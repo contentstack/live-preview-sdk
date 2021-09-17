@@ -1,5 +1,7 @@
+import { v4 as uuidv4 } from 'uuid'
+
 import { IInitData } from "./utils/types";
-import LivePreview from "./LivePreview";
+import LivePreview from "./live-preview";
 import { userInitData } from "./utils/defaults";
 
 import './styles.css'
@@ -36,7 +38,7 @@ export class ContentstackLivePreview {
     };
 
     static subscribe = (callback: any) => {
-        ContentstackLivePreview.subscribers[Math.random() * 10000] = callback;
+        ContentstackLivePreview.subscribers[uuidv4()] = callback;
     };
 
     static onEntryChange = (onChangeCallback: () => void) => {

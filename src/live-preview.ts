@@ -120,7 +120,7 @@ export default class LivePreview {
         }
     };
 
-    private scrollHandler = (e: MouseEvent) => {
+    private scrollHandler = () => {
         if (!this.tooltip) return;
 
         const cslpTag = this.tooltip.getAttribute("current-data-cslp");
@@ -158,7 +158,7 @@ export default class LivePreview {
         }
     };
 
-    private linkClickHandler = (e: MouseEvent) => {
+    private linkClickHandler = () => {
         if (!this.tooltip) return;
 
         const hrefAttribute = this.tooltip.getAttribute("current-href");
@@ -178,7 +178,7 @@ export default class LivePreview {
         this.config.onChange();
     };
 
-    setOnChangeCallback = (onChangeCallback: () => void) => {
+    setOnChangeCallback = (onChangeCallback: () => void): void => {
         this.config.onChange = onChangeCallback;
     };
 
@@ -187,7 +187,7 @@ export default class LivePreview {
         const doc = parser.parseFromString(receivedBody, "text/html");
         morphdom(document.body, doc.body);
         this.createCslpTooltip()
-    };
+    }
 
     private resolveIncomingMessage(e: MessageEvent) {
         if (typeof e.data !== "object") return;
@@ -229,7 +229,7 @@ export default class LivePreview {
                 break;
             }
         }
-    };
+    }
 
     private createCslpTooltip() {
         if (!document.getElementById("cslp-tooltip")) {
