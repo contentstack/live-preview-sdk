@@ -46,6 +46,5 @@ export declare interface IInitData {
     };
     clientUrlParams: Omit<IClientUrlParams, 'url'>;
     stackSdk: IStackSdk;
-    onChange: () => void;
 
 }
