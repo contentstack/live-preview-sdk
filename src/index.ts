@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { v4 as uuidv4 } from 'uuid'
 
 import { IInitData } from "./utils/types";
@@ -11,7 +13,7 @@ export class ContentstackLivePreview {
     static userConfig: Partial<IInitData> | null = null;
     static subscribers: any = {};
 
-    static init = (userConfig: Partial<IInitData> = userInitData) => {
+    static init = (userConfig: Partial<IInitData> = userInitData): Promise<LivePreview> | undefined => {
         if (typeof window !== "undefined") {
             if (ContentstackLivePreview.livePreview) {
                 return Promise.resolve(ContentstackLivePreview.livePreview);
@@ -29,7 +31,7 @@ export class ContentstackLivePreview {
         }
     };
 
-    static publish = () => {
+    static publish = (): void => {
         Object.values(ContentstackLivePreview.subscribers).forEach(
             (func: any) => {
                 func();
@@ -37,7 +39,7 @@ export class ContentstackLivePreview {
         );
     };
 
-    static subscribe = (callback: any) => {
+    static subscribe = (callback: any): void => {
         ContentstackLivePreview.subscribers[uuidv4()] = callback;
     };
 

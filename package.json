@@ -2,21 +2,25 @@
     "name": "@contentstack/live-preview-sdk",
     "version": "1.0.0",
     "types": "dist/index.d.ts",
-    "description": "This SDK helps connect to the development server of the Contentstack and sync the data.",
+    "description": "This SDK is responsible to establish a communication channel between the Contentstack SDK and your website, and transfer live changes to the site.",
     "main": "dist/index.js",
     "scripts": {
-        "build": "webpack --config webpack.dev.js",
+        "build": "webpack --config webpack.prod.js",
         "test": "echo \"Error: no test specified\" && exit 1",
-        "dev": "webpack --config webpack.prod.js"
+        "dev": "webpack --config webpack.dev.js"
     },
     "keywords": [],
-    "author": "Deepak Kharah",
+    "author": "Contentstack",
     "license": "MIT",
     "devDependencies": {
         "@babel/core": "^7.2.2",
         "@babel/preset-env": "^7.3.1",
+        "@types/uuid": "^8.3.1",
+        "@typescript-eslint/eslint-plugin": "^4.31.1",
+        "@typescript-eslint/parser": "^4.31.1",
         "babel-loader": "^8.0.5",
         "css-loader": "^5.2.2",
+        "eslint": "^7.32.0",
         "mini-css-extract-plugin": "^2.3.0",
         "style-loader": "^2.0.0",
         "ts-loader": "^8.1.0",
@@ -27,6 +31,7 @@
         "webpack-merge": "^5.8.0"
     },
     "dependencies": {
-        "morphdom": "^2.6.1"
+        "morphdom": "^2.6.1",
+        "uuid": "^8.3.2"
     }
 }

@@ -13,7 +13,7 @@ npm install @contenstack/live-preview-sdk
 or you can include it directly in the HTML.
 
 ```html
-<script src="url-to-cdn">
+<script src="https://unpkg.com/@contentstack/live-preview-sdk@1.1.0/dist/index.js"></script>
 ```
 
 # Usage

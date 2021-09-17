@@ -3,7 +3,7 @@ import { IClientUrlParams, IConfig, IStackSdk } from "./types";
 const handleClientUrlParams = (
     existingConfig: IConfig,
     userConfig: Partial<IClientUrlParams>
-) => {
+): void => {
     existingConfig.clientUrlParams.host =
         userConfig.host ?? existingConfig.clientUrlParams.host;
     existingConfig.clientUrlParams.protocol =
@@ -37,13 +37,13 @@ const handleClientUrlParams = (
 function isInitDataStackSdk(
     initObj: Partial<IConfig> | Partial<IStackSdk>
 ): initObj is IStackSdk {
-    return initObj.hasOwnProperty("cachePolicy");
+    return Object.prototype.hasOwnProperty.call(initObj, "cachePolicy")
 }
 
 export const handleInitData = (
     initData: Partial<IConfig> | Partial<IStackSdk>,
     config: IConfig
-) => {
+): void => {
     // only have stack sdk
     if (isInitDataStackSdk(initData)) {
         const livePreviewObject = initData?.config?.live_preview || {};
@@ -60,16 +60,16 @@ export const handleInitData = (
 
         config.stackSdk = initData
 
-        if (!initData.hasOwnProperty("headers"))
+        if (!Object.prototype.hasOwnProperty.call(initData, "headers"))
             throw new Error("Please add Api key to continue");
 
         // stack details
-        if (!initData.headers.hasOwnProperty("api_key"))
+        if (!Object.prototype.hasOwnProperty.call(initData, "api_key"))
             throw new Error("Please add the stack API key for live preview");
         else {
             config.stackDetails.apiKey = initData.headers.api_key;
         }
-        if (initData.hasOwnProperty("environment")) {
+        if (Object.prototype.hasOwnProperty.call(initData, "environment")) {
             config.stackDetails.environment = initData.environment;
         }
 
@@ -120,9 +120,6 @@ export const handleInitData = (
                 config.clientUrlParams
         );
     }
-
-
-    return JSON.parse(JSON.stringify(config));
 };
 
 export const handleUserConfig = {

@@ -1,19 +1,4 @@
-export function bindEvent(
-    element: HTMLElement | Window,
-    eventName: keyof HTMLElementEventMap,
-    eventHandler: (
-        this: HTMLElement,
-        ev: HTMLElementEventMap[typeof eventName]
-    ) => any
-) {
-    if (element.addEventListener) {
-        element.addEventListener(eventName, eventHandler, false);
-    } else if ((<any>element).attachEvent) {
-        (<any>element).attachEvent("on" + eventName, eventHandler);
-    }
-}
-
-export function hasWindow() {
+export function hasWindow(): boolean {
     return typeof window !== "undefined";
 }
 
@@ -39,7 +24,7 @@ export const tooltipMultipleInnerHtml = `<div class="edit-button" title="edit">
 
 export const createSingularEditButton = (
     editCallback: (e: MouseEvent) => void
-) => {
+): HTMLDivElement => {
     const singularEditButton = document.createElement("div");
     singularEditButton.classList.add("cslp-tooltip-child", "singular");
     singularEditButton.innerHTML = `<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -55,7 +40,7 @@ export const createSingularEditButton = (
 export const createMultipleEditButton = (
     editCallback: (e: MouseEvent) => void,
     linkCallback: (e: MouseEvent) => void
-) => {
+): HTMLDivElement => {
     const multipleEditButton = document.createElement("div");
     multipleEditButton.classList.add("cslp-tooltip-child");
     multipleEditButton.setAttribute("data-title", "Edit");

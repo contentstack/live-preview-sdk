@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export declare interface IEntryValue {
     [field: string]: any;
 }
@@ -19,7 +20,7 @@ export declare interface IStackSdk {
         api_key: string;
     };
     environment: string;
-};
+}
 export declare interface IConfig {
     shouldReload: boolean;
     enable: boolean;
