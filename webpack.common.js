@@ -2,10 +2,7 @@ const path = require("path");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
 module.exports = {
-    entry: [
-        path.resolve(__dirname, "src", "index.ts"),
-        path.resolve(__dirname, "src", "styles.css"),
-    ],
+    entry: path.resolve(__dirname, "src", "index.ts"),
     output: {
         globalObject: "this",
         library: "ContentstackLivePreview",
