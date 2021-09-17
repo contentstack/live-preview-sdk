@@ -146,7 +146,10 @@ export default class LivePreview {
             } else {
                 const protocol =
                     String(this.config.clientUrlParams.protocol) + "://";
-                const host = String(this.config.clientUrlParams.host); // todo trim any '/'
+                let host = String(this.config.clientUrlParams.host);
+                if (host.endsWith('/')) {
+                    host = host.slice(0,-1)
+                }
                 const port = ":" + String(this.config.clientUrlParams.port);
 
                 const redirectUrl = `${protocol}${host}${port}/#!/stack/${this.config.stackDetails.apiKey
