@@ -1,31 +1,27 @@
 import { IInitData } from "./types";
 
 export const userInitData: IInitData = {
-        shouldReload: true,
-        enable: true,
-        cleanCslpOnProduction: true,
+    shouldReload: true,
+    enable: true,
+    cleanCslpOnProduction: true,
 
-        stackDetails: {
-            apiKey: "",
-            environment: "",
-        },
+    stackDetails: {
+        apiKey: "",
+        environment: "",
+    },
 
-        clientUrlParams: {
-            protocol: "https",
-            host: "app.contentstack.com",
-            port: 443,
+    clientUrlParams: {
+        protocol: "https",
+        host: "app.contentstack.com",
+        port: 443,
+    },
+    stackSdk: {
+        config: {
+            live_preview: {},
         },
-        stackSdk: {
-            config: {
-                live_preview: {},
-            },
-            headers: {
-                api_key: "",
-            },
-            environment: "",
+        headers: {
+            api_key: "",
         },
-
-        onChange: () => {
-            // this is intentional
-        },
-    }
+        environment: "",
+    },
+};

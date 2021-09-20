@@ -25,19 +25,19 @@ const handleClientUrlParams = (
     }
 
     // build url
-    let host = existingConfig.clientUrlParams.host
+    let host = existingConfig.clientUrlParams.host;
 
-    if (host.endsWith('/')) {
-        host = host.slice(0, -1)
+    if (host.endsWith("/")) {
+        host = host.slice(0, -1);
     }
 
-    existingConfig.clientUrlParams.url = `${existingConfig.clientUrlParams.protocol}://${existingConfig.clientUrlParams.host}:${existingConfig.clientUrlParams.port}`
+    existingConfig.clientUrlParams.url = `${existingConfig.clientUrlParams.protocol}://${existingConfig.clientUrlParams.host}:${existingConfig.clientUrlParams.port}`;
 };
 
 function isInitDataStackSdk(
     initObj: Partial<IConfig> | Partial<IStackSdk>
 ): initObj is IStackSdk {
-    return Object.prototype.hasOwnProperty.call(initObj, "cachePolicy")
+    return Object.prototype.hasOwnProperty.call(initObj, "cachePolicy");
 }
 
 export const handleInitData = (
@@ -51,20 +51,25 @@ export const handleInitData = (
         // only stack indicates that user is running it on client side application
         config.shouldReload = false;
 
-        config.enable =
-            livePreviewObject.enable ?? config.enable;
+        config.enable = livePreviewObject.enable ?? config.enable;
 
         config.cleanCslpOnProduction =
             livePreviewObject.cleanCslpOnProduction ??
             config.cleanCslpOnProduction;
 
-        config.stackSdk = initData
+        config.stackSdk = initData;
 
         if (!Object.prototype.hasOwnProperty.call(initData, "headers"))
             throw new Error("Please add Api key to continue");
 
         // stack details
-        if (!Object.prototype.hasOwnProperty.call(initData, "api_key"))
+        if (
+            !Object.prototype.hasOwnProperty.call(
+                initData.headers,
+                "api_key"
+            ) ||
+            !initData.headers.api_key
+        )
             throw new Error("Please add the stack API key for live preview");
         else {
             config.stackDetails.apiKey = initData.headers.api_key;
@@ -87,12 +92,15 @@ export const handleInitData = (
             stackSdk.config?.live_preview?.enable ??
             config.enable;
 
-        config.shouldReload = initData.shouldReload ?? stackSdk.config?.live_preview?.shouldReload ?? false
+        config.shouldReload =
+            initData.shouldReload ??
+            stackSdk.config?.live_preview?.shouldReload ??
+            false;
 
         config.stackSdk = {
             ...config.stackSdk,
-            ...stackSdk
-        }
+            ...stackSdk,
+        };
 
         config.cleanCslpOnProduction =
             initData.cleanCslpOnProduction ??
