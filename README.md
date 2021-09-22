@@ -1,26 +1,29 @@
 # Contentstack Live Preveiew SDK
 
-This SDK is responsible to establish a communication channel between the Contentstack SDK and your website, and transfer live changes to the site.
+Contentstack is a headless CMS with an API-first approach. It is a CMS that developers can use to build powerful cross-platform applications in their favorite languages. Build your application frontend, and Contentstack will take care of the rest. [Read More](https://www.contentstack.com/).
+
+Contentstack provides the Live Preview SDK to establish a communication channel between the various Contentstack SDKs and your website, transmitting live changes to the preview pane.
 
 # Installation
 
-You could install this package via npm using following command
+To install the package via npm using following command:
 
 ```bash
 npm install @contenstack/live-preview-sdk
 ```
 
-or you can include it directly in the HTML.
+Alternatively, if you want to include the package directly in your website HTML code, use the following command:
 
 ```html
 <script src="https://unpkg.com/@contentstack/live-preview-sdk@1.1.0/dist/index.js"></script>
 ```
 
-# Usage
+# Initializing the SDK
 
 ### Live preview
 
-As this sdk is responsible only for the communication, we only need to initialize the SDK.
+Since the live preview SDK is responsible for communication, you need to only initialize it.
+Use the following command to initialize the SDK:
 
 ```javascript
 import ContentstackLivePreview from "@contenstack/live-preview-sdk";
@@ -33,7 +36,7 @@ ContentstackLivePreview.init({
 });
 ```
 
-If you are adding directly into the HTML tag, then the class is directly available under the same name `ContentstackLivePreview`
+Alternatively, if you want to initialize the SDK directly in the HTML tag, use the class attribute ContentstackLivePreview as follows:
 
 ```html
 <script>
@@ -46,9 +49,11 @@ If you are adding directly into the HTML tag, then the class is directly availab
 </script>
 ```
 
-### Live edit tags
+# Live editing
 
-Live edit tags are automatically idenfied when present in the `data-cslp` attrubute in the HTML tags. The styles for the live edit tags are available in `@contentstack/live-preview-sdk/dist/main.css`. Include them in your main `index.js` file.
+Live Preview allows you to edit your content by providing edit tags. Live edit tags are identified as the data-cslp attribute within the HTML tags. The styles for the live edit tags are available in the `@contentstack/live-preview-sdk/dist/main.css` file.
+
+To use the live edit tags within your stack, you need to Include them in your main index.js file as follows:
 
 ```javascript
 import "@contentstack/live-preview-sdk/dist/main.css";

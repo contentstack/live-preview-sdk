@@ -1,7 +1,4 @@
-import {
-    createSingularEditButton,
-    createMultipleEditButton,
-} from "./utils";
+import { createSingularEditButton, createMultipleEditButton } from "./utils";
 import { IConfig, IEntryValue, IInitData } from "./utils/types";
 import morphdom from "morphdom";
 import { handleInitData } from "./utils/handleUserConfig";
@@ -28,7 +25,7 @@ export default class LivePreview {
             protocol: "https",
             host: "app.contentstack.com",
             port: 443,
-            url: "https://app.contentstack.com:443"
+            url: "https://app.contentstack.com:443",
         },
         stackSdk: {
             config: {
@@ -52,17 +49,15 @@ export default class LivePreview {
         singular: HTMLDivElement | null;
         multiple: HTMLDivElement | null;
     } = {
-            singular: null,
-            multiple: null,
-        };
+        singular: null,
+        multiple: null,
+    };
     private tooltipCurrentChild: "multiple" | "singular" = "singular";
 
-
-    constructor(
-        initData: Partial<IInitData> = userInitData,
-    ) {
+    constructor(initData: Partial<IInitData> = userInitData) {
         handleInitData(initData, this.config);
 
+        console.error("mayhem config", this.config);
 
         if (this.config.enable) {
             if (
@@ -93,7 +88,6 @@ export default class LivePreview {
             const cslpTag = element.getAttribute("data-cslp");
 
             if (trigger && cslpTag) {
-
                 if (this.currentElementBesideTooltip)
                     this.currentElementBesideTooltip.classList.remove(
                         "cslp-edit-mode"
@@ -102,10 +96,7 @@ export default class LivePreview {
                 this.currentElementBesideTooltip = element;
 
                 if (this.updateTooltipPosition()) {
-                    this.tooltip?.setAttribute(
-                        "current-data-cslp",
-                        cslpTag
-                    );
+                    this.tooltip?.setAttribute("current-data-cslp", cslpTag);
                     this.tooltip?.setAttribute(
                         "current-href",
                         element.getAttribute("href") ?? ""
@@ -113,7 +104,6 @@ export default class LivePreview {
                 }
 
                 trigger = false;
-
             } else if (!trigger) {
                 element.classList.remove("cslp-edit-mode");
             }
@@ -126,35 +116,40 @@ export default class LivePreview {
         const cslpTag = this.tooltip.getAttribute("current-data-cslp");
 
         if (cslpTag) {
-            const [content_type_uid, entry_uid, locale, ...field] = cslpTag.split(".");
+            const [content_type_uid, entry_uid, locale, ...field] =
+                cslpTag.split(".");
 
             // check if opened inside an iframe
             if (window.location !== window.parent.location) {
-                    window.parent.postMessage(
-                        {
-                            from: "live-preview",
-                            type: "scroll",
-                            data: {
-                                field: field.join("."),
-                                content_type_uid,
-                                entry_uid,
-                                locale
-                            },
+                window.parent.postMessage(
+                    {
+                        from: "live-preview",
+                        type: "scroll",
+                        data: {
+                            field: field.join("."),
+                            content_type_uid,
+                            entry_uid,
+                            locale,
                         },
-                        "*"
-                    );
+                    },
+                    "*"
+                );
             } else {
                 const protocol =
                     String(this.config.clientUrlParams.protocol) + "://";
                 let host = String(this.config.clientUrlParams.host);
-                if (host.endsWith('/')) {
-                    host = host.slice(0,-1)
+                if (host.endsWith("/")) {
+                    host = host.slice(0, -1);
                 }
                 const port = ":" + String(this.config.clientUrlParams.port);
 
-                const redirectUrl = `${protocol}${host}${port}/#!/stack/${this.config.stackDetails.apiKey
-                    }/content-type/${content_type_uid}/${locale ?? 'en-us'}/entry/${entry_uid}/edit?preview-url=${window.location.origin
-                    }&preview-field=${field.join(".")}`;
+                const redirectUrl = `${protocol}${host}${port}/#!/stack/${
+                    this.config.stackDetails.apiKey
+                }/content-type/${content_type_uid}/${
+                    locale ?? "en-us"
+                }/entry/${entry_uid}/edit?preview-url=${
+                    window.location.origin
+                }&preview-field=${field.join(".")}`;
 
                 window.open(redirectUrl, "_blank");
             }
@@ -176,8 +171,7 @@ export default class LivePreview {
         this.config.stackSdk.config.live_preview = {
             ...this.config.stackSdk.config.live_preview,
             ...entryEditParams,
-
-        }
+        };
         this.config.onChange();
     };
 
@@ -185,14 +179,14 @@ export default class LivePreview {
         this.config.onChange = onChangeCallback;
     };
 
-    private updateDocumentBody (receivedBody: string) {
+    private updateDocumentBody = (receivedBody: string) => {
         const parser = new DOMParser();
         const doc = parser.parseFromString(receivedBody, "text/html");
         morphdom(document.body, doc.body);
-        this.createCslpTooltip()
-    }
+        this.createCslpTooltip();
+    };
 
-    private resolveIncomingMessage(e: MessageEvent) {
+    private resolveIncomingMessage = (e: MessageEvent) => {
         if (typeof e.data !== "object") return;
         const { type, from, data } = e.data;
 
@@ -232,9 +226,9 @@ export default class LivePreview {
                 break;
             }
         }
-    }
+    };
 
-    private createCslpTooltip() {
+    private createCslpTooltip = () => {
         if (!document.getElementById("cslp-tooltip")) {
             const tooltip = document.createElement("button");
             tooltip.classList.add("cslp-tooltip");
@@ -252,8 +246,8 @@ export default class LivePreview {
             tooltip.appendChild(this.tooltipChild.singular);
             this.tooltip = tooltip;
         }
-        this.updateTooltipPosition()
-    }
+        this.updateTooltipPosition();
+    };
 
     // Request parent for data sync when document loads
     private requestDataSync = () => {
@@ -262,7 +256,7 @@ export default class LivePreview {
         });
 
         // add edit tooltip
-        this.createCslpTooltip()
+        this.createCslpTooltip();
 
         window.parent.postMessage(
             {
@@ -271,7 +265,7 @@ export default class LivePreview {
                 data: {
                     config: {
                         shouldReload: this.config.shouldReload,
-                        href: window.location.href
+                        href: window.location.href,
                     },
                 },
             },
@@ -286,13 +280,12 @@ export default class LivePreview {
                         from: "live-preview",
                         type: "check-entry-page",
                         data: {
-                            href: window.location.href
+                            href: window.location.href,
                         },
                     },
                     "*"
                 );
-            }, 1500)
-
+            }, 1500);
         }
     };
 
@@ -341,11 +334,11 @@ export default class LivePreview {
     };
 
     // remove attributes when livePreview is false
-    private removeDataCslp() {
+    private removeDataCslp = () => {
         const nodes = document.querySelectorAll("[data-cslp]");
 
         nodes.forEach((node) => {
             node.removeAttribute("data-cslp");
         });
-    }
+    };
 }

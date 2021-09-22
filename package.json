@@ -2,7 +2,7 @@
     "name": "@contentstack/live-preview-sdk",
     "version": "1.0.0",
     "types": "dist/index.d.ts",
-    "description": "This SDK is responsible to establish a communication channel between the Contentstack SDK and your website, and transfer live changes to the site.",
+    "description": "Contentstack provides the Live Preview SDK to establish a communication channel between the various Contentstack SDKs and your website, transmitting  live changes to the preview pane.",
     "main": "dist/index.js",
     "scripts": {
         "build": "webpack --config webpack.prod.js",
