@@ -1,19 +1,22 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { v4 as uuidv4 } from 'uuid'
+import { v4 as uuidv4 } from "uuid";
+import camelCase from "just-camel-case";
 
-import { IInitData } from "./utils/types";
+import { IInitData, IStackSdk } from "./utils/types";
 import LivePreview from "./live-preview";
 import { userInitData } from "./utils/defaults";
 
-import './styles.css'
+import "./styles.css";
 
 export class ContentstackLivePreview {
     static livePreview: LivePreview | null = null;
     static userConfig: Partial<IInitData> | null = null;
     static subscribers: any = {};
 
-    static init = (userConfig: Partial<IInitData> = userInitData): Promise<LivePreview> | undefined => {
+    static init = (
+        userConfig: Partial<IInitData> = userInitData
+    ): Promise<LivePreview> | undefined => {
         if (typeof window !== "undefined") {
             if (ContentstackLivePreview.livePreview) {
                 return Promise.resolve(ContentstackLivePreview.livePreview);
@@ -31,7 +34,7 @@ export class ContentstackLivePreview {
         }
     };
 
-    static publish = (): void => {
+    private static publish = (): void => {
         Object.values(ContentstackLivePreview.subscribers).forEach(
             (func: any) => {
                 func();
@@ -39,7 +42,7 @@ export class ContentstackLivePreview {
         );
     };
 
-    static subscribe = (callback: any): void => {
+    private static subscribe = (callback: any): void => {
         ContentstackLivePreview.subscribers[uuidv4()] = callback;
     };
 
@@ -54,7 +57,27 @@ export class ContentstackLivePreview {
             ContentstackLivePreview.userConfig = null;
         }
         ContentstackLivePreview.subscribe(onChangeCallback);
-        onChangeCallback()
+        onChangeCallback();
+    };
+
+    static getGatsbyDataFormat = async (
+        sdkQuery: IStackSdk,
+        prefix: string
+    ) => {
+        return sdkQuery
+            .fetch()
+            .then((ent: { [key: string]: any }) => {
+                const dataTitle = camelCase(
+                    `${prefix}_${sdkQuery.content_type_uid}`
+                );
+                const entry = { [dataTitle]: ent.toJSON() };
+
+                fetch("/__refresh", { method: "POST" });
+                return entry;
+            })
+            .catch((err: any) => {
+                console.error(err);
+            });
     };
 }
 
