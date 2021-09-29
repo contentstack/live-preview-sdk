@@ -7,7 +7,7 @@ export declare interface IClientUrlParams {
     protocol: "http" | "https";
     host: string;
     port: string | number;
-    url: string
+    url: string;
 }
 
 export declare interface IStackSdk {
@@ -21,16 +21,23 @@ export declare interface IStackSdk {
     };
     environment: string;
 }
+
+export declare interface IStackDetails {
+    apiKey: string;
+    environment: string;
+    contentTypeUid: string;
+    entryUid: string;
+}
+
+export declare interface IInitStackDetails {
+    apiKey: string;
+    environment: string;
+}
 export declare interface IConfig {
     shouldReload: boolean;
     enable: boolean;
     cleanCslpOnProduction: boolean;
-    stackDetails: {
-        apiKey: string;
-        environment: string;
-        contentTypeUid: string;
-        entryUid: string;
-    };
+    stackDetails: IStackDetails;
     clientUrlParams: IClientUrlParams;
     stackSdk: IStackSdk;
     onChange: () => void;
@@ -40,11 +47,7 @@ export declare interface IInitData {
     shouldReload: boolean;
     enable: boolean;
     cleanCslpOnProduction: boolean;
-    stackDetails: {
-        apiKey: string;
-        environment: string;
-    };
-    clientUrlParams: Omit<IClientUrlParams, 'url'>;
+    stackDetails: Partial<IInitStackDetails>;
+    clientUrlParams: Partial<Omit<IClientUrlParams, "url">>;
     stackSdk: IStackSdk;
-
 }
