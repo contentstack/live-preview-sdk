@@ -2,7 +2,7 @@ import { IInitData } from "./types";
 
 export const userInitData: IInitData = {
     shouldReload: true,
-    enable: true,
+    enable: false,
     cleanCslpOnProduction: true,
 
     stackDetails: {
@@ -16,9 +16,7 @@ export const userInitData: IInitData = {
         port: 443,
     },
     stackSdk: {
-        config: {
-            live_preview: {},
-        },
+        live_preview: {},
         headers: {
             api_key: "",
         },

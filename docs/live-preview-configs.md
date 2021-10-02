@@ -16,41 +16,46 @@ The init data has following structure
     - [`stackSdk`](#stacksdk)
   - [`onEntryChange()`](#onentrychange)
   - [`getGatsbyDataFormat()`](#getgatsbydataformat)
-- [Alternate Method for passing config](#alternate-method-for-passing-config)
+- [Alternate Method​ for Passing Configuration Details](#alternate-method-for-passing-configuration-details)
 
 ## `init()`
 
-The init method is use to initialize the SDK by setting up necessary event listeners.
-
-The init method takes one object as configuration and the options for the configurations are as follows.
+The `init()` method initializes the Live Preview SDK by setting up the necessary event listeners.
+​
+The `init()` method accepts one object as configuration. The following explains all the options available for configuration.
 
 ### `enable`
 
 | type    | default | optional |
 | ------- | ------- | -------- |
-| boolean | true    | false    |
+| boolean | false   | no       |
 
-Determines whether live preview communications will be enabled.
+​
+The `enable` property determines whether Live Preview communications have been enabled.
 
 ### `shouldReload`
 
 | type    | default | optional |
 | ------- | ------- | -------- |
-| boolean | true    | true     |
+| boolean | true    | yes      |
 
-Should reload determines strategy of data replacement. It is dependent on whether your app is [SSR](https://developers.google.com/web/updates/2019/02/rendering-on-the-web#server-rendering) or [CSR](https://developers.google.com/web/updates/2019/02/rendering-on-the-web#csr). `true` determines SSR and a request will be made to your page for fresh HTML page, while `false` determines CSR and it will rely on the framework to get and reload the data. eg. React.
+The shouldReload property determines the data update strategy for previewed content whenever you make changes to entry content. It depends on whether your app is [SSR](https://developers.google.com/web/updates/2019/02/rendering-on-the-web#server-rendering) or [CSR](https://developers.google.com/web/updates/2019/02/rendering-on-the-web#csr).
+
+If you set the property to `true`, then your app or website is rendered from the server (SSR) and a request will be sent for a fresh HTML page every time you edit content.
+
+When you set the command to `false`, then your app is rendered from the client side (CSR). Your framework, e.g. React, will fetch the data and reload the existing page.
 
 ### `cleanCslpOnProduction`
 
 | type    | default | optional |
 | ------- | ------- | -------- |
-| boolean | true    | true     |
+| boolean | true    | yes      |
 
-When `enable` is set to `false` and `cleanCslpOnProduction` to `true`, it will remove the `data-cslp` attributes from the website.
+When `enable` is set to `false` and cleanCslpOnProduction is set to `true`, the `data-cslp` attributes are removed from the website.
 
 ### `stackDetails`
 
-This object contains stack related information that helps in redirecting to the proper page when `edit_tags` are enabled.
+The `stackDetails` object contains stack related information that helps in redirecting to the corresponding entry whenever you use edit tags to update content in real-time.
 
 ```ts
 stackDetails {
@@ -61,7 +66,7 @@ stackDetails {
 
 #### `apiKey`
 
-The `api_key` of the stack.
+The API key of the concerned stack.
 
 | type   | optional |
 | ------ | -------- |
@@ -69,7 +74,7 @@ The `api_key` of the stack.
 
 #### `environment`
 
-The `environment` of the stack.
+The environment name of the concerned stack.
 
 | type   | optional |
 | ------ | -------- |
@@ -77,7 +82,7 @@ The `environment` of the stack.
 
 ### `clientUrlParams`
 
-This object contains the url information of the stack your webpage. By default, the config are set for NA.
+The `clientUrlParams` object contains the URL information of the stack that contains your webpage content. By default, the configuration details are set for the NA region.
 
 #### NA config
 
@@ -99,19 +104,22 @@ This object contains the url information of the stack your webpage. By default, 
 }
 ```
 
-Pass the object if you need to modify the url.
+Pass the `clientUrlParams` object if you need to modify the URL.
+​
 
 ### `stackSdk`
 
-The Stack that we get by executing `Contentstack.Stack`. This is required for CSR as we need to inject the live preview hash and content_type_uid.
+The `stackSdk` object represents the `Stack` class that we get by executing the `Contentstack.Stack()` method. It is required for Client-Side Rendering (CSR) as we need to inject the live preview hash and content type UID into the Stack class.
 
 ## `onEntryChange()`
 
-For the CSRs, the data collection and rendering is handle by the framework themselves. Hence, for them, we recommend creating a function responsible for data fetching and storing and pass it to this method. This will execute the function whenever new data is available.
+For Client-Side Rendering (CSR), data collection and rendering is handled by the framework itself. Hence, for CSR, we recommend creating a function responsible for fetching and storing data, for example, `updatePage()`, and passing it to the `onEntryChange()` method. This will execute the updatePage() function whenever new data is available.
+​
 
-> **Note:** This function only works when `shouldReload` is set to `false`, indicating a CSR application.
-
-eg in `react.js`
+> **Note:** This function only works when `shouldReload` is set to `false`, indicating that the application is of type CSR.
+> ​
+> For example, in a React application, you can create an updateData() function that will fetch data from Contentstack and store it in a React state. Inside the useEffect() function, you need to call the `onEntryChange()` function and pass the updateData() function to it.
+> ​
 
 ```js
 // utils.js
@@ -141,11 +149,13 @@ const Footer = () => {
 
 ## `getGatsbyDataFormat()`
 
-Gatsby primarily gets its data from the [`contentstack-source-plugin`](https://www.gatsbyjs.com/plugins/gatsby-source-contentstack/). But, for live preview currently works only on [contentstack sdk](https://www.npmjs.com/package/contentstack). Hence, for Gatsby, we fetch the data from contentstack SDK and store it to react state and rerender the page using [`onEntryChange()`](#onentrychange) method. But, the data format is different for gatsby source plugin. It requires a prefix and the entry names are in camel case. Hence, we use `getGatsbyDataFormat()` to convert the entry's name.
+Gatsby primarily fetches data using the [`gatsby-source-contentstack` plugin](https://www.gatsbyjs.com/plugins/gatsby-source-contentstack/). But, Live Preview currently works only on the [contentstack SDK](https://www.npmjs.com/package/contentstack).
 
-It takes the Contentstack `Stack` object as first parameter and prefix as second. The prefix is set inside `gatsby-config.js` file. Default value is `contentstck`.
+Hence, for Gatsby, we fetch the data from the contentstack SDK and store it in React state. Post that, we re-render the page using the `onEntryChange()` method. As the data format is different for the gatsby-source-contentstack plugin, it returns a prefix and the entry name in Camel case. Hence, we use `getGatsbyDataFormat()` to change the entry's name.
+​
+The `getGatsbyDataFormat()` method accepts the Contentstack `Stack` object as the first parameter and the prefix as the second. The prefix is set inside the `gatsby-config.js` file. The default value set for the prefix is `contentstack`.
 
-eg.
+**For example:**
 
 ```js
 const query = Stack.ContentType("your-contentype").Entry("entry-uid");
@@ -158,7 +168,7 @@ const formattedData = ContentstackLivePreview.getGatsbyDataFormat(
 setData(formattedData);
 ```
 
-difference in data
+**Difference in data:**
 
 ```js
 // not passed to function
@@ -178,13 +188,13 @@ difference in data
 }
 ```
 
-# Alternate Method for passing config
+# Alternate Method​ for Passing Configuration Details
 
-For the Client side rendering, we require `Contentstack.Stack` as default and it already has some configs related to livepreview. Hence, this SDK is build to leverage that configurations.
+For Client Side Rendering, we require the Stack class by default, and it already has some configs related to Live Preview. Hence, the Live Preview SDK has been built to leverage those configurations.
 
-You can directly pass the SDK's config inside the `Contentstack.Stack.live_preview`
+You can directly pass the SDK config inside the `Contentstack.Stack.live_preview`
 
-eg
+**For example**
 
 ```js
 const stack = Contentstack.Stack({
@@ -197,10 +207,8 @@ const stack = Contentstack.Stack({
 })
 ```
 
-Now, pass this Stack directly into the live preview SDK.
+Now, directly pass the stack object defined within the config while initializing the Live Preview SDK:
 
 ```js
 ContentstackLivePreview.init(stack);
 ```
-
-> NOTE: `ContentstackLivePreview.onEntryChange()` function is available for CSR to force rerender of the components.

@@ -6,7 +6,7 @@ describe("handleInitData()", () => {
     beforeEach(() => {
         config = {
             shouldReload: true,
-            enable: true,
+            enable: false,
             cleanCslpOnProduction: true,
 
             stackDetails: {
@@ -23,9 +23,7 @@ describe("handleInitData()", () => {
                 url: "https://app.contentstack.com:443",
             },
             stackSdk: {
-                config: {
-                    live_preview: {},
-                },
+                live_preview: {},
                 headers: {
                     api_key: "",
                 },
@@ -171,9 +169,7 @@ describe("handleClientUrlParams()", () => {
                 url: "https://app.contentstack.com:443",
             },
             stackSdk: {
-                config: {
-                    live_preview: {},
-                },
+                live_preview: {},
                 headers: {
                     api_key: "",
                 },
