@@ -11,7 +11,7 @@ export default class LivePreview {
 
     private config: IConfig = {
         shouldReload: true,
-        enable: true,
+        enable: false,
         cleanCslpOnProduction: true,
 
         stackDetails: {
@@ -28,9 +28,7 @@ export default class LivePreview {
             url: "https://app.contentstack.com:443",
         },
         stackSdk: {
-            config: {
-                live_preview: {},
-            },
+            live_preview: {},
             headers: {
                 api_key: "",
             },
@@ -168,8 +166,8 @@ export default class LivePreview {
 
     private handleUserChange = (entryEditParams: IEntryValue) => {
         // here we provide contentTypeUid and EntryUid to the StackDelivery SDK.
-        this.config.stackSdk.config.live_preview = {
-            ...this.config.stackSdk.config.live_preview,
+        this.config.stackSdk.live_preview = {
+            ...this.config.stackSdk.live_preview,
             ...entryEditParams,
         };
         this.config.onChange();
