@@ -1,4 +1,4 @@
-import { IClientUrlParams, IConfig, IStackSdk } from "./types";
+import { IClientUrlParams, IConfig, IInitData, IStackSdk } from "./types";
 
 const handleClientUrlParams = (
     existingConfig: IConfig,
@@ -40,13 +40,19 @@ function isInitDataStackSdk(
     return Object.prototype.hasOwnProperty.call(initObj, "cachePolicy");
 }
 
+function isInitDataCommon(
+    initObj: Partial<IConfig> | Partial<IStackSdk>
+): initObj is IInitData {
+    return !isInitDataStackSdk(initObj);
+}
+
 export const handleInitData = (
-    initData: Partial<IConfig> | Partial<IStackSdk>,
+    initData: Partial<IInitData> | Partial<IStackSdk>,
     config: IConfig
 ): void => {
     // only have stack sdk
     if (isInitDataStackSdk(initData)) {
-        const livePreviewObject = initData?.config?.live_preview || {};
+        const livePreviewObject = initData?.live_preview || {};
 
         // only stack indicates that user is running it on client side application
         config.shouldReload = false;
@@ -83,18 +89,16 @@ export const handleInitData = (
             config,
             livePreviewObject.clientUrlParams ?? config.clientUrlParams
         );
-    } else {
+    } else if (isInitDataCommon(initData)) {
         const stackSdk: Partial<IStackSdk> =
             initData.stackSdk || config.stackSdk;
 
         config.enable =
-            initData.enable ??
-            stackSdk.config?.live_preview?.enable ??
-            config.enable;
+            initData.enable ?? stackSdk.live_preview?.enable ?? config.enable;
 
         config.shouldReload =
             initData.shouldReload ??
-            stackSdk.config?.live_preview?.shouldReload ??
+            stackSdk.live_preview?.shouldReload ??
             false;
 
         config.stackSdk = {
@@ -104,7 +108,7 @@ export const handleInitData = (
 
         config.cleanCslpOnProduction =
             initData.cleanCslpOnProduction ??
-            stackSdk.config?.live_preview?.cleanCslpOnProduction ??
+            stackSdk.live_preview?.cleanCslpOnProduction ??
             config.cleanCslpOnProduction;
 
         config.stackDetails.apiKey =
@@ -116,15 +120,14 @@ export const handleInitData = (
             throw new Error("Please add the stack API key for live preview");
 
         config.stackDetails.environment =
-            initData.stackDetails?.environment ??
-            stackSdk.environment ??
-            config.stackDetails.environment;
+            initData.stackDetails?.environment ?? stackSdk.environment ?? ``;
+        config.stackDetails.environment;
 
         // client URL params
         handleClientUrlParams(
             config,
             initData.clientUrlParams ??
-                stackSdk.config?.live_preview?.clientUrlParams ??
+                stackSdk.live_preview?.clientUrlParams ??
                 config.clientUrlParams
         );
     }
