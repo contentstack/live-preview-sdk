@@ -55,7 +55,7 @@ export const handleInitData = (
         const livePreviewObject = initData?.live_preview || {};
 
         // only stack indicates that user is running it on client side application
-        config.shouldReload = false;
+        config.ssr = false;
 
         config.enable = livePreviewObject.enable ?? config.enable;
 
@@ -96,9 +96,9 @@ export const handleInitData = (
         config.enable =
             initData.enable ?? stackSdk.live_preview?.enable ?? config.enable;
 
-        config.shouldReload =
-            initData.shouldReload ??
-            stackSdk.live_preview?.shouldReload ??
+        config.ssr =
+            initData.ssr ??
+            stackSdk.live_preview?.ssr ??
             false;
 
         config.stackSdk = {

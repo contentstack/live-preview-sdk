@@ -5,7 +5,7 @@ let config: IConfig;
 describe("handleInitData()", () => {
     beforeEach(() => {
         config = {
-            shouldReload: true,
+            ssr: true,
             enable: false,
             cleanCslpOnProduction: true,
 
@@ -53,7 +53,7 @@ describe("handleInitData()", () => {
 
         handleInitData(initData, config);
         const expectedOutput = {
-            shouldReload: false,
+            ssr: false,
             enable: true,
             cleanCslpOnProduction: true,
             stackDetails: {
@@ -97,7 +97,7 @@ describe("handleInitData()", () => {
 
         handleInitData(initData, config);
         const expectedOutput = {
-            shouldReload: false,
+            ssr: false,
             enable: true,
             cleanCslpOnProduction: true,
             stackDetails: {
@@ -151,7 +151,7 @@ describe("handleInitData()", () => {
 describe("handleClientUrlParams()", () => {
     beforeEach(() => {
         config = {
-            shouldReload: true,
+            ssr: true,
             enable: true,
             cleanCslpOnProduction: true,
 

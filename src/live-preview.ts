@@ -10,7 +10,7 @@ export default class LivePreview {
      */
 
     private config: IConfig = {
-        shouldReload: true,
+        ssr: true,
         enable: false,
         cleanCslpOnProduction: true,
 
@@ -192,7 +192,7 @@ export default class LivePreview {
 
         switch (type) {
             case "client-data-send": {
-                if (this.config.shouldReload) {
+                if (this.config.ssr) {
                     const body = data.body;
                     if (body) this.updateDocumentBody(body);
                 } else {
@@ -262,7 +262,7 @@ export default class LivePreview {
                 type: "init",
                 data: {
                     config: {
-                        shouldReload: this.config.shouldReload,
+                        shouldReload: this.config.ssr,
                         href: window.location.href,
                     },
                 },
@@ -271,7 +271,7 @@ export default class LivePreview {
         );
 
         // set timeout for client side (use to show warning: You are not editing this page)
-        if (!this.config.shouldReload) {
+        if (!this.config.ssr) {
             setInterval(() => {
                 window.parent.postMessage(
                     {

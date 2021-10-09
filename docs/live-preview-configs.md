@@ -5,7 +5,7 @@ The init data has following structure
 - [ContentstackLivePreviewSdk](#contentstacklivepreviewsdk)
   - [`init()`](#init)
     - [`enable`](#enable)
-    - [`shouldReload`](#shouldreload)
+    - [`ssr`](#ssr)
     - [`cleanCslpOnProduction`](#cleancslponproduction)
     - [`stackDetails`](#stackdetails)
       - [`apiKey`](#apikey)
@@ -33,17 +33,19 @@ The `init()` method accepts one object as configuration. The following explains 
 ​
 The `enable` property determines whether Live Preview communications have been enabled.
 
-### `shouldReload`
+### `ssr`
 
 | type    | default | optional |
 | ------- | ------- | -------- |
 | boolean | true    | yes      |
 
-The shouldReload property determines the data update strategy for previewed content whenever you make changes to entry content. It depends on whether your app is [SSR](https://developers.google.com/web/updates/2019/02/rendering-on-the-web#server-rendering) or [CSR](https://developers.google.com/web/updates/2019/02/rendering-on-the-web#csr).
+The ssr property determines the data update strategy for previewed content whenever you make changes to entry content. It depends on whether your app is [SSR](https://developers.google.com/web/updates/2019/02/rendering-on-the-web#server-rendering) or [CSR](https://developers.google.com/web/updates/2019/02/rendering-on-the-web#csr).
 
 If you set the property to `true`, then your app or website is rendered from the server (SSR) and a request will be sent for a fresh HTML page every time you edit content.
 
 When you set the command to `false`, then your app is rendered from the client side (CSR). Your framework, e.g. React, will fetch the data and reload the existing page.
+
+> **Note:** For most cases, we would automatically determine the type. This value is given as a manual overdrive.
 
 ### `cleanCslpOnProduction`
 
@@ -116,7 +118,7 @@ The `stackSdk` object represents the `Stack` class that we get by executing the 
 For Client-Side Rendering (CSR), data collection and rendering is handled by the framework itself. Hence, for CSR, we recommend creating a function responsible for fetching and storing data, for example, `updatePage()`, and passing it to the `onEntryChange()` method. This will execute the updatePage() function whenever new data is available.
 ​
 
-> **Note:** This function only works when `shouldReload` is set to `false`, indicating that the application is of type CSR.
+> **Note:** This function only works when `ssr` is set to `false`, indicating that the application is of type CSR.
 > ​
 > For example, in a React application, you can create an updateData() function that will fetch data from Contentstack and store it in a React state. Inside the useEffect() function, you need to call the `onEntryChange()` function and pass the updateData() function to it.
 > ​

@@ -1,7 +1,7 @@
 import { IInitData } from "./types";
 
 export const userInitData: IInitData = {
-    shouldReload: true,
+    ssr: true,
     enable: false,
     cleanCslpOnProduction: true,
 

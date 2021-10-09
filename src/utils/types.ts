@@ -31,7 +31,7 @@ export declare interface IInitStackDetails {
     environment: string;
 }
 export declare interface IConfig {
-    shouldReload: boolean;
+    ssr: boolean;
     enable: boolean;
     cleanCslpOnProduction: boolean;
     stackDetails: IStackDetails;
@@ -41,7 +41,7 @@ export declare interface IConfig {
 }
 
 export declare interface IInitData {
-    shouldReload: boolean;
+    ssr: boolean;
     enable: boolean;
     cleanCslpOnProduction: boolean;
     stackDetails: Partial<IInitStackDetails>;
