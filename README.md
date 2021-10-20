@@ -1,6 +1,6 @@
-# Contentstack Live Preveiew SDK
+# Contentstack Live Preview SDK
 
-Contentstack is a headless CMS with an API-first approach. It is a CMS that developers can use to build powerful cross-platform applications in their favorite languages. Build your application frontend, and Contentstack will take care of the rest. [Read More](https://www.contentstack.com/).
+Contentstack is a headless CMS with an API-first approach. It is a CMS that developers can use to build powerful cross-platform applications in their favorite languages. Build your application frontend, and Contentstack will take care of the rest. [Read More](https://www.contentstack.com/docs/content-managers/live-preview/).
 
 Contentstack provides the Live Preview SDK to establish a communication channel between the various Contentstack SDKs and your website, transmitting live changes to the preview pane.
 
@@ -49,7 +49,7 @@ Alternatively, if you want to initialize the SDK directly in the HTML tag, use t
 </script>
 ```
 
-# Live editing
+# [Live editing](https://www.contentstack.com/docs/developers/set-up-live-preview/set-up-live-preview-for-your-website/#live-editing-for-entries-optional-)
 
 Live Preview allows you to edit your content by providing edit tags. Live edit tags are identified as the data-cslp attribute within the HTML tags. The styles for the live edit tags are available in the `@contentstack/live-preview-sdk/dist/main.css` file.
 
