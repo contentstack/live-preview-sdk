@@ -15,7 +15,7 @@ npm install @contenstack/live-preview-sdk
 Alternatively, if you want to include the package directly in your website HTML code, use the following command:
 
 ```html
-<script src="https://unpkg.com/@contentstack/live-preview-sdk@1.1.0/dist/index.js"></script>
+<script src="https://unpkg.com/@contentstack/live-preview-sdk@1.0.0/dist/index.js"></script>
 ```
 
 # Initializing the SDK
