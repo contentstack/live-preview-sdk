@@ -1,14 +1,18 @@
 {
-    "name": "@contentstack/live-preview-sdk",
+    "name": "@contentstack/live-preview-utils",
     "version": "1.0.0",
     "types": "dist/index.d.ts",
     "description": "Contentstack provides the Live Preview SDK to establish a communication channel between the various Contentstack SDKs and your website, transmitting  live changes to the preview pane.",
     "main": "dist/index.js",
+    "files": [
+        "dist"
+    ],
     "scripts": {
         "build": "webpack --config webpack.prod.js",
         "test": "jest",
         "test:coverage": "jest src --coverage --watchAll --coverageDirectory=\"coverage\"",
-        "dev": "webpack --config webpack.dev.js"
+        "dev": "webpack --config webpack.dev.js",
+        "prepare": "npm run build"
     },
     "keywords": [
         "live-preview"
@@ -36,6 +40,10 @@
         "webpack-cli": "^4.8.0",
         "webpack-dev-server": "^4.2.1",
         "webpack-merge": "^5.8.0"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/contentstack/live-preview-sdk.git"
     },
     "dependencies": {
         "just-camel-case": "^4.0.2",
