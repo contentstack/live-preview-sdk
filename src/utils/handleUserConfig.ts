@@ -96,15 +96,9 @@ export const handleInitData = (
         config.enable =
             initData.enable ?? stackSdk.live_preview?.enable ?? config.enable;
 
-        config.ssr =
-            initData.ssr ??
-            stackSdk.live_preview?.ssr ??
-            false;
+        config.ssr = initData.ssr ?? stackSdk.live_preview?.ssr ?? true;
 
-        config.stackSdk = {
-            ...config.stackSdk,
-            ...stackSdk,
-        };
+        config.stackSdk = stackSdk as IStackSdk;
 
         config.cleanCslpOnProduction =
             initData.cleanCslpOnProduction ??
@@ -120,8 +114,9 @@ export const handleInitData = (
             throw new Error("Please add the stack API key for live preview");
 
         config.stackDetails.environment =
-            initData.stackDetails?.environment ?? stackSdk.environment ?? ``;
-        config.stackDetails.environment;
+            initData.stackDetails?.environment ??
+            stackSdk.environment ??
+            config.stackDetails.environment;
 
         // client URL params
         handleClientUrlParams(

@@ -1,8 +1,8 @@
-# ContentstackLivePreviewSdk
+# Contentstack Live Preview Utils SDK Configs
 
 The init data has following structure
 
-- [ContentstackLivePreviewSdk](#contentstacklivepreviewsdk)
+- [Contentstack Live Preview Utils SDK Configs](#contentstack-live-preview-utils-sdk-configs)
   - [`init()`](#init)
     - [`enable`](#enable)
     - [`ssr`](#ssr)
@@ -20,7 +20,7 @@ The init data has following structure
 
 ## `init()`
 
-The `init()` method initializes the Live Preview SDK by setting up the necessary event listeners.
+The `init()` method initializes the Live Preview Utils SDK by setting up the necessary event listeners.
 ​
 The `init()` method accepts one object as configuration. The following explains all the options available for configuration.
 
@@ -43,7 +43,7 @@ The ssr property determines the data update strategy for previewed content whene
 
 If you set the property to `true`, then your app or website is rendered from the server (SSR) and a request will be sent for a fresh HTML page every time you edit content.
 
-When you set the command to `false`, then your app is rendered from the client side (CSR). Your framework, e.g. React, will fetch the data and reload the existing page.
+When you set the property to `false`, then app is rendered from the client side (CSR). Your framework, e.g. React, will fetch the data and reload the existing page.
 
 > **Note:** For most cases, we would automatically determine the type. This value is given as a manual overdrive.
 
@@ -106,12 +106,12 @@ The `clientUrlParams` object contains the URL information of the stack that cont
 }
 ```
 
-Pass the `clientUrlParams` object if you need to modify the URL.
+Pass the `clientUrlParams` object only if you need to modify the URL.
 ​
 
 ### `stackSdk`
 
-The `stackSdk` object represents the `Stack` class that we get by executing the `Contentstack.Stack()` method. It is required for Client-Side Rendering (CSR) as we need to inject the live preview hash and content type UID into the Stack class.
+The `stackSdk` object represents the `Stack` class that we get by executing the `Contentstack.Stack()` method. It is required for Client-Side Rendering (CSR) as we need to inject the Live Preview hash and content type UID into the Stack class.
 
 ## `onEntryChange()`
 
@@ -120,13 +120,13 @@ For Client-Side Rendering (CSR), data collection and rendering is handled by the
 
 > **Note:** This function only works when `ssr` is set to `false`, indicating that the application is of type CSR.
 > ​
-> For example, in a React application, you can create an updateData() function that will fetch data from Contentstack and store it in a React state. Inside the useEffect() function, you need to call the `onEntryChange()` function and pass the updateData() function to it.
+> For example, in a React application, you can create an updateData() function that will fetch data from Contentstack and store it in a React state. Inside the useEffect() function, you need to call the `onEntryChange()` method and pass the updateData() function to it.
 > ​
 
 ```js
 // utils.js
 ...
-export const onEntryChange = ContentstackLivePreview.onEntryChange();
+export const onEntryChange = ContentstackLivePreview.onEntryChange;
 ...
 
 // Footer.js
@@ -192,9 +192,9 @@ setData(formattedData);
 
 # Alternate Method​ for Passing Configuration Details
 
-For Client Side Rendering, we require the Stack class by default, and it already has some configs related to Live Preview. Hence, the Live Preview SDK has been built to leverage those configurations.
+For Client Side Rendering, we require the Stack class by default, and it already has some configs related to Live Preview. Hence, the Live Preview Utils SDK has been built to leverage those configurations.
 
-You can directly pass the SDK config inside the `Contentstack.Stack.live_preview`
+You can directly pass the SDK config inside the `Contentstack.Stack.live_preview` object.
 
 **For example**
 
@@ -209,7 +209,7 @@ const stack = Contentstack.Stack({
 })
 ```
 
-Now, directly pass the stack object defined within the config while initializing the Live Preview SDK:
+Now, directly pass the stack object defined within the config while initializing the Live Preview Utils SDK:
 
 ```js
 ContentstackLivePreview.init(stack);
