@@ -55,7 +55,11 @@ export default class LivePreview {
     constructor(initData: Partial<IInitData> = userInitData) {
         handleInitData(initData, this.config);
 
-        console.error("mayhem config", this.config);
+        // @ts-ignore
+        if (initData.debug) {
+            console.log('final config', this.config)
+        }
+
 
         if (this.config.enable) {
             if (
@@ -169,6 +173,7 @@ export default class LivePreview {
         this.config.stackSdk.live_preview = {
             ...this.config.stackSdk.live_preview,
             ...entryEditParams,
+            live_preview: entryEditParams.hash
         };
         this.config.onChange();
     };
@@ -250,7 +255,7 @@ export default class LivePreview {
     // Request parent for data sync when document loads
     private requestDataSync = () => {
         this.handleUserChange({
-            hash: "init",
+            live_preview: "init", // this is the hash of the live preview
         });
 
         // add edit tooltip

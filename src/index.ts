@@ -64,20 +64,39 @@ export class ContentstackLivePreview {
         sdkQuery: IStackSdk,
         prefix: string
     ) => {
-        return sdkQuery
-            .fetch()
-            .then((ent: { [key: string]: any }) => {
-                const dataTitle = camelCase(
-                    `${prefix}_${sdkQuery.content_type_uid}`
-                );
-                const entry = { [dataTitle]: ent.toJSON() };
+        if (typeof sdkQuery.find === "function") {
+            return sdkQuery
+                .toJSON()
+                .find()
+                .then((result: { [key: string]: any }) => {
+                    return result.map((res: { [key: string]: any }) => {
+                        return res.map((entry: { [key: string]: any }) => {
+                            const dataTitle = camelCase(
+                                `${prefix}_${sdkQuery.content_type_uid}`
+                            );
+                            return { [dataTitle]: entry };
+                        });
+                    });
+                })
+                .catch((err: any) => {
+                    console.error(err);
+                });
+        } else if (typeof sdkQuery.fetch === "function") {
+            return sdkQuery
+                .toJSON()
+                .fetch()
+                .then((ent: { [key: string]: any }) => {
+                    const dataTitle = camelCase(
+                        `${prefix}_${sdkQuery.content_type_uid}`
+                    );
+                    const entry = { [dataTitle]: ent.toJSON() };
 
-                fetch("/__refresh", { method: "POST" });
-                return entry;
-            })
-            .catch((err: any) => {
-                console.error(err);
-            });
+                    return entry;
+                })
+                .catch((err: any) => {
+                    console.error(err);
+                });
+        }
     };
 }
 
