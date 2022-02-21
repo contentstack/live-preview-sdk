@@ -70,12 +70,6 @@ describe("handleInitData()", () => {
         };
     });
 
-    test("must throw error if apiKey is missing", () => {
-        expect(() => {
-            handleInitData({}, config);
-        }).toThrow("Please add the stack API key for live preview");
-    });
-
     test("must set data when config is provided", () => {
         const initData: Partial<IInitData> = {
             enable: true,
@@ -157,23 +151,41 @@ describe("handleInitData()", () => {
         expect(config).toMatchObject(expectedOutput);
     });
 
-    test("throw error if apiKey is missing from Stack headers", () => {
-        const initData = {
-            live_preview: {
-                enable: true,
+    test("must set SSR: true is stack SDK is not provided", () => {
+        const initData: Partial<IInitData> = {
+            enable: true,
+            stackDetails: {
+                apiKey: "bltanything",
+                environment: "",
             },
-            config: {},
-            headers: {
-                api_key: "",
-            },
-            environment: "",
-            cachePolicy: 1,
         };
 
-        expect(() => {
-            handleInitData(initData, config);
-        }).toThrow("Please add the stack API key for live preview");
-    });
+        handleInitData(initData, config);
+        expect(config.ssr).toBe(true);
+    })
+
+     test("must set SSR: true is stack SDK is not provided", () => {
+         const initData: Partial<IInitData> = {
+             enable: true,
+             stackDetails: {
+                 apiKey: "bltanything",
+                 environment: "",
+             },
+             stackSdk: {
+                    live_preview: {
+                        enable: true
+                    },
+                 headers: {
+                     api_key: "bltanything",
+                 },
+                 environment: "",
+                 cachePolicy: 1,
+             },
+         };
+
+         handleInitData(initData, config);
+         expect(config.ssr).toBe(false);
+     });
 });
 
 describe("handleClientUrlParams()", () => {
