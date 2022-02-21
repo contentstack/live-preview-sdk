@@ -19,6 +19,9 @@ export class ContentstackLivePreview {
     ): Promise<LivePreview> | undefined => {
         if (typeof window !== "undefined") {
             if (ContentstackLivePreview.livePreview) {
+                console.warn(
+                    "You have already initialized the live preview. Returning the existing instance."
+                );
                 return Promise.resolve(ContentstackLivePreview.livePreview);
             } else {
                 ContentstackLivePreview.livePreview = new LivePreview(
