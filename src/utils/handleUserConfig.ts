@@ -52,6 +52,12 @@ export const handleInitData = (
 ): void => {
     // only have stack sdk
     if (isInitDataStackSdk(initData)) {
+        if (process.env.NODE_ENV !== "test") {
+            console.warn(
+                "Depricated: Do not provide Stack object directly to the live preview. Pass it through the config object under the name -- config.stackSDK ."
+            );
+        }
+
         const livePreviewObject = initData?.live_preview || {};
 
         // only stack indicates that user is running it on client side application
