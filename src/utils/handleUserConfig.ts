@@ -96,7 +96,11 @@ export const handleInitData = (
         config.enable =
             initData.enable ?? stackSdk.live_preview?.enable ?? config.enable;
 
-        config.ssr = initData.ssr ?? stackSdk.live_preview?.ssr ?? true;
+        config.ssr =
+            initData.ssr ??
+            stackSdk.live_preview?.ssr ??
+            (typeof initData.stackDetails === "object" ? false : true) ??
+            true;
 
         config.stackSdk = stackSdk as IStackSdk;
 
