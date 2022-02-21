@@ -57,9 +57,8 @@ export default class LivePreview {
 
         // @ts-ignore
         if (initData.debug) {
-            console.log('final config', this.config)
+            console.log("final config", this.config);
         }
-
 
         if (this.config.enable) {
             if (
@@ -76,6 +75,8 @@ export default class LivePreview {
         } else if (this.config.cleanCslpOnProduction) {
             this.removeDataCslp();
         }
+
+        this.generateRedirectUrl = this.generateRedirectUrl.bind(this);
     }
 
     private addEditStyleOnHover = (e: MouseEvent) => {
@@ -112,6 +113,37 @@ export default class LivePreview {
         }
     };
 
+    private generateRedirectUrl(
+        content_type_uid: string,
+        locale: string = "en-us",
+        entry_uid: string,
+        preview_field: string
+    ) {
+        if (!this.config.stackDetails.apiKey) {
+            throw new Error(
+                "You must provide api key to use Edit tags. Provide the api key while initializing the Live preview SDK. {..., stackDetails: { apiKey: 'your-api-key' }, ...}"
+            );
+        }
+
+        const protocol = String(this.config.clientUrlParams.protocol);
+        const host = String(this.config.clientUrlParams.host);
+        const port = String(this.config.clientUrlParams.port);
+
+        const urlHash = `!/stack/${
+            this.config.stackDetails.apiKey
+        }/content-type/${content_type_uid}/${
+            locale ?? "en-us"
+        }/entry/${entry_uid}/edit`;
+
+        const url = new URL(`${protocol}://${host}`);
+        url.port = port;
+        url.hash = urlHash;
+        url.searchParams.append("preview_field", preview_field);
+        url.searchParams.append("preview_url", window.location.origin);
+
+        return url.toString();
+    }
+
     private scrollHandler = () => {
         if (!this.tooltip) return;
 
@@ -137,21 +169,12 @@ export default class LivePreview {
                     "*"
                 );
             } else {
-                const protocol =
-                    String(this.config.clientUrlParams.protocol) + "://";
-                let host = String(this.config.clientUrlParams.host);
-                if (host.endsWith("/")) {
-                    host = host.slice(0, -1);
-                }
-                const port = ":" + String(this.config.clientUrlParams.port);
-
-                const redirectUrl = `${protocol}${host}${port}/#!/stack/${
-                    this.config.stackDetails.apiKey
-                }/content-type/${content_type_uid}/${
-                    locale ?? "en-us"
-                }/entry/${entry_uid}/edit?preview-url=${
-                    window.location.origin
-                }&preview-field=${field.join(".")}`;
+                const redirectUrl = this.generateRedirectUrl(
+                    content_type_uid,
+                    locale,
+                    entry_uid,
+                    field.join(".")
+                );
 
                 window.open(redirectUrl, "_blank");
             }
@@ -173,7 +196,7 @@ export default class LivePreview {
         this.config.stackSdk.live_preview = {
             ...this.config.stackSdk.live_preview,
             ...entryEditParams,
-            live_preview: entryEditParams.hash
+            live_preview: entryEditParams.hash,
         };
         this.config.onChange();
     };
