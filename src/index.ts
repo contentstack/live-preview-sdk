@@ -14,13 +14,13 @@ export class ContentstackLivePreview {
     static userConfig: Partial<IInitData> | null = null;
     static subscribers: any = {};
 
-    static init = (
+    static init(
         userConfig: Partial<IInitData> = userInitData
-    ): Promise<LivePreview> | undefined => {
+    ): Promise<LivePreview> | undefined {
         if (typeof window !== "undefined") {
             if (ContentstackLivePreview.livePreview) {
                 console.warn(
-                    "You have already initialized the live preview. Returning the existing instance."
+                    "Contentstack Live Preview: You have already initialized the live preview. Returning the existing instance."
                 );
                 return Promise.resolve(ContentstackLivePreview.livePreview);
             } else {
@@ -35,21 +35,21 @@ export class ContentstackLivePreview {
         } else {
             ContentstackLivePreview.userConfig = userConfig;
         }
-    };
+    }
 
-    private static publish = (): void => {
+    private static publish(): void {
         Object.values(ContentstackLivePreview.subscribers).forEach(
             (func: any) => {
                 func();
             }
         );
-    };
+    }
 
-    private static subscribe = (callback: any): void => {
+    private static subscribe(callback: any): void {
         ContentstackLivePreview.subscribers[uuidv4()] = callback;
-    };
+    }
 
-    static onEntryChange = (onChangeCallback: () => void) => {
+    static onEntryChange(onChangeCallback: () => void) {
         if (ContentstackLivePreview.userConfig) {
             ContentstackLivePreview.livePreview = new LivePreview(
                 ContentstackLivePreview.userConfig
@@ -61,12 +61,9 @@ export class ContentstackLivePreview {
         }
         ContentstackLivePreview.subscribe(onChangeCallback);
         onChangeCallback();
-    };
+    }
 
-    static getGatsbyDataFormat = async (
-        sdkQuery: IStackSdk,
-        prefix: string
-    ) => {
+    static async getGatsbyDataFormat(sdkQuery: IStackSdk, prefix: string) {
         if (typeof sdkQuery.find === "function") {
             return sdkQuery
                 .toJSON()
@@ -100,7 +97,7 @@ export class ContentstackLivePreview {
                     console.error(err);
                 });
         }
-    };
+    }
 }
 
 export default ContentstackLivePreview;
