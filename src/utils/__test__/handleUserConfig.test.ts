@@ -162,30 +162,30 @@ describe("handleInitData()", () => {
 
         handleInitData(initData, config);
         expect(config.ssr).toBe(true);
-    })
+    });
 
-     test("must set SSR: true is stack SDK is not provided", () => {
-         const initData: Partial<IInitData> = {
-             enable: true,
-             stackDetails: {
-                 apiKey: "bltanything",
-                 environment: "",
-             },
-             stackSdk: {
-                    live_preview: {
-                        enable: true
-                    },
-                 headers: {
-                     api_key: "bltanything",
-                 },
-                 environment: "",
-                 cachePolicy: 1,
-             },
-         };
+    test("must set SSR: true is stack SDK is not provided", () => {
+        const initData: Partial<IInitData> = {
+            enable: true,
+            stackDetails: {
+                apiKey: "bltanything",
+                environment: "",
+            },
+            stackSdk: {
+                live_preview: {
+                    enable: true,
+                },
+                headers: {
+                    api_key: "bltanything",
+                },
+                environment: "",
+                cachePolicy: 1,
+            },
+        };
 
-         handleInitData(initData, config);
-         expect(config.ssr).toBe(false);
-     });
+        handleInitData(initData, config);
+        expect(config.ssr).toBe(false);
+    });
 });
 
 describe("handleClientUrlParams()", () => {

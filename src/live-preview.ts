@@ -132,7 +132,7 @@ export default class LivePreview {
         locale: string = "en-us",
         entry_uid: string,
         preview_field: string
-    ) {
+    ): string {
         if (!this.config.stackDetails.apiKey) {
             throw `Contentstack Live Preview: You must provide api key to use Edit tags. Provide the api key while initializing the Live preview SDK.
 
@@ -161,7 +161,6 @@ export default class LivePreview {
         url.searchParams.append("preview-field", preview_field);
         url.searchParams.append("preview-url", window.location.origin);
 
-        console.log("mayhem url", url);
         return `${url.origin}/${url.hash}${url.search}`;
     }
 
@@ -279,10 +278,11 @@ export default class LivePreview {
         }
     }
 
-    private createCslpTooltip() {
+    private createCslpTooltip = () => {
         if (!document.getElementById("cslp-tooltip")) {
             const tooltip = document.createElement("button");
             tooltip.classList.add("cslp-tooltip");
+            tooltip.setAttribute("data-test-id", "cs-cslp-tooltip");
             tooltip.id = "cslp-tooltip";
             window.document.body.insertAdjacentElement("beforeend", tooltip);
             this.tooltipChild.singular = createSingularEditButton(
@@ -298,11 +298,10 @@ export default class LivePreview {
             this.tooltip = tooltip;
         }
         this.updateTooltipPosition();
-    }
+    };
 
     // Request parent for data sync when document loads
     private requestDataSync() {
-        console.log("mayhem requestDataSync", this);
         this.handleUserChange({
             live_preview: "init", // this is the hash of the live preview
         });
