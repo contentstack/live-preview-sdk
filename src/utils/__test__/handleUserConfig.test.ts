@@ -1,5 +1,6 @@
+import { PublicLogger } from "..";
 import { handleInitData, handleUserConfig } from "../handleUserConfig";
-import { IConfig, IInitData } from "../types";
+import { IConfig, IInitData, IStackSdk } from "../types";
 
 // example Stack object
 
@@ -186,6 +187,27 @@ describe("handleInitData()", () => {
         handleInitData(initData, config);
         expect(config.ssr).toBe(false);
     });
+
+    test("should show depricated warning if stack object is passed directly", () => {
+        const initData: Partial<IStackSdk> = {
+            live_preview: {
+                enable: true,
+            },
+            headers: {
+                api_key: "bltanything",
+            },
+            environment: "",
+            cachePolicy: 1,
+        };
+
+        const spiedConsole = jest.spyOn(PublicLogger, "warn");
+
+        handleInitData(initData, config);
+
+        expect(spiedConsole).toHaveBeenCalledWith(
+            "Deprecated: Do not pass the Stack object directly to the Live Preview SDK. Pass it using the config.stackSDK config object."
+        );
+    });
 });
 
 describe("handleClientUrlParams()", () => {
@@ -224,16 +246,29 @@ describe("handleClientUrlParams()", () => {
 
     test("must modify host and url accordingly", () => {
         handleUserConfig.clientUrlParams(config, {
-            host: "example.com",
+            host: "example.com/",
             protocol: "http",
         });
 
-        const expectedOutput = {
+        const expectedOutputForHttp = {
             protocol: "http",
             host: "example.com",
             port: 80,
             url: "http://example.com:80",
         };
-        expect(config.clientUrlParams).toMatchObject(expectedOutput);
+        expect(config.clientUrlParams).toMatchObject(expectedOutputForHttp);
+
+        handleUserConfig.clientUrlParams(config, {
+            host: "example.com/",
+            protocol: "https",
+        });
+
+        const expectedOutputForHttps = {
+            protocol: "https",
+            host: "example.com",
+            port: 443,
+            url: "https://example.com:443",
+        };
+        expect(config.clientUrlParams).toMatchObject(expectedOutputForHttps);
     });
 });
