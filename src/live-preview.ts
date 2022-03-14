@@ -1,4 +1,8 @@
-import { createSingularEditButton, createMultipleEditButton } from "./utils";
+import {
+    createSingularEditButton,
+    createMultipleEditButton,
+    PublicLogger,
+} from "./utils";
 import { IConfig, IEntryValue, IInitData } from "./utils/types";
 import morphdom from "morphdom";
 import { handleInitData } from "./utils/handleUserConfig";
@@ -134,7 +138,7 @@ export default class LivePreview {
         preview_field: string
     ): string {
         if (!this.config.stackDetails.apiKey) {
-            throw `Contentstack Live Preview: You must provide api key to use Edit tags. Provide the api key while initializing the Live preview SDK.
+            throw `You must provide api key to use Edit tags. Provide the api key while initializing the Live preview SDK.
 
                 ContentstackLivePreview.init({
                     ...,
@@ -199,7 +203,7 @@ export default class LivePreview {
 
                     window.open(redirectUrl, "_blank");
                 } catch (error) {
-                    console.error(error);
+                    PublicLogger.error(error);
                 }
             }
         }

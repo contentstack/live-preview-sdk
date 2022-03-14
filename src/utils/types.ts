@@ -50,3 +50,5 @@ export declare interface IInitData {
 }
 
 export declare type OnEntryChangeCallback = () => void;
+
+export declare type OnEntryChangeCallbackUID = string;

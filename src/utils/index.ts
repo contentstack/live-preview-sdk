@@ -48,6 +48,10 @@ export const createMultipleEditButton = (
     const multipleEditButton = document.createElement("div");
     multipleEditButton.classList.add("cslp-tooltip-child");
     multipleEditButton.setAttribute("data-title", "Edit");
+    multipleEditButton.setAttribute(
+        "data-test-id",
+        "cslp-multiple-edit-button"
+    );
     multipleEditButton.innerHTML = ` <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path d="M8.1 3.5L0.3 11.3C0.1 11.5 0 11.7 0 12V15C0 15.6 0.4 16 1 16H4C4.3 16 4.5 15.9 4.7 15.7L12.5 7.9L8.1 3.5Z" fill="#718096"></path>
       <path d="M15.7 3.3L12.7 0.3C12.3 -0.1 11.7 -0.1 11.3 0.3L9.5 2.1L13.9 6.5L15.7 4.7C16.1 4.3 16.1 3.7 15.7 3.3Z" fill="#718096"></path>
@@ -75,3 +79,39 @@ export const createMultipleEditButton = (
 
     return multipleDiv;
 };
+
+export class PublicLogger {
+    private static logEvent(
+        logCallback:
+            | Console["log"]
+            | Console["warn"]
+            | Console["error"]
+            | Console["debug"]
+            | Console["info"],
+        message: any[]
+    ): void {
+        if (process.env.NODE_ENV !== "test") {
+            logCallback("Live_Preview_SDK:", ...message);
+        }
+    }
+
+    public static log(...data: any[]): void {
+        this.logEvent(console.log, data);
+    }
+
+    public static error(...data: any[]): void {
+        this.logEvent(console.error, data);
+    }
+
+    public static warn(...data: any[]): void {
+        this.logEvent(console.warn, data);
+    }
+
+    public static info(...data: any[]): void {
+        this.logEvent(console.info, data);
+    }
+
+    public static debug(...data: any[]): void {
+        this.logEvent(console.debug, data);
+    }
+}

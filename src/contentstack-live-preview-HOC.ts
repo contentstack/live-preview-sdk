@@ -1,9 +1,15 @@
 import { v4 as uuidv4 } from "uuid";
 import camelCase from "just-camel-case";
 
-import { IInitData, IStackSdk, OnEntryChangeCallback } from "./utils/types";
+import {
+    IInitData,
+    IStackSdk,
+    OnEntryChangeCallback,
+    OnEntryChangeCallbackUID,
+} from "./utils/types";
 import LivePreview from "./live-preview";
 import { userInitData } from "./utils/defaults";
+import { PublicLogger } from "./utils";
 
 export class ContentstackLivePreview {
     static livePreview: LivePreview | null = null;
@@ -41,11 +47,17 @@ export class ContentstackLivePreview {
         });
     }
 
-    private static subscribe(callback: OnEntryChangeCallback): void {
-        ContentstackLivePreview.subscribers[uuidv4()] = callback;
+    private static subscribe(
+        callback: OnEntryChangeCallback
+    ): OnEntryChangeCallbackUID {
+        const callbackUid = uuidv4();
+        ContentstackLivePreview.subscribers[callbackUid] = callback;
+        return callbackUid;
     }
 
-    static onEntryChange(onChangeCallback: OnEntryChangeCallback): void {
+    static onEntryChange(
+        onChangeCallback: OnEntryChangeCallback
+    ): OnEntryChangeCallbackUID {
         if (ContentstackLivePreview.userConfig) {
             ContentstackLivePreview.livePreview = new LivePreview(
                 ContentstackLivePreview.userConfig
@@ -55,8 +67,9 @@ export class ContentstackLivePreview {
             );
             ContentstackLivePreview.userConfig = null;
         }
-        ContentstackLivePreview.subscribe(onChangeCallback);
+        const callbackUid = ContentstackLivePreview.subscribe(onChangeCallback);
         onChangeCallback();
+        return callbackUid;
     }
 
     static unsbscribeOnEntryChange(
@@ -64,9 +77,7 @@ export class ContentstackLivePreview {
     ): void {
         if (typeof callback === "string") {
             if (!ContentstackLivePreview.subscribers[callback]) {
-                console.warn(
-                    "Contentstack Live Preview: No subscriber found with the given id."
-                );
+                PublicLogger.warn("No subscriber found with the given id.");
             }
             delete ContentstackLivePreview.subscribers[callback];
         } else if (typeof callback === "function") {
@@ -81,8 +92,8 @@ export class ContentstackLivePreview {
             });
 
             if (!isCallbackDeleted) {
-                console.warn(
-                    "Contentstack Live Preview: No subscriber found with the given callback."
+                PublicLogger.warn(
+                    "No subscriber found with the given callback."
                 );
             }
         }
