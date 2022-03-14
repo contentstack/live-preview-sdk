@@ -129,7 +129,7 @@ export default class LivePreview {
 
     private generateRedirectUrl(
         content_type_uid: string,
-        locale: string = "en-us",
+        locale = "en-us",
         entry_uid: string,
         preview_field: string
     ): string {
@@ -207,7 +207,6 @@ export default class LivePreview {
 
     private linkClickHandler() {
         if (!this.tooltip) return;
-
         const hrefAttribute = this.tooltip.getAttribute("current-href");
 
         if (hrefAttribute) {
