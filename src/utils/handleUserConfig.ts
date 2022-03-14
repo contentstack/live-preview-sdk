@@ -1,3 +1,4 @@
+import { PublicLogger } from ".";
 import { IClientUrlParams, IConfig, IInitData, IStackSdk } from "./types";
 
 const handleClientUrlParams = (
@@ -53,8 +54,8 @@ export const handleInitData = (
     // only have stack sdk
     if (isInitDataStackSdk(initData)) {
         if (process.env.NODE_ENV !== "test") {
-            console.warn(
-                "Depricated: Do not provide Stack object directly to the live preview. Pass it through the config object under the name -- config.stackSDK ."
+            PublicLogger.warn(
+                "Deprecated: Do not pass the Stack object directly to the Live Preview SDK. Pass it using the config.stackSDK config object."
             );
         }
 

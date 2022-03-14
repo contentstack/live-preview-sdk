@@ -74,7 +74,7 @@ export default class LivePreview {
 
         // @ts-ignore
         if (initData.debug) {
-            console.debug(
+            PublicLogger.debug(
                 "Contentstack Live Preview Debugging mode: config --",
                 this.config
             );
@@ -138,7 +138,7 @@ export default class LivePreview {
         preview_field: string
     ): string {
         if (!this.config.stackDetails.apiKey) {
-            throw `You must provide api key to use Edit tags. Provide the api key while initializing the Live preview SDK.
+            throw `To use edit tags, you must provide the stack API key. Specify the API key while initializing the Live Preview SDK.
 
                 ContentstackLivePreview.init({
                     ...,

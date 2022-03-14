@@ -121,7 +121,7 @@ describe("cslp tooltip", () => {
             " "
         );
         const expectedErrorLog =
-            "You must provide api key to use Edit tags. Provide the api key while initializing the Live preview SDK.  ContentstackLivePreview.init({  ...,  stackDetails: {  apiKey: 'your-api-key'  },  ...  })";
+            "To use edit tags, you must provide the stack API key. Specify the API key while initializing the Live Preview SDK.  ContentstackLivePreview.init({  ...,  stackDetails: {  apiKey: 'your-api-key'  },  ...  })";
 
         expect(sanitizedErrorMessage).toEqual(expectedErrorLog);
 
