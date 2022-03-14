@@ -1,5 +1,5 @@
 import ContentstackLivePreview from "../contentstack-live-preview-HOC";
-import { PublicLogger } from "../utils";
+import { PublicLogger } from "../utils/public-logger";
 
 describe("Live preview HOC Callback Pub Sub", () => {
     afterEach(() => {

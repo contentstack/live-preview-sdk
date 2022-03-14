@@ -1,8 +1,5 @@
-import {
-    createSingularEditButton,
-    createMultipleEditButton,
-    PublicLogger,
-} from "./utils";
+import { createSingularEditButton, createMultipleEditButton } from "./utils";
+import { PublicLogger } from "./utils/public-logger";
 import { IConfig, IEntryValue, IInitData } from "./utils/types";
 import morphdom from "morphdom";
 import { handleInitData } from "./utils/handleUserConfig";

@@ -1,4 +1,4 @@
-import { PublicLogger } from ".";
+import { PublicLogger } from "./public-logger";
 import { IClientUrlParams, IConfig, IInitData, IStackSdk } from "./types";
 
 const handleClientUrlParams = (

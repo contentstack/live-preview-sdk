@@ -9,7 +9,7 @@ import {
 } from "./utils/types";
 import LivePreview from "./live-preview";
 import { userInitData } from "./utils/defaults";
-import { PublicLogger } from "./utils";
+import { PublicLogger } from "./utils/public-logger";
 
 export class ContentstackLivePreview {
     static livePreview: LivePreview | null = null;

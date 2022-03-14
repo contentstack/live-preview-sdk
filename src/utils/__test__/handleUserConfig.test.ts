@@ -1,4 +1,4 @@
-import { PublicLogger } from "..";
+import { PublicLogger } from "../public-logger";
 import { handleInitData, handleUserConfig } from "../handleUserConfig";
 import { IConfig, IInitData, IStackSdk } from "../types";
 

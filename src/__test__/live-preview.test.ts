@@ -1,5 +1,5 @@
 import LivePreview from "../live-preview";
-import { PublicLogger } from "../utils";
+import { PublicLogger } from "../utils/public-logger";
 
 const TITLE_CSLP_TAG = "content-type-1.entry-uid-1.en-us.field-title";
 const DESC_CSLP_TAG = "content-type-2.entry-uid-2.en-us.field-description";
