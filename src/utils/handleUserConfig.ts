@@ -30,6 +30,7 @@ const handleClientUrlParams = (
 
     if (host.endsWith("/")) {
         host = host.slice(0, -1);
+        existingConfig.clientUrlParams.host = host;
     }
 
     existingConfig.clientUrlParams.url = `${existingConfig.clientUrlParams.protocol}://${existingConfig.clientUrlParams.host}:${existingConfig.clientUrlParams.port}`;
@@ -53,11 +54,9 @@ export const handleInitData = (
 ): void => {
     // only have stack sdk
     if (isInitDataStackSdk(initData)) {
-        if (process.env.NODE_ENV !== "test") {
-            PublicLogger.warn(
-                "Deprecated: Do not pass the Stack object directly to the Live Preview SDK. Pass it using the config.stackSDK config object."
-            );
-        }
+        PublicLogger.warn(
+            "Deprecated: Do not pass the Stack object directly to the Live Preview SDK. Pass it using the config.stackSDK config object."
+        );
 
         const livePreviewObject = initData?.live_preview || {};
 
