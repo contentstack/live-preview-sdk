@@ -211,7 +211,7 @@ export default class LivePreview {
         const hrefAttribute = this.tooltip.getAttribute("current-href");
 
         if (hrefAttribute) {
-            window.location.href = hrefAttribute;
+            window.location.assign(hrefAttribute);
         }
     }
 
