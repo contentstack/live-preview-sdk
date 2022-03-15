@@ -214,6 +214,43 @@ describe("cslp tooltip", () => {
         );
     });
 
+    test("should remove class when another element is hovered", () => {});
+
+    test.skip("should redirect to link when multiple Tooltip is clicked", () => {
+        new LivePreview({
+            enable: true,
+        });
+
+        const linkPara = document.querySelector("[data-test-id='link-para']");
+
+        const hoverEvent = new CustomEvent("mouseover", {
+            bubbles: true,
+        });
+
+        linkPara?.dispatchEvent(hoverEvent);
+
+        const linkButton = document.querySelector(
+            "[data-test-id='cslp-multiple-external-link-button']"
+        ) as HTMLDivElement;
+
+        linkButton?.click();
+
+        global.window = Object.create(window);
+        const url = "http://localhost";
+        Object.defineProperty(window, "location", {
+            value: {
+                href: url,
+            },
+            writable: true,
+        });
+
+        console.log("mayhem", document.body.innerHTML, linkButton);
+
+        expect(window.location.assign).toHaveBeenCalledWith(
+            "https://www.example.com"
+        );
+    });
+
     // test("should show warning when Live preview is initialized twice", () => {
     //     const spiedConsole = jest.spyOn(console, "warn");
 
