@@ -40,7 +40,7 @@ export class ContentstackLivePreview {
         }
     }
 
-    private static publish(entryEditParams: IEntryValue): void {
+    private static publish(entryEditParams?: IEntryValue): void {
         Object.values<OnEntryChangeCallback>(
             ContentstackLivePreview.subscribers
         ).forEach((func) => {

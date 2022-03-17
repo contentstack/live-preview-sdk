@@ -30,6 +30,11 @@ export declare interface IInitStackDetails {
     apiKey: string;
     environment: string;
 }
+
+export declare type OnEntryChangeCallback = (entryEditParams?: IEntryValue) => void;
+
+export declare type OnEntryChangeCallbackUID = string;
+
 export declare interface IConfig {
     ssr: boolean;
     enable: boolean;
@@ -37,7 +42,7 @@ export declare interface IConfig {
     stackDetails: IStackDetails;
     clientUrlParams: IClientUrlParams;
     stackSdk: IStackSdk;
-    onChange: () => void;
+    onChange: OnEntryChangeCallback
 }
 
 export declare interface IInitData {
@@ -48,7 +53,3 @@ export declare interface IInitData {
     clientUrlParams: Partial<Omit<IClientUrlParams, "url">>;
     stackSdk: IStackSdk;
 }
-
-export declare type OnEntryChangeCallback = () => void;
-
-export declare type OnEntryChangeCallbackUID = string;
