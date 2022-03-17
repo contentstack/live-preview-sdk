@@ -222,10 +222,10 @@ export default class LivePreview {
             ...entryEditParams,
             live_preview: entryEditParams.hash,
         };
-        this.config.onChange();
-    }
+        this.config.onChange(entryEditParams);
+    };
 
-    setOnChangeCallback(onChangeCallback: () => void): void {
+    setOnChangeCallback = (onChangeCallback: (entryEditParams: IEntryValue) => void): void => {
         this.config.onChange = onChangeCallback;
     }
 

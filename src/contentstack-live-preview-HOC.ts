@@ -2,6 +2,7 @@ import { v4 as uuidv4 } from "uuid";
 import camelCase from "just-camel-case";
 
 import {
+    IEntryValue,
     IInitData,
     IStackSdk,
     OnEntryChangeCallback,
@@ -39,11 +40,11 @@ export class ContentstackLivePreview {
         }
     }
 
-    private static publish(): void {
+    private static publish(entryEditParams: IEntryValue): void {
         Object.values<OnEntryChangeCallback>(
             ContentstackLivePreview.subscribers
         ).forEach((func) => {
-            func();
+            func(entryEditParams);
         });
     }
 
