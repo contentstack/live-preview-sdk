@@ -3,7 +3,7 @@
 import { v4 as uuidv4 } from "uuid";
 import camelCase from "just-camel-case";
 
-import { IInitData, IStackSdk } from "./utils/types";
+import { IEntryValue, IInitData, IStackSdk } from "./utils/types";
 import LivePreview from "./live-preview";
 import { userInitData } from "./utils/defaults";
 
@@ -34,10 +34,10 @@ export class ContentstackLivePreview {
         }
     };
 
-    private static publish = (): void => {
+    private static publish = (entryEditParams: IEntryValue): void => {
         Object.values(ContentstackLivePreview.subscribers).forEach(
             (func: any) => {
-                func();
+                func(entryEditParams);
             }
         );
     };
