@@ -37,7 +37,7 @@ export declare interface IConfig {
     stackDetails: IStackDetails;
     clientUrlParams: IClientUrlParams;
     stackSdk: IStackSdk;
-    onChange: () => void;
+    onChange: (entryEditParams: IEntryValue) => void;
 }
 
 export declare interface IInitData {
