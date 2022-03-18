@@ -46,7 +46,7 @@ export class ContentstackLivePreview {
         ContentstackLivePreview.subscribers[uuidv4()] = callback;
     };
 
-    static onEntryChange = (onChangeCallback: () => void) => {
+    static onEntryChange = (onChangeCallback: (onChangeCallbackParams?: IEntryValue) => void) => {
         if (ContentstackLivePreview.userConfig) {
             ContentstackLivePreview.livePreview = new LivePreview(
                 ContentstackLivePreview.userConfig
