@@ -1,5 +1,7 @@
 import LivePreview from "../live-preview";
+import { userInitData } from "../utils/defaults";
 import { PublicLogger } from "../utils/public-logger";
+import { convertObjectToMinifiedString } from "./utils";
 
 const TITLE_CSLP_TAG = "content-type-1.entry-uid-1.en-us.field-title";
 const DESC_CSLP_TAG = "content-type-2.entry-uid-2.en-us.field-description";
@@ -54,6 +56,86 @@ describe("cslp tooltip", () => {
         descPara?.dispatchEvent(hoverEvent);
 
         expect(tooltip?.getAttribute("current-data-cslp")).toBe(DESC_CSLP_TAG);
+    });
+
+    test("should change the button to single when hovered again to element without href", () => {
+        new LivePreview({
+            enable: true,
+        });
+
+        const tooltip = document.querySelector(
+            "[data-test-id='cs-cslp-tooltip']"
+        );
+
+        const titlePara = document.querySelector("[data-test-id='title-para']");
+        const linkPara = document.querySelector("[data-test-id='link-para']");
+
+        const hoverEvent = new CustomEvent("mouseover", {
+            bubbles: true,
+        });
+
+        titlePara?.dispatchEvent(hoverEvent);
+
+        expect(tooltip?.getAttribute("current-data-cslp")).toBe(TITLE_CSLP_TAG);
+
+        linkPara?.dispatchEvent(hoverEvent);
+
+        expect(tooltip?.getAttribute("current-data-cslp")).toBe(LINK_CSLP_TAG);
+
+        titlePara?.dispatchEvent(hoverEvent);
+
+        expect(tooltip?.getAttribute("current-data-cslp")).toBe(TITLE_CSLP_TAG);
+    });
+
+    test("should stick to top when element is above the viewport", () => {
+        new LivePreview({
+            enable: true,
+        });
+
+        const tooltip = document.querySelector(
+            "[data-test-id='cs-cslp-tooltip']"
+        ) as HTMLDivElement;
+
+        const titlePara = document.querySelector(
+            "[data-test-id='title-para']"
+        ) as HTMLHeadingElement;
+        const descPara = document.querySelector(
+            "[data-test-id='desc-para']"
+        ) as HTMLParagraphElement;
+
+        const hoverEvent = new CustomEvent("mouseover", {
+            bubbles: true,
+        });
+
+        titlePara.getBoundingClientRect = jest.fn(() => ({
+            x: 50,
+            y: 50,
+            width: 50,
+            height: 50,
+            top: 50,
+            right: 50,
+            bottom: 50,
+            left: 50,
+        })) as any;
+
+        titlePara?.dispatchEvent(hoverEvent);
+
+        expect(tooltip.style.top).toBe("10px");
+
+        descPara.getBoundingClientRect = jest.fn(() => ({
+            bottom: 16,
+            height: 21,
+            left: 8,
+            right: 46.25,
+            top: -5,
+            width: 38.25,
+            x: 8,
+            y: -5,
+        })) as any;
+
+        descPara?.dispatchEvent(hoverEvent);
+
+        expect(tooltip.style.top).toBe("0px");
     });
 
     test("should redirect to page when edit tag button is clicked", () => {
@@ -116,10 +198,8 @@ describe("cslp tooltip", () => {
         singularEditButton?.click();
 
         const outputErrorLog = (spiedConsole.mock.calls[0] as any[])[0];
-        const sanitizedErrorMessage = outputErrorLog.replace(
-            /([\n]+|[\s]{2,})/gm,
-            " "
-        );
+        const sanitizedErrorMessage =
+            convertObjectToMinifiedString(outputErrorLog);
         const expectedErrorLog =
             "To use edit tags, you must provide the stack API key. Specify the API key while initializing the Live Preview SDK.  ContentstackLivePreview.init({  ...,  stackDetails: {  apiKey: 'your-api-key'  },  ...  })";
 
@@ -269,4 +349,22 @@ describe("cslp tooltip", () => {
     //     console.log("outputErrorLog", outputErrorLog);
     // });
     // test.skip("should run onchangeCallback() when entry is updated", () => {});`
+});
+
+describe("debug module", () => {
+    test("should display config when debug is true", () => {
+        const spiedConsole = jest.spyOn(PublicLogger, "debug");
+        new LivePreview({
+            //@ts-ignore
+            debug: true,
+        });
+
+        const outputErrorLog = spiedConsole.mock.calls[0];
+
+        expect(outputErrorLog[0]).toEqual(
+            "Contentstack Live Preview Debugging mode: config --"
+        );
+
+        expect(outputErrorLog[1]).toMatchObject(userInitData);
+    });
 });

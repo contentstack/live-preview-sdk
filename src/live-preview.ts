@@ -374,17 +374,17 @@ export default class LivePreview {
             this.tooltip.parentElement?.getBoundingClientRect();
 
         if (currentRectOfElement && currentRectOfParentOfElement) {
-            let top = currentRectOfElement.top - 40;
+            let upperBoundOfTooltip = currentRectOfElement.top - 40;
             const left = currentRectOfElement.left - 5;
 
             // if scrolled and element is still visible, make sure tooltip is also visible
-            if (top < 0) {
+            if (upperBoundOfTooltip < 0) {
                 if (currentRectOfElement.top < 0)
-                    top = currentRectOfElement.top;
-                else top = 0;
+                    upperBoundOfTooltip = currentRectOfElement.top;
+                else upperBoundOfTooltip = 0;
             }
 
-            this.tooltip.style.top = top + "px";
+            this.tooltip.style.top = upperBoundOfTooltip + "px";
             this.tooltip.style.zIndex =
                 this.currentElementBesideTooltip.style.zIndex || "200";
             this.tooltip.style.left = left + "px";
