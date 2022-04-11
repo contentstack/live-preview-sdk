@@ -1,3 +1,4 @@
+import { PublicLogger } from "./public-logger";
 import { IClientUrlParams, IConfig, IInitData, IStackSdk } from "./types";
 
 const handleClientUrlParams = (
@@ -29,6 +30,7 @@ const handleClientUrlParams = (
 
     if (host.endsWith("/")) {
         host = host.slice(0, -1);
+        existingConfig.clientUrlParams.host = host;
     }
 
     existingConfig.clientUrlParams.url = `${existingConfig.clientUrlParams.protocol}://${existingConfig.clientUrlParams.host}:${existingConfig.clientUrlParams.port}`;
@@ -52,6 +54,10 @@ export const handleInitData = (
 ): void => {
     // only have stack sdk
     if (isInitDataStackSdk(initData)) {
+        PublicLogger.warn(
+            "Deprecated: Do not pass the Stack object directly to the Live Preview SDK. Pass it using the config.stackSDK config object."
+        );
+
         const livePreviewObject = initData?.live_preview || {};
 
         // only stack indicates that user is running it on client side application
@@ -65,21 +71,13 @@ export const handleInitData = (
 
         config.stackSdk = initData;
 
-        if (!Object.prototype.hasOwnProperty.call(initData, "headers"))
-            throw new Error("Please add Api key to continue");
-
         // stack details
         if (
-            !Object.prototype.hasOwnProperty.call(
-                initData.headers,
-                "api_key"
-            ) ||
-            !initData.headers.api_key
+            Object.prototype.hasOwnProperty.call(initData.headers, "api_key") &&
+            initData.headers.api_key
         )
-            throw new Error("Please add the stack API key for live preview");
-        else {
             config.stackDetails.apiKey = initData.headers.api_key;
-        }
+
         if (Object.prototype.hasOwnProperty.call(initData, "environment")) {
             config.stackDetails.environment = initData.environment;
         }
@@ -96,7 +94,11 @@ export const handleInitData = (
         config.enable =
             initData.enable ?? stackSdk.live_preview?.enable ?? config.enable;
 
-        config.ssr = initData.ssr ?? stackSdk.live_preview?.ssr ?? true;
+        config.ssr =
+            initData.ssr ??
+            stackSdk.live_preview?.ssr ??
+            (typeof initData.stackSdk === "object" ? false : true) ??
+            true;
 
         config.stackSdk = stackSdk as IStackSdk;
 
@@ -109,9 +111,6 @@ export const handleInitData = (
             initData.stackDetails?.apiKey ??
             stackSdk.headers?.api_key ??
             config.stackDetails.apiKey;
-
-        if (!config.stackDetails.apiKey)
-            throw new Error("Please add the stack API key for live preview");
 
         config.stackDetails.environment =
             initData.stackDetails?.environment ??

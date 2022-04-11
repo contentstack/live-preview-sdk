@@ -48,3 +48,7 @@ export declare interface IInitData {
     clientUrlParams: Partial<Omit<IClientUrlParams, "url">>;
     stackSdk: IStackSdk;
 }
+
+export declare type OnEntryChangeCallback = () => void;
+
+export declare type OnEntryChangeCallbackUID = string;

@@ -1,4 +1,5 @@
 import { createSingularEditButton, createMultipleEditButton } from "./utils";
+import { PublicLogger } from "./utils/public-logger";
 import { IConfig, IEntryValue, IInitData } from "./utils/types";
 import morphdom from "morphdom";
 import { handleInitData } from "./utils/handleUserConfig";
@@ -55,11 +56,26 @@ export default class LivePreview {
     constructor(initData: Partial<IInitData> = userInitData) {
         handleInitData(initData, this.config);
 
+        this.addEditStyleOnHover = this.addEditStyleOnHover.bind(this);
+        this.generateRedirectUrl = this.generateRedirectUrl.bind(this);
+        this.scrollHandler = this.scrollHandler.bind(this);
+        this.linkClickHandler = this.linkClickHandler.bind(this);
+        this.handleUserChange = this.handleUserChange.bind(this);
+        this.setOnChangeCallback = this.setOnChangeCallback.bind(this);
+        this.updateDocumentBody = this.updateDocumentBody.bind(this);
+        this.resolveIncomingMessage = this.resolveIncomingMessage.bind(this);
+        this.createCslpTooltip = this.createCslpTooltip.bind(this);
+        this.requestDataSync = this.requestDataSync.bind(this);
+        this.updateTooltipPosition = this.updateTooltipPosition.bind(this);
+        this.removeDataCslp = this.removeDataCslp.bind(this);
+
         // @ts-ignore
         if (initData.debug) {
-            console.log('final config', this.config)
+            PublicLogger.debug(
+                "Contentstack Live Preview Debugging mode: config --",
+                this.config
+            );
         }
-
 
         if (this.config.enable) {
             if (
@@ -78,7 +94,7 @@ export default class LivePreview {
         }
     }
 
-    private addEditStyleOnHover = (e: MouseEvent) => {
+    private addEditStyleOnHover(e: MouseEvent) {
         let trigger = true;
         const eventTargets = e.composedPath();
 
@@ -110,9 +126,46 @@ export default class LivePreview {
                 element.classList.remove("cslp-edit-mode");
             }
         }
-    };
+    }
 
-    private scrollHandler = () => {
+    private generateRedirectUrl(
+        content_type_uid: string,
+        locale = "en-us",
+        entry_uid: string,
+        preview_field: string
+    ): string {
+        if (!this.config.stackDetails.apiKey) {
+            throw `To use edit tags, you must provide the stack API key. Specify the API key while initializing the Live Preview SDK.
+
+                ContentstackLivePreview.init({
+                    ...,
+                    stackDetails: {
+                        apiKey: 'your-api-key'
+                    },
+                    ...
+                })`;
+        }
+
+        const protocol = String(this.config.clientUrlParams.protocol);
+        const host = String(this.config.clientUrlParams.host);
+        const port = String(this.config.clientUrlParams.port);
+
+        const urlHash = `!/stack/${
+            this.config.stackDetails.apiKey
+        }/content-type/${content_type_uid}/${
+            locale ?? "en-us"
+        }/entry/${entry_uid}/edit`;
+
+        const url = new URL(`${protocol}://${host}`);
+        url.port = port;
+        url.hash = urlHash;
+        url.searchParams.append("preview-field", preview_field);
+        url.searchParams.append("preview-url", window.location.origin);
+
+        return `${url.origin}/${url.hash}${url.search}`;
+    }
+
+    private scrollHandler() {
         if (!this.tooltip) return;
 
         const cslpTag = this.tooltip.getAttribute("current-data-cslp");
@@ -137,59 +190,53 @@ export default class LivePreview {
                     "*"
                 );
             } else {
-                const protocol =
-                    String(this.config.clientUrlParams.protocol) + "://";
-                let host = String(this.config.clientUrlParams.host);
-                if (host.endsWith("/")) {
-                    host = host.slice(0, -1);
+                try {
+                    const redirectUrl = this.generateRedirectUrl(
+                        content_type_uid,
+                        locale,
+                        entry_uid,
+                        field.join(".")
+                    );
+
+                    window.open(redirectUrl, "_blank");
+                } catch (error) {
+                    PublicLogger.error(error);
                 }
-                const port = ":" + String(this.config.clientUrlParams.port);
-
-                const redirectUrl = `${protocol}${host}${port}/#!/stack/${
-                    this.config.stackDetails.apiKey
-                }/content-type/${content_type_uid}/${
-                    locale ?? "en-us"
-                }/entry/${entry_uid}/edit?preview-url=${
-                    window.location.origin
-                }&preview-field=${field.join(".")}`;
-
-                window.open(redirectUrl, "_blank");
             }
         }
-    };
+    }
 
-    private linkClickHandler = () => {
+    private linkClickHandler() {
         if (!this.tooltip) return;
-
         const hrefAttribute = this.tooltip.getAttribute("current-href");
 
         if (hrefAttribute) {
-            window.location.href = hrefAttribute;
+            window.location.assign(hrefAttribute);
         }
-    };
+    }
 
-    private handleUserChange = (entryEditParams: IEntryValue) => {
+    private handleUserChange(entryEditParams: IEntryValue) {
         // here we provide contentTypeUid and EntryUid to the StackDelivery SDK.
         this.config.stackSdk.live_preview = {
             ...this.config.stackSdk.live_preview,
             ...entryEditParams,
-            live_preview: entryEditParams.hash
+            live_preview: entryEditParams.hash,
         };
         this.config.onChange();
-    };
+    }
 
-    setOnChangeCallback = (onChangeCallback: () => void): void => {
+    setOnChangeCallback(onChangeCallback: () => void): void {
         this.config.onChange = onChangeCallback;
-    };
+    }
 
-    private updateDocumentBody = (receivedBody: string) => {
+    private updateDocumentBody(receivedBody: string) {
         const parser = new DOMParser();
         const doc = parser.parseFromString(receivedBody, "text/html");
         morphdom(document.body, doc.body);
         this.createCslpTooltip();
-    };
+    }
 
-    private resolveIncomingMessage = (e: MessageEvent) => {
+    private resolveIncomingMessage(e: MessageEvent) {
         if (typeof e.data !== "object") return;
         const { type, from, data } = e.data;
 
@@ -229,12 +276,13 @@ export default class LivePreview {
                 break;
             }
         }
-    };
+    }
 
     private createCslpTooltip = () => {
         if (!document.getElementById("cslp-tooltip")) {
             const tooltip = document.createElement("button");
             tooltip.classList.add("cslp-tooltip");
+            tooltip.setAttribute("data-test-id", "cs-cslp-tooltip");
             tooltip.id = "cslp-tooltip";
             window.document.body.insertAdjacentElement("beforeend", tooltip);
             this.tooltipChild.singular = createSingularEditButton(
@@ -253,7 +301,7 @@ export default class LivePreview {
     };
 
     // Request parent for data sync when document loads
-    private requestDataSync = () => {
+    private requestDataSync() {
         this.handleUserChange({
             live_preview: "init", // this is the hash of the live preview
         });
@@ -290,9 +338,9 @@ export default class LivePreview {
                 );
             }, 1500);
         }
-    };
+    }
 
-    private updateTooltipPosition = () => {
+    private updateTooltipPosition() {
         if (!this.currentElementBesideTooltip || !this.tooltip) return false;
 
         const currentRectOfElement =
@@ -334,14 +382,14 @@ export default class LivePreview {
         }
 
         return false;
-    };
+    }
 
     // remove attributes when livePreview is false
-    private removeDataCslp = () => {
+    private removeDataCslp() {
         const nodes = document.querySelectorAll("[data-cslp]");
 
         nodes.forEach((node) => {
             node.removeAttribute("data-cslp");
         });
-    };
+    }
 }

@@ -1,5 +1,6 @@
+import { PublicLogger } from "../public-logger";
 import { handleInitData, handleUserConfig } from "../handleUserConfig";
-import { IConfig, IInitData } from "../types";
+import { IConfig, IInitData, IStackSdk } from "../types";
 
 // example Stack object
 
@@ -68,12 +69,6 @@ describe("handleInitData()", () => {
                 // this is intentional
             },
         };
-    });
-
-    test("must throw error if apiKey is missing", () => {
-        expect(() => {
-            handleInitData({}, config);
-        }).toThrow("Please add the stack API key for live preview");
     });
 
     test("must set data when config is provided", () => {
@@ -157,22 +152,61 @@ describe("handleInitData()", () => {
         expect(config).toMatchObject(expectedOutput);
     });
 
-    test("throw error if apiKey is missing from Stack headers", () => {
-        const initData = {
+    test("must set SSR: true is stack SDK is not provided", () => {
+        const initData: Partial<IInitData> = {
+            enable: true,
+            stackDetails: {
+                apiKey: "bltanything",
+                environment: "",
+            },
+        };
+
+        handleInitData(initData, config);
+        expect(config.ssr).toBe(true);
+    });
+
+    test("must set SSR: true is stack SDK is not provided", () => {
+        const initData: Partial<IInitData> = {
+            enable: true,
+            stackDetails: {
+                apiKey: "bltanything",
+                environment: "",
+            },
+            stackSdk: {
+                live_preview: {
+                    enable: true,
+                },
+                headers: {
+                    api_key: "bltanything",
+                },
+                environment: "",
+                cachePolicy: 1,
+            },
+        };
+
+        handleInitData(initData, config);
+        expect(config.ssr).toBe(false);
+    });
+
+    test("should show depricated warning if stack object is passed directly", () => {
+        const initData: Partial<IStackSdk> = {
             live_preview: {
                 enable: true,
             },
-            config: {},
             headers: {
-                api_key: "",
+                api_key: "bltanything",
             },
             environment: "",
             cachePolicy: 1,
         };
 
-        expect(() => {
-            handleInitData(initData, config);
-        }).toThrow("Please add the stack API key for live preview");
+        const spiedConsole = jest.spyOn(PublicLogger, "warn");
+
+        handleInitData(initData, config);
+
+        expect(spiedConsole).toHaveBeenCalledWith(
+            "Deprecated: Do not pass the Stack object directly to the Live Preview SDK. Pass it using the config.stackSDK config object."
+        );
     });
 });
 
@@ -212,16 +246,29 @@ describe("handleClientUrlParams()", () => {
 
     test("must modify host and url accordingly", () => {
         handleUserConfig.clientUrlParams(config, {
-            host: "example.com",
+            host: "example.com/",
             protocol: "http",
         });
 
-        const expectedOutput = {
+        const expectedOutputForHttp = {
             protocol: "http",
             host: "example.com",
             port: 80,
             url: "http://example.com:80",
         };
-        expect(config.clientUrlParams).toMatchObject(expectedOutput);
+        expect(config.clientUrlParams).toMatchObject(expectedOutputForHttp);
+
+        handleUserConfig.clientUrlParams(config, {
+            host: "example.com/",
+            protocol: "https",
+        });
+
+        const expectedOutputForHttps = {
+            protocol: "https",
+            host: "example.com",
+            port: 443,
+            url: "https://example.com:443",
+        };
+        expect(config.clientUrlParams).toMatchObject(expectedOutputForHttps);
     });
 });
