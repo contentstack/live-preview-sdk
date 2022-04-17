@@ -14,10 +14,10 @@
         "dev": "webpack --config webpack.dev.js",
         "prepare": "npm run build && (is-ci || husky install)",
         "lint": "eslint src",
-        "lint:fix": "npm run lint -- --fix",
+        "lint:fix": "eslint --fix",
         "prettier": "prettier src --check",
-        "prettier:fix": "npm run prettier -- --write",
-        "format": "npm run prettier:fix"
+        "prettier:fix": "prettier --write",
+        "format": "npm run prettier:fix && npm run lint:fix"
     },
     "keywords": [
         "live-preview"
@@ -39,6 +39,7 @@
         "husky": "^7.0.0",
         "is-ci": "^3.0.1",
         "jest": "^27.2.0",
+        "lint-staged": "^12.3.8",
         "mini-css-extract-plugin": "^2.3.0",
         "prettier-eslint": "^13.0.0",
         "style-loader": "^2.0.0",
@@ -58,5 +59,11 @@
         "just-camel-case": "^4.0.2",
         "morphdom": "^2.6.1",
         "uuid": "^8.3.2"
+    },
+    "lint-staged": {
+        "*.{js,css,md,ts}": [
+            "npm run prettier:fix ",
+            " npm run lint:fix"
+        ]
     }
 }
