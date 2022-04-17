@@ -12,7 +12,12 @@
         "test": "jest",
         "test:coverage": "jest src --coverage --watchAll --coverageDirectory=\"coverage\"",
         "dev": "webpack --config webpack.dev.js",
-        "prepare": "npm run build"
+        "prepare": "npm run build && (is-ci || husky install)",
+        "lint": "eslint src",
+        "lint:fix": "npm run lint -- --fix",
+        "prettier": "prettier src --check",
+        "prettier:fix": "npm run prettier -- --write",
+        "format": "npm run prettier:fix"
     },
     "keywords": [
         "live-preview"
@@ -25,13 +30,17 @@
         "@testing-library/jest-dom": "^5.14.1",
         "@types/jest": "^27.0.1",
         "@types/uuid": "^8.3.1",
-        "@typescript-eslint/eslint-plugin": "^4.31.1",
-        "@typescript-eslint/parser": "^4.31.1",
+        "@typescript-eslint/eslint-plugin": "^5.19.0",
+        "@typescript-eslint/parser": "^5.19.0",
         "babel-loader": "^8.0.5",
         "css-loader": "^5.2.2",
         "eslint": "^7.32.0",
+        "eslint-config-prettier": "^8.5.0",
+        "husky": "^7.0.0",
+        "is-ci": "^3.0.1",
         "jest": "^27.2.0",
         "mini-css-extract-plugin": "^2.3.0",
+        "prettier-eslint": "^13.0.0",
         "style-loader": "^2.0.0",
         "ts-jest": "^27.0.5",
         "ts-loader": "^8.1.0",
