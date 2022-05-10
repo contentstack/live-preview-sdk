@@ -1,7 +1,12 @@
+import fetch from "jest-fetch-mock";
+
 import LivePreview from "../live-preview";
 import { userInitData } from "../utils/defaults";
 import { PublicLogger } from "../utils/public-logger";
-import { convertObjectToMinifiedString } from "./utils";
+import {
+    convertObjectToMinifiedString,
+    sendPostmessageToWindow,
+} from "./utils";
 
 const TITLE_CSLP_TAG = "content-type-1.entry-uid-1.en-us.field-title";
 const DESC_CSLP_TAG = "content-type-2.entry-uid-2.en-us.field-description";
@@ -122,20 +127,22 @@ describe("cslp tooltip", () => {
 
         expect(tooltip.style.top).toBe("10px");
 
+        const expectedTop = -5;
+
         descPara.getBoundingClientRect = jest.fn(() => ({
             bottom: 16,
             height: 21,
             left: 8,
             right: 46.25,
-            top: -5,
+            top: expectedTop,
             width: 38.25,
             x: 8,
-            y: -5,
+            y: expectedTop,
         })) as any;
 
         descPara?.dispatchEvent(hoverEvent);
 
-        expect(tooltip.style.top).toBe("0px");
+        expect(tooltip.style.top).toBe(`${expectedTop}px`);
     });
 
     test("should redirect to page when edit tag button is clicked", () => {
@@ -294,9 +301,33 @@ describe("cslp tooltip", () => {
         );
     });
 
-    test("should remove class when another element is hovered", () => {});
+    test("should move class to another element when that element is hovered", () => {
+        new LivePreview({
+            enable: true,
+        });
 
-    test.skip("should redirect to link when multiple Tooltip is clicked", () => {
+        const titlePara = document.querySelector("[data-test-id='title-para']");
+        const descPara = document.querySelector("[data-test-id='desc-para']");
+
+        const hoverEvent = new CustomEvent("mouseover", {
+            bubbles: true,
+        });
+        expect(titlePara?.classList.contains("cslp-edit-mode")).toBeFalsy();
+        expect(descPara?.classList.contains("cslp-edit-mode")).toBeFalsy();
+
+        titlePara?.dispatchEvent(hoverEvent);
+
+        expect(titlePara?.classList.contains("cslp-edit-mode")).toBeTruthy();
+        expect(descPara?.classList.contains("cslp-edit-mode")).toBeFalsy();
+
+        descPara?.dispatchEvent(hoverEvent);
+
+        expect(titlePara?.classList.contains("cslp-edit-mode")).toBeFalsy();
+        expect(descPara?.classList.contains("cslp-edit-mode")).toBeTruthy();
+    });
+
+    test("should redirect to link when multiple Tooltip is clicked", () => {
+        const { location } = window;
         new LivePreview({
             enable: true,
         });
@@ -307,6 +338,18 @@ describe("cslp tooltip", () => {
             bubbles: true,
         });
 
+        const mockAssign = jest.fn();
+
+        const locationSpy = jest
+            .spyOn(window, "location", "get")
+            .mockImplementation(() => {
+                const mockLocation: Location = JSON.parse(
+                    JSON.stringify(location)
+                );
+                mockLocation.assign = mockAssign;
+                return mockLocation;
+            });
+
         linkPara?.dispatchEvent(hoverEvent);
 
         const linkButton = document.querySelector(
@@ -315,40 +358,67 @@ describe("cslp tooltip", () => {
 
         linkButton?.click();
 
-        global.window = Object.create(window);
-        const url = "http://localhost";
-        Object.defineProperty(window, "location", {
-            value: {
-                href: url,
-            },
-            writable: true,
+        expect(mockAssign).toHaveBeenCalledWith("https://www.example.com");
+
+        locationSpy.mockRestore();
+    });
+    test("should send postMessage for scroll when button is clicked inside an iframe", () => {
+        const { location } = window;
+
+        const locationSpy = jest
+            .spyOn(window, "location", "get")
+            .mockImplementation(() => {
+                const mockLocation = JSON.parse(JSON.stringify(location));
+                mockLocation.href = "https://example.com";
+                return mockLocation;
+            });
+
+        const parentLocationSpy = jest
+            .spyOn(window.parent, "location", "get")
+            .mockImplementation(() => {
+                const mockLocation = JSON.parse(JSON.stringify(location));
+                mockLocation.href = "https://example1.com";
+
+                return mockLocation;
+            });
+
+        new LivePreview({
+            enable: true,
         });
 
-        console.log("mayhem", document.body.innerHTML, linkButton);
+        const singularEditButton = document.querySelector(
+            "[data-test-id='cslp-singular-edit-button']"
+        ) as HTMLDivElement;
 
-        expect(window.location.assign).toHaveBeenCalledWith(
-            "https://www.example.com"
+        const titlePara = document.querySelector("[data-test-id='title-para']");
+
+        jest.spyOn(window, "postMessage");
+
+        const hoverEvent = new CustomEvent("mouseover", {
+            bubbles: true,
+        });
+
+        titlePara?.dispatchEvent(hoverEvent);
+
+        singularEditButton?.click();
+
+        expect(window.postMessage).toHaveBeenCalledWith(
+            {
+                from: "live-preview",
+                type: "scroll",
+                data: {
+                    field: "field-title",
+                    content_type_uid: "content-type-1",
+                    entry_uid: "entry-uid-1",
+                    locale: "en-us",
+                },
+            },
+            "*"
         );
+
+        locationSpy.mockRestore();
+        parentLocationSpy.mockRestore();
     });
-
-    // test("should show warning when Live preview is initialized twice", () => {
-    //     const spiedConsole = jest.spyOn(console, "warn");
-
-    //     new LivePreview({
-    //         enable: true,
-    //     });
-
-    //     // re-initialized to see if warning is thrown
-    //     new LivePreview({
-    //         enable: true,
-    //         ssr: false,
-    //     });
-
-    //     const outputErrorLog = spiedConsole.mock.calls[0] as any[];
-
-    //     console.log("outputErrorLog", outputErrorLog);
-    // });
-    // test.skip("should run onchangeCallback() when entry is updated", () => {});`
 });
 
 describe("debug module", () => {
@@ -366,5 +436,125 @@ describe("debug module", () => {
         );
 
         expect(outputErrorLog[1]).toMatchObject(userInitData);
+    });
+});
+
+describe("incoming postMessage", () => {
+    beforeEach(() => {
+        fetch.resetMocks();
+    });
+    afterEach(() => {
+        document.getElementsByTagName("html")[0].innerHTML = "";
+    });
+
+    test("should trigger user onChange function when client-data-send is sent with ssr: false", async () => {
+        const mockedStackSdk = {
+            live_preview: {},
+            headers: {
+                api_key: "",
+            },
+            environment: "",
+        };
+
+        // initiate live preview
+        const livePreview = new LivePreview({
+            enable: true,
+            ssr: false,
+            stackSdk: mockedStackSdk,
+        });
+
+        // set user onChange function
+        const userOnChange = jest.fn();
+        livePreview.setOnChangeCallback(userOnChange);
+
+        await sendPostmessageToWindow("client-data-send", {
+            hash: "livePreviewHash1234",
+            content_type_uid: "entryContentTypeUid",
+        });
+
+        expect(userOnChange).toHaveBeenCalled();
+        expect(mockedStackSdk.live_preview).toMatchObject({
+            hash: "livePreviewHash1234",
+            content_type_uid: "entryContentTypeUid",
+            live_preview: "livePreviewHash1234",
+        });
+    });
+
+    test("should fetch data when client-data-send is sent with ssr: true", async () => {
+        new LivePreview({
+            enable: true,
+            ssr: true,
+            stackDetails: {
+                apiKey: "iiyy",
+            },
+        });
+
+        const expectedLivePreviewDomBody = `
+            <div data-test-id="cslp-modified-body"><p>Modified Body</p></div>
+        `;
+        const expectedLivePreviewFetchUrl =
+            "http://localhost/?live_preview=livePreviewHash1234&content_type_uid=entryContentTypeUid";
+
+        fetch.mockResponse(expectedLivePreviewDomBody);
+
+        await sendPostmessageToWindow("client-data-send", {
+            hash: "livePreviewHash1234",
+            content_type_uid: "entryContentTypeUid",
+        });
+
+        const livePreviewFetchUrl = fetch.mock.calls[0][0];
+
+        expect(livePreviewFetchUrl).toBe(expectedLivePreviewFetchUrl);
+        expect(document.body.children[0].outerHTML.trim()).toBe(
+            expectedLivePreviewDomBody.trim()
+        );
+    });
+
+    test("should receive contentTypeUid and EntryUid on init-ack", async () => {
+        const livePreview = new LivePreview({
+            enable: true,
+        });
+
+        await sendPostmessageToWindow("init-ack", {
+            entryUid: "livePreviewEntryUid",
+            contentTypeUid: "livePreviewContentTypeUid",
+        });
+
+        expect(livePreview["config"].stackDetails).toMatchObject({
+            apiKey: "",
+            contentTypeUid: "livePreviewContentTypeUid",
+            entryUid: "livePreviewEntryUid",
+            environment: "",
+        });
+    });
+    test("should navigate forward, backward and reload page on history call", async () => {
+        new LivePreview({
+            enable: true,
+        });
+
+        jest.spyOn(window.history, "forward");
+        jest.spyOn(window.history, "back");
+        jest.spyOn(window.history, "go").mockImplementation(() => {});
+
+        // for forward
+        await sendPostmessageToWindow("history", {
+            type: "forward",
+        });
+
+        expect(window.history.forward).toHaveBeenCalled();
+
+        // for back
+        await sendPostmessageToWindow("history", {
+            type: "backward",
+        });
+
+        expect(window.history.back).toHaveBeenCalled();
+
+        // for reload
+        await sendPostmessageToWindow("history", {
+            type: "reload",
+        });
+
+        expect(window.history.go).toHaveBeenCalled();
     });
 });
