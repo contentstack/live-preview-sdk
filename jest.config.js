@@ -4,6 +4,8 @@ module.exports = {
         "**/__tests__/**/*.+(ts|tsx|js)",
         "**/?(*.)+(spec|test).+(ts|tsx|js)",
     ],
+    automock: false,
+    setupFiles: ["<rootDir>/setupJest.ts"],
     testEnvironment: "jsdom",
     transform: {
         "^.+\\.(ts|tsx)$": "ts-jest",
