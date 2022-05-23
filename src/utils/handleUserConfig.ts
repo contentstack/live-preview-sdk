@@ -63,6 +63,9 @@ export const handleInitData = (
         // only stack indicates that user is running it on client side application
         config.ssr = false;
 
+        config.runScriptsOnUpdate =
+            livePreviewObject.runScriptsOnUpdate ?? config.runScriptsOnUpdate;
+
         config.enable = livePreviewObject.enable ?? config.enable;
 
         config.cleanCslpOnProduction =
@@ -99,6 +102,11 @@ export const handleInitData = (
             stackSdk.live_preview?.ssr ??
             (typeof initData.stackSdk === "object" ? false : true) ??
             true;
+
+        config.runScriptsOnUpdate =
+            initData.runScriptsOnUpdate ??
+            stackSdk.live_preview?.runScriptsOnUpdate ??
+            config.runScriptsOnUpdate;
 
         config.stackSdk = stackSdk as IStackSdk;
 

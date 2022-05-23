@@ -5,6 +5,7 @@ import morphdom from "morphdom";
 import { handleInitData } from "./utils/handleUserConfig";
 import { userInitData } from "./utils/defaults";
 import packageJson from "../package.json";
+import { replaceDocumentBody, updateDocumentBody } from "./utils/replaceHtml";
 
 export default class LivePreview {
     /**
@@ -14,6 +15,7 @@ export default class LivePreview {
     private config: IConfig = {
         ssr: true,
         enable: false,
+        runScriptsOnUpdate: false,
         cleanCslpOnProduction: true,
 
         stackDetails: {
@@ -63,7 +65,6 @@ export default class LivePreview {
         this.linkClickHandler = this.linkClickHandler.bind(this);
         this.handleUserChange = this.handleUserChange.bind(this);
         this.setOnChangeCallback = this.setOnChangeCallback.bind(this);
-        this.updateDocumentBody = this.updateDocumentBody.bind(this);
         this.resolveIncomingMessage = this.resolveIncomingMessage.bind(this);
         this.createCslpTooltip = this.createCslpTooltip.bind(this);
         this.requestDataSync = this.requestDataSync.bind(this);
@@ -230,13 +231,6 @@ export default class LivePreview {
         this.config.onChange = onChangeCallback;
     }
 
-    private updateDocumentBody(receivedBody: string) {
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(receivedBody, "text/html");
-        morphdom(document.body, doc.body);
-        this.createCslpTooltip();
-    }
-
     private resolveIncomingMessage(e: MessageEvent) {
         if (typeof e.data !== "object") return;
         const { type, from, data } = e.data;
@@ -247,7 +241,6 @@ export default class LivePreview {
             case "client-data-send": {
                 if (this.config.ssr) {
                     // Get the content from the server and replace the body
-                    // to get the effect of
 
                     const fetch_url = new URL(window.location.href);
 
@@ -262,14 +255,11 @@ export default class LivePreview {
                     })
                         .then((res) => res.text())
                         .then((res) => {
-                            const parser = new DOMParser();
-                            const receivedDoc = parser.parseFromString(
-                                res,
-                                "text/html"
-                            );
-
-                            const body = receivedDoc.body.outerHTML;
-                            if (body) this.updateDocumentBody(body);
+                            updateDocumentBody(document, res, {
+                                onPostOperation: this.createCslpTooltip,
+                                shouldReRunScripts:
+                                    this.config.runScriptsOnUpdate,
+                            });
                         });
                 } else {
                     this.handleUserChange(data);
@@ -298,6 +288,10 @@ export default class LivePreview {
                     }
                 }
                 break;
+            }
+            case "document-body-post-scripts-loaded": {
+                const { body } = data;
+                replaceDocumentBody(body, this.createCslpTooltip);
             }
         }
     }

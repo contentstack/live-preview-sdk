@@ -38,10 +38,12 @@ export declare interface IConfig {
     clientUrlParams: IClientUrlParams;
     stackSdk: IStackSdk;
     onChange: () => void;
+    runScriptsOnUpdate: boolean;
 }
 
 export declare interface IInitData {
     ssr: boolean;
+    runScriptsOnUpdate: boolean;
     enable: boolean;
     cleanCslpOnProduction: boolean;
     stackDetails: Partial<IInitStackDetails>;
