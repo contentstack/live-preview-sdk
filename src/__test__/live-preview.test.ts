@@ -463,6 +463,11 @@ describe("incoming postMessage", () => {
             stackSdk: mockedStackSdk,
         });
 
+        await sendPostmessageToWindow("init-ack", {
+            entryUid: "entryUid",
+            contentTypeUid: "entryContentTypeUid",
+        });
+
         // set user onChange function
         const userOnChange = jest.fn();
         livePreview.setOnChangeCallback(userOnChange);
@@ -477,6 +482,7 @@ describe("incoming postMessage", () => {
             hash: "livePreviewHash1234",
             content_type_uid: "entryContentTypeUid",
             live_preview: "livePreviewHash1234",
+            entry_uid: "entryUid",
         });
     });
 
@@ -489,11 +495,16 @@ describe("incoming postMessage", () => {
             },
         });
 
+        await sendPostmessageToWindow("init-ack", {
+            entryUid: "entryUid",
+            contentTypeUid: "entryContentTypeUid",
+        });
+
         const expectedLivePreviewDomBody = `
             <div data-test-id="cslp-modified-body"><p>Modified Body</p></div>
         `;
         const expectedLivePreviewFetchUrl =
-            "http://localhost/?live_preview=livePreviewHash1234&content_type_uid=entryContentTypeUid";
+            "http://localhost/?live_preview=livePreviewHash1234&content_type_uid=entryContentTypeUid&entry_uid=entryUid";
 
         fetch.mockResponse(expectedLivePreviewDomBody);
 
