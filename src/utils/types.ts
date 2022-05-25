@@ -1,6 +1,11 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-export declare interface IEntryValue {
-    [field: string]: any;
+export declare interface IEditEntrySearchParams {
+    hash?: string;
+    entry_uid?: string;
+    content_type_uid?: string;
+    /**
+     * @deprecated pass this value as hash instead
+     */
+    live_preview?: string;
 }
 
 export declare interface IClientUrlParams {
@@ -50,6 +55,49 @@ export declare interface IInitData {
     clientUrlParams: Partial<Omit<IClientUrlParams, "url">>;
     stackSdk: IStackSdk;
 }
+
+// Post message types
+
+export declare interface ILivePreviewMessageCommon {
+    from: "live-preview";
+}
+
+export type ILivePreviewReceivePostMessages =
+    | IClientDataMessage
+    | IInitAckMessage
+    | IHistoryMessage
+    | IDocWithScriptMessage;
+export declare interface IClientDataMessage extends ILivePreviewMessageCommon {
+    type: "client-data-send";
+    data: {
+        hash: string;
+    };
+}
+
+export declare interface IInitAckMessage extends ILivePreviewMessageCommon {
+    type: "init-ack";
+    data: {
+        contentTypeUid: string;
+        entryUid: string;
+    };
+}
+
+export declare interface IHistoryMessage extends ILivePreviewMessageCommon {
+    type: "history";
+    data: {
+        type: "forward" | "backward" | "reload";
+    };
+}
+
+export declare interface IDocWithScriptMessage
+    extends ILivePreviewMessageCommon {
+    type: "document-body-post-scripts-loaded";
+    data: {
+        body: string;
+    };
+}
+
+// end of Post message types
 
 export declare type OnEntryChangeCallback = () => void;
 

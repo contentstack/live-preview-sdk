@@ -1,7 +1,11 @@
 import { createSingularEditButton, createMultipleEditButton } from "./utils";
 import { PublicLogger } from "./utils/public-logger";
-import { IConfig, IEntryValue, IInitData } from "./utils/types";
-import morphdom from "morphdom";
+import {
+    IConfig,
+    IEditEntrySearchParams,
+    IInitData,
+    ILivePreviewReceivePostMessages,
+} from "./utils/types";
 import { handleInitData } from "./utils/handleUserConfig";
 import { userInitData } from "./utils/defaults";
 import packageJson from "../package.json";
@@ -217,12 +221,12 @@ export default class LivePreview {
         }
     }
 
-    private handleUserChange(entryEditParams: IEntryValue) {
+    private handleUserChange(editEntrySearchParams: IEditEntrySearchParams) {
         // here we provide contentTypeUid and EntryUid to the StackDelivery SDK.
         this.config.stackSdk.live_preview = {
             ...this.config.stackSdk.live_preview,
-            ...entryEditParams,
-            live_preview: entryEditParams.hash,
+            ...editEntrySearchParams,
+            live_preview: editEntrySearchParams.hash,
         };
         this.config.onChange();
     }
@@ -231,24 +235,29 @@ export default class LivePreview {
         this.config.onChange = onChangeCallback;
     }
 
-    private resolveIncomingMessage(e: MessageEvent) {
+    private resolveIncomingMessage(
+        e: MessageEvent<ILivePreviewReceivePostMessages>
+    ) {
         if (typeof e.data !== "object") return;
-        const { type, from, data } = e.data;
 
-        if (from !== "live-preview") return;
+        if (e.data.from !== "live-preview") return;
 
-        switch (type) {
+        switch (e.data.type) {
             case "client-data-send": {
+                const { contentTypeUid, entryUid } = this.config.stackDetails;
+                const { hash } = e.data.data;
+
                 if (this.config.ssr) {
                     // Get the content from the server and replace the body
 
                     const fetch_url = new URL(window.location.href);
 
-                    fetch_url.searchParams.append("live_preview", data.hash);
+                    fetch_url.searchParams.append("live_preview", hash);
                     fetch_url.searchParams.append(
                         "content_type_uid",
-                        data.content_type_uid
+                        contentTypeUid
                     );
+                    fetch_url.searchParams.append("entry_uid", entryUid);
 
                     fetch(fetch_url.toString(), {
                         method: "GET",
@@ -262,19 +271,23 @@ export default class LivePreview {
                             });
                         });
                 } else {
-                    this.handleUserChange(data);
+                    this.handleUserChange({
+                        content_type_uid: contentTypeUid,
+                        entry_uid: entryUid,
+                        hash: hash,
+                    });
                 }
                 break;
             }
             case "init-ack": {
-                const { contentTypeUid, entryUid } = data;
+                const { contentTypeUid, entryUid } = e.data.data;
 
                 this.config.stackDetails.contentTypeUid = contentTypeUid;
                 this.config.stackDetails.entryUid = entryUid;
                 break;
             }
             case "history": {
-                switch (data.type) {
+                switch (e.data.data.type) {
                     case "forward": {
                         window.history.forward();
                         break;
@@ -290,7 +303,7 @@ export default class LivePreview {
                 break;
             }
             case "document-body-post-scripts-loaded": {
-                const { body } = data;
+                const { body } = e.data.data;
                 replaceDocumentBody(body, this.createCslpTooltip);
             }
         }
@@ -321,7 +334,7 @@ export default class LivePreview {
     // Request parent for data sync when document loads
     private requestDataSync() {
         this.handleUserChange({
-            live_preview: "init", // this is the hash of the live preview
+            live_preview: "init", // this is the hash of the live previewd
         });
 
         // add edit tooltip
