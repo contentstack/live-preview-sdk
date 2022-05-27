@@ -14,14 +14,18 @@ export function rerunScriptsInDocument(): void {
 
     function decrementNumberOfScriptsLeft() {
         scriptsLeftToExecute--;
+
         if (scriptsLeftToExecute === 0) {
-            window.parent.postMessage({
-                from: "live-preview",
-                type: "document-body-post-scripts-loaded",
-                data: {
-                    body: document.body.outerHTML,
+            window.parent.postMessage(
+                {
+                    from: "live-preview",
+                    type: "document-body-post-scripts-loaded",
+                    data: {
+                        body: document.body.outerHTML,
+                    },
                 },
-            });
+                "*"
+            );
         }
     }
 
