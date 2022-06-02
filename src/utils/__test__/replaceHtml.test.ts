@@ -116,8 +116,6 @@ describe("rerunScriptsInDocument", () => {
                     window.scriptRan = 1
                 }
             </script>
-            <script src="https://slowfil.es/file?type=js&delay=50&status=500"></script>
-            <script src="https://slowfil.es/file?type=js&delay=50"></script>
         `;
     });
     afterEach(() => {
@@ -125,12 +123,57 @@ describe("rerunScriptsInDocument", () => {
         //@ts-ignore
         window.scriptRan = undefined;
     });
-    test("should run both scripts", async () => {
+    test("should run internal scripts", async () => {
         rerunScriptsInDocument();
-
-        await new Promise((r) => setTimeout(r, 110));
 
         //@ts-ignore
         expect(window.scriptRan).toBe(1);
+    });
+
+    test("should run external script", () => {
+        document.body.innerHTML = `
+            <h1 data-test-id="heading">The title is old</h1>
+            <p data-test-id="paragraph">hello I am not updated</p>
+            <script>
+                if (window.scriptRan) {
+                    window.scriptRan++
+                } else {
+                    window.scriptRan = 1
+                }
+            </script>
+            <script src="https://slowfil.es/file?type=js&delay=5"></script>
+        `;
+
+        rerunScriptsInDocument();
+
+        //@ts-ignore
+        expect(window.scriptRan).toBe(1);
+    });
+
+    test("should trigger document-body-post-scripts-loaded with correct body", async () => {
+        jest.spyOn(window, "postMessage");
+
+        rerunScriptsInDocument();
+
+        expect(window.postMessage).toBeCalledWith(
+            {
+                from: "live-preview",
+                type: "document-body-post-scripts-loaded",
+                data: {
+                    body: `<body>
+            <h1 data-test-id="heading">The title is old</h1>
+            <p data-test-id="paragraph">hello I am not updated</p>
+            <script>
+                if (window.scriptRan) {
+                    window.scriptRan++
+                } else {
+                    window.scriptRan = 1
+                }
+            </script>
+        </body>`,
+                },
+            },
+            "*"
+        );
     });
 });
