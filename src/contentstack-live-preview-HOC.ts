@@ -1,5 +1,6 @@
 import { v4 as uuidv4 } from "uuid";
 import camelCase from "just-camel-case";
+import packageJson from "../package.json";
 
 import {
     IInitData,
@@ -136,6 +137,10 @@ export class ContentstackLivePreview {
                     console.error(err);
                 });
         }
+    }
+
+    static getSdkVersion(): string {
+        return packageJson.version;
     }
 }
 

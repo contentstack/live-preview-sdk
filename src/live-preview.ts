@@ -4,6 +4,7 @@ import { IConfig, IEntryValue, IInitData } from "./utils/types";
 import morphdom from "morphdom";
 import { handleInitData } from "./utils/handleUserConfig";
 import { userInitData } from "./utils/defaults";
+import packageJson from "../package.json";
 
 export default class LivePreview {
     /**
@@ -245,8 +246,31 @@ export default class LivePreview {
         switch (type) {
             case "client-data-send": {
                 if (this.config.ssr) {
-                    const body = data.body;
-                    if (body) this.updateDocumentBody(body);
+                    // Get the content from the server and replace the body
+                    // to get the effect of
+
+                    const fetch_url = new URL(window.location.href);
+
+                    fetch_url.searchParams.append("live_preview", data.hash);
+                    fetch_url.searchParams.append(
+                        "content_type_uid",
+                        data.content_type_uid
+                    );
+
+                    fetch(fetch_url.toString(), {
+                        method: "GET",
+                    })
+                        .then((res) => res.text())
+                        .then((res) => {
+                            const parser = new DOMParser();
+                            const receivedDoc = parser.parseFromString(
+                                res,
+                                "text/html"
+                            );
+
+                            const body = receivedDoc.body.outerHTML;
+                            if (body) this.updateDocumentBody(body);
+                        });
                 } else {
                     this.handleUserChange(data);
                 }
@@ -317,6 +341,7 @@ export default class LivePreview {
                     config: {
                         shouldReload: this.config.ssr,
                         href: window.location.href,
+                        sdkVersion: packageJson.version,
                     },
                 },
             },

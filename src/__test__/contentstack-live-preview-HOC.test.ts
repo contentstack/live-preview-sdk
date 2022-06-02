@@ -96,3 +96,9 @@ describe("Live preview HOC Callback Pub Sub", () => {
         );
     });
 });
+
+describe("Live preview version", () => {
+    test("should return current version", () => {
+        expect(ContentstackLivePreview.getSdkVersion()).toBe("1.1.0");
+    });
+});
