@@ -2,7 +2,7 @@ import { IInitData } from "./types";
 
 export const userInitData: IInitData = {
     ssr: true,
-    enable: false,
+    enable: true,
     cleanCslpOnProduction: true,
 
     stackDetails: {
