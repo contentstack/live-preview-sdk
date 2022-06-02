@@ -22,4 +22,5 @@ export const userInitData: IInitData = {
         },
         environment: "",
     },
+    runScriptsOnUpdate: false,
 };

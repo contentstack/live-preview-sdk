@@ -43,6 +43,7 @@ describe("handleInitData()", () => {
             ssr: true,
             enable: false,
             cleanCslpOnProduction: true,
+            runScriptsOnUpdate: false,
 
             stackDetails: {
                 apiKey: "",
@@ -216,6 +217,7 @@ describe("handleClientUrlParams()", () => {
             ssr: true,
             enable: true,
             cleanCslpOnProduction: true,
+            runScriptsOnUpdate: false,
 
             stackDetails: {
                 apiKey: "",

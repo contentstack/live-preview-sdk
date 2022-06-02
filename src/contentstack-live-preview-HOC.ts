@@ -73,7 +73,7 @@ export class ContentstackLivePreview {
         return callbackUid;
     }
 
-    static unsbscribeOnEntryChange(
+    static unsubscribeOnEntryChange(
         callback: string | OnEntryChangeCallback
     ): void {
         if (typeof callback === "string") {
@@ -129,7 +129,7 @@ export class ContentstackLivePreview {
                     const dataTitle = camelCase(
                         `${prefix}_${sdkQuery.content_type_uid}`
                     );
-                    const entry = { [dataTitle]: ent.toJSON() };
+                    const entry = { [dataTitle]: ent };
 
                     return entry;
                 })
