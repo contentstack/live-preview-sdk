@@ -1,8 +1,9 @@
 import { v4 as uuidv4 } from "uuid";
 import camelCase from "just-camel-case";
+import packageJson from "../package.json";
 
 import {
-    IEntryValue,
+    IEditEntrySearchParams,
     IInitData,
     IStackSdk,
     OnEntryChangeCallback,
@@ -40,7 +41,7 @@ export class ContentstackLivePreview {
         }
     }
 
-    private static publish(entryEditParams?: IEntryValue): void {
+    private static publish(entryEditParams?: IEditEntrySearchParams): void {
         Object.values<OnEntryChangeCallback>(
             ContentstackLivePreview.subscribers
         ).forEach((func) => {
@@ -73,7 +74,7 @@ export class ContentstackLivePreview {
         return callbackUid;
     }
 
-    static unsbscribeOnEntryChange(
+    static unsubscribeOnEntryChange(
         callback: string | OnEntryChangeCallback
     ): void {
         if (typeof callback === "string") {
@@ -129,7 +130,7 @@ export class ContentstackLivePreview {
                     const dataTitle = camelCase(
                         `${prefix}_${sdkQuery.content_type_uid}`
                     );
-                    const entry = { [dataTitle]: ent.toJSON() };
+                    const entry = { [dataTitle]: ent };
 
                     return entry;
                 })
@@ -137,6 +138,10 @@ export class ContentstackLivePreview {
                     console.error(err);
                 });
         }
+    }
+
+    static getSdkVersion(): string {
+        return packageJson.version;
     }
 }
 

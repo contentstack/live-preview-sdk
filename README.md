@@ -2,7 +2,7 @@
 
 Contentstack is a headless CMS with an API-first approach. It is a CMS that developers can use to build powerful cross-platform applications in their favorite languages. Build your application frontend, and Contentstack will take care of the rest.
 
-Contentstack provides the Live Preview Utils SDK to establish a communication channel between the various Contentstack SDKs and your website, transmitting live changes to the preview pane.  [Read More](https://www.contentstack.com/docs/content-managers/live-preview/).
+Contentstack provides the Live Preview Utils SDK to establish a communication channel between the various Contentstack SDKs and your website, transmitting live changes to the preview pane. [Read More](https://www.contentstack.com/docs/content-managers/live-preview/).
 
 # Installation
 
@@ -29,7 +29,6 @@ Use the following command to initialize the SDK:
 import ContentstackLivePreview from "@contentstack/live-preview-utils";
 
 ContentstackLivePreview.init({
-    enable: true,
     stackDetails: {
         apiKey: "your-stack-api-key",
     },
@@ -38,11 +37,9 @@ ContentstackLivePreview.init({
 
 ternatively, if you want to initialize the SDK directly inside the HTML tag, use the ContentstackLivePreview.init() method as follows:
 
-
 ```html
 <script>
     ContentstackLivePreview.init({
-        enable: true,
         stackDetails: {
             apiKey: "your-stack-api-key",
         },
@@ -55,7 +52,6 @@ ternatively, if you want to initialize the SDK directly inside the HTML tag, use
 Live Preview provides edit tags that allow you to edit your content in real-time. Live edit tags are identified as the data-cslp attribute within the HTML tags. The styles for the live edit tags are available in the @contentstack/live-preview-utils/dist/main.css file.
 
 To use live edit tags within your stack, you need to include them in your main index.js file as follows:
-
 
 ```javascript
 import "@contentstack/live-preview-utils/dist/main.css";
