@@ -18,7 +18,7 @@ export default class LivePreview {
 
     private config: IConfig = {
         ssr: true,
-        enable: false,
+        enable: true,
         runScriptsOnUpdate: false,
         cleanCslpOnProduction: true,
 
