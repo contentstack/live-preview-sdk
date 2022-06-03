@@ -3,9 +3,10 @@
 The init data has following structure
 
 - [Contentstack Live Preview Utils SDK Configs](#contentstack-live-preview-utils-sdk-configs)
-  - [`init()`](#init)
+  - [`init(config: IConfig)`](#initconfig-iconfig)
     - [`enable`](#enable)
     - [`ssr`](#ssr)
+    - [`runScriptsOnUpdate`](#runscriptsonupdate)
     - [`cleanCslpOnProduction`](#cleancslponproduction)
     - [`stackDetails`](#stackdetails)
       - [`apiKey`](#apikey)
@@ -14,21 +15,20 @@ The init data has following structure
       - [NA config](#na-config)
       - [EU config](#eu-config)
     - [`stackSdk`](#stacksdk)
-  - [`onEntryChange()`](#onentrychange)
-  - [`getGatsbyDataFormat()`](#getgatsbydataformat)
-- [Alternate Method​ for Passing Configuration Details](#alternate-method-for-passing-configuration-details)
+  - [`onEntryChange(callback: () => void)`](#onentrychangecallback---void)
+  - [`getGatsbyDataFormat(sdkQuery: IStackSdk, prefix: string)`](#getgatsbydataformatsdkquery-istacksdk-prefix-string)
 
-## `init()`
+## `init(config: IConfig)`
 
 The `init()` method initializes the Live Preview Utils SDK by setting up the necessary event listeners.
 ​
-The `init()` method accepts one object as configuration. The following explains all the options available for configuration.
+The `init()` method accepts a configuration object as a parameter. The following explains all the options available for the configuration.
 
 ### `enable`
 
 | type    | default | optional |
 | ------- | ------- | -------- |
-| boolean | false   | no       |
+| boolean | true    | yes      |
 
 ​
 The `enable` property determines whether Live Preview communications have been enabled.
@@ -39,13 +39,25 @@ The `enable` property determines whether Live Preview communications have been e
 | ------- | ------- | -------- |
 | boolean | true    | yes      |
 
-The ssr property determines the data update strategy for previewed content whenever you make changes to entry content. It depends on whether your app is [SSR](https://developers.google.com/web/updates/2019/02/rendering-on-the-web#server-rendering) or [CSR](https://developers.google.com/web/updates/2019/02/rendering-on-the-web#csr).
+The ssr property determines the data update strategy for previewed content whenever you make changes to entry content. It depends on whether your app is [SSR](https://www.contentstack.com/docs/developers/set-up-live-preview/set-up-live-preview-for-your-website/#server-side-rendering-ssr-) or [CSR](https://www.contentstack.com/docs/developers/set-up-live-preview/set-up-live-preview-for-your-website/#client-side-rendering-csr-).
 
 If you set the property to `true`, then your app or website is rendered from the server (SSR) and a request will be sent for a fresh HTML page every time you edit content.
 
 When you set the property to `false`, then app is rendered from the client side (CSR). Your framework, e.g. React, will fetch the data and reload the existing page.
 
-> **Note:** For most cases, we would automatically determine the type. This value is given as a manual overdrive.
+> **Note:** For CSR mode, [stackSDK](#stacksdk) is required. Hence, we automatically switch mode to CSR when you pass this object. This config is provided to override the default behavior.
+
+### `runScriptsOnUpdate`
+
+| type    | default | optional |
+| ------- | ------- | -------- |
+| boolean | false   | yes      |
+
+When the live preview runs in SSR mode, we fetch a new page every time you update the entry and update the difference in the DOM. If your webpage relies on scripts as soon as it loads, changes from those scripts will not get reflected on the DOM.
+
+If your page is missing some components, you could set `runScriptsOnUpdate` to `true`, and it will run the scripts every time you make update the entry.
+
+> **Note:** This option will wait for all the scripts to load. This could potentially make your page slow if it depends on a lot of scripts. Use it only if your page is not rendering properly.
 
 ### `cleanCslpOnProduction`
 
@@ -57,7 +69,9 @@ When `enable` is set to `false` and cleanCslpOnProduction is set to `true`, the 
 
 ### `stackDetails`
 
-The `stackDetails` object contains stack related information that helps in redirecting to the corresponding entry whenever you use edit tags to update content in real-time.
+The `stackDetails` object contains stack related information that helps in redirecting to the corresponding entry whenever you use [edit tags](https://www.contentstack.com/docs/developers/set-up-live-preview/set-up-live-preview-for-your-website/#live-edit-tags-for-entries-optional-) within your website.
+
+The `stackDetails` is an optional property if you do not use the live edit tags.
 
 ```ts
 stackDetails {
@@ -70,9 +84,11 @@ stackDetails {
 
 The API key of the concerned stack.
 
-| type   | optional |
-| ------ | -------- |
-| string | false    |
+> **Note:** This is required if you are using the live edit tags.
+
+| type   | optional                             |
+| ------ | ------------------------------------ |
+| string | yes (no, if you are using edit tags) |
 
 #### `environment`
 
@@ -80,7 +96,7 @@ The environment name of the concerned stack.
 
 | type   | optional |
 | ------ | -------- |
-| string | true     |
+| string | yes      |
 
 ### `clientUrlParams`
 
@@ -113,15 +129,15 @@ Pass the `clientUrlParams` object only if you need to modify the URL.
 
 The `stackSdk` object represents the `Stack` class that we get by executing the `Contentstack.Stack()` method. It is required for Client-Side Rendering (CSR) as we need to inject the Live Preview hash and content type UID into the Stack class.
 
-## `onEntryChange()`
+## `onEntryChange(callback: () => void)`
 
 For Client-Side Rendering (CSR), data collection and rendering is handled by the framework itself. Hence, for CSR, we recommend creating a function responsible for fetching and storing data, for example, `updatePage()`, and passing it to the `onEntryChange()` method. This will execute the updatePage() function whenever new data is available.
 ​
 
-> **Note:** This function only works when `ssr` is set to `false`, indicating that the application is of type CSR.
-> ​
-> For example, in a React application, you can create an updateData() function that will fetch data from Contentstack and store it in a React state. Inside the useEffect() function, you need to call the `onEntryChange()` method and pass the updateData() function to it.
-> ​
+> **Note:** This function only works when [`ssr`](#ssr) is set to `false`, indicating that the application is of type [CSR](https://www.contentstack.com/docs/developers/set-up-live-preview/set-up-live-preview-for-your-website/#client-side-rendering-csr-).
+
+For example, in a React application, you can create an updateData() function that will fetch data from Contentstack and store it in a React state. Inside the useEffect() function, you need to call the `onEntryChange()` method and pass the updateData() function to it.
+​
 
 ```js
 // utils.js
@@ -131,7 +147,7 @@ export const onEntryChange = ContentstackLivePreview.onEntryChange;
 
 // Footer.js
 import React from "react";
-import { onEntryChange } from "./utils.js";
+import ContentstackLivePreview from "live-preview-utils";
 
 const Footer = () => {
     const [data, setData] = React.useState({});
@@ -142,14 +158,14 @@ const Footer = () => {
     };
 
     React.useEffect(() => {
-        onEntryChange(updateData);
+        ContentstackLivePreview.onEntryChange(updateData);
     }, []);
 
     return <div>{data.company_name}</div>;
 };
 ```
 
-## `getGatsbyDataFormat()`
+## `getGatsbyDataFormat(sdkQuery: IStackSdk, prefix: string)`
 
 Gatsby primarily fetches data using the [`gatsby-source-contentstack` plugin](https://www.gatsbyjs.com/plugins/gatsby-source-contentstack/). But, Live Preview currently works only on the [contentstack SDK](https://www.npmjs.com/package/contentstack).
 
@@ -188,29 +204,4 @@ setData(formattedData);
     ...
   }
 }
-```
-
-# Alternate Method​ for Passing Configuration Details
-
-For Client Side Rendering, we require the Stack class by default, and it already has some configs related to Live Preview. Hence, the Live Preview Utils SDK has been built to leverage those configurations.
-
-You can directly pass the SDK config inside the `Contentstack.Stack.live_preview` object.
-
-**For example**
-
-```js
-const stack = Contentstack.Stack({
-  ...
-  live_preview: {
-    enable: true,
-    cleanCslpOnProduction: true,
-    ...
-  }
-})
-```
-
-Now, directly pass the stack object defined within the config while initializing the Live Preview Utils SDK:
-
-```js
-ContentstackLivePreview.init(stack);
 ```
