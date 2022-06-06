@@ -55,7 +55,7 @@ When you set the property to `false`, then app is rendered from the client side 
 
 When the live preview runs in SSR mode, we fetch a new page every time you update the entry and update the difference in the DOM. If your webpage relies on scripts as soon as it loads, changes from those scripts will not get reflected on the DOM.
 
-If your page is missing some components, you could set `runScriptsOnUpdate` to `true`, and it will run the scripts every time you make update the entry.
+If your page is missing some components, you could set `runScriptsOnUpdate` to `true` to run the scripts every time you update the entry.
 
 > **Note:** This option will wait for all the scripts to load. This could potentially make your page slow if it depends on a lot of scripts. Use it only if your page is not rendering properly.
 
@@ -71,7 +71,7 @@ When `enable` is set to `false` and cleanCslpOnProduction is set to `true`, the 
 
 The `stackDetails` object contains stack related information that helps in redirecting to the corresponding entry whenever you use [edit tags](https://www.contentstack.com/docs/developers/set-up-live-preview/set-up-live-preview-for-your-website/#live-edit-tags-for-entries-optional-) within your website.
 
-The `stackDetails` is an optional property if you do not use the live edit tags.
+If you do not use live edit tags, then you don't need to use the `stackDetails` property.
 
 ```ts
 stackDetails {
