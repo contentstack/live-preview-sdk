@@ -1,7 +1,7 @@
 {
     "name": "@contentstack/live-preview-utils",
     "version": "1.2.0",
-    "types": "dist/index.d.ts",
+    "types": "dist/src/index.d.ts",
     "description": "Contentstack provides the Live Preview SDK to establish a communication channel between the various Contentstack SDKs and your website, transmitting  live changes to the preview pane.",
     "main": "dist/index.js",
     "files": [
