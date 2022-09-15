@@ -2,6 +2,7 @@ import ContentstackLivePreview from "../contentstack-live-preview-HOC";
 import { PublicLogger } from "../utils/public-logger";
 import { IInitData } from "../utils/types";
 import { sendPostmessageToWindow } from "./utils";
+import packageJson from "../../package.json";
 
 describe("Live preview HOC Callback Pub Sub", () => {
     afterEach(() => {
@@ -190,7 +191,9 @@ describe("Live preview initialization", () => {
 
 describe("Live preview version", () => {
     test("should return current version", () => {
-        expect(ContentstackLivePreview.getSdkVersion()).toBe("1.1.0");
+        expect(ContentstackLivePreview.getSdkVersion()).toBe(
+            packageJson.version
+        );
     });
 });
 
