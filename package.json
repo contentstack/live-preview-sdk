@@ -48,7 +48,7 @@
         "url": "https://github.com/contentstack/live-preview-sdk.git"
     },
     "dependencies": {
-        "just-camel-case": "^4.0.2",
+        "just-camel-case": "^6.1.1",
         "morphdom": "^2.6.1",
         "uuid": "^8.3.2"
     }
