@@ -3,6 +3,7 @@ import { PublicLogger } from "../utils/public-logger";
 import { IInitData } from "../utils/types";
 import { sendPostmessageToWindow } from "./utils";
 import packageJson from "../../package.json";
+const ContentstackLivePreview2 = ContentstackLivePreview;
 
 describe("Live preview HOC Callback Pub Sub", () => {
     afterEach(() => {
@@ -106,18 +107,35 @@ describe("Live preview HOC Callback Pub Sub", () => {
         ContentstackLivePreview.init({ enable: true, ssr: false });
 
         const userDefinedOnChangeFunction = jest.fn();
+        const userDefinedOnChangeFunctionWithSignedTrue = jest.fn();
+        const userDefinedOnChangeFUnctionWithNoInitiator = jest.fn();
 
         ContentstackLivePreview.onEntryChange(userDefinedOnChangeFunction);
+        ContentstackLivePreview.onEntryChange(
+            userDefinedOnChangeFunctionWithSignedTrue,
+            {
+                skipInitRun: true,
+            }
+        );
+        ContentstackLivePreview.onLiveEdit(
+            userDefinedOnChangeFUnctionWithNoInitiator
+        );
 
         await sendPostmessageToWindow("client-data-send", {
             hash: "livePreviewHash1234",
             content_type_uid: "entryContentTypeUid",
         });
 
+        expect(userDefinedOnChangeFunctionWithSignedTrue).toHaveBeenCalledTimes(
+            1
+        );
         // This function will run twice because, first it will be
         // run when it is was added by onEntryChange()
         // and then it will be run when the entry is changed
         expect(userDefinedOnChangeFunction).toHaveBeenCalledTimes(2);
+        expect(
+            userDefinedOnChangeFUnctionWithNoInitiator
+        ).toHaveBeenCalledTimes(1);
     });
     test("should initialize the live preview when live preview was not initialized", async () => {
         const { window } = global;
