@@ -114,7 +114,7 @@ describe("Live preview HOC Callback Pub Sub", () => {
         ContentstackLivePreview.onEntryChange(
             userDefinedOnChangeFunctionWithSignedTrue,
             {
-                skipInitRun: true,
+                skipInitialRender: true,
             }
         );
         ContentstackLivePreview.onLiveEdit(

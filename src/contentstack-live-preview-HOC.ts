@@ -59,14 +59,14 @@ export class ContentstackLivePreview {
     /**
      * @type {function}
      * @param onChangeCallback A function param to fetch the data from contentstack database
-     * @param config An optional object param, pass {skipInitRun:Boolean} to skip init call to onChangeCallback
+     * @param config An optional object param, pass {skipInitialRender:Boolean} to skip init call to onChangeCallback
      * @returns Subscribed Callback UID
      */
     static onEntryChange(
         onChangeCallback: OnEntryChangeCallback,
         config?: OnEntryChangeConfig
     ): OnEntryChangeCallbackUID {
-        const { skipInitRun = false } = config || {};
+        const { skipInitialRender = false } = config || {};
         if (ContentstackLivePreview.userConfig) {
             ContentstackLivePreview.livePreview = new LivePreview(
                 ContentstackLivePreview.userConfig
@@ -77,7 +77,7 @@ export class ContentstackLivePreview {
             ContentstackLivePreview.userConfig = null;
         }
         const callbackUid = ContentstackLivePreview.subscribe(onChangeCallback);
-        if (!skipInitRun) {
+        if (!skipInitialRender) {
             onChangeCallback();
         }
         return callbackUid;
@@ -92,7 +92,7 @@ export class ContentstackLivePreview {
         onChangeCallback: OnEntryChangeCallback
     ): OnEntryChangeCallbackUID {
         return ContentstackLivePreview.onEntryChange(onChangeCallback, {
-            skipInitRun: true,
+            skipInitialRender: true,
         });
     }
 
