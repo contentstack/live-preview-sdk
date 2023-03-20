@@ -1,4 +1,8 @@
-import { createSingularEditButton, createMultipleEditButton } from "./utils";
+import {
+    createSingularEditButton,
+    createMultipleEditButton,
+    addLivePreviewQueryTags,
+} from "./utils";
 import { PublicLogger } from "./utils/public-logger";
 import {
     IConfig,
@@ -102,9 +106,7 @@ export default class LivePreview {
                     allATags.forEach((tag) => {
                         const docOrigin: string = document.location.origin;
                         if (tag.href && tag.href.includes(docOrigin)) {
-                            const newUrl = this.addLivePreviewQueryTags(
-                                tag.href
-                            );
+                            const newUrl = addLivePreviewQueryTags(tag.href);
                             tag.href = newUrl;
                         }
                     });
@@ -120,30 +122,14 @@ export default class LivePreview {
                         targetHref.includes(docOrigin) &&
                         !targetHref.includes("live_preview")
                     ) {
-                        const newUrl = this.addLivePreviewQueryTags(
-                            target.href
-                        );
-                        event.target.href = newUrl;
+                        const newUrl = addLivePreviewQueryTags(target.href);
+                        event.target.href = newUrl || target.href;
                     }
                 });
             }
         } else if (this.config.cleanCslpOnProduction) {
             this.removeDataCslp();
         }
-    }
-
-    private addLivePreviewQueryTags(link: string) {
-        const docUrl = new URL(document.location.href);
-        const newUrl = new URL(link);
-        const livePreviewHash = docUrl.searchParams.get("live_preview");
-        const ctUid = docUrl.searchParams.get("content_type_uid");
-        const entryUid = docUrl.searchParams.get("entry_uid");
-        if (livePreviewHash && ctUid && entryUid) {
-            newUrl.searchParams.set("live_preview", livePreviewHash);
-            newUrl.searchParams.set("content_type_uid", ctUid);
-            newUrl.searchParams.set("entry_uid", entryUid);
-        }
-        return newUrl.href;
     }
 
     private addEditStyleOnHover(e: MouseEvent) {
