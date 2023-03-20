@@ -95,9 +95,55 @@ export default class LivePreview {
             window.addEventListener("message", this.resolveIncomingMessage);
             window.addEventListener("scroll", this.updateTooltipPosition);
             window.addEventListener("mouseover", this.addEditStyleOnHover);
+
+            if (this.config.ssr) {
+                window.addEventListener("load", (e) => {
+                    const allATags = document.querySelectorAll("a");
+                    allATags.forEach((tag) => {
+                        const docOrigin: string = document.location.origin;
+                        if (tag.href && tag.href.includes(docOrigin)) {
+                            const newUrl = this.addLivePreviewQueryTags(
+                                tag.href
+                            );
+                            tag.href = newUrl;
+                        }
+                    });
+                });
+
+                // Setting the query params to all the click events related to current domain
+                window.addEventListener("click", (event: any) => {
+                    const target: any = event.target;
+                    const targetHref: string | any = target.href;
+                    const docOrigin: string = document.location.origin;
+                    if (
+                        targetHref &&
+                        targetHref.includes(docOrigin) &&
+                        !targetHref.includes("live_preview")
+                    ) {
+                        const newUrl = this.addLivePreviewQueryTags(
+                            target.href
+                        );
+                        event.target.href = newUrl;
+                    }
+                });
+            }
         } else if (this.config.cleanCslpOnProduction) {
             this.removeDataCslp();
         }
+    }
+
+    private addLivePreviewQueryTags(link: string) {
+        const docUrl = new URL(document.location.href);
+        const newUrl = new URL(link);
+        const livePreviewHash = docUrl.searchParams.get("live_preview");
+        const ctUid = docUrl.searchParams.get("content_type_uid");
+        const entryUid = docUrl.searchParams.get("entry_uid");
+        if (livePreviewHash && ctUid && entryUid) {
+            newUrl.searchParams.set("live_preview", livePreviewHash);
+            newUrl.searchParams.set("content_type_uid", ctUid);
+            newUrl.searchParams.set("entry_uid", entryUid);
+        }
+        return newUrl.href;
     }
 
     private addEditStyleOnHover(e: MouseEvent) {
@@ -333,6 +379,10 @@ export default class LivePreview {
 
     // Request parent for data sync when document loads
     private requestDataSync() {
+        this.handleUserChange({
+            live_preview: "init", // this is the hash of the live previewd
+        });
+
         // add edit tooltip
         this.createCslpTooltip();
 
