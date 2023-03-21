@@ -132,13 +132,11 @@ The `stackSdk` object represents the `Stack` class that we get by executing the 
 
 ## `onLiveEdit(callback: () => void)`
 
-The `onLiveEdit` method modifies or alters the content inside the Live Preview panel as soon as a change is made in the entry.
+The onLiveEdit method modifies or alters the content inside the Live Preview panel as soon as a change is made in the entry. This method runs a single API request to retrieve draft content from the entry and display the changes in the Live Preview panel.
 
-> **Note:** This function only works when [`ssr`](#ssr) is set to `false`, indicating that the application is of type [CSR](https://www.contentstack.com/docs/developers/set-up-live-preview/set-up-live-preview-for-your-website/#client-side-rendering-csr-).
+> **Note:** The onLiveEdit method will not fetch the published content of the entry and is only applicable in the Client-Side Rendering ([CSR](https://www.contentstack.com/docs/developers/set-up-live-preview/set-up-live-preview-for-your-website/#client-side-rendering-csr-)) mode.
 
 For Client-Side Rendering (CSR), as the framework handles data collection and rendering by itself, we recommend creating a function, say `updateData`, to fetch data and pass it to the `onLiveEdit` method. The `onLiveEdit` method will execute the `updateData` function whenever new data is available. 
-​
-The `onLiveEdit` method runs a single API request to retrieve draft content from the entry and display the changes in the Live Preview panel. This method will not fetch the published content of the entry.
 
 For example, in a React application, you can create an `updateData` function that will fetch data from Contentstack and store it in a React state. Inside the `useEffect` function, you need to call the `onLiveEdit` method and pass the `updateData` function to it.
 ​
@@ -205,7 +203,7 @@ const Footer = () => {
 };
 ```
 
-> **Note:** To make the `onEntryChange` method work similarly to the `onLiveEdit` method, you can utilize the optional parameter `skipInitialRender:true`. This will enable the function to only call the Contentstack API once.
+> **Note:** To make the `onEntryChange` method work similarly to the [`onLiveEdit`](#onliveeditcallback---void) method, you can utilize the optional parameter `skipInitialRender:true`. This will enable the function to only call the Contentstack API once.
 >
 >For example:
 >```js
