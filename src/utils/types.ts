@@ -101,4 +101,8 @@ export declare interface IDocWithScriptMessage
 
 export declare type OnEntryChangeCallback = () => void;
 
+export declare type OnEntryChangeConfig = {
+    skipInitialRender?: boolean;
+};
+
 export declare type OnEntryChangeCallbackUID = string;

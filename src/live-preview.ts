@@ -1,4 +1,8 @@
-import { createSingularEditButton, createMultipleEditButton } from "./utils";
+import {
+    createSingularEditButton,
+    createMultipleEditButton,
+    addLivePreviewQueryTags,
+} from "./utils";
 import { PublicLogger } from "./utils/public-logger";
 import {
     IConfig,
@@ -95,6 +99,34 @@ export default class LivePreview {
             window.addEventListener("message", this.resolveIncomingMessage);
             window.addEventListener("scroll", this.updateTooltipPosition);
             window.addEventListener("mouseover", this.addEditStyleOnHover);
+
+            if (this.config.ssr) {
+                window.addEventListener("load", (e) => {
+                    const allATags = document.querySelectorAll("a");
+                    allATags.forEach((tag) => {
+                        const docOrigin: string = document.location.origin;
+                        if (tag.href && tag.href.includes(docOrigin)) {
+                            const newUrl = addLivePreviewQueryTags(tag.href);
+                            tag.href = newUrl;
+                        }
+                    });
+                });
+
+                // Setting the query params to all the click events related to current domain
+                window.addEventListener("click", (event: any) => {
+                    const target: any = event.target;
+                    const targetHref: string | any = target.href;
+                    const docOrigin: string = document.location.origin;
+                    if (
+                        targetHref &&
+                        targetHref.includes(docOrigin) &&
+                        !targetHref.includes("live_preview")
+                    ) {
+                        const newUrl = addLivePreviewQueryTags(target.href);
+                        event.target.href = newUrl || target.href;
+                    }
+                });
+            }
         } else if (this.config.cleanCslpOnProduction) {
             this.removeDataCslp();
         }
