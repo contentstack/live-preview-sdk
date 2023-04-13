@@ -342,12 +342,7 @@ export default class LivePreview {
     }
 
     private createCslpTooltip = () => {
-        const cslpNodes = document.querySelectorAll("[data-cslp]");
-        if (
-            !document.getElementById("cslp-tooltip") &&
-            cslpNodes &&
-            cslpNodes.length
-        ) {
+        if (!document.getElementById("cslp-tooltip")) {
             const tooltip = document.createElement("button");
             tooltip.classList.add("cslp-tooltip");
             tooltip.setAttribute("data-test-id", "cs-cslp-tooltip");
