@@ -150,6 +150,7 @@ describe("cslp tooltip", () => {
             enable: true,
             stackDetails: {
                 apiKey: "sample-api-key",
+                environment: "sample-environment",
             },
         });
 
@@ -175,7 +176,7 @@ describe("cslp tooltip", () => {
         singularEditButton?.click();
 
         const expectedRedirectUrl =
-            "https://app.contentstack.com/#!/stack/sample-api-key/content-type/content-type-1/en-us/entry/entry-uid-1/edit?preview-field=field-title&preview-url=http%3A%2F%2Flocalhost";
+            "https://app.contentstack.com/#!/stack/sample-api-key/content-type/content-type-1/en-us/entry/entry-uid-1/edit?preview-field=field-title&preview-locale=en-us&preview-environment=sample-environment";
 
         expect(window.open).toHaveBeenCalledWith(expectedRedirectUrl, "_blank");
 
