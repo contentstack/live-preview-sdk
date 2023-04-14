@@ -184,9 +184,22 @@ export default class LivePreview {
                 })`;
         }
 
+        if (!this.config.stackDetails.environment) {
+            throw `To use edit tags, you must provide the preview environment. Specify the preview environment while initializing the Live Preview SDK.
+
+                ContentstackLivePreview.init({
+                    ...,
+                    stackDetails: {
+                        environment: "Your-environment"
+                    },
+                    ...
+                })`;
+        }
+
         const protocol = String(this.config.clientUrlParams.protocol);
         const host = String(this.config.clientUrlParams.host);
         const port = String(this.config.clientUrlParams.port);
+        const environment = String(this.config.stackDetails.environment);
 
         const urlHash = `!/stack/${
             this.config.stackDetails.apiKey
@@ -198,7 +211,8 @@ export default class LivePreview {
         url.port = port;
         url.hash = urlHash;
         url.searchParams.append("preview-field", preview_field);
-        url.searchParams.append("preview-url", window.location.origin);
+        url.searchParams.append("preview-locale", locale ?? "en-us");
+        url.searchParams.append("preview-environment", environment);
 
         return `${url.origin}/${url.hash}${url.search}`;
     }
