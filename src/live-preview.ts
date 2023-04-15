@@ -2,6 +2,7 @@ import {
     createSingularEditButton,
     createMultipleEditButton,
     addLivePreviewQueryTags,
+    shouldRenderEditButton,
 } from "./utils";
 import { PublicLogger } from "./utils/public-logger";
 import {
@@ -25,6 +26,7 @@ export default class LivePreview {
         enable: true,
         runScriptsOnUpdate: false,
         cleanCslpOnProduction: true,
+        renderCslpButtonsByDefault: true,
 
         stackDetails: {
             apiKey: "",
@@ -98,7 +100,12 @@ export default class LivePreview {
             }
             window.addEventListener("message", this.resolveIncomingMessage);
             window.addEventListener("scroll", this.updateTooltipPosition);
-            window.addEventListener("mouseover", this.addEditStyleOnHover);
+            // render the hover outline only when edit button enable
+            if (
+                shouldRenderEditButton(this.config.renderCslpButtonsByDefault)
+            ) {
+                window.addEventListener("mouseover", this.addEditStyleOnHover);
+            }
 
             if (this.config.ssr) {
                 window.addEventListener("load", (e) => {
@@ -342,7 +349,7 @@ export default class LivePreview {
     }
 
     private createCslpTooltip = () => {
-        if (!document.getElementById("cslp-tooltip")) {
+        if (shouldRenderEditButton(this.config.renderCslpButtonsByDefault)) {
             const tooltip = document.createElement("button");
             tooltip.classList.add("cslp-tooltip");
             tooltip.setAttribute("data-test-id", "cs-cslp-tooltip");

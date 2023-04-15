@@ -72,6 +72,10 @@ export const handleInitData = (
             livePreviewObject.cleanCslpOnProduction ??
             config.cleanCslpOnProduction;
 
+        config.renderCslpButtonsByDefault =
+            livePreviewObject.renderCslpButtonByDefault ??
+            config.renderCslpButtonsByDefault;
+
         config.stackSdk = initData;
 
         // stack details

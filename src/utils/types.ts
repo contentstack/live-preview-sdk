@@ -44,6 +44,7 @@ export declare interface IConfig {
     stackSdk: IStackSdk;
     onChange: () => void;
     runScriptsOnUpdate: boolean;
+    renderCslpButtonsByDefault: boolean;
 }
 
 export declare interface IInitData {

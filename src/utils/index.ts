@@ -1,3 +1,5 @@
+import { PublicLogger } from "./public-logger";
+
 export function hasWindow(): boolean {
     return typeof window !== "undefined";
 }
@@ -85,16 +87,47 @@ export const createMultipleEditButton = (
 };
 
 export function addLivePreviewQueryTags(link: string): string {
-    const docUrl: URL = new URL(document.location.href);
-    const newUrl: URL = new URL(link);
-    const livePreviewHash: string | null =
-        docUrl.searchParams.get("live_preview");
-    const ctUid: string | null = docUrl.searchParams.get("content_type_uid");
-    const entryUid: string | null = docUrl.searchParams.get("entry_uid");
-    if (livePreviewHash && ctUid && entryUid) {
-        newUrl.searchParams.set("live_preview", livePreviewHash);
-        newUrl.searchParams.set("content_type_uid", ctUid);
-        newUrl.searchParams.set("entry_uid", entryUid);
+    try {
+        const docUrl: URL = new URL(document.location.href);
+        const newUrl: URL = new URL(link);
+        const livePreviewHash: string | null =
+            docUrl.searchParams.get("live_preview");
+        const ctUid: string | null =
+            docUrl.searchParams.get("content_type_uid");
+        const entryUid: string | null = docUrl.searchParams.get("entry_uid");
+        if (livePreviewHash && ctUid && entryUid) {
+            newUrl.searchParams.set("live_preview", livePreviewHash);
+            newUrl.searchParams.set("content_type_uid", ctUid);
+            newUrl.searchParams.set("entry_uid", entryUid);
+        }
+        return newUrl.href;
+    } catch (error) {
+        PublicLogger.error("Error while adding live preview to URL");
+        return link;
     }
-    return newUrl.href;
+}
+
+function inIframe() {
+    return window.location !== window.parent.location;
+}
+
+export function shouldRenderEditButton(
+    renderCslpButtonByDefault: boolean
+): boolean {
+    let cslpEditButtonEnabled = renderCslpButtonByDefault;
+    try {
+        const currentLocation = new URL(window.location.href);
+        const cslpButtonQueryValue =
+            currentLocation.searchParams.get("cslp-buttons");
+        if (cslpButtonQueryValue)
+            cslpEditButtonEnabled =
+                cslpButtonQueryValue !== "false" ? true : false;
+    } catch (error) {
+        PublicLogger.error(error);
+    }
+    // Priority list => 1. Inside iframe or not  2. cslpEditButton query value  3. renderCslpButtonByDefault value selected by user
+    return (
+        !document.getElementById("cslp-tooltip") &&
+        (inIframe() || cslpEditButtonEnabled)
+    );
 }
