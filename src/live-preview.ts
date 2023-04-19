@@ -349,7 +349,10 @@ export default class LivePreview {
     }
 
     private createCslpTooltip = () => {
-        if (shouldRenderEditButton(this.config.renderCslpButtonsByDefault)) {
+        if (
+            !document.getElementById("cslp-tooltip") &&
+            shouldRenderEditButton(this.config.renderCslpButtonsByDefault)
+        ) {
             const tooltip = document.createElement("button");
             tooltip.classList.add("cslp-tooltip");
             tooltip.setAttribute("data-test-id", "cs-cslp-tooltip");

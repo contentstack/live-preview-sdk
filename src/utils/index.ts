@@ -112,9 +112,9 @@ function inIframe() {
 }
 
 export function shouldRenderEditButton(
-    renderCslpButtonByDefault: boolean
+    renderCslpButtonsByDefault: boolean
 ): boolean {
-    let cslpEditButtonEnabled = renderCslpButtonByDefault;
+    let cslpEditButtonEnabled = renderCslpButtonsByDefault;
     try {
         const currentLocation = new URL(window.location.href);
         const cslpButtonQueryValue =
@@ -126,8 +126,5 @@ export function shouldRenderEditButton(
         PublicLogger.error(error);
     }
     // Priority list => 1. Inside iframe or not  2. cslpEditButton query value  3. renderCslpButtonByDefault value selected by user
-    return (
-        !document.getElementById("cslp-tooltip") &&
-        (inIframe() || cslpEditButtonEnabled)
-    );
+    return inIframe() || cslpEditButtonEnabled;
 }

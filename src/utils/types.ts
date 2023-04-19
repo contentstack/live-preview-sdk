@@ -52,6 +52,7 @@ export declare interface IInitData {
     runScriptsOnUpdate: boolean;
     enable: boolean;
     cleanCslpOnProduction: boolean;
+    renderCslpButtonsByDefault: boolean;
     stackDetails: Partial<IInitStackDetails>;
     clientUrlParams: Partial<Omit<IClientUrlParams, "url">>;
     stackSdk: IStackSdk;

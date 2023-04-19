@@ -4,6 +4,7 @@ export const userInitData: IInitData = {
     ssr: true,
     enable: true,
     cleanCslpOnProduction: true,
+    renderCslpButtonsByDefault: true,
 
     stackDetails: {
         apiKey: "",

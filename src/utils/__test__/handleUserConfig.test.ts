@@ -44,6 +44,7 @@ describe("handleInitData()", () => {
             enable: false,
             cleanCslpOnProduction: true,
             runScriptsOnUpdate: false,
+            renderCslpButtonsByDefault: true,
 
             stackDetails: {
                 apiKey: "",
@@ -218,6 +219,7 @@ describe("handleClientUrlParams()", () => {
             enable: true,
             cleanCslpOnProduction: true,
             runScriptsOnUpdate: false,
+            renderCslpButtonsByDefault: true,
 
             stackDetails: {
                 apiKey: "",
