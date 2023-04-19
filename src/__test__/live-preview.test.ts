@@ -214,6 +214,42 @@ describe("cslp tooltip", () => {
         expect(sanitizedErrorMessage).toEqual(expectedErrorLog);
 
         descPara?.dispatchEvent(hoverEvent);
+        spiedConsole.mockReset();
+    });
+
+    test("should throw error when edit tag is used without environment", () => {
+        new LivePreview({
+            enable: true,
+            stackDetails: {
+                apiKey: "Your-api-key",
+            },
+        });
+
+        const singularEditButton = document.querySelector(
+            "[data-test-id='cslp-singular-edit-button']"
+        ) as HTMLDivElement;
+
+        const titlePara = document.querySelector("[data-test-id='title-para']");
+        const descPara = document.querySelector("[data-test-id='desc-para']");
+
+        const spiedConsole = jest.spyOn(PublicLogger, "error");
+
+        const hoverEvent = new CustomEvent("mouseover", {
+            bubbles: true,
+        });
+
+        titlePara?.dispatchEvent(hoverEvent);
+
+        singularEditButton?.click();
+
+        const outputErrorLog = (spiedConsole.mock.calls[0] as any[])[0];
+        const sanitizedErrorMessage =
+            convertObjectToMinifiedString(outputErrorLog);
+        const expectedErrorLog =
+            "To use edit tags, you must provide the preview environment. Specify the preview environment while initializing the Live Preview SDK.  ContentstackLivePreview.init({  ...,  stackDetails: {  environment: 'Your-environment'  },  ...  })";
+        expect(sanitizedErrorMessage).toEqual(expectedErrorLog);
+
+        descPara?.dispatchEvent(hoverEvent);
     });
 
     test("should remove data-cslp tag when cleanCslpOnProduction is true", () => {

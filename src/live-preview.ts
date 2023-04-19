@@ -190,7 +190,7 @@ export default class LivePreview {
                 ContentstackLivePreview.init({
                     ...,
                     stackDetails: {
-                        environment: "Your-environment"
+                        environment: 'Your-environment'
                     },
                     ...
                 })`;
