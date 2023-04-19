@@ -24,6 +24,7 @@ button#cslp-tooltip {
     align-items: center;
     box-shadow: 0px 8px 20px 0px #2222221a;
     box-sizing: border-box;
+    top: -100%;
 }
 
 button#cslp-tooltip div {
