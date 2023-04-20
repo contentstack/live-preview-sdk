@@ -1,4 +1,5 @@
 import { PublicLogger } from "./public-logger";
+import { IConfigEditButton } from "./types";
 
 export function hasWindow(): boolean {
     return typeof window !== "undefined";
@@ -111,20 +112,41 @@ function inIframe() {
     return window.location !== window.parent.location;
 }
 
-export function shouldRenderEditButton(
-    renderCslpButtonsByDefault: boolean
-): boolean {
-    let cslpEditButtonEnabled = renderCslpButtonsByDefault;
+export function shouldRenderEditButton(editButton: IConfigEditButton): boolean {
+    if (!editButton.enable) return false;
+
+    // return boolean in case of cslp-buttons query added in url
     try {
         const currentLocation = new URL(window.location.href);
         const cslpButtonQueryValue =
             currentLocation.searchParams.get("cslp-buttons");
         if (cslpButtonQueryValue)
-            cslpEditButtonEnabled =
-                cslpButtonQueryValue !== "false" ? true : false;
+            return cslpButtonQueryValue === "false" ? false : true;
     } catch (error) {
         PublicLogger.error(error);
     }
-    // Priority list => 1. Inside iframe or not  2. cslpEditButton query value  3. renderCslpButtonByDefault value selected by user
-    return inIframe() || cslpEditButtonEnabled;
+
+    // case if inside live preview
+    if (
+        inIframe() &&
+        editButton.exclude?.find(
+            (exclude) => exclude === "insideLivePreviewPanel"
+        )
+    ) {
+        return false;
+    } else if (inIframe()) {
+        return true;
+    }
+
+    // case outside live preview
+    if (
+        editButton.exclude?.find(
+            (exclude) => exclude === "outsideLivePreviewPanel"
+        )
+    ) {
+        return false;
+    }
+
+    // Priority list => 1. cslpEditButton query value 2.  Inside live preview  3. renderCslpButtonByDefault value selected by user
+    return true;
 }

@@ -44,7 +44,12 @@ export declare interface IConfig {
     stackSdk: IStackSdk;
     onChange: () => void;
     runScriptsOnUpdate: boolean;
-    renderCslpButtonsByDefault: boolean;
+    editButton: IConfigEditButton;
+}
+
+export declare interface IConfigEditButton {
+    enable: boolean;
+    exclude?: ("insideLivePreviewPanel" | "outsideLivePreviewPanel")[];
 }
 
 export declare interface IInitData {
@@ -52,10 +57,10 @@ export declare interface IInitData {
     runScriptsOnUpdate: boolean;
     enable: boolean;
     cleanCslpOnProduction: boolean;
-    renderCslpButtonsByDefault: boolean;
     stackDetails: Partial<IInitStackDetails>;
     clientUrlParams: Partial<Omit<IClientUrlParams, "url">>;
     stackSdk: IStackSdk;
+    editButton: IConfigEditButton;
 }
 
 // Post message types
