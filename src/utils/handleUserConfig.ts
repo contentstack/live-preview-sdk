@@ -1,3 +1,4 @@
+import { shouldRenderEditButton } from ".";
 import { PublicLogger } from "./public-logger";
 import { IClientUrlParams, IConfig, IInitData, IStackSdk } from "./types";
 
@@ -72,6 +73,16 @@ export const handleInitData = (
             livePreviewObject.cleanCslpOnProduction ??
             config.cleanCslpOnProduction;
 
+        config.editButton = {
+            enable: shouldRenderEditButton(
+                livePreviewObject.editButton ?? config.editButton
+            ),
+            exclude:
+                livePreviewObject.editButton?.exclude ??
+                config.editButton.exclude ??
+                [],
+        };
+
         config.stackSdk = initData;
 
         // stack details
@@ -114,6 +125,19 @@ export const handleInitData = (
             initData.cleanCslpOnProduction ??
             stackSdk.live_preview?.cleanCslpOnProduction ??
             config.cleanCslpOnProduction;
+
+        config.editButton = {
+            enable: shouldRenderEditButton(
+                initData.editButton ??
+                    stackSdk.live_preview?.editButton ??
+                    config.editButton
+            ),
+            exclude:
+                initData.editButton?.exclude ??
+                stackSdk.live_preview?.exclude ??
+                config.editButton.exclude ??
+                [],
+        };
 
         config.stackDetails.apiKey =
             initData.stackDetails?.apiKey ??

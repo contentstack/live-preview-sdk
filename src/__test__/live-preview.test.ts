@@ -456,6 +456,120 @@ describe("cslp tooltip", () => {
         locationSpy.mockRestore();
         parentLocationSpy.mockRestore();
     });
+
+    test("should disable the edit button when the editButton config is disabled", async () => {
+        new LivePreview({
+            enable: true,
+            editButton: {
+                enable: false,
+            },
+        });
+
+        const tooltip = document.querySelector(
+            "[data-test-id='cs-cslp-tooltip']"
+        );
+
+        const titlePara = document.querySelector("[data-test-id='title-para']");
+        const descPara = document.querySelector("[data-test-id='desc-para']");
+
+        expect(tooltip?.getAttribute("current-data-cslp")).toBe(undefined);
+
+        const hoverEvent = new CustomEvent("mouseover", {
+            bubbles: true,
+        });
+
+        titlePara?.dispatchEvent(hoverEvent);
+
+        expect(tooltip?.getAttribute("current-data-cslp")).toBe(undefined);
+
+        descPara?.dispatchEvent(hoverEvent);
+
+        expect(tooltip?.getAttribute("current-data-cslp")).toBe(undefined);
+    });
+
+    test("should disable the edit button when the editButton config is disabled for outside live preview panel", async () => {
+        new LivePreview({
+            enable: true,
+            editButton: {
+                enable: true,
+                exclude: ["outsideLivePreviewPanel"],
+            },
+        });
+
+        const tooltip = document.querySelector(
+            "[data-test-id='cs-cslp-tooltip']"
+        );
+
+        const titlePara = document.querySelector("[data-test-id='title-para']");
+        const descPara = document.querySelector("[data-test-id='desc-para']");
+
+        expect(tooltip?.getAttribute("current-data-cslp")).toBe(undefined);
+
+        const hoverEvent = new CustomEvent("mouseover", {
+            bubbles: true,
+        });
+
+        titlePara?.dispatchEvent(hoverEvent);
+
+        expect(tooltip?.getAttribute("current-data-cslp")).toBe(undefined);
+
+        descPara?.dispatchEvent(hoverEvent);
+
+        expect(tooltip?.getAttribute("current-data-cslp")).toBe(undefined);
+    });
+
+    test("should disable the edit button when the editButton config is disabled for inside live preview panel", async () => {
+        const { location } = window;
+
+        const locationSpy = jest
+            .spyOn(window, "location", "get")
+            .mockImplementation(() => {
+                const mockLocation = JSON.parse(JSON.stringify(location));
+                mockLocation.href = "https://example.com";
+                return mockLocation;
+            });
+
+        const parentLocationSpy = jest
+            .spyOn(window.parent, "location", "get")
+            .mockImplementation(() => {
+                const mockLocation = JSON.parse(JSON.stringify(location));
+                mockLocation.href = "https://example1.com";
+
+                return mockLocation;
+            });
+
+        new LivePreview({
+            enable: true,
+            editButton: {
+                enable: true,
+                exclude: ["insideLivePreviewPanel"],
+            },
+        });
+
+        const tooltip = document.querySelector(
+            "[data-test-id='cs-cslp-tooltip']"
+        );
+
+        const titlePara = document.querySelector("[data-test-id='title-para']");
+        const descPara = document.querySelector("[data-test-id='desc-para']");
+
+        expect(tooltip?.getAttribute("current-data-cslp")).toBe(undefined);
+
+        const hoverEvent = new CustomEvent("mouseover", {
+            bubbles: true,
+        });
+
+        titlePara?.dispatchEvent(hoverEvent);
+
+        expect(tooltip?.getAttribute("current-data-cslp")).toBe(undefined);
+
+        descPara?.dispatchEvent(hoverEvent);
+
+        expect(tooltip?.getAttribute("current-data-cslp")).toBe(undefined);
+
+        locationSpy.mockRestore();
+        parentLocationSpy.mockRestore();
+    });
 });
 
 describe("debug module", () => {

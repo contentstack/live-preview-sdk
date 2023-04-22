@@ -44,6 +44,12 @@ export declare interface IConfig {
     stackSdk: IStackSdk;
     onChange: () => void;
     runScriptsOnUpdate: boolean;
+    editButton: IConfigEditButton;
+}
+
+export declare interface IConfigEditButton {
+    enable: boolean;
+    exclude?: ("insideLivePreviewPanel" | "outsideLivePreviewPanel")[];
 }
 
 export declare interface IInitData {
@@ -54,6 +60,7 @@ export declare interface IInitData {
     stackDetails: Partial<IInitStackDetails>;
     clientUrlParams: Partial<Omit<IClientUrlParams, "url">>;
     stackSdk: IStackSdk;
+    editButton: IConfigEditButton;
 }
 
 // Post message types

@@ -44,6 +44,10 @@ describe("handleInitData()", () => {
             enable: false,
             cleanCslpOnProduction: true,
             runScriptsOnUpdate: false,
+            editButton: {
+                enable: true,
+                exclude: [],
+            },
 
             stackDetails: {
                 apiKey: "",
@@ -218,6 +222,10 @@ describe("handleClientUrlParams()", () => {
             enable: true,
             cleanCslpOnProduction: true,
             runScriptsOnUpdate: false,
+            editButton: {
+                enable: true,
+                exclude: [],
+            },
 
             stackDetails: {
                 apiKey: "",

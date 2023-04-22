@@ -4,6 +4,10 @@ export const userInitData: IInitData = {
     ssr: true,
     enable: true,
     cleanCslpOnProduction: true,
+    editButton: {
+        enable: true,
+        exclude: [],
+    },
 
     stackDetails: {
         apiKey: "",
