@@ -11,4 +11,6 @@ module.exports = {
         "^.+\\.(ts|tsx)$": "ts-jest",
     },
     coveragePathIgnorePatterns: ["__test__/"],
+    "collectCoverage": true,
+    "coverageReporters": ["html"],
 };
