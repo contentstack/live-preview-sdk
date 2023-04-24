@@ -50,6 +50,17 @@ export declare interface IConfig {
 export declare interface IConfigEditButton {
     enable: boolean;
     exclude?: ("insideLivePreviewPanel" | "outsideLivePreviewPanel")[];
+    position?:
+        | "top"
+        | "bottom"
+        | "left"
+        | "right"
+        | "top-left"
+        | "top-right"
+        | "top-center"
+        | "bottom-left"
+        | "bottom-right"
+        | "bottom-center";
 }
 
 export declare interface IInitData {
@@ -102,6 +113,11 @@ export declare interface IDocWithScriptMessage
     data: {
         body: string;
     };
+}
+
+export declare interface IEditButtonPosition {
+    upperBoundOfTooltip: number;
+    leftBoundOfTooltip: number;
 }
 
 // end of Post message types

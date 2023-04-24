@@ -3,10 +3,12 @@ import {
     createMultipleEditButton,
     addLivePreviewQueryTags,
     shouldRenderEditButton,
+    getEditButtonPosition,
 } from "./utils";
 import { PublicLogger } from "./utils/public-logger";
 import {
     IConfig,
+    IEditButtonPosition,
     IEditEntrySearchParams,
     IInitData,
     ILivePreviewReceivePostMessages,
@@ -29,6 +31,7 @@ export default class LivePreview {
         editButton: {
             enable: true,
             exclude: [],
+            position: "top",
         },
         stackDetails: {
             apiKey: "",
@@ -437,8 +440,14 @@ export default class LivePreview {
             this.tooltip.parentElement?.getBoundingClientRect();
 
         if (currentRectOfElement && currentRectOfParentOfElement) {
-            let upperBoundOfTooltip = currentRectOfElement.top - 40;
-            const left = currentRectOfElement.left - 5;
+            // eslint-disable-next-line prefer-const
+            let {
+                upperBoundOfTooltip,
+                leftBoundOfTooltip,
+            }: IEditButtonPosition = getEditButtonPosition(
+                this.currentElementBesideTooltip,
+                this.config.editButton.position
+            );
 
             // if scrolled and element is still visible, make sure tooltip is also visible
             if (upperBoundOfTooltip < 0) {
@@ -450,7 +459,7 @@ export default class LivePreview {
             this.tooltip.style.top = upperBoundOfTooltip + "px";
             this.tooltip.style.zIndex =
                 this.currentElementBesideTooltip.style.zIndex || "200";
-            this.tooltip.style.left = left + "px";
+            this.tooltip.style.left = leftBoundOfTooltip + "px";
 
             if (this.tooltipChild.singular && this.tooltipChild.multiple) {
                 if (this.currentElementBesideTooltip.hasAttribute("href")) {
@@ -465,7 +474,6 @@ export default class LivePreview {
                     this.tooltipCurrentChild = "singular";
                 }
             }
-
             return true;
         }
 
