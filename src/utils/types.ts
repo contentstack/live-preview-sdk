@@ -49,7 +49,7 @@ export declare interface IConfig {
 
 export declare interface IConfigEditButton {
     enable: boolean;
-    exclude?: ("insideLivePreviewPanel" | "outsideLivePreviewPanel")[];
+    exclude?: ("insideLivePreviewPortal" | "outsideLivePreviewPortal")[];
     position?:
         | "top"
         | "bottom"

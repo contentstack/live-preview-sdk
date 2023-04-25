@@ -130,7 +130,7 @@ export function shouldRenderEditButton(editButton: IConfigEditButton): boolean {
     if (
         inIframe() &&
         editButton.exclude?.find(
-            (exclude) => exclude === "insideLivePreviewPanel"
+            (exclude) => exclude === "insideLivePreviewPortal"
         )
     ) {
         return false;
@@ -141,7 +141,7 @@ export function shouldRenderEditButton(editButton: IConfigEditButton): boolean {
     // case outside live preview
     if (
         editButton.exclude?.find(
-            (exclude) => exclude === "outsideLivePreviewPanel"
+            (exclude) => exclude === "outsideLivePreviewPortal"
         )
     ) {
         return false;
