@@ -48,18 +48,6 @@ When you set the property to `false`, then app is rendered from the client side 
 
 > **Note:** For CSR mode, [stackSDK](#stacksdk) is required. Hence, we automatically switch mode to CSR when you pass this object. This config is provided to override the default behavior.
 
-### `runScriptsOnUpdate`
-
-| type    | default | optional |
-| ------- | ------- | -------- |
-| boolean | false   | yes      |
-
-When the live preview runs in SSR mode, we fetch a new page every time you update the entry and update the difference in the DOM. If your webpage relies on scripts as soon as it loads, changes from those scripts will not get reflected on the DOM.
-
-If your page is missing some components, you could set `runScriptsOnUpdate` to `true` to run the scripts every time you update the entry.
-
-> **Note:** This option will wait for all the scripts to load. This could potentially make your page slow if it depends on a lot of scripts. Use it only if your page is not rendering properly.
-
 ### `cleanCslpOnProduction`
 
 | type    | default | optional |
@@ -67,6 +55,16 @@ If your page is missing some components, you could set `runScriptsOnUpdate` to `
 | boolean | true    | yes      |
 
 When `enable` is set to `false` and cleanCslpOnProduction is set to `true`, the `data-cslp` attributes are removed from the website.
+
+### `renderCslpButtonsByDefault`
+
+| type    | default | optional |
+| ------- | ------- | -------- |
+| boolean | true    | yes      |
+
+When renderCslpButtonsByDefault is set to `false`, the live preview buttons will not be render outside the live preview panel.
+
+> **Note:** You can also disable the live preview buttons by setting `cslp-buttons` query parameter to `false` in your website URL.
 
 ### `stackDetails`
 
