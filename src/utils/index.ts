@@ -120,7 +120,7 @@ export function shouldRenderEditButton(editButton: IConfigEditButton): boolean {
         const currentLocation = new URL(window.location.href);
         const cslpButtonQueryValue =
             currentLocation.searchParams.get("cslp-buttons");
-        if (cslpButtonQueryValue)
+        if (cslpButtonQueryValue !== null)
             return cslpButtonQueryValue === "false" ? false : true;
     } catch (error) {
         PublicLogger.error(error);
@@ -204,7 +204,13 @@ function calculateEditButtonPosition(
                 editButtonPosition.leftBoundOfTooltip =
                     currentRectOfElement.right + 5;
                 break;
-            case "bottom" || "bottom-left":
+            case "bottom":
+                editButtonPosition.upperBoundOfTooltip =
+                    currentRectOfElement.bottom + 5;
+                editButtonPosition.leftBoundOfTooltip =
+                    currentRectOfElement.left - 5;
+                break;
+            case "bottom-left":
                 editButtonPosition.upperBoundOfTooltip =
                     currentRectOfElement.bottom + 5;
                 editButtonPosition.leftBoundOfTooltip =
