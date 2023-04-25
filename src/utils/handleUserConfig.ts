@@ -77,10 +77,12 @@ export const handleInitData = (
             enable: shouldRenderEditButton(
                 livePreviewObject.editButton ?? config.editButton
             ),
+            // added extra check if exclude data passed by user is array or not
             exclude:
-                livePreviewObject.editButton?.exclude ??
-                config.editButton.exclude ??
-                [],
+                Array.isArray(livePreviewObject.editButton?.exclude) &&
+                livePreviewObject.editButton?.exclude
+                    ? livePreviewObject.editButton?.exclude
+                    : config.editButton.exclude ?? [],
             position:
                 livePreviewObject.editButton?.position ??
                 config.editButton.position ??
@@ -136,11 +138,15 @@ export const handleInitData = (
                     stackSdk.live_preview?.editButton ??
                     config.editButton
             ),
+            // added extra check if exclude data passed by user is array or not
             exclude:
-                initData.editButton?.exclude ??
-                stackSdk.live_preview?.exclude ??
-                config.editButton.exclude ??
-                [],
+                Array.isArray(initData.editButton?.exclude) &&
+                initData.editButton?.exclude
+                    ? initData.editButton?.exclude
+                    : Array.isArray(stackSdk.live_preview?.exclude) &&
+                      stackSdk.live_preview?.exclude
+                    ? stackSdk.live_preview?.exclude
+                    : config.editButton.exclude ?? [],
             position:
                 initData.editButton?.position ??
                 stackSdk.live_preview?.position ??
