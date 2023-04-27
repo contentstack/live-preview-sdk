@@ -83,6 +83,10 @@ export const handleInitData = (
                 livePreviewObject.editButton?.exclude
                     ? livePreviewObject.editButton?.exclude
                     : config.editButton.exclude ?? [],
+            position:
+                livePreviewObject.editButton?.position ??
+                config.editButton.position ??
+                "top",
         };
 
         config.stackSdk = initData;
@@ -143,6 +147,11 @@ export const handleInitData = (
                       stackSdk.live_preview?.exclude
                     ? stackSdk.live_preview?.exclude
                     : config.editButton.exclude ?? [],
+            position:
+                initData.editButton?.position ??
+                stackSdk.live_preview?.position ??
+                config.editButton.position ??
+                "top",
         };
 
         config.stackDetails.apiKey =

@@ -492,7 +492,7 @@ describe("cslp tooltip", () => {
             enable: true,
             editButton: {
                 enable: true,
-                exclude: ["outsideLivePreviewPanel"],
+                exclude: ["outsideLivePreviewPortal"],
             },
         });
 
@@ -542,7 +542,7 @@ describe("cslp tooltip", () => {
             enable: true,
             editButton: {
                 enable: true,
-                exclude: ["insideLivePreviewPanel"],
+                exclude: ["insideLivePreviewPortal"],
             },
         });
 

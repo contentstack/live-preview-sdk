@@ -1,5 +1,5 @@
 import { PublicLogger } from "./public-logger";
-import { IConfigEditButton } from "./types";
+import { IConfigEditButton, IEditButtonPosition } from "./types";
 
 export function hasWindow(): boolean {
     return typeof window !== "undefined";
@@ -120,7 +120,7 @@ export function shouldRenderEditButton(editButton: IConfigEditButton): boolean {
         const currentLocation = new URL(window.location.href);
         const cslpButtonQueryValue =
             currentLocation.searchParams.get("cslp-buttons");
-        if (cslpButtonQueryValue)
+        if (cslpButtonQueryValue !== null)
             return cslpButtonQueryValue === "false" ? false : true;
     } catch (error) {
         PublicLogger.error(error);
@@ -130,7 +130,7 @@ export function shouldRenderEditButton(editButton: IConfigEditButton): boolean {
     if (
         inIframe() &&
         editButton.exclude?.find(
-            (exclude) => exclude === "insideLivePreviewPanel"
+            (exclude) => exclude === "insideLivePreviewPortal"
         )
     ) {
         return false;
@@ -141,7 +141,7 @@ export function shouldRenderEditButton(editButton: IConfigEditButton): boolean {
     // case outside live preview
     if (
         editButton.exclude?.find(
-            (exclude) => exclude === "outsideLivePreviewPanel"
+            (exclude) => exclude === "outsideLivePreviewPortal"
         )
     ) {
         return false;
@@ -149,4 +149,102 @@ export function shouldRenderEditButton(editButton: IConfigEditButton): boolean {
 
     // Priority list => 1. cslpEditButton query value 2.  Inside live preview  3. renderCslpButtonByDefault value selected by user
     return true;
+}
+
+export function getEditButtonPosition(
+    currentHoveredElement: HTMLElement | null,
+    defaultPosition: string | undefined
+): IEditButtonPosition {
+    if (!currentHoveredElement)
+        return { upperBoundOfTooltip: 0, leftBoundOfTooltip: 0 };
+
+    const cslpButtonPosition = currentHoveredElement.getAttribute(
+        "data-cslp-button-position"
+    );
+    if (cslpButtonPosition) {
+        return calculateEditButtonPosition(
+            currentHoveredElement,
+            cslpButtonPosition
+        );
+    }
+
+    // NOTE: position "top" and "top-left" will be the position of edit button if no default position passed in config
+    return calculateEditButtonPosition(
+        currentHoveredElement,
+        defaultPosition || "top"
+    );
+}
+
+function calculateEditButtonPosition(
+    currentHoveredElement: HTMLElement,
+    cslpButtonPosition: string
+): IEditButtonPosition {
+    const editButtonPosition: IEditButtonPosition = {
+        upperBoundOfTooltip: 0,
+        leftBoundOfTooltip: 0,
+    };
+    const currentRectOfElement = currentHoveredElement.getBoundingClientRect();
+    try {
+        switch (cslpButtonPosition) {
+            case "top-center":
+                editButtonPosition.upperBoundOfTooltip =
+                    currentRectOfElement.top - 40;
+                editButtonPosition.leftBoundOfTooltip =
+                    currentRectOfElement.width / 2 - 35.5;
+                break;
+            case "top-right":
+                editButtonPosition.upperBoundOfTooltip =
+                    currentRectOfElement.top - 40;
+                editButtonPosition.leftBoundOfTooltip =
+                    currentRectOfElement.right - 72;
+                break;
+            case "right":
+                editButtonPosition.upperBoundOfTooltip =
+                    currentRectOfElement.top - 5;
+                editButtonPosition.leftBoundOfTooltip =
+                    currentRectOfElement.right + 5;
+                break;
+            case "bottom":
+                editButtonPosition.upperBoundOfTooltip =
+                    currentRectOfElement.bottom + 5;
+                editButtonPosition.leftBoundOfTooltip =
+                    currentRectOfElement.left - 5;
+                break;
+            case "bottom-left":
+                editButtonPosition.upperBoundOfTooltip =
+                    currentRectOfElement.bottom + 5;
+                editButtonPosition.leftBoundOfTooltip =
+                    currentRectOfElement.left - 5;
+                break;
+            case "bottom-center":
+                editButtonPosition.upperBoundOfTooltip =
+                    currentRectOfElement.bottom + 5;
+                editButtonPosition.leftBoundOfTooltip =
+                    currentRectOfElement.width / 2 - 35.5;
+                break;
+            case "bottom-right":
+                editButtonPosition.upperBoundOfTooltip =
+                    currentRectOfElement.bottom + 5;
+                editButtonPosition.leftBoundOfTooltip =
+                    currentRectOfElement.right - 72;
+                break;
+            case "left":
+                editButtonPosition.upperBoundOfTooltip =
+                    currentRectOfElement.top - 5;
+                editButtonPosition.leftBoundOfTooltip =
+                    currentRectOfElement.left - 77;
+                break;
+            // default position => top, top-left or any other string
+            default:
+                editButtonPosition.upperBoundOfTooltip =
+                    currentRectOfElement.top - 40;
+                editButtonPosition.leftBoundOfTooltip =
+                    currentRectOfElement.left - 5;
+                break;
+        }
+        return editButtonPosition;
+    } catch (error) {
+        PublicLogger.error(error);
+        return editButtonPosition;
+    }
 }
