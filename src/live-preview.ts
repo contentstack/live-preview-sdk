@@ -32,6 +32,7 @@ export default class LivePreview {
             enable: true,
             exclude: [],
             position: "top",
+            includeByQueryParameter: true,
         },
         stackDetails: {
             apiKey: "",
@@ -440,9 +441,9 @@ export default class LivePreview {
             this.tooltip.parentElement?.getBoundingClientRect();
 
         if (currentRectOfElement && currentRectOfParentOfElement) {
-            // eslint-disable-next-line prefer-const
             let {
                 upperBoundOfTooltip,
+                // eslint-disable-next-line prefer-const
                 leftBoundOfTooltip,
             }: IEditButtonPosition = getEditButtonPosition(
                 this.currentElementBesideTooltip,
