@@ -7,6 +7,8 @@ export const userInitData: IInitData = {
     editButton: {
         enable: true,
         exclude: [],
+        position: "top",
+        includeByQueryParameter: true,
     },
 
     stackDetails: {

@@ -120,7 +120,10 @@ export function shouldRenderEditButton(editButton: IConfigEditButton): boolean {
         const currentLocation = new URL(window.location.href);
         const cslpButtonQueryValue =
             currentLocation.searchParams.get("cslp-buttons");
-        if (cslpButtonQueryValue !== null)
+        if (
+            cslpButtonQueryValue !== null &&
+            editButton.includeByQueryParameter !== false
+        )
             return cslpButtonQueryValue === "false" ? false : true;
     } catch (error) {
         PublicLogger.error(error);
@@ -185,61 +188,82 @@ function calculateEditButtonPosition(
     };
     const currentRectOfElement = currentHoveredElement.getBoundingClientRect();
     try {
+        const buttonMeasurementValues = {
+            width: 72,
+            halfWidth: 36,
+            height: 40,
+            basicMargin: 5,
+            widthWithMargin: 77,
+        };
+
         switch (cslpButtonPosition) {
             case "top-center":
                 editButtonPosition.upperBoundOfTooltip =
-                    currentRectOfElement.top - 40;
+                    currentRectOfElement.top - buttonMeasurementValues.height;
                 editButtonPosition.leftBoundOfTooltip =
-                    currentRectOfElement.width / 2 - 35.5;
+                    currentRectOfElement.width / 2 -
+                    buttonMeasurementValues.halfWidth;
                 break;
             case "top-right":
                 editButtonPosition.upperBoundOfTooltip =
-                    currentRectOfElement.top - 40;
+                    currentRectOfElement.top - buttonMeasurementValues.height;
                 editButtonPosition.leftBoundOfTooltip =
-                    currentRectOfElement.right - 72;
+                    currentRectOfElement.right - buttonMeasurementValues.width;
                 break;
             case "right":
                 editButtonPosition.upperBoundOfTooltip =
-                    currentRectOfElement.top - 5;
+                    currentRectOfElement.top -
+                    buttonMeasurementValues.basicMargin;
                 editButtonPosition.leftBoundOfTooltip =
-                    currentRectOfElement.right + 5;
+                    currentRectOfElement.right +
+                    buttonMeasurementValues.basicMargin;
                 break;
             case "bottom":
                 editButtonPosition.upperBoundOfTooltip =
-                    currentRectOfElement.bottom + 5;
+                    currentRectOfElement.bottom +
+                    buttonMeasurementValues.basicMargin;
                 editButtonPosition.leftBoundOfTooltip =
-                    currentRectOfElement.left - 5;
+                    currentRectOfElement.left -
+                    buttonMeasurementValues.basicMargin;
                 break;
             case "bottom-left":
                 editButtonPosition.upperBoundOfTooltip =
-                    currentRectOfElement.bottom + 5;
+                    currentRectOfElement.bottom +
+                    buttonMeasurementValues.basicMargin;
                 editButtonPosition.leftBoundOfTooltip =
-                    currentRectOfElement.left - 5;
+                    currentRectOfElement.left -
+                    buttonMeasurementValues.basicMargin;
                 break;
             case "bottom-center":
                 editButtonPosition.upperBoundOfTooltip =
-                    currentRectOfElement.bottom + 5;
+                    currentRectOfElement.bottom +
+                    buttonMeasurementValues.basicMargin;
                 editButtonPosition.leftBoundOfTooltip =
-                    currentRectOfElement.width / 2 - 35.5;
+                    currentRectOfElement.width / 2 -
+                    buttonMeasurementValues.halfWidth;
                 break;
             case "bottom-right":
                 editButtonPosition.upperBoundOfTooltip =
-                    currentRectOfElement.bottom + 5;
+                    currentRectOfElement.bottom +
+                    buttonMeasurementValues.basicMargin;
                 editButtonPosition.leftBoundOfTooltip =
-                    currentRectOfElement.right - 72;
+                    currentRectOfElement.right - buttonMeasurementValues.width;
                 break;
             case "left":
                 editButtonPosition.upperBoundOfTooltip =
-                    currentRectOfElement.top - 5;
+                    currentRectOfElement.top -
+                    buttonMeasurementValues.basicMargin;
                 editButtonPosition.leftBoundOfTooltip =
-                    currentRectOfElement.left - 77;
+                    currentRectOfElement.left -
+                    buttonMeasurementValues.widthWithMargin;
                 break;
             // default position => top, top-left or any other string
             default:
                 editButtonPosition.upperBoundOfTooltip =
-                    currentRectOfElement.top - 40;
+                    currentRectOfElement.top - buttonMeasurementValues.height;
                 editButtonPosition.leftBoundOfTooltip =
-                    currentRectOfElement.left - 5;
+                    currentRectOfElement.left -
+                    buttonMeasurementValues.basicMargin;
                 break;
         }
         return editButtonPosition;

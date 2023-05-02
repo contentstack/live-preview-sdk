@@ -570,6 +570,99 @@ describe("cslp tooltip", () => {
         locationSpy.mockRestore();
         parentLocationSpy.mockRestore();
     });
+
+    test("should enable the edit button when the editButton config is disabled for outside live preview panel but query parameter is passed", async () => {
+        const { location } = window;
+
+        const locationSpy = jest
+            .spyOn(window, "location", "get")
+            .mockImplementation(() => {
+                const mockLocation = JSON.parse(JSON.stringify(location));
+                mockLocation.href = "https://example.com?cslp-buttons=true";
+                return mockLocation;
+            });
+
+        new LivePreview({
+            enable: true,
+            editButton: {
+                enable: true,
+                exclude: [
+                    "outsideLivePreviewPortal",
+                    "insideLivePreviewPortal",
+                ],
+            },
+        });
+
+        const tooltip = document.querySelector(
+            "[data-test-id='cs-cslp-tooltip']"
+        );
+
+        const titlePara = document.querySelector("[data-test-id='title-para']");
+        const descPara = document.querySelector("[data-test-id='desc-para']");
+
+        expect(tooltip?.getAttribute("current-data-cslp")).toBe(null);
+
+        const hoverEvent = new CustomEvent("mouseover", {
+            bubbles: true,
+        });
+
+        titlePara?.dispatchEvent(hoverEvent);
+
+        expect(tooltip?.getAttribute("current-data-cslp")).toBe(TITLE_CSLP_TAG);
+
+        descPara?.dispatchEvent(hoverEvent);
+
+        expect(tooltip?.getAttribute("current-data-cslp")).toBe(DESC_CSLP_TAG);
+
+        locationSpy.mockRestore();
+    });
+
+    test("should disable the edit button even with the query parameter if includeByQueryParameter is false", async () => {
+        const { location } = window;
+
+        const locationSpy = jest
+            .spyOn(window, "location", "get")
+            .mockImplementation(() => {
+                const mockLocation = JSON.parse(JSON.stringify(location));
+                mockLocation.href = "https://example.com?cslp-buttons=true";
+                return mockLocation;
+            });
+
+        new LivePreview({
+            enable: true,
+            editButton: {
+                enable: true,
+                exclude: [
+                    "outsideLivePreviewPortal",
+                    "insideLivePreviewPortal",
+                ],
+                includeByQueryParameter: false,
+            },
+        });
+
+        const tooltip = document.querySelector(
+            "[data-test-id='cs-cslp-tooltip']"
+        );
+
+        const titlePara = document.querySelector("[data-test-id='title-para']");
+        const descPara = document.querySelector("[data-test-id='desc-para']");
+
+        expect(tooltip?.getAttribute("current-data-cslp")).toBe(undefined);
+
+        const hoverEvent = new CustomEvent("mouseover", {
+            bubbles: true,
+        });
+
+        titlePara?.dispatchEvent(hoverEvent);
+
+        expect(tooltip?.getAttribute("current-data-cslp")).toBe(undefined);
+
+        descPara?.dispatchEvent(hoverEvent);
+
+        expect(tooltip?.getAttribute("current-data-cslp")).toBe(undefined);
+
+        locationSpy.mockRestore();
+    });
 });
 
 describe("debug module", () => {

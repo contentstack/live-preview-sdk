@@ -87,6 +87,11 @@ export const handleInitData = (
                 livePreviewObject.editButton?.position ??
                 config.editButton.position ??
                 "top",
+
+            includeByQueryParameter:
+                livePreviewObject.editButton?.includeByQueryParameter ??
+                config.editButton.includeByQueryParameter ??
+                true,
         };
 
         config.stackSdk = initData;
@@ -152,6 +157,12 @@ export const handleInitData = (
                 stackSdk.live_preview?.position ??
                 config.editButton.position ??
                 "top",
+
+            includeByQueryParameter:
+                initData.editButton?.includeByQueryParameter ??
+                stackSdk.live_preview?.includeByQueryParameter ??
+                config.editButton.includeByQueryParameter ??
+                true,
         };
 
         config.stackDetails.apiKey =
