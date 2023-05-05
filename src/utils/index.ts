@@ -113,7 +113,13 @@ function inIframe() {
 }
 
 export function shouldRenderEditButton(editButton: IConfigEditButton): boolean {
-    if (!editButton.enable) return false;
+    if (!editButton.enable) {
+        if (editButton.enable === undefined)
+            PublicLogger.error(
+                "enable key is required inside editButton object"
+            );
+        return false;
+    }
 
     // return boolean in case of cslp-buttons query added in url
     try {
