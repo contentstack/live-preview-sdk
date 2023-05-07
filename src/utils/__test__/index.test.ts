@@ -152,7 +152,7 @@ describe("getEditButtonPosition: Edit button", () => {
             getEditButtonPosition(titlePara as HTMLElement, "top-center")
         ).toStrictEqual({
             upperBoundOfTooltip: 36.75,
-            leftBoundOfTooltip: 728.5,
+            leftBoundOfTooltip: 786.5,
         });
     });
 
@@ -192,7 +192,7 @@ describe("getEditButtonPosition: Edit button", () => {
             getEditButtonPosition(titlePara as HTMLElement, "bottom-center")
         ).toStrictEqual({
             upperBoundOfTooltip: 114.75,
-            leftBoundOfTooltip: 728.5,
+            leftBoundOfTooltip: 786.5,
         });
     });
 
@@ -233,7 +233,7 @@ describe("getEditButtonPosition: Edit button", () => {
             getEditButtonPosition(titlePara as HTMLElement, "top-left")
         ).toStrictEqual({
             upperBoundOfTooltip: 36.75,
-            leftBoundOfTooltip: 728.5,
+            leftBoundOfTooltip: 786.5,
         });
     });
 

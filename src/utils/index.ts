@@ -208,7 +208,8 @@ function calculateEditButtonPosition(
                     currentRectOfElement.top - buttonMeasurementValues.height;
                 editButtonPosition.leftBoundOfTooltip =
                     currentRectOfElement.width / 2 -
-                    buttonMeasurementValues.halfWidth;
+                    buttonMeasurementValues.halfWidth +
+                    currentRectOfElement.left;
                 break;
             case "top-right":
                 editButtonPosition.upperBoundOfTooltip =
@@ -246,7 +247,8 @@ function calculateEditButtonPosition(
                     buttonMeasurementValues.basicMargin;
                 editButtonPosition.leftBoundOfTooltip =
                     currentRectOfElement.width / 2 -
-                    buttonMeasurementValues.halfWidth;
+                    buttonMeasurementValues.halfWidth +
+                    currentRectOfElement.left;
                 break;
             case "bottom-right":
                 editButtonPosition.upperBoundOfTooltip =
