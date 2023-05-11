@@ -1,3 +1,4 @@
+import { shouldRenderEditButton } from ".";
 import { PublicLogger } from "./public-logger";
 import { IClientUrlParams, IConfig, IInitData, IStackSdk } from "./types";
 
@@ -72,6 +73,27 @@ export const handleInitData = (
             livePreviewObject.cleanCslpOnProduction ??
             config.cleanCslpOnProduction;
 
+        config.editButton = {
+            enable: shouldRenderEditButton(
+                livePreviewObject.editButton ?? config.editButton
+            ),
+            // added extra check if exclude data passed by user is array or not
+            exclude:
+                Array.isArray(livePreviewObject.editButton?.exclude) &&
+                livePreviewObject.editButton?.exclude
+                    ? livePreviewObject.editButton?.exclude
+                    : config.editButton.exclude ?? [],
+            position:
+                livePreviewObject.editButton?.position ??
+                config.editButton.position ??
+                "top",
+
+            includeByQueryParameter:
+                livePreviewObject.editButton?.includeByQueryParameter ??
+                config.editButton.includeByQueryParameter ??
+                true,
+        };
+
         config.stackSdk = initData;
 
         // stack details
@@ -114,6 +136,34 @@ export const handleInitData = (
             initData.cleanCslpOnProduction ??
             stackSdk.live_preview?.cleanCslpOnProduction ??
             config.cleanCslpOnProduction;
+
+        config.editButton = {
+            enable: shouldRenderEditButton(
+                initData.editButton ??
+                    stackSdk.live_preview?.editButton ??
+                    config.editButton
+            ),
+            // added extra check if exclude data passed by user is array or not
+            exclude:
+                Array.isArray(initData.editButton?.exclude) &&
+                initData.editButton?.exclude
+                    ? initData.editButton?.exclude
+                    : Array.isArray(stackSdk.live_preview?.exclude) &&
+                      stackSdk.live_preview?.exclude
+                    ? stackSdk.live_preview?.exclude
+                    : config.editButton.exclude ?? [],
+            position:
+                initData.editButton?.position ??
+                stackSdk.live_preview?.position ??
+                config.editButton.position ??
+                "top",
+
+            includeByQueryParameter:
+                initData.editButton?.includeByQueryParameter ??
+                stackSdk.live_preview?.includeByQueryParameter ??
+                config.editButton.includeByQueryParameter ??
+                true,
+        };
 
         config.stackDetails.apiKey =
             initData.stackDetails?.apiKey ??

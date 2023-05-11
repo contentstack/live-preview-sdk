@@ -25,3 +25,22 @@ export async function sendPostmessageToWindow(
 
     return new Promise<void>((res) => setTimeout(res, timeout));
 }
+
+export class DOMRect {
+    top = 76.75;
+    right = 1587;
+    bottom = 109.75;
+    left = 58;
+    constructor(
+        public x = 5,
+        public y = 0,
+        public width = 0,
+        public height = 0
+    ) {}
+    static fromRect(other?: DOMRectInit): DOMRect {
+        return new DOMRect(other?.x, other?.y, other?.width, other?.height);
+    }
+    toJSON() {
+        return JSON.stringify(this);
+    }
+}

@@ -6,7 +6,7 @@ The init data has following structure
   - [`init(config: IConfig)`](#initconfig-iconfig)
     - [`enable`](#enable)
     - [`ssr`](#ssr)
-    - [`runScriptsOnUpdate`](#runscriptsonupdate)
+    - [`editButton`](#editbutton)
     - [`cleanCslpOnProduction`](#cleancslponproduction)
     - [`stackDetails`](#stackdetails)
       - [`apiKey`](#apikey)
@@ -48,17 +48,66 @@ When you set the property to `false`, then app is rendered from the client side 
 
 > **Note:** For CSR mode, [stackSDK](#stacksdk) is required. Hence, we automatically switch mode to CSR when you pass this object. This config is provided to override the default behavior.
 
-### `runScriptsOnUpdate`
+### `editButton`
+The editButton object allows you to manage the "Edit" button both within and outside the Live Preview portal. It offers the following features:
+- Enable/disable the "Edit" button
+- Include/exclude the "Edit" button from inside/outside the Live Preview panel
+- Adjust the position of the "Edit" button using eight over predefined positions
 
-| type    | default | optional |
-| ------- | ------- | -------- |
-| boolean | false   | yes      |
+The editButton object contains four keys:
 
-When the live preview runs in SSR mode, we fetch a new page every time you update the entry and update the difference in the DOM. If your webpage relies on scripts as soon as it loads, changes from those scripts will not get reflected on the DOM.
+1. #### `enable`
+    | type    | default | optional |
+    | ------- | ------- | -------- |
+    | boolean | true    | no       |
 
-If your page is missing some components, you could set `runScriptsOnUpdate` to `true` to run the scripts every time you update the entry.
+    This key lets you specify whether you want to display the “Edit” button or not. It is of type “Boolean” with value true/false.
 
-> **Note:** This option will wait for all the scripts to load. This could potentially make your page slow if it depends on a lot of scripts. Use it only if your page is not rendering properly.
+2. #### `exclude`
+    | type    | default | optional |
+    | ------- | ------- | -------- |
+    | array   | [ ]     | yes      |
+
+    This key provides you with the option to exclude the editButton from either inside or outside the Live Preview portal for certain conditions. It is of type “Array” with any one of the following string values:
+    
+    - ##### `insideLivePreviewPortal`
+    
+        Used when you want to remove the “Edit” button from within the Live Preview portal.
+    - ##### `outsideLivePreviewPortal`
+    
+        Used when you want to remove the “Edit” button from outside the Live Preview portal.
+    
+    > **Note:** Although you have excluded the "Edit" button for Live Preview, you can add the `cslp-buttons` query parameter in your website URL to display the "Edit" button outside of your Live Preview-enabled website.
+
+
+3. #### `includeByQueryParameter`
+    | type    | default | optional |
+    | ------- | ------- | -------- |
+    | boolean | true    | yes      |
+
+    This key is used to override the `cslp-buttons` query parameter. You can set this to true/false to enable/disable the "Edit" button option, respectively.    
+
+4. #### `position`
+    | type    | default | optional |
+    | ------- | ------- | -------- |
+    | string  | top     | yes      |
+
+    The user can place the "Edit" button in eight predefined positions within or over the Live Preview portal using these values: left, right, top-left (or top), top-right, top-center, bottom-left (or bottom), bottom-right, and bottom-center.
+    
+    > **Note:** The default position of the "Edit" button is set to "top". In a collaborative work environment, you can also manually position the “Edit” button on your website by applying the `data-cslp-button-position` attribute to the HTML tag with one of the position values.
+
+**For example:**    
+```ts
+ContentstackLivePreview.init({
+    ...
+    editButton: {
+        enable: true,
+        exclude: ["outsideLivePreviewPortal"],
+        includeByQueryParameter: false,
+        position:'top-right',
+    }
+});
+```
 
 ### `cleanCslpOnProduction`
 
