@@ -487,6 +487,7 @@ export default class LivePreview {
 
         nodes.forEach((node) => {
             node.removeAttribute("data-cslp");
+            node.removeAttribute("data-cslp-button-position");
         });
     }
 }
