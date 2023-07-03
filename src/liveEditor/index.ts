@@ -616,7 +616,7 @@ const getStackDetails = (stackSdk: any) => {
         environment,
         api_key,
         branch,
-        app_url: "https://localhost:8080",
+        app_url: "https://localhost:3030",
     };
 };
 
