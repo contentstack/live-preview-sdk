@@ -251,6 +251,10 @@ export class VisualEditor {
         startEditingButton.setAttribute("data-cslp-environment", environment);
         startEditingButton.setAttribute("data-cslp-branch", branch);
         startEditingButton.setAttribute("data-cslp-app-host", app_url);
+        startEditingButton.setAttribute(
+            "data-testid",
+            "vcms-start-editing-btn"
+        );
         startEditingButton.classList.add("visual-editor__start-editing-btn");
         startEditingButton.addEventListener("click", this.handleStartEditing);
         this.startEditingButton = startEditingButton;
