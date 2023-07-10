@@ -34,10 +34,12 @@ export class VisualEditor {
     private nextButton: HTMLButtonElement | null = null;
     private previousHoveredTargetDOM: Element | null = null;
     private startEditingButton: HTMLButtonElement | null = null;
+
     constructor() {
         Object.keys(mockData).forEach((ctUID: string) => {
             this.fieldSchemaMap[ctUID] = generateFieldSchemaMap(ctUID);
         });
+
         this.handleDOMEdit = this.handleDOMEdit.bind(this);
         this.handleMouseHover = this.handleMouseHover.bind(this);
         this.hideCustomCursor = this.hideCustomCursor.bind(this);
@@ -50,6 +52,12 @@ export class VisualEditor {
             this.handleSpecialCaseForVariousFields.bind(this);
         this.generateStartEditingButton =
             this.generateStartEditingButton.bind(this);
+
+        window.addEventListener(
+            "mousedown",
+            this.handleMouseDownForVisualEditing
+        );
+        window.addEventListener("mousemove", this.handleMouseHover);
     }
     getFieldType = (fieldSchema: any) => {
         //TODO: get value for contants
@@ -209,7 +217,7 @@ export class VisualEditor {
 
         return _.isFinite(+fieldPath);
     };
-    handleStartEditing = (_event: any): void => {
+    private handleStartEditing = (_event: any): void => {
         if (!this.startEditingButton) {
             return;
         }
@@ -238,7 +246,7 @@ export class VisualEditor {
 
         window.location.replace(completeURL);
     };
-    generateStartEditingButton = (stackSdk: StackDetails): void => {
+    private generateStartEditingButton = (stackSdk: StackDetails): void => {
         const { api_key, branch, environment, app_url } = stackSdk;
         if (!this.visualEditorWrapper) {
             console.warn("Live Editor overlay not found.");
@@ -263,7 +271,7 @@ export class VisualEditor {
 
         //We cannot get locale from Stacks directly
     };
-    handleMouseDownForVisualEditing = (event: MouseEvent): void => {
+    private handleMouseDownForVisualEditing = (event: MouseEvent): void => {
         const eventDetails = this.handleCSLPMouseEvent(event);
         if (!eventDetails) {
             return;
@@ -290,9 +298,9 @@ export class VisualEditor {
 
         this.handleSpecialCaseForVariousFields(eventDetails);
     };
-    private handleSpecialCaseForVariousFields(
+    private handleSpecialCaseForVariousFields = (
         eventDetails: ReturnType<typeof this.handleCSLPMouseEvent>
-    ) {
+    ) => {
         if (!eventDetails) {
             return;
         }
@@ -322,9 +330,9 @@ export class VisualEditor {
         ) {
             // Intentional
         }
-    }
+    };
 
-    getMetadataFromCSLP(cslpValue: string) {
+    private getMetadataFromCSLP = (cslpValue: string) => {
         const [content_type_uid, entry_uid, locale, ...fieldPath] =
             cslpValue.split(".");
 
@@ -339,13 +347,13 @@ export class VisualEditor {
             locale,
             fieldPath: calculatedPath.join("."),
         };
-    }
-    handleDOMEdit(event: any): void {
+    };
+    handleDOMEdit = (event: any): void => {
         const targetElement = event.target as HTMLElement;
         if (!targetElement) {
             return;
         }
-    }
+    };
     handleMouseHover = _.throttle((event: MouseEvent) => {
         // handle throttle
 
@@ -384,7 +392,7 @@ export class VisualEditor {
         }
         this.previousHoveredTargetDOM = editableElement;
     }, 10);
-    handleCSLPMouseEvent(event: MouseEvent) {
+    handleCSLPMouseEvent = (event: MouseEvent) => {
         const targetElement = event.target as HTMLElement;
         if (!targetElement) {
             return;
@@ -410,8 +418,8 @@ export class VisualEditor {
             fieldMetadata,
             fieldSchema,
         };
-    }
-    appendVisualEditorDOM(stack: any): void {
+    };
+    appendVisualEditorDOM = (stack: any): void => {
         const visualEditorDOM = document.querySelector(
             ".visual-editor__container"
         );
@@ -451,11 +459,11 @@ export class VisualEditor {
             return;
         }
         this.generateStartEditingButton(stackDetails);
-    }
-    addOverlayOnDOM(
+    };
+    addOverlayOnDOM = (
         targetDOM: Element,
         eventDetails: ReturnType<typeof this.handleCSLPMouseEvent>
-    ): void {
+    ): void => {
         if (!targetDOM || !this.overlayWrapper || !eventDetails) {
             return;
         }
@@ -532,8 +540,8 @@ export class VisualEditor {
         ) {
             this.handleAddButtonsForMultiple(eventDetails);
         }
-    }
-    hideOverlayDOM(event: MouseEvent): void {
+    };
+    hideOverlayDOM = (event: MouseEvent): void => {
         const targetElement = event.target as Element;
 
         if (targetElement.classList.contains("visual-editor__overlay")) {
@@ -551,13 +559,13 @@ export class VisualEditor {
                 );
             }
         }
-    }
-    hideCustomCursor(): void {
+    };
+    hideCustomCursor = (): void => {
         if (this.customCursor) {
             this.customCursor.classList.remove("visible");
         }
-    }
-    hideAddInstanceButtons(eventTarget: EventTarget | null): void {
+    };
+    hideAddInstanceButtons = (eventTarget: EventTarget | null): void => {
         if (
             !this.visualEditorWrapper ||
             !this.previousButton ||
@@ -583,8 +591,8 @@ export class VisualEditor {
             this.visualEditorWrapper.removeChild(this.nextButton);
             this.nextButton = null;
         }
-    }
-    removeVisualEditorDOM(): void {
+    };
+    removeVisualEditorDOM = (): void => {
         const visualEditorDOM = document.querySelector(
             ".visual-editor__container"
         );
@@ -592,7 +600,7 @@ export class VisualEditor {
             window.document.body.removeChild(visualEditorDOM);
         }
         this.customCursor = null;
-    }
+    };
 }
 
 const getStackDetails = (stackSdk: any) => {
