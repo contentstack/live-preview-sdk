@@ -1,6 +1,7 @@
 import _ from "lodash";
 
 import mockData from "./ctmap";
+import { IConfig, IStackSdk } from "../utils/types";
 
 const RESET =
     "overflow: hidden !important; width: 0 !important; height: 0 !important; padding: 0 !important; border: 0 !important;";
@@ -35,7 +36,7 @@ export class VisualEditor {
     private previousHoveredTargetDOM: Element | null = null;
     private startEditingButton: HTMLButtonElement | null = null;
 
-    constructor() {
+    constructor(config: IConfig, stackSdk: IStackSdk) {
         Object.keys(mockData).forEach((ctUID: string) => {
             this.fieldSchemaMap[ctUID] = generateFieldSchemaMap(ctUID);
         });
@@ -58,6 +59,8 @@ export class VisualEditor {
             this.handleMouseDownForVisualEditing
         );
         window.addEventListener("mousemove", this.handleMouseHover);
+
+        this.appendVisualEditorDOM(config, stackSdk);
     }
     getFieldType = (fieldSchema: any) => {
         //TODO: get value for contants
@@ -419,7 +422,7 @@ export class VisualEditor {
             fieldSchema,
         };
     };
-    appendVisualEditorDOM = (stack: any): void => {
+    appendVisualEditorDOM = (config: IConfig, stack: IStackSdk): void => {
         const visualEditorDOM = document.querySelector(
             ".visual-editor__container"
         );
@@ -454,7 +457,7 @@ export class VisualEditor {
                 this.hideOverlayDOM
             );
         }
-        const stackDetails = getStackDetails(stack);
+        const stackDetails = getStackDetails(config, stack);
         if (!stackDetails) {
             return;
         }
@@ -603,7 +606,7 @@ export class VisualEditor {
     };
 }
 
-const getStackDetails = (stackSdk: any) => {
+const getStackDetails = (config: IConfig, stackSdk: IStackSdk) => {
     if (!stackSdk) {
         console.warn("StackSDK is required for Visual Editor to work");
         return;
@@ -623,12 +626,14 @@ const getStackDetails = (stackSdk: any) => {
     //@ts-ignore
     const branch = (stackSdk?.["headers"]?.branch as string) || "main";
 
+    console.log("htllo world", config);
+
     //TODO: getAppURL details from StackSDK
     return {
         environment,
         api_key,
         branch,
-        app_url: "https://localhost:3030",
+        app_url: config.clientUrlParams.url,
     };
 };
 
