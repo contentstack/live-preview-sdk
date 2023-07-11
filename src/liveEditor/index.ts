@@ -2,23 +2,10 @@ import _ from "lodash";
 
 import mockData from "./ctmap";
 import { IConfig, IStackSdk } from "../utils/types";
+import { generateStartEditingButton } from "./utils/generateStartEditingButton";
 
 const RESET =
     "overflow: hidden !important; width: 0 !important; height: 0 !important; padding: 0 !important; border: 0 !important;";
-
-const edit = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-<g id="Edit">
-<path id="Edit_2" fill-rule="evenodd" clip-rule="evenodd" d="M3.58347 15.3803C3.35617 15.6076 3.22019 15.9104 3.20131 16.2313L3.00244 19.6122C2.95629 20.3967 3.60524 21.0456 4.38975 20.9995L7.7706 20.8006C8.0915 20.7817 8.39431 20.6458 8.62161 20.4185L20.6176 8.4225C21.1301 7.90993 21.1301 7.07891 20.6176 6.56634L17.4356 3.38436C16.923 2.8718 16.092 2.8718 15.5794 3.38436L3.58347 15.3803ZM4.32437 16.2974C4.32707 16.2515 4.3465 16.2083 4.37897 16.1758L14.2003 6.35446L17.4954 9.64949C17.5492 9.70337 17.6113 9.74403 17.6776 9.77148L7.82611 19.623C7.79364 19.6554 7.75038 19.6749 7.70454 19.6776L4.32369 19.8764C4.21161 19.883 4.11891 19.7903 4.1255 19.6782L4.32437 16.2974ZM18.4128 9.03624L19.8221 7.627C19.8953 7.55378 19.8953 7.43506 19.8221 7.36184L16.6401 4.17986C16.5669 4.10663 16.4481 4.10663 16.3749 4.17986L14.9958 5.55897L18.2908 8.854C18.3447 8.90788 18.3854 8.96996 18.4128 9.03624Z" fill="white"/>
-</g>
-</svg>
-`;
-
-interface StackDetails {
-    api_key: string;
-    branch: string;
-    environment: string;
-    app_url: string;
-}
 
 const allowedInlineEditable = ["singleline", "multiline"];
 
@@ -51,8 +38,6 @@ export class VisualEditor {
             this.handleMouseDownForVisualEditing.bind(this);
         this.handleSpecialCaseForVariousFields =
             this.handleSpecialCaseForVariousFields.bind(this);
-        this.generateStartEditingButton =
-            this.generateStartEditingButton.bind(this);
 
         window.addEventListener(
             "mousedown",
@@ -208,6 +193,7 @@ export class VisualEditor {
             }px`;
         }
     };
+
     private IsInstanceOfMultiple = (path: string) => {
         const arrayPath = path.split(".");
         if (!arrayPath.length) {
@@ -220,6 +206,7 @@ export class VisualEditor {
 
         return _.isFinite(+fieldPath);
     };
+
     private handleStartEditing = (_event: any): void => {
         if (!this.startEditingButton) {
             return;
@@ -249,31 +236,7 @@ export class VisualEditor {
 
         window.location.replace(completeURL);
     };
-    private generateStartEditingButton = (stackSdk: StackDetails): void => {
-        const { api_key, branch, environment, app_url } = stackSdk;
-        if (!this.visualEditorWrapper) {
-            console.warn("Live Editor overlay not found.");
-            return;
-        }
 
-        const startEditingButton = document.createElement("button");
-        startEditingButton.innerHTML = edit + `<span>Start Editing</span>`;
-        startEditingButton.setAttribute("data-cslp-stack", api_key);
-        startEditingButton.setAttribute("data-cslp-environment", environment);
-        startEditingButton.setAttribute("data-cslp-branch", branch);
-        startEditingButton.setAttribute("data-cslp-app-host", app_url);
-        startEditingButton.setAttribute(
-            "data-testid",
-            "vcms-start-editing-btn"
-        );
-        startEditingButton.classList.add("visual-editor__start-editing-btn");
-        startEditingButton.addEventListener("click", this.handleStartEditing);
-        this.startEditingButton = startEditingButton;
-
-        this.visualEditorWrapper.appendChild(startEditingButton);
-
-        //We cannot get locale from Stacks directly
-    };
     private handleMouseDownForVisualEditing = (event: MouseEvent): void => {
         const eventDetails = this.handleCSLPMouseEvent(event);
         if (!eventDetails) {
@@ -457,12 +420,18 @@ export class VisualEditor {
                 this.hideOverlayDOM
             );
         }
-        const stackDetails = getStackDetails(config, stack);
-        if (!stackDetails) {
-            return;
+
+        const startEditingButton = generateStartEditingButton(
+            config,
+            this.visualEditorWrapper,
+            this.handleStartEditing
+        );
+
+        if (startEditingButton) {
+            this.startEditingButton = startEditingButton;
         }
-        this.generateStartEditingButton(stackDetails);
     };
+
     addOverlayOnDOM = (
         targetDOM: Element,
         eventDetails: ReturnType<typeof this.handleCSLPMouseEvent>
@@ -605,37 +574,6 @@ export class VisualEditor {
         this.customCursor = null;
     };
 }
-
-const getStackDetails = (config: IConfig, stackSdk: IStackSdk) => {
-    if (!stackSdk) {
-        console.warn("StackSDK is required for Visual Editor to work");
-        return;
-    }
-
-    const environment = stackSdk.environment as string;
-    if (!environment) {
-        console.warn("Environment was not found in StackSDK.");
-        return;
-    }
-    //@ts-ignore
-    const api_key = stackSdk?.["headers"]?.api_key as string;
-    if (!api_key) {
-        console.warn("Stack API_KEY was not found in StackSDK.");
-        return;
-    }
-    //@ts-ignore
-    const branch = (stackSdk?.["headers"]?.branch as string) || "main";
-
-    console.log("htllo world", config);
-
-    //TODO: getAppURL details from StackSDK
-    return {
-        environment,
-        api_key,
-        branch,
-        app_url: config.clientUrlParams.url,
-    };
-};
 
 export const generateFieldSchemaMap = (ctUID: string) => {
     const pageCT = mockData[ctUID];
