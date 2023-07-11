@@ -1,13 +1,12 @@
-import { PublicLogger } from "../public-logger";
+import { getDefaultConfig } from "../defaults";
 import { handleInitData, handleUserConfig } from "../handleUserConfig";
+import { PublicLogger } from "../public-logger";
 import {
     IConfig,
     IInitData,
-    IStackSdk,
-    ILivePreviewMode,
     ILivePreviewModeConfig,
+    IStackSdk,
 } from "../types";
-import { getDefaultConfig } from "../defaults";
 
 // example Stack object
 
@@ -200,6 +199,10 @@ describe("handleInitData()", () => {
             const initData: Partial<IInitData> = {
                 enable: true,
                 mode: "editor",
+                stackDetails: {
+                    environment: "main",
+                    apiKey: "bltanything",
+                },
             };
 
             handleInitData(initData, config);
@@ -232,42 +235,7 @@ describe("handleInitData()", () => {
 
 describe("handleClientUrlParams()", () => {
     beforeEach(() => {
-        config = {
-            ssr: true,
-            enable: true,
-            cleanCslpOnProduction: true,
-            runScriptsOnUpdate: false,
-            mode: 1,
-            editButton: {
-                enable: true,
-                exclude: [],
-            },
-
-            stackDetails: {
-                apiKey: "",
-                environment: "",
-                contentTypeUid: "",
-                entryUid: "",
-            },
-
-            clientUrlParams: {
-                protocol: "https",
-                host: "app.contentstack.com",
-                port: 443,
-                url: "https://app.contentstack.com:443",
-            },
-            stackSdk: {
-                live_preview: {},
-                headers: {
-                    api_key: "",
-                },
-                environment: "",
-            },
-
-            onChange: () => {
-                // this is intentional
-            },
-        };
+        config = getDefaultConfig();
     });
 
     test("must modify host and url accordingly", () => {
