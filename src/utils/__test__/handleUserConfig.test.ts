@@ -361,6 +361,59 @@ describe("handleInitData()", () => {
                 handleInitData(initData, config);
             }).toThrowError("Live preview SDK: environment is required");
         });
+
+        test("should prioritize branch from user config", () => {
+            const initData: Partial<IInitData> = {
+                enable: true,
+                stackDetails: {
+                    branch: "userbranch",
+                },
+            };
+
+            handleInitData(initData, config);
+            expect(config.stackDetails.branch).toBe("userbranch");
+
+            config = getDefaultConfig();
+
+            initData.stackSdk = {
+                live_preview: {},
+                headers: {
+                    api_key: "bltapikey",
+                    branch: "sdkbranch",
+                },
+                environment: "dev",
+            };
+
+            handleInitData(initData, config);
+            expect(config.stackDetails.branch).toBe("userbranch");
+        });
+
+        test("should set branch from headers if available", () => {
+            const initData: Partial<IInitData> = {
+                enable: true,
+
+                stackSdk: {
+                    live_preview: {},
+                    headers: {
+                        api_key: "sdkbranch",
+                        branch: "sdkbranch",
+                    },
+                    environment: "dev",
+                },
+            };
+
+            handleInitData(initData, config);
+            expect(config.stackDetails.branch).toBe("sdkbranch");
+        });
+
+        test("should reset branch if it is not passed", () => {
+            const initData: Partial<IInitData> = {
+                enable: true,
+            };
+
+            handleInitData(initData, config);
+            expect(config.stackDetails.branch).toBe("main");
+        });
     });
 });
 
