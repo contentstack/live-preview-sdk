@@ -5,7 +5,6 @@ import {
     IConfig,
     IInitData,
     ILivePreviewModeConfig,
-    ILivePreviewMode,
     IStackSdk,
 } from "./types";
 
@@ -171,17 +170,6 @@ export const handleInitData = (
                 config.editButton.includeByQueryParameter ??
                 true,
         };
-
-        config.stackDetails.apiKey =
-            initData.stackDetails?.apiKey ??
-            stackSdk.headers?.api_key ??
-            config.stackDetails.apiKey;
-
-        config.stackDetails.environment =
-            initData.stackDetails?.environment ??
-            stackSdk.environment ??
-            config.stackDetails.environment;
-
         // client URL params
         handleClientUrlParams(
             config,
@@ -207,8 +195,41 @@ export const handleInitData = (
                 }
             }
         }
+
+        handleStackDetails(initData, stackSdk, config);
     }
 };
+
+function handleStackDetails(
+    initData: Partial<IInitData>,
+    stackSdk: Partial<IStackSdk>,
+    config: IConfig
+): void {
+    config.stackDetails.apiKey =
+        initData.stackDetails?.apiKey ??
+        stackSdk.headers?.api_key ??
+        config.stackDetails.apiKey;
+
+    config.stackDetails.environment =
+        initData.stackDetails?.environment ??
+        stackSdk.environment ??
+        config.stackDetails.environment;
+
+    config.stackDetails.branch =
+        initData.stackDetails?.branch ??
+        stackSdk.headers?.branch ??
+        config.stackDetails.branch;
+
+    if (config.mode >= ILivePreviewModeConfig.EDITOR) {
+        if (!config.stackDetails.environment) {
+            throw Error("Live preview SDK: environment is required");
+        }
+
+        if (!config.stackDetails.apiKey) {
+            throw Error("Live preview SDK: api key is required");
+        }
+    }
+}
 
 export const handleUserConfig = {
     clientUrlParams: handleClientUrlParams,
