@@ -231,6 +231,137 @@ describe("handleInitData()", () => {
             );
         });
     });
+
+    describe("stack details set by user", () => {
+        test("should prioritize api key from user config", () => {
+            const initData: Partial<IInitData> = {
+                enable: true,
+                stackDetails: {
+                    apiKey: "bltuserapikey",
+                },
+            };
+
+            handleInitData(initData, config);
+            expect(config.stackDetails.apiKey).toBe("bltuserapikey");
+
+            config = getDefaultConfig();
+
+            initData.stackSdk = {
+                live_preview: {},
+                headers: {
+                    api_key: "bltheaderapikey",
+                },
+                environment: "dev",
+            };
+
+            handleInitData(initData, config);
+            expect(config.stackDetails.apiKey).toBe("bltuserapikey");
+        });
+
+        test("should set api key from headers if available", () => {
+            const initData: Partial<IInitData> = {
+                enable: true,
+
+                stackSdk: {
+                    live_preview: {},
+                    headers: {
+                        api_key: "bltheaderapikey",
+                    },
+                    environment: "dev",
+                },
+            };
+
+            handleInitData(initData, config);
+            expect(config.stackDetails.apiKey).toBe("bltheaderapikey");
+        });
+
+        test("should reset api key if it is not passed", () => {
+            const initData: Partial<IInitData> = {
+                enable: true,
+            };
+
+            handleInitData(initData, config);
+            expect(config.stackDetails.apiKey).toBe("");
+        });
+
+        test("should throw error if api key is not passed in editor mode", () => {
+            const initData: Partial<IInitData> = {
+                enable: true,
+                stackDetails: {
+                    environment: "dev",
+                },
+                mode: "editor",
+            };
+
+            expect(() => {
+                handleInitData(initData, config);
+            }).toThrowError("Live preview SDK: api key is required");
+        });
+
+        test("should prioritize environment from user config", () => {
+            const initData: Partial<IInitData> = {
+                enable: true,
+                stackDetails: {
+                    environment: "userenvironment",
+                },
+            };
+
+            handleInitData(initData, config);
+            expect(config.stackDetails.environment).toBe("userenvironment");
+
+            config = getDefaultConfig();
+
+            initData.stackSdk = {
+                live_preview: {},
+                environment: "sdkenvironment",
+                headers: {
+                    api_key: "",
+                },
+            };
+
+            handleInitData(initData, config);
+            expect(config.stackDetails.environment).toBe("userenvironment");
+        });
+
+        test("should set environment from stack sdk if available", () => {
+            const initData: Partial<IInitData> = {
+                enable: true,
+                stackSdk: {
+                    live_preview: {},
+                    environment: "sdkenvironment",
+                    headers: {
+                        api_key: "",
+                    },
+                },
+            };
+
+            handleInitData(initData, config);
+            expect(config.stackDetails.environment).toBe("sdkenvironment");
+        });
+
+        test("should reset environment if it is not passed", () => {
+            const initData: Partial<IInitData> = {
+                enable: true,
+            };
+
+            handleInitData(initData, config);
+            expect(config.stackDetails.environment).toBe("");
+        });
+
+        test("should throw error if environment is not passed in editor mode", () => {
+            const initData: Partial<IInitData> = {
+                enable: true,
+                stackDetails: {
+                    apiKey: "bltapikey",
+                },
+                mode: "editor",
+            };
+
+            expect(() => {
+                handleInitData(initData, config);
+            }).toThrowError("Live preview SDK: environment is required");
+        });
+    });
 });
 
 describe("handleClientUrlParams()", () => {
