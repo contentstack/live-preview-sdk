@@ -20,6 +20,7 @@ export declare interface IStackSdk {
     [key: string]: any;
     headers: {
         api_key: string;
+        branch?: string;
     };
     environment: string;
 }
@@ -29,11 +30,13 @@ export declare interface IStackDetails {
     environment: string;
     contentTypeUid: string;
     entryUid: string;
+    branch: string;
 }
 
 export declare interface IInitStackDetails {
     apiKey: string;
     environment: string;
+    branch: string;
 }
 
 export declare type ILivePreviewMode = "editor" | "preview";

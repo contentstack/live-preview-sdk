@@ -42,6 +42,7 @@ export default class LivePreview {
             environment: "",
             contentTypeUid: "",
             entryUid: "",
+            branch: "main",
         },
 
         clientUrlParams: {
