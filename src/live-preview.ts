@@ -145,7 +145,7 @@ export default class LivePreview {
             }
 
             if (this.config.mode >= ILivePreviewModeConfig.EDITOR) {
-                new VisualEditor(this.config, this.config.stackSdk);
+                new VisualEditor(this.config);
             }
         } else if (this.config.cleanCslpOnProduction) {
             this.removeDataCslp();
