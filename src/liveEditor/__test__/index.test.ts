@@ -51,11 +51,6 @@ describe("Visual editor", () => {
         expect(visualEditorDOM).toMatchSnapshot();
     });
 
-    describe("instance buttons", () => {
-        test.todo("should append to the DOM");
-        test.todo("should hide when overlay is closed");
-    });
-
     describe("inline editing", () => {
         let h1Tag: HTMLHeadingElement;
         let multiple: HTMLDivElement;
@@ -80,7 +75,9 @@ describe("Visual editor", () => {
         test("should add overlay to DOM when clicked", () => {
             new VisualEditor(config);
 
-            (h1Tag.firstChild as HTMLDivElement).click();
+            console.log(document.body.outerHTML);
+
+            h1Tag.click();
 
             expect(document.body).toMatchSnapshot();
         });

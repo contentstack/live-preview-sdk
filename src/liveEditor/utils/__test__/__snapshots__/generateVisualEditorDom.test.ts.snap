@@ -3,6 +3,7 @@
 exports[`generateVisualEditorCursor should generate cursor 1`] = `
 <div
   class="visual-editor__cursor"
+  data-testid="visual-editor__cursor"
 />
 `;
 
@@ -43,9 +44,11 @@ exports[`generateVisualEditorOverlay should generate overlay 1`] = `
 exports[`generateVisualEditorWrapper should generate wrapper 1`] = `
 <div
   class="visual-editor__container"
+  data-testid="visual-editor__container"
 >
   <div
     class="visual-editor__cursor"
+    data-testid="visual-editor__cursor"
   />
   <div
     class="visual-editor__overlay__wrapper"
