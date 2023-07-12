@@ -1,8 +1,15 @@
 import _ from "lodash";
 
 import mockData from "./ctmap";
-import { IConfig, IStackSdk } from "../utils/types";
+import { IConfig } from "../utils/types";
 import { generateStartEditingButton } from "./utils/generateStartEditingButton";
+import { generateFieldSchemaMap } from "./utils/generateFieldSchemaMap";
+import {
+    generateVisualEditorCursor,
+    generateVisualEditorOverlay,
+    generateVisualEditorWrapper,
+} from "./utils/generateVisualEditorDom";
+import { shouldHideInstanceButton } from "./utils/instanceButtons";
 
 const RESET =
     "overflow: hidden !important; width: 0 !important; height: 0 !important; padding: 0 !important; border: 0 !important;";
@@ -16,14 +23,14 @@ export class VisualEditor {
     private customCursor: HTMLDivElement | null = null;
     private overlayWrapper: HTMLDivElement | null = null;
     private previousSelectedEditableDOM: Element | null = null;
-    private replaceButtonAsset: HTMLButtonElement | null = null;
+    private replaceAssetButton: HTMLButtonElement | null = null;
     private visualEditorWrapper: HTMLDivElement | null = null;
     private previousButton: HTMLButtonElement | null = null;
     private nextButton: HTMLButtonElement | null = null;
     private previousHoveredTargetDOM: Element | null = null;
     private startEditingButton: HTMLButtonElement | null = null;
 
-    constructor(config: IConfig, stackSdk: IStackSdk) {
+    constructor(config: IConfig) {
         Object.keys(mockData).forEach((ctUID: string) => {
             this.fieldSchemaMap[ctUID] = generateFieldSchemaMap(ctUID);
         });
@@ -39,14 +46,13 @@ export class VisualEditor {
         this.handleSpecialCaseForVariousFields =
             this.handleSpecialCaseForVariousFields.bind(this);
 
-        window.addEventListener(
-            "mousedown",
-            this.handleMouseDownForVisualEditing
-        );
+        window.addEventListener("click", this.handleMouseDownForVisualEditing);
         window.addEventListener("mousemove", this.handleMouseHover);
 
-        this.appendVisualEditorDOM(config, stackSdk);
+        this.appendVisualEditorDOM(config);
     }
+
+    // remaining
     getFieldType = (fieldSchema: any) => {
         //TODO: get value for contants
 
@@ -132,6 +138,8 @@ export class VisualEditor {
 
         return dir;
     };
+
+    // remaining
     private handleAddButtonsForMultiple = (
         eventDetails: ReturnType<typeof this.handleCSLPMouseEvent>
     ) => {
@@ -194,19 +202,6 @@ export class VisualEditor {
         }
     };
 
-    private IsInstanceOfMultiple = (path: string) => {
-        const arrayPath = path.split(".");
-        if (!arrayPath.length) {
-            return false;
-        }
-        const fieldPath = arrayPath.at(-1);
-        if (!fieldPath) {
-            return false;
-        }
-
-        return _.isFinite(+fieldPath);
-    };
-
     private handleStartEditing = (_event: any): void => {
         if (!this.startEditingButton) {
             return;
@@ -242,9 +237,9 @@ export class VisualEditor {
         if (!eventDetails) {
             return;
         }
-        if (this.replaceButtonAsset && this.overlayWrapper) {
-            this.overlayWrapper.removeChild(this.replaceButtonAsset);
-            this.replaceButtonAsset = null;
+        if (this.replaceAssetButton && this.overlayWrapper) {
+            this.overlayWrapper.removeChild(this.replaceAssetButton);
+            this.replaceAssetButton = null;
         }
         const { editableElement, fieldSchema } = eventDetails;
         const fieldType = this.getFieldType(fieldSchema) || "";
@@ -279,13 +274,13 @@ export class VisualEditor {
             const replaceButton = document.createElement("button");
             replaceButton.classList.add("visual-editor__replace-button");
             replaceButton.innerHTML = `Replace Asset`;
-            this.replaceButtonAsset = replaceButton;
+            this.replaceAssetButton = replaceButton;
             this.overlayWrapper?.appendChild(replaceButton);
 
-            this.replaceButtonAsset.style.top = `${
+            this.replaceAssetButton.style.top = `${
                 targetDOMDimension.bottom + window.scrollY - 30
             }px`;
-            this.replaceButtonAsset.style.right = `${
+            this.replaceAssetButton.style.right = `${
                 window.innerWidth - targetDOMDimension.right
             }px`;
         }
@@ -314,15 +309,15 @@ export class VisualEditor {
             fieldPath: calculatedPath.join("."),
         };
     };
+
     handleDOMEdit = (event: any): void => {
         const targetElement = event.target as HTMLElement;
         if (!targetElement) {
             return;
         }
     };
-    handleMouseHover = _.throttle((event: MouseEvent) => {
-        // handle throttle
 
+    handleMouseHover = _.throttle((event: MouseEvent) => {
         const eventDetails = this.handleCSLPMouseEvent(event);
         if (!eventDetails) {
             this.hideCustomCursor();
@@ -358,6 +353,12 @@ export class VisualEditor {
         }
         this.previousHoveredTargetDOM = editableElement;
     }, 10);
+
+    /**
+     * Get the details of the CSLP tag of the target.
+     * @param event Mouse event
+     * @returns Details of the closest data cslp
+     */
     handleCSLPMouseEvent = (event: MouseEvent) => {
         const targetElement = event.target as HTMLElement;
         if (!targetElement) {
@@ -385,40 +386,21 @@ export class VisualEditor {
             fieldSchema,
         };
     };
-    appendVisualEditorDOM = (config: IConfig, stack: IStackSdk): void => {
+
+    appendVisualEditorDOM = (config: IConfig): void => {
         const visualEditorDOM = document.querySelector(
             ".visual-editor__container"
         );
         if (!visualEditorDOM) {
-            const visualEditorDOM = document.createElement("div");
-            this.visualEditorWrapper = visualEditorDOM;
-            visualEditorDOM.classList.add("visual-editor__container");
-
-            const customVisualCursor = document.createElement("div");
-            customVisualCursor.classList.add("visual-editor__cursor");
-            this.customCursor = customVisualCursor;
-            window.document.body.appendChild(visualEditorDOM);
-            visualEditorDOM.appendChild(customVisualCursor);
-
-            const visualEditorOverlayWrapper = document.createElement("div");
-            visualEditorOverlayWrapper.classList.add(
-                "visual-editor__overlay__wrapper"
-            );
-
-            visualEditorOverlayWrapper.innerHTML = `
-                <div class="visual-editor__overlay visual-editor__overlay--top"></div>
-                <div class="visual-editor__overlay visual-editor__overlay--left"></div>
-                <div class="visual-editor__overlay visual-editor__overlay--right"></div>
-                <div class="visual-editor__overlay visual-editor__overlay--bottom"></div>
-                <div class="visual-editor__overlay--outline"></div>
-            `;
-            this.overlayWrapper = visualEditorOverlayWrapper;
-            visualEditorDOM.appendChild(visualEditorOverlayWrapper);
-
-            visualEditorOverlayWrapper.addEventListener(
-                "mousedown",
+            this.customCursor = generateVisualEditorCursor();
+            this.overlayWrapper = generateVisualEditorOverlay(
                 this.hideOverlayDOM
             );
+
+            this.visualEditorWrapper = generateVisualEditorWrapper({
+                cursor: this.customCursor,
+                overlay: this.overlayWrapper,
+            });
         }
 
         const startEditingButton = generateStartEditingButton(
@@ -432,6 +414,7 @@ export class VisualEditor {
         }
     };
 
+    // done
     addOverlayOnDOM = (
         targetDOM: Element,
         eventDetails: ReturnType<typeof this.handleCSLPMouseEvent>
@@ -539,29 +522,24 @@ export class VisualEditor {
     };
     hideAddInstanceButtons = (eventTarget: EventTarget | null): void => {
         if (
-            !this.visualEditorWrapper ||
-            !this.previousButton ||
-            !this.nextButton
+            shouldHideInstanceButton(
+                {
+                    overlay: this.overlayWrapper,
+                    nextButton: this.nextButton,
+                    previousButton: this.previousButton,
+                    visualEditorWrapper: this.visualEditorWrapper,
+                },
+                eventTarget
+            )
         ) {
-            return;
-        }
-        if (
-            eventTarget &&
-            (this.previousButton.contains(eventTarget as Node) ||
-                this.nextButton.contains(eventTarget as Node))
-        ) {
-            return;
-        }
-        if (this?.overlayWrapper?.classList.contains("visible")) {
-            return;
-        }
-        if (this.previousButton) {
-            this.visualEditorWrapper.removeChild(this.previousButton);
-            this.previousButton = null;
-        }
-        if (this.nextButton) {
-            this.visualEditorWrapper.removeChild(this.nextButton);
-            this.nextButton = null;
+            if (this.previousButton) {
+                this.visualEditorWrapper?.removeChild(this.previousButton);
+                this.previousButton = null;
+            }
+            if (this.nextButton) {
+                this.visualEditorWrapper?.removeChild(this.nextButton);
+                this.nextButton = null;
+            }
         }
     };
     removeVisualEditorDOM = (): void => {
@@ -574,91 +552,3 @@ export class VisualEditor {
         this.customCursor = null;
     };
 }
-
-export const generateFieldSchemaMap = (ctUID: string) => {
-    const pageCT = mockData[ctUID];
-    const getFieldSchemaMap: ITraverseSchemaVisitor = {
-        fieldMap: {},
-        should_visit: (_fieldSchema, _path) => {
-            return true;
-        },
-        visit: function (fieldSchema, path) {
-            this.fieldMap[path] = fieldSchema;
-            if (fieldSchema.data_type === "link") {
-                //handle special key for special fields
-                this.fieldMap[`${path}.title`] = fieldSchema;
-                this.fieldMap[`${path}.url`] = fieldSchema;
-            }
-            if (fieldSchema.data_type === "file") {
-                this.fieldMap[`${path}.url`] = fieldSchema;
-            }
-            if (fieldSchema.data_type === "blocks") {
-                if (!fieldSchema.blocks) {
-                    return;
-                }
-                fieldSchema.blocks.map((block: any) => {
-                    this.fieldMap[`${path}.${block.uid}`] = {
-                        ...block,
-                        data_type: "block",
-                        display_name: block.title,
-                    };
-                });
-            }
-        },
-    };
-    traverseSchema(pageCT.schema, [getFieldSchemaMap]);
-    return getFieldSchemaMap.fieldMap;
-};
-
-export interface ITraverseSchemaVisitor {
-    should_visit: (fieldSchema: any, path: string) => boolean;
-    visit: (fieldSchema: any, path: string) => void;
-    [key: string]: any;
-}
-export const traverseSchema = (
-    schema: any,
-    visitors: Array<ITraverseSchemaVisitor>
-) => {
-    function genPath(prefix: string, path: string) {
-        return _.isEmpty(prefix) ? path : [prefix, path].join(".");
-    }
-
-    function traverse(fields: any, path: string) {
-        path = path || "";
-        for (const element of fields) {
-            const field = element;
-            const currPath = genPath(path, field.uid);
-
-            visitors.forEach((visitor) => {
-                if (visitor.should_visit(field, currPath)) {
-                    visitor.visit(field, currPath);
-                }
-            });
-
-            if (field.data_type === "group") traverse(field.schema, currPath);
-
-            if (
-                field.data_type === "global_field" &&
-                _.isUndefined(field.schema) === false &&
-                _.isEmpty(field.schema) === false
-            )
-                traverse(field.schema, currPath);
-            if (field.data_type === "blocks") {
-                field.blocks.forEach(function (block: any) {
-                    if (block.schema)
-                        traverse(block.schema, currPath + "." + block.uid);
-                });
-            }
-            if (field.data_type === "experience_container") {
-                field.variations.forEach(function (variation: any) {
-                    if (variation.schema)
-                        traverse(
-                            variation.schema,
-                            currPath + "." + variation.uid
-                        );
-                });
-            }
-        }
-    }
-    traverse(schema, "");
-};
