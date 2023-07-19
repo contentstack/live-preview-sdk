@@ -27,6 +27,7 @@ export const userInitData: IInitData = {
         live_preview: {},
         headers: {
             api_key: "",
+            branch: "main",
         },
         environment: "",
     },
@@ -52,6 +53,7 @@ export function getDefaultConfig(): IConfig {
             environment: "",
             contentTypeUid: "",
             entryUid: "",
+            branch: "main",
         },
 
         clientUrlParams: {

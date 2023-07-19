@@ -832,6 +832,10 @@ describe("Live modes", () => {
     test("should initiate Visual editor if mode is greater than editor", () => {
         const config: Partial<IInitData> = {
             enable: true,
+            stackDetails: {
+                environment: "development",
+                apiKey: "bltapikey",
+            },
         };
 
         const spiedVisualEditor = jest.spyOn(LiveEditorModule, "VisualEditor");
