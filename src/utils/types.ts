@@ -35,6 +35,14 @@ export declare interface IInitStackDetails {
     apiKey: string;
     environment: string;
 }
+
+export declare type ILivePreviewMode = "editor" | "preview";
+
+export declare const enum ILivePreviewModeConfig {
+    PREVIEW = 1,
+    EDITOR = 2,
+}
+
 export declare interface IConfig {
     ssr: boolean;
     enable: boolean;
@@ -45,6 +53,7 @@ export declare interface IConfig {
     onChange: () => void;
     runScriptsOnUpdate: boolean;
     editButton: IConfigEditButton;
+    mode: ILivePreviewModeConfig;
 }
 
 export declare interface IConfigEditButton {
@@ -73,6 +82,7 @@ export declare interface IInitData {
     clientUrlParams: Partial<Omit<IClientUrlParams, "url">>;
     stackSdk: IStackSdk;
     editButton: IConfigEditButton;
+    mode: ILivePreviewMode;
 }
 
 // Post message types

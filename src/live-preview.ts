@@ -1,23 +1,24 @@
+import packageJson from "../package.json";
+import { VisualEditor } from "./liveEditor";
 import {
-    createSingularEditButton,
-    createMultipleEditButton,
     addLivePreviewQueryTags,
-    shouldRenderEditButton,
+    createMultipleEditButton,
+    createSingularEditButton,
     getEditButtonPosition,
 } from "./utils";
+import { userInitData } from "./utils/defaults";
+import { handleInitData } from "./utils/handleUserConfig";
 import { PublicLogger } from "./utils/public-logger";
+import { replaceDocumentBody, updateDocumentBody } from "./utils/replaceHtml";
 import {
     IConfig,
     IEditButtonPosition,
     IEditEntrySearchParams,
     IInitData,
+    ILivePreviewModeConfig,
+    ILivePreviewMode,
     ILivePreviewReceivePostMessages,
 } from "./utils/types";
-import { handleInitData } from "./utils/handleUserConfig";
-import { userInitData } from "./utils/defaults";
-import packageJson from "../package.json";
-import { replaceDocumentBody, updateDocumentBody } from "./utils/replaceHtml";
-import { VisualEditor } from "./liveEditor";
 
 export default class LivePreview {
     /**
@@ -35,6 +36,7 @@ export default class LivePreview {
             position: "top",
             includeByQueryParameter: true,
         },
+        mode: 1,
         stackDetails: {
             apiKey: "",
             environment: "",
@@ -106,8 +108,6 @@ export default class LivePreview {
                 window.addEventListener("load", this.requestDataSync);
             }
 
-            const liveEditor = new VisualEditor();
-
             window.addEventListener("message", this.resolveIncomingMessage);
             window.addEventListener("scroll", this.updateTooltipPosition);
             // render the hover outline only when edit button enable
@@ -143,12 +143,9 @@ export default class LivePreview {
                 });
             }
 
-            window.addEventListener(
-                "mousedown",
-                liveEditor.handleMouseDownForVisualEditing
-            );
-            window.addEventListener("mousemove", liveEditor.handleMouseHover);
-            liveEditor.appendVisualEditorDOM(this.config.stackSdk);
+            if (this.config.mode >= ILivePreviewModeConfig.EDITOR) {
+                new VisualEditor(this.config, this.config.stackSdk);
+            }
         } else if (this.config.cleanCslpOnProduction) {
             this.removeDataCslp();
         }

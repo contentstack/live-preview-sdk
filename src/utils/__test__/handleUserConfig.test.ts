@@ -1,6 +1,13 @@
 import { PublicLogger } from "../public-logger";
 import { handleInitData, handleUserConfig } from "../handleUserConfig";
-import { IConfig, IInitData, IStackSdk } from "../types";
+import {
+    IConfig,
+    IInitData,
+    IStackSdk,
+    ILivePreviewMode,
+    ILivePreviewModeConfig,
+} from "../types";
+import { getDefaultConfig } from "../defaults";
 
 // example Stack object
 
@@ -39,41 +46,7 @@ import { IConfig, IInitData, IStackSdk } from "../types";
 let config: IConfig;
 describe("handleInitData()", () => {
     beforeEach(() => {
-        config = {
-            ssr: true,
-            enable: false,
-            cleanCslpOnProduction: true,
-            runScriptsOnUpdate: false,
-            editButton: {
-                enable: true,
-                exclude: [],
-            },
-
-            stackDetails: {
-                apiKey: "",
-                environment: "",
-                contentTypeUid: "",
-                entryUid: "",
-            },
-
-            clientUrlParams: {
-                protocol: "https",
-                host: "app.contentstack.com",
-                port: 443,
-                url: "https://app.contentstack.com:443",
-            },
-            stackSdk: {
-                live_preview: {},
-                headers: {
-                    api_key: "",
-                },
-                environment: "",
-            },
-
-            onChange: () => {
-                // this is intentional
-            },
-        };
+        config = getDefaultConfig();
     });
 
     test("must set data when config is provided", () => {
@@ -213,6 +186,48 @@ describe("handleInitData()", () => {
             "Deprecated: Do not pass the Stack object directly to the Live Preview SDK. Pass it using the config.stackSDK config object."
         );
     });
+
+    describe("live mode", () => {
+        test("should be set to 1 by default", () => {
+            const initData: Partial<IInitData> = {
+                enable: true,
+            };
+
+            handleInitData(initData, config);
+            expect(config.mode).toBe(ILivePreviewModeConfig.PREVIEW);
+        });
+        test("should be set to 2 if user set it to editor", () => {
+            const initData: Partial<IInitData> = {
+                enable: true,
+                mode: "editor",
+            };
+
+            handleInitData(initData, config);
+            expect(config.mode).toBe(ILivePreviewModeConfig.EDITOR);
+        });
+        test("should be set to 1 if user set it to preview", () => {
+            const initData: Partial<IInitData> = {
+                enable: true,
+                mode: "preview",
+            };
+
+            handleInitData(initData, config);
+            expect(config.mode).toBe(ILivePreviewModeConfig.PREVIEW);
+        });
+        test("should throw an error if user set it to something else", () => {
+            const initData: Partial<IInitData> = {
+                enable: true,
+                // @ts-ignore
+                mode: "wrong-value",
+            };
+
+            expect(() => {
+                handleInitData(initData, config);
+            }).toThrowError(
+                "Live Preview SDK: The mode must be either 'editor' or 'preview'"
+            );
+        });
+    });
 });
 
 describe("handleClientUrlParams()", () => {
@@ -222,6 +237,7 @@ describe("handleClientUrlParams()", () => {
             enable: true,
             cleanCslpOnProduction: true,
             runScriptsOnUpdate: false,
+            mode: 1,
             editButton: {
                 enable: true,
                 exclude: [],

@@ -1,6 +1,13 @@
 import { shouldRenderEditButton } from ".";
 import { PublicLogger } from "./public-logger";
-import { IClientUrlParams, IConfig, IInitData, IStackSdk } from "./types";
+import {
+    IClientUrlParams,
+    IConfig,
+    IInitData,
+    ILivePreviewModeConfig,
+    ILivePreviewMode,
+    IStackSdk,
+} from "./types";
 
 const handleClientUrlParams = (
     existingConfig: IConfig,
@@ -182,6 +189,24 @@ export const handleInitData = (
                 stackSdk.live_preview?.clientUrlParams ??
                 config.clientUrlParams
         );
+
+        if (initData.mode) {
+            switch (initData.mode) {
+                case "preview": {
+                    config.mode = ILivePreviewModeConfig.PREVIEW;
+                    break;
+                }
+                case "editor": {
+                    config.mode = ILivePreviewModeConfig.EDITOR;
+                    break;
+                }
+                default: {
+                    throw new TypeError(
+                        "Live Preview SDK: The mode must be either 'editor' or 'preview'"
+                    );
+                }
+            }
+        }
     }
 };
 
