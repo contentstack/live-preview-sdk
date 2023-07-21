@@ -1,7 +1,14 @@
-import { createSingularEditButton, createMultipleEditButton } from "./utils";
+import {
+    createSingularEditButton,
+    createMultipleEditButton,
+    addLivePreviewQueryTags,
+    shouldRenderEditButton,
+    getEditButtonPosition,
+} from "./utils";
 import { PublicLogger } from "./utils/public-logger";
 import {
     IConfig,
+    IEditButtonPosition,
     IEditEntrySearchParams,
     IInitData,
     ILivePreviewReceivePostMessages,
@@ -23,6 +30,12 @@ export default class LivePreview {
         cleanCslpOnProduction: true,
         hash: "",
 
+        editButton: {
+            enable: true,
+            exclude: [],
+            position: "top",
+            includeByQueryParameter: true,
+        },
         stackDetails: {
             apiKey: "",
             environment: "",
@@ -95,7 +108,38 @@ export default class LivePreview {
             }
             window.addEventListener("message", this.resolveIncomingMessage);
             window.addEventListener("scroll", this.updateTooltipPosition);
-            window.addEventListener("mouseover", this.addEditStyleOnHover);
+            // render the hover outline only when edit button enable
+            if (this.config.editButton.enable) {
+                window.addEventListener("mouseover", this.addEditStyleOnHover);
+            }
+
+            if (this.config.ssr) {
+                window.addEventListener("load", (e) => {
+                    const allATags = document.querySelectorAll("a");
+                    allATags.forEach((tag) => {
+                        const docOrigin: string = document.location.origin;
+                        if (tag.href && tag.href.includes(docOrigin)) {
+                            const newUrl = addLivePreviewQueryTags(tag.href);
+                            tag.href = newUrl;
+                        }
+                    });
+                });
+
+                // Setting the query params to all the click events related to current domain
+                window.addEventListener("click", (event: any) => {
+                    const target: any = event.target;
+                    const targetHref: string | any = target.href;
+                    const docOrigin: string = document.location.origin;
+                    if (
+                        targetHref &&
+                        targetHref.includes(docOrigin) &&
+                        !targetHref.includes("live_preview")
+                    ) {
+                        const newUrl = addLivePreviewQueryTags(target.href);
+                        event.target.href = newUrl || target.href;
+                    }
+                });
+            }
         } else if (this.config.cleanCslpOnProduction) {
             this.removeDataCslp();
         }
@@ -153,9 +197,22 @@ export default class LivePreview {
                 })`;
         }
 
+        if (!this.config.stackDetails.environment) {
+            throw `To use edit tags, you must provide the preview environment. Specify the preview environment while initializing the Live Preview SDK.
+
+                ContentstackLivePreview.init({
+                    ...,
+                    stackDetails: {
+                        environment: 'Your-environment'
+                    },
+                    ...
+                })`;
+        }
+
         const protocol = String(this.config.clientUrlParams.protocol);
         const host = String(this.config.clientUrlParams.host);
         const port = String(this.config.clientUrlParams.port);
+        const environment = String(this.config.stackDetails.environment);
 
         const urlHash = `!/stack/${
             this.config.stackDetails.apiKey
@@ -167,7 +224,8 @@ export default class LivePreview {
         url.port = port;
         url.hash = urlHash;
         url.searchParams.append("preview-field", preview_field);
-        url.searchParams.append("preview-url", window.location.origin);
+        url.searchParams.append("preview-locale", locale ?? "en-us");
+        url.searchParams.append("preview-environment", environment);
 
         return `${url.origin}/${url.hash}${url.search}`;
     }
@@ -334,7 +392,10 @@ export default class LivePreview {
     }
 
     private createCslpTooltip = () => {
-        if (!document.getElementById("cslp-tooltip")) {
+        if (
+            !document.getElementById("cslp-tooltip") &&
+            this.config.editButton.enable
+        ) {
             const tooltip = document.createElement("button");
             tooltip.classList.add("cslp-tooltip");
             tooltip.setAttribute("data-test-id", "cs-cslp-tooltip");
@@ -405,8 +466,14 @@ export default class LivePreview {
             this.tooltip.parentElement?.getBoundingClientRect();
 
         if (currentRectOfElement && currentRectOfParentOfElement) {
-            let upperBoundOfTooltip = currentRectOfElement.top - 40;
-            const left = currentRectOfElement.left - 5;
+            let {
+                upperBoundOfTooltip,
+                // eslint-disable-next-line prefer-const
+                leftBoundOfTooltip,
+            }: IEditButtonPosition = getEditButtonPosition(
+                this.currentElementBesideTooltip,
+                this.config.editButton.position
+            );
 
             // if scrolled and element is still visible, make sure tooltip is also visible
             if (upperBoundOfTooltip < 0) {
@@ -418,7 +485,7 @@ export default class LivePreview {
             this.tooltip.style.top = upperBoundOfTooltip + "px";
             this.tooltip.style.zIndex =
                 this.currentElementBesideTooltip.style.zIndex || "200";
-            this.tooltip.style.left = left + "px";
+            this.tooltip.style.left = leftBoundOfTooltip + "px";
 
             if (this.tooltipChild.singular && this.tooltipChild.multiple) {
                 if (this.currentElementBesideTooltip.hasAttribute("href")) {
@@ -433,7 +500,6 @@ export default class LivePreview {
                     this.tooltipCurrentChild = "singular";
                 }
             }
-
             return true;
         }
 
@@ -446,6 +512,7 @@ export default class LivePreview {
 
         nodes.forEach((node) => {
             node.removeAttribute("data-cslp");
+            node.removeAttribute("data-cslp-button-position");
         });
     }
 }

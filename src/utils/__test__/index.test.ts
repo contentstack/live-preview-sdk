@@ -1,8 +1,11 @@
+import { DOMRect } from "../../__test__/utils";
 import {
     createMultipleEditButton,
     createSingularEditButton,
+    getEditButtonPosition,
     hasWindow,
 } from "../index";
+import { IConfigEditButton } from "../types";
 
 let editCallback: jest.Mock<void, [e: MouseEvent]> | undefined;
 let linkCallback: jest.Mock<void, [e: MouseEvent]> | undefined;
@@ -108,5 +111,137 @@ describe("Edit button", () => {
         const editButton = tooltipChild[0];
         editButton.click();
         expect(editCallback).toBeCalled();
+    });
+});
+
+describe("getEditButtonPosition: Edit button", () => {
+    beforeAll(() => {
+        const titlePara = document.createElement("h3");
+        titlePara.setAttribute("data-test-id", "title-para");
+        if (titlePara) {
+            titlePara.getBoundingClientRect = jest.fn(
+                () => new DOMRect(53, 75, 1529, 10)
+            );
+        }
+
+        document.body.appendChild(titlePara);
+    });
+
+    afterAll(() => {
+        document.getElementsByTagName("html")[0].innerHTML = "";
+        jest.clearAllMocks();
+    });
+
+    test("should be positioned on top of hovered element", async () => {
+        const titlePara = document.querySelector("[data-test-id='title-para']");
+        expect(
+            getEditButtonPosition(titlePara as HTMLElement, "top")
+        ).toStrictEqual({ upperBoundOfTooltip: 36.75, leftBoundOfTooltip: 53 });
+    });
+
+    test("should be positioned on top-left of hovered element", async () => {
+        const titlePara = document.querySelector("[data-test-id='title-para']");
+        expect(
+            getEditButtonPosition(titlePara as HTMLElement, "top-left")
+        ).toStrictEqual({ upperBoundOfTooltip: 36.75, leftBoundOfTooltip: 53 });
+    });
+
+    test("should be positioned on top-center of hovered element", async () => {
+        const titlePara = document.querySelector("[data-test-id='title-para']");
+        expect(
+            getEditButtonPosition(titlePara as HTMLElement, "top-center")
+        ).toStrictEqual({
+            upperBoundOfTooltip: 36.75,
+            leftBoundOfTooltip: 786.5,
+        });
+    });
+
+    test("should be positioned on top-right of hovered element", async () => {
+        const titlePara = document.querySelector("[data-test-id='title-para']");
+        expect(
+            getEditButtonPosition(titlePara as HTMLElement, "top-right")
+        ).toStrictEqual({
+            upperBoundOfTooltip: 36.75,
+            leftBoundOfTooltip: 1515,
+        });
+    });
+
+    test("should be positioned on right of hovered element", async () => {
+        const titlePara = document.querySelector("[data-test-id='title-para']");
+        expect(
+            getEditButtonPosition(titlePara as HTMLElement, "right")
+        ).toStrictEqual({
+            upperBoundOfTooltip: 71.75,
+            leftBoundOfTooltip: 1592,
+        });
+    });
+
+    test("should be positioned on bottom-right of hovered element", async () => {
+        const titlePara = document.querySelector("[data-test-id='title-para']");
+        expect(
+            getEditButtonPosition(titlePara as HTMLElement, "bottom-right")
+        ).toStrictEqual({
+            upperBoundOfTooltip: 114.75,
+            leftBoundOfTooltip: 1515,
+        });
+    });
+
+    test("should be positioned on bottom-center of hovered element", async () => {
+        const titlePara = document.querySelector("[data-test-id='title-para']");
+        expect(
+            getEditButtonPosition(titlePara as HTMLElement, "bottom-center")
+        ).toStrictEqual({
+            upperBoundOfTooltip: 114.75,
+            leftBoundOfTooltip: 786.5,
+        });
+    });
+
+    test("should be positioned on bottom-left of hovered element", async () => {
+        const titlePara = document.querySelector("[data-test-id='title-para']");
+        expect(
+            getEditButtonPosition(titlePara as HTMLElement, "bottom-left")
+        ).toStrictEqual({
+            upperBoundOfTooltip: 114.75,
+            leftBoundOfTooltip: 53,
+        });
+    });
+
+    test("should be positioned on bottom of hovered element", async () => {
+        const titlePara = document.querySelector("[data-test-id='title-para']");
+        expect(
+            getEditButtonPosition(titlePara as HTMLElement, "bottom")
+        ).toStrictEqual({
+            upperBoundOfTooltip: 114.75,
+            leftBoundOfTooltip: 53,
+        });
+    });
+
+    test("should be positioned on left of hovered element", async () => {
+        const titlePara = document.querySelector("[data-test-id='title-para']");
+        expect(
+            getEditButtonPosition(titlePara as HTMLElement, "left")
+        ).toStrictEqual({
+            upperBoundOfTooltip: 71.75,
+            leftBoundOfTooltip: -19,
+        });
+    });
+
+    test("should override the default position if position attribute is present", async () => {
+        const titlePara = document.querySelector("[data-test-id='title-para']");
+        titlePara?.setAttribute("data-cslp-button-position", "top-center");
+        expect(
+            getEditButtonPosition(titlePara as HTMLElement, "top-left")
+        ).toStrictEqual({
+            upperBoundOfTooltip: 36.75,
+            leftBoundOfTooltip: 786.5,
+        });
+    });
+
+    test("should positioned on top-left if the passed position is not valid ", async () => {
+        const titlePara = document.querySelector("[data-test-id='title-para']");
+        titlePara?.setAttribute("data-cslp-button-position", "random-string");
+        expect(
+            getEditButtonPosition(titlePara as HTMLElement, "top-left")
+        ).toStrictEqual({ upperBoundOfTooltip: 36.75, leftBoundOfTooltip: 53 });
     });
 });

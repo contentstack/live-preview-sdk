@@ -45,6 +45,24 @@ export declare interface IConfig {
     onChange: () => void;
     runScriptsOnUpdate: boolean;
     hash: string;
+    editButton: IConfigEditButton;
+}
+
+export declare interface IConfigEditButton {
+    enable: boolean;
+    exclude?: ("insideLivePreviewPortal" | "outsideLivePreviewPortal")[];
+    includeByQueryParameter?: boolean;
+    position?:
+        | "top"
+        | "bottom"
+        | "left"
+        | "right"
+        | "top-left"
+        | "top-right"
+        | "top-center"
+        | "bottom-left"
+        | "bottom-right"
+        | "bottom-center";
 }
 
 export declare interface IInitData {
@@ -55,6 +73,7 @@ export declare interface IInitData {
     stackDetails: Partial<IInitStackDetails>;
     clientUrlParams: Partial<Omit<IClientUrlParams, "url">>;
     stackSdk: IStackSdk;
+    editButton: IConfigEditButton;
 }
 
 // Post message types
@@ -98,8 +117,17 @@ export declare interface IDocWithScriptMessage
     };
 }
 
+export declare interface IEditButtonPosition {
+    upperBoundOfTooltip: number;
+    leftBoundOfTooltip: number;
+}
+
 // end of Post message types
 
 export declare type OnEntryChangeCallback = () => void;
+
+export declare type OnEntryChangeConfig = {
+    skipInitialRender?: boolean;
+};
 
 export declare type OnEntryChangeCallbackUID = string;

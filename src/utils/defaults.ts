@@ -4,6 +4,12 @@ export const userInitData: IInitData = {
     ssr: true,
     enable: true,
     cleanCslpOnProduction: true,
+    editButton: {
+        enable: true,
+        exclude: [],
+        position: "top",
+        includeByQueryParameter: true,
+    },
 
     stackDetails: {
         apiKey: "",

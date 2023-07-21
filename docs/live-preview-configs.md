@@ -6,7 +6,7 @@ The init data has following structure
   - [`init(config: IConfig)`](#initconfig-iconfig)
     - [`enable`](#enable)
     - [`ssr`](#ssr)
-    - [`runScriptsOnUpdate`](#runscriptsonupdate)
+    - [`editButton`](#editbutton)
     - [`cleanCslpOnProduction`](#cleancslponproduction)
     - [`stackDetails`](#stackdetails)
       - [`apiKey`](#apikey)
@@ -15,6 +15,7 @@ The init data has following structure
       - [NA config](#na-config)
       - [EU config](#eu-config)
     - [`stackSdk`](#stacksdk)
+  - [`onLiveEdit(callback: () => void)`](#onliveeditcallback---void)
   - [`onEntryChange(callback: () => void)`](#onentrychangecallback---void)
   - [`getGatsbyDataFormat(sdkQuery: IStackSdk, prefix: string)`](#getgatsbydataformatsdkquery-istacksdk-prefix-string)
 
@@ -47,17 +48,66 @@ When you set the property to `false`, then app is rendered from the client side 
 
 > **Note:** For CSR mode, [stackSDK](#stacksdk) is required. Hence, we automatically switch mode to CSR when you pass this object. This config is provided to override the default behavior.
 
-### `runScriptsOnUpdate`
+### `editButton`
+The editButton object allows you to manage the "Edit" button both within and outside the Live Preview portal. It offers the following features:
+- Enable/disable the "Edit" button
+- Include/exclude the "Edit" button from inside/outside the Live Preview panel
+- Adjust the position of the "Edit" button using eight over predefined positions
 
-| type    | default | optional |
-| ------- | ------- | -------- |
-| boolean | false   | yes      |
+The editButton object contains four keys:
 
-When the live preview runs in SSR mode, we fetch a new page every time you update the entry and update the difference in the DOM. If your webpage relies on scripts as soon as it loads, changes from those scripts will not get reflected on the DOM.
+1. #### `enable`
+    | type    | default | optional |
+    | ------- | ------- | -------- |
+    | boolean | true    | no       |
 
-If your page is missing some components, you could set `runScriptsOnUpdate` to `true` to run the scripts every time you update the entry.
+    This key lets you specify whether you want to display the “Edit” button or not. It is of type “Boolean” with value true/false.
 
-> **Note:** This option will wait for all the scripts to load. This could potentially make your page slow if it depends on a lot of scripts. Use it only if your page is not rendering properly.
+2. #### `exclude`
+    | type    | default | optional |
+    | ------- | ------- | -------- |
+    | array   | [ ]     | yes      |
+
+    This key provides you with the option to exclude the editButton from either inside or outside the Live Preview portal for certain conditions. It is of type “Array” with any one of the following string values:
+    
+    - ##### `insideLivePreviewPortal`
+    
+        Used when you want to remove the “Edit” button from within the Live Preview portal.
+    - ##### `outsideLivePreviewPortal`
+    
+        Used when you want to remove the “Edit” button from outside the Live Preview portal.
+    
+    > **Note:** Although you have excluded the "Edit" button for Live Preview, you can add the `cslp-buttons` query parameter in your website URL to display the "Edit" button outside of your Live Preview-enabled website.
+
+
+3. #### `includeByQueryParameter`
+    | type    | default | optional |
+    | ------- | ------- | -------- |
+    | boolean | true    | yes      |
+
+    This key is used to override the `cslp-buttons` query parameter. You can set this to true/false to enable/disable the "Edit" button option, respectively.    
+
+4. #### `position`
+    | type    | default | optional |
+    | ------- | ------- | -------- |
+    | string  | top     | yes      |
+
+    The user can place the "Edit" button in eight predefined positions within or over the Live Preview portal using these values: left, right, top-left (or top), top-right, top-center, bottom-left (or bottom), bottom-right, and bottom-center.
+    
+    > **Note:** The default position of the "Edit" button is set to "top". In a collaborative work environment, you can also manually position the “Edit” button on your website by applying the `data-cslp-button-position` attribute to the HTML tag with one of the position values.
+
+**For example:**    
+```ts
+ContentstackLivePreview.init({
+    ...
+    editButton: {
+        enable: true,
+        exclude: ["outsideLivePreviewPortal"],
+        includeByQueryParameter: false,
+        position:'top-right',
+    }
+});
+```
 
 ### `cleanCslpOnProduction`
 
@@ -129,6 +179,43 @@ Pass the `clientUrlParams` object only if you need to modify the URL.
 
 The `stackSdk` object represents the `Stack` class that we get by executing the `Contentstack.Stack()` method. It is required for Client-Side Rendering (CSR) as we need to inject the Live Preview hash and content type UID into the Stack class.
 
+## `onLiveEdit(callback: () => void)`
+
+The onLiveEdit method modifies or alters the content inside the Live Preview panel as soon as a change is made in the entry. This method runs a single API request to retrieve draft content from the entry and display the changes in the Live Preview panel.
+
+> **Note:** The onLiveEdit method will not fetch the published content of the entry and is only applicable in the Client-Side Rendering ([CSR](https://www.contentstack.com/docs/developers/set-up-live-preview/set-up-live-preview-for-your-website/#client-side-rendering-csr-)) mode.
+
+For Client-Side Rendering (CSR), as the framework handles data collection and rendering by itself, we recommend creating a function, say `updateData`, to fetch data and pass it to the `onLiveEdit` method. The `onLiveEdit` method will execute the `updateData` function whenever new data is available. 
+
+For example, in a React application, you can create an `updateData` function that will fetch data from Contentstack and store it in a React state. Inside the `useEffect` function, you need to call the `onLiveEdit` method and pass the `updateData` function to it.
+​
+
+```js
+// utils.js
+...
+export const onLiveEdit = ContentstackLivePreview.onLiveEdit;
+...
+
+// Footer.js
+import React from "react";
+import ContentstackLivePreview from "./utils.js";
+
+const Footer = () => {
+    const [data, setData] = React.useState({});
+
+    const updateData = () => {
+        const fetchedData = SomeCallToGetData();
+        setData(fetchedData);
+    };
+
+      React.useEffect(() => {
+        ContentstackLivePreview.onLiveEdit(updateData);
+    }, []);
+
+    return <div>{data.company_name}</div>;
+};
+```
+
 ## `onEntryChange(callback: () => void)`
 
 For Client-Side Rendering (CSR), data collection and rendering is handled by the framework itself. Hence, for CSR, we recommend creating a function responsible for fetching and storing data, for example, `updatePage()`, and passing it to the `onEntryChange()` method. This will execute the updatePage() function whenever new data is available.
@@ -164,6 +251,13 @@ const Footer = () => {
     return <div>{data.company_name}</div>;
 };
 ```
+
+> **Note:** To make the `onEntryChange` method work similarly to the [`onLiveEdit`](#onliveeditcallback---void) method, you can utilize the optional parameter `skipInitialRender:true`. This will enable the function to only call the Contentstack API once.
+>
+>For example:
+>```js
+>onEntryChange(fetchData,{skipInitialRender:true})
+>```
 
 ## `getGatsbyDataFormat(sdkQuery: IStackSdk, prefix: string)`
 
