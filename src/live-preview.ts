@@ -21,6 +21,7 @@ export default class LivePreview {
         enable: true,
         runScriptsOnUpdate: false,
         cleanCslpOnProduction: true,
+        hash: "",
 
         stackDetails: {
             apiKey: "",
@@ -235,6 +236,27 @@ export default class LivePreview {
         this.config.onChange = onChangeCallback;
     }
 
+    get hash(): string {
+        return this.config.hash;
+    }
+
+    setConfigFromParams(
+        params: Partial<{
+            live_preview: string;
+        }> = {}
+    ): void {
+        if (typeof params !== "object")
+            throw new TypeError(
+                "Live preview SDK: query param must be an object"
+            );
+
+        const { live_preview } = params;
+
+        if (live_preview) {
+            this.config.hash = live_preview;
+        }
+    }
+
     private resolveIncomingMessage(
         e: MessageEvent<ILivePreviewReceivePostMessages>
     ) {
@@ -246,6 +268,8 @@ export default class LivePreview {
             case "client-data-send": {
                 const { contentTypeUid, entryUid } = this.config.stackDetails;
                 const { hash } = e.data.data;
+
+                this.setConfigFromParams({ live_preview: hash });
 
                 if (this.config.ssr) {
                     // Get the content from the server and replace the body
