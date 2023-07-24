@@ -1,6 +1,6 @@
 import ContentstackLivePreview from "../contentstack-live-preview-HOC";
 import { PublicLogger } from "../utils/public-logger";
-import { IInitData } from "../utils/types";
+import { IInitData } from "../types/types";
 import { sendPostmessageToWindow } from "./utils";
 import packageJson from "../../package.json";
 const ContentstackLivePreview2 = ContentstackLivePreview;

@@ -1,4 +1,4 @@
-import { IConfig, IInitData } from "./types";
+import { IConfig, IInitData } from "../types/types";
 
 export const userInitData: IInitData = {
     ssr: true,

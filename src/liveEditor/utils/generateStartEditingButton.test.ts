@@ -1,6 +1,6 @@
 import { getDefaultConfig } from "../../utils/defaults";
 import { PublicLogger } from "../../utils/public-logger";
-import { IConfig } from "../../utils/types";
+import { IConfig } from "../../types/types";
 import { generateStartEditingButton } from "./generateStartEditingButton";
 
 describe("generateStartEditingButton", () => {

@@ -4,11 +4,12 @@ import LivePreview from "../live-preview";
 import { getDefaultConfig } from "../utils/defaults";
 import * as LiveEditorModule from "../liveEditor";
 import { PublicLogger } from "../utils/public-logger";
-import { IInitData } from "../utils/types";
+
 import {
     convertObjectToMinifiedString,
     sendPostmessageToWindow,
 } from "./utils";
+import { IInitData } from "../types/types";
 
 const TITLE_CSLP_TAG = "content-type-1.entry-uid-1.en-us.field-title";
 const DESC_CSLP_TAG = "content-type-2.entry-uid-2.en-us.field-description";
