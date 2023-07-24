@@ -294,10 +294,19 @@ export default class LivePreview {
         this.config.onChange = onChangeCallback;
     }
 
+    /**
+     * It is the live preview hash.
+     * This hash could be used when data is fetched manually.
+     */
     get hash(): string {
         return this.config.hash;
     }
 
+    /**
+     * Sets the live preview hash from the query param which is
+     * accessible via `hash` property.
+     * @param params query param in an object form
+     */
     setConfigFromParams(
         params: Partial<{
             live_preview: string;

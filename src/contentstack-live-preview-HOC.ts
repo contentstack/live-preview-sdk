@@ -17,6 +17,13 @@ export class ContentstackLivePreview {
     static livePreview: LivePreview | null = null;
     static userConfig: Partial<IInitData> | null = null;
     static subscribers: { [uid: string]: OnEntryChangeCallback } = {};
+    static configs: {
+        params: Partial<{
+            live_preview: string;
+        }>;
+    } = {
+        params: {},
+    };
 
     static init(
         userConfig: Partial<IInitData> = userInitData
@@ -34,11 +41,48 @@ export class ContentstackLivePreview {
                 ContentstackLivePreview.livePreview.setOnChangeCallback(
                     ContentstackLivePreview.publish
                 );
+
+                ContentstackLivePreview.livePreview.setConfigFromParams(
+                    this.configs.params
+                );
+                this.configs.params = {};
+
                 return Promise.resolve(ContentstackLivePreview.livePreview);
             }
         } else {
             ContentstackLivePreview.userConfig = userConfig;
         }
+    }
+
+    /**
+     * It is the live preview hash.
+     * This hash could be used when data is fetched manually.
+     */
+    static get hash(): string {
+        if (!this.livePreview) {
+            throw new Error(
+                "Live preview SDK must be initialized before getting hash"
+            );
+        }
+        return this.livePreview.hash;
+    }
+
+    /**
+     * Sets the live preview hash from the query param which is
+     * accessible via `hash` property.
+     * @param params query param in an object form
+     */
+    static setConfigFromParams(
+        params: Partial<{
+            live_preview: string;
+        }> = {}
+    ): void {
+        if (!this.livePreview) {
+            this.configs.params = params;
+            return;
+        }
+
+        this.livePreview.setConfigFromParams(params);
     }
 
     private static publish(): void {
@@ -74,6 +118,13 @@ export class ContentstackLivePreview {
             ContentstackLivePreview.livePreview.setOnChangeCallback(
                 ContentstackLivePreview.publish
             );
+
+            ContentstackLivePreview.livePreview.setConfigFromParams(
+                this.configs.params
+            );
+
+            this.configs.params = {};
+
             ContentstackLivePreview.userConfig = null;
         }
         const callbackUid = ContentstackLivePreview.subscribe(onChangeCallback);
