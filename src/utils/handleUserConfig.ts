@@ -6,7 +6,7 @@ import {
     IInitData,
     ILivePreviewModeConfig,
     IStackSdk,
-} from "./types";
+} from "../types/types";
 
 const handleClientUrlParams = (
     existingConfig: IConfig,

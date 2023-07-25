@@ -1,7 +1,7 @@
 import _ from "lodash";
 
 import mockData from "./ctmap";
-import { IConfig } from "../utils/types";
+import { IConfig } from "../types/types";
 import { generateStartEditingButton } from "./utils/generateStartEditingButton";
 import { generateFieldSchemaMap } from "./utils/generateFieldSchemaMap";
 import {

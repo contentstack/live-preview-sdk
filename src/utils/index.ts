@@ -1,5 +1,5 @@
 import { PublicLogger } from "./public-logger";
-import { IConfigEditButton, IEditButtonPosition } from "./types";
+import { IConfigEditButton, IEditButtonPosition } from "../types/types";
 
 export function hasWindow(): boolean {
     return typeof window !== "undefined";

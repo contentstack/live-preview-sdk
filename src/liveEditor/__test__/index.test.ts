@@ -1,7 +1,6 @@
 import { VisualEditor } from "../index";
 import { getDefaultConfig } from "../../utils/defaults";
-
-import { IConfig } from "../../utils/types";
+import { IConfig } from "../../types/types";
 
 const multipleElementDOM = `<div data-cslp="page.blt58a50b4cebae75c5.en-us.page_components.4.section_with_cards"
     data-cslp-container="page.blt58a50b4cebae75c5.en-us.page_components">

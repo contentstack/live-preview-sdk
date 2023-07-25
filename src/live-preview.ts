@@ -18,7 +18,7 @@ import {
     ILivePreviewModeConfig,
     ILivePreviewMode,
     ILivePreviewReceivePostMessages,
-} from "./utils/types";
+} from "./types/types";
 
 export default class LivePreview {
     /**
