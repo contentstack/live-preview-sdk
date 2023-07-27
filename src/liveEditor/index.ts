@@ -10,13 +10,14 @@ import {
     generateVisualEditorWrapper,
 } from "./utils/generateVisualEditorDom";
 import { shouldHideInstanceButton } from "./utils/instanceButtons";
-
-const RESET =
-    "overflow: hidden !important; width: 0 !important; height: 0 !important; padding: 0 !important; border: 0 !important;";
+import {
+    generateAddButton,
+    getChildrenDirection,
+    handleAddButtonsForMultiple,
+    hideAddInstanceButtons,
+} from "./utils/multipleElementAddButton";
 
 const allowedInlineEditable = ["singleline", "multiline"];
-
-const addButton = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">\n<path d="M10.4688 4.375C10.4688 4.11612 10.259 3.90625 10.0001 3.90625C9.74121 3.90625 9.53135 4.11612 9.53135 4.375V9.27307H4.37402C4.11514 9.27307 3.90527 9.48294 3.90527 9.74182C3.90527 10.0007 4.11514 10.2106 4.37402 10.2106H9.53135V15.625C9.53135 15.8839 9.74121 16.0937 10.0001 16.0937C10.259 16.0937 10.4688 15.8839 10.4688 15.625V10.2106H15.6259C15.8847 10.2106 16.0946 10.0007 16.0946 9.74182C16.0946 9.48294 15.8847 9.27307 15.6259 9.27307H10.4688V4.375Z" fill="#475161"/>\n</svg>`;
 
 export class VisualEditor {
     private fieldSchemaMap: { [key: string]: any } = {};
@@ -25,8 +26,8 @@ export class VisualEditor {
     private previousSelectedEditableDOM: Element | null = null;
     private replaceAssetButton: HTMLButtonElement | null = null;
     private visualEditorWrapper: HTMLDivElement | null = null;
-    private previousButton: HTMLButtonElement | null = null;
-    private nextButton: HTMLButtonElement | null = null;
+    private previousButton: HTMLButtonElement = generateAddButton();
+    private nextButton: HTMLButtonElement = generateAddButton();
     private previousHoveredTargetDOM: Element | null = null;
     private startEditingButton: HTMLButtonElement | null = null;
 
@@ -81,126 +82,11 @@ export class VisualEditor {
             return "singleline";
         }
     };
-    private getChildrenDirection = (
-        eventDetails: ReturnType<typeof this.handleCSLPMouseEvent>
-    ) => {
-        let dir = "none";
 
-        if (!eventDetails) {
-            return dir;
-        }
-        dir = "none";
-        const { editableElement } = eventDetails;
+    // ! ready for test
+    // private handleAddButtonsForMultiple = (editableElement?: Element) => {
 
-        const parentCSLPValue = editableElement.getAttribute(
-            "data-cslp-container"
-        );
-        const parentElement = editableElement.closest(
-            `[data-cslp="${parentCSLPValue}"]`
-        );
-
-        if (!parentElement) {
-            return dir;
-        }
-
-        const children = parentElement.querySelectorAll(
-            `[data-cslp-container="${parentCSLPValue}"]`
-        );
-        const firstChildElement = children[0];
-        let secondChildElement = children[1];
-        let clonedElement;
-
-        if (!firstChildElement) {
-            return dir;
-        }
-        if (!secondChildElement) {
-            clonedElement = document.createElement("div");
-            clonedElement.setAttribute(
-                "class",
-                firstChildElement.getAttribute("class") ?? ""
-            );
-            clonedElement.setAttribute("style", RESET);
-            parentElement.appendChild(clonedElement);
-            secondChildElement = clonedElement;
-        }
-        // get horizontal and vertical position differences
-        const firstChildBounds = firstChildElement.getBoundingClientRect();
-        const siblingBounding = secondChildElement.getBoundingClientRect();
-        const deltaX = Math.abs(firstChildBounds.left - siblingBounding.left);
-        const deltaY = Math.abs(firstChildBounds.top - siblingBounding.top);
-
-        // if
-        dir = deltaX > deltaY ? "horizontal" : "vertical";
-
-        if (clonedElement) {
-            parentElement.parentElement?.removeChild(clonedElement);
-        }
-
-        return dir;
-    };
-
-    // remaining
-    private handleAddButtonsForMultiple = (
-        eventDetails: ReturnType<typeof this.handleCSLPMouseEvent>
-    ) => {
-        if (!eventDetails) {
-            return;
-        }
-        const { cslpData, editableElement, fieldSchema } = eventDetails;
-
-        if (!editableElement.getAttribute("data-cslp-container")) {
-            return;
-        }
-
-        const direction = this.getChildrenDirection(eventDetails);
-
-        if (direction === "none" || !this.visualEditorWrapper) {
-            return;
-        }
-
-        const targetDOMDimension = editableElement.getBoundingClientRect();
-
-        if (!this.previousButton) {
-            const previousButtonDOM = document.createElement("button");
-            this.previousButton = previousButtonDOM;
-            this.previousButton.innerHTML = addButton;
-            previousButtonDOM.classList.add("visual-editor__add-button");
-            this.visualEditorWrapper.appendChild(previousButtonDOM);
-        }
-
-        if (!this.nextButton) {
-            const nextButtonDOM = document.createElement("button");
-            this.nextButton = nextButtonDOM;
-            this.nextButton.innerHTML = addButton;
-            nextButtonDOM.classList.add("visual-editor__add-button");
-            this.visualEditorWrapper.appendChild(nextButtonDOM);
-        }
-
-        if (direction === "horizontal") {
-            const middleHeight =
-                targetDOMDimension.top +
-                (targetDOMDimension.bottom - targetDOMDimension.top) / 2 +
-                window.scrollY;
-            this.previousButton.style.left = `${targetDOMDimension.left}px`;
-            this.previousButton.style.top = `${middleHeight}px`;
-
-            this.nextButton.style.left = `${targetDOMDimension.right}px`;
-            this.nextButton.style.top = `${middleHeight}px`;
-        } else {
-            const middleWidth =
-                targetDOMDimension.left +
-                (targetDOMDimension.right - targetDOMDimension.left) / 2;
-            this.previousButton.style.left = `${middleWidth}px`;
-            this.previousButton.style.top = `${
-                targetDOMDimension.top + window.scrollY
-            }px`;
-
-            this.nextButton.style.left = `${middleWidth}px`;
-            this.nextButton.style.top = `${
-                targetDOMDimension.bottom + window.scrollY
-            }px`;
-        }
-    };
+    // };
 
     private handleStartEditing = (_event: any): void => {
         if (!this.startEditingButton) {
@@ -321,12 +207,24 @@ export class VisualEditor {
         const eventDetails = this.handleCSLPMouseEvent(event);
         if (!eventDetails) {
             this.hideCustomCursor();
-            this.hideAddInstanceButtons(event.target);
+            hideAddInstanceButtons({
+                eventTarget: event.target,
+                visualEditorWrapper: this.visualEditorWrapper,
+                nextButton: this.nextButton,
+                previousButton: this.previousButton,
+                overlayWrapper: this.overlayWrapper,
+            });
             return;
         }
         const { fieldSchema, editableElement } = eventDetails;
         if (this.previousHoveredTargetDOM !== editableElement) {
-            this.hideAddInstanceButtons(event.target);
+            hideAddInstanceButtons({
+                eventTarget: event.target,
+                visualEditorWrapper: this.visualEditorWrapper,
+                nextButton: this.nextButton,
+                previousButton: this.previousButton,
+                overlayWrapper: this.overlayWrapper,
+            });
         }
 
         if (this.customCursor) {
@@ -347,9 +245,20 @@ export class VisualEditor {
             fieldSchema?.field_metadata?.ref_multiple ||
             fieldSchema?.data_type === "block"
         ) {
-            this.handleAddButtonsForMultiple(eventDetails);
+            handleAddButtonsForMultiple({
+                editableElement: eventDetails.editableElement,
+                visualEditorWrapper: this.visualEditorWrapper,
+                nextButton: this.nextButton,
+                previousButton: this.previousButton,
+            });
         } else {
-            this.hideAddInstanceButtons(event.target);
+            hideAddInstanceButtons({
+                eventTarget: event.target,
+                visualEditorWrapper: this.visualEditorWrapper,
+                nextButton: this.nextButton,
+                previousButton: this.previousButton,
+                overlayWrapper: this.overlayWrapper,
+            });
         }
         this.previousHoveredTargetDOM = editableElement;
     }, 10);
@@ -493,7 +402,12 @@ export class VisualEditor {
             fieldSchema?.multiple ||
             fieldSchema?.field_metadata?.ref_multiple
         ) {
-            this.handleAddButtonsForMultiple(eventDetails);
+            handleAddButtonsForMultiple({
+                editableElement: eventDetails.editableElement,
+                visualEditorWrapper: this.visualEditorWrapper,
+                nextButton: this.nextButton,
+                previousButton: this.previousButton,
+            });
         }
     };
     hideOverlayDOM = (event: MouseEvent): void => {
@@ -502,7 +416,13 @@ export class VisualEditor {
         if (targetElement.classList.contains("visual-editor__overlay")) {
             this.overlayWrapper?.classList.remove("visible");
 
-            this.hideAddInstanceButtons(null);
+            hideAddInstanceButtons({
+                eventTarget: null,
+                visualEditorWrapper: this.visualEditorWrapper,
+                nextButton: this.nextButton,
+                previousButton: this.previousButton,
+                overlayWrapper: this.overlayWrapper,
+            });
             // Remove contentEditable from previous element
             if (this.previousSelectedEditableDOM) {
                 this.previousSelectedEditableDOM.removeAttribute(
@@ -518,28 +438,6 @@ export class VisualEditor {
     hideCustomCursor = (): void => {
         if (this.customCursor) {
             this.customCursor.classList.remove("visible");
-        }
-    };
-    hideAddInstanceButtons = (eventTarget: EventTarget | null): void => {
-        if (
-            shouldHideInstanceButton(
-                {
-                    overlay: this.overlayWrapper,
-                    nextButton: this.nextButton,
-                    previousButton: this.previousButton,
-                    visualEditorWrapper: this.visualEditorWrapper,
-                },
-                eventTarget
-            )
-        ) {
-            if (this.previousButton) {
-                this.visualEditorWrapper?.removeChild(this.previousButton);
-                this.previousButton = null;
-            }
-            if (this.nextButton) {
-                this.visualEditorWrapper?.removeChild(this.nextButton);
-                this.nextButton = null;
-            }
         }
     };
     removeVisualEditorDOM = (): void => {

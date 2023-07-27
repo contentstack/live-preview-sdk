@@ -1,7 +1,7 @@
-import { getDefaultConfig } from "../../utils/defaults";
-import { PublicLogger } from "../../utils/public-logger";
-import { IConfig } from "../../types/types";
-import { generateStartEditingButton } from "./generateStartEditingButton";
+import { getDefaultConfig } from "../../../utils/defaults";
+import { PublicLogger } from "../../../utils/public-logger";
+import { IConfig } from "../../../types/types";
+import { generateStartEditingButton } from "../generateStartEditingButton";
 
 describe("generateStartEditingButton", () => {
     let config: IConfig;
