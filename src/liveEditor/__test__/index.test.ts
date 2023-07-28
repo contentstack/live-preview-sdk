@@ -73,9 +73,6 @@ describe("Visual editor", () => {
 
         test("should add overlay to DOM when clicked", () => {
             new VisualEditor(config);
-
-            console.log(document.body.outerHTML);
-
             h1Tag.click();
 
             expect(document.body).toMatchSnapshot();

@@ -157,13 +157,25 @@ export interface ILinkContentTypeSchema extends IContentTypeSchemaCommonData {
     };
 }
 
-export interface IReferenceContentTypeSchema {
+export interface IReferenceContentTypeSchema
+    extends IContentTypeSchemaCommonData {
     data_type: "reference";
     reference_to: string[];
     field_metadata: {
         ref_multiple: boolean;
         ref_multiple_content_types: boolean;
     };
+}
+
+export interface IExperienceContainerContentTypeSchema
+    extends IContentTypeSchemaCommonData {
+    data_type: "experience_container";
+    field_metadata: {
+        experience_uid: string;
+        project_uid: string;
+        enableDefaultVariation: boolean;
+    };
+    schema: IContentTypeCommonBlocks[];
 }
 
 export type IContentTypeCommonBlocks =
@@ -180,10 +192,27 @@ export type IContentTypeCommonBlocks =
     | ILinkContentTypeSchema
     | IModularBlocksContentTypeSchema
     | IGroupContentTypeSchema
-    | IReferenceContentTypeSchema;
+    | IReferenceContentTypeSchema
+    | IGlobalFieldContentTypeSchema
+    | IExperienceContainerContentTypeSchema;
 
 export type IContentTypeRootBlocks =
-    | IContentTypeCommonBlocks
+    | ISingleLineTextBoxContentTypeSchema
+    | IMultiLineTextBoxContentTypeSchema
+    | IHTMLRTEContentTypeSchema
+    | IJSONRTEContentTypeSchema
+    | IMarkdownContentTypeSchema
+    | ISelectContentTypeSchema
+    | INumberContentTypeSchema
+    | IBooleanContentTypeSchema
+    | IDateContentTypeSchema
+    | IFileContentTypeSchema
+    | ILinkContentTypeSchema
+    | IModularBlocksContentTypeSchema
+    | IGroupContentTypeSchema
+    | IReferenceContentTypeSchema
+    | IGlobalFieldContentTypeSchema
+    | IExperienceContainerContentTypeSchema
     | ITitleContentTypeSchema
     | IURLContentTypeSchema;
 
@@ -218,6 +247,22 @@ export interface IGlobalFieldContentTypeSchema
     reference_to: string;
     field_metadata: {
         description: string;
+    };
+    schema: IContentTypeRootBlocks[];
+}
+
+export interface IPageSchema {
+    created_at: string;
+    updated_at: string;
+    title: string;
+    description: string;
+    uid: string;
+    _version: number;
+    inbuilt_class: false;
+    options: {
+        is_page: boolean;
+        singleton: boolean;
+        title: string;
     };
     schema: IContentTypeRootBlocks[];
 }
