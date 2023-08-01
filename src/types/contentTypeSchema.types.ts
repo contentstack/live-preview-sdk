@@ -97,6 +97,24 @@ export interface IMarkdownContentTypeSchema
     };
 }
 
+export interface ICustomFieldContentTypeSchema
+    extends IContentTypeSchemaCommonData {
+    extension_uid: string;
+    field_metadata: {
+        extension: true;
+        is_asset?: boolean;
+    };
+    config: Record<string, unknown>;
+    data_type:
+        | "text"
+        | "number"
+        | "isodate"
+        | "boolean"
+        | "json"
+        | "reference"
+        | "file";
+}
+
 export interface ISelectContentTypeSchema extends IContentTypeSchemaCommonData {
     data_type: "text";
     display_type: "dropdown" | "radio";
@@ -189,6 +207,7 @@ export type IContentTypeCommonBlocks =
     | IBooleanContentTypeSchema
     | IDateContentTypeSchema
     | IFileContentTypeSchema
+    | ICustomFieldContentTypeSchema
     | ILinkContentTypeSchema
     | IModularBlocksContentTypeSchema
     | IGroupContentTypeSchema
@@ -203,6 +222,7 @@ export type IContentTypeRootBlocks =
     | IJSONRTEContentTypeSchema
     | IMarkdownContentTypeSchema
     | ISelectContentTypeSchema
+    | ICustomFieldContentTypeSchema
     | INumberContentTypeSchema
     | IBooleanContentTypeSchema
     | IDateContentTypeSchema

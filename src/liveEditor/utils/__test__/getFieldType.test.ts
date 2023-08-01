@@ -1,5 +1,6 @@
 import {
     IBooleanContentTypeSchema,
+    ICustomFieldContentTypeSchema,
     IDateContentTypeSchema,
     IExperienceContainerContentTypeSchema,
     IFileContentTypeSchema,
@@ -348,5 +349,24 @@ describe("getFieldType", () => {
         };
 
         expect(getFieldType(data)).toBe("experience_container");
+    });
+
+    test("should return custom_field if it is custom_field", () => {
+        const data: ICustomFieldContentTypeSchema = {
+            extension_uid: "",
+            field_metadata: {
+                extension: true,
+            },
+            config: {},
+            data_type: "number",
+            uid: "",
+            display_name: "",
+            mandatory: false,
+            multiple: false,
+            non_localizable: false,
+            unique: false,
+        };
+
+        expect(getFieldType(data)).toBe("custom_field");
     });
 });

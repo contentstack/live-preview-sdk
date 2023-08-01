@@ -2,6 +2,10 @@
 import { ISchemaFieldMap } from "./types/index.types";
 
 export function getFieldType(fieldSchema: ISchemaFieldMap): string {
+    if (Object.hasOwnProperty.call(fieldSchema, "extension_uid")) {
+        return "custom_field";
+    }
+
     switch (fieldSchema.data_type) {
         case "text": {
             if (fieldSchema?.field_metadata.multiline) {
