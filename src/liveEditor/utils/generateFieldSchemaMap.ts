@@ -1,9 +1,18 @@
 import mockData from "../ctmap";
 import _ from "lodash";
-import { ITraverseSchemaVisitor } from "./types/index.types";
+import {
+    ISchemaIndividualFieldMap,
+    ITraverseSchemaVisitor,
+} from "./types/index.types";
+import {
+    IContentTypeRootBlocks,
+    IPageSchema,
+} from "../../types/contentTypeSchema.types";
 
-export function generateFieldSchemaMap(ctUID: string): Record<string, any> {
-    const pageCT = mockData[ctUID];
+export function generateFieldSchemaMap(
+    ctUID: string
+): ISchemaIndividualFieldMap {
+    const pageCT: IPageSchema = mockData[ctUID];
     const getFieldSchemaMap: ITraverseSchemaVisitor = {
         fieldMap: {},
         should_visit: (_fieldSchema, _path) => {
@@ -23,7 +32,7 @@ export function generateFieldSchemaMap(ctUID: string): Record<string, any> {
                 if (!fieldSchema.blocks) {
                     return;
                 }
-                fieldSchema.blocks.map((block: any) => {
+                fieldSchema.blocks.map((block) => {
                     this.fieldMap[`${path}.${block.uid}`] = {
                         ...block,
                         data_type: "block",
@@ -38,17 +47,16 @@ export function generateFieldSchemaMap(ctUID: string): Record<string, any> {
 }
 
 function traverseSchema(
-    schema: Record<string, unknown>,
+    schema: IContentTypeRootBlocks[],
     visitors: Array<ITraverseSchemaVisitor>
 ): void {
     function genPath(prefix: string, path: string) {
         return _.isEmpty(prefix) ? path : [prefix, path].join(".");
     }
 
-    function traverse(fields: any, path: string) {
+    function traverse(fields: IContentTypeRootBlocks[], path: string) {
         path = path || "";
-        for (const element of fields) {
-            const field = element;
+        for (const field of fields) {
             const currPath = genPath(path, field.uid);
 
             visitors.forEach((visitor) => {
@@ -58,28 +66,27 @@ function traverseSchema(
             });
 
             if (field.data_type === "group") traverse(field.schema, currPath);
-
-            if (
+            else if (
                 field.data_type === "global_field" &&
                 _.isUndefined(field.schema) === false &&
                 _.isEmpty(field.schema) === false
             )
                 traverse(field.schema, currPath);
             if (field.data_type === "blocks") {
-                field.blocks.forEach(function (block: any) {
+                field.blocks.forEach(function (block) {
                     if (block.schema)
                         traverse(block.schema, currPath + "." + block.uid);
                 });
             }
-            if (field.data_type === "experience_container") {
-                field.variations.forEach(function (variation: any) {
-                    if (variation.schema)
-                        traverse(
-                            variation.schema,
-                            currPath + "." + variation.uid
-                        );
-                });
-            }
+            // if (field.data_type === "experience_container") {
+            //     field.variations.forEach(function (variation: any) {
+            //         if (variation.schema)
+            //             traverse(
+            //                 variation.schema,
+            //                 currPath + "." + variation.uid
+            //             );
+            //     });
+            // }
         }
     }
     traverse(schema, "");

@@ -1,26 +1,28 @@
 import _ from "lodash";
 
-import mockData from "./ctmap";
+import { VisualEditorCslpEventDetails } from "../types/liveEditor.types";
 import { IConfig } from "../types/types";
-import { generateStartEditingButton } from "./utils/generateStartEditingButton";
+import { extractDetailsFromCslp } from "../utils/cslpdata";
+import mockData from "./ctmap";
 import { generateFieldSchemaMap } from "./utils/generateFieldSchemaMap";
+import { generateStartEditingButton } from "./utils/generateStartEditingButton";
 import {
     generateVisualEditorCursor,
     generateVisualEditorOverlay,
     generateVisualEditorWrapper,
 } from "./utils/generateVisualEditorDom";
-import { shouldHideInstanceButton } from "./utils/instanceButtons";
+import { getFieldType } from "./utils/getFieldType";
 import {
     generateAddButton,
-    getChildrenDirection,
     handleAddButtonsForMultiple,
     hideAddInstanceButtons,
 } from "./utils/multipleElementAddButton";
+import { ISchemaIndividualFieldMap } from "./utils/types/index.types";
 
 const allowedInlineEditable = ["singleline", "multiline"];
 
 export class VisualEditor {
-    private fieldSchemaMap: { [key: string]: any } = {};
+    private fieldSchemaMap: Record<string, ISchemaIndividualFieldMap> = {};
     private customCursor: HTMLDivElement | null = null;
     private overlayWrapper: HTMLDivElement | null = null;
     private previousSelectedEditableDOM: Element | null = null;
@@ -52,41 +54,6 @@ export class VisualEditor {
 
         this.appendVisualEditorDOM(config);
     }
-
-    // remaining
-    getFieldType = (fieldSchema: any) => {
-        //TODO: get value for contants
-
-        if (
-            fieldSchema.data_type === "text" &&
-            fieldSchema?.field_metadata?.multiline
-        ) {
-            return "multiline";
-        }
-        if (
-            fieldSchema.data_type === "text" &&
-            fieldSchema?.field_metadata?.allow_rich_text
-        ) {
-            return "html_rte";
-        }
-        if (
-            fieldSchema.data_type === "text" &&
-            fieldSchema?.field_metadata?.markdown
-        ) {
-            return "markdown_rte";
-        }
-        if (fieldSchema.enum) {
-            return "select";
-        }
-        if (fieldSchema.data_type === "text") {
-            return "singleline";
-        }
-    };
-
-    // ! ready for test
-    // private handleAddButtonsForMultiple = (editableElement?: Element) => {
-
-    // };
 
     private handleStartEditing = (_event: any): void => {
         if (!this.startEditingButton) {
@@ -128,7 +95,7 @@ export class VisualEditor {
             this.replaceAssetButton = null;
         }
         const { editableElement, fieldSchema } = eventDetails;
-        const fieldType = this.getFieldType(fieldSchema) || "";
+        const fieldType = getFieldType(fieldSchema) || "";
 
         if (allowedInlineEditable.includes(fieldType)) {
             // Add contentEditable property for Element
@@ -179,23 +146,6 @@ export class VisualEditor {
         }
     };
 
-    private getMetadataFromCSLP = (cslpValue: string) => {
-        const [content_type_uid, entry_uid, locale, ...fieldPath] =
-            cslpValue.split(".");
-
-        const calculatedPath = fieldPath.filter((path) => {
-            const isEmpty = _.isNil(path);
-            const isNumber = _.isFinite(+path);
-            return (!isEmpty && !isNumber) || false;
-        });
-        return {
-            entry_uid,
-            content_type_uid,
-            locale,
-            fieldPath: calculatedPath.join("."),
-        };
-    };
-
     handleDOMEdit = (event: any): void => {
         const targetElement = event.target as HTMLElement;
         if (!targetElement) {
@@ -241,9 +191,10 @@ export class VisualEditor {
             return;
         }
         if (
+            fieldSchema?.data_type === "block" ||
             fieldSchema?.multiple ||
-            fieldSchema?.field_metadata?.ref_multiple ||
-            fieldSchema?.data_type === "block"
+            (fieldSchema.data_type === "reference" &&
+                fieldSchema.field_metadata.ref_multiple)
         ) {
             handleAddButtonsForMultiple({
                 editableElement: eventDetails.editableElement,
@@ -268,7 +219,9 @@ export class VisualEditor {
      * @param event Mouse event
      * @returns Details of the closest data cslp
      */
-    handleCSLPMouseEvent = (event: MouseEvent) => {
+    handleCSLPMouseEvent = (
+        event: MouseEvent
+    ): VisualEditorCslpEventDetails | undefined => {
         const targetElement = event.target as HTMLElement;
         if (!targetElement) {
             return;
@@ -281,7 +234,7 @@ export class VisualEditor {
         if (!cslpData) {
             return;
         }
-        const fieldMetadata = this.getMetadataFromCSLP(cslpData);
+        const fieldMetadata = extractDetailsFromCslp(cslpData);
 
         const fieldSchema =
             this.fieldSchemaMap[fieldMetadata.content_type_uid][
@@ -326,7 +279,7 @@ export class VisualEditor {
     // done
     addOverlayOnDOM = (
         targetDOM: Element,
-        eventDetails: ReturnType<typeof this.handleCSLPMouseEvent>
+        eventDetails: VisualEditorCslpEventDetails | undefined
     ): void => {
         if (!targetDOM || !this.overlayWrapper || !eventDetails) {
             return;
@@ -399,8 +352,10 @@ export class VisualEditor {
             outlineDOM.style.left = `${targetDOMDimension.left}px`;
         }
         if (
+            fieldSchema?.data_type === "block" || // originally, this condition was not herer
             fieldSchema?.multiple ||
-            fieldSchema?.field_metadata?.ref_multiple
+            (fieldSchema.data_type === "reference" &&
+                fieldSchema.field_metadata.ref_multiple)
         ) {
             handleAddButtonsForMultiple({
                 editableElement: eventDetails.editableElement,
