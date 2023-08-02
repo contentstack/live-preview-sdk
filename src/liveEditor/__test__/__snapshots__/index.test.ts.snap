@@ -184,6 +184,178 @@ exports[`Visual editor inline editing should add overlay to DOM when clicked 1`]
 </body>
 `;
 
+exports[`Visual editor on click, the sdk inline elements must be contenteditable file should render a replacer and remove when it is not 1`] = `
+<h1
+  data-cslp="all_fields.blt58a50b4cebae75c5.en-us.file"
+/>
+`;
+
+exports[`Visual editor on click, the sdk inline elements must be contenteditable file should render a replacer and remove when it is not 2`] = `
+<button
+  class="visual-editor__replace-button"
+  style="top: -30px; right: 1024px;"
+>
+  Replace Asset
+</button>
+`;
+
+exports[`Visual editor on click, the sdk inline elements must be contenteditable multi line should be contenteditable 1`] = `
+<h1
+  contenteditable="true"
+  data-cslp="all_fields.blt58a50b4cebae75c5.en-us.multi_line"
+/>
+`;
+
+exports[`Visual editor on click, the sdk inline elements must be contenteditable single line should be contenteditable 1`] = `
+<h1
+  contenteditable="true"
+  data-cslp="all_fields.blt58a50b4cebae75c5.en-us.single_line"
+/>
+`;
+
+exports[`Visual editor on click, the sdk should do nothing if data-cslp not available 1`] = `
+<body>
+  <h1 />
+  <div
+    class="visual-editor__container"
+    data-testid="visual-editor__container"
+  >
+    <div
+      class="visual-editor__cursor"
+      data-testid="visual-editor__cursor"
+    />
+    <div
+      class="visual-editor__overlay__wrapper"
+    >
+      
+        
+      <div
+        class="visual-editor__overlay visual-editor__overlay--top"
+      />
+      
+        
+      <div
+        class="visual-editor__overlay visual-editor__overlay--left"
+      />
+      
+        
+      <div
+        class="visual-editor__overlay visual-editor__overlay--right"
+      />
+      
+        
+      <div
+        class="visual-editor__overlay visual-editor__overlay--bottom"
+      />
+      
+        
+      <div
+        class="visual-editor__overlay--outline"
+      />
+      
+    
+    </div>
+    <button
+      class="visual-editor__start-editing-btn"
+      data-cslp-app-host="https://app.contentstack.com:443"
+      data-cslp-branch="main"
+      data-cslp-environment=""
+      data-cslp-stack=""
+      data-testid="vcms-start-editing-btn"
+    >
+      <svg
+        fill="none"
+        height="24"
+        viewBox="0 0 24 24"
+        width="24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        
+
+        <g
+          id="Edit"
+        >
+          
+
+          <path
+            clip-rule="evenodd"
+            d="M3.58347 15.3803C3.35617 15.6076 3.22019 15.9104 3.20131 16.2313L3.00244 19.6122C2.95629 20.3967 3.60524 21.0456 4.38975 20.9995L7.7706 20.8006C8.0915 20.7817 8.39431 20.6458 8.62161 20.4185L20.6176 8.4225C21.1301 7.90993 21.1301 7.07891 20.6176 6.56634L17.4356 3.38436C16.923 2.8718 16.092 2.8718 15.5794 3.38436L3.58347 15.3803ZM4.32437 16.2974C4.32707 16.2515 4.3465 16.2083 4.37897 16.1758L14.2003 6.35446L17.4954 9.64949C17.5492 9.70337 17.6113 9.74403 17.6776 9.77148L7.82611 19.623C7.79364 19.6554 7.75038 19.6749 7.70454 19.6776L4.32369 19.8764C4.21161 19.883 4.11891 19.7903 4.1255 19.6782L4.32437 16.2974ZM18.4128 9.03624L19.8221 7.627C19.8953 7.55378 19.8953 7.43506 19.8221 7.36184L16.6401 4.17986C16.5669 4.10663 16.4481 4.10663 16.3749 4.17986L14.9958 5.55897L18.2908 8.854C18.3447 8.90788 18.3854 8.96996 18.4128 9.03624Z"
+            fill="white"
+            fill-rule="evenodd"
+            id="Edit_2"
+          />
+          
+
+        </g>
+        
+
+      </svg>
+      
+
+      <span>
+        Start Editing
+      </span>
+    </button>
+  </div>
+</body>
+`;
+
+exports[`Visual editor on hover, the sdk should do nothing if the element is hovered with empty data-cslp 1`] = `
+<div
+  class="visual-editor__cursor visible"
+  data-testid="visual-editor__cursor"
+/>
+`;
+
+exports[`Visual editor on hover, the sdk should do nothing if the element is hovered with empty data-cslp 2`] = `
+<div
+  class="visual-editor__cursor visible"
+  data-testid="visual-editor__cursor"
+/>
+`;
+
+exports[`Visual editor on hover, the sdk should do nothing if the same element is hovered 1`] = `
+<div
+  class="visual-editor__cursor visible"
+  data-testid="visual-editor__cursor"
+/>
+`;
+
+exports[`Visual editor on hover, the sdk should do nothing if the same element is hovered 2`] = `
+<div
+  class="visual-editor__cursor"
+  data-testid="visual-editor__cursor"
+/>
+`;
+
+exports[`Visual editor on hover, the sdk should hide custom cursor if data cslp not available 1`] = `
+<div
+  class="visual-editor__cursor visible"
+  data-testid="visual-editor__cursor"
+/>
+`;
+
+exports[`Visual editor on hover, the sdk should hide custom cursor if data cslp not available 2`] = `
+<div
+  class="visual-editor__cursor"
+  data-testid="visual-editor__cursor"
+/>
+`;
+
+exports[`Visual editor on hover, the sdk should hide custom cursor if the current element is not previously hovered element 1`] = `
+<div
+  class="visual-editor__cursor visible"
+  data-testid="visual-editor__cursor"
+/>
+`;
+
+exports[`Visual editor on hover, the sdk should hide custom cursor if the current element is not previously hovered element 2`] = `
+<div
+  class="visual-editor__cursor"
+  data-testid="visual-editor__cursor"
+/>
+`;
+
 exports[`Visual editor on hover, the sdk show a custom cursor 1`] = `
 <div
   class="visual-editor__cursor visible"

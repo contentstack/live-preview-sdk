@@ -43,4 +43,6 @@ export function getFieldType(fieldSchema: ISchemaFieldMap): string {
             return fieldSchema.data_type;
         }
     }
+
+    return "";
 }

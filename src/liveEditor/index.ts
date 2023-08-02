@@ -55,19 +55,17 @@ export class VisualEditor {
         this.appendVisualEditorDOM(config);
     }
 
-    private handleStartEditing = (_event: any): void => {
-        if (!this.startEditingButton) {
-            return;
-        }
+    private handleStartEditing = (event: MouseEvent): void => {
+        const startEditingButton = event.target as HTMLButtonElement;
 
-        const stack = this.startEditingButton.getAttribute("data-cslp-stack");
-        const environment = this.startEditingButton.getAttribute(
+        const stack = startEditingButton.getAttribute("data-cslp-stack");
+        const environment = startEditingButton.getAttribute(
             "data-cslp-environment"
         );
-        const branch = this.startEditingButton.getAttribute(
+        const branch = startEditingButton.getAttribute(
             "data-cslp-branch"
         ) as string;
-        const app_url = this.startEditingButton.getAttribute(
+        const app_url = startEditingButton.getAttribute(
             "data-cslp-app-host"
         ) as string;
 
@@ -95,7 +93,7 @@ export class VisualEditor {
             this.replaceAssetButton = null;
         }
         const { editableElement, fieldSchema } = eventDetails;
-        const fieldType = getFieldType(fieldSchema) || "";
+        const fieldType = getFieldType(fieldSchema);
 
         if (allowedInlineEditable.includes(fieldType)) {
             // Add contentEditable property for Element
@@ -113,11 +111,8 @@ export class VisualEditor {
         this.handleSpecialCaseForVariousFields(eventDetails);
     };
     private handleSpecialCaseForVariousFields = (
-        eventDetails: ReturnType<typeof this.handleCSLPMouseEvent>
+        eventDetails: VisualEditorCslpEventDetails
     ) => {
-        if (!eventDetails) {
-            return;
-        }
         const { fieldSchema, editableElement } = eventDetails;
 
         const targetDOMDimension = editableElement.getBoundingClientRect();
@@ -140,17 +135,15 @@ export class VisualEditor {
         // Handle All RTE Click
         if (
             fieldSchema.data_type === "json" &&
+            // @ts-ignore
             fieldSchema?.field_metadata?.allow_json_rte
         ) {
             // Intentional
         }
     };
 
-    handleDOMEdit = (event: any): void => {
+    handleDOMEdit = (event: Event): void => {
         const targetElement = event.target as HTMLElement;
-        if (!targetElement) {
-            return;
-        }
     };
 
     handleMouseHover = _.throttle((event: MouseEvent) => {
@@ -168,6 +161,7 @@ export class VisualEditor {
         }
         const { fieldSchema, editableElement } = eventDetails;
         if (this.previousHoveredTargetDOM !== editableElement) {
+            this.hideCustomCursor();
             hideAddInstanceButtons({
                 eventTarget: event.target,
                 visualEditorWrapper: this.visualEditorWrapper,
@@ -176,6 +170,8 @@ export class VisualEditor {
                 overlayWrapper: this.overlayWrapper,
             });
         }
+
+        if (!fieldSchema) return;
 
         if (this.customCursor) {
             this.customCursor.classList.add("visible");
@@ -191,9 +187,10 @@ export class VisualEditor {
             return;
         }
         if (
-            fieldSchema?.data_type === "block" ||
-            fieldSchema?.multiple ||
+            fieldSchema.data_type === "block" ||
+            fieldSchema.multiple ||
             (fieldSchema.data_type === "reference" &&
+                // @ts-ignore
                 fieldSchema.field_metadata.ref_multiple)
         ) {
             handleAddButtonsForMultiple({
@@ -355,6 +352,7 @@ export class VisualEditor {
             fieldSchema?.data_type === "block" || // originally, this condition was not herer
             fieldSchema?.multiple ||
             (fieldSchema.data_type === "reference" &&
+                // @ts-ignore
                 fieldSchema.field_metadata.ref_multiple)
         ) {
             handleAddButtonsForMultiple({
