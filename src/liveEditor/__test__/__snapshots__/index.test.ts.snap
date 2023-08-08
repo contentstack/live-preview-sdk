@@ -5,6 +5,7 @@ exports[`Visual editor inline editing should add overlay to DOM when clicked 1`]
   <h1
     contenteditable="true"
     data-cslp="page.blt58a50b4cebae75c5.en-us.page_components.1.section.title_h2"
+    data-cslp-field-type="singleline"
   />
   <div
     data-cslp="page.blt58a50b4cebae75c5.en-us.page_components.4.section_with_cards"
@@ -203,6 +204,7 @@ exports[`Visual editor on click, the sdk inline elements must be contenteditable
 <h1
   contenteditable="true"
   data-cslp="all_fields.blt58a50b4cebae75c5.en-us.multi_line"
+  data-cslp-field-type="multiline"
 />
 `;
 
@@ -210,6 +212,7 @@ exports[`Visual editor on click, the sdk inline elements must be contenteditable
 <h1
   contenteditable="true"
   data-cslp="all_fields.blt58a50b4cebae75c5.en-us.single_line"
+  data-cslp-field-type="singleline"
 />
 `;
 

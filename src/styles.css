@@ -75,3 +75,128 @@ div.multiple div.cslp-tooltip-child:before {
 div.multiple div.cslp-tooltip-child:hover:before {
     opacity: 1;
 }
+
+.cslp-edit-mode {
+    cursor: none;
+}
+.visual-editor__cursor {
+    visibility: hidden;
+    height: 0;
+}
+.visual-editor__cursor.visible {
+    visibility: visible;
+    position: fixed;
+    top: 0;
+    left: 0;
+
+    background: #715cdd;
+    color: #fff;
+
+    height: 24px;
+    padding: 0 10px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    pointer-events: none !important;
+    position: fixed !important;
+    cursor: none;
+    z-index: 1000;
+}
+.visual-editor__container {
+    font-family: "Inter", sans-serif;
+}
+.visual-editor__overlay__wrapper {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    visibility: hidden;
+    z-index: 199;
+
+    pointer-events: none;
+}
+.visual-editor__overlay--outline {
+    position: absolute;
+    outline: 4px solid #715cdd;
+    transition: all 0.2s ease-in;
+}
+.visual-editor__overlay__wrapper.visible {
+    visibility: visible;
+}
+.visual-editor__overlay {
+    background: rgba(0, 0, 0, 0.3);
+    box-sizing: content-box;
+    pointer-events: all;
+    position: absolute;
+    transition: all 0.2s ease-in;
+}
+.visual-editor__replace-button {
+    position: absolute;
+    background: #715cdd;
+    color: #fff;
+    border: 1px solid transparent;
+    pointer-events: all;
+    border-radius: 4px;
+}
+.cslp-tooltip {
+    visibility: hidden;
+}
+.visual-editor__add-button {
+    position: absolute;
+    pointer-events: all;
+
+    background: #ffffff;
+    color: #475161;
+
+    border-radius: 4px;
+    border: 1px solid #6c5ce7;
+
+    height: 32px;
+    width: 32px;
+    transform: translate(-50%, -50%);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    z-index: 200;
+}
+.visual-editor__start-editing-btn {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+
+    display: inline-flex;
+    padding: 0.5rem 1rem;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+
+    border-radius: 4px;
+    border: 1px solid transparent;
+    background: #6c5ce7;
+    transition: background-color 0.15s ease-in-out,
+        border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out,
+        -webkit-box-shadow 0.15s ease-in-out;
+}
+.visual-editor__start-editing-btn:hover {
+    background-color: #5d50be;
+}
+.visual-editor__start-editing-btn:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px #ada4f4;
+}
+.visual-editor__start-editing-btn > span {
+    color: #fff;
+    /* Body/P1 Bold */
+    font-size: 1rem;
+    font-family: Inter;
+    font-weight: 600;
+    line-height: 150%;
+    letter-spacing: 0.01rem;
+    text-transform: capitalize;
+}
