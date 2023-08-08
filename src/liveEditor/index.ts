@@ -17,15 +17,21 @@ import {
     handleAddButtonsForMultiple,
     hideAddInstanceButtons,
 } from "./utils/multipleElementAddButton";
-import { ISchemaIndividualFieldMap } from "./utils/types/index.types";
+import {
+    ISchemaFieldMap,
+    ISchemaIndividualFieldMap,
+} from "./utils/types/index.types";
+import { handleFieldKeyDown } from "./utils/handleFieldMouseDown";
+import { LIVE_EDITOR_FIELD_TYPE_ATTRIBUTE_KEY } from "./utils/constants";
 
-const allowedInlineEditable = ["singleline", "multiline"];
+const allowedInlineEditable = ["singleline", "multiline", "number"];
 
 export class VisualEditor {
     private fieldSchemaMap: Record<string, ISchemaIndividualFieldMap> = {};
     private customCursor: HTMLDivElement | null = null;
     private overlayWrapper: HTMLDivElement | null = null;
     private previousSelectedEditableDOM: Element | null = null;
+    private previousSelectedEditableDOMFieldSchema: ISchemaFieldMap | undefined;
     private replaceAssetButton: HTMLButtonElement | null = null;
     private visualEditorWrapper: HTMLDivElement | null = null;
     private previousButton: HTMLButtonElement = generateAddButton();
@@ -95,13 +101,22 @@ export class VisualEditor {
         const { editableElement, fieldSchema } = eventDetails;
         const fieldType = getFieldType(fieldSchema);
 
-        if (allowedInlineEditable.includes(fieldType)) {
+        if (
+            allowedInlineEditable.includes(fieldType) &&
+            // @ts-ignore
+            !fieldSchema.multiple
+        ) {
             // Add contentEditable property for Element
             editableElement.setAttribute("contenteditable", "true");
+            editableElement.setAttribute(
+                LIVE_EDITOR_FIELD_TYPE_ATTRIBUTE_KEY,
+                fieldType
+            );
         }
 
         // Add input eventHandler to support
         editableElement.addEventListener("input", this.handleDOMEdit);
+        editableElement.addEventListener("keydown", handleFieldKeyDown);
 
         // Set Overlay visible
         this.addOverlayOnDOM(editableElement, eventDetails);
@@ -142,8 +157,18 @@ export class VisualEditor {
         }
     };
 
-    handleDOMEdit = (event: Event): void => {
+    handleDOMEdit = (e: Event): void => {
+        const event = e as InputEvent;
         const targetElement = event.target as HTMLElement;
+
+        if (event.type === "input") {
+            if (
+                this.previousSelectedEditableDOMFieldSchema?.data_type ===
+                "number"
+            ) {
+                //
+            }
+        }
     };
 
     handleMouseHover = _.throttle((event: MouseEvent) => {
@@ -209,6 +234,7 @@ export class VisualEditor {
             });
         }
         this.previousHoveredTargetDOM = editableElement;
+        this.previousSelectedEditableDOMFieldSchema = fieldSchema;
     }, 10);
 
     /**
@@ -276,9 +302,9 @@ export class VisualEditor {
     // done
     addOverlayOnDOM = (
         targetDOM: Element,
-        eventDetails: VisualEditorCslpEventDetails | undefined
+        eventDetails: VisualEditorCslpEventDetails
     ): void => {
-        if (!targetDOM || !this.overlayWrapper || !eventDetails) {
+        if (!targetDOM || !this.overlayWrapper) {
             return;
         }
         const targetDOMDimension = targetDOM.getBoundingClientRect();
@@ -381,9 +407,23 @@ export class VisualEditor {
                 this.previousSelectedEditableDOM.removeAttribute(
                     "contenteditable"
                 );
+                console.log(
+                    this.previousSelectedEditableDOM.getAttribute(
+                        LIVE_EDITOR_FIELD_TYPE_ATTRIBUTE_KEY
+                    )
+                );
+                this.previousSelectedEditableDOM.removeAttribute(
+                    LIVE_EDITOR_FIELD_TYPE_ATTRIBUTE_KEY
+                );
+
                 this.previousSelectedEditableDOM.removeEventListener(
                     "input",
                     this.handleDOMEdit
+                );
+
+                this.previousSelectedEditableDOM.removeEventListener(
+                    "keydown",
+                    handleFieldKeyDown
                 );
             }
         }
