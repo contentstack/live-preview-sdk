@@ -28,14 +28,19 @@ export function generateVisualEditorOverlay(
     onClick: (event: MouseEvent) => void
 ): HTMLDivElement {
     const visualEditorOverlayWrapper = document.createElement("div");
+
+    visualEditorOverlayWrapper.setAttribute(
+        "data-testid",
+        "visual-editor__overlay__wrapper"
+    );
     visualEditorOverlayWrapper.classList.add("visual-editor__overlay__wrapper");
 
     visualEditorOverlayWrapper.innerHTML = `
-        <div class="visual-editor__overlay visual-editor__overlay--top"></div>
-        <div class="visual-editor__overlay visual-editor__overlay--left"></div>
-        <div class="visual-editor__overlay visual-editor__overlay--right"></div>
-        <div class="visual-editor__overlay visual-editor__overlay--bottom"></div>
-        <div class="visual-editor__overlay--outline"></div>
+        <div data-testid="visual-editor__overlay--top" class="visual-editor__overlay visual-editor__overlay--top"></div>
+        <div data-testid="visual-editor__overlay--left" class="visual-editor__overlay visual-editor__overlay--left"></div>
+        <div data-testid="visual-editor__overlay--right" class="visual-editor__overlay visual-editor__overlay--right"></div>
+        <div data-testid="visual-editor__overlay--bottom" class="visual-editor__overlay visual-editor__overlay--bottom"></div>
+        <div data-testid="visual-editor__overlay--outline" class="visual-editor__overlay--outline"></div>
     `;
 
     visualEditorOverlayWrapper.addEventListener("click", onClick);

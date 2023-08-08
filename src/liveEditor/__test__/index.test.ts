@@ -433,3 +433,187 @@ describe("start editing button", () => {
         );
     });
 });
+
+describe("visual editor DOM", () => {
+    let h1: HTMLHeadElement;
+    let config: IConfig;
+
+    beforeEach(() => {
+        config = getDefaultConfig();
+
+        h1 = document.createElement("h1");
+
+        h1.setAttribute(
+            "data-cslp",
+            "all_fields.blt58a50b4cebae75c5.en-us.title"
+        );
+
+        h1.getBoundingClientRect = jest.fn(() => ({
+            left: 10,
+            right: 20,
+            top: 10,
+            bottom: 20,
+        })) as any;
+
+        document.body.appendChild(h1);
+    });
+
+    afterEach(() => {
+        document.getElementsByTagName("html")[0].innerHTML = "";
+        jest.resetAllMocks();
+    });
+
+    test("should have an overlay over the element", () => {
+        new VisualEditor(config);
+
+        let visualEditorOverlayWrapper = document.querySelector(
+            `[data-testid="visual-editor__overlay__wrapper"]`
+        );
+
+        expect(visualEditorOverlayWrapper).toMatchSnapshot();
+
+        h1.click();
+
+        visualEditorOverlayWrapper = document.querySelector(
+            `[data-testid="visual-editor__overlay__wrapper"]`
+        );
+
+        expect(visualEditorOverlayWrapper).toMatchSnapshot();
+        expect(visualEditorOverlayWrapper?.classList.contains("visible")).toBe(
+            true
+        );
+
+        const visualEditorWrapperTopOverlay = document.querySelector(
+            `[data-testid="visual-editor__overlay--top"]`
+        ) as HTMLDivElement;
+        const visualEditorWrapperLeftOverlay = document.querySelector(
+            `[data-testid="visual-editor__overlay--left"]`
+        ) as HTMLDivElement;
+        const visualEditorWrapperRightOverlay = document.querySelector(
+            `[data-testid="visual-editor__overlay--right"]`
+        ) as HTMLDivElement;
+        const visualEditorWrapperBottomOverlay = document.querySelector(
+            `[data-testid="visual-editor__overlay--bottom"]`
+        ) as HTMLDivElement;
+
+        expect(visualEditorWrapperTopOverlay.style.top).toBe("0px");
+        expect(visualEditorWrapperTopOverlay.style.left).toBe("0px");
+        expect(visualEditorWrapperTopOverlay.style.width).toBe("100%");
+        expect(visualEditorWrapperTopOverlay.style.height).toBe("10px");
+
+        expect(visualEditorWrapperBottomOverlay.style.top).toBe("20px");
+        expect(visualEditorWrapperBottomOverlay.style.left).toBe("0px");
+        expect(visualEditorWrapperBottomOverlay.style.width).toBe("100%");
+        expect(visualEditorWrapperBottomOverlay.style.height).toBe("-20px");
+
+        expect(visualEditorWrapperLeftOverlay.style.top).toBe("10px");
+        expect(visualEditorWrapperLeftOverlay.style.left).toBe("0px");
+        expect(visualEditorWrapperLeftOverlay.style.width).toBe("10px");
+
+        expect(visualEditorWrapperRightOverlay.style.top).toBe("10px");
+        expect(visualEditorWrapperRightOverlay.style.left).toBe("20px");
+        expect(visualEditorWrapperRightOverlay.style.width).toBe("1004px");
+    });
+
+    test("should remove the DOM when method is triggered", () => {
+        const visualEditor = new VisualEditor(config);
+
+        h1.click();
+
+        let visualEditorContainer = document.querySelector(
+            `[data-testid="visual-editor__container"]`
+        );
+
+        expect(visualEditorContainer).toBeDefined();
+
+        visualEditor.removeVisualEditorDOM();
+
+        visualEditorContainer = document.querySelector(
+            `[data-testid="visual-editor__container"]`
+        );
+
+        expect(visualEditorContainer).toBeNull();
+    });
+
+    test("should hide the DOM, when it is clicked", () => {
+        new VisualEditor(config);
+
+        h1.click();
+
+        let visualEditorOverlayWrapper = document.querySelector(
+            `[data-testid="visual-editor__overlay__wrapper"]`
+        );
+        expect(visualEditorOverlayWrapper?.classList.contains("visible")).toBe(
+            true
+        );
+        expect(h1.getAttribute("contenteditable")).toBe("true");
+
+        const visualEditorOverlayTop = document.querySelector(`
+        [data-testid="visual-editor__overlay--top"]`) as HTMLDivElement;
+
+        visualEditorOverlayTop?.click();
+
+        visualEditorOverlayWrapper = document.querySelector(
+            `[data-testid="visual-editor__overlay__wrapper"]`
+        );
+        expect(visualEditorOverlayWrapper?.classList.contains("visible")).toBe(
+            false
+        );
+        expect(h1.getAttribute("contenteditable")).toBeNull();
+    });
+
+    describe("handle multiple elements", () => {
+        test("handle block element", async () => {
+            const firstChild = document.createElement("div");
+            firstChild.setAttribute(
+                "data-cslp",
+                "all_fields.bltapikey.en-us.modular_blocks.0.block"
+            );
+            firstChild.setAttribute(
+                "data-cslp-container",
+                "all_fields.bltapikey.en-us.modular_blocks"
+            );
+
+            firstChild.getBoundingClientRect = jest.fn(() => ({
+                left: 10,
+                right: 20,
+                top: 10,
+                bottom: 20,
+            })) as any;
+
+            const secondChild = document.createElement("div");
+            secondChild.setAttribute(
+                "data-cslp",
+                "all_fields.bltapikey.en-us.modular_blocks.1.second_block"
+            );
+            secondChild.setAttribute(
+                "data-cslp-container",
+                "all_fields.bltapikey.en-us.modular_blocks"
+            );
+
+            const container = document.createElement("div");
+            container.setAttribute(
+                "data-cslp",
+                "all_fields.bltapikey.en-us.modular_blocks"
+            );
+            container.appendChild(firstChild);
+            container.appendChild(secondChild);
+
+            document.body.appendChild(container);
+
+            new VisualEditor(config);
+
+            firstChild.click();
+
+            const [prevBtn, nextBtn] = document.getElementsByClassName(
+                "visual-editor__add-button"
+            ) as unknown as [HTMLDivElement, HTMLDivElement];
+
+            expect(prevBtn.style.left).toBe("15px");
+            expect(prevBtn.style.top).toBe("10px");
+
+            expect(nextBtn.style.left).toBe("15px");
+            expect(nextBtn.style.top).toBe("20px");
+        });
+    });
+});

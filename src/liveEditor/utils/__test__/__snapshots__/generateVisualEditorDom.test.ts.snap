@@ -10,31 +10,37 @@ exports[`generateVisualEditorCursor should generate cursor 1`] = `
 exports[`generateVisualEditorOverlay should generate overlay 1`] = `
 <div
   class="visual-editor__overlay__wrapper"
+  data-testid="visual-editor__overlay__wrapper"
 >
   
         
   <div
     class="visual-editor__overlay visual-editor__overlay--top"
+    data-testid="visual-editor__overlay--top"
   />
   
         
   <div
     class="visual-editor__overlay visual-editor__overlay--left"
+    data-testid="visual-editor__overlay--left"
   />
   
         
   <div
     class="visual-editor__overlay visual-editor__overlay--right"
+    data-testid="visual-editor__overlay--right"
   />
   
         
   <div
     class="visual-editor__overlay visual-editor__overlay--bottom"
+    data-testid="visual-editor__overlay--bottom"
   />
   
         
   <div
     class="visual-editor__overlay--outline"
+    data-testid="visual-editor__overlay--outline"
   />
   
     
@@ -52,31 +58,37 @@ exports[`generateVisualEditorWrapper should generate wrapper 1`] = `
   />
   <div
     class="visual-editor__overlay__wrapper"
+    data-testid="visual-editor__overlay__wrapper"
   >
     
         
     <div
       class="visual-editor__overlay visual-editor__overlay--top"
+      data-testid="visual-editor__overlay--top"
     />
     
         
     <div
       class="visual-editor__overlay visual-editor__overlay--left"
+      data-testid="visual-editor__overlay--left"
     />
     
         
     <div
       class="visual-editor__overlay visual-editor__overlay--right"
+      data-testid="visual-editor__overlay--right"
     />
     
         
     <div
       class="visual-editor__overlay visual-editor__overlay--bottom"
+      data-testid="visual-editor__overlay--bottom"
     />
     
         
     <div
       class="visual-editor__overlay--outline"
+      data-testid="visual-editor__overlay--outline"
     />
     
     
