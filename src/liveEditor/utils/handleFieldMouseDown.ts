@@ -3,6 +3,15 @@ import {
     numericInputRegex,
 } from "./constants";
 
+export function handleFieldInput(e: Event): void {
+    const event = e as InputEvent;
+    const targetElement = event.target as HTMLElement;
+
+    if (event.type === "input") {
+        // do something
+    }
+}
+
 export function handleFieldKeyDown(e: Event): void {
     const event = e as KeyboardEvent;
     const targetElement = event.target as HTMLElement;
