@@ -1,6 +1,12 @@
 import { shouldRenderEditButton } from ".";
 import { PublicLogger } from "./public-logger";
-import { IClientUrlParams, IConfig, IInitData, IStackSdk } from "./types";
+import {
+    IClientUrlParams,
+    IConfig,
+    IInitData,
+    ILivePreviewModeConfig,
+    IStackSdk,
+} from "../types/types";
 
 const handleClientUrlParams = (
     existingConfig: IConfig,
@@ -164,17 +170,6 @@ export const handleInitData = (
                 config.editButton.includeByQueryParameter ??
                 true,
         };
-
-        config.stackDetails.apiKey =
-            initData.stackDetails?.apiKey ??
-            stackSdk.headers?.api_key ??
-            config.stackDetails.apiKey;
-
-        config.stackDetails.environment =
-            initData.stackDetails?.environment ??
-            stackSdk.environment ??
-            config.stackDetails.environment;
-
         // client URL params
         handleClientUrlParams(
             config,
@@ -182,8 +177,59 @@ export const handleInitData = (
                 stackSdk.live_preview?.clientUrlParams ??
                 config.clientUrlParams
         );
+
+        if (initData.mode) {
+            switch (initData.mode) {
+                case "preview": {
+                    config.mode = ILivePreviewModeConfig.PREVIEW;
+                    break;
+                }
+                case "editor": {
+                    config.mode = ILivePreviewModeConfig.EDITOR;
+                    break;
+                }
+                default: {
+                    throw new TypeError(
+                        "Live Preview SDK: The mode must be either 'editor' or 'preview'"
+                    );
+                }
+            }
+        }
+
+        handleStackDetails(initData, stackSdk, config);
     }
 };
+
+function handleStackDetails(
+    initData: Partial<IInitData>,
+    stackSdk: Partial<IStackSdk>,
+    config: IConfig
+): void {
+    config.stackDetails.apiKey =
+        initData.stackDetails?.apiKey ??
+        stackSdk.headers?.api_key ??
+        config.stackDetails.apiKey;
+
+    config.stackDetails.environment =
+        initData.stackDetails?.environment ??
+        stackSdk.environment ??
+        config.stackDetails.environment;
+
+    config.stackDetails.branch =
+        initData.stackDetails?.branch ??
+        stackSdk.headers?.branch ??
+        config.stackDetails.branch;
+
+    if (config.mode >= ILivePreviewModeConfig.EDITOR) {
+        if (!config.stackDetails.environment) {
+            throw Error("Live preview SDK: environment is required");
+        }
+
+        if (!config.stackDetails.apiKey) {
+            throw Error("Live preview SDK: api key is required");
+        }
+    }
+}
 
 export const handleUserConfig = {
     clientUrlParams: handleClientUrlParams,

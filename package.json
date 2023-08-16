@@ -30,6 +30,7 @@
         "@babel/preset-env": "^7.3.1",
         "@testing-library/jest-dom": "^5.14.1",
         "@types/jest": "^27.0.1",
+        "@types/lodash": "^4.14.195",
         "@types/mustache": "^4.2.2",
         "@types/uuid": "^8.3.1",
         "@typescript-eslint/eslint-plugin": "^4.31.1",
@@ -60,6 +61,7 @@
     },
     "dependencies": {
         "just-camel-case": "^4.0.2",
+        "lodash": "^4.17.21",
         "morphdom": "^2.6.1",
         "mustache": "^4.2.0",
         "uuid": "^8.3.2"

@@ -1,12 +1,15 @@
 import fetch from "jest-fetch-mock";
 
 import LivePreview from "../live-preview";
-import { userInitData } from "../utils/defaults";
+import { getDefaultConfig } from "../utils/defaults";
+import * as LiveEditorModule from "../liveEditor";
 import { PublicLogger } from "../utils/public-logger";
+
 import {
     convertObjectToMinifiedString,
     sendPostmessageToWindow,
 } from "./utils";
+import { IInitData } from "../types/types";
 
 const TITLE_CSLP_TAG = "content-type-1.entry-uid-1.en-us.field-title";
 const DESC_CSLP_TAG = "content-type-2.entry-uid-2.en-us.field-description";
@@ -679,7 +682,15 @@ describe("debug module", () => {
             "Contentstack Live Preview Debugging mode: config --"
         );
 
-        expect(outputErrorLog[1]).toMatchObject(userInitData);
+        const expectedOutput = getDefaultConfig();
+        const actualOutput = outputErrorLog[1];
+
+        // Not removing them causes serialization problems.
+        // @ts-ignore
+        delete expectedOutput.onChange;
+        delete actualOutput.onChange;
+
+        expect(actualOutput).toMatchObject(expectedOutput);
     });
 });
 
@@ -811,5 +822,47 @@ describe("incoming postMessage", () => {
         });
 
         expect(window.history.go).toHaveBeenCalled();
+    });
+});
+
+describe("Live modes", () => {
+    beforeEach(() => {
+        jest.clearAllMocks();
+    });
+
+    test("should initiate Visual editor if mode is greater than editor", () => {
+        const config: Partial<IInitData> = {
+            enable: true,
+            stackDetails: {
+                environment: "development",
+                apiKey: "bltapikey",
+            },
+        };
+
+        const spiedVisualEditor = jest.spyOn(LiveEditorModule, "VisualEditor");
+
+        new LivePreview(config);
+        expect(spiedVisualEditor).not.toHaveBeenCalled();
+
+        config.mode = "editor";
+
+        new LivePreview(config);
+        expect(spiedVisualEditor).toHaveBeenCalled();
+    });
+
+    test("should not initiate Visual editor if mode is less than editor", () => {
+        const config: Partial<IInitData> = {
+            enable: true,
+        };
+
+        const spiedVisualEditor = jest.spyOn(LiveEditorModule, "VisualEditor");
+
+        new LivePreview(config);
+        expect(spiedVisualEditor).not.toHaveBeenCalled();
+
+        config.mode = "preview";
+
+        new LivePreview(config);
+        expect(spiedVisualEditor).not.toHaveBeenCalled();
     });
 });

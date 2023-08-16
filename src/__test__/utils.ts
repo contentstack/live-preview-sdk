@@ -44,3 +44,7 @@ export class DOMRect {
         return JSON.stringify(this);
     }
 }
+
+export async function sleep(waitTimeInMs = 100): Promise<void> {
+    return new Promise((resolve) => setTimeout(resolve, waitTimeInMs));
+}

@@ -8,7 +8,7 @@ import {
     OnEntryChangeCallback,
     OnEntryChangeCallbackUID,
     OnEntryChangeConfig,
-} from "./utils/types";
+} from "./types/types";
 import LivePreview from "./live-preview";
 import { userInitData } from "./utils/defaults";
 import { PublicLogger } from "./utils/public-logger";
