@@ -24,3 +24,25 @@ export interface ITraverseSchemaVisitor {
      */
     fieldMap: ISchemaIndividualFieldMap;
 }
+
+export enum FieldDataType {
+    CUSTOM_FIELD = "custom_field",
+    MULTILINE = "multiline",
+    HTML_RTE = "html_rte",
+    MARKDOWN_RTE = "markdown_rte",
+    SELECT = "select",
+    URL = "url",
+    SINGLELINE = "singleline",
+    JSON_RTE = "json_rte",
+    MODULAR_BLOCK = "modular_block",
+    LINK = "link",
+    ISODATE = "isodate",
+    BOOLEAN = "boolean",
+    BLOCK = "block",
+    NUMBER = "number",
+    REFERENCE = "reference",
+    GROUP = "group",
+    EXPERIENCE_CONTAINER = "experience_container",
+    FILE = "file",
+    GLOBAL_FIELD = "global_field",
+}

@@ -1,28 +1,33 @@
 // @ts-nocheck
-import { ISchemaFieldMap } from "./types/index.types";
+import { ISchemaFieldMap, FieldDataType } from "./types/index.types";
 
-export function getFieldType(fieldSchema: ISchemaFieldMap): string {
+export function getFieldType(fieldSchema: ISchemaFieldMap): FieldDataType {
     if (Object.hasOwnProperty.call(fieldSchema, "extension_uid")) {
-        return "custom_field";
+        return FieldDataType.CUSTOM_FIELD;
     }
 
     switch (fieldSchema.data_type) {
         case "text": {
             if (fieldSchema?.field_metadata.multiline) {
-                return "multiline";
+                return FieldDataType.MULTILINE;
             } else if (fieldSchema?.field_metadata.allow_rich_text) {
-                return "html_rte";
+                return FieldDataType.HTML_RTE;
             } else if (fieldSchema?.field_metadata.markdown) {
-                return "markdown_rte";
+                return FieldDataType.MARKDOWN_RTE;
             } else if (fieldSchema.enum) {
-                return "select";
+                return FieldDataType.SELECT;
+            } else if (
+                fieldSchema.uid === "url" &&
+                fieldSchema.field_metadata._default
+            ) {
+                return FieldDataType.URL;
             } else {
-                return "singleline";
+                return FieldDataType.SINGLELINE;
             }
         }
         case "json": {
             if (fieldSchema.field_metadata.allow_json_rte) {
-                return "json_rte";
+                return FieldDataType.JSON_RTE;
             }
             break;
         }
@@ -40,7 +45,7 @@ export function getFieldType(fieldSchema: ISchemaFieldMap): string {
         case "experience_container":
         case "file":
         case "global_field": {
-            return fieldSchema.data_type;
+            return FieldDataType[fieldSchema.data_type.toUpperCase()];
         }
     }
 

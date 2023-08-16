@@ -11,7 +11,10 @@ import {
     generateVisualEditorOverlay,
     generateVisualEditorWrapper,
 } from "./utils/generateVisualEditorDom";
-import { getFieldType } from "./utils/getFieldType";
+import {
+    cleanIndividualFieldResidual,
+    handleIndividualFields,
+} from "./utils/handleIndividualFields";
 import {
     generateAddButton,
     handleAddButtonsForMultiple,
@@ -21,18 +24,12 @@ import {
     ISchemaFieldMap,
     ISchemaIndividualFieldMap,
 } from "./utils/types/index.types";
-import { handleFieldKeyDown } from "./utils/handleFieldMouseDown";
-import { LIVE_EDITOR_FIELD_TYPE_ATTRIBUTE_KEY } from "./utils/constants";
-
-const allowedInlineEditable = ["singleline", "multiline", "number"];
 
 export class VisualEditor {
     private fieldSchemaMap: Record<string, ISchemaIndividualFieldMap> = {};
     private customCursor: HTMLDivElement | null = null;
     private overlayWrapper: HTMLDivElement | null = null;
     private previousSelectedEditableDOM: Element | null = null;
-    private previousSelectedEditableDOMFieldSchema: ISchemaFieldMap | undefined;
-    private replaceAssetButton: HTMLButtonElement | null = null;
     private visualEditorWrapper: HTMLDivElement | null = null;
     private previousButton: HTMLButtonElement = generateAddButton();
     private nextButton: HTMLButtonElement = generateAddButton();
@@ -44,7 +41,6 @@ export class VisualEditor {
             this.fieldSchemaMap[ctUID] = generateFieldSchemaMap(ctUID);
         });
 
-        this.handleDOMEdit = this.handleDOMEdit.bind(this);
         this.handleMouseHover = this.handleMouseHover.bind(this);
         this.hideCustomCursor = this.hideCustomCursor.bind(this);
         this.hideOverlayDOM = this.hideOverlayDOM.bind(this);
@@ -52,8 +48,6 @@ export class VisualEditor {
         this.removeVisualEditorDOM = this.removeVisualEditorDOM.bind(this);
         this.handleMouseDownForVisualEditing =
             this.handleMouseDownForVisualEditing.bind(this);
-        this.handleSpecialCaseForVariousFields =
-            this.handleSpecialCaseForVariousFields.bind(this);
 
         window.addEventListener("click", this.handleMouseDownForVisualEditing);
         window.addEventListener("mousemove", this.handleMouseHover);
@@ -91,84 +85,24 @@ export class VisualEditor {
 
     private handleMouseDownForVisualEditing = (event: MouseEvent): void => {
         const eventDetails = this.handleCSLPMouseEvent(event);
-        if (!eventDetails) {
+        if (
+            !eventDetails ||
+            !this.overlayWrapper ||
+            !this.visualEditorWrapper
+        ) {
             return;
         }
-        if (this.replaceAssetButton && this.overlayWrapper) {
-            this.overlayWrapper.removeChild(this.replaceAssetButton);
-            this.replaceAssetButton = null;
-        }
-        const { editableElement, fieldSchema } = eventDetails;
-        const fieldType = getFieldType(fieldSchema);
-
-        if (
-            allowedInlineEditable.includes(fieldType) &&
-            // @ts-ignore
-            !fieldSchema.multiple
-        ) {
-            // Add contentEditable property for Element
-            editableElement.setAttribute("contenteditable", "true");
-            editableElement.setAttribute(
-                LIVE_EDITOR_FIELD_TYPE_ATTRIBUTE_KEY,
-                fieldType
-            );
-        }
-
-        // Add input eventHandler to support
-        editableElement.addEventListener("input", this.handleDOMEdit);
-        editableElement.addEventListener("keydown", handleFieldKeyDown);
-
-        // Set Overlay visible
-        this.addOverlayOnDOM(editableElement, eventDetails);
+        const { editableElement } = eventDetails;
 
         this.previousSelectedEditableDOM = editableElement;
+        this.addOverlayOnDOM(editableElement);
 
-        this.handleSpecialCaseForVariousFields(eventDetails);
-    };
-    private handleSpecialCaseForVariousFields = (
-        eventDetails: VisualEditorCslpEventDetails
-    ) => {
-        const { fieldSchema, editableElement } = eventDetails;
-
-        const targetDOMDimension = editableElement.getBoundingClientRect();
-
-        if (fieldSchema.data_type === "file") {
-            // Append Replace button for File
-            const replaceButton = document.createElement("button");
-            replaceButton.classList.add("visual-editor__replace-button");
-            replaceButton.innerHTML = `Replace Asset`;
-            this.replaceAssetButton = replaceButton;
-            this.overlayWrapper?.appendChild(replaceButton);
-
-            this.replaceAssetButton.style.top = `${
-                targetDOMDimension.bottom + window.scrollY - 30
-            }px`;
-            this.replaceAssetButton.style.right = `${
-                window.innerWidth - targetDOMDimension.right
-            }px`;
-        }
-        // Handle All RTE Click
-        if (
-            fieldSchema.data_type === "json" &&
-            // @ts-ignore
-            fieldSchema?.field_metadata?.allow_json_rte
-        ) {
-            // Intentional
-        }
-    };
-
-    handleDOMEdit = (e: Event): void => {
-        const event = e as InputEvent;
-        const targetElement = event.target as HTMLElement;
-
-        if (event.type === "input") {
-            if (
-                this.previousSelectedEditableDOMFieldSchema?.data_type ===
-                "number"
-            ) {
-                //
-            }
-        }
+        handleIndividualFields(eventDetails, {
+            overlayWrapper: this.overlayWrapper,
+            visualEditorWrapper: this.visualEditorWrapper,
+            nextButton: this.nextButton,
+            previousButton: this.previousButton,
+        });
     };
 
     handleMouseHover = _.throttle((event: MouseEvent) => {
@@ -234,7 +168,6 @@ export class VisualEditor {
             });
         }
         this.previousHoveredTargetDOM = editableElement;
-        this.previousSelectedEditableDOMFieldSchema = fieldSchema;
     }, 10);
 
     /**
@@ -300,16 +233,11 @@ export class VisualEditor {
     };
 
     // done
-    addOverlayOnDOM = (
-        targetDOM: Element,
-        eventDetails: VisualEditorCslpEventDetails
-    ): void => {
+    addOverlayOnDOM = (targetDOM: Element): void => {
         if (!targetDOM || !this.overlayWrapper) {
             return;
         }
         const targetDOMDimension = targetDOM.getBoundingClientRect();
-
-        const { fieldSchema } = eventDetails;
 
         this.overlayWrapper.classList.add("visible");
 
@@ -374,57 +302,24 @@ export class VisualEditor {
             outlineDOM.style.width = `${targetDOMDimension.width}px`;
             outlineDOM.style.left = `${targetDOMDimension.left}px`;
         }
-        if (
-            fieldSchema?.data_type === "block" || // originally, this condition was not herer
-            fieldSchema?.multiple ||
-            (fieldSchema.data_type === "reference" &&
-                // @ts-ignore
-                fieldSchema.field_metadata.ref_multiple)
-        ) {
-            handleAddButtonsForMultiple({
-                editableElement: eventDetails.editableElement,
-                visualEditorWrapper: this.visualEditorWrapper,
-                nextButton: this.nextButton,
-                previousButton: this.previousButton,
-            });
-        }
     };
     hideOverlayDOM = (event: MouseEvent): void => {
         const targetElement = event.target as Element;
 
+        if (!this.overlayWrapper) return;
+
         if (targetElement.classList.contains("visual-editor__overlay")) {
-            this.overlayWrapper?.classList.remove("visible");
+            this.overlayWrapper.classList.remove("visible");
 
-            hideAddInstanceButtons({
-                eventTarget: null,
-                visualEditorWrapper: this.visualEditorWrapper,
-                nextButton: this.nextButton,
-                previousButton: this.previousButton,
-                overlayWrapper: this.overlayWrapper,
-            });
-            // Remove contentEditable from previous element
             if (this.previousSelectedEditableDOM) {
-                this.previousSelectedEditableDOM.removeAttribute(
-                    "contenteditable"
-                );
-                console.log(
-                    this.previousSelectedEditableDOM.getAttribute(
-                        LIVE_EDITOR_FIELD_TYPE_ATTRIBUTE_KEY
-                    )
-                );
-                this.previousSelectedEditableDOM.removeAttribute(
-                    LIVE_EDITOR_FIELD_TYPE_ATTRIBUTE_KEY
-                );
-
-                this.previousSelectedEditableDOM.removeEventListener(
-                    "input",
-                    this.handleDOMEdit
-                );
-
-                this.previousSelectedEditableDOM.removeEventListener(
-                    "keydown",
-                    handleFieldKeyDown
-                );
+                cleanIndividualFieldResidual({
+                    overlayWrapper: this.overlayWrapper,
+                    previousSelectedEditableDOM:
+                        this.previousSelectedEditableDOM,
+                    previousButton: this.previousButton,
+                    nextButton: this.nextButton,
+                    visualEditorWrapper: this.visualEditorWrapper,
+                });
             }
         }
     };

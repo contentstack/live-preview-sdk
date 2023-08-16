@@ -194,6 +194,7 @@ exports[`Visual editor inline editing should add overlay to DOM when clicked 1`]
 exports[`Visual editor on click, the sdk inline elements must be contenteditable file should render a replacer and remove when it is not 1`] = `
 <h1
   data-cslp="all_fields.blt58a50b4cebae75c5.en-us.file"
+  data-cslp-field-type="file"
 />
 `;
 
