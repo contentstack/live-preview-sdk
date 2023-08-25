@@ -58,12 +58,11 @@ export class ContentstackLivePreview {
      * It is the live preview hash.
      * This hash could be used when data is fetched manually.
      */
-    static get hash(): string {
+    static get hash(): string | undefined {
         if (!this.livePreview) {
-            throw new Error(
-                "Live preview SDK must be initialized before getting hash"
-            );
+            return this.configs.params?.live_preview;
         }
+
         return this.livePreview.hash;
     }
 
