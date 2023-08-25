@@ -322,12 +322,8 @@ describe("live preview hash", () => {
         expect(ContentstackLivePreview.hash).toBe(livePreviewHash);
     });
 
-    test("should throw an error if has is get before init", () => {
-        expect(() => {
-            ContentstackLivePreview.hash;
-        }).toThrowError(
-            "Live preview SDK must be initialized before getting hash"
-        );
+    test("should be undefined before init", () => {
+        expect(ContentstackLivePreview.hash).toBeUndefined();
     });
 });
 
@@ -364,14 +360,6 @@ describe("setConfigFromParams()", () => {
         ContentstackLivePreview.setConfigFromParams({
             live_preview: livePreviewHash,
         });
-
-        expect(() => {
-            ContentstackLivePreview.hash;
-        }).toThrowError(
-            "Live preview SDK must be initialized before getting hash"
-        );
-
-        ContentstackLivePreview.init();
 
         expect(ContentstackLivePreview.hash).toBe(livePreviewHash);
     });
