@@ -20,10 +20,8 @@ import {
     handleAddButtonsForMultiple,
     hideAddInstanceButtons,
 } from "./utils/multipleElementAddButton";
-import {
-    ISchemaFieldMap,
-    ISchemaIndividualFieldMap,
-} from "./utils/types/index.types";
+
+import { ISchemaIndividualFieldMap } from "./utils/types/index.types";
 
 export class VisualEditor {
     private fieldSchemaMap: Record<string, ISchemaIndividualFieldMap> = {};
@@ -34,7 +32,6 @@ export class VisualEditor {
     private previousButton: HTMLButtonElement = generateAddButton();
     private nextButton: HTMLButtonElement = generateAddButton();
     private previousHoveredTargetDOM: Element | null = null;
-    private startEditingButton: HTMLButtonElement | null = null;
 
     constructor(config: IConfig) {
         Object.keys(mockData).forEach((ctUID: string) => {
@@ -56,7 +53,7 @@ export class VisualEditor {
     }
 
     private handleStartEditing = (event: MouseEvent): void => {
-        const startEditingButton = event.target as HTMLButtonElement;
+        const startEditingButton = event.currentTarget as HTMLButtonElement;
 
         const stack = startEditingButton.getAttribute("data-cslp-stack");
         const environment = startEditingButton.getAttribute(
@@ -221,15 +218,11 @@ export class VisualEditor {
             });
         }
 
-        const startEditingButton = generateStartEditingButton(
+        generateStartEditingButton(
             config,
             this.visualEditorWrapper,
             this.handleStartEditing
         );
-
-        if (startEditingButton) {
-            this.startEditingButton = startEditingButton;
-        }
     };
 
     // done
