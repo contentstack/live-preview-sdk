@@ -18,9 +18,7 @@ export class ContentstackLivePreview {
     static userConfig: Partial<IInitData> | null = null;
     static subscribers: { [uid: string]: OnEntryChangeCallback } = {};
     static configs: {
-        params: Partial<{
-            live_preview: string;
-        }>;
+        params: ConstructorParameters<typeof URLSearchParams>[0];
     } = {
         params: {},
     };
@@ -58,9 +56,10 @@ export class ContentstackLivePreview {
      * It is the live preview hash.
      * This hash could be used when data is fetched manually.
      */
-    static get hash(): string | undefined {
+    static get hash(): string {
         if (!this.livePreview) {
-            return this.configs.params?.live_preview;
+            const urlParams = new URLSearchParams(this.configs.params);
+            return urlParams.get("live_preview") ?? "";
         }
 
         return this.livePreview.hash;
@@ -72,9 +71,7 @@ export class ContentstackLivePreview {
      * @param params query param in an object form
      */
     static setConfigFromParams(
-        params: Partial<{
-            live_preview: string;
-        }> = {}
+        params: ConstructorParameters<typeof URLSearchParams>[0] = {}
     ): void {
         if (!this.livePreview) {
             this.configs.params = params;

@@ -322,8 +322,8 @@ describe("live preview hash", () => {
         expect(ContentstackLivePreview.hash).toBe(livePreviewHash);
     });
 
-    test("should be undefined before init", () => {
-        expect(ContentstackLivePreview.hash).toBeUndefined();
+    test("should be empty string before init", () => {
+        expect(ContentstackLivePreview.hash).toBe("");
     });
 });
 
