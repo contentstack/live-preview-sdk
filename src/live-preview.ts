@@ -308,16 +308,15 @@ export default class LivePreview {
      * @param params query param in an object form
      */
     setConfigFromParams(
-        params: Partial<{
-            live_preview: string;
-        }> = {}
+        params: ConstructorParameters<typeof URLSearchParams>[0] = {}
     ): void {
         if (typeof params !== "object")
             throw new TypeError(
                 "Live preview SDK: query param must be an object"
             );
 
-        const { live_preview } = params;
+        const urlParams = new URLSearchParams(params);
+        const live_preview = urlParams.get("live_preview");
 
         if (live_preview) {
             this.config.hash = live_preview;
