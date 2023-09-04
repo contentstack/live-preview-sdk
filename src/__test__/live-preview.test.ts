@@ -813,3 +813,48 @@ describe("incoming postMessage", () => {
         expect(window.history.go).toHaveBeenCalled();
     });
 });
+
+describe("live preview hash", () => {
+    test("should be empty by default", () => {
+        const livePreview = new LivePreview();
+
+        expect(livePreview.hash).toBe("");
+    });
+
+    test("should be set when client-data-send event is fired", async () => {
+        const livePreview = new LivePreview();
+        const livePreviewHash = "livePreviewHash1234";
+
+        await sendPostmessageToWindow("client-data-send", {
+            hash: livePreviewHash,
+            content_type_uid: "entryContentTypeUid",
+            entry_uid: "entryUid",
+        });
+
+        expect(livePreview.hash).toBe(livePreviewHash);
+    });
+});
+
+describe("setConfigFromParams()", () => {
+    test("should set hash if live_preview is present", () => {
+        const livePreview = new LivePreview();
+        const livePreviewHash = "livePreviewHash1234";
+
+        expect(livePreview.hash).toBe("");
+
+        livePreview.setConfigFromParams({
+            live_preview: livePreviewHash,
+        });
+
+        expect(livePreview.hash).toBe(livePreviewHash);
+    });
+
+    test("should throw an error if param is not an object", () => {
+        const livePreview = new LivePreview();
+
+        expect(() => {
+            // @ts-ignore
+            livePreview.setConfigFromParams("");
+        }).toThrowError("Live preview SDK: query param must be an object");
+    });
+});

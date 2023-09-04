@@ -297,3 +297,70 @@ describe("Gatsby Data formatter", () => {
         ]);
     });
 });
+
+describe("live preview hash", () => {
+    afterEach(() => {
+        ContentstackLivePreview.subscribers = {};
+        ContentstackLivePreview.livePreview = null;
+    });
+    test("should be empty by default", () => {
+        ContentstackLivePreview.init();
+
+        expect(ContentstackLivePreview.hash).toBe("");
+    });
+
+    test("should be set when client-data-send event is fired", async () => {
+        ContentstackLivePreview.init();
+        const livePreviewHash = "livePreviewHash1234";
+
+        await sendPostmessageToWindow("client-data-send", {
+            hash: livePreviewHash,
+            content_type_uid: "entryContentTypeUid",
+            entry_uid: "entryUid",
+        });
+
+        expect(ContentstackLivePreview.hash).toBe(livePreviewHash);
+    });
+
+    test("should be empty string before init", () => {
+        expect(ContentstackLivePreview.hash).toBe("");
+    });
+});
+
+describe("setConfigFromParams()", () => {
+    afterEach(() => {
+        ContentstackLivePreview.subscribers = {};
+        ContentstackLivePreview.livePreview = null;
+    });
+    test("should set hash if live_preview is present", () => {
+        ContentstackLivePreview.init();
+        const livePreviewHash = "livePreviewHash1234";
+
+        expect(ContentstackLivePreview.hash).toBe("");
+
+        ContentstackLivePreview.setConfigFromParams({
+            live_preview: livePreviewHash,
+        });
+
+        expect(ContentstackLivePreview.hash).toBe(livePreviewHash);
+    });
+
+    test("should throw an error if param is not an object", () => {
+        ContentstackLivePreview.init();
+
+        expect(() => {
+            // @ts-ignore
+            ContentstackLivePreview.setConfigFromParams("");
+        }).toThrowError("Live preview SDK: query param must be an object");
+    });
+
+    test("should set the params if it was set before initialization", () => {
+        const livePreviewHash = "livePreviewHash1234";
+
+        ContentstackLivePreview.setConfigFromParams({
+            live_preview: livePreviewHash,
+        });
+
+        expect(ContentstackLivePreview.hash).toBe(livePreviewHash);
+    });
+});

@@ -44,6 +44,8 @@ describe("handleInitData()", () => {
             enable: false,
             cleanCslpOnProduction: true,
             runScriptsOnUpdate: false,
+            hash: "",
+
             editButton: {
                 enable: true,
                 exclude: [],
@@ -222,6 +224,8 @@ describe("handleClientUrlParams()", () => {
             enable: true,
             cleanCslpOnProduction: true,
             runScriptsOnUpdate: false,
+            hash: "",
+
             editButton: {
                 enable: true,
                 exclude: [],
