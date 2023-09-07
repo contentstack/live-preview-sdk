@@ -2,22 +2,24 @@
 
 The init data has following structure
 
-- [Contentstack Live Preview Utils SDK Configs](#contentstack-live-preview-utils-sdk-configs)
-  - [`init(config: IConfig)`](#initconfig-iconfig)
-    - [`enable`](#enable)
-    - [`ssr`](#ssr)
-    - [`editButton`](#editbutton)
-    - [`cleanCslpOnProduction`](#cleancslponproduction)
-    - [`stackDetails`](#stackdetails)
-      - [`apiKey`](#apikey)
-      - [`environment`](#environment)
-    - [`clientUrlParams`](#clienturlparams)
-      - [NA config](#na-config)
-      - [EU config](#eu-config)
-    - [`stackSdk`](#stacksdk)
-  - [`onLiveEdit(callback: () => void)`](#onliveeditcallback---void)
-  - [`onEntryChange(callback: () => void)`](#onentrychangecallback---void)
-  - [`getGatsbyDataFormat(sdkQuery: IStackSdk, prefix: string)`](#getgatsbydataformatsdkquery-istacksdk-prefix-string)
+-   [Contentstack Live Preview Utils SDK Configs](#contentstack-live-preview-utils-sdk-configs)
+    -   [`init(config: IConfig)`](#initconfig-iconfig)
+        -   [`enable`](#enable)
+        -   [`ssr`](#ssr)
+        -   [`editButton`](#editbutton)
+        -   [`cleanCslpOnProduction`](#cleancslponproduction)
+        -   [`stackDetails`](#stackdetails)
+            -   [`apiKey`](#apikey)
+            -   [`environment`](#environment)
+        -   [`clientUrlParams`](#clienturlparams)
+            -   [NA config](#na-config)
+            -   [EU config](#eu-config)
+        -   [`stackSdk`](#stacksdk)
+    -   [`onLiveEdit(callback: () => void)`](#onliveeditcallback---void)
+    -   [`onEntryChange(callback: () => void)`](#onentrychangecallback---void)
+    -   [hash](#hash)
+    -   [setConfigFromParams(config: ConstructorParameters\[0\])](#setconfigfromparamsconfig-constructorparameters0)
+    -   [`getGatsbyDataFormat(sdkQuery: IStackSdk, prefix: string)`](#getgatsbydataformatsdkquery-istacksdk-prefix-string)
 
 ## `init(config: IConfig)`
 
@@ -253,11 +255,36 @@ const Footer = () => {
 ```
 
 > **Note:** To make the `onEntryChange` method work similarly to the [`onLiveEdit`](#onliveeditcallback---void) method, you can utilize the optional parameter `skipInitialRender:true`. This will enable the function to only call the Contentstack API once.
->
->For example:
->```js
->onEntryChange(fetchData,{skipInitialRender:true})
->```
+
+**For example:**
+
+```js
+onEntryChange(fetchData, { skipInitialRender: true });
+```
+
+## hash
+
+The `hash` property returns the live preview hash of the entry. It returns an empty string if the page is not opened in live preivew pane.
+
+> **Note:** In the SSR mode, the hash may not be populated automatically and may require you to pass it using the `setConfigFromParams()` method.
+
+**For example:**
+
+```js
+console.log(ContentstackLivePreview.hash); // "hash"
+```
+
+## setConfigFromParams(config: ConstructorParameters<typeof URLSearchParams>[0])
+
+The `setConfigFromParams` method allows you to set the configuration from the URL parameters. It accepts the URLSearchParams object as a parameter. This method is used in the SSR mode to set the live preview hash received from the URL.
+
+**For example:**
+
+```js
+console.log(ContentstackLivePreview.hash); // ""
+ContentstackLivePreview.setConfigFromParams(window.location.search); // https://example.com?live_preview=hash
+console.log(ContentstackLivePreview.hash); // "hash"
+```
 
 ## `getGatsbyDataFormat(sdkQuery: IStackSdk, prefix: string)`
 
