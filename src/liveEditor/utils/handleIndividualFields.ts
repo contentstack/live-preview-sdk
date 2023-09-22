@@ -1,35 +1,33 @@
 import { VisualEditorCslpEventDetails } from "../../types/liveEditor.types";
+import {
+    generateReplaceAssetButton,
+    removeReplaceAssetButton,
+} from "./assetButton";
 import { LIVE_EDITOR_FIELD_TYPE_ATTRIBUTE_KEY } from "./constants";
 import { getFieldType } from "./getFieldType";
 import { handleFieldInput, handleFieldKeyDown } from "./handleFieldMouseDown";
+import liveEditorPostMessage from "./liveEditorPostMessage";
 import {
     handleAddButtonsForMultiple,
-    hideAddInstanceButtons,
+    removeAddInstanceButtons,
 } from "./multipleElementAddButton";
 import { FieldDataType } from "./types/index.types";
+import { LiveEditorPostMessageEvents } from "./types/postMessage.types";
 
 /**
- * The field that can be directly modified using contenteditable=true.
- * This includes all text fields like title and numbers.
+ * It handles all the fields based on their data type and its "multiple" property.
+ * @param eventDetails The event details object that contain cslp and field metadata.
+ * @param elements The elements object that contain the visual editor wrapper.
  */
-const ALLOWED_INLINE_EDITABLE_FIELD: FieldDataType[] = [
-    FieldDataType.SINGLELINE,
-    FieldDataType.MULTILINE,
-    FieldDataType.NUMBER,
-];
-
 export function handleIndividualFields(
     eventDetails: VisualEditorCslpEventDetails,
     elements: {
-        overlayWrapper: HTMLDivElement;
         visualEditorWrapper: HTMLDivElement;
-        nextButton: HTMLButtonElement;
-        previousButton: HTMLButtonElement;
+        lastEditedField: Element | null;
     }
 ): void {
     const { fieldSchema, editableElement } = eventDetails;
-    const { overlayWrapper, visualEditorWrapper, nextButton, previousButton } =
-        elements;
+    const { visualEditorWrapper, lastEditedField } = elements;
     const fieldType = getFieldType(fieldSchema);
 
     editableElement.setAttribute(
@@ -37,86 +35,94 @@ export function handleIndividualFields(
         fieldType
     );
 
-    const existingReplaceButtons = document.getElementsByClassName(
-        "visual-editor__replace-button"
-    );
-
-    // @ts-ignore
-    for (const existingReplaceButton of existingReplaceButtons) {
-        existingReplaceButton.remove();
-    }
-
-    const targetDOMDimension = editableElement.getBoundingClientRect();
-
     if (
-        fieldSchema?.data_type === "block" || // originally, this condition was not herer
+        // @ts-ignore
         fieldSchema?.multiple ||
         (fieldSchema.data_type === "reference" &&
             // @ts-ignore
             fieldSchema.field_metadata.ref_multiple)
     ) {
-        handleAddButtonsForMultiple({
-            editableElement: eventDetails.editableElement,
-            visualEditorWrapper: visualEditorWrapper,
-            nextButton: nextButton,
-            previousButton: previousButton,
-        });
+        if (lastEditedField !== editableElement) {
+            handleAddButtonsForMultiple(eventDetails, {
+                editableElement: eventDetails.editableElement,
+                visualEditorWrapper: visualEditorWrapper,
+            });
+        }
+
+        // * fields could be handled as they are in a single instance
+        if (eventDetails.fieldMetadata.multipleFieldMetadata.index > -1) {
+            handleSingleField();
+        }
         return;
+    } else {
+        handleSingleField();
     }
 
-    // TODO: handle multiple type
-    // * title, single single_line, single multi_line, single number
-    if (
-        ALLOWED_INLINE_EDITABLE_FIELD.includes(fieldType) &&
-        !fieldSchema.multiple
-    ) {
-        editableElement.setAttribute("contenteditable", "true");
-        editableElement.addEventListener("input", handleFieldInput);
-        editableElement.addEventListener("keydown", handleFieldKeyDown);
+    /**
+     * Handles all the fields based on their data type.
+     */
+    function handleSingleField() {
+        /**
+         * The field that can be directly modified using contenteditable=true.
+         * This includes all text fields like title and numbers.
+         */
+        const ALLOWED_INLINE_EDITABLE_FIELD: FieldDataType[] = [
+            FieldDataType.SINGLELINE,
+            FieldDataType.MULTILINE,
+            FieldDataType.NUMBER,
+        ];
 
-        return;
+        // * title, single single_line, single multi_line, single number
+        if (ALLOWED_INLINE_EDITABLE_FIELD.includes(fieldType)) {
+            editableElement.setAttribute("contenteditable", "true");
+            editableElement.addEventListener("input", handleFieldInput);
+            editableElement.addEventListener("keydown", handleFieldKeyDown);
+
+            return;
+        }
+
+        if (fieldSchema.data_type === "file") {
+            const replaceButton = generateReplaceAssetButton(
+                editableElement,
+                () => {
+                    liveEditorPostMessage?.send(
+                        LiveEditorPostMessageEvents.OPEN_ASSET_MODAL,
+                        {
+                            fieldMetadata: eventDetails.fieldMetadata,
+                        }
+                    );
+                }
+            );
+
+            visualEditorWrapper?.appendChild(replaceButton);
+            return;
+        }
+
+        liveEditorPostMessage?.send(
+            LiveEditorPostMessageEvents.OPEN_QUICK_FORM,
+            {
+                fieldMetadata: eventDetails.fieldMetadata,
+                cslpData: eventDetails.cslpData,
+            }
+        );
     }
-
-    if (fieldSchema.data_type === "file") {
-        const replaceButton = document.createElement("button");
-        replaceButton.classList.add("visual-editor__replace-button");
-        replaceButton.innerHTML = `Replace Asset`;
-        replaceButton.style.top = `${
-            targetDOMDimension.bottom + window.scrollY - 30
-        }px`;
-        replaceButton.style.right = `${
-            window.innerWidth - targetDOMDimension.right
-        }px`;
-
-        overlayWrapper?.appendChild(replaceButton);
-        return;
-    }
-
-    //
 }
 
 export function cleanIndividualFieldResidual(elements: {
     overlayWrapper: HTMLDivElement;
     previousSelectedEditableDOM: Element;
     visualEditorWrapper: HTMLDivElement | null;
-    nextButton: HTMLButtonElement;
-    previousButton: HTMLButtonElement;
 }): void {
-    const {
-        overlayWrapper,
-        previousSelectedEditableDOM,
-        visualEditorWrapper,
-        nextButton,
-        previousButton,
-    } = elements;
+    const { overlayWrapper, previousSelectedEditableDOM, visualEditorWrapper } =
+        elements;
 
-    hideAddInstanceButtons({
+    removeAddInstanceButtons({
         eventTarget: null,
         visualEditorWrapper: visualEditorWrapper,
-        nextButton: nextButton,
-        previousButton: previousButton,
         overlayWrapper: overlayWrapper,
     });
+
+    removeReplaceAssetButton(visualEditorWrapper);
 
     previousSelectedEditableDOM.removeAttribute(
         LIVE_EDITOR_FIELD_TYPE_ATTRIBUTE_KEY

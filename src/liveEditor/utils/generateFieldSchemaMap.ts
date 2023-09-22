@@ -23,7 +23,7 @@ export function generateFieldSchemaMap(
             if (fieldSchema.data_type === "link") {
                 //handle special key for special fields
                 this.fieldMap[`${path}.title`] = fieldSchema;
-                this.fieldMap[`${path}.url`] = fieldSchema;
+                this.fieldMap[`${path}.href`] = fieldSchema;
             }
             if (fieldSchema.data_type === "file") {
                 this.fieldMap[`${path}.url`] = fieldSchema;

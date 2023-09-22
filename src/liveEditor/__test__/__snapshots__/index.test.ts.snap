@@ -201,6 +201,7 @@ exports[`Visual editor on click, the sdk inline elements must be contenteditable
 exports[`Visual editor on click, the sdk inline elements must be contenteditable file should render a replacer and remove when it is not 2`] = `
 <button
   class="visual-editor__replace-button"
+  data-testid="visual-editor-replace-asset"
   style="top: -30px; right: 1024px;"
 >
   Replace Asset
@@ -314,69 +315,6 @@ exports[`Visual editor on click, the sdk should do nothing if data-cslp not avai
     </button>
   </div>
 </body>
-`;
-
-exports[`Visual editor on hover, the sdk should do nothing if the element is hovered with empty data-cslp 1`] = `
-<div
-  class="visual-editor__cursor visible"
-  data-testid="visual-editor__cursor"
-/>
-`;
-
-exports[`Visual editor on hover, the sdk should do nothing if the element is hovered with empty data-cslp 2`] = `
-<div
-  class="visual-editor__cursor visible"
-  data-testid="visual-editor__cursor"
-/>
-`;
-
-exports[`Visual editor on hover, the sdk should do nothing if the same element is hovered 1`] = `
-<div
-  class="visual-editor__cursor visible"
-  data-testid="visual-editor__cursor"
-/>
-`;
-
-exports[`Visual editor on hover, the sdk should do nothing if the same element is hovered 2`] = `
-<div
-  class="visual-editor__cursor"
-  data-testid="visual-editor__cursor"
-/>
-`;
-
-exports[`Visual editor on hover, the sdk should hide custom cursor if data cslp not available 1`] = `
-<div
-  class="visual-editor__cursor visible"
-  data-testid="visual-editor__cursor"
-/>
-`;
-
-exports[`Visual editor on hover, the sdk should hide custom cursor if data cslp not available 2`] = `
-<div
-  class="visual-editor__cursor"
-  data-testid="visual-editor__cursor"
-/>
-`;
-
-exports[`Visual editor on hover, the sdk should hide custom cursor if the current element is not previously hovered element 1`] = `
-<div
-  class="visual-editor__cursor visible"
-  data-testid="visual-editor__cursor"
-/>
-`;
-
-exports[`Visual editor on hover, the sdk should hide custom cursor if the current element is not previously hovered element 2`] = `
-<div
-  class="visual-editor__cursor"
-  data-testid="visual-editor__cursor"
-/>
-`;
-
-exports[`Visual editor on hover, the sdk show a custom cursor 1`] = `
-<div
-  class="visual-editor__cursor visible"
-  data-testid="visual-editor__cursor"
-/>
 `;
 
 exports[`Visual editor should append a visual editor container to the DOM 1`] = `
