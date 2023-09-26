@@ -1,8 +1,6 @@
 import _ from "lodash";
 
-import { VisualEditorCslpEventDetails } from "../types/liveEditor.types";
 import { IConfig } from "../types/types";
-import { extractDetailsFromCslp } from "../utils/cslpdata";
 import mockData from "./ctmap";
 import { generateFieldSchemaMap } from "./utils/generateFieldSchemaMap";
 import { generateStartEditingButton } from "./utils/generateStartEditingButton";
@@ -16,14 +14,13 @@ import {
     handleIndividualFields,
 } from "./utils/handleIndividualFields";
 import {
-    generateAddButton,
     handleAddButtonsForMultiple,
-    hideAddInstanceButtons,
+    removeAddInstanceButtons,
 } from "./utils/multipleElementAddButton";
-import {
-    ISchemaFieldMap,
-    ISchemaIndividualFieldMap,
-} from "./utils/types/index.types";
+
+import { addFocusOverlay, hideFocusOverlay } from "./utils/focusOverlayWrapper";
+import { getCsDataOfElement } from "./utils/getCsDataOfElement";
+import { ISchemaIndividualFieldMap } from "./utils/types/index.types";
 
 export class VisualEditor {
     private fieldSchemaMap: Record<string, ISchemaIndividualFieldMap> = {};
@@ -31,10 +28,7 @@ export class VisualEditor {
     private overlayWrapper: HTMLDivElement | null = null;
     private previousSelectedEditableDOM: Element | null = null;
     private visualEditorWrapper: HTMLDivElement | null = null;
-    private previousButton: HTMLButtonElement = generateAddButton();
-    private nextButton: HTMLButtonElement = generateAddButton();
     private previousHoveredTargetDOM: Element | null = null;
-    private startEditingButton: HTMLButtonElement | null = null;
 
     constructor(config: IConfig) {
         Object.keys(mockData).forEach((ctUID: string) => {
@@ -43,7 +37,6 @@ export class VisualEditor {
 
         this.handleMouseHover = this.handleMouseHover.bind(this);
         this.hideCustomCursor = this.hideCustomCursor.bind(this);
-        this.hideOverlayDOM = this.hideOverlayDOM.bind(this);
         this.appendVisualEditorDOM = this.appendVisualEditorDOM.bind(this);
         this.removeVisualEditorDOM = this.removeVisualEditorDOM.bind(this);
         this.handleMouseDownForVisualEditing =
@@ -56,7 +49,7 @@ export class VisualEditor {
     }
 
     private handleStartEditing = (event: MouseEvent): void => {
-        const startEditingButton = event.target as HTMLButtonElement;
+        const startEditingButton = event.currentTarget as HTMLButtonElement;
 
         const stack = startEditingButton.getAttribute("data-cslp-stack");
         const environment = startEditingButton.getAttribute(
@@ -84,7 +77,8 @@ export class VisualEditor {
     };
 
     private handleMouseDownForVisualEditing = (event: MouseEvent): void => {
-        const eventDetails = this.handleCSLPMouseEvent(event);
+        event.preventDefault();
+        const eventDetails = getCsDataOfElement(event, this.fieldSchemaMap);
         if (
             !eventDetails ||
             !this.overlayWrapper ||
@@ -94,26 +88,34 @@ export class VisualEditor {
         }
         const { editableElement } = eventDetails;
 
-        this.previousSelectedEditableDOM = editableElement;
-        this.addOverlayOnDOM(editableElement);
+        if (
+            this.previousSelectedEditableDOM &&
+            this.previousSelectedEditableDOM !== editableElement
+        ) {
+            cleanIndividualFieldResidual({
+                overlayWrapper: this.overlayWrapper,
+                previousSelectedEditableDOM: this.previousSelectedEditableDOM,
+                visualEditorWrapper: this.visualEditorWrapper,
+            });
+        }
+
+        addFocusOverlay(editableElement, this.overlayWrapper);
 
         handleIndividualFields(eventDetails, {
-            overlayWrapper: this.overlayWrapper,
             visualEditorWrapper: this.visualEditorWrapper,
-            nextButton: this.nextButton,
-            previousButton: this.previousButton,
+            lastEditedField: this.previousSelectedEditableDOM,
         });
+        this.previousSelectedEditableDOM = editableElement;
     };
 
     handleMouseHover = _.throttle((event: MouseEvent) => {
-        const eventDetails = this.handleCSLPMouseEvent(event);
+        const eventDetails = getCsDataOfElement(event, this.fieldSchemaMap);
         if (!eventDetails) {
             this.hideCustomCursor();
-            hideAddInstanceButtons({
+
+            removeAddInstanceButtons({
                 eventTarget: event.target,
                 visualEditorWrapper: this.visualEditorWrapper,
-                nextButton: this.nextButton,
-                previousButton: this.previousButton,
                 overlayWrapper: this.overlayWrapper,
             });
             return;
@@ -121,11 +123,9 @@ export class VisualEditor {
         const { fieldSchema, editableElement } = eventDetails;
         if (this.previousHoveredTargetDOM !== editableElement) {
             this.hideCustomCursor();
-            hideAddInstanceButtons({
+            removeAddInstanceButtons({
                 eventTarget: event.target,
                 visualEditorWrapper: this.visualEditorWrapper,
-                nextButton: this.nextButton,
-                previousButton: this.previousButton,
                 overlayWrapper: this.overlayWrapper,
             });
         }
@@ -152,58 +152,19 @@ export class VisualEditor {
                 // @ts-ignore
                 fieldSchema.field_metadata.ref_multiple)
         ) {
-            handleAddButtonsForMultiple({
-                editableElement: eventDetails.editableElement,
+            handleAddButtonsForMultiple(eventDetails, {
+                editableElement: editableElement,
                 visualEditorWrapper: this.visualEditorWrapper,
-                nextButton: this.nextButton,
-                previousButton: this.previousButton,
             });
         } else {
-            hideAddInstanceButtons({
+            removeAddInstanceButtons({
                 eventTarget: event.target,
                 visualEditorWrapper: this.visualEditorWrapper,
-                nextButton: this.nextButton,
-                previousButton: this.previousButton,
                 overlayWrapper: this.overlayWrapper,
             });
         }
         this.previousHoveredTargetDOM = editableElement;
     }, 10);
-
-    /**
-     * Get the details of the CSLP tag of the target.
-     * @param event Mouse event
-     * @returns Details of the closest data cslp
-     */
-    handleCSLPMouseEvent = (
-        event: MouseEvent
-    ): VisualEditorCslpEventDetails | undefined => {
-        const targetElement = event.target as HTMLElement;
-        if (!targetElement) {
-            return;
-        }
-        const editableElement = targetElement.closest("[data-cslp]");
-        if (!editableElement) {
-            return;
-        }
-        const cslpData = editableElement.getAttribute("data-cslp");
-        if (!cslpData) {
-            return;
-        }
-        const fieldMetadata = extractDetailsFromCslp(cslpData);
-
-        const fieldSchema =
-            this.fieldSchemaMap[fieldMetadata.content_type_uid][
-                fieldMetadata.fieldPath
-            ];
-
-        return {
-            editableElement: editableElement,
-            cslpData,
-            fieldMetadata,
-            fieldSchema,
-        };
-    };
 
     appendVisualEditorDOM = (config: IConfig): void => {
         const visualEditorDOM = document.querySelector(
@@ -211,8 +172,12 @@ export class VisualEditor {
         );
         if (!visualEditorDOM) {
             this.customCursor = generateVisualEditorCursor();
-            this.overlayWrapper = generateVisualEditorOverlay(
-                this.hideOverlayDOM
+            this.overlayWrapper = generateVisualEditorOverlay((event) =>
+                hideFocusOverlay(event, {
+                    previousSelectedEditableDOM:
+                        this.previousSelectedEditableDOM,
+                    visualEditorWrapper: this.visualEditorWrapper,
+                })
             );
 
             this.visualEditorWrapper = generateVisualEditorWrapper({
@@ -221,107 +186,11 @@ export class VisualEditor {
             });
         }
 
-        const startEditingButton = generateStartEditingButton(
+        generateStartEditingButton(
             config,
             this.visualEditorWrapper,
             this.handleStartEditing
         );
-
-        if (startEditingButton) {
-            this.startEditingButton = startEditingButton;
-        }
-    };
-
-    // done
-    addOverlayOnDOM = (targetDOM: Element): void => {
-        if (!targetDOM || !this.overlayWrapper) {
-            return;
-        }
-        const targetDOMDimension = targetDOM.getBoundingClientRect();
-
-        this.overlayWrapper.classList.add("visible");
-
-        const distanceFromTop = targetDOMDimension.top + window.scrollY;
-        const topOverlayDOM = this.overlayWrapper.querySelector(
-            ".visual-editor__overlay--top"
-        ) as HTMLDivElement | null;
-
-        if (topOverlayDOM) {
-            topOverlayDOM.style.top = "0";
-            topOverlayDOM.style.left = "0";
-            topOverlayDOM.style.width = "100%";
-            topOverlayDOM.style.height = `${distanceFromTop}px`;
-        }
-
-        const bottomOverlayDOM = this.overlayWrapper.querySelector(
-            ".visual-editor__overlay--bottom"
-        ) as HTMLDivElement | null;
-        if (bottomOverlayDOM) {
-            bottomOverlayDOM.style.top = `${
-                targetDOMDimension.bottom + window.scrollY
-            }px`;
-            bottomOverlayDOM.style.height = `${
-                window.document.body.scrollHeight -
-                targetDOMDimension.bottom -
-                window.scrollY
-            }px`;
-            bottomOverlayDOM.style.left = "0";
-            bottomOverlayDOM.style.width = "100%";
-        }
-
-        const leftOverlayDOM = this.overlayWrapper.querySelector(
-            ".visual-editor__overlay--left"
-        ) as HTMLDivElement | null;
-        if (leftOverlayDOM) {
-            leftOverlayDOM.style.left = "0";
-            leftOverlayDOM.style.top = `${distanceFromTop}px`;
-            leftOverlayDOM.style.height = `${targetDOMDimension.height}px`;
-            leftOverlayDOM.style.width = `${targetDOMDimension.left}px`;
-        }
-
-        const rightOverlayDOM = this.overlayWrapper.querySelector(
-            ".visual-editor__overlay--right"
-        ) as HTMLDivElement | null;
-        if (rightOverlayDOM) {
-            rightOverlayDOM.style.left = `${targetDOMDimension.right}px`;
-            rightOverlayDOM.style.top = `${distanceFromTop}px`;
-            rightOverlayDOM.style.height = `${targetDOMDimension.height}px`;
-            rightOverlayDOM.style.width = `${
-                window.innerWidth - targetDOMDimension.right
-            }px`;
-        }
-
-        const outlineDOM = this.overlayWrapper.querySelector(
-            ".visual-editor__overlay--outline"
-        ) as HTMLDivElement | null;
-        if (outlineDOM) {
-            outlineDOM.style.top = `${
-                targetDOMDimension.top + window.scrollY
-            }px`;
-            outlineDOM.style.height = `${targetDOMDimension.height}px`;
-            outlineDOM.style.width = `${targetDOMDimension.width}px`;
-            outlineDOM.style.left = `${targetDOMDimension.left}px`;
-        }
-    };
-    hideOverlayDOM = (event: MouseEvent): void => {
-        const targetElement = event.target as Element;
-
-        if (!this.overlayWrapper) return;
-
-        if (targetElement.classList.contains("visual-editor__overlay")) {
-            this.overlayWrapper.classList.remove("visible");
-
-            if (this.previousSelectedEditableDOM) {
-                cleanIndividualFieldResidual({
-                    overlayWrapper: this.overlayWrapper,
-                    previousSelectedEditableDOM:
-                        this.previousSelectedEditableDOM,
-                    previousButton: this.previousButton,
-                    nextButton: this.nextButton,
-                    visualEditorWrapper: this.visualEditorWrapper,
-                });
-            }
-        }
     };
     hideCustomCursor = (): void => {
         if (this.customCursor) {
@@ -336,5 +205,15 @@ export class VisualEditor {
             window.document.body.removeChild(visualEditorDOM);
         }
         this.customCursor = null;
+    };
+
+    // TODO: write test cases
+    destroy = (): void => {
+        window.removeEventListener(
+            "click",
+            this.handleMouseDownForVisualEditing
+        );
+        window.removeEventListener("mousemove", this.handleMouseHover);
+        this.removeVisualEditorDOM();
     };
 }

@@ -1,17 +1,28 @@
+import { VisualEditorCslpEventDetails } from "../../../types/liveEditor.types";
+import { generateAddInstanceButton } from "../instanceButtons";
 import {
-    generateAddButton,
     getChildrenDirection,
     handleAddButtonsForMultiple,
-    hideAddInstanceButtons,
+    removeAddInstanceButtons,
 } from "../multipleElementAddButton";
+import { getCsDataOfElement } from "../getCsDataOfElement";
+import { generateFieldSchemaMap } from "../generateFieldSchemaMap";
 
-describe("generateAddButton", () => {
+describe("generateAddInstanceButton", () => {
     test("should generate a button", () => {
-        const button = generateAddButton();
+        const button = generateAddInstanceButton(() => {});
         expect(button.tagName).toBe("BUTTON");
+    });
+
+    test("should run the callback when the button is clicked", () => {
+        const mockCallback = jest.fn();
+        const button = generateAddInstanceButton(mockCallback);
+        button.click();
+        expect(mockCallback).toHaveBeenCalled();
     });
 });
 
+// TODO: rewrite this
 describe("getChildrenDirection", () => {
     let firstChild: HTMLElement;
     let secondChild: HTMLElement;
@@ -21,28 +32,17 @@ describe("getChildrenDirection", () => {
         firstChild = document.createElement("div");
         firstChild.setAttribute(
             "data-cslp",
-            "page.bltapikey.en-us.page_components.0.hero_banner"
-        );
-        firstChild.setAttribute(
-            "data-cslp-container",
-            "page.bltapikey.en-us.page_components"
+            "all_fields.bltapikey.en-us.group.0"
         );
 
         secondChild = document.createElement("div");
         secondChild.setAttribute(
             "data-cslp",
-            "page.bltapikey.en-us.page_components.1.section"
-        );
-        secondChild.setAttribute(
-            "data-cslp-container",
-            "page.bltapikey.en-us.page_components"
+            "all_fields.bltapikey.en-us.group.1"
         );
 
         container = document.createElement("div");
-        container.setAttribute(
-            "data-cslp",
-            "page.bltapikey.en-us.page_components"
-        );
+        container.setAttribute("data-cslp", "all_fields.bltapikey.en-us.group");
         container.appendChild(firstChild);
         container.appendChild(secondChild);
 
@@ -57,17 +57,24 @@ describe("getChildrenDirection", () => {
     test(`should return "none" if it is not a list type`, () => {
         container.innerHTML = "";
 
-        const direction = getChildrenDirection(firstChild);
+        const direction = getChildrenDirection(
+            firstChild,
+            "all_fields.bltapikey.en-us.group"
+        );
         expect(direction).toBe("none");
     });
 
     test(`should return "none" if the parent container is not found`, () => {
         container.removeAttribute("data-cslp");
-        expect(getChildrenDirection(firstChild)).toBe("none");
+        expect(
+            getChildrenDirection(firstChild, "all_fields.bltapikey.en-us.group")
+        ).toBe("none");
     });
 
     test("should return 'vertical' if the parent container is found and the children are in a vertical list", () => {
-        expect(getChildrenDirection(firstChild)).toBe("vertical");
+        expect(
+            getChildrenDirection(firstChild, "all_fields.bltapikey.en-us.group")
+        ).toBe("vertical");
     });
 
     test("should return 'horizontal' if the parent container is found and the children are in a horizontal list", () => {
@@ -81,7 +88,9 @@ describe("getChildrenDirection", () => {
             top: 10,
         });
 
-        expect(getChildrenDirection(firstChild)).toBe("horizontal");
+        expect(
+            getChildrenDirection(firstChild, "all_fields.bltapikey.en-us.group")
+        ).toBe("horizontal");
     });
 
     test("should create a clone and determine direction when one child is present", () => {
@@ -92,7 +101,9 @@ describe("getChildrenDirection", () => {
             top: 10,
         });
 
-        expect(getChildrenDirection(firstChild)).toBe("vertical");
+        expect(
+            getChildrenDirection(firstChild, "all_fields.bltapikey.en-us.group")
+        ).toBe("vertical");
     });
 
     test("should return 'none' if input is not provided", () => {
@@ -105,7 +116,9 @@ describe("getChildrenDirection", () => {
         document.body.appendChild(firstChild);
         document.body.appendChild(secondChild);
 
-        expect(getChildrenDirection(firstChild)).toBe("none");
+        expect(
+            getChildrenDirection(firstChild, "all_fields.bltapikey.en-us.group")
+        ).toBe("none");
     });
 });
 
@@ -113,29 +126,20 @@ describe("handleAddButtonsForMultiple", () => {
     let firstChild: HTMLElement;
     let secondChild: HTMLElement;
     let container: HTMLElement;
-    let visualEditorWrapper: HTMLElement;
-    let previousButton: HTMLButtonElement;
-    let nextButton: HTMLButtonElement;
+    let visualEditorWrapper: HTMLDivElement;
+    let eventDetails: VisualEditorCslpEventDetails;
 
     beforeEach(() => {
         firstChild = document.createElement("div");
         firstChild.setAttribute(
             "data-cslp",
-            "page.bltapikey.en-us.page_components.0.hero_banner"
-        );
-        firstChild.setAttribute(
-            "data-cslp-container",
-            "page.bltapikey.en-us.page_components"
+            "all_fields.bltapikey.en-us.group.0"
         );
 
         secondChild = document.createElement("div");
         secondChild.setAttribute(
             "data-cslp",
-            "page.bltapikey.en-us.page_components.1.section"
-        );
-        secondChild.setAttribute(
-            "data-cslp-container",
-            "page.bltapikey.en-us.page_components"
+            "all_fields.bltapikey.en-us.group.1"
         );
 
         firstChild.getBoundingClientRect = jest.fn().mockReturnValue({
@@ -152,21 +156,27 @@ describe("handleAddButtonsForMultiple", () => {
             bottom: 20,
         });
 
-        previousButton = document.createElement("button");
-        nextButton = document.createElement("button");
-
         visualEditorWrapper = document.createElement("div");
 
         container = document.createElement("div");
-        container.setAttribute(
-            "data-cslp",
-            "page.bltapikey.en-us.page_components"
-        );
+        container.setAttribute("data-cslp", "all_fields.bltapikey.en-us.group");
         container.appendChild(firstChild);
         container.appendChild(secondChild);
 
         document.body.appendChild(container);
         document.body.appendChild(visualEditorWrapper);
+
+        const mouseEvent = new MouseEvent("click", {
+            bubbles: true,
+            cancelable: true,
+        });
+        firstChild.dispatchEvent(mouseEvent);
+
+        const fieldMap = generateFieldSchemaMap("all_fields");
+
+        eventDetails = getCsDataOfElement(mouseEvent, {
+            all_fields: fieldMap,
+        }) as VisualEditorCslpEventDetails;
     });
 
     afterEach(() => {
@@ -175,71 +185,70 @@ describe("handleAddButtonsForMultiple", () => {
     });
 
     test("should not add buttons if the editable element is not found", () => {
-        handleAddButtonsForMultiple({
+        handleAddButtonsForMultiple(eventDetails, {
             editableElement: null,
-            visualEditorWrapper,
-            nextButton: nextButton,
-            previousButton: previousButton,
+            visualEditorWrapper: visualEditorWrapper,
         });
 
-        expect(visualEditorWrapper.contains(previousButton)).toBeFalsy();
-    });
+        const addInstanceButtons = visualEditorWrapper.querySelectorAll(
+            `[data-testid="visual-editor-add-instance-button"]`
+        );
 
-    test("should not add buttons if the editable element does not contain container", () => {
-        firstChild.removeAttribute("data-cslp-container");
-
-        handleAddButtonsForMultiple({
-            editableElement: firstChild,
-            visualEditorWrapper,
-            nextButton: nextButton,
-            previousButton: previousButton,
-        });
-
-        expect(visualEditorWrapper.contains(previousButton)).toBeFalsy();
+        expect(addInstanceButtons.length).toBe(0);
     });
 
     test("should not add buttons if the direction is none", () => {
         container.removeAttribute("data-cslp");
-        handleAddButtonsForMultiple({
+        handleAddButtonsForMultiple(eventDetails, {
             editableElement: firstChild,
             visualEditorWrapper,
-            nextButton: nextButton,
-            previousButton: previousButton,
         });
 
-        expect(visualEditorWrapper.contains(previousButton)).toBeFalsy();
+        const addInstanceButtons = visualEditorWrapper.querySelectorAll(
+            `[data-testid="visual-editor-add-instance-button"]`
+        );
+
+        expect(addInstanceButtons.length).toBe(0);
     });
 
     test("should not add buttons if the visual editor wrapper is not found", () => {
-        handleAddButtonsForMultiple({
+        handleAddButtonsForMultiple(eventDetails, {
             editableElement: firstChild,
             visualEditorWrapper: null,
-            nextButton: nextButton,
-            previousButton: previousButton,
         });
 
-        expect(visualEditorWrapper.contains(previousButton)).toBeFalsy();
+        const addInstanceButtons = visualEditorWrapper.querySelectorAll(
+            `[data-testid="visual-editor-add-instance-button"]`
+        );
+
+        expect(addInstanceButtons.length).toBe(0);
     });
 
     test("should append the buttons to the visual editor wrapper", () => {
-        handleAddButtonsForMultiple({
+        handleAddButtonsForMultiple(eventDetails, {
             editableElement: firstChild,
             visualEditorWrapper,
-            nextButton: nextButton,
-            previousButton: previousButton,
         });
 
-        expect(visualEditorWrapper.contains(previousButton)).toBeTruthy();
-        expect(visualEditorWrapper.contains(nextButton)).toBeTruthy();
+        const addInstanceButtons = visualEditorWrapper.querySelectorAll(
+            `[data-testid="visual-editor-add-instance-button"]`
+        );
+
+        expect(addInstanceButtons.length).toBe(2);
     });
 
     test("should add the buttons to the center if the direction is horizontal", () => {
-        handleAddButtonsForMultiple({
+        handleAddButtonsForMultiple(eventDetails, {
             editableElement: firstChild,
             visualEditorWrapper,
-            nextButton: nextButton,
-            previousButton: previousButton,
         });
+
+        const addInstanceButtons = visualEditorWrapper.querySelectorAll(
+            `[data-testid="visual-editor-add-instance-button"]`
+        );
+
+        const previousButton = addInstanceButtons[0] as HTMLButtonElement;
+        const nextButton = addInstanceButtons[1] as HTMLButtonElement;
 
         expect(previousButton.style.left).toBe("10px");
         expect(previousButton.style.top).toBe("15px");
@@ -262,12 +271,17 @@ describe("handleAddButtonsForMultiple", () => {
             top: 20,
             bottom: 30,
         });
-        handleAddButtonsForMultiple({
+        handleAddButtonsForMultiple(eventDetails, {
             editableElement: firstChild,
             visualEditorWrapper,
-            nextButton: nextButton,
-            previousButton: previousButton,
         });
+
+        const addInstanceButtons = visualEditorWrapper.querySelectorAll(
+            `[data-testid="visual-editor-add-instance-button"]`
+        );
+
+        const previousButton = addInstanceButtons[0] as HTMLButtonElement;
+        const nextButton = addInstanceButtons[1] as HTMLButtonElement;
 
         expect(previousButton.style.left).toBe("15px");
         expect(previousButton.style.top).toBe("10px");
@@ -277,7 +291,7 @@ describe("handleAddButtonsForMultiple", () => {
     });
 });
 
-describe("hideAddInstanceButtons", () => {
+describe("removeAddInstanceButtons", () => {
     let visualEditorWrapper: HTMLDivElement;
     let previousButton: HTMLButtonElement;
     let nextButton: HTMLButtonElement;
@@ -286,8 +300,8 @@ describe("hideAddInstanceButtons", () => {
 
     beforeEach(() => {
         visualEditorWrapper = document.createElement("div");
-        previousButton = document.createElement("button");
-        nextButton = document.createElement("button");
+        previousButton = generateAddInstanceButton(() => {});
+        nextButton = generateAddInstanceButton(() => {});
         overlayWrapper = document.createElement("div");
         eventTarget = document.createElement("div");
 
@@ -303,67 +317,129 @@ describe("hideAddInstanceButtons", () => {
         jest.resetAllMocks();
     });
 
-    test("should not hide buttons if wrapper or buttons are not present", () => {
-        hideAddInstanceButtons({
+    test("should not remove buttons if wrapper or buttons are not present", () => {
+        removeAddInstanceButtons({
             visualEditorWrapper: null,
             eventTarget: eventTarget,
-            nextButton: null,
-            previousButton: null,
             overlayWrapper: overlayWrapper,
         });
 
-        expect(visualEditorWrapper.contains(previousButton)).toBeTruthy();
-        expect(visualEditorWrapper.contains(nextButton)).toBeTruthy();
+        const addInstanceButtons = visualEditorWrapper.querySelectorAll(
+            `[data-testid="visual-editor-add-instance-button"]`
+        );
+
+        expect(addInstanceButtons.length).toBe(2);
     });
 
-    test("should not hide buttons if previous button contains event target", () => {
-        hideAddInstanceButtons({
+    test("should not remove buttons if previous button contains event target", () => {
+        removeAddInstanceButtons({
             visualEditorWrapper: visualEditorWrapper,
             eventTarget: previousButton,
-            nextButton: nextButton,
-            previousButton: previousButton,
             overlayWrapper: overlayWrapper,
         });
 
-        expect(visualEditorWrapper.contains(previousButton)).toBeTruthy();
-        expect(visualEditorWrapper.contains(nextButton)).toBeTruthy();
+        let addInstanceButtons = visualEditorWrapper.querySelectorAll(
+            `[data-testid="visual-editor-add-instance-button"]`
+        );
 
-        hideAddInstanceButtons({
+        expect(addInstanceButtons.length).toBe(2);
+
+        removeAddInstanceButtons({
             visualEditorWrapper: visualEditorWrapper,
             eventTarget: nextButton,
-            nextButton: nextButton,
-            previousButton: previousButton,
             overlayWrapper: overlayWrapper,
         });
 
-        expect(visualEditorWrapper.contains(previousButton)).toBeTruthy();
-        expect(visualEditorWrapper.contains(nextButton)).toBeTruthy();
+        addInstanceButtons = visualEditorWrapper.querySelectorAll(
+            `[data-testid="visual-editor-add-instance-button"]`
+        );
+
+        expect(addInstanceButtons.length).toBe(2);
     });
-    test("should not hide buttons if next button contains event target", () => {
+    test("should not remove buttons if next button contains event target", () => {
         overlayWrapper.classList.add("visible");
 
-        hideAddInstanceButtons({
+        removeAddInstanceButtons({
             visualEditorWrapper: visualEditorWrapper,
             eventTarget: eventTarget,
-            nextButton: nextButton,
-            previousButton: previousButton,
             overlayWrapper: overlayWrapper,
         });
 
-        expect(visualEditorWrapper.contains(previousButton)).toBeTruthy();
-        expect(visualEditorWrapper.contains(nextButton)).toBeTruthy();
+        const addInstanceButtons = visualEditorWrapper.querySelectorAll(
+            `[data-testid="visual-editor-add-instance-button"]`
+        );
+
+        expect(addInstanceButtons.length).toBe(2);
     });
 
-    test("should hide the buttons", () => {
-        hideAddInstanceButtons({
+    test("should remove the buttons", () => {
+        removeAddInstanceButtons({
             visualEditorWrapper: visualEditorWrapper,
             eventTarget: eventTarget,
-            nextButton: nextButton,
-            previousButton: previousButton,
             overlayWrapper: overlayWrapper,
         });
 
         expect(visualEditorWrapper.contains(previousButton)).toBeFalsy();
         expect(visualEditorWrapper.contains(nextButton)).toBeFalsy();
+    });
+
+    test("should remove all buttons if forceRemoveAll is true", () => {
+        for (let i = 0; i < 5; i++) {
+            const button = generateAddInstanceButton(() => {});
+            visualEditorWrapper.appendChild(button);
+        }
+
+        let buttons = visualEditorWrapper.querySelectorAll(
+            `[data-testid="visual-editor-add-instance-button"]`
+        );
+
+        expect(buttons.length).toBe(7);
+
+        removeAddInstanceButtons(
+            {
+                visualEditorWrapper: visualEditorWrapper,
+                eventTarget: eventTarget,
+                overlayWrapper: overlayWrapper,
+            },
+            true
+        );
+
+        buttons = visualEditorWrapper.querySelectorAll(
+            `[data-testid="visual-editor-add-instance-button"]`
+        );
+
+        expect(buttons.length).toBe(0);
+    });
+
+    test("should not remove all buttons if forceRemoveAll is false", () => {
+        for (let i = 0; i < 5; i++) {
+            const button = generateAddInstanceButton(() => {});
+            visualEditorWrapper.appendChild(button);
+        }
+
+        let buttons = visualEditorWrapper.querySelectorAll(
+            `[data-testid="visual-editor-add-instance-button"]`
+        );
+
+        expect(buttons.length).toBe(7);
+
+        removeAddInstanceButtons(
+            {
+                visualEditorWrapper: visualEditorWrapper,
+                eventTarget: eventTarget,
+                overlayWrapper: overlayWrapper,
+            },
+            false
+        );
+
+        buttons = visualEditorWrapper.querySelectorAll(
+            `[data-testid="visual-editor-add-instance-button"]`
+        );
+
+        const addInstanceButtons = visualEditorWrapper.querySelectorAll(
+            `[data-testid="visual-editor-add-instance-button"]`
+        );
+
+        expect(addInstanceButtons.length).toBe(5);
     });
 });

@@ -16,8 +16,10 @@ import {
     IReferenceContentTypeSchema,
     ISelectContentTypeSchema,
     ISingleLineTextBoxContentTypeSchema,
+    IURLContentTypeSchema,
 } from "../../../types/contentTypeSchema.types";
 import { getFieldType } from "../getFieldType";
+import { FieldDataType, ISchemaFieldMap } from "../types/index.types";
 
 describe("getFieldType", () => {
     test("should return multiline if it is multiline", () => {
@@ -369,4 +371,37 @@ describe("getFieldType", () => {
 
         expect(getFieldType(data)).toBe("custom_field");
     });
+
+    test("should return url if it is url", () => {
+        const data: IURLContentTypeSchema = {
+            data_type: "text",
+            uid: "url",
+            field_metadata: {
+                _default: true,
+                version: 0,
+            },
+            display_name: "",
+            mandatory: false,
+            multiple: false,
+            non_localizable: false,
+            unique: false,
+        };
+
+        expect(getFieldType(data)).toBe(FieldDataType.URL);
+    });
+
+    test("should return empty string if it is not any of the above", () => {
+        const data = {} as unknown as ISchemaFieldMap;
+
+        expect(getFieldType(data)).toBe("");
+    });
+
+    test("should return empty string if it is json but not rte or custom field", () => {
+        const data = {
+            data_type: "json",
+            field_metadata: {}
+        } as unknown as ISchemaFieldMap;
+
+        expect(getFieldType(data)).toBe("");
+    })
 });
