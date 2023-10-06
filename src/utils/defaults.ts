@@ -53,6 +53,7 @@ export function getDefaultConfig(): IConfig {
             environment: "",
             contentTypeUid: "",
             entryUid: "",
+            locale: "en-us",
             branch: "main",
         },
 

@@ -21,6 +21,7 @@ import {
 import { addFocusOverlay, hideFocusOverlay } from "./utils/focusOverlayWrapper";
 import { getCsDataOfElement } from "./utils/getCsDataOfElement";
 import { ISchemaIndividualFieldMap } from "./utils/types/index.types";
+import { extractDetailsFromCslp } from "../utils/cslpdata";
 
 export class VisualEditor {
     private fieldSchemaMap: Record<string, ISchemaIndividualFieldMap> = {};
@@ -62,18 +63,34 @@ export class VisualEditor {
             "data-cslp-app-host"
         ) as string;
 
-        //TODO: Check if branch is mandatory
-        const searchParams = new URLSearchParams({
-            branch: branch,
-        });
         const completeURL = new URL(
             `/#!/live-editor/stack/${stack}/environment/${environment}/target_url/${encodeURIComponent(
                 window.location.href
-            )}?${searchParams.toString()}`,
+            )}`,
             app_url
         );
 
-        window.location.replace(completeURL);
+        completeURL.searchParams.set("branch", branch);
+
+        // get the locale from the data cslp attribute
+        const elementWithDataCslp = document.querySelector(`[data-cslp]`);
+
+        if (elementWithDataCslp) {
+            const cslpData = elementWithDataCslp.getAttribute(
+                "data-cslp"
+            ) as string;
+            const { locale } = extractDetailsFromCslp(cslpData);
+
+            completeURL.searchParams.set("locale", locale);
+        } else {
+            const locale = startEditingButton.getAttribute(
+                "data-cslp-locale"
+            ) as string;
+
+            completeURL.searchParams.set("locale", locale);
+        }
+
+        window.location.assign(completeURL.toString());
     };
 
     private handleMouseDownForVisualEditing = (event: MouseEvent): void => {

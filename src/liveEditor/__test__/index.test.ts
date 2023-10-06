@@ -184,7 +184,9 @@ describe("start editing button", () => {
     });
     afterEach(() => {
         document.getElementsByTagName("html")[0].innerHTML = "";
+        jest.restoreAllMocks();
     });
+
     test("should exist", () => {
         new VisualEditor(config);
         const startEditingButton = document.querySelector(
@@ -195,25 +197,43 @@ describe("start editing button", () => {
     });
 
     test("should go to an URL upon click", () => {
+        config.stackDetails.apiKey = "api_key";
+        config.stackDetails.environment = "environment";
+
+        const mockReplace = jest.fn();
+        Object.defineProperty(window, "location", {
+            value: {
+                assign: mockReplace,
+                href: "https://example.com",
+            },
+        });
+
         new VisualEditor(config);
         const startEditingButton = document.querySelector(
             `[data-testid="vcms-start-editing-btn"]`
         ) as HTMLButtonElement;
 
-        const mockReplace = jest.fn();
-        Object.defineProperty(window, "location", {
-            value: {
-                replace: mockReplace,
-            },
-        });
+        startEditingButton.click();
+
+        console.log(document.body.outerHTML);
+
+        expect(mockReplace).toHaveBeenCalled();
+        expect(mockReplace.mock.calls.at(0).at(0).toString()).toBe(
+            "https://app.contentstack.com/?branch=main&locale=en-us#!/live-editor/stack/api_key/environment/environment/target_url/https%3A%2F%2Fexample.com"
+        );
+
+        const h1 = document.createElement("h1");
+        h1.setAttribute(
+            "data-cslp",
+            "all_fields.blt58a50b4cebae75c5.en-uk.title"
+        );
+
+        document.body.appendChild(h1);
 
         startEditingButton.click();
 
-        expect(mockReplace).toHaveBeenCalled();
-        expect(mockReplace).toHaveBeenCalledWith(
-            new URL(
-                "https://app.contentstack.com/#!/live-editor/stack//environment//target_url/undefined?branch=main"
-            )
+        expect(mockReplace.mock.calls.at(1).at(0).toString()).toBe(
+            "https://app.contentstack.com/?branch=main&locale=en-uk#!/live-editor/stack/api_key/environment/environment/target_url/https%3A%2F%2Fexample.com"
         );
     });
 });
