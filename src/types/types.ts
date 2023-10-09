@@ -31,16 +31,30 @@ export declare interface IStackDetails {
     contentTypeUid: string;
     entryUid: string;
     branch: string;
+    /**
+     * This locale is currently used by the live editor to
+     * redirect to the correct locale if the no data-cslp tag
+     * is present in the HTML to extract the locale.
+     */
+    locale: string;
 }
 
 export declare interface IInitStackDetails {
     apiKey: string;
     environment: string;
     branch: string;
+    /**
+     * This locale is currently used by the live editor to
+     * redirect to the correct locale if the no data-cslp tag
+     * is present in the HTML to extract the locale.
+     */
+    locale: string;
 }
 
 export declare type ILivePreviewMode = "editor" | "preview";
 
+//? We kept it as number so that we could disable only the unrequired features,
+//? since the "Editor" mode will contain all the features of the "Preview" mode.
 export declare const enum ILivePreviewModeConfig {
     PREVIEW = 1,
     EDITOR = 2,

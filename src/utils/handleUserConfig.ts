@@ -220,6 +220,9 @@ function handleStackDetails(
         stackSdk.headers?.branch ??
         config.stackDetails.branch;
 
+    config.stackDetails.locale =
+        initData.stackDetails?.locale ?? config.stackDetails.locale;
+
     if (config.mode >= ILivePreviewModeConfig.EDITOR) {
         if (!config.stackDetails.environment) {
             throw Error("Live preview SDK: environment is required");

@@ -38,6 +38,7 @@ export default class LivePreview {
         },
         mode: 1,
         stackDetails: {
+            locale: "en-us",
             apiKey: "",
             environment: "",
             contentTypeUid: "",

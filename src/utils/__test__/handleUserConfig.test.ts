@@ -414,6 +414,27 @@ describe("handleInitData()", () => {
             handleInitData(initData, config);
             expect(config.stackDetails.branch).toBe("main");
         });
+
+        test("should set locale from user config", () => {
+            const initData: Partial<IInitData> = {
+                enable: true,
+                stackDetails: {
+                    locale: "userlocale",
+                },
+            };
+
+            handleInitData(initData, config);
+            expect(config.stackDetails.locale).toBe("userlocale");
+        });
+
+        test("should set default locale if it is not passed", () => {
+            const initData: Partial<IInitData> = {
+                enable: true,
+            };
+
+            handleInitData(initData, config);
+            expect(config.stackDetails.locale).toBe("en-us");
+        });
     });
 });
 

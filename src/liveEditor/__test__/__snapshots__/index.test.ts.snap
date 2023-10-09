@@ -151,6 +151,7 @@ exports[`Visual editor inline editing should add overlay to DOM when clicked 1`]
       data-cslp-app-host="https://app.contentstack.com:443"
       data-cslp-branch="main"
       data-cslp-environment=""
+      data-cslp-locale="en-us"
       data-cslp-stack=""
       data-testid="vcms-start-editing-btn"
     >
@@ -277,6 +278,7 @@ exports[`Visual editor on click, the sdk should do nothing if data-cslp not avai
       data-cslp-app-host="https://app.contentstack.com:443"
       data-cslp-branch="main"
       data-cslp-environment=""
+      data-cslp-locale="en-us"
       data-cslp-stack=""
       data-testid="vcms-start-editing-btn"
     >
@@ -368,6 +370,7 @@ exports[`Visual editor should append a visual editor container to the DOM 1`] = 
     data-cslp-app-host="https://app.contentstack.com:443"
     data-cslp-branch="main"
     data-cslp-environment=""
+    data-cslp-locale="en-us"
     data-cslp-stack=""
     data-testid="vcms-start-editing-btn"
   >

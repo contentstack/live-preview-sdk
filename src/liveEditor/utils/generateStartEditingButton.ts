@@ -13,7 +13,7 @@ export function generateStartEditingButton(
     visualEditorWrapper: HTMLDivElement | null,
     onClick: (event: MouseEvent) => void
 ): HTMLButtonElement | undefined {
-    const { apiKey, branch, environment } = config.stackDetails;
+    const { apiKey, branch, environment, locale } = config.stackDetails;
     const { url } = config.clientUrlParams;
 
     if (!visualEditorWrapper) {
@@ -28,6 +28,7 @@ export function generateStartEditingButton(
     startEditingButton.setAttribute("data-cslp-environment", environment);
     startEditingButton.setAttribute("data-cslp-branch", branch);
     startEditingButton.setAttribute("data-cslp-app-host", url);
+    startEditingButton.setAttribute("data-cslp-locale", locale);
     startEditingButton.setAttribute("data-testid", "vcms-start-editing-btn");
     startEditingButton.classList.add("visual-editor__start-editing-btn");
     startEditingButton.addEventListener("click", onClick);
