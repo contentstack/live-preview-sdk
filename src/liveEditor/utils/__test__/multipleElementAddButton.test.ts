@@ -7,6 +7,7 @@ import {
 } from "../multipleElementAddButton";
 import { getCsDataOfElement } from "../getCsDataOfElement";
 import { generateFieldSchemaMap } from "../generateFieldSchemaMap";
+import { getAllContentTypes } from "../../../__test__/data/contentType";
 
 describe("generateAddInstanceButton", () => {
     test("should generate a button", () => {
@@ -172,7 +173,9 @@ describe("handleAddButtonsForMultiple", () => {
         });
         firstChild.dispatchEvent(mouseEvent);
 
-        const fieldMap = generateFieldSchemaMap("all_fields");
+        const fieldMap = generateFieldSchemaMap(
+            getAllContentTypes().all_fields
+        );
 
         eventDetails = getCsDataOfElement(mouseEvent, {
             all_fields: fieldMap,

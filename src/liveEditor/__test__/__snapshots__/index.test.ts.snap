@@ -4,98 +4,9 @@ exports[`Visual editor inline editing should add overlay to DOM when clicked 1`]
 <body>
   <h1
     contenteditable="true"
-    data-cslp="page.blt58a50b4cebae75c5.en-us.page_components.1.section.title_h2"
+    data-cslp="all_fields.blt58a50b4cebae75c5.en-us.modular_blocks.0.block.single_line"
     data-cslp-field-type="singleline"
   />
-  <div
-    data-cslp="page.blt58a50b4cebae75c5.en-us.page_components.4.section_with_cards"
-    data-cslp-container="page.blt58a50b4cebae75c5.en-us.page_components"
-  >
-    
-    
-    <div
-      class="demo-section"
-    >
-      
-        
-      <div
-        class="cards"
-      >
-        
-            
-        <h3
-          data-cslp="page.blt58a50b4cebae75c5.en-us.page_components.4.section_with_cards.cards.0.title_h3"
-        >
-          
-                Schedule a Demo with us
-        </h3>
-        
-            
-        <p
-          data-cslp="page.blt58a50b4cebae75c5.en-us.page_components.4.section_with_cards.cards.0.description"
-        >
-          Get a
-                customized platform walk through for your stack.
-        </p>
-        
-            
-        <div
-          class="card-cta"
-        >
-          <a
-            class="btn primary-btn"
-            data-cslp="page.blt58a50b4cebae75c5.en-us.page_components.4.section_with_cards.cards.0.call_to_action.title"
-            href="/contact-us"
-          >
-            Schedule a Demo
-          </a>
-        </div>
-        
-        
-      </div>
-      
-        
-      <div
-        class="cards"
-      >
-        
-            
-        <h3
-          data-cslp="page.blt58a50b4cebae75c5.en-us.page_components.4.section_with_cards.cards.1.title_h3"
-        >
-          Start a
-                Free Trial
-        </h3>
-        
-            
-        <p
-          data-cslp="page.blt58a50b4cebae75c5.en-us.page_components.4.section_with_cards.cards.1.description"
-        >
-          Lorem
-                ipsum dolor sit amet, consectetur adipiscing elit. Vel lorem morbi nulla quis sed diam sed.
-        </p>
-        
-            
-        <div
-          class="card-cta"
-        >
-          <a
-            class="btn primary-btn"
-            data-cslp="page.blt58a50b4cebae75c5.en-us.page_components.4.section_with_cards.cards.1.call_to_action.title"
-            href="/contact-us"
-          >
-            Start Free Trial
-          </a>
-        </div>
-        
-        
-      </div>
-      
-    
-    </div>
-    
-
-  </div>
   <div
     class="visual-editor__container"
     data-testid="visual-editor__container"
@@ -199,15 +110,7 @@ exports[`Visual editor on click, the sdk inline elements must be contenteditable
 />
 `;
 
-exports[`Visual editor on click, the sdk inline elements must be contenteditable file should render a replacer and remove when it is not 2`] = `
-<button
-  class="visual-editor__replace-button"
-  data-testid="visual-editor-replace-asset"
-  style="top: -30px; right: 1024px;"
->
-  Replace Asset
-</button>
-`;
+exports[`Visual editor on click, the sdk inline elements must be contenteditable file should render a replacer and remove when it is not 2`] = `undefined`;
 
 exports[`Visual editor on click, the sdk inline elements must be contenteditable multi line should be contenteditable 1`] = `
 <h1

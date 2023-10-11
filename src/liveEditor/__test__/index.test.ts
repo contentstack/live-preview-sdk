@@ -1,39 +1,34 @@
-import { VisualEditor } from "../index";
-import { getDefaultConfig } from "../../utils/defaults";
+import crypto from "crypto";
+
+import { sleep } from "../../__test__/utils";
 import { IConfig } from "../../types/types";
+import { getDefaultConfig } from "../../utils/defaults";
+import { VisualEditor } from "../index";
 
 jest.mock("../utils/liveEditorPostMessage", () => {
+    const { getAllContentTypes } = jest.requireActual(
+        "../../__test__/data/contentType"
+    );
+    const contentTypes = getAllContentTypes();
     return {
         __esModule: true,
         default: {
-            send: jest.fn(),
+            send: jest.fn().mockImplementation((eventName: string) => {
+                if (eventName === "init")
+                    return Promise.resolve({
+                        contentTypes,
+                    });
+                return Promise.resolve();
+            }),
         },
     };
 });
 
-const multipleElementDOM = `<div data-cslp="page.blt58a50b4cebae75c5.en-us.page_components.4.section_with_cards"
-    data-cslp-container="page.blt58a50b4cebae75c5.en-us.page_components">
-    <div class="demo-section">
-        <div class="cards">
-            <h3 data-cslp="page.blt58a50b4cebae75c5.en-us.page_components.4.section_with_cards.cards.0.title_h3">
-                Schedule a Demo with us</h3>
-            <p data-cslp="page.blt58a50b4cebae75c5.en-us.page_components.4.section_with_cards.cards.0.description">Get a
-                customized platform walk through for your stack.</p>
-            <div class="card-cta"><a class="btn primary-btn"
-                    data-cslp="page.blt58a50b4cebae75c5.en-us.page_components.4.section_with_cards.cards.0.call_to_action.title"
-                    href="/contact-us">Schedule a Demo</a></div>
-        </div>
-        <div class="cards">
-            <h3 data-cslp="page.blt58a50b4cebae75c5.en-us.page_components.4.section_with_cards.cards.1.title_h3">Start a
-                Free Trial</h3>
-            <p data-cslp="page.blt58a50b4cebae75c5.en-us.page_components.4.section_with_cards.cards.1.description">Lorem
-                ipsum dolor sit amet, consectetur adipiscing elit. Vel lorem morbi nulla quis sed diam sed.</p>
-            <div class="card-cta"><a class="btn primary-btn"
-                    data-cslp="page.blt58a50b4cebae75c5.en-us.page_components.4.section_with_cards.cards.1.call_to_action.title"
-                    href="/contact-us">Start Free Trial</a></div>
-        </div>
-    </div>
-</div>`;
+Object.defineProperty(globalThis, "crypto", {
+    value: {
+        getRandomValues: (arr: Array<any>) => crypto.randomBytes(arr.length),
+    },
+});
 
 describe("Visual editor", () => {
     let config: IConfig;
@@ -61,27 +56,21 @@ describe("Visual editor", () => {
 
     describe("inline editing", () => {
         let h1Tag: HTMLHeadingElement;
-        let multiple: HTMLDivElement;
         beforeEach(() => {
             h1Tag = document.createElement("h1");
             h1Tag.innerText = "Hello World";
 
             h1Tag.setAttribute(
                 "data-cslp",
-                "page.blt58a50b4cebae75c5.en-us.page_components.1.section.title_h2"
+                "all_fields.blt58a50b4cebae75c5.en-us.modular_blocks.0.block.single_line"
             );
-
-            multiple = new DOMParser().parseFromString(
-                multipleElementDOM,
-                "text/html"
-            ).body.firstChild as HTMLDivElement;
-
             document.body.appendChild(h1Tag);
-            document.body.appendChild(multiple);
         });
 
-        test("should add overlay to DOM when clicked", () => {
+        test("should add overlay to DOM when clicked", async () => {
             new VisualEditor(config);
+
+            await sleep(0);
             h1Tag.click();
 
             expect(document.body).toMatchSnapshot();
@@ -105,7 +94,7 @@ describe("Visual editor", () => {
         });
 
         describe("inline elements must be contenteditable", () => {
-            test("single line should be contenteditable", () => {
+            test("single line should be contenteditable", async () => {
                 const h1 = document.createElement("h1");
 
                 h1.setAttribute(
@@ -116,6 +105,7 @@ describe("Visual editor", () => {
                 document.body.appendChild(h1);
                 new VisualEditor(config);
 
+                await sleep(0);
                 h1.click();
 
                 expect(h1).toMatchSnapshot();
@@ -215,8 +205,6 @@ describe("start editing button", () => {
 
         startEditingButton.click();
 
-        console.log(document.body.outerHTML);
-
         expect(mockReplace).toHaveBeenCalled();
         expect(mockReplace.mock.calls.at(0).at(0).toString()).toBe(
             "https://app.contentstack.com/?branch=main&locale=en-us#!/live-editor/stack/api_key/environment/environment/target_url/https%3A%2F%2Fexample.com"
@@ -264,10 +252,9 @@ describe("visual editor DOM", () => {
 
     afterEach(() => {
         document.getElementsByTagName("html")[0].innerHTML = "";
-        jest.resetAllMocks();
     });
 
-    test("should have an overlay over the element", () => {
+    test("should have an overlay over the element", async () => {
         new VisualEditor(config);
 
         let visualEditorOverlayWrapper = document.querySelector(
@@ -276,6 +263,7 @@ describe("visual editor DOM", () => {
 
         expect(visualEditorOverlayWrapper).toMatchSnapshot();
 
+        await sleep(0);
         h1.click();
 
         visualEditorOverlayWrapper = document.querySelector(
@@ -319,9 +307,10 @@ describe("visual editor DOM", () => {
         expect(visualEditorWrapperRightOverlay.style.width).toBe("1004px");
     });
 
-    test("should remove the DOM when method is triggered", () => {
+    test("should remove the DOM when method is triggered", async () => {
         const visualEditor = new VisualEditor(config);
 
+        await sleep(0);
         h1.click();
 
         let visualEditorContainer = document.querySelector(
@@ -339,9 +328,10 @@ describe("visual editor DOM", () => {
         expect(visualEditorContainer).toBeNull();
     });
 
-    test("should hide the DOM, when it is clicked", () => {
+    test("should hide the DOM, when it is clicked", async () => {
         new VisualEditor(config);
 
+        await sleep(0);
         h1.click();
 
         let visualEditorOverlayWrapper = document.querySelector(

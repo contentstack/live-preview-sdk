@@ -1,3 +1,4 @@
+import { getAllContentTypes } from "../../../__test__/data/contentType";
 import { generateFieldSchemaMap } from "../generateFieldSchemaMap";
 import { getCsDataOfElement } from "../getCsDataOfElement";
 import { ISchemaIndividualFieldMap } from "../types/index.types";
@@ -14,7 +15,7 @@ describe("getCsDataOfElement", () => {
             "all_fields.bltentryuid.en-us.title"
         );
         fieldSchemaMap = {
-            all_fields: generateFieldSchemaMap("all_fields"),
+            all_fields: generateFieldSchemaMap(getAllContentTypes().all_fields),
         };
 
         document.body.appendChild(targetElement);
