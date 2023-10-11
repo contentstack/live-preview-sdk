@@ -1,4 +1,3 @@
-import mockData from "../ctmap";
 import _ from "lodash";
 import {
     ISchemaIndividualFieldMap,
@@ -10,9 +9,8 @@ import {
 } from "../../types/contentTypeSchema.types";
 
 export function generateFieldSchemaMap(
-    ctUID: string
+    pageCT: IPageSchema
 ): ISchemaIndividualFieldMap {
-    const pageCT: IPageSchema = mockData[ctUID];
     const getFieldSchemaMap: ITraverseSchemaVisitor = {
         fieldMap: {},
         should_visit: (_fieldSchema, _path) => {
