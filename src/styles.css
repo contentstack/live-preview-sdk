@@ -76,9 +76,6 @@ div.multiple div.cslp-tooltip-child:hover:before {
     opacity: 1;
 }
 
-.cslp-edit-mode {
-    cursor: none;
-}
 .visual-editor__cursor {
     visibility: hidden;
     height: 0;
