@@ -5,10 +5,20 @@ import liveEditorPostMessage from "../utils/liveEditorPostMessage";
 import { LiveEditorPostMessageEvents } from "../utils/types/postMessage.types";
 
 jest.mock("../utils/liveEditorPostMessage", () => {
+    const { getAllContentTypes } = jest.requireActual(
+        "../../__test__/data/contentType"
+    );
+    const contentTypes = getAllContentTypes();
     return {
         __esModule: true,
         default: {
-            send: jest.fn(),
+            send: jest.fn().mockImplementation((eventName: string) => {
+                if (eventName === "init")
+                    return Promise.resolve({
+                        contentTypes,
+                    });
+                return Promise.resolve();
+            }),
         },
     };
 });
@@ -381,7 +391,7 @@ describe("When an element is hovered in visual editor mode", () => {
                 }
             );
 
-            expect(liveEditorPostMessage?.send).toHaveBeenCalledTimes(2);
+            expect(liveEditorPostMessage?.send).toHaveBeenCalledTimes(3);
         });
     });
 
@@ -579,7 +589,7 @@ describe("When an element is hovered in visual editor mode", () => {
                 }
             );
 
-            expect(liveEditorPostMessage?.send).toHaveBeenCalledTimes(2);
+            expect(liveEditorPostMessage?.send).toHaveBeenCalledTimes(3);
         });
     });
 
@@ -975,7 +985,7 @@ describe("When an element is hovered in visual editor mode", () => {
                 }
             );
 
-            expect(liveEditorPostMessage?.send).toHaveBeenCalledTimes(2);
+            expect(liveEditorPostMessage?.send).toHaveBeenCalledTimes(3);
         });
     });
 
@@ -1850,7 +1860,7 @@ describe("When an element is hovered in visual editor mode", () => {
                 }
             );
 
-            expect(liveEditorPostMessage?.send).toHaveBeenCalledTimes(2);
+            expect(liveEditorPostMessage?.send).toHaveBeenCalledTimes(3);
         });
 
         test("should have outline on the url", () => {

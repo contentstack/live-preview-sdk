@@ -1,0 +1,7 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`When outside the Visual editor, the Visual Editor should not have clickable elements 1`] = `
+<h1
+  data-cslp="all_fields.blt58a50b4cebae75c5.en-us.single_line"
+/>
+`;

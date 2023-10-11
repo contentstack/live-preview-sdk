@@ -1,7 +1,6 @@
 import _ from "lodash";
 
 import { IConfig } from "../types/types";
-import mockData from "./ctmap";
 import { generateFieldSchemaMap } from "./utils/generateFieldSchemaMap";
 import { generateStartEditingButton } from "./utils/generateStartEditingButton";
 import {
@@ -22,6 +21,8 @@ import { addFocusOverlay, hideFocusOverlay } from "./utils/focusOverlayWrapper";
 import { getCsDataOfElement } from "./utils/getCsDataOfElement";
 import { ISchemaIndividualFieldMap } from "./utils/types/index.types";
 import { extractDetailsFromCslp } from "../utils/cslpdata";
+import liveEditorPostMessage from "./utils/liveEditorPostMessage";
+import { IPageSchema } from "../types/contentTypeSchema.types";
 
 export class VisualEditor {
     private fieldSchemaMap: Record<string, ISchemaIndividualFieldMap> = {};
@@ -32,10 +33,6 @@ export class VisualEditor {
     private previousHoveredTargetDOM: Element | null = null;
 
     constructor(config: IConfig) {
-        Object.keys(mockData).forEach((ctUID: string) => {
-            this.fieldSchemaMap[ctUID] = generateFieldSchemaMap(ctUID);
-        });
-
         this.handleMouseHover = this.handleMouseHover.bind(this);
         this.hideCustomCursor = this.hideCustomCursor.bind(this);
         this.appendVisualEditorDOM = this.appendVisualEditorDOM.bind(this);
@@ -43,9 +40,23 @@ export class VisualEditor {
         this.handleMouseDownForVisualEditing =
             this.handleMouseDownForVisualEditing.bind(this);
 
-        window.addEventListener("click", this.handleMouseDownForVisualEditing);
-        window.addEventListener("mousemove", this.handleMouseHover);
+        // list all the keys of the liveEditorPostMessage object
+        liveEditorPostMessage
+            ?.send<{ contentTypes: Record<string, IPageSchema> }>("init")
+            .then((data) => {
+                const { contentTypes } = data;
 
+                Object.entries(contentTypes).forEach(([uid, contentType]) => {
+                    this.fieldSchemaMap[uid] =
+                        generateFieldSchemaMap(contentType);
+                });
+
+                window.addEventListener(
+                    "click",
+                    this.handleMouseDownForVisualEditing
+                );
+                window.addEventListener("mousemove", this.handleMouseHover);
+            });
         this.appendVisualEditorDOM(config);
     }
 

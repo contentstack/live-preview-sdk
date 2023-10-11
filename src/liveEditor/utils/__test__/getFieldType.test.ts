@@ -399,9 +399,9 @@ describe("getFieldType", () => {
     test("should return empty string if it is json but not rte or custom field", () => {
         const data = {
             data_type: "json",
-            field_metadata: {}
+            field_metadata: {},
         } as unknown as ISchemaFieldMap;
 
         expect(getFieldType(data)).toBe("");
-    })
+    });
 });
