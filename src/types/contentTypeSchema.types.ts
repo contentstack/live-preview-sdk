@@ -11,7 +11,7 @@ export interface ITitleContentTypeSchema extends IContentTypeSchemaCommonData {
     data_type: "text";
     field_metadata: {
         _default: true;
-        version: string;
+        version: number;
     };
     mandatory: true;
     unique: true;
