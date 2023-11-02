@@ -12,7 +12,7 @@ export function generateStartEditingButton(
     config: IConfig,
     visualEditorWrapper: HTMLDivElement | null,
     onClick: (event: MouseEvent) => void
-): HTMLButtonElement | undefined {
+): HTMLAnchorElement | undefined {
     const { apiKey, branch, environment, locale } = config.stackDetails;
     const { url } = config.clientUrlParams;
 
@@ -21,7 +21,7 @@ export function generateStartEditingButton(
         return;
     }
 
-    const startEditingButton = document.createElement("button");
+    const startEditingButton = document.createElement("a");
 
     startEditingButton.innerHTML = editIcon + `<span>Start Editing</span>`;
     startEditingButton.setAttribute("data-cslp-stack", apiKey);
@@ -29,6 +29,10 @@ export function generateStartEditingButton(
     startEditingButton.setAttribute("data-cslp-branch", branch);
     startEditingButton.setAttribute("data-cslp-app-host", url);
     startEditingButton.setAttribute("data-cslp-locale", locale);
+    startEditingButton.setAttribute(
+        "href",
+        "https://app.contentstack.com/live-editor"
+    );
     startEditingButton.setAttribute("data-testid", "vcms-start-editing-btn");
     startEditingButton.classList.add("visual-editor__start-editing-btn");
     startEditingButton.addEventListener("click", onClick);

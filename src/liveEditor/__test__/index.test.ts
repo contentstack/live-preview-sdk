@@ -190,10 +190,8 @@ describe("start editing button", () => {
         config.stackDetails.apiKey = "api_key";
         config.stackDetails.environment = "environment";
 
-        const mockReplace = jest.fn();
         Object.defineProperty(window, "location", {
             value: {
-                assign: mockReplace,
                 href: "https://example.com",
             },
         });
@@ -205,8 +203,7 @@ describe("start editing button", () => {
 
         startEditingButton.click();
 
-        expect(mockReplace).toHaveBeenCalled();
-        expect(mockReplace.mock.calls.at(0).at(0).toString()).toBe(
+        expect(startEditingButton.getAttribute("href")).toBe(
             "https://app.contentstack.com/live-editor/stack/api_key/environment/environment/target_url/https%3A%2F%2Fexample.com?branch=main&locale=en-us"
         );
 
@@ -220,7 +217,7 @@ describe("start editing button", () => {
 
         startEditingButton.click();
 
-        expect(mockReplace.mock.calls.at(1).at(0).toString()).toBe(
+        expect(startEditingButton.getAttribute("href")).toBe(
             "https://app.contentstack.com/live-editor/stack/api_key/environment/environment/target_url/https%3A%2F%2Fexample.com?branch=main&locale=en-uk"
         );
     });
