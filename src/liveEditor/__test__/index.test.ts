@@ -207,7 +207,7 @@ describe("start editing button", () => {
 
         expect(mockReplace).toHaveBeenCalled();
         expect(mockReplace.mock.calls.at(0).at(0).toString()).toBe(
-            "https://app.contentstack.com/?branch=main&locale=en-us#!/live-editor/stack/api_key/environment/environment/target_url/https%3A%2F%2Fexample.com"
+            "https://app.contentstack.com/live-editor/stack/api_key/environment/environment/target_url/https%3A%2F%2Fexample.com?branch=main&locale=en-us"
         );
 
         const h1 = document.createElement("h1");
@@ -221,7 +221,7 @@ describe("start editing button", () => {
         startEditingButton.click();
 
         expect(mockReplace.mock.calls.at(1).at(0).toString()).toBe(
-            "https://app.contentstack.com/?branch=main&locale=en-uk#!/live-editor/stack/api_key/environment/environment/target_url/https%3A%2F%2Fexample.com"
+            "https://app.contentstack.com/live-editor/stack/api_key/environment/environment/target_url/https%3A%2F%2Fexample.com?branch=main&locale=en-uk"
         );
     });
 });
