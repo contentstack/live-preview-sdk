@@ -75,7 +75,7 @@ export class VisualEditor {
         ) as string;
 
         const completeURL = new URL(
-            `/#!/live-editor/stack/${stack}/environment/${environment}/target_url/${encodeURIComponent(
+            `/live-editor/stack/${stack}/environment/${environment}/target_url/${encodeURIComponent(
                 window.location.href
             )}`,
             app_url
