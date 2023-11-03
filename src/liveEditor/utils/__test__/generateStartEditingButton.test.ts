@@ -21,13 +21,13 @@ describe("generateStartEditingButton", () => {
         jest.clearAllMocks();
     });
 
-    test("should  return a button", () => {
+    test("should  return an anchor tag", () => {
         const button = generateStartEditingButton(
             config,
             visualEditorWrapper,
             onClickEvent
         );
-        expect(button).toBeInstanceOf(HTMLButtonElement);
+        expect(button).toBeInstanceOf(HTMLAnchorElement);
     });
     test("should append the button within visualEditorWrapper", () => {
         expect(visualEditorWrapper.children.length).toBe(0);

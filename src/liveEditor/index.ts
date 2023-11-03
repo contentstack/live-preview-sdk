@@ -101,7 +101,7 @@ export class VisualEditor {
             completeURL.searchParams.set("locale", locale);
         }
 
-        window.location.assign(completeURL.toString());
+        startEditingButton.setAttribute("href", completeURL.toString());
     };
 
     private handleMouseDownForVisualEditing = (event: MouseEvent): void => {

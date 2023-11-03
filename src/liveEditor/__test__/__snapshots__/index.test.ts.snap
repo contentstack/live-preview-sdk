@@ -57,7 +57,7 @@ exports[`Visual editor inline editing should add overlay to DOM when clicked 1`]
       
     
     </div>
-    <button
+    <a
       class="visual-editor__start-editing-btn"
       data-cslp-app-host="https://app.contentstack.com:443"
       data-cslp-branch="main"
@@ -65,6 +65,7 @@ exports[`Visual editor inline editing should add overlay to DOM when clicked 1`]
       data-cslp-locale="en-us"
       data-cslp-stack=""
       data-testid="vcms-start-editing-btn"
+      href="https://app.contentstack.com/live-editor"
     >
       <svg
         fill="none"
@@ -98,7 +99,7 @@ exports[`Visual editor inline editing should add overlay to DOM when clicked 1`]
       <span>
         Start Editing
       </span>
-    </button>
+    </a>
   </div>
 </body>
 `;
@@ -176,7 +177,7 @@ exports[`Visual editor on click, the sdk should do nothing if data-cslp not avai
       
     
     </div>
-    <button
+    <a
       class="visual-editor__start-editing-btn"
       data-cslp-app-host="https://app.contentstack.com:443"
       data-cslp-branch="main"
@@ -184,6 +185,7 @@ exports[`Visual editor on click, the sdk should do nothing if data-cslp not avai
       data-cslp-locale="en-us"
       data-cslp-stack=""
       data-testid="vcms-start-editing-btn"
+      href="https://app.contentstack.com/live-editor"
     >
       <svg
         fill="none"
@@ -217,7 +219,7 @@ exports[`Visual editor on click, the sdk should do nothing if data-cslp not avai
       <span>
         Start Editing
       </span>
-    </button>
+    </a>
   </div>
 </body>
 `;
@@ -268,7 +270,7 @@ exports[`Visual editor should append a visual editor container to the DOM 1`] = 
     
     
   </div>
-  <button
+  <a
     class="visual-editor__start-editing-btn"
     data-cslp-app-host="https://app.contentstack.com:443"
     data-cslp-branch="main"
@@ -276,6 +278,7 @@ exports[`Visual editor should append a visual editor container to the DOM 1`] = 
     data-cslp-locale="en-us"
     data-cslp-stack=""
     data-testid="vcms-start-editing-btn"
+    href="https://app.contentstack.com/live-editor"
   >
     <svg
       fill="none"
@@ -309,7 +312,7 @@ exports[`Visual editor should append a visual editor container to the DOM 1`] = 
     <span>
       Start Editing
     </span>
-  </button>
+  </a>
 </div>
 `;
 
