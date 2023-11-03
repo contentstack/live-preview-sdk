@@ -162,6 +162,7 @@ div.multiple div.cslp-tooltip-child:hover:before {
     z-index: 200;
 }
 .visual-editor__start-editing-btn {
+    text-decoration: none;
     position: fixed;
     bottom: 30px;
     left: 50%;
