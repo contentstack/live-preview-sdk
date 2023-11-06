@@ -40,7 +40,8 @@ export class VisualEditor {
         this.handleMouseDownForVisualEditing =
             this.handleMouseDownForVisualEditing.bind(this);
 
-        // list all the keys of the liveEditorPostMessage object
+        this.appendVisualEditorDOM();
+
         liveEditorPostMessage
             ?.send<{ contentTypes: Record<string, IPageSchema> }>("init")
             .then((data) => {
@@ -56,8 +57,14 @@ export class VisualEditor {
                     this.handleMouseDownForVisualEditing
                 );
                 window.addEventListener("mousemove", this.handleMouseHover);
+            })
+            .catch(() => {
+                generateStartEditingButton(
+                    config,
+                    this.visualEditorWrapper,
+                    this.handleStartEditing
+                );
             });
-        this.appendVisualEditorDOM(config);
     }
 
     private handleStartEditing = (event: MouseEvent): void => {
@@ -194,7 +201,7 @@ export class VisualEditor {
         this.previousHoveredTargetDOM = editableElement;
     }, 10);
 
-    appendVisualEditorDOM = (config: IConfig): void => {
+    appendVisualEditorDOM = (): void => {
         const visualEditorDOM = document.querySelector(
             ".visual-editor__container"
         );
@@ -213,12 +220,6 @@ export class VisualEditor {
                 overlay: this.overlayWrapper,
             });
         }
-
-        generateStartEditingButton(
-            config,
-            this.visualEditorWrapper,
-            this.handleStartEditing
-        );
     };
     hideCustomCursor = (): void => {
         if (this.customCursor) {
