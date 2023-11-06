@@ -26,9 +26,12 @@ describe("When outside the Visual editor, the Visual Editor", () => {
     afterAll(() => {
         mockedConsoleError.mockRestore();
     });
-    test("should have the start editing button", () => {
+    test("should have the start editing button", async () => {
         const config: IConfig = getDefaultConfig();
         new VisualEditor(config);
+
+        await sleep();
+
         const startEditingButton = document.querySelector(
             `[data-testid="vcms-start-editing-btn"]`
         );

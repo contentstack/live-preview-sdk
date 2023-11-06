@@ -49,7 +49,9 @@ describe("Visual editor", () => {
 
         new VisualEditor(config);
 
-        visualEditorDOM = document.querySelector(".visual-editor__container");
+        visualEditorDOM = document.querySelector(
+            `[data-testid="visual-editor__container"]`
+        );
 
         expect(visualEditorDOM).toMatchSnapshot();
     });
@@ -164,62 +166,6 @@ describe("Visual editor", () => {
                 expect(replaceBtn).toBeUndefined();
             });
         });
-    });
-});
-
-describe("start editing button", () => {
-    let config: IConfig;
-    beforeEach(() => {
-        config = getDefaultConfig();
-    });
-    afterEach(() => {
-        document.getElementsByTagName("html")[0].innerHTML = "";
-        jest.restoreAllMocks();
-    });
-
-    test("should exist", () => {
-        new VisualEditor(config);
-        const startEditingButton = document.querySelector(
-            `[data-testid="vcms-start-editing-btn"]`
-        );
-
-        expect(startEditingButton).toBeDefined();
-    });
-
-    test("should go to an URL upon click", () => {
-        config.stackDetails.apiKey = "api_key";
-        config.stackDetails.environment = "environment";
-
-        Object.defineProperty(window, "location", {
-            value: {
-                href: "https://example.com",
-            },
-        });
-
-        new VisualEditor(config);
-        const startEditingButton = document.querySelector(
-            `[data-testid="vcms-start-editing-btn"]`
-        ) as HTMLButtonElement;
-
-        startEditingButton.click();
-
-        expect(startEditingButton.getAttribute("href")).toBe(
-            "https://app.contentstack.com/live-editor/stack/api_key/environment/environment/target_url/https%3A%2F%2Fexample.com?branch=main&locale=en-us"
-        );
-
-        const h1 = document.createElement("h1");
-        h1.setAttribute(
-            "data-cslp",
-            "all_fields.blt58a50b4cebae75c5.en-uk.title"
-        );
-
-        document.body.appendChild(h1);
-
-        startEditingButton.click();
-
-        expect(startEditingButton.getAttribute("href")).toBe(
-            "https://app.contentstack.com/live-editor/stack/api_key/environment/environment/target_url/https%3A%2F%2Fexample.com?branch=main&locale=en-uk"
-        );
     });
 });
 
