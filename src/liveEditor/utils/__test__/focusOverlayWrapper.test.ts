@@ -112,11 +112,11 @@ describe("addFocusOverlay", () => {
 
     test("should run onClickCallback when the focus overlay is clicked", () => {
         addFocusOverlay(targetElement, focusOverlayWrapper);
-        const visualEditorOverlayWrapper = document.querySelector(
-            `[data-testid="visual-editor__overlay__wrapper"]`
+        const visualEditorOverlay = document.querySelector(
+            `[data-testid="visual-editor__overlay--top"]`
         ) as HTMLDivElement;
 
-        visualEditorOverlayWrapper?.dispatchEvent(
+        visualEditorOverlay?.dispatchEvent(
             new MouseEvent("click", {
                 bubbles: true,
                 cancelable: true,
@@ -128,7 +128,6 @@ describe("addFocusOverlay", () => {
 });
 
 describe("hideFocusOverlay", () => {
-    let mockEvent: MouseEvent;
     let editedElement: HTMLParagraphElement;
     let focusOverlayWrapper: HTMLDivElement;
     let singleFocusOverlay: HTMLDivElement;
@@ -148,12 +147,15 @@ describe("hideFocusOverlay", () => {
             bottom: 20,
         })) as any;
 
-        focusOverlayWrapper = generateVisualEditorOverlay((event) => {
-            hideFocusOverlay(event, {
-                previousSelectedEditableDOM: editedElement,
-                visualEditorWrapper,
-            });
-        });
+        focusOverlayWrapper = generateVisualEditorOverlay(
+            (visualEditorOverlayWrapper) => {
+                hideFocusOverlay({
+                    previousSelectedEditableDOM: editedElement,
+                    visualEditorWrapper,
+                    visualEditorOverlayWrapper,
+                });
+            }
+        );
         document.body.appendChild(visualEditorWrapper);
         document.body.appendChild(editedElement);
         document.body.appendChild(focusOverlayWrapper);
@@ -173,15 +175,10 @@ describe("hideFocusOverlay", () => {
     test("should not hide the overlay if the focus overlay wrapper is null", () => {
         expect(focusOverlayWrapper.classList.contains("visible")).toBe(true);
 
-        // We didn't dispatch it to simulate the case where the targetElement is not present
-        mockEvent = new MouseEvent("click", {
-            bubbles: true,
-            cancelable: true,
-        });
-
-        hideFocusOverlay(mockEvent, {
+        hideFocusOverlay({
             previousSelectedEditableDOM: editedElement,
             visualEditorWrapper,
+            visualEditorOverlayWrapper: null,
         });
 
         expect(focusOverlayWrapper.classList.contains("visible")).toBe(true);
@@ -246,12 +243,15 @@ describe("hideFocusOverlay", () => {
             bottom: 20,
         })) as any;
 
-        const focusOverlayWrapper = generateVisualEditorOverlay((event) => {
-            hideFocusOverlay(event, {
-                previousSelectedEditableDOM: editedElement,
-                visualEditorWrapper,
-            });
-        });
+        const focusOverlayWrapper = generateVisualEditorOverlay(
+            (visualEditorOverlayWrapper = null) => {
+                hideFocusOverlay({
+                    previousSelectedEditableDOM: editedElement,
+                    visualEditorWrapper,
+                    visualEditorOverlayWrapper,
+                });
+            }
+        );
         document.body.appendChild(visualEditorWrapper);
         document.body.appendChild(editedElement);
         document.body.appendChild(focusOverlayWrapper);
@@ -267,5 +267,16 @@ describe("hideFocusOverlay", () => {
         singleFocusOverlay.click();
 
         expect(cleanIndividualFieldResidual).toHaveBeenCalledTimes(1);
+    });
+
+    test("should hide the overlay if the escape key is pressed", () => {
+        expect(focusOverlayWrapper.classList.contains("visible")).toBe(true);
+
+        const escapeEvent = new KeyboardEvent("keydown", {
+            key: "Escape",
+        });
+        window.dispatchEvent(escapeEvent);
+
+        expect(focusOverlayWrapper.classList.contains("visible")).toBe(false);
     });
 });

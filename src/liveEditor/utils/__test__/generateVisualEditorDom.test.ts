@@ -17,7 +17,9 @@ describe("generateVisualEditorOverlay", () => {
     });
 
     test("should run the function when clicked on the overlay", () => {
-        const overlay = generateVisualEditorOverlay(onOverlayClick);
+        const overlayWrapper = generateVisualEditorOverlay(onOverlayClick);
+        const overlay = overlayWrapper.children[0] as HTMLDivElement;
+
         overlay.click();
         expect(onOverlayClick).toHaveBeenCalledTimes(1);
     });

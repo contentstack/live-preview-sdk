@@ -25,7 +25,7 @@ export function generateVisualEditorCursor(): HTMLDivElement {
 }
 
 export function generateVisualEditorOverlay(
-    onClick: (event: MouseEvent) => void
+    onClick: (visualEditorOverlayWrapper: HTMLDivElement | null) => void
 ): HTMLDivElement {
     const visualEditorOverlayWrapper = document.createElement("div");
 
@@ -43,7 +43,19 @@ export function generateVisualEditorOverlay(
         <div data-testid="visual-editor__overlay--outline" class="visual-editor__overlay--outline"></div>
     `;
 
-    visualEditorOverlayWrapper.addEventListener("click", onClick);
+    visualEditorOverlayWrapper.addEventListener("click", (event) => {
+        const targetElement = event.target as Element;
+
+        if (targetElement.classList.contains("visual-editor__overlay")) {
+            onClick(visualEditorOverlayWrapper);
+        }
+    });
+
+    window.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") {
+            onClick(visualEditorOverlayWrapper);
+        }
+    });
 
     return visualEditorOverlayWrapper;
 }

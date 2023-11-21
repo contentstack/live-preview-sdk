@@ -207,12 +207,14 @@ export class VisualEditor {
         );
         if (!visualEditorDOM) {
             this.customCursor = generateVisualEditorCursor();
-            this.overlayWrapper = generateVisualEditorOverlay((event) =>
-                hideFocusOverlay(event, {
-                    previousSelectedEditableDOM:
-                        this.previousSelectedEditableDOM,
-                    visualEditorWrapper: this.visualEditorWrapper,
-                })
+            this.overlayWrapper = generateVisualEditorOverlay(
+                (visualEditorOverlayWrapper = null) =>
+                    hideFocusOverlay({
+                        previousSelectedEditableDOM:
+                            this.previousSelectedEditableDOM,
+                        visualEditorWrapper: this.visualEditorWrapper,
+                        visualEditorOverlayWrapper,
+                    })
             );
 
             this.visualEditorWrapper = generateVisualEditorWrapper({
