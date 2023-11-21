@@ -426,10 +426,6 @@ export default class LivePreview {
 
     // Request parent for data sync when document loads
     private requestDataSync() {
-        this.handleUserChange({
-            live_preview: "init", // this is the hash of the live previewd
-        });
-
         // add edit tooltip
         this.createCslpTooltip();
 
