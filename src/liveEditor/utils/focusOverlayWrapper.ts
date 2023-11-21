@@ -85,22 +85,19 @@ export function addFocusOverlay(
  * @param event - The mouse event that triggered the function.
  * @param elements - An object containing references to the focus overlay wrapper, the previously selected editable DOM element, and the visual editor wrapper.
  */
-export function hideFocusOverlay(
-    event: MouseEvent,
-    elements: {
-        previousSelectedEditableDOM: Element | null;
-        visualEditorWrapper: HTMLDivElement | null;
-    }
-): void {
-    const targetElement = event.target as Element;
-    const { previousSelectedEditableDOM, visualEditorWrapper } = elements;
+export function hideFocusOverlay(elements: {
+    previousSelectedEditableDOM: Element | null;
+    visualEditorWrapper: HTMLDivElement | null;
+    visualEditorOverlayWrapper: HTMLDivElement | null;
+}): void {
+    const {
+        previousSelectedEditableDOM,
+        visualEditorWrapper,
+        visualEditorOverlayWrapper,
+    } = elements;
 
-    if (targetElement?.classList.contains("visual-editor__overlay")) {
-        const focusOverlayWrapper = targetElement.closest(
-            ".visual-editor__overlay__wrapper"
-        ) as HTMLDivElement;
-
-        focusOverlayWrapper.classList.remove("visible");
+    if (visualEditorOverlayWrapper) {
+        visualEditorOverlayWrapper.classList.remove("visible");
 
         if (previousSelectedEditableDOM) {
             if (previousSelectedEditableDOM.hasAttribute("contenteditable")) {
@@ -118,7 +115,7 @@ export function hideFocusOverlay(
             }
 
             cleanIndividualFieldResidual({
-                overlayWrapper: focusOverlayWrapper,
+                overlayWrapper: visualEditorOverlayWrapper,
                 previousSelectedEditableDOM: previousSelectedEditableDOM,
                 visualEditorWrapper: visualEditorWrapper,
             });
