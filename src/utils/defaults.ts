@@ -1,38 +1,40 @@
 import { IConfig, IInitData } from "../types/types";
 
-export const userInitData: IInitData = {
-    ssr: true,
-    enable: true,
-    cleanCslpOnProduction: true,
-    editButton: {
+export function getUserInitData(): IInitData {
+    return {
+        ssr: true,
         enable: true,
-        exclude: [],
-        position: "top",
-        includeByQueryParameter: true,
-    },
-
-    mode: "preview",
-
-    stackDetails: {
-        apiKey: "",
-        environment: "",
-    },
-
-    clientUrlParams: {
-        protocol: "https",
-        host: "app.contentstack.com",
-        port: 443,
-    },
-    stackSdk: {
-        live_preview: {},
-        headers: {
-            api_key: "",
-            branch: "main",
+        cleanCslpOnProduction: true,
+        editButton: {
+            enable: true,
+            exclude: [],
+            position: "top",
+            includeByQueryParameter: true,
         },
-        environment: "",
-    },
-    runScriptsOnUpdate: false,
-};
+
+        mode: "preview",
+
+        stackDetails: {
+            apiKey: "",
+            environment: "",
+        },
+
+        clientUrlParams: {
+            protocol: "https",
+            host: "app.contentstack.com",
+            port: 443,
+        },
+        stackSdk: {
+            live_preview: {},
+            headers: {
+                api_key: "",
+                branch: "main",
+            },
+            environment: "",
+        },
+        runScriptsOnUpdate: false,
+    };
+}
 
 export function getDefaultConfig(): IConfig {
     return {

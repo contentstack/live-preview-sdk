@@ -1,69 +1,27 @@
 import packageJson from "../package.json";
 import { VisualEditor } from "./liveEditor";
 import {
+    IEditButtonPosition,
+    IEditEntrySearchParams,
+    IInitData,
+    ILivePreviewModeConfig,
+    ILivePreviewReceivePostMessages,
+} from "./types/types";
+import {
     addLivePreviewQueryTags,
     createMultipleEditButton,
     createSingularEditButton,
     getEditButtonPosition,
 } from "./utils";
-import { userInitData } from "./utils/defaults";
-import { handleInitData } from "./utils/handleUserConfig";
+import Config from "./utils/configHandler";
+import { getUserInitData } from "./utils/defaults";
 import { PublicLogger } from "./utils/public-logger";
 import { replaceDocumentBody, updateDocumentBody } from "./utils/replaceHtml";
-import {
-    IConfig,
-    IEditButtonPosition,
-    IEditEntrySearchParams,
-    IInitData,
-    ILivePreviewModeConfig,
-    ILivePreviewMode,
-    ILivePreviewReceivePostMessages,
-} from "./types/types";
 
 export default class LivePreview {
     /**
      * @hideconstructor
      */
-
-    private config: IConfig = {
-        ssr: true,
-        enable: true,
-        runScriptsOnUpdate: false,
-        cleanCslpOnProduction: true,
-        editButton: {
-            enable: true,
-            exclude: [],
-            position: "top",
-            includeByQueryParameter: true,
-        },
-        mode: 1,
-        stackDetails: {
-            locale: "en-us",
-            apiKey: "",
-            environment: "",
-            contentTypeUid: "",
-            entryUid: "",
-            branch: "main",
-        },
-
-        clientUrlParams: {
-            protocol: "https",
-            host: "app.contentstack.com",
-            port: 443,
-            url: "https://app.contentstack.com:443",
-        },
-        stackSdk: {
-            live_preview: {},
-            headers: {
-                api_key: "",
-            },
-            environment: "",
-        },
-
-        onChange: () => {
-            // this is intentional
-        },
-    };
 
     private tooltip: HTMLButtonElement | null = null; // this tooltip is responsible to redirect user to Contentstack edit page
     private currentElementBesideTooltip: HTMLElement | null = null; // this element helps to move tooltip with the scroll
@@ -77,8 +35,9 @@ export default class LivePreview {
     };
     private tooltipCurrentChild: "multiple" | "singular" = "singular";
 
-    constructor(initData: Partial<IInitData> = userInitData) {
-        handleInitData(initData, this.config);
+    constructor(initData: Partial<IInitData> = getUserInitData()) {
+        Config.replace(initData);
+        const config = Config.get();
 
         this.addEditStyleOnHover = this.addEditStyleOnHover.bind(this);
         this.generateRedirectUrl = this.generateRedirectUrl.bind(this);
@@ -96,11 +55,11 @@ export default class LivePreview {
         if (initData.debug) {
             PublicLogger.debug(
                 "Contentstack Live Preview Debugging mode: config --",
-                this.config
+                config
             );
         }
 
-        if (this.config.enable) {
+        if (config.enable) {
             if (
                 typeof document !== undefined &&
                 document.readyState === "complete"
@@ -113,11 +72,11 @@ export default class LivePreview {
             window.addEventListener("message", this.resolveIncomingMessage);
             window.addEventListener("scroll", this.updateTooltipPosition);
             // render the hover outline only when edit button enable
-            if (this.config.editButton.enable) {
+            if (config.editButton.enable) {
                 window.addEventListener("mouseover", this.addEditStyleOnHover);
             }
 
-            if (this.config.ssr) {
+            if (config.ssr) {
                 window.addEventListener("load", (e) => {
                     const allATags = document.querySelectorAll("a");
                     allATags.forEach((tag) => {
@@ -145,10 +104,10 @@ export default class LivePreview {
                 });
             }
 
-            if (this.config.mode >= ILivePreviewModeConfig.EDITOR) {
-                new VisualEditor(this.config);
+            if (config.mode >= ILivePreviewModeConfig.EDITOR) {
+                new VisualEditor(config);
             }
-        } else if (this.config.cleanCslpOnProduction) {
+        } else if (config.cleanCslpOnProduction) {
             this.removeDataCslp();
         }
     }
@@ -193,7 +152,8 @@ export default class LivePreview {
         entry_uid: string,
         preview_field: string
     ): string {
-        if (!this.config.stackDetails.apiKey) {
+        const config = Config.get();
+        if (!config.stackDetails.apiKey) {
             throw `To use edit tags, you must provide the stack API key. Specify the API key while initializing the Live Preview SDK.
 
                 ContentstackLivePreview.init({
@@ -205,7 +165,7 @@ export default class LivePreview {
                 })`;
         }
 
-        if (!this.config.stackDetails.environment) {
+        if (!config.stackDetails.environment) {
             throw `To use edit tags, you must provide the preview environment. Specify the preview environment while initializing the Live Preview SDK.
 
                 ContentstackLivePreview.init({
@@ -217,13 +177,13 @@ export default class LivePreview {
                 })`;
         }
 
-        const protocol = String(this.config.clientUrlParams.protocol);
-        const host = String(this.config.clientUrlParams.host);
-        const port = String(this.config.clientUrlParams.port);
-        const environment = String(this.config.stackDetails.environment);
+        const protocol = String(config.clientUrlParams.protocol);
+        const host = String(config.clientUrlParams.host);
+        const port = String(config.clientUrlParams.port);
+        const environment = String(config.stackDetails.environment);
 
         const urlHash = `!/stack/${
-            this.config.stackDetails.apiKey
+            config.stackDetails.apiKey
         }/content-type/${content_type_uid}/${
             locale ?? "en-us"
         }/entry/${entry_uid}/edit`;
@@ -289,17 +249,19 @@ export default class LivePreview {
     }
 
     private handleUserChange(editEntrySearchParams: IEditEntrySearchParams) {
+        const config = Config.get();
         // here we provide contentTypeUid and EntryUid to the StackDelivery SDK.
-        this.config.stackSdk.live_preview = {
-            ...this.config.stackSdk.live_preview,
+        const stackSdkLivePreviewConfig = {
+            ...config.stackSdk.live_preview,
             ...editEntrySearchParams,
             live_preview: editEntrySearchParams.hash,
         };
-        this.config.onChange();
+        Config.set("stackSdk.live_preview", stackSdkLivePreviewConfig);
+        config.onChange();
     }
 
     setOnChangeCallback(onChangeCallback: () => void): void {
-        this.config.onChange = onChangeCallback;
+        Config.set("onChange", onChangeCallback);
     }
 
     private resolveIncomingMessage(
@@ -309,12 +271,14 @@ export default class LivePreview {
 
         if (e.data.from !== "live-preview") return;
 
+        const config = Config.get();
+
         switch (e.data.type) {
             case "client-data-send": {
-                const { contentTypeUid, entryUid } = this.config.stackDetails;
+                const { contentTypeUid, entryUid } = config.stackDetails;
                 const { hash } = e.data.data;
 
-                if (this.config.ssr) {
+                if (config.ssr) {
                     // Get the content from the server and replace the body
 
                     const fetch_url = new URL(window.location.href);
@@ -333,8 +297,7 @@ export default class LivePreview {
                         .then((res) => {
                             updateDocumentBody(document, res, {
                                 onPostOperation: this.createCslpTooltip,
-                                shouldReRunScripts:
-                                    this.config.runScriptsOnUpdate,
+                                shouldReRunScripts: config.runScriptsOnUpdate,
                             });
                         });
                 } else {
@@ -349,8 +312,8 @@ export default class LivePreview {
             case "init-ack": {
                 const { contentTypeUid, entryUid } = e.data.data;
 
-                this.config.stackDetails.contentTypeUid = contentTypeUid;
-                this.config.stackDetails.entryUid = entryUid;
+                config.stackDetails.contentTypeUid = contentTypeUid;
+                config.stackDetails.entryUid = entryUid;
                 break;
             }
             case "history": {
@@ -377,9 +340,10 @@ export default class LivePreview {
     }
 
     private createCslpTooltip = () => {
+        const config = Config.get();
         if (
             !document.getElementById("cslp-tooltip") &&
-            this.config.editButton.enable
+            config.editButton.enable
         ) {
             const tooltip = document.createElement("button");
             tooltip.classList.add("cslp-tooltip");
@@ -403,6 +367,7 @@ export default class LivePreview {
 
     // Request parent for data sync when document loads
     private requestDataSync() {
+        const config = Config.get();
         this.handleUserChange({
             live_preview: "init", // this is the hash of the live previewd
         });
@@ -416,7 +381,7 @@ export default class LivePreview {
                 type: "init",
                 data: {
                     config: {
-                        shouldReload: this.config.ssr,
+                        shouldReload: config.ssr,
                         href: window.location.href,
                         sdkVersion: packageJson.version,
                     },
@@ -426,7 +391,7 @@ export default class LivePreview {
         );
 
         // set timeout for client side (use to show warning: You are not editing this page)
-        if (!this.config.ssr) {
+        if (!config.ssr) {
             setInterval(() => {
                 window.parent.postMessage(
                     {
@@ -445,6 +410,8 @@ export default class LivePreview {
     private updateTooltipPosition() {
         if (!this.currentElementBesideTooltip || !this.tooltip) return false;
 
+        const config = Config.get();
+
         const currentRectOfElement =
             this.currentElementBesideTooltip.getBoundingClientRect();
         const currentRectOfParentOfElement =
@@ -457,7 +424,7 @@ export default class LivePreview {
                 leftBoundOfTooltip,
             }: IEditButtonPosition = getEditButtonPosition(
                 this.currentElementBesideTooltip,
-                this.config.editButton.position
+                config.editButton.position
             );
 
             // if scrolled and element is still visible, make sure tooltip is also visible

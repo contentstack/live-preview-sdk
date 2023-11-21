@@ -10,6 +10,7 @@ import {
     sendPostmessageToWindow,
 } from "./utils";
 import { IInitData } from "../types/types";
+import Config from "../utils/configHandler";
 
 jest.mock("../liveEditor/utils/liveEditorPostMessage", () => {
     const { getAllContentTypes } = jest.requireActual("./data/contentType");
@@ -686,6 +687,9 @@ describe("cslp tooltip", () => {
 });
 
 describe("debug module", () => {
+    beforeEach(() => {
+        Config.reset();
+    });
     test("should display config when debug is true", () => {
         const spiedConsole = jest.spyOn(PublicLogger, "debug");
         new LivePreview({
@@ -714,6 +718,7 @@ describe("debug module", () => {
 describe("incoming postMessage", () => {
     beforeEach(() => {
         fetch.resetMocks();
+        Config.reset();
     });
     afterEach(() => {
         document.getElementsByTagName("html")[0].innerHTML = "";
@@ -803,7 +808,7 @@ describe("incoming postMessage", () => {
             contentTypeUid: "livePreviewContentTypeUid",
         });
 
-        expect(livePreview["config"].stackDetails).toMatchObject({
+        expect(Config.get().stackDetails).toMatchObject({
             apiKey: "",
             contentTypeUid: "livePreviewContentTypeUid",
             entryUid: "livePreviewEntryUid",
@@ -844,6 +849,7 @@ describe("incoming postMessage", () => {
 
 describe("Live modes", () => {
     beforeEach(() => {
+        Config.reset();
         jest.clearAllMocks();
     });
 

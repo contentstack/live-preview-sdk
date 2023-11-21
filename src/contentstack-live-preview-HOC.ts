@@ -10,7 +10,7 @@ import {
     OnEntryChangeConfig,
 } from "./types/types";
 import LivePreview from "./live-preview";
-import { userInitData } from "./utils/defaults";
+import { getUserInitData } from "./utils/defaults";
 import { PublicLogger } from "./utils/public-logger";
 
 export class ContentstackLivePreview {
@@ -19,7 +19,7 @@ export class ContentstackLivePreview {
     static subscribers: { [uid: string]: OnEntryChangeCallback } = {};
 
     static init(
-        userConfig: Partial<IInitData> = userInitData
+        userConfig: Partial<IInitData> = getUserInitData()
     ): Promise<LivePreview> | undefined {
         if (typeof window !== "undefined") {
             if (ContentstackLivePreview.livePreview) {
