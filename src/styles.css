@@ -1,5 +1,9 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter&display=swap");
+
 .cslp-edit-mode {
-    outline: 1px dashed #6c5ce7 !important;
+    outline-width: 2px;
+    outline-style: dashed;
+    outline-color: #6c5ce7;
     position: relative !important;
 }
 
@@ -99,7 +103,7 @@ div.multiple div.cslp-tooltip-child:hover:before {
     pointer-events: none !important;
     position: fixed !important;
     cursor: none;
-    z-index: 1000;
+    z-index: 200;
 }
 .visual-editor__container {
     font-family: "Inter", sans-serif;
@@ -111,13 +115,15 @@ div.multiple div.cslp-tooltip-child:hover:before {
     width: 100%;
     height: 100vh;
     visibility: hidden;
-    z-index: 199;
+    z-index: 50;
 
     pointer-events: none;
 }
 .visual-editor__overlay--outline {
     position: absolute;
-    outline: 4px solid #715cdd;
+     outline-width: 2px;
+    outline-style: dashed;
+    outline-color: #6c5ce7;
     transition: all 0.2s ease-in;
 }
 .visual-editor__overlay__wrapper.visible {
@@ -197,4 +203,16 @@ div.multiple div.cslp-tooltip-child:hover:before {
     line-height: 150%;
     letter-spacing: 0.01rem;
     text-transform: capitalize;
+}
+
+.visual-editor__field-indicator {
+    position: absolute;
+    background-color: #6c5ce7;
+    padding: 4px 6px;
+    z-index: 200;
+    color: #fff;
+    font-weight: 300;
+    border-radius: 2px;
+    font-size: 13px;
+    font-family: "Inter", sans-serif;
 }
