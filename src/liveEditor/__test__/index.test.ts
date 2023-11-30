@@ -234,20 +234,36 @@ describe("visual editor DOM", () => {
         expect(visualEditorWrapperTopOverlay.style.top).toBe("0px");
         expect(visualEditorWrapperTopOverlay.style.left).toBe("0px");
         expect(visualEditorWrapperTopOverlay.style.width).toBe("100%");
-        expect(visualEditorWrapperTopOverlay.style.height).toBe("10px");
+        expect(visualEditorWrapperTopOverlay.style.height).toBe(
+            "calc(10px - 2px)"
+        );
 
-        expect(visualEditorWrapperBottomOverlay.style.top).toBe("20px");
+        expect(visualEditorWrapperBottomOverlay.style.top).toBe(
+            "calc(20px + 2px)"
+        );
         expect(visualEditorWrapperBottomOverlay.style.left).toBe("0px");
         expect(visualEditorWrapperBottomOverlay.style.width).toBe("100%");
-        expect(visualEditorWrapperBottomOverlay.style.height).toBe("-20px");
+        expect(visualEditorWrapperBottomOverlay.style.height).toBe(
+            "calc(-20px - 2px)"
+        );
 
-        expect(visualEditorWrapperLeftOverlay.style.top).toBe("10px");
+        expect(visualEditorWrapperLeftOverlay.style.top).toBe(
+            "calc(10px - 2px)"
+        );
         expect(visualEditorWrapperLeftOverlay.style.left).toBe("0px");
-        expect(visualEditorWrapperLeftOverlay.style.width).toBe("10px");
+        expect(visualEditorWrapperLeftOverlay.style.width).toBe(
+            "calc(10px - 2px)"
+        );
 
-        expect(visualEditorWrapperRightOverlay.style.top).toBe("10px");
-        expect(visualEditorWrapperRightOverlay.style.left).toBe("20px");
-        expect(visualEditorWrapperRightOverlay.style.width).toBe("1004px");
+        expect(visualEditorWrapperRightOverlay.style.top).toBe(
+            "calc(10px - 2px)"
+        );
+        expect(visualEditorWrapperRightOverlay.style.left).toBe(
+            "calc(20px + 2px)"
+        );
+        expect(visualEditorWrapperRightOverlay.style.width).toBe(
+            "calc(1004px - 2px)"
+        );
     });
 
     test("should remove the DOM when method is triggered", async () => {
