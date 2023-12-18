@@ -117,7 +117,7 @@ div.multiple div.cslp-tooltip-child:hover:before {
 }
 .visual-editor__overlay--outline {
     position: absolute;
-    outline: 4px solid red;
+    outline: 4px solid #715cdd;
     transition: all 0.2s ease-in;
 }
 .visual-editor__overlay__wrapper.visible {
