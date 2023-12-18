@@ -32,6 +32,34 @@ export class VisualEditor {
     private visualEditorWrapper: HTMLDivElement | null = null;
     private previousHoveredTargetDOM: Element | null = null;
 
+    private resizeObserver = new ResizeObserver(([entry]) => {
+        if (!this.overlayWrapper || !this.previousSelectedEditableDOM) return;
+
+        if (!entry.target.isSameNode(entry.target)) return;
+
+        addFocusOverlay(this.previousSelectedEditableDOM, this.overlayWrapper);
+    });
+
+    private addOverlay(editableElement: Element | null) {
+        if (!this.overlayWrapper || !editableElement) return;
+
+        addFocusOverlay(editableElement, this.overlayWrapper);
+        this.resizeObserver.observe(editableElement);
+    }
+
+    private hideOverlay(
+        visualEditorOverlayWrapper: HTMLDivElement | null = null
+    ) {
+        hideFocusOverlay({
+            previousSelectedEditableDOM: this.previousSelectedEditableDOM,
+            visualEditorWrapper: this.visualEditorWrapper,
+            visualEditorOverlayWrapper,
+        });
+
+        if (!this.previousSelectedEditableDOM) return;
+        this.resizeObserver.unobserve(this.previousSelectedEditableDOM);
+    }
+
     constructor(config: IConfig) {
         this.handleMouseHover = this.handleMouseHover.bind(this);
         this.hideCustomCursor = this.hideCustomCursor.bind(this);
@@ -134,7 +162,7 @@ export class VisualEditor {
             });
         }
 
-        addFocusOverlay(editableElement, this.overlayWrapper);
+        this.addOverlay(editableElement);
 
         handleIndividualFields(eventDetails, {
             visualEditorWrapper: this.visualEditorWrapper,
@@ -207,15 +235,7 @@ export class VisualEditor {
         );
         if (!visualEditorDOM) {
             this.customCursor = generateVisualEditorCursor();
-            this.overlayWrapper = generateVisualEditorOverlay(
-                (visualEditorOverlayWrapper = null) =>
-                    hideFocusOverlay({
-                        previousSelectedEditableDOM:
-                            this.previousSelectedEditableDOM,
-                        visualEditorWrapper: this.visualEditorWrapper,
-                        visualEditorOverlayWrapper,
-                    })
-            );
+            this.overlayWrapper = generateVisualEditorOverlay(this.hideOverlay);
 
             this.visualEditorWrapper = generateVisualEditorWrapper({
                 cursor: this.customCursor,
@@ -245,6 +265,7 @@ export class VisualEditor {
             this.handleMouseDownForVisualEditing
         );
         window.removeEventListener("mousemove", this.handleMouseHover);
+        this.resizeObserver.disconnect();
         this.removeVisualEditorDOM();
     };
 }
