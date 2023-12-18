@@ -37,7 +37,7 @@ export class VisualEditor {
 
         if (!entry.target.isSameNode(entry.target)) return;
 
-        // addFocusOverlay(this.previousSelectedEditableDOM, this.overlayWrapper);
+        addFocusOverlay(this.previousSelectedEditableDOM, this.overlayWrapper);
     });
 
     private addOverlay(editableElement: Element | null) {
@@ -47,9 +47,9 @@ export class VisualEditor {
         this.resizeObserver.observe(editableElement);
     }
 
-    private hideOverlay(
+    private hideOverlay = (
         visualEditorOverlayWrapper: HTMLDivElement | null = null
-    ) {
+    ) => {
         hideFocusOverlay({
             previousSelectedEditableDOM: this.previousSelectedEditableDOM,
             visualEditorWrapper: this.visualEditorWrapper,
@@ -58,7 +58,7 @@ export class VisualEditor {
 
         if (!this.previousSelectedEditableDOM) return;
         this.resizeObserver.unobserve(this.previousSelectedEditableDOM);
-    }
+    };
 
     constructor(config: IConfig) {
         this.handleMouseHover = this.handleMouseHover.bind(this);
