@@ -37,7 +37,7 @@ export class VisualEditor {
 
         if (!entry.target.isSameNode(entry.target)) return;
 
-        addFocusOverlay(this.previousSelectedEditableDOM, this.overlayWrapper);
+        // addFocusOverlay(this.previousSelectedEditableDOM, this.overlayWrapper);
     });
 
     private addOverlay(editableElement: Element | null) {

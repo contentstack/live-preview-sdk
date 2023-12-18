@@ -11,6 +11,11 @@ Object.defineProperty(globalThis, "crypto", {
     },
 });
 
+global.ResizeObserver = jest.fn().mockImplementation(() => ({
+    observe: jest.fn(),
+    unobserve: jest.fn(),
+    disconnect: jest.fn(),
+}));
 describe("When outside the Visual editor, the Visual Editor", () => {
     const mockedConsoleError = jest
         .spyOn(console, "error")
