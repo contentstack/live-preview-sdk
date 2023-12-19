@@ -146,6 +146,12 @@ const mockDomRect = {
     }),
 };
 
+global.ResizeObserver = jest.fn().mockImplementation(() => ({
+    observe: jest.fn(),
+    unobserve: jest.fn(),
+    disconnect: jest.fn(),
+}));
+
 describe("When an element is hovered in visual editor mode", () => {
     let config: IConfig;
     let mousemoveEvent: Event;
