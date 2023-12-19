@@ -35,7 +35,7 @@ export class VisualEditor {
     private resizeObserver = new ResizeObserver(([entry]) => {
         if (!this.overlayWrapper || !this.previousSelectedEditableDOM) return;
 
-        if (!entry.target.isSameNode(entry.target)) return;
+        if (!entry.target.isSameNode(this.previousSelectedEditableDOM)) return;
 
         addFocusOverlay(this.previousSelectedEditableDOM, this.overlayWrapper);
     });
