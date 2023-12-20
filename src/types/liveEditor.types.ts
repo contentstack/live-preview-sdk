@@ -5,5 +5,4 @@ export interface VisualEditorCslpEventDetails {
     editableElement: Element;
     cslpData: string;
     fieldMetadata: CslpData;
-    fieldSchema: ISchemaFieldMap;
 }

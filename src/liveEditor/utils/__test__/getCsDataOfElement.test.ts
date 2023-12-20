@@ -1,12 +1,8 @@
-import { getAllContentTypes } from "../../../__test__/data/contentType";
-import { generateFieldSchemaMap } from "../generateFieldSchemaMap";
 import { getCsDataOfElement } from "../getCsDataOfElement";
-import { ISchemaIndividualFieldMap } from "../types/index.types";
 
 describe("getCsDataOfElement", () => {
     let targetElement: Element;
     let mockEvent: MouseEvent;
-    let fieldSchemaMap: Record<string, ISchemaIndividualFieldMap>;
 
     beforeEach(() => {
         targetElement = document.createElement("div");
@@ -14,9 +10,6 @@ describe("getCsDataOfElement", () => {
             "data-cslp",
             "all_fields.bltentryuid.en-us.title"
         );
-        fieldSchemaMap = {
-            all_fields: generateFieldSchemaMap(getAllContentTypes().all_fields),
-        };
 
         document.body.appendChild(targetElement);
 
@@ -42,7 +35,7 @@ describe("getCsDataOfElement", () => {
             writable: false,
         });
 
-        const result = getCsDataOfElement(mockEvent, fieldSchemaMap);
+        const result = getCsDataOfElement(mockEvent);
 
         expect(result).toBeUndefined();
     });
@@ -58,7 +51,7 @@ describe("getCsDataOfElement", () => {
 
         targetElement.dispatchEvent(mockEvent);
 
-        const result = getCsDataOfElement(mockEvent, fieldSchemaMap);
+        const result = getCsDataOfElement(mockEvent);
 
         expect(result).toBeUndefined();
     });
@@ -66,13 +59,13 @@ describe("getCsDataOfElement", () => {
     test("should return undefined if cslpData is not present", () => {
         targetElement.removeAttribute("data-cslp");
 
-        const result = getCsDataOfElement(mockEvent, fieldSchemaMap);
+        const result = getCsDataOfElement(mockEvent);
 
         expect(result).toBeUndefined();
     });
 
     test("should return event details if all the required data is present", () => {
-        const result = getCsDataOfElement(mockEvent, fieldSchemaMap);
+        const result = getCsDataOfElement(mockEvent);
 
         expect(result).toEqual({
             editableElement: targetElement,
@@ -85,16 +78,6 @@ describe("getCsDataOfElement", () => {
                 fieldPath: "title",
                 fieldPathWithIndex: "title",
                 multipleFieldMetadata: { parentDetails: null, index: -1 },
-            },
-            fieldSchema: {
-                data_type: "text",
-                display_name: "Title",
-                field_metadata: { _default: true, version: 3 },
-                mandatory: true,
-                uid: "title",
-                unique: true,
-                multiple: false,
-                non_localizable: false,
             },
         });
     });
@@ -119,7 +102,7 @@ describe("getCsDataOfElement", () => {
 
         targetElement.dispatchEvent(mockEvent);
 
-        const result = getCsDataOfElement(mockEvent, fieldSchemaMap);
+        const result = getCsDataOfElement(mockEvent);
 
         expect(result).toEqual({
             editableElement: parentElement,
@@ -132,16 +115,6 @@ describe("getCsDataOfElement", () => {
                 fieldPath: "title",
                 fieldPathWithIndex: "title",
                 multipleFieldMetadata: { parentDetails: null, index: -1 },
-            },
-            fieldSchema: {
-                data_type: "text",
-                display_name: "Title",
-                field_metadata: { _default: true, version: 3 },
-                mandatory: true,
-                uid: "title",
-                unique: true,
-                multiple: false,
-                non_localizable: false,
             },
         });
     });

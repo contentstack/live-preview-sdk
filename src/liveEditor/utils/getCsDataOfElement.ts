@@ -1,6 +1,5 @@
 import { VisualEditorCslpEventDetails } from "../../types/liveEditor.types";
 import { extractDetailsFromCslp } from "../../utils/cslpdata";
-import { ISchemaIndividualFieldMap } from "./types/index.types";
 
 /**
  * Returns the CSLP data of the closest ancestor element with a `data-cslp` attribute
@@ -11,8 +10,7 @@ import { ISchemaIndividualFieldMap } from "./types/index.types";
  * along with metadata and schema information for the corresponding field.
  */
 export function getCsDataOfElement(
-    event: MouseEvent,
-    fieldSchemaMap: Record<string, ISchemaIndividualFieldMap>
+    event: MouseEvent
 ): VisualEditorCslpEventDetails | undefined {
     const targetElement = event.target as HTMLElement;
     if (!targetElement) {
@@ -29,13 +27,9 @@ export function getCsDataOfElement(
     }
     const fieldMetadata = extractDetailsFromCslp(cslpData);
 
-    const fieldSchema =
-        fieldSchemaMap[fieldMetadata.content_type_uid][fieldMetadata.fieldPath];
-
     return {
         editableElement: editableElement,
         cslpData,
         fieldMetadata,
-        fieldSchema,
     };
 }

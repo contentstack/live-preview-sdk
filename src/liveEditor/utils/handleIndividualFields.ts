@@ -4,6 +4,7 @@ import {
     removeReplaceAssetButton,
 } from "./assetButton";
 import { LIVE_EDITOR_FIELD_TYPE_ATTRIBUTE_KEY } from "./constants";
+import { FieldSchemaMap } from "./fieldSchemaMap";
 import { getFieldType } from "./getFieldType";
 import { handleFieldInput, handleFieldKeyDown } from "./handleFieldMouseDown";
 import liveEditorPostMessage from "./liveEditorPostMessage";
@@ -19,15 +20,20 @@ import { LiveEditorPostMessageEvents } from "./types/postMessage.types";
  * @param eventDetails The event details object that contain cslp and field metadata.
  * @param elements The elements object that contain the visual editor wrapper.
  */
-export function handleIndividualFields(
+export async function handleIndividualFields(
     eventDetails: VisualEditorCslpEventDetails,
     elements: {
         visualEditorWrapper: HTMLDivElement;
         lastEditedField: Element | null;
     }
-): void {
-    const { fieldSchema, editableElement } = eventDetails;
+): Promise<void> {
+    const { fieldMetadata, editableElement } = eventDetails;
     const { visualEditorWrapper, lastEditedField } = elements;
+    const { content_type_uid, fieldPath } = fieldMetadata;
+    const fieldSchema = await FieldSchemaMap.getFieldSchema(
+        content_type_uid,
+        fieldPath
+    );
     const fieldType = getFieldType(fieldSchema);
 
     editableElement.setAttribute(

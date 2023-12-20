@@ -1,6 +1,9 @@
+import { getFieldSchemaMap } from "../../__test__/data/fieldSchemaMap";
+import { sleep } from "../../__test__/utils";
 import { IConfig } from "../../types/types";
 import { getDefaultConfig } from "../../utils/defaults";
 import { VisualEditor } from "../index";
+import { FieldSchemaMap } from "../utils/fieldSchemaMap";
 import liveEditorPostMessage from "../utils/liveEditorPostMessage";
 import { LiveEditorPostMessageEvents } from "../utils/types/postMessage.types";
 
@@ -155,6 +158,13 @@ global.ResizeObserver = jest.fn().mockImplementation(() => ({
 describe("When an element is hovered in visual editor mode", () => {
     let config: IConfig;
     let mousemoveEvent: Event;
+
+    beforeAll(() => {
+        FieldSchemaMap.setFieldSchema(
+            "all_fields",
+            getFieldSchemaMap().all_fields
+        );
+    });
 
     beforeEach(() => {
         config = getDefaultConfig();
@@ -323,8 +333,10 @@ describe("When an element is hovered in visual editor mode", () => {
             expect(customCursor?.classList.contains("visible")).toBeTruthy();
         });
 
-        test("should have instance button on individual instances", () => {
+        test("should have instance button on individual instances", async () => {
             firstSingleLineField.dispatchEvent(mousemoveEvent);
+            await sleep(0);
+
             const instanceButton = document.querySelectorAll<HTMLButtonElement>(
                 `[data-testid="visual-editor-add-instance-button"]`
             );
@@ -339,8 +351,9 @@ describe("When an element is hovered in visual editor mode", () => {
             expect(instanceButton[1].style.top).toBe("61.19921875px");
         });
 
-        test("should send event to parent to add new instance", () => {
+        test("should send event to parent to add new instance", async () => {
             firstSingleLineField.dispatchEvent(mousemoveEvent);
+            await sleep(0);
             const instanceButton = document.querySelectorAll<HTMLButtonElement>(
                 `[data-testid="visual-editor-add-instance-button"]`
             );
@@ -425,14 +438,16 @@ describe("When an element is hovered in visual editor mode", () => {
             visualEditor.destroy();
         });
 
-        test("should have outline", () => {
+        test("should have outline", async () => {
             multiLineField.dispatchEvent(mousemoveEvent);
+            await sleep(0);
             expect(multiLineField).toMatchSnapshot();
             expect(multiLineField.classList.contains("cslp-edit-mode"));
         });
 
-        test("should have custom cursor", () => {
+        test("should have custom cursor", async () => {
             multiLineField.dispatchEvent(mousemoveEvent);
+            await sleep(0);
             const customCursor = document.querySelector(
                 `[data-testid="visual-editor__cursor"]`
             );
@@ -489,13 +504,15 @@ describe("When an element is hovered in visual editor mode", () => {
             visualEditor.destroy();
         });
 
-        test("should have outline", () => {
+        test("should have outline", async () => {
+            await sleep(0);
             container.dispatchEvent(mousemoveEvent);
             expect(container).toMatchSnapshot();
             expect(container.classList.contains("cslp-edit-mode"));
         });
 
-        test("should have custom cursor", () => {
+        test("should have custom cursor", async () => {
+            await sleep(0);
             container.dispatchEvent(mousemoveEvent);
             const customCursor = document.querySelector(
                 `[data-testid="visual-editor__cursor"]`
@@ -505,14 +522,16 @@ describe("When an element is hovered in visual editor mode", () => {
             expect(customCursor?.classList.contains("visible")).toBeTruthy();
         });
 
-        test("should have outline on individual instances", () => {
+        test("should have outline on individual instances", async () => {
             firstMultiLineField.dispatchEvent(mousemoveEvent);
+            await sleep(0);
             expect(firstMultiLineField).toMatchSnapshot();
             expect(firstMultiLineField.classList.contains("cslp-edit-mode"));
         });
 
-        test("should have custom cursor on individual instances", () => {
+        test("should have custom cursor on individual instances", async () => {
             firstMultiLineField.dispatchEvent(mousemoveEvent);
+            await sleep(0);
             const customCursor = document.querySelector(
                 `[data-testid="visual-editor__cursor"]`
             );
@@ -521,8 +540,9 @@ describe("When an element is hovered in visual editor mode", () => {
             expect(customCursor?.classList.contains("visible")).toBeTruthy();
         });
 
-        test("should have instance button on individual instances", () => {
+        test("should have instance button on individual instances", async () => {
             firstMultiLineField.dispatchEvent(mousemoveEvent);
+            await sleep(0);
             const instanceButton = document.querySelectorAll<HTMLButtonElement>(
                 `[data-testid="visual-editor-add-instance-button"]`
             );
@@ -537,8 +557,9 @@ describe("When an element is hovered in visual editor mode", () => {
             expect(instanceButton[1].style.top).toBe("61.19921875px");
         });
 
-        test("should send event to parent to add new instance", () => {
+        test("should send event to parent to add new instance", async () => {
             firstMultiLineField.dispatchEvent(mousemoveEvent);
+            await sleep(0);
             const instanceButton = document.querySelectorAll<HTMLButtonElement>(
                 `[data-testid="visual-editor-add-instance-button"]`
             );
@@ -623,13 +644,15 @@ describe("When an element is hovered in visual editor mode", () => {
             visualEditor.destroy();
         });
 
-        test("should have outline", () => {
+        test("should have outline", async () => {
             htmlRteField.dispatchEvent(mousemoveEvent);
+            await sleep(0);
             expect(htmlRteField).toMatchSnapshot();
             expect(htmlRteField.classList.contains("cslp-edit-mode"));
         });
-        test("should have custom cursor", () => {
+        test("should have custom cursor", async () => {
             htmlRteField.dispatchEvent(mousemoveEvent);
+            await sleep(0);
             const customCursor = document.querySelector(
                 `[data-testid="visual-editor__cursor"]`
             );
@@ -687,14 +710,16 @@ describe("When an element is hovered in visual editor mode", () => {
             visualEditor.destroy();
         });
 
-        test("should have outline", () => {
+        test("should have outline", async () => {
             container.dispatchEvent(mousemoveEvent);
+            await sleep(0);
             expect(container).toMatchSnapshot();
             expect(container.classList.contains("cslp-edit-mode"));
         });
 
-        test("should have custom cursor", () => {
+        test("should have custom cursor", async () => {
             container.dispatchEvent(mousemoveEvent);
+            await sleep(0);
             const customCursor = document.querySelector(
                 `[data-testid="visual-editor__cursor"]`
             );
@@ -703,14 +728,16 @@ describe("When an element is hovered in visual editor mode", () => {
             expect(customCursor?.classList.contains("visible")).toBeTruthy();
         });
 
-        test("should have outline on individual instances", () => {
+        test("should have outline on individual instances", async () => {
             firstHtmlRteField.dispatchEvent(mousemoveEvent);
+            await sleep(0);
             expect(firstHtmlRteField).toMatchSnapshot();
             expect(firstHtmlRteField.classList.contains("cslp-edit-mode"));
         });
 
-        test("should have custom cursor on individual instances", () => {
+        test("should have custom cursor on individual instances", async () => {
             firstHtmlRteField.dispatchEvent(mousemoveEvent);
+            await sleep(0);
             const customCursor = document.querySelector(
                 `[data-testid="visual-editor__cursor"]`
             );
@@ -719,8 +746,9 @@ describe("When an element is hovered in visual editor mode", () => {
             expect(customCursor?.classList.contains("visible")).toBeTruthy();
         });
 
-        test("should have instance button on individual instances", () => {
+        test("should have instance button on individual instances", async () => {
             firstHtmlRteField.dispatchEvent(mousemoveEvent);
+            await sleep(0);
             const instanceButton = document.querySelectorAll<HTMLButtonElement>(
                 `[data-testid="visual-editor-add-instance-button"]`
             );
@@ -735,8 +763,9 @@ describe("When an element is hovered in visual editor mode", () => {
             expect(instanceButton[1].style.top).toBe("61.19921875px");
         });
 
-        test("should send event to parent to add new instance", () => {
+        test("should send event to parent to add new instance", async () => {
             firstHtmlRteField.dispatchEvent(mousemoveEvent);
+            await sleep(0);
             const instanceButton = document.querySelectorAll<HTMLButtonElement>(
                 `[data-testid="visual-editor-add-instance-button"]`
             );
@@ -820,14 +849,16 @@ describe("When an element is hovered in visual editor mode", () => {
             visualEditor.destroy();
         });
 
-        test("should have outline", () => {
+        test("should have outline", async () => {
             jsonRteField.dispatchEvent(mousemoveEvent);
+            await sleep(0);
             expect(jsonRteField).toMatchSnapshot();
             expect(jsonRteField.classList.contains("cslp-edit-mode"));
         });
 
-        test("should have custom cursor", () => {
+        test("should have custom cursor", async () => {
             jsonRteField.dispatchEvent(mousemoveEvent);
+            await sleep(0);
             const customCursor = document.querySelector(
                 `[data-testid="visual-editor__cursor"]`
             );
@@ -885,14 +916,16 @@ describe("When an element is hovered in visual editor mode", () => {
             visualEditor.destroy();
         });
 
-        test("should have outline", () => {
+        test("should have outline", async () => {
             container.dispatchEvent(mousemoveEvent);
+            await sleep(0);
             expect(container).toMatchSnapshot();
             expect(container.classList.contains("cslp-edit-mode"));
         });
 
-        test("should have custom cursor", () => {
+        test("should have custom cursor", async () => {
             container.dispatchEvent(mousemoveEvent);
+            await sleep(0);
             const customCursor = document.querySelector(
                 `[data-testid="visual-editor__cursor"]`
             );
@@ -901,14 +934,16 @@ describe("When an element is hovered in visual editor mode", () => {
             expect(customCursor?.classList.contains("visible")).toBeTruthy();
         });
 
-        test("should have outline on individual instances", () => {
+        test("should have outline on individual instances", async () => {
             firstJsonRteField.dispatchEvent(mousemoveEvent);
+            await sleep(0);
             expect(firstJsonRteField).toMatchSnapshot();
             expect(firstJsonRteField.classList.contains("cslp-edit-mode"));
         });
 
-        test("should have custom cursor on individual instances", () => {
+        test("should have custom cursor on individual instances", async () => {
             firstJsonRteField.dispatchEvent(mousemoveEvent);
+            await sleep(0);
             const customCursor = document.querySelector(
                 `[data-testid="visual-editor__cursor"]`
             );
@@ -917,8 +952,9 @@ describe("When an element is hovered in visual editor mode", () => {
             expect(customCursor?.classList.contains("visible")).toBeTruthy();
         });
 
-        test("should have instance button on individual instances", () => {
+        test("should have instance button on individual instances", async () => {
             firstJsonRteField.dispatchEvent(mousemoveEvent);
+            await sleep(0);
             const instanceButton = document.querySelectorAll<HTMLButtonElement>(
                 `[data-testid="visual-editor-add-instance-button"]`
             );
@@ -933,8 +969,9 @@ describe("When an element is hovered in visual editor mode", () => {
             expect(instanceButton[1].style.top).toBe("61.19921875px");
         });
 
-        test("should send event to parent to add new instance", () => {
+        test("should send event to parent to add new instance", async () => {
             firstJsonRteField.dispatchEvent(mousemoveEvent);
+            await sleep(0);
             const instanceButton = document.querySelectorAll<HTMLButtonElement>(
                 `[data-testid="visual-editor-add-instance-button"]`
             );
@@ -1019,13 +1056,15 @@ describe("When an element is hovered in visual editor mode", () => {
             visualEditor.destroy();
         });
 
-        test("should have outline", () => {
+        test("should have outline", async () => {
             markdownField.dispatchEvent(mousemoveEvent);
+            await sleep(0);
             expect(markdownField).toMatchSnapshot();
             expect(markdownField.classList.contains("cslp-edit-mode"));
         });
-        test("should have custom cursor", () => {
+        test("should have custom cursor", async () => {
             markdownField.dispatchEvent(mousemoveEvent);
+            await sleep(0);
             const customCursor = document.querySelector(
                 `[data-testid="visual-editor__cursor"]`
             );
@@ -1083,14 +1122,16 @@ describe("When an element is hovered in visual editor mode", () => {
             visualEditor.destroy();
         });
 
-        test("should have outline", () => {
+        test("should have outline", async () => {
             container.dispatchEvent(mousemoveEvent);
+            await sleep(0);
             expect(container).toMatchSnapshot();
             expect(container.classList.contains("cslp-edit-mode"));
         });
 
-        test("should have custom cursor", () => {
+        test("should have custom cursor", async () => {
             container.dispatchEvent(mousemoveEvent);
+            await sleep(0);
             const customCursor = document.querySelector(
                 `[data-testid="visual-editor__cursor"]`
             );
@@ -1099,14 +1140,16 @@ describe("When an element is hovered in visual editor mode", () => {
             expect(customCursor?.classList.contains("visible")).toBeTruthy();
         });
 
-        test("should have outline on individual instances", () => {
+        test("should have outline on individual instances", async () => {
             firstMarkdownField.dispatchEvent(mousemoveEvent);
+            await sleep(0);
             expect(firstMarkdownField).toMatchSnapshot();
             expect(firstMarkdownField.classList.contains("cslp-edit-mode"));
         });
 
-        test("should have custom cursor on individual instances", () => {
+        test("should have custom cursor on individual instances", async () => {
             firstMarkdownField.dispatchEvent(mousemoveEvent);
+            await sleep(0);
             const customCursor = document.querySelector(
                 `[data-testid="visual-editor__cursor"]`
             );
@@ -1115,8 +1158,9 @@ describe("When an element is hovered in visual editor mode", () => {
             expect(customCursor?.classList.contains("visible")).toBeTruthy();
         });
 
-        test("should have instance button on individual instances", () => {
+        test("should have instance button on individual instances", async () => {
             firstMarkdownField.dispatchEvent(mousemoveEvent);
+            await sleep(0);
             const instanceButton = document.querySelectorAll<HTMLButtonElement>(
                 `[data-testid="visual-editor-add-instance-button"]`
             );
@@ -1131,8 +1175,9 @@ describe("When an element is hovered in visual editor mode", () => {
             expect(instanceButton[1].style.top).toBe("61.19921875px");
         });
 
-        test("should send event to parent to add new instance", () => {
+        test("should send event to parent to add new instance", async () => {
             firstMarkdownField.dispatchEvent(mousemoveEvent);
+            await sleep(0);
             const instanceButton = document.querySelectorAll<HTMLButtonElement>(
                 `[data-testid="visual-editor-add-instance-button"]`
             );
@@ -1216,14 +1261,16 @@ describe("When an element is hovered in visual editor mode", () => {
             visualEditor.destroy();
         });
 
-        test("should have outline", () => {
+        test("should have outline", async () => {
             selectField.dispatchEvent(mousemoveEvent);
+            await sleep(0);
             expect(selectField).toMatchSnapshot();
             expect(selectField.classList.contains("cslp-edit-mode"));
         });
 
-        test("should have custom cursor", () => {
+        test("should have custom cursor", async () => {
             selectField.dispatchEvent(mousemoveEvent);
+            await sleep(0);
             const customCursor = document.querySelector(
                 `[data-testid="visual-editor__cursor"]`
             );
@@ -1280,14 +1327,16 @@ describe("When an element is hovered in visual editor mode", () => {
             visualEditor.destroy();
         });
 
-        test("should have outline", () => {
+        test("should have outline", async () => {
             container.dispatchEvent(mousemoveEvent);
+            await sleep(0);
             expect(container).toMatchSnapshot();
             expect(container.classList.contains("cslp-edit-mode"));
         });
 
-        test("should have custom cursor", () => {
+        test("should have custom cursor", async () => {
             container.dispatchEvent(mousemoveEvent);
+            await sleep(0);
             const customCursor = document.querySelector(
                 `[data-testid="visual-editor__cursor"]`
             );
@@ -1296,14 +1345,16 @@ describe("When an element is hovered in visual editor mode", () => {
             expect(customCursor?.classList.contains("visible")).toBeTruthy();
         });
 
-        test("should have outline on individual instances", () => {
+        test("should have outline on individual instances", async () => {
             firstSelectField.dispatchEvent(mousemoveEvent);
+            await sleep(0);
             expect(firstSelectField).toMatchSnapshot();
             expect(firstSelectField.classList.contains("cslp-edit-mode"));
         });
 
-        test("should have custom cursor on individual instances", () => {
+        test("should have custom cursor on individual instances", async () => {
             firstSelectField.dispatchEvent(mousemoveEvent);
+            await sleep(0);
             const customCursor = document.querySelector(
                 `[data-testid="visual-editor__cursor"]`
             );
@@ -1312,8 +1363,9 @@ describe("When an element is hovered in visual editor mode", () => {
             expect(customCursor?.classList.contains("visible")).toBeTruthy();
         });
 
-        test("should have instance button on individual instances", () => {
+        test("should have instance button on individual instances", async () => {
             firstSelectField.dispatchEvent(mousemoveEvent);
+            await sleep(0);
             const instanceButton = document.querySelectorAll<HTMLButtonElement>(
                 `[data-testid="visual-editor-add-instance-button"]`
             );
@@ -1328,8 +1380,9 @@ describe("When an element is hovered in visual editor mode", () => {
             expect(instanceButton[1].style.top).toBe("71.3984375px");
         });
 
-        test("should send event to parent to add new instance", () => {
+        test("should send event to parent to add new instance", async () => {
             firstSelectField.dispatchEvent(mousemoveEvent);
+            await sleep(0);
             const instanceButton = document.querySelectorAll<HTMLButtonElement>(
                 `[data-testid="visual-editor-add-instance-button"]`
             );
@@ -1413,14 +1466,16 @@ describe("When an element is hovered in visual editor mode", () => {
             visualEditor.destroy();
         });
 
-        test("should have outline", () => {
+        test("should have outline", async () => {
             numberField.dispatchEvent(mousemoveEvent);
+            await sleep(0);
             expect(numberField).toMatchSnapshot();
             expect(numberField.classList.contains("cslp-edit-mode"));
         });
 
-        test("should have custom cursor", () => {
+        test("should have custom cursor", async () => {
             numberField.dispatchEvent(mousemoveEvent);
+            await sleep(0);
             const customCursor = document.querySelector(
                 `[data-testid="visual-editor__cursor"]`
             );
@@ -1475,14 +1530,16 @@ describe("When an element is hovered in visual editor mode", () => {
             visualEditor.destroy();
         });
 
-        test("should have outline", () => {
+        test("should have outline", async () => {
             container.dispatchEvent(mousemoveEvent);
+            await sleep(0);
             expect(container).toMatchSnapshot();
             expect(container.classList.contains("cslp-edit-mode"));
         });
 
-        test("should have custom cursor", () => {
+        test("should have custom cursor", async () => {
             container.dispatchEvent(mousemoveEvent);
+            await sleep(0);
             const customCursor = document.querySelector(
                 `[data-testid="visual-editor__cursor"]`
             );
@@ -1491,14 +1548,16 @@ describe("When an element is hovered in visual editor mode", () => {
             expect(customCursor?.classList.contains("visible")).toBeTruthy();
         });
 
-        test("should have outline on individual instances", () => {
+        test("should have outline on individual instances", async () => {
             firstNumberField.dispatchEvent(mousemoveEvent);
+            await sleep(0);
             expect(firstNumberField).toMatchSnapshot();
             expect(firstNumberField.classList.contains("cslp-edit-mode"));
         });
 
-        test("should have custom cursor on individual instances", () => {
+        test("should have custom cursor on individual instances", async () => {
             firstNumberField.dispatchEvent(mousemoveEvent);
+            await sleep(0);
             const customCursor = document.querySelector(
                 `[data-testid="visual-editor__cursor"]`
             );
@@ -1507,8 +1566,9 @@ describe("When an element is hovered in visual editor mode", () => {
             expect(customCursor?.classList.contains("visible")).toBeTruthy();
         });
 
-        test("should have instance button on individual instances", () => {
+        test("should have instance button on individual instances", async () => {
             firstNumberField.dispatchEvent(mousemoveEvent);
+            await sleep(0);
             const instanceButton = document.querySelectorAll<HTMLButtonElement>(
                 `[data-testid="visual-editor-add-instance-button"]`
             );
@@ -1523,8 +1583,9 @@ describe("When an element is hovered in visual editor mode", () => {
             expect(instanceButton[1].style.top).toBe("61.19921875px");
         });
 
-        test("should send event to parent to add new instance", () => {
+        test("should send event to parent to add new instance", async () => {
             firstNumberField.dispatchEvent(mousemoveEvent);
+            await sleep(0);
             const instanceButton = document.querySelectorAll<HTMLButtonElement>(
                 `[data-testid="visual-editor-add-instance-button"]`
             );
@@ -1608,14 +1669,16 @@ describe("When an element is hovered in visual editor mode", () => {
             visualEditor.destroy();
         });
 
-        test("should have outline", () => {
+        test("should have outline", async () => {
             booleanField.dispatchEvent(mousemoveEvent);
+            await sleep(0);
             expect(booleanField).toMatchSnapshot();
             expect(booleanField.classList.contains("cslp-edit-mode"));
         });
 
-        test("should have custom cursor", () => {
+        test("should have custom cursor", async () => {
             booleanField.dispatchEvent(mousemoveEvent);
+            await sleep(0);
             const customCursor = document.querySelector(
                 `[data-testid="visual-editor__cursor"]`
             );
@@ -1657,13 +1720,14 @@ describe("When an element is hovered in visual editor mode", () => {
             visualEditor.destroy();
         });
 
-        test("should have outline", () => {
+        test("should have outline", async () => {
             fileField.dispatchEvent(mousemoveEvent);
+            await sleep(0);
             expect(fileField).toMatchSnapshot();
             expect(fileField.classList.contains("cslp-edit-mode"));
         });
 
-        test("should have custom cursor", () => {
+        test("should have custom cursor", async () => {
             fileField.dispatchEvent(mousemoveEvent);
             const customCursor = document.querySelector(
                 `[data-testid="visual-editor__cursor"]`
@@ -1673,14 +1737,16 @@ describe("When an element is hovered in visual editor mode", () => {
             expect(customCursor?.classList.contains("visible")).toBeTruthy();
         });
 
-        test("should have a outline on the url as well", () => {
+        test("should have a outline on the url as well", async () => {
             imageField.dispatchEvent(mousemoveEvent);
+            await sleep(0);
             expect(imageField).toMatchSnapshot();
             expect(imageField.classList.contains("cslp-edit-mode"));
         });
 
-        test("should have custom cursor on the url as well", () => {
+        test("should have custom cursor on the url as well", async () => {
             imageField.dispatchEvent(mousemoveEvent);
+            await sleep(0);
             const customCursor = document.querySelector(
                 `[data-testid="visual-editor__cursor"]`
             );
@@ -1760,30 +1826,35 @@ describe("When an element is hovered in visual editor mode", () => {
             visualEditor.destroy();
         });
 
-        test("should have outline", () => {
+        test("should have outline", async () => {
             container.dispatchEvent(mousemoveEvent);
+            await sleep(0);
             expect(container).toMatchSnapshot();
             expect(container.classList.contains("cslp-edit-mode"));
         });
 
-        test("should have custom cursor", () => {
+        test("should have custom cursor", async () => {
             container.dispatchEvent(mousemoveEvent);
+
             const customCursor = document.querySelector(
                 `[data-testid="visual-editor__cursor"]`
             );
 
+            await sleep(0);
             expect(customCursor).toMatchSnapshot();
             expect(customCursor?.classList.contains("visible")).toBeTruthy();
         });
 
-        test("should have outline on individual instances", () => {
+        test("should have outline on individual instances", async () => {
             firstFileField.dispatchEvent(mousemoveEvent);
+            await sleep(0);
             expect(firstFileField).toMatchSnapshot();
             expect(firstFileField.classList.contains("cslp-edit-mode"));
         });
 
-        test("should have custom cursor on individual instances", () => {
+        test("should have custom cursor on individual instances", async () => {
             firstFileField.dispatchEvent(mousemoveEvent);
+            await sleep(0);
             const customCursor = document.querySelector(
                 `[data-testid="visual-editor__cursor"]`
             );
@@ -1792,8 +1863,9 @@ describe("When an element is hovered in visual editor mode", () => {
             expect(customCursor?.classList.contains("visible")).toBeTruthy();
         });
 
-        test("should have instance button on individual instances", () => {
+        test("should have instance button on individual instances", async () => {
             firstFileField.dispatchEvent(mousemoveEvent);
+            await sleep(0);
             const instanceButton = document.querySelectorAll<HTMLButtonElement>(
                 `[data-testid="visual-editor-add-instance-button"]`
             );
@@ -1808,8 +1880,9 @@ describe("When an element is hovered in visual editor mode", () => {
             expect(instanceButton[1].style.top).toBe("61.19921875px");
         });
 
-        test("should send event to parent to add new instance", () => {
+        test("should send event to parent to add new instance", async () => {
             firstFileField.dispatchEvent(mousemoveEvent);
+            await sleep(0);
             const instanceButton = document.querySelectorAll<HTMLButtonElement>(
                 `[data-testid="visual-editor-add-instance-button"]`
             );
@@ -1869,13 +1942,13 @@ describe("When an element is hovered in visual editor mode", () => {
             expect(liveEditorPostMessage?.send).toHaveBeenCalledTimes(3);
         });
 
-        test("should have outline on the url", () => {
+        test("should have outline on the url", async () => {
             firstImageField.dispatchEvent(mousemoveEvent);
             expect(firstImageField).toMatchSnapshot();
             expect(firstImageField.classList.contains("cslp-edit-mode"));
         });
 
-        test("should have custom cursor on the url", () => {
+        test("should have custom cursor on the url", async () => {
             firstImageField.dispatchEvent(mousemoveEvent);
             const customCursor = document.querySelector(
                 `[data-testid="visual-editor__cursor"]`
@@ -1885,8 +1958,9 @@ describe("When an element is hovered in visual editor mode", () => {
             expect(customCursor?.classList.contains("visible")).toBeTruthy();
         });
 
-        test("should have instance button on individual instances on the url", () => {
+        test("should have instance button on individual instances on the url", async () => {
             firstImageField.dispatchEvent(mousemoveEvent);
+            await sleep(0);
             const instanceButton = document.querySelectorAll<HTMLButtonElement>(
                 `[data-testid="visual-editor-add-instance-button"]`
             );
@@ -1928,13 +2002,15 @@ describe("When an element is hovered in visual editor mode", () => {
             visualEditor.destroy();
         });
 
-        test("should have outline", () => {
+        test("should have outline", async () => {
             dataField.dispatchEvent(mousemoveEvent);
+            await sleep(0);
             expect(dataField).toMatchSnapshot();
             expect(dataField.classList.contains("cslp-edit-mode"));
         });
-        test("should have custom cursor", () => {
+        test("should have custom cursor", async () => {
             dataField.dispatchEvent(mousemoveEvent);
+            await sleep(0);
             const customCursor = document.querySelector(
                 `[data-testid="visual-editor__cursor"]`
             );
@@ -1968,14 +2044,15 @@ describe("When an element is hovered in visual editor mode", () => {
             visualEditor.destroy();
         });
 
-        test("should have outline", () => {
+        test("should have outline", async () => {
             linkField.dispatchEvent(mousemoveEvent);
             expect(linkField).toMatchSnapshot();
             expect(linkField.classList.contains("cslp-edit-mode"));
         });
 
-        test("should have custom cursor", () => {
+        test("should have custom cursor", async () => {
             linkField.dispatchEvent(mousemoveEvent);
+            await sleep(0);
             const customCursor = document.querySelector(
                 `[data-testid="visual-editor__cursor"]`
             );
@@ -2030,14 +2107,16 @@ describe("When an element is hovered in visual editor mode", () => {
             visualEditor.destroy();
         });
 
-        test("should have outline", () => {
+        test("should have outline", async () => {
             container.dispatchEvent(mousemoveEvent);
+            await sleep(0);
             expect(container).toMatchSnapshot();
             expect(container.classList.contains("cslp-edit-mode"));
         });
 
-        test("should have custom cursor", () => {
+        test("should have custom cursor", async () => {
             container.dispatchEvent(mousemoveEvent);
+            await sleep(0);
             const customCursor = document.querySelector(
                 `[data-testid="visual-editor__cursor"]`
             );
@@ -2046,15 +2125,17 @@ describe("When an element is hovered in visual editor mode", () => {
             expect(customCursor?.classList.contains("visible")).toBeTruthy();
         });
 
-        test("should have outline on individual instances", () => {
+        test("should have outline on individual instances", async () => {
             firstLinkField.dispatchEvent(mousemoveEvent);
+            await sleep(0);
             expect(firstLinkField).toMatchSnapshot();
 
             expect(firstLinkField.classList.contains("cslp-edit-mode"));
         });
 
-        test("should have custom cursor on individual instances", () => {
+        test("should have custom cursor on individual instances", async () => {
             firstLinkField.dispatchEvent(mousemoveEvent);
+            await sleep(0);
             const customCursor = document.querySelector(
                 `[data-testid="visual-editor__cursor"]`
             );
@@ -2063,8 +2144,9 @@ describe("When an element is hovered in visual editor mode", () => {
             expect(customCursor?.classList.contains("visible")).toBeTruthy();
         });
 
-        test.skip("should have instance button on individual instances", () => {
+        test.skip("should have instance button on individual instances", async () => {
             firstLinkField.dispatchEvent(mousemoveEvent);
+            await sleep(0);
             const instanceButton = document.querySelectorAll<HTMLButtonElement>(
                 `[data-testid="visual-editor-add-instance-button"]`
             );
@@ -2084,8 +2166,9 @@ describe("When an element is hovered in visual editor mode", () => {
             expect(instanceButton[1].style.top).toBe("61.19921875px");
         });
 
-        test.skip("should send event to parent to add new instance", () => {
+        test.skip("should send event to parent to add new instance", async () => {
             firstLinkField.dispatchEvent(mousemoveEvent);
+            await sleep(0);
             const instanceButton = document.querySelectorAll<HTMLButtonElement>(
                 `[data-testid="visual-editor-add-instance-button"]`
             );
@@ -2169,13 +2252,15 @@ describe("When an element is hovered in visual editor mode", () => {
             visualEditor.destroy();
         });
 
-        test("should have outline", () => {
+        test("should have outline", async () => {
             referenceField.dispatchEvent(mousemoveEvent);
+            await sleep(0);
             expect(referenceField).toMatchSnapshot();
             expect(referenceField.classList.contains("cslp-edit-mode"));
         });
-        test("should have custom cursor", () => {
+        test("should have custom cursor", async () => {
             referenceField.dispatchEvent(mousemoveEvent);
+            await sleep(0);
             const customCursor = document.querySelector(
                 `[data-testid="visual-editor__cursor"]`
             );
@@ -2232,14 +2317,16 @@ describe("When an element is hovered in visual editor mode", () => {
             visualEditor.destroy();
         });
 
-        test("should have outline", () => {
+        test("should have outline", async () => {
             container.dispatchEvent(mousemoveEvent);
+            await sleep(0);
             expect(container).toMatchSnapshot();
             expect(container.classList.contains("cslp-edit-mode"));
         });
 
-        test("should have custom cursor", () => {
+        test("should have custom cursor", async () => {
             container.dispatchEvent(mousemoveEvent);
+            await sleep(0);
             const customCursor = document.querySelector(
                 `[data-testid="visual-editor__cursor"]`
             );
@@ -2248,13 +2335,14 @@ describe("When an element is hovered in visual editor mode", () => {
             expect(customCursor?.classList.contains("visible")).toBeTruthy();
         });
 
-        test("should have outline on individual instances", () => {
+        test("should have outline on individual instances", async () => {
             firstReferenceField.dispatchEvent(mousemoveEvent);
+            await sleep(0);
             expect(firstReferenceField).toMatchSnapshot();
             expect(firstReferenceField.classList.contains("cslp-edit-mode"));
         });
 
-        test("should have custom cursor on individual instances", () => {
+        test("should have custom cursor on individual instances", async () => {
             firstReferenceField.dispatchEvent(mousemoveEvent);
             const customCursor = document.querySelector(
                 `[data-testid="visual-editor__cursor"]`
@@ -2264,8 +2352,9 @@ describe("When an element is hovered in visual editor mode", () => {
             expect(customCursor?.classList.contains("visible")).toBeTruthy();
         });
 
-        test("should have instance button on individual instances", () => {
+        test("should have instance button on individual instances", async () => {
             firstReferenceField.dispatchEvent(mousemoveEvent);
+            await sleep(0);
             const instanceButton = document.querySelectorAll<HTMLButtonElement>(
                 `[data-testid="visual-editor-add-instance-button"]`
             );
@@ -2280,8 +2369,9 @@ describe("When an element is hovered in visual editor mode", () => {
             expect(instanceButton[1].style.top).toBe("61.19921875px");
         });
 
-        test("should send event to parent to add new instance", () => {
+        test("should send event to parent to add new instance", async () => {
             firstReferenceField.dispatchEvent(mousemoveEvent);
+            await sleep(0);
             const instanceButton = document.querySelectorAll<HTMLButtonElement>(
                 `[data-testid="visual-editor-add-instance-button"]`
             );
@@ -2378,13 +2468,15 @@ describe("When an element is hovered in visual editor mode", () => {
             visualEditor.destroy();
         });
 
-        test("should have outline", () => {
+        test("should have outline", async () => {
             groupField.dispatchEvent(mousemoveEvent);
+            await sleep(0);
             expect(groupField).toMatchSnapshot();
             expect(groupField.classList.contains("cslp-edit-mode"));
         });
-        test("should have custom cursor", () => {
+        test("should have custom cursor", async () => {
             groupField.dispatchEvent(mousemoveEvent);
+            await sleep(0);
             const customCursor = document.querySelector(
                 `[data-testid="visual-editor__cursor"]`
             );
@@ -2393,7 +2485,7 @@ describe("When an element is hovered in visual editor mode", () => {
             expect(customCursor?.classList.contains("visible")).toBeTruthy();
         });
 
-        test("should have a outline on the nested single line", () => {
+        test("should have a outline on the nested single line", async () => {
             const singleLine = document.createElement("p");
             singleLine.setAttribute(
                 "data-cslp",
@@ -2407,11 +2499,12 @@ describe("When an element is hovered in visual editor mode", () => {
             groupField.appendChild(singleLine);
 
             singleLine.dispatchEvent(mousemoveEvent);
+            await sleep(0);
             expect(singleLine).toMatchSnapshot();
             expect(singleLine.classList.contains("cslp-edit-mode"));
         });
 
-        test("should have custom cursor on the nested single line", () => {
+        test("should have custom cursor on the nested single line", async () => {
             const singleLine = document.createElement("p");
             singleLine.setAttribute(
                 "data-cslp",
@@ -2425,6 +2518,7 @@ describe("When an element is hovered in visual editor mode", () => {
             groupField.appendChild(singleLine);
 
             singleLine.dispatchEvent(mousemoveEvent);
+            await sleep(0);
             const customCursor = document.querySelector(
                 `[data-testid="visual-editor__cursor"]`
             );
@@ -2496,13 +2590,13 @@ describe("When an element is hovered in visual editor mode", () => {
             visualEditor.destroy();
         });
 
-        test("should have outline", () => {
+        test("should have outline", async () => {
             container.dispatchEvent(mousemoveEvent);
             expect(container).toMatchSnapshot();
             expect(container.classList.contains("cslp-edit-mode"));
         });
 
-        test("should have custom cursor", () => {
+        test("should have custom cursor", async () => {
             container.dispatchEvent(mousemoveEvent);
             const customCursor = document.querySelector(
                 `[data-testid="visual-editor__cursor"]`
@@ -2512,8 +2606,9 @@ describe("When an element is hovered in visual editor mode", () => {
             expect(customCursor?.classList.contains("visible")).toBeTruthy();
         });
 
-        test("should have instance button on individual instances", () => {
+        test("should have instance button on individual instances", async () => {
             firstGroupField.dispatchEvent(mousemoveEvent);
+            await sleep(0);
             const instanceButton = document.querySelectorAll<HTMLButtonElement>(
                 `[data-testid="visual-editor-add-instance-button"]`
             );
@@ -2528,8 +2623,9 @@ describe("When an element is hovered in visual editor mode", () => {
             expect(instanceButton[1].style.top).toBe("61.19921875px");
         });
 
-        test("should send event to parent to add new instance", () => {
+        test("should send event to parent to add new instance", async () => {
             firstGroupField.dispatchEvent(mousemoveEvent);
+            await sleep(0);
             const instanceButton = document.querySelectorAll<HTMLButtonElement>(
                 `[data-testid="visual-editor-add-instance-button"]`
             );
@@ -2589,14 +2685,16 @@ describe("When an element is hovered in visual editor mode", () => {
             );
         });
 
-        test("should have outline on the nested single line", () => {
+        test("should have outline on the nested single line", async () => {
             firstNestedMultiLine.dispatchEvent(mousemoveEvent);
+            await sleep(0);
             expect(firstNestedMultiLine).toMatchSnapshot();
             expect(firstNestedMultiLine.classList.contains("cslp-edit-mode"));
         });
 
-        test("should have custom cursor on the nested single line", () => {
+        test("should have custom cursor on the nested single line", async () => {
             firstNestedMultiLine.dispatchEvent(mousemoveEvent);
+            await sleep(0);
             const customCursor = document.querySelector(
                 `[data-testid="visual-editor__cursor"]`
             );
@@ -2605,8 +2703,9 @@ describe("When an element is hovered in visual editor mode", () => {
             expect(customCursor?.classList.contains("visible")).toBeTruthy();
         });
 
-        test("should not have any instance button on the nested single line", () => {
+        test("should not have any instance button on the nested single line", async () => {
             firstNestedMultiLine.dispatchEvent(mousemoveEvent);
+            await sleep(0);
             const instanceButton = document.querySelectorAll<HTMLButtonElement>(
                 `[data-testid="visual-editor-add-instance-button"]`
             );

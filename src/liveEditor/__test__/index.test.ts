@@ -4,6 +4,8 @@ import { sleep } from "../../__test__/utils";
 import { IConfig } from "../../types/types";
 import { getDefaultConfig } from "../../utils/defaults";
 import { VisualEditor } from "../index";
+import { FieldSchemaMap } from "../utils/fieldSchemaMap";
+import { getFieldSchemaMap } from "../../__test__/data/fieldSchemaMap";
 
 jest.mock("../utils/liveEditorPostMessage", () => {
     const { getAllContentTypes } = jest.requireActual(
@@ -38,12 +40,23 @@ global.ResizeObserver = jest.fn().mockImplementation(() => ({
 
 describe("Visual editor", () => {
     let config: IConfig;
+
+    beforeAll(() => {
+        FieldSchemaMap.setFieldSchema(
+            "all_fields",
+            getFieldSchemaMap().all_fields
+        );
+    });
     beforeEach(() => {
         config = getDefaultConfig();
     });
 
     afterEach(() => {
         document.getElementsByTagName("html")[0].innerHTML = "";
+    });
+
+    afterAll(() => {
+        FieldSchemaMap.clear();
     });
 
     test("should append a visual editor container to the DOM", () => {
@@ -80,6 +93,7 @@ describe("Visual editor", () => {
 
             await sleep(0);
             h1Tag.click();
+            await sleep(0);
 
             expect(document.body).toMatchSnapshot();
         });
@@ -90,13 +104,14 @@ describe("Visual editor", () => {
             document.getElementsByTagName("html")[0].innerHTML = "";
         });
 
-        test("should do nothing if data-cslp not available", () => {
+        test("should do nothing if data-cslp not available", async () => {
             const h1 = document.createElement("h1");
 
             document.body.appendChild(h1);
             new VisualEditor(config);
 
             h1.click();
+            await sleep(0);
 
             expect(document.body).toMatchSnapshot();
         });
@@ -115,12 +130,13 @@ describe("Visual editor", () => {
 
                 await sleep(0);
                 h1.click();
+                await sleep(0);
 
                 expect(h1).toMatchSnapshot();
                 expect(h1.getAttribute("contenteditable")).toBe("true");
             });
 
-            test("multi line should be contenteditable", () => {
+            test("multi line should be contenteditable", async () => {
                 const h1 = document.createElement("h1");
                 h1.setAttribute(
                     "data-cslp",
@@ -130,6 +146,7 @@ describe("Visual editor", () => {
                 new VisualEditor(config);
 
                 h1.click();
+                await sleep(0);
 
                 // h1.addEventListener("keydown", (e: KeyboardEvent) => {
                 //     e.code.includes("")
@@ -139,7 +156,7 @@ describe("Visual editor", () => {
                 expect(h1.getAttribute("contenteditable")).toBe("true");
             });
 
-            test("file should render a replacer and remove when it is not", () => {
+            test("file should render a replacer and remove when it is not", async () => {
                 const h1 = document.createElement("h1");
                 h1.setAttribute(
                     "data-cslp",
@@ -148,6 +165,7 @@ describe("Visual editor", () => {
                 document.body.appendChild(h1);
                 new VisualEditor(config);
                 h1.click();
+                await sleep(0);
 
                 let replaceBtn = document.getElementsByClassName(
                     "visual-editor__replace-button"
@@ -164,6 +182,7 @@ describe("Visual editor", () => {
                 document.body.appendChild(h2);
 
                 h2.click();
+                await sleep(0);
 
                 replaceBtn = document.getElementsByClassName(
                     "visual-editor__replace-button"
@@ -178,6 +197,13 @@ describe("Visual editor", () => {
 describe("visual editor DOM", () => {
     let h1: HTMLHeadElement;
     let config: IConfig;
+
+    beforeAll(() => {
+        FieldSchemaMap.setFieldSchema(
+            "all_fields",
+            getFieldSchemaMap().all_fields
+        );
+    });
 
     beforeEach(() => {
         config = getDefaultConfig();
@@ -203,6 +229,10 @@ describe("visual editor DOM", () => {
         document.getElementsByTagName("html")[0].innerHTML = "";
     });
 
+    afterAll(() => {
+        FieldSchemaMap.clear();
+    });
+
     test("should have an overlay over the element", async () => {
         new VisualEditor(config);
 
@@ -214,6 +244,7 @@ describe("visual editor DOM", () => {
 
         await sleep(0);
         h1.click();
+        await sleep(0);
 
         visualEditorOverlayWrapper = document.querySelector(
             `[data-testid="visual-editor__overlay__wrapper"]`
@@ -277,6 +308,9 @@ describe("visual editor DOM", () => {
 
         await sleep(0);
         h1.click();
+        // We need this sleep as there are some async task happening while
+        // the overlay is being rendered.
+        await sleep(0);
 
         let visualEditorContainer = document.querySelector(
             `[data-testid="visual-editor__container"]`
@@ -298,6 +332,9 @@ describe("visual editor DOM", () => {
 
         await sleep(0);
         h1.click();
+        // We need this sleep as there are some async task happening while
+        // the overlay is being rendered.
+        await sleep(0);
 
         let visualEditorOverlayWrapper = document.querySelector(
             `[data-testid="visual-editor__overlay__wrapper"]`

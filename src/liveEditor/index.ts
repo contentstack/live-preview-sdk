@@ -1,7 +1,6 @@
 import _ from "lodash";
 
 import { IConfig } from "../types/types";
-import { generateFieldSchemaMap } from "./utils/generateFieldSchemaMap";
 import { generateStartEditingButton } from "./utils/generateStartEditingButton";
 import {
     generateVisualEditorCursor,
@@ -17,15 +16,13 @@ import {
     removeAddInstanceButtons,
 } from "./utils/multipleElementAddButton";
 
+import { extractDetailsFromCslp } from "../utils/cslpdata";
+import { FieldSchemaMap } from "./utils/fieldSchemaMap";
 import { addFocusOverlay, hideFocusOverlay } from "./utils/focusOverlayWrapper";
 import { getCsDataOfElement } from "./utils/getCsDataOfElement";
-import { ISchemaIndividualFieldMap } from "./utils/types/index.types";
-import { extractDetailsFromCslp } from "../utils/cslpdata";
 import liveEditorPostMessage from "./utils/liveEditorPostMessage";
-import { IPageSchema } from "../types/contentTypeSchema.types";
 
 export class VisualEditor {
-    private fieldSchemaMap: Record<string, ISchemaIndividualFieldMap> = {};
     private customCursor: HTMLDivElement | null = null;
     private overlayWrapper: HTMLDivElement | null = null;
     private previousSelectedEditableDOM: Element | null = null;
@@ -71,15 +68,8 @@ export class VisualEditor {
         this.appendVisualEditorDOM();
 
         liveEditorPostMessage
-            ?.send<{ contentTypes: Record<string, IPageSchema> }>("init")
-            .then((data) => {
-                const { contentTypes } = data;
-
-                Object.entries(contentTypes).forEach(([uid, contentType]) => {
-                    this.fieldSchemaMap[uid] =
-                        generateFieldSchemaMap(contentType);
-                });
-
+            ?.send("init")
+            .then(() => {
                 window.addEventListener(
                     "click",
                     this.handleMouseDownForVisualEditing
@@ -139,9 +129,11 @@ export class VisualEditor {
         startEditingButton.setAttribute("href", completeURL.toString());
     };
 
-    private handleMouseDownForVisualEditing = (event: MouseEvent): void => {
+    private handleMouseDownForVisualEditing = async (
+        event: MouseEvent
+    ): Promise<void> => {
         event.preventDefault();
-        const eventDetails = getCsDataOfElement(event, this.fieldSchemaMap);
+        const eventDetails = getCsDataOfElement(event);
         if (
             !eventDetails ||
             !this.overlayWrapper ||
@@ -164,15 +156,15 @@ export class VisualEditor {
 
         this.addOverlay(editableElement);
 
-        handleIndividualFields(eventDetails, {
+        await handleIndividualFields(eventDetails, {
             visualEditorWrapper: this.visualEditorWrapper,
             lastEditedField: this.previousSelectedEditableDOM,
         });
         this.previousSelectedEditableDOM = editableElement;
     };
 
-    handleMouseHover = _.throttle((event: MouseEvent) => {
-        const eventDetails = getCsDataOfElement(event, this.fieldSchemaMap);
+    handleMouseHover = _.throttle(async (event: MouseEvent) => {
+        const eventDetails = getCsDataOfElement(event);
         if (!eventDetails) {
             this.hideCustomCursor();
 
@@ -183,7 +175,7 @@ export class VisualEditor {
             });
             return;
         }
-        const { fieldSchema, editableElement } = eventDetails;
+        const { editableElement, fieldMetadata } = eventDetails;
         if (this.previousHoveredTargetDOM !== editableElement) {
             this.hideCustomCursor();
             removeAddInstanceButtons({
@@ -193,11 +185,27 @@ export class VisualEditor {
             });
         }
 
-        if (!fieldSchema) return;
+        const { content_type_uid, fieldPath } = fieldMetadata;
 
         if (this.customCursor) {
+            if (!FieldSchemaMap.hasFieldSchema(content_type_uid, fieldPath)) {
+                this.customCursor.innerText = "Loading...";
+            }
+
+            /**
+             * We called it seperately inside the code block to ensure that
+             * the code will not wait for the promise to resolve.
+             * If we get a cache miss, we will send a message to the iframe
+             * without blocking the code.
+             */
+            FieldSchemaMap.getFieldSchema(content_type_uid, fieldPath).then(
+                (fieldSchema) => {
+                    if (!this.customCursor) return;
+                    this.customCursor.innerText = fieldSchema.display_name;
+                }
+            );
+
             this.customCursor.classList.add("visible");
-            this.customCursor.innerText = fieldSchema.display_name;
             const mouseY = event.clientY;
             const mouseX = event.clientX;
 
@@ -208,6 +216,12 @@ export class VisualEditor {
         if (this.previousHoveredTargetDOM === editableElement) {
             return;
         }
+
+        const fieldSchema = await FieldSchemaMap.getFieldSchema(
+            content_type_uid,
+            fieldPath
+        );
+
         if (
             fieldSchema.data_type === "block" ||
             fieldSchema.multiple ||
