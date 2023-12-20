@@ -1,13 +1,11 @@
 import { VisualEditorCslpEventDetails } from "../../../types/liveEditor.types";
+import { getCsDataOfElement } from "../getCsDataOfElement";
 import { generateAddInstanceButton } from "../instanceButtons";
 import {
     getChildrenDirection,
     handleAddButtonsForMultiple,
     removeAddInstanceButtons,
 } from "../multipleElementAddButton";
-import { getCsDataOfElement } from "../getCsDataOfElement";
-import { generateFieldSchemaMap } from "../generateFieldSchemaMap";
-import { getAllContentTypes } from "../../../__test__/data/contentType";
 
 describe("generateAddInstanceButton", () => {
     test("should generate a button", () => {
@@ -173,13 +171,9 @@ describe("handleAddButtonsForMultiple", () => {
         });
         firstChild.dispatchEvent(mouseEvent);
 
-        const fieldMap = generateFieldSchemaMap(
-            getAllContentTypes().all_fields
-        );
-
-        eventDetails = getCsDataOfElement(mouseEvent, {
-            all_fields: fieldMap,
-        }) as VisualEditorCslpEventDetails;
+        eventDetails = getCsDataOfElement(
+            mouseEvent
+        ) as VisualEditorCslpEventDetails;
     });
 
     afterEach(() => {
