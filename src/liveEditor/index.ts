@@ -21,6 +21,7 @@ import { FieldSchemaMap } from "./utils/fieldSchemaMap";
 import { addFocusOverlay, hideFocusOverlay } from "./utils/focusOverlayWrapper";
 import { getCsDataOfElement } from "./utils/getCsDataOfElement";
 import liveEditorPostMessage from "./utils/liveEditorPostMessage";
+import { LiveEditorPostMessageEvents } from "./utils/types/postMessage.types";
 
 export class VisualEditor {
     private customCursor: HTMLDivElement | null = null;
@@ -155,6 +156,9 @@ export class VisualEditor {
         }
 
         this.addOverlay(editableElement);
+        liveEditorPostMessage?.send(LiveEditorPostMessageEvents.FOCUS_FIELD, {
+            fieldMetadata: eventDetails.fieldMetadata,
+        });
 
         await handleIndividualFields(eventDetails, {
             visualEditorWrapper: this.visualEditorWrapper,
