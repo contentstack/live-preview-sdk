@@ -61,4 +61,27 @@ describe("extractDetailsFromCslp", () => {
         };
         expect(extractDetailsFromCslp(cslpValue)).toEqual(expected);
     });
+
+    test("should handle a CSLP value string with nested group field", () => {
+        const cslpValue =
+            "content_type_uid.entry_uid.locale.field1.0.field3.field4.3";
+        const expected = {
+            entry_uid: "entry_uid",
+            content_type_uid: "content_type_uid",
+            locale: "locale",
+            cslpValue:
+                "content_type_uid.entry_uid.locale.field1.0.field3.field4.3",
+            fieldPath: "field1.field3.field4",
+            fieldPathWithIndex: "field1.0.field3.field4",
+            multipleFieldMetadata: {
+                parentDetails: {
+                    parentCslpValue:
+                        "content_type_uid.entry_uid.locale.field1.0.field3.field4",
+                    parentPath: "field1.0.field3.field4",
+                },
+                index: 3,
+            },
+        };
+        expect(extractDetailsFromCslp(cslpValue)).toEqual(expected);
+    });
 });

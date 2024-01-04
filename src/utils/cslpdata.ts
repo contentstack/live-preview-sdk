@@ -98,7 +98,7 @@ function getMultipleFieldMetadata(
         fieldPath
     );
 
-    const index = _.find(fieldPath, (path) => _.isFinite(+path));
+    const index = _.findLast(fieldPath, (path) => _.isFinite(+path));
 
     return {
         parentDetails: parentDetails,
