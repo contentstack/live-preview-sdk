@@ -1,5 +1,6 @@
+import Config from "../../utils/configHandler";
+import { extractDetailsFromCslp } from "../../utils/cslpdata";
 import { PublicLogger } from "../../utils/public-logger";
-import { IConfig } from "../../types/types";
 
 const editIcon = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
 <g id="Edit">
@@ -8,14 +9,15 @@ const editIcon = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xm
 </svg>
 `;
 
+/**
+ * Generates a start editing button for the visual editor.
+ *
+ * @param visualEditorWrapper - The HTMLDivElement that wraps the visual editor.
+ * @returns The generated HTMLAnchorElement representing the start editing button, or undefined if the visualEditorWrapper is null.
+ */
 export function generateStartEditingButton(
-    config: IConfig,
-    visualEditorWrapper: HTMLDivElement | null,
-    onClick: (event: MouseEvent) => void
+    visualEditorWrapper: HTMLDivElement | null
 ): HTMLAnchorElement | undefined {
-    const { apiKey, branch, environment, locale } = config.stackDetails;
-    const { url } = config.clientUrlParams;
-
     if (!visualEditorWrapper) {
         PublicLogger.warn("Live Editor overlay not found.");
         return;
@@ -24,22 +26,68 @@ export function generateStartEditingButton(
     const startEditingButton = document.createElement("a");
 
     startEditingButton.innerHTML = editIcon + `<span>Start Editing</span>`;
-    startEditingButton.setAttribute("data-cslp-stack", apiKey);
-    startEditingButton.setAttribute("data-cslp-environment", environment);
-    startEditingButton.setAttribute("data-cslp-branch", branch);
-    startEditingButton.setAttribute("data-cslp-app-host", url);
-    startEditingButton.setAttribute("data-cslp-locale", locale);
+
     startEditingButton.setAttribute(
         "href",
-        "https://app.contentstack.com/live-editor"
+        getLiveEditorRedirectionUrl().toString()
     );
     startEditingButton.setAttribute("data-testid", "vcms-start-editing-btn");
     startEditingButton.classList.add("visual-editor__start-editing-btn");
-    startEditingButton.addEventListener("click", onClick);
+    startEditingButton.addEventListener("click", updateStartEditingHref);
 
     visualEditorWrapper.appendChild(startEditingButton);
 
     return startEditingButton;
 
     //We cannot get locale from Stacks directly
+}
+
+/**
+ * Returns the redirection URL for the Live Editor.
+ * @returns {URL} The redirection URL.
+ */
+function getLiveEditorRedirectionUrl(): URL {
+    const { stackDetails, clientUrlParams } = Config.get();
+    const { branch, apiKey, environment, locale } = stackDetails;
+    const { url: appUrl } = clientUrlParams;
+
+    const completeURL = new URL(
+        `/live-editor/stack/${apiKey}/environment/${environment}`,
+        appUrl
+    );
+
+    if (branch) {
+        completeURL.searchParams.set("branch", branch);
+    }
+
+    completeURL.searchParams.set("target-url", window.location.href);
+
+    // get the locale from the data cslp attribute
+    const elementWithDataCslp = document.querySelector(`[data-cslp]`);
+
+    if (elementWithDataCslp) {
+        const cslpData = elementWithDataCslp.getAttribute(
+            "data-cslp"
+        ) as string;
+        const { locale } = extractDetailsFromCslp(cslpData);
+
+        completeURL.searchParams.set("locale", locale);
+    } else if (locale) {
+        completeURL.searchParams.set("locale", locale);
+    }
+
+    return completeURL;
+}
+
+/**
+ * Updates the href attribute of the start editing button with the redirection URL.
+ *
+ * @param event - The mouse event that triggered the update.
+ */
+function updateStartEditingHref(event: MouseEvent) {
+    const startEditingButton = event.currentTarget as HTMLButtonElement;
+    startEditingButton.setAttribute(
+        "href",
+        getLiveEditorRedirectionUrl().toString()
+    );
 }

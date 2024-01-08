@@ -102,6 +102,60 @@ export declare interface IInitData {
     mode: ILivePreviewMode;
 }
 
+// type PickPartial<T, K extends keyof T> = Partial<Pick<T, K>> & Omit<T, K>;
+
+// export type IInitData =
+//     | {
+//           ssr?: true;
+//           stackSdk?: IStackSdk;
+//           runScriptsOnUpdate?: boolean;
+//           enable?: boolean;
+//           cleanCslpOnProduction?: boolean;
+//           stackDetails?: Partial<IInitStackDetails>;
+//           clientUrlParams?: Partial<Omit<IClientUrlParams, "url">>;
+//           editButton?: IConfigEditButton;
+//           mode?: "preview";
+//       }
+//     | {
+//           ssr?: true;
+//           stackSdk?: IStackSdk;
+//           runScriptsOnUpdate?: boolean;
+//           enable?: boolean;
+//           cleanCslpOnProduction?: boolean;
+//           stackDetails: PickPartial<IInitStackDetails, "branch">;
+//           clientUrlParams: PickPartial<
+//               Omit<IClientUrlParams, "url">,
+//               "port" | "protocol"
+//           >;
+//           editButton?: IConfigEditButton;
+//           mode: "editor";
+//       }
+//     | {
+//           ssr: false;
+//           runScriptsOnUpdate?: boolean;
+//           enable?: boolean;
+//           cleanCslpOnProduction?: boolean;
+//           stackDetails?: Partial<IInitStackDetails>;
+//           clientUrlParams?: Partial<Omit<IClientUrlParams, "url">>;
+//           stackSdk: IStackSdk;
+//           editButton?: IConfigEditButton;
+//           mode?: "preview";
+//       }
+//     | {
+//           ssr: false;
+//           runScriptsOnUpdate?: boolean;
+//           enable?: boolean;
+//           cleanCslpOnProduction?: boolean;
+//           stackDetails: PickPartial<IInitStackDetails, "branch">;
+//           clientUrlParams: PickPartial<
+//               Omit<IClientUrlParams, "url">,
+//               "port" | "protocol"
+//           >;
+//           stackSdk: IStackSdk;
+//           editButton?: IConfigEditButton;
+//           mode: "editor";
+//       };
+
 // Post message types
 
 export declare interface ILivePreviewMessageCommon {

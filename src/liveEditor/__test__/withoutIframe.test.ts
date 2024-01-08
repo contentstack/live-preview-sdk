@@ -1,8 +1,6 @@
 import crypto from "crypto";
 
 import { sleep } from "../../__test__/utils";
-import { IConfig } from "../../types/types";
-import { getDefaultConfig } from "../../utils/defaults";
 import { VisualEditor } from "../index";
 
 Object.defineProperty(globalThis, "crypto", {
@@ -32,8 +30,7 @@ describe("When outside the Visual editor, the Visual Editor", () => {
         mockedConsoleError.mockRestore();
     });
     test("should have the start editing button", async () => {
-        const config: IConfig = getDefaultConfig();
-        new VisualEditor(config);
+        new VisualEditor();
 
         await sleep();
 
@@ -53,9 +50,7 @@ describe("When outside the Visual editor, the Visual Editor", () => {
 
         document.body.appendChild(h1);
 
-        const config: IConfig = getDefaultConfig();
-
-        new VisualEditor(config);
+        new VisualEditor();
 
         await sleep(0);
         h1.click();

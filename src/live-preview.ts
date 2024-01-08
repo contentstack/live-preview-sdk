@@ -105,7 +105,7 @@ export default class LivePreview {
             }
 
             if (config.mode >= ILivePreviewModeConfig.EDITOR) {
-                new VisualEditor(config);
+                new VisualEditor();
             }
         } else if (config.cleanCslpOnProduction) {
             this.removeDataCslp();

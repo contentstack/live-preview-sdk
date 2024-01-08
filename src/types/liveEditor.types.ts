@@ -1,4 +1,3 @@
-import { ISchemaFieldMap } from "../liveEditor/utils/types/index.types";
 import { CslpData } from "./cslp.types";
 
 export interface VisualEditorCslpEventDetails {
