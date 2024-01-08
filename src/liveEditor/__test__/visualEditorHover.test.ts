@@ -156,7 +156,6 @@ global.ResizeObserver = jest.fn().mockImplementation(() => ({
 }));
 
 describe("When an element is hovered in visual editor mode", () => {
-    let config: IConfig;
     let mousemoveEvent: Event;
 
     beforeAll(() => {
@@ -167,7 +166,6 @@ describe("When an element is hovered in visual editor mode", () => {
     });
 
     beforeEach(() => {
-        config = getDefaultConfig();
         mousemoveEvent = new Event("mousemove", {
             bubbles: true,
             cancelable: true,
@@ -193,7 +191,7 @@ describe("When an element is hovered in visual editor mode", () => {
                 .mockReturnValue(mockDomRect.singleLeft());
             document.body.appendChild(titleField);
 
-            visualEditor = new VisualEditor(config);
+            visualEditor = new VisualEditor();
         });
 
         afterEach(() => {
@@ -232,7 +230,7 @@ describe("When an element is hovered in visual editor mode", () => {
                 .mockReturnValue(mockDomRect.singleLeft());
             document.body.appendChild(singleLineField);
 
-            visualEditor = new VisualEditor(config);
+            visualEditor = new VisualEditor();
         });
 
         afterEach(() => {
@@ -294,7 +292,7 @@ describe("When an element is hovered in visual editor mode", () => {
             container.appendChild(secondSingleLineField);
             document.body.appendChild(container);
 
-            visualEditor = new VisualEditor(config);
+            visualEditor = new VisualEditor();
         });
 
         afterEach(() => {
@@ -431,7 +429,7 @@ describe("When an element is hovered in visual editor mode", () => {
                 .mockReturnValue(mockDomRect.singleLeft());
             document.body.appendChild(multiLineField);
 
-            visualEditor = new VisualEditor(config);
+            visualEditor = new VisualEditor();
         });
 
         afterEach(() => {
@@ -497,7 +495,7 @@ describe("When an element is hovered in visual editor mode", () => {
             container.appendChild(secondMultiLineField);
             document.body.appendChild(container);
 
-            visualEditor = new VisualEditor(config);
+            visualEditor = new VisualEditor();
         });
 
         afterEach(() => {
@@ -637,7 +635,7 @@ describe("When an element is hovered in visual editor mode", () => {
 
             document.body.appendChild(htmlRteField);
 
-            visualEditor = new VisualEditor(config);
+            visualEditor = new VisualEditor();
         });
 
         afterEach(() => {
@@ -703,7 +701,7 @@ describe("When an element is hovered in visual editor mode", () => {
             container.appendChild(secondHtmlRteField);
             document.body.appendChild(container);
 
-            visualEditor = new VisualEditor(config);
+            visualEditor = new VisualEditor();
         });
 
         afterEach(() => {
@@ -842,7 +840,7 @@ describe("When an element is hovered in visual editor mode", () => {
 
             document.body.appendChild(jsonRteField);
 
-            visualEditor = new VisualEditor(config);
+            visualEditor = new VisualEditor();
         });
 
         afterEach(() => {
@@ -909,7 +907,7 @@ describe("When an element is hovered in visual editor mode", () => {
             container.appendChild(secondJsonRteField);
             document.body.appendChild(container);
 
-            visualEditor = new VisualEditor(config);
+            visualEditor = new VisualEditor();
         });
 
         afterEach(() => {
@@ -1049,7 +1047,7 @@ describe("When an element is hovered in visual editor mode", () => {
 
             document.body.appendChild(markdownField);
 
-            visualEditor = new VisualEditor(config);
+            visualEditor = new VisualEditor();
         });
 
         afterEach(() => {
@@ -1115,7 +1113,7 @@ describe("When an element is hovered in visual editor mode", () => {
             container.appendChild(secondMarkdownField);
             document.body.appendChild(container);
 
-            visualEditor = new VisualEditor(config);
+            visualEditor = new VisualEditor();
         });
 
         afterEach(() => {
@@ -1254,7 +1252,7 @@ describe("When an element is hovered in visual editor mode", () => {
 
             document.body.appendChild(selectField);
 
-            visualEditor = new VisualEditor(config);
+            visualEditor = new VisualEditor();
         });
 
         afterEach(() => {
@@ -1320,7 +1318,7 @@ describe("When an element is hovered in visual editor mode", () => {
             container.appendChild(secondSelectField);
             document.body.appendChild(container);
 
-            visualEditor = new VisualEditor(config);
+            visualEditor = new VisualEditor();
         });
 
         afterEach(() => {
@@ -1459,7 +1457,7 @@ describe("When an element is hovered in visual editor mode", () => {
 
             document.body.appendChild(numberField);
 
-            visualEditor = new VisualEditor(config);
+            visualEditor = new VisualEditor();
         });
 
         afterEach(() => {
@@ -1523,7 +1521,7 @@ describe("When an element is hovered in visual editor mode", () => {
             container.appendChild(secondNumberField);
             document.body.appendChild(container);
 
-            visualEditor = new VisualEditor(config);
+            visualEditor = new VisualEditor();
         });
 
         afterEach(() => {
@@ -1662,7 +1660,7 @@ describe("When an element is hovered in visual editor mode", () => {
 
             document.body.appendChild(booleanField);
 
-            visualEditor = new VisualEditor(config);
+            visualEditor = new VisualEditor();
         });
 
         afterEach(() => {
@@ -1713,7 +1711,7 @@ describe("When an element is hovered in visual editor mode", () => {
             document.body.appendChild(fileField);
             document.body.appendChild(imageField);
 
-            visualEditor = new VisualEditor(config);
+            visualEditor = new VisualEditor();
         });
 
         afterEach(() => {
@@ -1819,7 +1817,7 @@ describe("When an element is hovered in visual editor mode", () => {
             container.appendChild(secondImageField);
             document.body.appendChild(container);
 
-            visualEditor = new VisualEditor(config);
+            visualEditor = new VisualEditor();
         });
 
         afterEach(() => {
@@ -1995,7 +1993,7 @@ describe("When an element is hovered in visual editor mode", () => {
 
             document.body.appendChild(dataField);
 
-            visualEditor = new VisualEditor(config);
+            visualEditor = new VisualEditor();
         });
 
         afterEach(() => {
@@ -2037,7 +2035,7 @@ describe("When an element is hovered in visual editor mode", () => {
 
             document.body.appendChild(linkField);
 
-            visualEditor = new VisualEditor(config);
+            visualEditor = new VisualEditor();
         });
 
         afterEach(() => {
@@ -2100,7 +2098,7 @@ describe("When an element is hovered in visual editor mode", () => {
             container.appendChild(secondLinkField);
             document.body.appendChild(container);
 
-            visualEditor = new VisualEditor(config);
+            visualEditor = new VisualEditor();
         });
 
         afterEach(() => {
@@ -2245,7 +2243,7 @@ describe("When an element is hovered in visual editor mode", () => {
 
             document.body.appendChild(referenceField);
 
-            visualEditor = new VisualEditor(config);
+            visualEditor = new VisualEditor();
         });
 
         afterEach(() => {
@@ -2310,7 +2308,7 @@ describe("When an element is hovered in visual editor mode", () => {
             container.appendChild(secondReferenceField);
             document.body.appendChild(container);
 
-            visualEditor = new VisualEditor(config);
+            visualEditor = new VisualEditor();
         });
 
         afterEach(() => {
@@ -2461,7 +2459,7 @@ describe("When an element is hovered in visual editor mode", () => {
             groupField.appendChild(nestedSingleLine);
             document.body.appendChild(groupField);
 
-            visualEditor = new VisualEditor(config);
+            visualEditor = new VisualEditor();
         });
 
         afterEach(() => {
@@ -2583,7 +2581,7 @@ describe("When an element is hovered in visual editor mode", () => {
 
             document.body.appendChild(container);
 
-            visualEditor = new VisualEditor(config);
+            visualEditor = new VisualEditor();
         });
 
         afterEach(() => {

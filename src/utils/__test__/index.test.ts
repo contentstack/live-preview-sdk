@@ -5,7 +5,6 @@ import {
     getEditButtonPosition,
     hasWindow,
 } from "../index";
-import { IConfigEditButton } from "../../types/types";
 
 let editCallback: jest.Mock<void, [e: MouseEvent]> | undefined;
 let linkCallback: jest.Mock<void, [e: MouseEvent]> | undefined;

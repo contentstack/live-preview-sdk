@@ -39,16 +39,11 @@ global.ResizeObserver = jest.fn().mockImplementation(() => ({
 }));
 
 describe("Visual editor", () => {
-    let config: IConfig;
-
     beforeAll(() => {
         FieldSchemaMap.setFieldSchema(
             "all_fields",
             getFieldSchemaMap().all_fields
         );
-    });
-    beforeEach(() => {
-        config = getDefaultConfig();
     });
 
     afterEach(() => {
@@ -66,7 +61,7 @@ describe("Visual editor", () => {
 
         expect(visualEditorDOM).toBeNull();
 
-        new VisualEditor(config);
+        new VisualEditor();
 
         visualEditorDOM = document.querySelector(
             `[data-testid="visual-editor__container"]`
@@ -89,7 +84,7 @@ describe("Visual editor", () => {
         });
 
         test("should add overlay to DOM when clicked", async () => {
-            new VisualEditor(config);
+            new VisualEditor();
 
             await sleep(0);
             h1Tag.click();
@@ -108,7 +103,7 @@ describe("Visual editor", () => {
             const h1 = document.createElement("h1");
 
             document.body.appendChild(h1);
-            new VisualEditor(config);
+            new VisualEditor();
 
             h1.click();
             await sleep(0);
@@ -126,7 +121,7 @@ describe("Visual editor", () => {
                 );
 
                 document.body.appendChild(h1);
-                new VisualEditor(config);
+                new VisualEditor();
 
                 await sleep(0);
                 h1.click();
@@ -143,7 +138,7 @@ describe("Visual editor", () => {
                     "all_fields.blt58a50b4cebae75c5.en-us.multi_line"
                 );
                 document.body.appendChild(h1);
-                new VisualEditor(config);
+                new VisualEditor();
 
                 h1.click();
                 await sleep(0);
@@ -163,7 +158,7 @@ describe("Visual editor", () => {
                     "all_fields.blt58a50b4cebae75c5.en-us.file"
                 );
                 document.body.appendChild(h1);
-                new VisualEditor(config);
+                new VisualEditor();
                 h1.click();
                 await sleep(0);
 
@@ -196,7 +191,6 @@ describe("Visual editor", () => {
 
 describe("visual editor DOM", () => {
     let h1: HTMLHeadElement;
-    let config: IConfig;
 
     beforeAll(() => {
         FieldSchemaMap.setFieldSchema(
@@ -206,8 +200,6 @@ describe("visual editor DOM", () => {
     });
 
     beforeEach(() => {
-        config = getDefaultConfig();
-
         h1 = document.createElement("h1");
 
         h1.setAttribute(
@@ -234,7 +226,7 @@ describe("visual editor DOM", () => {
     });
 
     test("should have an overlay over the element", async () => {
-        new VisualEditor(config);
+        new VisualEditor();
 
         let visualEditorOverlayWrapper = document.querySelector(
             `[data-testid="visual-editor__overlay__wrapper"]`
@@ -304,7 +296,7 @@ describe("visual editor DOM", () => {
     });
 
     test("should remove the DOM when method is triggered", async () => {
-        const visualEditor = new VisualEditor(config);
+        const visualEditor = new VisualEditor();
 
         await sleep(0);
         h1.click();
@@ -328,7 +320,7 @@ describe("visual editor DOM", () => {
     });
 
     test("should hide the DOM, when it is clicked", async () => {
-        new VisualEditor(config);
+        new VisualEditor();
 
         await sleep(0);
         h1.click();

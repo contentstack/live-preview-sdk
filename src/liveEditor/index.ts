@@ -1,6 +1,5 @@
 import _ from "lodash";
 
-import { IConfig } from "../types/types";
 import { generateStartEditingButton } from "./utils/generateStartEditingButton";
 import {
     generateVisualEditorCursor,
@@ -16,7 +15,6 @@ import {
     removeAddInstanceButtons,
 } from "./utils/multipleElementAddButton";
 
-import { extractDetailsFromCslp } from "../utils/cslpdata";
 import { FieldSchemaMap } from "./utils/fieldSchemaMap";
 import { addFocusOverlay, hideFocusOverlay } from "./utils/focusOverlayWrapper";
 import { getCsDataOfElement } from "./utils/getCsDataOfElement";
@@ -58,7 +56,7 @@ export class VisualEditor {
         this.resizeObserver.unobserve(this.previousSelectedEditableDOM);
     };
 
-    constructor(config: IConfig) {
+    constructor() {
         this.handleMouseHover = this.handleMouseHover.bind(this);
         this.hideCustomCursor = this.hideCustomCursor.bind(this);
         this.appendVisualEditorDOM = this.appendVisualEditorDOM.bind(this);
@@ -78,57 +76,9 @@ export class VisualEditor {
                 window.addEventListener("mousemove", this.handleMouseHover);
             })
             .catch(() => {
-                generateStartEditingButton(
-                    config,
-                    this.visualEditorWrapper,
-                    this.handleStartEditing
-                );
+                generateStartEditingButton(this.visualEditorWrapper);
             });
     }
-
-    private handleStartEditing = (event: MouseEvent): void => {
-        const startEditingButton = event.currentTarget as HTMLButtonElement;
-
-        const stack = startEditingButton.getAttribute("data-cslp-stack");
-        const environment = startEditingButton.getAttribute(
-            "data-cslp-environment"
-        );
-        const branch = startEditingButton.getAttribute(
-            "data-cslp-branch"
-        ) as string;
-        const app_url = startEditingButton.getAttribute(
-            "data-cslp-app-host"
-        ) as string;
-
-        const completeURL = new URL(
-            `/live-editor/stack/${stack}/environment/${environment}/target_url/${encodeURIComponent(
-                window.location.href
-            )}`,
-            app_url
-        );
-
-        completeURL.searchParams.set("branch", branch);
-
-        // get the locale from the data cslp attribute
-        const elementWithDataCslp = document.querySelector(`[data-cslp]`);
-
-        if (elementWithDataCslp) {
-            const cslpData = elementWithDataCslp.getAttribute(
-                "data-cslp"
-            ) as string;
-            const { locale } = extractDetailsFromCslp(cslpData);
-
-            completeURL.searchParams.set("locale", locale);
-        } else {
-            const locale = startEditingButton.getAttribute(
-                "data-cslp-locale"
-            ) as string;
-
-            completeURL.searchParams.set("locale", locale);
-        }
-
-        startEditingButton.setAttribute("href", completeURL.toString());
-    };
 
     private handleMouseDownForVisualEditing = async (
         event: MouseEvent
