@@ -60,7 +60,7 @@
     },
     "dependencies": {
         "just-camel-case": "^4.0.2",
-        "morphdom": "^2.6.1",
+        "morphdom": "^2.7.1",
         "mustache": "^4.2.0",
         "uuid": "^8.3.2"
     },
