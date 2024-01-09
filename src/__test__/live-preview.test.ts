@@ -894,3 +894,24 @@ describe("Live modes", () => {
         expect(spiedVisualEditor).not.toHaveBeenCalled();
     });
 });
+
+describe("live preview hash", () => {
+    test("should be empty by default", () => {
+        const livePreview = new LivePreview();
+
+        expect(livePreview.hash).toBe("");
+    });
+
+    test("should be set when client-data-send event is fired", async () => {
+        const livePreview = new LivePreview();
+        const livePreviewHash = "livePreviewHash1234";
+
+        await sendPostmessageToWindow("client-data-send", {
+            hash: livePreviewHash,
+            content_type_uid: "entryContentTypeUid",
+            entry_uid: "entryUid",
+        });
+
+        expect(livePreview.hash).toBe(livePreviewHash);
+    });
+});
