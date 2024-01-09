@@ -1,0 +1,119 @@
+<!DOCTYPE html><html class="default" lang="en"><head><meta charSet="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>@contentstack/live-preview-utils</title><meta name="description" content="Documentation for @contentstack/live-preview-utils"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="assets/style.css"/><link rel="stylesheet" href="assets/highlight.css"/><script async src="assets/search.js" id="search-script"></script></head><body><script>document.documentElement.dataset.theme = localStorage.getItem("tsd-theme") || "os"</script><header class="tsd-page-toolbar">
+<div class="tsd-toolbar-contents container">
+<div class="table-cell" id="tsd-search" data-base=".">
+<div class="field"><label for="tsd-search-field" class="tsd-widget tsd-toolbar-icon search no-caption"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M15.7824 13.833L12.6666 10.7177C12.5259 10.5771 12.3353 10.499 12.1353 10.499H11.6259C12.4884 9.39596 13.001 8.00859 13.001 6.49937C13.001 2.90909 10.0914 0 6.50048 0C2.90959 0 0 2.90909 0 6.49937C0 10.0896 2.90959 12.9987 6.50048 12.9987C8.00996 12.9987 9.39756 12.4863 10.5008 11.6239V12.1332C10.5008 12.3332 10.5789 12.5238 10.7195 12.6644L13.8354 15.7797C14.1292 16.0734 14.6042 16.0734 14.8948 15.7797L15.7793 14.8954C16.0731 14.6017 16.0731 14.1267 15.7824 13.833ZM6.50048 10.499C4.29094 10.499 2.50018 8.71165 2.50018 6.49937C2.50018 4.29021 4.28781 2.49976 6.50048 2.49976C8.71001 2.49976 10.5008 4.28708 10.5008 6.49937C10.5008 8.70852 8.71314 10.499 6.50048 10.499Z" fill="var(--color-text)"></path></svg></label><input type="text" id="tsd-search-field" aria-label="Search"/></div>
+<div class="field">
+<div id="tsd-toolbar-links"></div></div>
+<ul class="results">
+<li class="state loading">Preparing search index...</li>
+<li class="state failure">The search index is not available</li></ul><a href="index.html" class="title">@contentstack/live-preview-utils</a></div>
+<div class="table-cell" id="tsd-widgets"><a href="#" class="tsd-widget tsd-toolbar-icon menu no-caption" data-toggle="menu" aria-label="Menu"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1" y="3" width="14" height="2" fill="var(--color-text)"></rect><rect x="1" y="7" width="14" height="2" fill="var(--color-text)"></rect><rect x="1" y="11" width="14" height="2" fill="var(--color-text)"></rect></svg></a></div></div></header>
+<div class="container container-main">
+<div class="col-8 col-content">
+<div class="tsd-page-title">
+<h2>@contentstack/live-preview-utils</h2></div>
+<div class="tsd-panel tsd-typography">
+<a href="#contentstack-live-preview-utils-sdk" id="contentstack-live-preview-utils-sdk" style="color: inherit; text-decoration: none;">
+  <h1>Contentstack Live Preview Utils SDK</h1>
+</a>
+<p>Contentstack is a headless CMS with an API-first approach. It is a CMS that developers can use to build powerful cross-platform applications in their favorite languages. Build your application frontend, and Contentstack will take care of the rest.</p>
+<p>Contentstack provides the Live Preview Utils SDK to establish a communication channel between the various Contentstack SDKs and your website, transmitting live changes to the preview pane. <a href="https://www.contentstack.com/docs/content-managers/live-preview/">Read More</a>.</p>
+
+<a href="#installation" id="installation" style="color: inherit; text-decoration: none;">
+  <h1>Installation</h1>
+</a>
+<p>To install the package via npm, use the following command:</p>
+<pre><code class="language-bash"><span class="hl-0">npm </span><span class="hl-1">install</span><span class="hl-0"> </span><span class="hl-1">@contentstack/live-preview-utils</span>
+</code></pre>
+<p>Alternatively, if you want to include the package directly in your website HTML code, use the following command:</p>
+<pre><code class="language-html"><span class="hl-2">&lt;</span><span class="hl-3">script</span><span class="hl-4"> </span><span class="hl-5">src</span><span class="hl-4">=</span><span class="hl-6">&quot;https://unpkg.com/@contentstack/live-preview-utils@1.3.2/dist/index.js&quot;</span><span class="hl-2">&gt;&lt;/</span><span class="hl-3">script</span><span class="hl-2">&gt;</span>
+</code></pre>
+
+<a href="#initializing-the-sdk" id="initializing-the-sdk" style="color: inherit; text-decoration: none;">
+  <h1>Initializing the SDK</h1>
+</a>
+
+<a href="#live-preview-utils" id="live-preview-utils" style="color: inherit; text-decoration: none;">
+  <h3>Live Preview Utils</h3>
+</a>
+<p>Since the Live Preview Utils SDK is responsible for communication, you need to only initialize it.
+Use the following command to initialize the SDK:</p>
+<pre><code class="language-javascript"><span class="hl-7">import</span><span class="hl-0"> </span><span class="hl-8">ContentstackLivePreview</span><span class="hl-0"> </span><span class="hl-7">from</span><span class="hl-0"> </span><span class="hl-1">&quot;@contentstack/live-preview-utils&quot;</span><span class="hl-0">;</span><br/><br/><span class="hl-8">ContentstackLivePreview</span><span class="hl-0">.</span><span class="hl-9">init</span><span class="hl-0">({</span><br/><span class="hl-0">    </span><span class="hl-8">stackDetails:</span><span class="hl-0"> {</span><br/><span class="hl-0">        </span><span class="hl-8">apiKey:</span><span class="hl-0"> </span><span class="hl-1">&quot;your-stack-api-key&quot;</span><span class="hl-0">,</span><br/><span class="hl-0">    },</span><br/><span class="hl-0">});</span>
+</code></pre>
+<p>Alternatively, if you want to initialize the SDK directly inside the HTML tag, use the ContentstackLivePreview.init() method as follows:</p>
+<pre><code class="language-html"><span class="hl-2">&lt;</span><span class="hl-3">script</span><span class="hl-2">&gt;</span><br/><span class="hl-4">    </span><span class="hl-8">ContentstackLivePreview</span><span class="hl-4">.</span><span class="hl-9">init</span><span class="hl-4">({</span><br/><span class="hl-4">        </span><span class="hl-8">stackDetails:</span><span class="hl-4"> {</span><br/><span class="hl-4">            </span><span class="hl-8">apiKey:</span><span class="hl-4"> </span><span class="hl-1">&quot;your-stack-api-key&quot;</span><span class="hl-4">,</span><br/><span class="hl-4">        },</span><br/><span class="hl-4">    });</span><br/><span class="hl-2">&lt;/</span><span class="hl-3">script</span><span class="hl-2">&gt;</span>
+</code></pre>
+
+<a href="#live-editing" id="live-editing" style="color: inherit; text-decoration: none;">
+  <h1><a href="https://www.contentstack.com/docs/developers/set-up-live-preview/set-up-live-preview-for-your-website/#live-editing-for-entries-optional-">Live Editing</a></h1>
+</a>
+<p>Live Preview provides edit tags that allow you to edit your content in real-time. Live edit tags are identified as the data-cslp attribute within the HTML tags. The styles for the live edit tags are available in the @contentstack/live-preview-utils/dist/main.css file.</p>
+<p>To use live edit tags within your stack, you need to include them in your main index.js file as follows:</p>
+<pre><code class="language-javascript"><span class="hl-7">import</span><span class="hl-0"> </span><span class="hl-1">&quot;@contentstack/live-preview-utils/dist/main.css&quot;</span><span class="hl-0">;</span>
+</code></pre>
+
+<a href="#license" id="license" style="color: inherit; text-decoration: none;">
+  <h1>License</h1>
+</a>
+<p>MIT License</p>
+<p>Copyright © 2021 <a href="https://www.contentstack.com/">Contentstack</a>. All Rights Reserved</p>
+<p>Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the &quot;Software&quot;), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:</p>
+<p>The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.</p>
+<p>THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</p>
+</div></div>
+<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+<div class="tsd-navigation settings">
+<details class="tsd-index-accordion"><summary class="tsd-accordion-summary">
+<h3><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4.93896 8.531L12 15.591L19.061 8.531L16.939 6.409L12 11.349L7.06098 6.409L4.93896 8.531Z" fill="var(--color-text)"></path></svg> Settings</h3></summary>
+<div class="tsd-accordion-details">
+<div class="tsd-filter-visibility">
+<h4 class="uppercase">Member Visibility</h4><form>
+<ul id="tsd-filter-options">
+<li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-protected" name="protected"/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Protected</span></label></li>
+<li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-private" name="private"/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Private</span></label></li>
+<li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-inherited" name="inherited" checked/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Inherited</span></label></li>
+<li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-external" name="external"/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>External</span></label></li></ul></form></div>
+<div class="tsd-theme-toggle">
+<h4 class="uppercase">Theme</h4><select id="theme"><option value="os">OS</option><option value="light">Light</option><option value="dark">Dark</option></select></div></div></details></div>
+<nav class="tsd-navigation primary">
+<details class="tsd-index-accordion" open><summary class="tsd-accordion-summary">
+<h3><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4.93896 8.531L12 15.591L19.061 8.531L16.939 6.409L12 11.349L7.06098 6.409L4.93896 8.531Z" fill="var(--color-text)"></path></svg> Modules</h3></summary>
+<div class="tsd-accordion-details">
+<ul>
+<li class="current selected"><a href="modules.html">@contentstack/live-<wbr/>preview-<wbr/>utils</a>
+<ul>
+<li class="tsd-kind-module"><a href="modules/contentstack_live_preview_HOC.html">contentstack-<wbr/>live-<wbr/>preview-<wbr/>HOC</a></li>
+<li class="tsd-kind-module"><a href="modules/index.html">index</a></li>
+<li class="tsd-kind-module"><a href="modules/live_preview.html">live-<wbr/>preview</a></li>
+<li class="tsd-kind-module"><a href="modules/liveEditor.html">live<wbr/>Editor</a></li>
+<li class="tsd-kind-module"><a href="modules/liveEditor_utils_assetButton.html">live<wbr/>Editor/utils/asset<wbr/>Button</a></li>
+<li class="tsd-kind-module"><a href="modules/liveEditor_utils_constants.html">live<wbr/>Editor/utils/constants</a></li>
+<li class="tsd-kind-module"><a href="modules/liveEditor_utils_fieldSchemaMap.html">live<wbr/>Editor/utils/field<wbr/>Schema<wbr/>Map</a></li>
+<li class="tsd-kind-module"><a href="modules/liveEditor_utils_focusOverlayWrapper.html">live<wbr/>Editor/utils/focus<wbr/>Overlay<wbr/>Wrapper</a></li>
+<li class="tsd-kind-module"><a href="modules/liveEditor_utils_generateFieldSchemaMap.html">live<wbr/>Editor/utils/generate<wbr/>Field<wbr/>Schema<wbr/>Map</a></li>
+<li class="tsd-kind-module"><a href="modules/liveEditor_utils_generateStartEditingButton.html">live<wbr/>Editor/utils/generate<wbr/>Start<wbr/>Editing<wbr/>Button</a></li>
+<li class="tsd-kind-module"><a href="modules/liveEditor_utils_generateVisualEditorDom.html">live<wbr/>Editor/utils/generate<wbr/>Visual<wbr/>Editor<wbr/>Dom</a></li>
+<li class="tsd-kind-module"><a href="modules/liveEditor_utils_getCsDataOfElement.html">live<wbr/>Editor/utils/get<wbr/>Cs<wbr/>Data<wbr/>Of<wbr/>Element</a></li>
+<li class="tsd-kind-module"><a href="modules/liveEditor_utils_getFieldType.html">live<wbr/>Editor/utils/get<wbr/>Field<wbr/>Type</a></li>
+<li class="tsd-kind-module"><a href="modules/liveEditor_utils_handleFieldMouseDown.html">live<wbr/>Editor/utils/handle<wbr/>Field<wbr/>Mouse<wbr/>Down</a></li>
+<li class="tsd-kind-module"><a href="modules/liveEditor_utils_handleIndividualFields.html">live<wbr/>Editor/utils/handle<wbr/>Individual<wbr/>Fields</a></li>
+<li class="tsd-kind-module"><a href="modules/liveEditor_utils_instanceButtons.html">live<wbr/>Editor/utils/instance<wbr/>Buttons</a></li>
+<li class="tsd-kind-module"><a href="modules/liveEditor_utils_liveEditorPostMessage.html">live<wbr/>Editor/utils/live<wbr/>Editor<wbr/>Post<wbr/>Message</a></li>
+<li class="tsd-kind-module"><a href="modules/liveEditor_utils_multipleElementAddButton.html">live<wbr/>Editor/utils/multiple<wbr/>Element<wbr/>Add<wbr/>Button</a></li>
+<li class="tsd-kind-module"><a href="modules/liveEditor_utils_types_index_types.html">live<wbr/>Editor/utils/types/index.types</a></li>
+<li class="tsd-kind-module"><a href="modules/liveEditor_utils_types_postMessage_types.html">live<wbr/>Editor/utils/types/post<wbr/>Message.types</a></li>
+<li class="tsd-kind-module"><a href="modules/types_contentTypeSchema_types.html">types/content<wbr/>Type<wbr/>Schema.types</a></li>
+<li class="tsd-kind-module"><a href="modules/types_cslp_types.html">types/cslp.types</a></li>
+<li class="tsd-kind-module"><a href="modules/types_liveEditor_types.html">types/live<wbr/>Editor.types</a></li>
+<li class="tsd-kind-module"><a href="modules/types_types.html">types/types</a></li>
+<li class="tsd-kind-module"><a href="modules/utils.html">utils</a></li>
+<li class="tsd-kind-module"><a href="modules/utils_configHandler.html">utils/config<wbr/>Handler</a></li>
+<li class="tsd-kind-module"><a href="modules/utils_cslpdata.html">utils/cslpdata</a></li>
+<li class="tsd-kind-module"><a href="modules/utils_defaults.html">utils/defaults</a></li>
+<li class="tsd-kind-module"><a href="modules/utils_handleUserConfig.html">utils/handle<wbr/>User<wbr/>Config</a></li>
+<li class="tsd-kind-module"><a href="modules/utils_onCookieChange.html">utils/on<wbr/>Cookie<wbr/>Change</a></li>
+<li class="tsd-kind-module"><a href="modules/utils_public_logger.html">utils/public-<wbr/>logger</a></li>
+<li class="tsd-kind-module"><a href="modules/utils_replaceHtml.html">utils/replace<wbr/>Html</a></li></ul></li></ul></div></details></nav></div></div>
+<div class="container tsd-generator">
+<p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p></div>
+<div class="overlay"></div><script src="assets/main.js"></script></body></html>

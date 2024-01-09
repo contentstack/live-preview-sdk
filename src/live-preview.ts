@@ -264,6 +264,35 @@ export default class LivePreview {
         Config.set("onChange", onChangeCallback);
     }
 
+    /**
+     * It is the live preview hash.
+     * This hash could be used when data is fetched manually.
+     */
+    get hash(): string {
+        return Config.get().hash;
+    }
+
+    /**
+     * Sets the live preview hash from the query param which is
+     * accessible via `hash` property.
+     * @param params query param in an object form
+     */
+    setConfigFromParams(
+        params: ConstructorParameters<typeof URLSearchParams>[0] = {}
+    ): void {
+        if (typeof params !== "object")
+            throw new TypeError(
+                "Live preview SDK: query param must be an object"
+            );
+
+        const urlParams = new URLSearchParams(params);
+        const live_preview = urlParams.get("live_preview");
+
+        if (live_preview) {
+            Config.set("hash", live_preview);
+        }
+    }
+
     private resolveIncomingMessage(
         e: MessageEvent<ILivePreviewReceivePostMessages>
     ) {
@@ -277,6 +306,8 @@ export default class LivePreview {
             case "client-data-send": {
                 const { contentTypeUid, entryUid } = config.stackDetails;
                 const { hash } = e.data.data;
+
+                this.setConfigFromParams({ live_preview: hash });
 
                 if (config.ssr) {
                     // Get the content from the server and replace the body

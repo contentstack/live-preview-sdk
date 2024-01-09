@@ -69,6 +69,7 @@ export declare interface IConfig {
     stackSdk: IStackSdk;
     onChange: () => void;
     runScriptsOnUpdate: boolean;
+    hash: string;
     editButton: IConfigEditButton;
     mode: ILivePreviewModeConfig;
 }

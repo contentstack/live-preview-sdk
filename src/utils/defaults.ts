@@ -48,6 +48,7 @@ export function getDefaultConfig(): IConfig {
             includeByQueryParameter: true,
         },
 
+        hash: "",
         mode: 1,
 
         stackDetails: {
