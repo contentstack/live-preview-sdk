@@ -3,6 +3,7 @@ import { PublicLogger } from "../utils/public-logger";
 import { IInitData } from "../types/types";
 import { sendPostmessageToWindow } from "./utils";
 import packageJson from "../../package.json";
+import Config from "../utils/configHandler";
 
 describe("Live preview HOC Callback Pub Sub", () => {
     afterEach(() => {
@@ -298,9 +299,13 @@ describe("Gatsby Data formatter", () => {
 });
 
 describe("live preview hash", () => {
+    beforeAll(() => {
+        Config.reset();
+    });
     afterEach(() => {
         ContentstackLivePreview.subscribers = {};
         ContentstackLivePreview.livePreview = null;
+        Config.reset();
     });
     test("should be empty by default", () => {
         ContentstackLivePreview.init();
