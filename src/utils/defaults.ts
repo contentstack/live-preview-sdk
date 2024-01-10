@@ -1,4 +1,4 @@
-import { IConfig, IInitData } from "../types/types";
+import { IConfig, IInitData, ILivePreviewWindowType } from "../types/types";
 
 export function getUserInitData(): IInitData {
     return {
@@ -50,6 +50,7 @@ export function getDefaultConfig(): IConfig {
 
         hash: "",
         mode: 1,
+        windowType: ILivePreviewWindowType.INDEPENDENT,
 
         stackDetails: {
             apiKey: "",
@@ -77,6 +78,10 @@ export function getDefaultConfig(): IConfig {
 
         onChange() {
             // this is intentional
+        },
+
+        elements: {
+            highlightedElement: null,
         },
     };
 }

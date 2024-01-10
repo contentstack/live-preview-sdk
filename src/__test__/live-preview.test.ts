@@ -9,7 +9,7 @@ import {
     convertObjectToMinifiedString,
     sendPostmessageToWindow,
 } from "./utils";
-import { IInitData } from "../types/types";
+import { IInitData, ILivePreviewWindowType } from "../types/types";
 import Config from "../utils/configHandler";
 
 jest.mock("../liveEditor/utils/liveEditorPostMessage", () => {
@@ -56,10 +56,13 @@ describe("cslp tooltip", () => {
         document.body.appendChild(titlePara);
         document.body.appendChild(descPara);
         document.body.appendChild(linkPara);
+
+        Config.set("windowType", ILivePreviewWindowType.PREVIEW);
     });
 
     afterEach(() => {
         document.getElementsByTagName("html")[0].innerHTML = "";
+        Config.reset();
     });
 
     test("should get value of cslp-tooltip into current-data-cslp when tag is hovered", () => {
@@ -748,6 +751,7 @@ describe("incoming postMessage", () => {
         await sendPostmessageToWindow("init-ack", {
             entryUid: "entryUid",
             contentTypeUid: "entryContentTypeUid",
+            windowType: "preview",
         });
 
         // set user onChange function

@@ -20,6 +20,10 @@ import { addFocusOverlay, hideFocusOverlay } from "./utils/focusOverlayWrapper";
 import { getCsDataOfElement } from "./utils/getCsDataOfElement";
 import liveEditorPostMessage from "./utils/liveEditorPostMessage";
 import { LiveEditorPostMessageEvents } from "./utils/types/postMessage.types";
+import { addCslpOutline } from "../utils/cslpdata";
+import Config from "../utils/configHandler";
+import { ILivePreviewWindowType } from "../types/types";
+import { inIframe } from "../utils/inIframe";
 
 export class VisualEditor {
     private customCursor: HTMLDivElement | null = null;
@@ -69,14 +73,20 @@ export class VisualEditor {
         liveEditorPostMessage
             ?.send("init")
             .then(() => {
+                Config.set("windowType", ILivePreviewWindowType.EDITOR);
                 window.addEventListener(
                     "click",
                     this.handleMouseDownForVisualEditing
                 );
                 window.addEventListener("mousemove", this.handleMouseHover);
+                window.addEventListener("mouseover", (event) => {
+                    addCslpOutline(event);
+                });
             })
             .catch(() => {
-                generateStartEditingButton(this.visualEditorWrapper);
+                if (!inIframe()) {
+                    generateStartEditingButton(this.visualEditorWrapper);
+                }
             });
     }
 
