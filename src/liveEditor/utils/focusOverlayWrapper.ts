@@ -109,7 +109,10 @@ export function hideFocusOverlay(elements: {
                 liveEditorPostMessage?.send(
                     LiveEditorPostMessageEvents.UPDATE_FIELD,
                     {
-                        data: previousSelectedEditableDOM.innerHTML,
+                        data:
+                            "innerText" in previousSelectedEditableDOM
+                                ? previousSelectedEditableDOM.innerText
+                                : previousSelectedEditableDOM.textContent,
                         fieldMetadata: extractDetailsFromCslp(
                             previousSelectedEditableDOM.getAttribute(
                                 "data-cslp"
