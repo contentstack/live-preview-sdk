@@ -60,6 +60,12 @@ export declare const enum ILivePreviewModeConfig {
     EDITOR = 2,
 }
 
+export declare const enum ILivePreviewWindowType {
+    PREVIEW = "preview",
+    EDITOR = "editor",
+    INDEPENDENT = "independent",
+}
+
 export declare interface IConfig {
     ssr: boolean;
     enable: boolean;
@@ -69,9 +75,13 @@ export declare interface IConfig {
     stackSdk: IStackSdk;
     onChange: () => void;
     runScriptsOnUpdate: boolean;
+    windowType: ILivePreviewWindowType;
     hash: string;
     editButton: IConfigEditButton;
     mode: ILivePreviewModeConfig;
+    elements: {
+        highlightedElement: HTMLElement | null;
+    };
 }
 
 export declare interface IConfigEditButton {
@@ -180,6 +190,7 @@ export declare interface IInitAckMessage extends ILivePreviewMessageCommon {
     data: {
         contentTypeUid: string;
         entryUid: string;
+        windowType: ILivePreviewWindowType;
     };
 }
 

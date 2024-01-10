@@ -4,6 +4,7 @@ import {
     CslpDataMultipleFieldMetadata,
     CslpDataParentDetails,
 } from "../types/cslp.types";
+import Config from "./configHandler";
 
 /**
  * Extracts details from a CSLP value string.
@@ -104,4 +105,46 @@ function getMultipleFieldMetadata(
         parentDetails: parentDetails,
         index: _.isNil(index) ? -1 : +index,
     };
+}
+
+export function addCslpOutline(
+    e: MouseEvent,
+    callback?: (args: {
+        cslpTag: string;
+        highlightedElement: HTMLElement;
+    }) => void
+): void {
+    const config = Config.get();
+
+    let trigger = true;
+    const eventTargets = e.composedPath();
+
+    for (const eventTarget of eventTargets) {
+        const element = eventTarget as HTMLElement;
+        if (element.nodeName === "BODY") break;
+        if (typeof element?.getAttribute !== "function") continue;
+
+        const cslpTag = element.getAttribute("data-cslp");
+
+        if (trigger && cslpTag) {
+            if (config.elements.highlightedElement)
+                config.elements.highlightedElement.classList.remove(
+                    "cslp-edit-mode"
+                );
+            element.classList.add("cslp-edit-mode");
+
+            const updatedElements = config.elements;
+            updatedElements.highlightedElement = element;
+            Config.set("elements", updatedElements);
+
+            callback?.({
+                cslpTag: cslpTag,
+                highlightedElement: element,
+            });
+
+            trigger = false;
+        } else if (!trigger) {
+            element.classList.remove("cslp-edit-mode");
+        }
+    }
 }

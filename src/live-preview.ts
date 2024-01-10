@@ -6,6 +6,7 @@ import {
     IInitData,
     ILivePreviewModeConfig,
     ILivePreviewReceivePostMessages,
+    ILivePreviewWindowType,
 } from "./types/types";
 import {
     addLivePreviewQueryTags,
@@ -14,6 +15,7 @@ import {
     getEditButtonPosition,
 } from "./utils";
 import Config from "./utils/configHandler";
+import { addCslpOutline } from "./utils/cslpdata";
 import { getUserInitData } from "./utils/defaults";
 import { PublicLogger } from "./utils/public-logger";
 import { replaceDocumentBody, updateDocumentBody } from "./utils/replaceHtml";
@@ -24,7 +26,6 @@ export default class LivePreview {
      */
 
     private tooltip: HTMLButtonElement | null = null; // this tooltip is responsible to redirect user to Contentstack edit page
-    private currentElementBesideTooltip: HTMLElement | null = null; // this element helps to move tooltip with the scroll
 
     private tooltipChild: {
         singular: HTMLDivElement | null;
@@ -72,7 +73,10 @@ export default class LivePreview {
             window.addEventListener("message", this.resolveIncomingMessage);
             window.addEventListener("scroll", this.updateTooltipPosition);
             // render the hover outline only when edit button enable
-            if (config.editButton.enable) {
+            if (
+                config.editButton.enable ||
+                config.mode >= ILivePreviewModeConfig.EDITOR
+            ) {
                 window.addEventListener("mouseover", this.addEditStyleOnHover);
             }
 
@@ -113,36 +117,26 @@ export default class LivePreview {
     }
 
     private addEditStyleOnHover(e: MouseEvent) {
-        let trigger = true;
-        const eventTargets = e.composedPath();
-
-        for (const eventTarget of eventTargets) {
-            const element = eventTarget as HTMLElement;
-            if (element.nodeName === "BODY") break;
-            if (typeof element?.getAttribute !== "function") continue;
-
-            const cslpTag = element.getAttribute("data-cslp");
-
-            if (trigger && cslpTag) {
-                if (this.currentElementBesideTooltip)
-                    this.currentElementBesideTooltip.classList.remove(
-                        "cslp-edit-mode"
-                    );
-                element.classList.add("cslp-edit-mode");
-                this.currentElementBesideTooltip = element;
-
-                if (this.updateTooltipPosition()) {
-                    this.tooltip?.setAttribute("current-data-cslp", cslpTag);
-                    this.tooltip?.setAttribute(
-                        "current-href",
-                        element.getAttribute("href") ?? ""
-                    );
-                }
-
-                trigger = false;
-            } else if (!trigger) {
-                element.classList.remove("cslp-edit-mode");
+        const updateTooltipPosition: Parameters<typeof addCslpOutline>["1"] = ({
+            cslpTag,
+            highlightedElement,
+        }) => {
+            if (this.updateTooltipPosition()) {
+                this.tooltip?.setAttribute("current-data-cslp", cslpTag);
+                this.tooltip?.setAttribute(
+                    "current-href",
+                    highlightedElement.getAttribute("href") ?? ""
+                );
             }
+        };
+
+        const config = Config.get();
+        if (
+            (config.windowType === ILivePreviewWindowType.PREVIEW ||
+                config.windowType === ILivePreviewWindowType.INDEPENDENT) &&
+            config.editButton.enable
+        ) {
+            addCslpOutline(e, updateTooltipPosition);
         }
     }
 
@@ -341,10 +335,20 @@ export default class LivePreview {
                 break;
             }
             case "init-ack": {
-                const { contentTypeUid, entryUid } = e.data.data;
+                const {
+                    contentTypeUid,
+                    entryUid,
+                    windowType = ILivePreviewWindowType.PREVIEW,
+                } = e.data.data;
 
-                config.stackDetails.contentTypeUid = contentTypeUid;
-                config.stackDetails.entryUid = entryUid;
+                const stackDetails = Config.get().stackDetails;
+
+                stackDetails.contentTypeUid = contentTypeUid;
+                stackDetails.entryUid = entryUid;
+
+                Config.set("stackDetails", stackDetails);
+                Config.set("windowType", windowType);
+
                 break;
             }
             case "history": {
@@ -372,6 +376,14 @@ export default class LivePreview {
 
     private createCslpTooltip = () => {
         const config = Config.get();
+
+        if (
+            config.mode >= ILivePreviewModeConfig.EDITOR &&
+            config.windowType === ILivePreviewWindowType.EDITOR
+        ) {
+            return;
+        }
+
         if (
             !document.getElementById("cslp-tooltip") &&
             config.editButton.enable
@@ -439,12 +451,13 @@ export default class LivePreview {
     }
 
     private updateTooltipPosition() {
-        if (!this.currentElementBesideTooltip || !this.tooltip) return false;
+        const { elements } = Config.get();
+        if (!elements.highlightedElement || !this.tooltip) return false;
 
         const config = Config.get();
 
         const currentRectOfElement =
-            this.currentElementBesideTooltip.getBoundingClientRect();
+            elements.highlightedElement.getBoundingClientRect();
         const currentRectOfParentOfElement =
             this.tooltip.parentElement?.getBoundingClientRect();
 
@@ -454,7 +467,7 @@ export default class LivePreview {
                 // eslint-disable-next-line prefer-const
                 leftBoundOfTooltip,
             }: IEditButtonPosition = getEditButtonPosition(
-                this.currentElementBesideTooltip,
+                elements.highlightedElement,
                 config.editButton.position
             );
 
@@ -467,11 +480,11 @@ export default class LivePreview {
 
             this.tooltip.style.top = upperBoundOfTooltip + "px";
             this.tooltip.style.zIndex =
-                this.currentElementBesideTooltip.style.zIndex || "200";
+                elements.highlightedElement.style.zIndex || "200";
             this.tooltip.style.left = leftBoundOfTooltip + "px";
 
             if (this.tooltipChild.singular && this.tooltipChild.multiple) {
-                if (this.currentElementBesideTooltip.hasAttribute("href")) {
+                if (elements.highlightedElement.hasAttribute("href")) {
                     if (this.tooltipCurrentChild !== "multiple") {
                         this.tooltip.innerHTML = "";
                         this.tooltip.appendChild(this.tooltipChild.multiple);

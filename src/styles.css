@@ -139,7 +139,7 @@ div.multiple div.cslp-tooltip-child:hover:before {
     border-radius: 4px;
 }
 .cslp-tooltip {
-    visibility: hidden;
+    /* visibility: hidden; */
 }
 .visual-editor__add-button {
     position: absolute;
