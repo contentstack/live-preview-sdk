@@ -71,9 +71,10 @@ export class VisualEditor {
         this.appendVisualEditorDOM();
 
         liveEditorPostMessage
-            ?.send("init")
-            .then(() => {
-                Config.set("windowType", ILivePreviewWindowType.EDITOR);
+            ?.send<{ windowType: ILivePreviewWindowType }>("init")
+            .then((data) => {
+                const { windowType = ILivePreviewWindowType.EDITOR } = data;
+                Config.set("windowType", windowType);
                 window.addEventListener(
                     "click",
                     this.handleMouseDownForVisualEditing
