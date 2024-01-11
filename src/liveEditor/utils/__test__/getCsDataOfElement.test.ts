@@ -1,4 +1,5 @@
-import { getCsDataOfElement } from "../getCsDataOfElement";
+import { getCsDataOfElement, getDOMEditStack } from "../getCsDataOfElement";
+import { JSDOM } from "jsdom";
 
 describe("getCsDataOfElement", () => {
     let targetElement: Element;
@@ -116,6 +117,55 @@ describe("getCsDataOfElement", () => {
                 fieldPathWithIndex: "title",
                 multipleFieldMetadata: { parentDetails: null, index: -1 },
             },
+        });
+    });
+});
+
+describe("getDOMEditStack", () => {
+    it("get dom edit stack should provide stack", () => {
+        const stack = [
+            {
+                ct: "page",
+                uid: "page_uid",
+                locale: "page_locale",
+                fieldPath: "group",
+            },
+            {
+                ct: "blog",
+                uid: "blog_post_uid",
+                locale: "blog_locale",
+                fieldPath: "blogs",
+            },
+            {
+                ct: "author",
+                uid: "author_uid",
+                locale: "author_locale",
+                fieldPath: "author.name",
+            },
+        ];
+        const getCSLP = ({ ct, uid, locale, fieldPath }: any) =>
+            `${ct}.${uid}.${locale}.${fieldPath}`;
+        const dom = new JSDOM(`
+            <div data-cslp="${getCSLP(stack[0])}">
+                <div class='empty_el'>
+                    <span data-cslp="${getCSLP(stack[1])}">
+                        <span data-cslp="${getCSLP(stack[1])}.0">
+                            <span data-cslp="${getCSLP(
+                                stack[2]
+                            )}">author name</stack>
+                        </span>
+                    </span>
+                </div>
+            </div>
+        `).window.document;
+        const leafEl = dom.querySelector(
+            `[data-cslp="${getCSLP(stack[2])}"]`
+        ) as HTMLElement;
+        const editStack = getDOMEditStack(leafEl);
+        editStack.forEach((edit, idx) => {
+            expect(edit.entry_uid).toBe(stack[idx].uid);
+            expect(edit.content_type_uid).toBe(stack[idx].ct);
+            expect(edit.locale).toBe(stack[idx].locale);
         });
     });
 });

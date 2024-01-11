@@ -1,5 +1,7 @@
+import { CslpData } from "../../types/cslp.types";
 import { VisualEditorCslpEventDetails } from "../../types/liveEditor.types";
 import { extractDetailsFromCslp } from "../../utils/cslpdata";
+import { DATA_CSLP_ATTR_SELECTOR } from "./constants";
 
 /**
  * Returns the CSLP data of the closest ancestor element with a `data-cslp` attribute
@@ -32,4 +34,19 @@ export function getCsDataOfElement(
         cslpData,
         fieldMetadata,
     };
+}
+
+export function getDOMEditStack(ele: Element): CslpData[] {
+    const cslpSet: string[] = [];
+    let curr: any = ele.closest(`[${DATA_CSLP_ATTR_SELECTOR}]`);
+    while (curr) {
+        const cslp = curr.getAttribute(DATA_CSLP_ATTR_SELECTOR)!;
+        const entryPrefix = cslp.split(".").slice(0, 3).join(".");
+        const hasSamePrevPrefix = (cslpSet.at(0) || "").startsWith(entryPrefix);
+        if (!hasSamePrevPrefix) {
+            cslpSet.unshift(cslp);
+        }
+        curr = curr.parentElement?.closest(`[${DATA_CSLP_ATTR_SELECTOR}]`);
+    }
+    return cslpSet.map((cslp) => extractDetailsFromCslp(cslp));
 }
