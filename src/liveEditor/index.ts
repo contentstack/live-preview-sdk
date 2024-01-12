@@ -27,6 +27,8 @@ import { addCslpOutline } from "../utils/cslpdata";
 import Config from "../utils/configHandler";
 import { ILivePreviewWindowType } from "../types/types";
 import { inIframe } from "../utils/inIframe";
+import { getFieldType } from "./utils/getFieldType";
+import { generateCustomCursor } from "./utils/generateCustomCursor";
 
 export class VisualEditor {
     private customCursor: HTMLDivElement | null = null;
@@ -66,6 +68,8 @@ export class VisualEditor {
     constructor() {
         this.handleMouseHover = this.handleMouseHover.bind(this);
         this.hideCustomCursor = this.hideCustomCursor.bind(this);
+        this.handleCursorPosition = this.handleCursorPosition.bind(this);
+        this.resetCustomCursor = this.resetCustomCursor.bind(this);
         this.appendVisualEditorDOM = this.appendVisualEditorDOM.bind(this);
         this.removeVisualEditorDOM = this.removeVisualEditorDOM.bind(this);
         this.handleMouseDownForVisualEditing =
@@ -134,18 +138,19 @@ export class VisualEditor {
     handleMouseHover = _.throttle(async (event: MouseEvent) => {
         const eventDetails = getCsDataOfElement(event);
         if (!eventDetails) {
-            this.hideCustomCursor();
+            this.resetCustomCursor();
 
             removeAddInstanceButtons({
                 eventTarget: event.target,
                 visualEditorWrapper: this.visualEditorWrapper,
                 overlayWrapper: this.overlayWrapper,
             });
+            this.handleCursorPosition(event);
             return;
         }
         const { editableElement, fieldMetadata } = eventDetails;
         if (this.previousHoveredTargetDOM !== editableElement) {
-            this.hideCustomCursor();
+            this.resetCustomCursor();
             removeAddInstanceButtons({
                 eventTarget: event.target,
                 visualEditorWrapper: this.visualEditorWrapper,
@@ -157,7 +162,10 @@ export class VisualEditor {
 
         if (this.customCursor) {
             if (!FieldSchemaMap.hasFieldSchema(content_type_uid, fieldPath)) {
-                this.customCursor.innerText = "Loading...";
+                generateCustomCursor({
+                    fieldType: "loading",
+                    customCursor: this.customCursor,
+                });
             }
 
             /**
@@ -169,16 +177,16 @@ export class VisualEditor {
             FieldSchemaMap.getFieldSchema(content_type_uid, fieldPath).then(
                 (fieldSchema) => {
                     if (!this.customCursor) return;
-                    this.customCursor.innerText = fieldSchema.display_name;
+                    const fieldType = getFieldType(fieldSchema);
+                    generateCustomCursor({
+                        fieldType,
+                        customCursor: this.customCursor,
+                    });
                 }
             );
 
             this.customCursor.classList.add("visible");
-            const mouseY = event.clientY;
-            const mouseX = event.clientX;
-
-            this.customCursor.style.left = `${mouseX}px`;
-            this.customCursor.style.top = `${mouseY}px`;
+            this.handleCursorPosition(event);
         }
 
         if (this.previousHoveredTargetDOM === editableElement) {
@@ -225,9 +233,26 @@ export class VisualEditor {
             });
         }
     };
+    handleCursorPosition = (event: MouseEvent): void => {
+        if (this.customCursor) {
+            const mouseY = event.clientY;
+            const mouseX = event.clientX;
+
+            this.customCursor.style.left = `${mouseX}px`;
+            this.customCursor.style.top = `${mouseY}px`;
+        }
+    };
     hideCustomCursor = (): void => {
         if (this.customCursor) {
             this.customCursor.classList.remove("visible");
+        }
+    };
+    resetCustomCursor = (): void => {
+        if (this.customCursor) {
+            generateCustomCursor({
+                fieldType: "empty",
+                customCursor: this.customCursor,
+            });
         }
     };
     removeVisualEditorDOM = (): void => {
