@@ -1,7 +1,15 @@
+import { CslpData } from "../../types/cslp.types";
+import { VisualEditorCslpEventDetails } from "../../types/liveEditor.types";
 import { extractDetailsFromCslp } from "../../utils/cslpdata";
-import { LIVE_PREVIEW_OUTLINE_WIDTH_IN_PX } from "./constants";
+import {
+    DATA_CSLP_ATTR_SELECTOR,
+    LIVE_PREVIEW_OUTLINE_WIDTH_IN_PX,
+} from "./constants";
+import { FieldSchemaMap } from "./fieldSchemaMap";
 import { cleanIndividualFieldResidual } from "./handleIndividualFields";
+import { caretSVG, deleteSVG, moveLeft, moveRight } from "./icon";
 import liveEditorPostMessage from "./liveEditorPostMessage";
+import { getChildrenDirection } from "./multipleElementAddButton";
 import { LiveEditorPostMessageEvents } from "./types/postMessage.types";
 
 /**
@@ -94,11 +102,13 @@ export function hideFocusOverlay(elements: {
     previousSelectedEditableDOM: Element | null;
     visualEditorWrapper: HTMLDivElement | null;
     visualEditorOverlayWrapper: HTMLDivElement | null;
+    focusedToolbar: HTMLDivElement | null;
 }): void {
     const {
         previousSelectedEditableDOM,
         visualEditorWrapper,
         visualEditorOverlayWrapper,
+        focusedToolbar,
     } = elements;
 
     if (visualEditorOverlayWrapper) {
@@ -126,7 +136,258 @@ export function hideFocusOverlay(elements: {
                 overlayWrapper: visualEditorOverlayWrapper,
                 previousSelectedEditableDOM: previousSelectedEditableDOM,
                 visualEditorWrapper: visualEditorWrapper,
+                focusedToolbar: focusedToolbar,
             });
         }
     }
+}
+export function appendFocusedToolbar(
+    eventDetails: VisualEditorCslpEventDetails,
+    focusedToolbarElement: HTMLDivElement
+) {
+    appendFieldPathDropdown(eventDetails, focusedToolbarElement);
+    appendMultipleFieldToolbar(eventDetails, focusedToolbarElement);
+}
+function closeOverlay() {
+    document
+        .querySelector<HTMLDivElement>(".visual-editor__overlay--top")
+        ?.click();
+}
+export function appendMultipleFieldToolbar(
+    eventDetails: VisualEditorCslpEventDetails,
+    focusedToolbarElement: HTMLDivElement
+) {
+    const { editableElement: targetElement, fieldMetadata } = eventDetails;
+    FieldSchemaMap.getFieldSchema(
+        fieldMetadata.content_type_uid,
+        fieldMetadata.fieldPath
+    ).then((fieldSchema) => {
+        //@ts-ignore
+        if (fieldSchema?.multiple) {
+            const multipleFieldToolbar = document.createElement("div");
+            multipleFieldToolbar.classList.add(
+                "visual-editor__focused-toolbar__multiple-field-toolbar"
+            );
+
+            const buttonGroup = document.createElement("div");
+            buttonGroup.classList.add(
+                "visual-editor__focused-toolbar__button-group"
+            );
+
+            const deleteSVGButton = document.createElement("button");
+            deleteSVGButton.classList.add(
+                "visual-editor__button",
+                "visual-editor__button--secondary"
+            );
+            deleteSVGButton.innerHTML = deleteSVG;
+            deleteSVGButton.addEventListener("click", (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                handleDeleteInstance(fieldMetadata);
+            });
+
+            const parentPath =
+                fieldMetadata?.multipleFieldMetadata?.parentDetails
+                    ?.parentCslpValue || "";
+
+            const addDirection = getChildrenDirection(
+                targetElement,
+                parentPath
+            );
+
+            const movePreviousButton = document.createElement("button");
+            movePreviousButton.classList.add(
+                "visual-editor__button",
+                "visual-editor__button--secondary"
+            );
+            movePreviousButton.innerHTML = moveLeft;
+            movePreviousButton.addEventListener("click", (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                handleMoveInstance(fieldMetadata, "previous");
+            });
+
+            const moveNextButton = document.createElement("button");
+            moveNextButton.classList.add(
+                "visual-editor__button",
+                "visual-editor__button--secondary"
+            );
+            moveNextButton.innerHTML = moveRight;
+            moveNextButton.addEventListener("click", (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log("🚀 ~ moveNextButton.addEventListener ~ e:", e);
+                handleMoveInstance(fieldMetadata, "next");
+            });
+
+            if (addDirection === "vertical") {
+                movePreviousButton.classList.add("visual-editor__rotate--90");
+                moveNextButton.classList.add("visual-editor__rotate--90");
+            }
+
+            buttonGroup.append(
+                movePreviousButton,
+                moveNextButton,
+                deleteSVGButton
+            );
+            multipleFieldToolbar.append(buttonGroup);
+
+            focusedToolbarElement.append(multipleFieldToolbar);
+        }
+    });
+}
+export function appendFieldPathDropdown(
+    eventDetails: VisualEditorCslpEventDetails,
+    focusedToolbarElement: HTMLDivElement
+) {
+    const { editableElement: targetElement, fieldMetadata } = eventDetails;
+    const targetElementDimension = targetElement.getBoundingClientRect();
+
+    const distanceFromTop =
+        targetElementDimension.top +
+        window.scrollY -
+        LIVE_PREVIEW_OUTLINE_WIDTH_IN_PX -
+        5;
+    const distanceFromLeft =
+        targetElementDimension.left - LIVE_PREVIEW_OUTLINE_WIDTH_IN_PX;
+
+    focusedToolbarElement.style.top = `${distanceFromTop}px`;
+    focusedToolbarElement.style.left = `${distanceFromLeft}px`;
+    const parentPaths = collectParentCSLPPaths(targetElement, 2);
+
+    const FieldLabelWrapper = document.createElement("div");
+    FieldLabelWrapper.classList.add(
+        "visual-editor__focused-toolbar__field-label-wrapper"
+    );
+
+    const currentFieldItem = document.createElement("button");
+    currentFieldItem.classList.add(
+        "visual-editor__focused-toolbar__field-label-wrapper__current-field",
+        "visual-editor__button",
+        "visual-editor__button--primary"
+    );
+
+    const textDiv = document.createElement("div");
+    textDiv.classList.add("visual-editor__focused-toolbar__text");
+    textDiv.innerText =
+        fieldMetadata.fieldPath[fieldMetadata.fieldPath.length - 1];
+
+    const caretIcon = document.createElement("div");
+    caretIcon.classList.add(
+        "visual-editor__focused-toolbar__field-label-wrapper__caret"
+    );
+    caretIcon.innerHTML = caretSVG;
+
+    currentFieldItem.append(textDiv, caretIcon);
+    focusedToolbarElement.addEventListener("click", (e) => {
+        e.preventDefault();
+
+        if (
+            (e.target as Element).classList.contains(
+                "visual-editor__focused-toolbar__field-label-wrapper__parent-field"
+            )
+        ) {
+            const cslp = (e.target as Element).getAttribute(
+                "data-target-cslp"
+            ) as string;
+            const parentElement = targetElement.closest(
+                `[${DATA_CSLP_ATTR_SELECTOR}="${cslp}"]`
+            ) as HTMLElement;
+            if (parentElement) {
+                parentElement.click();
+            }
+            return;
+        }
+
+        if (FieldLabelWrapper.classList.contains("field-label-dropdown-open")) {
+            FieldLabelWrapper.classList.remove("field-label-dropdown-open");
+            return;
+        }
+        FieldLabelWrapper.classList.add("field-label-dropdown-open");
+    });
+
+    FieldSchemaMap.getFieldSchema(
+        fieldMetadata.content_type_uid,
+        fieldMetadata.fieldPath
+    ).then((fieldSchema) => {
+        textDiv.innerText = fieldSchema.display_name;
+    });
+
+    FieldLabelWrapper.appendChild(currentFieldItem);
+
+    parentPaths.forEach((path, index) => {
+        const parentFieldItem = document.createElement("button");
+        parentFieldItem.classList.add(
+            "visual-editor__focused-toolbar__field-label-wrapper__parent-field",
+            "visual-editor__button",
+            "visual-editor__button--secondary",
+            "visual-editor__focused-toolbar__text"
+        );
+
+        parentFieldItem.setAttribute("data-target-cslp", path);
+        parentFieldItem.style.top = `-${(index + 1) * 30}px`;
+        const { content_type_uid, fieldPath } = extractDetailsFromCslp(path);
+        parentFieldItem.innerText = fieldPath[fieldPath.length - 1];
+        FieldLabelWrapper.appendChild(parentFieldItem);
+        FieldSchemaMap.getFieldSchema(content_type_uid, fieldPath).then(
+            (fieldSchema) => {
+                parentFieldItem.innerText = fieldSchema.display_name;
+                return;
+            }
+        );
+    });
+
+    focusedToolbarElement.appendChild(FieldLabelWrapper);
+}
+
+function handleDeleteInstance(fieldMetadata: CslpData) {
+    liveEditorPostMessage
+        ?.send(LiveEditorPostMessageEvents.DELETE_INSTANCE, {
+            data:
+                fieldMetadata.fieldPathWithIndex +
+                "." +
+                fieldMetadata.multipleFieldMetadata.index,
+            fieldMetadata: fieldMetadata,
+        })
+        .finally(closeOverlay);
+}
+function handleMoveInstance(
+    fieldMetadata: CslpData,
+    direction: "previous" | "next"
+) {
+    //TODO: Disable first and last instance move
+    liveEditorPostMessage
+        ?.send(LiveEditorPostMessageEvents.MOVE_INSTANCE, {
+            data:
+                fieldMetadata.fieldPathWithIndex +
+                "." +
+                fieldMetadata.multipleFieldMetadata.index,
+            direction: direction,
+            fieldMetadata: fieldMetadata,
+        })
+        .finally(closeOverlay);
+}
+
+function collectParentCSLPPaths(
+    targetElement: Element,
+    count: number
+): Array<string> {
+    const cslpPaths: Array<string> = [];
+    let currentElement = targetElement.parentElement;
+
+    while (count > 0 || currentElement === window.document.body) {
+        if (!currentElement) {
+            return cslpPaths;
+        }
+
+        if (currentElement.hasAttribute(DATA_CSLP_ATTR_SELECTOR)) {
+            cslpPaths.push(
+                currentElement.getAttribute(DATA_CSLP_ATTR_SELECTOR) as string
+            );
+            count--;
+        }
+        currentElement = currentElement.parentElement;
+    }
+
+    return cslpPaths;
 }
