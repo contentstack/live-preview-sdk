@@ -169,6 +169,7 @@ describe("hideFocusOverlay", () => {
                     previousSelectedEditableDOM: editedElement,
                     visualEditorWrapper,
                     visualEditorOverlayWrapper,
+                    focusedToolbar: null,
                 });
             }
         );
@@ -195,6 +196,7 @@ describe("hideFocusOverlay", () => {
             previousSelectedEditableDOM: editedElement,
             visualEditorWrapper,
             visualEditorOverlayWrapper: null,
+            focusedToolbar: null,
         });
 
         expect(focusOverlayWrapper.classList.contains("visible")).toBe(true);
@@ -265,6 +267,7 @@ describe("hideFocusOverlay", () => {
                     previousSelectedEditableDOM: editedElement,
                     visualEditorWrapper,
                     visualEditorOverlayWrapper,
+                    focusedToolbar: null,
                 });
             }
         );

@@ -1,4 +1,5 @@
 import {
+    generateFocusedToolbar,
     generateVisualEditorCursor,
     generateVisualEditorOverlay,
     generateVisualEditorWrapper,
@@ -40,6 +41,7 @@ describe("generateVisualEditorWrapper", () => {
         const wrapper = generateVisualEditorWrapper({
             cursor,
             overlay,
+            toolbar: generateFocusedToolbar(),
         });
         expect(wrapper).toMatchSnapshot();
     });

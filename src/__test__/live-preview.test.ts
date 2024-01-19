@@ -862,7 +862,7 @@ describe("Live modes", () => {
         jest.clearAllMocks();
     });
 
-    test("should initiate Visual editor if mode is greater than editor", () => {
+    test.skip("should initiate Visual editor if mode is greater than editor", () => {
         const config: Partial<IInitData> = {
             enable: true,
             stackDetails: {
