@@ -2,6 +2,7 @@ import _ from "lodash";
 
 import { generateStartEditingButton } from "./utils/generateStartEditingButton";
 import {
+    generateFocusedToolbar,
     generateVisualEditorCursor,
     generateVisualEditorOverlay,
     generateVisualEditorWrapper,
@@ -16,7 +17,11 @@ import {
 } from "./utils/multipleElementAddButton";
 
 import { FieldSchemaMap } from "./utils/fieldSchemaMap";
-import { addFocusOverlay, hideFocusOverlay } from "./utils/focusOverlayWrapper";
+import {
+    addFocusOverlay,
+    appendFocusedToolbar,
+    hideFocusOverlay,
+} from "./utils/focusOverlayWrapper";
 import {
     getCsDataOfElement,
     getDOMEditStack,
@@ -29,6 +34,7 @@ import { ILivePreviewWindowType } from "../types/types";
 import { inIframe } from "../utils/inIframe";
 import { getFieldType } from "./utils/getFieldType";
 import { generateCustomCursor } from "./utils/generateCustomCursor";
+import { VisualEditorCslpEventDetails } from "../types/liveEditor.types";
 
 export class VisualEditor {
     private customCursor: HTMLDivElement | null = null;
@@ -36,6 +42,7 @@ export class VisualEditor {
     private previousSelectedEditableDOM: Element | null = null;
     private visualEditorWrapper: HTMLDivElement | null = null;
     private previousHoveredTargetDOM: Element | null = null;
+    private focusedToolbar: HTMLDivElement | null = null;
 
     private resizeObserver = new ResizeObserver(([entry]) => {
         if (!this.overlayWrapper || !this.previousSelectedEditableDOM) return;
@@ -59,11 +66,29 @@ export class VisualEditor {
             previousSelectedEditableDOM: this.previousSelectedEditableDOM,
             visualEditorWrapper: this.visualEditorWrapper,
             visualEditorOverlayWrapper,
+            focusedToolbar: this.focusedToolbar,
         });
 
         if (!this.previousSelectedEditableDOM) return;
         this.resizeObserver.unobserve(this.previousSelectedEditableDOM);
+        this.previousSelectedEditableDOM = null;
     };
+
+    private addFocusedToolbar(eventDetails: VisualEditorCslpEventDetails) {
+        const { editableElement } = eventDetails;
+
+        if (!editableElement || !this.focusedToolbar) return;
+
+        // Don't append again if already present
+        if (
+            this.previousSelectedEditableDOM &&
+            this.previousSelectedEditableDOM === editableElement
+        ) {
+            return;
+        }
+
+        appendFocusedToolbar(eventDetails, this.focusedToolbar);
+    }
 
     constructor() {
         this.handleMouseHover = this.handleMouseHover.bind(this);
@@ -76,6 +101,7 @@ export class VisualEditor {
             this.handleMouseDownForVisualEditing.bind(this);
 
         this.appendVisualEditorDOM();
+        this.addFocusedToolbar = this.addFocusedToolbar.bind(this);
 
         liveEditorPostMessage
             ?.send<{ windowType: ILivePreviewWindowType }>("init")
@@ -120,10 +146,12 @@ export class VisualEditor {
                 overlayWrapper: this.overlayWrapper,
                 previousSelectedEditableDOM: this.previousSelectedEditableDOM,
                 visualEditorWrapper: this.visualEditorWrapper,
+                focusedToolbar: this.focusedToolbar,
             });
         }
 
         this.addOverlay(editableElement);
+        this.addFocusedToolbar(eventDetails);
         liveEditorPostMessage?.send(LiveEditorPostMessageEvents.FOCUS_FIELD, {
             DOMEditStack: getDOMEditStack(editableElement),
         });
@@ -226,10 +254,11 @@ export class VisualEditor {
         if (!visualEditorDOM) {
             this.customCursor = generateVisualEditorCursor();
             this.overlayWrapper = generateVisualEditorOverlay(this.hideOverlay);
-
+            this.focusedToolbar = generateFocusedToolbar();
             this.visualEditorWrapper = generateVisualEditorWrapper({
                 cursor: this.customCursor,
                 overlay: this.overlayWrapper,
+                toolbar: this.focusedToolbar,
             });
         }
     };

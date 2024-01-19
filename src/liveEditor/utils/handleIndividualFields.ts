@@ -118,9 +118,14 @@ export function cleanIndividualFieldResidual(elements: {
     overlayWrapper: HTMLDivElement;
     previousSelectedEditableDOM: Element;
     visualEditorWrapper: HTMLDivElement | null;
+    focusedToolbar: HTMLDivElement | null;
 }): void {
-    const { overlayWrapper, previousSelectedEditableDOM, visualEditorWrapper } =
-        elements;
+    const {
+        overlayWrapper,
+        previousSelectedEditableDOM,
+        visualEditorWrapper,
+        focusedToolbar,
+    } = elements;
 
     removeAddInstanceButtons({
         eventTarget: null,
@@ -139,4 +144,8 @@ export function cleanIndividualFieldResidual(elements: {
         "keydown",
         handleFieldKeyDown
     );
+
+    if (focusedToolbar) {
+        focusedToolbar.innerHTML = "";
+    }
 }

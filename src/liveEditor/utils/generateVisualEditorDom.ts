@@ -1,8 +1,9 @@
 export function generateVisualEditorWrapper(elements: {
     cursor: HTMLDivElement;
     overlay: HTMLDivElement;
+    toolbar: HTMLDivElement;
 }): HTMLDivElement {
-    const { cursor, overlay } = elements;
+    const { cursor, overlay, toolbar } = elements;
 
     const visualEditorWrapper = document.createElement("div");
     visualEditorWrapper.classList.add("visual-editor__container");
@@ -10,6 +11,7 @@ export function generateVisualEditorWrapper(elements: {
 
     visualEditorWrapper.appendChild(cursor);
     visualEditorWrapper.appendChild(overlay);
+    visualEditorWrapper.appendChild(toolbar);
 
     window.document.body.appendChild(visualEditorWrapper);
 
@@ -24,6 +26,15 @@ export function generateVisualEditorCursor(): HTMLDivElement {
     return customVisualCursor;
 }
 
+export function generateFocusedToolbar(): HTMLDivElement {
+    const focusedToolbar = document.createElement("div");
+    focusedToolbar.classList.add("visual-editor__focused-toolbar");
+    focusedToolbar.setAttribute(
+        "data-testid",
+        "visual-editor__focused-toolbar"
+    );
+    return focusedToolbar;
+}
 export function generateVisualEditorOverlay(
     onClick: (visualEditorOverlayWrapper: HTMLDivElement | null) => void
 ): HTMLDivElement {

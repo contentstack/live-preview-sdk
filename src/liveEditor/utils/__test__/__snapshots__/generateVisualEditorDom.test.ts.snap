@@ -93,5 +93,9 @@ exports[`generateVisualEditorWrapper should generate wrapper 1`] = `
     
     
   </div>
+  <div
+    class="visual-editor__focused-toolbar"
+    data-testid="visual-editor__focused-toolbar"
+  />
 </div>
 `;
