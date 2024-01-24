@@ -349,15 +349,6 @@ describe("setConfigFromParams()", () => {
         expect(ContentstackLivePreview.hash).toBe(livePreviewHash);
     });
 
-    test("should throw an error if param is not an object", () => {
-        ContentstackLivePreview.init();
-
-        expect(() => {
-            // @ts-ignore
-            ContentstackLivePreview.setConfigFromParams("");
-        }).toThrowError("Live preview SDK: query param must be an object");
-    });
-
     test("should set the params if it was set before initialization", () => {
         const livePreviewHash = "livePreviewHash1234";
 

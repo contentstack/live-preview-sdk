@@ -1,4 +1,4 @@
-import Config from "../configHandler";
+import Config, { updateConfigFromUrl } from "../configHandler";
 import { getDefaultConfig } from "../defaults";
 
 describe("Config", () => {
@@ -81,5 +81,61 @@ describe("Config", () => {
                 apiKey: "api-key",
             },
         });
+    });
+});
+
+describe("update config from url", () => {
+    beforeEach(() => {
+        Config.reset();
+    });
+
+    afterEach(() => {
+        Object.defineProperty(window, "location", {
+            writable: true,
+            value: {
+                search: "",
+            },
+        });
+    });
+
+    afterAll(() => {
+        Config.reset();
+    });
+
+    it("should update config from url if available", () => {
+        const searchParams = new URLSearchParams(window.location.search);
+        searchParams.set("content_type_uid", "test");
+        searchParams.set("entry_uid", "test");
+        searchParams.set("live_preview", "test");
+
+        // mock window location
+        Object.defineProperty(window, "location", {
+            writable: true,
+            value: {
+                search: searchParams.toString(),
+            },
+        });
+
+        expect(Config.get().stackDetails.contentTypeUid).toEqual("");
+        expect(Config.get().stackDetails.entryUid).toEqual("");
+        expect(Config.get().hash).toEqual("");
+
+        updateConfigFromUrl();
+
+        expect(Config.get().stackDetails.contentTypeUid).toEqual("test");
+        expect(Config.get().stackDetails.entryUid).toEqual("test");
+        expect(Config.get().hash).toEqual("test");
+    });
+
+    it("should be default config if url params are not available", () => {
+        expect(Config.get().stackDetails.contentTypeUid).toEqual("");
+        expect(Config.get().stackDetails.entryUid).toEqual("");
+        expect(Config.get().hash).toEqual("");
+
+        updateConfigFromUrl();
+
+        expect(Config.get().stackDetails.contentTypeUid).toEqual("");
+        expect(Config.get().stackDetails.entryUid).toEqual("");
+        expect(Config.get().hash).toEqual("");
     });
 });

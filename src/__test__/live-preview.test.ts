@@ -919,3 +919,45 @@ describe("live preview hash", () => {
         expect(livePreview.hash).toBe(livePreviewHash);
     });
 });
+
+describe("Live preview config update", () => {
+    beforeEach(() => {
+        Config.reset();
+    });
+
+    afterAll(() => {
+        Config.reset();
+    });
+
+    test("should update the config from the URL", () => {
+        const searchParams = new URLSearchParams(window.location.search);
+        searchParams.set("content_type_uid", "test");
+        searchParams.set("entry_uid", "test");
+        searchParams.set("live_preview", "test");
+
+        // mock window location
+        Object.defineProperty(window, "location", {
+            writable: true,
+            value: {
+                search: searchParams.toString(),
+            },
+        });
+
+        expect(Config.get().stackDetails.contentTypeUid).toEqual("");
+        expect(Config.get().stackDetails.entryUid).toEqual("");
+        expect(Config.get().hash).toEqual("");
+
+        new LivePreview();
+
+        expect(Config.get().stackDetails.contentTypeUid).toEqual("test");
+        expect(Config.get().stackDetails.entryUid).toEqual("test");
+        expect(Config.get().hash).toEqual("test");
+
+        Object.defineProperty(window, "location", {
+            writable: true,
+            value: {
+                search: "",
+            },
+        });
+    });
+});

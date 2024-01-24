@@ -12,6 +12,7 @@ import {
 import LivePreview from "./live-preview";
 import { getUserInitData } from "./utils/defaults";
 import { PublicLogger } from "./utils/public-logger";
+import { setConfigFromParams } from "./utils/configHandler";
 
 export class ContentstackLivePreview {
     static livePreview: LivePreview | null = null;
@@ -40,9 +41,7 @@ export class ContentstackLivePreview {
                     ContentstackLivePreview.publish
                 );
 
-                ContentstackLivePreview.livePreview.setConfigFromParams(
-                    this.configs.params
-                );
+                setConfigFromParams(this.configs.params);
                 this.configs.params = {};
 
                 return Promise.resolve(ContentstackLivePreview.livePreview);
@@ -69,6 +68,8 @@ export class ContentstackLivePreview {
      * Sets the live preview hash from the query param which is
      * accessible via `hash` property.
      * @param params query param in an object form
+     * @deprecated The SDK will automatically get the hash from the URL.
+     *
      */
     static setConfigFromParams(
         params: ConstructorParameters<typeof URLSearchParams>[0] = {}
@@ -78,7 +79,7 @@ export class ContentstackLivePreview {
             return;
         }
 
-        this.livePreview.setConfigFromParams(params);
+        setConfigFromParams(params);
     }
 
     private static publish(): void {
@@ -115,9 +116,7 @@ export class ContentstackLivePreview {
                 ContentstackLivePreview.publish
             );
 
-            ContentstackLivePreview.livePreview.setConfigFromParams(
-                this.configs.params
-            );
+            setConfigFromParams(this.configs.params);
 
             this.configs.params = {};
 

@@ -2,7 +2,6 @@ import packageJson from "../package.json";
 import { VisualEditor } from "./liveEditor";
 import {
     IEditButtonPosition,
-    IEditEntrySearchParams,
     IInitData,
     ILivePreviewModeConfig,
     ILivePreviewReceivePostMessages,
@@ -14,7 +13,10 @@ import {
     createSingularEditButton,
     getEditButtonPosition,
 } from "./utils";
-import Config from "./utils/configHandler";
+import Config, {
+    setConfigFromParams,
+    updateConfigFromUrl,
+} from "./utils/configHandler";
 import { addCslpOutline } from "./utils/cslpdata";
 import { getUserInitData } from "./utils/defaults";
 import { PublicLogger } from "./utils/public-logger";
@@ -38,13 +40,13 @@ export default class LivePreview {
 
     constructor(initData: Partial<IInitData> = getUserInitData()) {
         Config.replace(initData);
+        updateConfigFromUrl();
         const config = Config.get();
 
         this.addEditStyleOnHover = this.addEditStyleOnHover.bind(this);
         this.generateRedirectUrl = this.generateRedirectUrl.bind(this);
         this.scrollHandler = this.scrollHandler.bind(this);
         this.linkClickHandler = this.linkClickHandler.bind(this);
-        this.handleUserChange = this.handleUserChange.bind(this);
         this.setOnChangeCallback = this.setOnChangeCallback.bind(this);
         this.resolveIncomingMessage = this.resolveIncomingMessage.bind(this);
         this.createCslpTooltip = this.createCslpTooltip.bind(this);
@@ -242,18 +244,6 @@ export default class LivePreview {
         }
     }
 
-    private handleUserChange(editEntrySearchParams: IEditEntrySearchParams) {
-        const config = Config.get();
-        // here we provide contentTypeUid and EntryUid to the StackDelivery SDK.
-        const stackSdkLivePreviewConfig = {
-            ...config.stackSdk.live_preview,
-            ...editEntrySearchParams,
-            live_preview: editEntrySearchParams.hash,
-        };
-        Config.set("stackSdk.live_preview", stackSdkLivePreviewConfig);
-        config.onChange();
-    }
-
     setOnChangeCallback(onChangeCallback: () => void): void {
         Config.set("onChange", onChangeCallback);
     }
@@ -264,27 +254,6 @@ export default class LivePreview {
      */
     get hash(): string {
         return Config.get().hash;
-    }
-
-    /**
-     * Sets the live preview hash from the query param which is
-     * accessible via `hash` property.
-     * @param params query param in an object form
-     */
-    setConfigFromParams(
-        params: ConstructorParameters<typeof URLSearchParams>[0] = {}
-    ): void {
-        if (typeof params !== "object")
-            throw new TypeError(
-                "Live preview SDK: query param must be an object"
-            );
-
-        const urlParams = new URLSearchParams(params);
-        const live_preview = urlParams.get("live_preview");
-
-        if (live_preview) {
-            Config.set("hash", live_preview);
-        }
     }
 
     private resolveIncomingMessage(
@@ -301,7 +270,11 @@ export default class LivePreview {
                 const { contentTypeUid, entryUid } = config.stackDetails;
                 const { hash } = e.data.data;
 
-                this.setConfigFromParams({ live_preview: hash });
+                setConfigFromParams({
+                    live_preview: hash,
+                    content_type_uid: contentTypeUid,
+                    entry_uid: entryUid,
+                });
 
                 if (config.ssr) {
                     // Get the content from the server and replace the body
@@ -326,11 +299,8 @@ export default class LivePreview {
                             });
                         });
                 } else {
-                    this.handleUserChange({
-                        content_type_uid: contentTypeUid,
-                        entry_uid: entryUid,
-                        hash: hash,
-                    });
+                    const config = Config.get();
+                    config.onChange();
                 }
                 break;
             }
@@ -411,9 +381,10 @@ export default class LivePreview {
     // Request parent for data sync when document loads
     private requestDataSync() {
         const config = Config.get();
-        this.handleUserChange({
-            live_preview: "init", // this is the hash of the live previewd
-        });
+
+        //! TODO: we replaced the handleOnChange() with this.
+        //! I don't think we need this. Confirm and remove it.
+        config.onChange();
 
         // add edit tooltip
         this.createCslpTooltip();
