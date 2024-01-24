@@ -32,6 +32,7 @@
         "@contentstack/advanced-post-message": "github:contentstack/adv-post-message#EB-676-config-support",
         "@testing-library/jest-dom": "^5.14.1",
         "@types/jest": "^27.0.1",
+        "@types/jsdom": "^21.1.6",
         "@types/lodash": "^4.14.195",
         "@types/mustache": "^4.2.2",
         "@types/uuid": "^8.3.1",
@@ -63,7 +64,6 @@
         "url": "https://github.com/contentstack/live-preview-sdk.git"
     },
     "dependencies": {
-        "@types/jsdom": "^21.1.6",
         "just-camel-case": "^4.0.2",
         "lodash": "^4.17.21",
         "morphdom": "^2.6.1",
