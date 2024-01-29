@@ -28,7 +28,7 @@ import {
 } from "./utils/getCsDataOfElement";
 import liveEditorPostMessage from "./utils/liveEditorPostMessage";
 import { LiveEditorPostMessageEvents } from "./utils/types/postMessage.types";
-import { addCslpOutline } from "../utils/cslpdata";
+import { addCslpOutline, extractDetailsFromCslp } from "../utils/cslpdata";
 import Config from "../utils/configHandler";
 import { ILivePreviewWindowType } from "../types/types";
 import { inIframe } from "../utils/inIframe";
@@ -116,6 +116,30 @@ export class VisualEditor {
                 window.addEventListener("mouseover", (event) => {
                     addCslpOutline(event);
                 });
+
+                liveEditorPostMessage?.on(
+                    LiveEditorPostMessageEvents.GET_ENTRY_UID_IN_CURRENT_PAGE,
+                    () => {
+                        const elementsWithCslp = Array.from(
+                            document.querySelectorAll("[data-cslp]")
+                        );
+                        const entryUidsInCurrentPage = elementsWithCslp.map(
+                            (element) => {
+                                return extractDetailsFromCslp(
+                                    element.getAttribute("data-cslp") as string
+                                ).entry_uid;
+                            }
+                        );
+                        const uniqueEntryUidsInCurrentPage = Array.from(
+                            new Set(entryUidsInCurrentPage)
+                        );
+
+                        return {
+                            entryUidsInCurrentPage:
+                                uniqueEntryUidsInCurrentPage,
+                        };
+                    }
+                );
             })
             .catch(() => {
                 if (!inIframe()) {
