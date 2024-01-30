@@ -9,6 +9,7 @@ jest.mock("../liveEditorPostMessage", () => {
         __esModule: true,
         default: {
             send: jest.fn(),
+            on: jest.fn(),
         },
     };
 });

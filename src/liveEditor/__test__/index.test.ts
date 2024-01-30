@@ -1,20 +1,23 @@
 import crypto from "crypto";
 
+import { getFieldSchemaMap } from "../../__test__/data/fieldSchemaMap";
 import { sleep } from "../../__test__/utils";
-import { IConfig } from "../../types/types";
-import { getDefaultConfig } from "../../utils/defaults";
 import { VisualEditor } from "../index";
 import { FieldSchemaMap } from "../utils/fieldSchemaMap";
-import { getFieldSchemaMap } from "../../__test__/data/fieldSchemaMap";
 
 jest.mock("../utils/liveEditorPostMessage", () => {
     const { getAllContentTypes } = jest.requireActual(
         "../../__test__/data/contentType"
     );
     const contentTypes = getAllContentTypes();
+    const liveEditorPostMessageActual = jest.requireActual(
+        "../utils/liveEditorPostMessage"
+    );
+
     return {
         __esModule: true,
         default: {
+            ...liveEditorPostMessageActual.default,
             send: jest.fn().mockImplementation((eventName: string) => {
                 if (eventName === "init")
                     return Promise.resolve({

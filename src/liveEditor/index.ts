@@ -35,6 +35,7 @@ import { inIframe } from "../utils/inIframe";
 import { getFieldType } from "./utils/getFieldType";
 import { generateCustomCursor } from "./utils/generateCustomCursor";
 import { VisualEditorCslpEventDetails } from "../types/liveEditor.types";
+import { getEntryUidFromCurrentPage } from "./utils/getEntryUidFromCurrentPage";
 
 export class VisualEditor {
     private customCursor: HTMLDivElement | null = null;
@@ -119,26 +120,7 @@ export class VisualEditor {
 
                 liveEditorPostMessage?.on(
                     LiveEditorPostMessageEvents.GET_ENTRY_UID_IN_CURRENT_PAGE,
-                    () => {
-                        const elementsWithCslp = Array.from(
-                            document.querySelectorAll("[data-cslp]")
-                        );
-                        const entryUidsInCurrentPage = elementsWithCslp.map(
-                            (element) => {
-                                return extractDetailsFromCslp(
-                                    element.getAttribute("data-cslp") as string
-                                ).entry_uid;
-                            }
-                        );
-                        const uniqueEntryUidsInCurrentPage = Array.from(
-                            new Set(entryUidsInCurrentPage)
-                        );
-
-                        return {
-                            entryUidsInCurrentPage:
-                                uniqueEntryUidsInCurrentPage,
-                        };
-                    }
+                    getEntryUidFromCurrentPage
                 );
             })
             .catch(() => {
