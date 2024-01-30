@@ -10,14 +10,10 @@ jest.mock("../utils/liveEditorPostMessage", () => {
         "../../__test__/data/contentType"
     );
     const contentTypes = getAllContentTypes();
-    const liveEditorPostMessageActual = jest.requireActual(
-        "../utils/liveEditorPostMessage"
-    );
 
     return {
         __esModule: true,
         default: {
-            ...liveEditorPostMessageActual.default,
             send: jest.fn().mockImplementation((eventName: string) => {
                 if (eventName === "init")
                     return Promise.resolve({
@@ -25,6 +21,7 @@ jest.mock("../utils/liveEditorPostMessage", () => {
                     });
                 return Promise.resolve();
             }),
+            on: jest.fn(),
         },
     };
 });
