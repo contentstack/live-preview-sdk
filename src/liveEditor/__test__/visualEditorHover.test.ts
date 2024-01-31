@@ -1,7 +1,5 @@
 import { getFieldSchemaMap } from "../../__test__/data/fieldSchemaMap";
 import { sleep } from "../../__test__/utils";
-import { IConfig } from "../../types/types";
-import { getDefaultConfig } from "../../utils/defaults";
 import { VisualEditor } from "../index";
 import { FieldSchemaMap } from "../utils/fieldSchemaMap";
 import liveEditorPostMessage from "../utils/liveEditorPostMessage";

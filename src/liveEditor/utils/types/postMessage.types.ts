@@ -7,4 +7,5 @@ export enum LiveEditorPostMessageEvents {
     FOCUS_FIELD = "focus-field",
     DELETE_INSTANCE = "delete-instance",
     MOVE_INSTANCE = "move-instance",
+    GET_ENTRY_UID_IN_CURRENT_PAGE = "get-entry-uid-in-current-page",
 }

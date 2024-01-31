@@ -20,6 +20,7 @@ jest.mock("../../utils/liveEditorPostMessage", () => {
                 }
                 return Promise.resolve();
             }),
+            on: jest.fn(),
         },
     };
 });

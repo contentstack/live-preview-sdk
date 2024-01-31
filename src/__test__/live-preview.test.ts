@@ -1,16 +1,16 @@
 import fetch from "jest-fetch-mock";
 
 import LivePreview from "../live-preview";
-import { getDefaultConfig } from "../utils/defaults";
 import * as LiveEditorModule from "../liveEditor";
+import { getDefaultConfig } from "../utils/defaults";
 import { PublicLogger } from "../utils/public-logger";
 
+import { IInitData, ILivePreviewWindowType } from "../types/types";
+import Config from "../utils/configHandler";
 import {
     convertObjectToMinifiedString,
     sendPostmessageToWindow,
 } from "./utils";
-import { IInitData, ILivePreviewWindowType } from "../types/types";
-import Config from "../utils/configHandler";
 
 jest.mock("../liveEditor/utils/liveEditorPostMessage", () => {
     const { getAllContentTypes } = jest.requireActual("./data/contentType");
@@ -25,6 +25,7 @@ jest.mock("../liveEditor/utils/liveEditorPostMessage", () => {
                     });
                 return Promise.resolve();
             }),
+            on: jest.fn(),
         },
     };
 });

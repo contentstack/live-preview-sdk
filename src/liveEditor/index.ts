@@ -28,13 +28,14 @@ import {
 } from "./utils/getCsDataOfElement";
 import liveEditorPostMessage from "./utils/liveEditorPostMessage";
 import { LiveEditorPostMessageEvents } from "./utils/types/postMessage.types";
-import { addCslpOutline } from "../utils/cslpdata";
+import { addCslpOutline, extractDetailsFromCslp } from "../utils/cslpdata";
 import Config from "../utils/configHandler";
 import { ILivePreviewWindowType } from "../types/types";
 import { inIframe } from "../utils/inIframe";
 import { getFieldType } from "./utils/getFieldType";
 import { generateCustomCursor } from "./utils/generateCustomCursor";
 import { VisualEditorCslpEventDetails } from "../types/liveEditor.types";
+import { getEntryUidFromCurrentPage } from "./utils/getEntryUidFromCurrentPage";
 
 export class VisualEditor {
     private customCursor: HTMLDivElement | null = null;
@@ -116,6 +117,11 @@ export class VisualEditor {
                 window.addEventListener("mouseover", (event) => {
                     addCslpOutline(event);
                 });
+
+                liveEditorPostMessage?.on(
+                    LiveEditorPostMessageEvents.GET_ENTRY_UID_IN_CURRENT_PAGE,
+                    getEntryUidFromCurrentPage
+                );
             })
             .catch(() => {
                 if (!inIframe()) {
