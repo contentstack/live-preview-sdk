@@ -115,14 +115,25 @@ export function hideFocusOverlay(elements: {
         visualEditorOverlayWrapper.classList.remove("visible");
 
         if (previousSelectedEditableDOM) {
-            if (previousSelectedEditableDOM.hasAttribute("contenteditable")) {
+            const pseudoEditableElement = visualEditorWrapper?.querySelector(
+                "div.visual-editor__pseudo-editable-element"
+            );
+
+            if (
+                previousSelectedEditableDOM.hasAttribute("contenteditable") ||
+                pseudoEditableElement
+            ) {
+                const actualEditedElement =
+                    pseudoEditableElement ||
+                    (previousSelectedEditableDOM as HTMLElement);
+
                 liveEditorPostMessage?.send(
                     LiveEditorPostMessageEvents.UPDATE_FIELD,
                     {
                         data:
-                            "innerText" in previousSelectedEditableDOM
-                                ? previousSelectedEditableDOM.innerText
-                                : previousSelectedEditableDOM.textContent,
+                            "innerText" in actualEditedElement
+                                ? actualEditedElement.innerText
+                                : actualEditedElement.textContent,
                         fieldMetadata: extractDetailsFromCslp(
                             previousSelectedEditableDOM.getAttribute(
                                 "data-cslp"
@@ -216,7 +227,6 @@ export function appendMultipleFieldToolbar(
             moveNextButton.addEventListener("click", (e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                console.log("🚀 ~ moveNextButton.addEventListener ~ e:", e);
                 handleMoveInstance(fieldMetadata, "next");
             });
 
