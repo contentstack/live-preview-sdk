@@ -5,6 +5,7 @@ import {
 } from "./assetButton";
 import { LIVE_EDITOR_FIELD_TYPE_ATTRIBUTE_KEY } from "./constants";
 import { FieldSchemaMap } from "./fieldSchemaMap";
+import { getExpectedFieldData, isEllipsisActive } from "./pseudoEditableField";
 import { getFieldType } from "./getFieldType";
 import { handleFieldInput, handleFieldKeyDown } from "./handleFieldMouseDown";
 import liveEditorPostMessage from "./liveEditorPostMessage";
@@ -14,6 +15,7 @@ import {
 } from "./multipleElementAddButton";
 import { FieldDataType } from "./types/index.types";
 import { LiveEditorPostMessageEvents } from "./types/postMessage.types";
+import { generatePseudoEditableElement } from "./pseudoEditableField";
 
 /**
  * It handles all the fields based on their data type and its "multiple" property.
@@ -30,10 +32,12 @@ export async function handleIndividualFields(
     const { fieldMetadata, editableElement } = eventDetails;
     const { visualEditorWrapper, lastEditedField } = elements;
     const { content_type_uid, fieldPath } = fieldMetadata;
-    const fieldSchema = await FieldSchemaMap.getFieldSchema(
-        content_type_uid,
-        fieldPath
-    );
+
+    const [fieldSchema, expectedFieldData] = await Promise.all([
+        FieldSchemaMap.getFieldSchema(content_type_uid, fieldPath),
+        getExpectedFieldData(fieldMetadata),
+    ]);
+
     const fieldType = getFieldType(fieldSchema);
 
     editableElement.setAttribute(
@@ -57,17 +61,30 @@ export async function handleIndividualFields(
 
         // * fields could be handled as they are in a single instance
         if (eventDetails.fieldMetadata.multipleFieldMetadata.index > -1) {
-            handleSingleField();
+            handleSingleField(
+                { editableElement, visualEditorWrapper },
+                { expectedFieldData }
+            );
         }
         return;
     } else {
-        handleSingleField();
+        handleSingleField(
+            { editableElement, visualEditorWrapper },
+            { expectedFieldData }
+        );
     }
 
     /**
      * Handles all the fields based on their data type.
      */
-    function handleSingleField() {
+    function handleSingleField(
+        elements: {
+            editableElement: Element;
+            visualEditorWrapper: HTMLDivElement;
+        },
+        config: { expectedFieldData: string }
+    ) {
+        const { editableElement, visualEditorWrapper } = elements;
         /**
          * The field that can be directly modified using contenteditable=true.
          * This includes all text fields like title and numbers.
@@ -80,9 +97,29 @@ export async function handleIndividualFields(
 
         // * title, single single_line, single multi_line, single number
         if (ALLOWED_INLINE_EDITABLE_FIELD.includes(fieldType)) {
-            editableElement.setAttribute("contenteditable", "true");
-            editableElement.addEventListener("input", handleFieldInput);
-            editableElement.addEventListener("keydown", handleFieldKeyDown);
+            let actualEditableField = editableElement;
+
+            const actualFieldData =
+                editableElement.innerHTML || editableElement.textContent || "";
+            if (
+                actualFieldData !== config.expectedFieldData ||
+                isEllipsisActive(editableElement as HTMLElement)
+            ) {
+                // TODO: Testing will be don in the E2E.
+                const pseudoEditableField = generatePseudoEditableElement(
+                    { editableElement: editableElement as HTMLElement },
+                    { textContent: config.expectedFieldData }
+                );
+
+                (editableElement as HTMLElement).style.visibility = "hidden";
+
+                visualEditorWrapper.appendChild(pseudoEditableField);
+                actualEditableField = pseudoEditableField;
+            }
+
+            actualEditableField.setAttribute("contenteditable", "true");
+            actualEditableField.addEventListener("input", handleFieldInput);
+            actualEditableField.addEventListener("keydown", handleFieldKeyDown);
 
             return;
         }
@@ -135,6 +172,10 @@ export function cleanIndividualFieldResidual(elements: {
 
     removeReplaceAssetButton(visualEditorWrapper);
 
+    const pseudoEditableElement = visualEditorWrapper?.querySelector(
+        ".visual-editor__pseudo-editable-element"
+    );
+
     previousSelectedEditableDOM.removeAttribute(
         LIVE_EDITOR_FIELD_TYPE_ATTRIBUTE_KEY
     );
@@ -144,6 +185,13 @@ export function cleanIndividualFieldResidual(elements: {
         "keydown",
         handleFieldKeyDown
     );
+
+    if (pseudoEditableElement) {
+        pseudoEditableElement.remove();
+        (previousSelectedEditableDOM as HTMLElement).style.removeProperty(
+            "visibility"
+        );
+    }
 
     if (focusedToolbar) {
         focusedToolbar.innerHTML = "";
