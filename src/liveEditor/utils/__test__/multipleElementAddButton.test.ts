@@ -1,4 +1,7 @@
+import { getFieldSchemaMap } from "../../../__test__/data/fieldSchemaMap";
+import { sleep } from "../../../__test__/utils";
 import { VisualEditorCslpEventDetails } from "../../../types/liveEditor.types";
+import { FieldSchemaMap } from "../fieldSchemaMap";
 import { getCsDataOfElement } from "../getCsDataOfElement";
 import { generateAddInstanceButton } from "../instanceButtons";
 import {
@@ -128,6 +131,13 @@ describe("handleAddButtonsForMultiple", () => {
     let visualEditorWrapper: HTMLDivElement;
     let eventDetails: VisualEditorCslpEventDetails;
 
+    beforeAll(() => {
+        FieldSchemaMap.setFieldSchema(
+            "all_fields",
+            getFieldSchemaMap().all_fields
+        );
+    });
+
     beforeEach(() => {
         firstChild = document.createElement("div");
         firstChild.setAttribute(
@@ -221,12 +231,13 @@ describe("handleAddButtonsForMultiple", () => {
         expect(addInstanceButtons.length).toBe(0);
     });
 
-    test("should append the buttons to the visual editor wrapper", () => {
+    test("should append the buttons to the visual editor wrapper", async () => {
         handleAddButtonsForMultiple(eventDetails, {
             editableElement: firstChild,
             visualEditorWrapper,
         });
 
+        await sleep(0);
         const addInstanceButtons = visualEditorWrapper.querySelectorAll(
             `[data-testid="visual-editor-add-instance-button"]`
         );
@@ -234,11 +245,12 @@ describe("handleAddButtonsForMultiple", () => {
         expect(addInstanceButtons.length).toBe(2);
     });
 
-    test("should add the buttons to the center if the direction is horizontal", () => {
+    test("should add the buttons to the center if the direction is horizontal", async () => {
         handleAddButtonsForMultiple(eventDetails, {
             editableElement: firstChild,
             visualEditorWrapper,
         });
+        await sleep(0);
 
         const addInstanceButtons = visualEditorWrapper.querySelectorAll(
             `[data-testid="visual-editor-add-instance-button"]`
@@ -254,7 +266,7 @@ describe("handleAddButtonsForMultiple", () => {
         expect(nextButton.style.top).toBe("15px");
     });
 
-    test("should add the buttons to the middle if the direction is vertical", () => {
+    test("should add the buttons to the middle if the direction is vertical", async () => {
         firstChild.getBoundingClientRect = jest.fn().mockReturnValue({
             left: 10,
             right: 20,
@@ -272,6 +284,7 @@ describe("handleAddButtonsForMultiple", () => {
             editableElement: firstChild,
             visualEditorWrapper,
         });
+        await sleep(0);
 
         const addInstanceButtons = visualEditorWrapper.querySelectorAll(
             `[data-testid="visual-editor-add-instance-button"]`

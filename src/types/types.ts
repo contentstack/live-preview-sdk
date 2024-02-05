@@ -224,3 +224,10 @@ export declare type OnEntryChangeConfig = {
 };
 
 export declare type OnEntryChangeCallbackUID = string;
+
+export interface IVisualEditorInitEvent {
+    windowType: ILivePreviewWindowType;
+    stackDetails: {
+        masterLocale: string;
+    };
+}

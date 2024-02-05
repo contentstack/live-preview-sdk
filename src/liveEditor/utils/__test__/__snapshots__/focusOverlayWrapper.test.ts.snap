@@ -78,7 +78,7 @@ exports[`addFocusOverlay should set the top overlay to the correct dimensions 2`
   <div
     class="visual-editor__overlay--outline"
     data-testid="visual-editor__overlay--outline"
-    style="top: 10px; left: 10px;"
+    style="top: 10px; left: 10px; outline-color: rgb(113, 92, 221);"
   />
   
     

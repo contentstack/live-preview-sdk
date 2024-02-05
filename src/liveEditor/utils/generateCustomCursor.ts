@@ -42,8 +42,8 @@ export const generateCustomCursor = ({
     if (prevDataIcon === fieldType) {
         return;
     }
-    customCursor.innerHTML = `<div class="visual-editor__cursor-wrapper ${
-        fieldDisabled ? "visual-editor__cursor-disabled" : ""
+    customCursor.innerHTML = `<div class="visual-editor__cursor-wrapper${
+        fieldDisabled ? " visual-editor__cursor-disabled" : ""
     }"><div class="visual-editor__cursor-pointer">${cursor}</div><div class="visual-editor__cursor-icon">${icon}</div>`;
     customCursor.setAttribute("data-icon", fieldType);
 };

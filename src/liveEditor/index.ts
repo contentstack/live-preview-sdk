@@ -30,19 +30,13 @@ import liveEditorPostMessage from "./utils/liveEditorPostMessage";
 import { LiveEditorPostMessageEvents } from "./utils/types/postMessage.types";
 import { addCslpOutline, extractDetailsFromCslp } from "../utils/cslpdata";
 import Config from "../utils/configHandler";
-import { ILivePreviewWindowType } from "../types/types";
+import { ILivePreviewWindowType, IVisualEditorInitEvent } from "../types/types";
 import { inIframe } from "../utils/inIframe";
 import { getFieldType } from "./utils/getFieldType";
 import { generateCustomCursor } from "./utils/generateCustomCursor";
 import { VisualEditorCslpEventDetails } from "../types/liveEditor.types";
 import { getEntryUidFromCurrentPage } from "./utils/getEntryUidFromCurrentPage";
 import { isFieldDisabled } from "./utils/isFieldDisabled";
-interface IVisualEditorInitEvent {
-    windowType: ILivePreviewWindowType;
-    stackDetails: {
-        masterLocale: string;
-    };
-}
 
 export class VisualEditor {
     private customCursor: HTMLDivElement | null = null;
@@ -123,7 +117,7 @@ export class VisualEditor {
                 Config.set("windowType", windowType);
                 Config.set(
                     "stackDetails.masterLocale",
-                    stackDetails.masterLocale
+                    stackDetails?.masterLocale || "en-us"
                 );
                 window.addEventListener(
                     "click",
