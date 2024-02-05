@@ -112,7 +112,9 @@ export class VisualEditor {
         this.addFocusedToolbar = this.addFocusedToolbar.bind(this);
 
         liveEditorPostMessage
-            ?.send<IVisualEditorInitEvent>("init")
+            ?.send<IVisualEditorInitEvent>("init", {
+                isSSR: Config.get().ssr,
+            })
             .then((data) => {
                 const {
                     windowType = ILivePreviewWindowType.EDITOR,
