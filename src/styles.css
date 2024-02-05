@@ -2,9 +2,7 @@
     outline: 1px dashed #6c5ce7 !important;
     position: relative !important;
 }
-body {
-    cursor: none !important;
-}
+
 button#cslp-tooltip {
     padding: 0;
     display: flex;
@@ -355,4 +353,66 @@ div.multiple div.cslp-tooltip-child:hover:before {
 
 .visual-editor__rotate--90 {
     transform: rotate(90deg);
+}
+
+.visual-editor__focused-toolbar--field-disabled {
+    pointer-events: none;
+    cursor: not-allowed;
+}
+.visual-editor__focused-toolbar--field-disabled
+    .visual-editor__focused-toolbar__field-label-wrapper__current-field {
+    background: #909090;
+}
+.visual-editor__cursor-disabled .visual-editor__cursor-icon {
+    background: #909090;
+}
+.visual-editor__cursor-disabled .visual-editor__cursor-pointer path {
+    fill: #909090;
+}
+.visual-editor__tooltip {
+    pointer-events: all;
+}
+.visual-editor__tooltip svg {
+    pointer-events: none;
+}
+
+.visual-editor__tooltip:before {
+    content: attr(data-tooltip);
+    position: absolute;
+
+    bottom: 20px;
+    left: -16px;
+    margin-bottom: 16px;
+
+    padding: 12px;
+    border-radius: 4px;
+
+    width: max-content;
+    max-width: 200px;
+    display: none;
+
+    color: #fff;
+    background: #767676;
+    font-family: Inter;
+    font-size: 0.75rem;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 132%; /* 0.99rem */
+    letter-spacing: 0.015rem;
+}
+.visual-editor__tooltip:hover:before,
+.visual-editor__tooltip:hover:after {
+    display: block;
+}
+.visual-editor__tooltip:after {
+    content: "";
+    position: absolute;
+
+    bottom: 17px;
+
+    /* the arrow */
+    border: 10px solid #000;
+    border-color: #767676 transparent transparent transparent;
+
+    display: none;
 }

@@ -59,6 +59,7 @@ export function getDefaultConfig(): IConfig {
             entryUid: "",
             locale: "en-us",
             branch: "main",
+            masterLocale: "en-us",
         },
 
         clientUrlParams: {

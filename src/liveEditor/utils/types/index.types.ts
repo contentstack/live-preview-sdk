@@ -5,12 +5,19 @@ import {
 
 export type ISchemaIndividualFieldMap = Record<string, ISchemaFieldMap>;
 
-export type ISchemaFieldMap =
+export type ISchemaFieldMap = (
     | IContentTypeRootBlocks
     | (IModularBlockSingleBlock & {
           data_type: "block";
           display_name: string;
-      });
+      })
+) & {
+    non_localizable?: boolean;
+    multiple?: boolean;
+    field_metadata?: {
+        updateRestrict?: boolean;
+    };
+};
 
 export interface ITraverseSchemaVisitor {
     should_visit: (

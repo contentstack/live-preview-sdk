@@ -36,6 +36,13 @@ import { getFieldType } from "./utils/getFieldType";
 import { generateCustomCursor } from "./utils/generateCustomCursor";
 import { VisualEditorCslpEventDetails } from "../types/liveEditor.types";
 import { getEntryUidFromCurrentPage } from "./utils/getEntryUidFromCurrentPage";
+import { isFieldDisabled } from "./utils/isFieldDisabled";
+interface IVisualEditorInitEvent {
+    windowType: ILivePreviewWindowType;
+    stackDetails: {
+        masterLocale: string;
+    };
+}
 
 export class VisualEditor {
     private customCursor: HTMLDivElement | null = null;
@@ -105,10 +112,17 @@ export class VisualEditor {
         this.addFocusedToolbar = this.addFocusedToolbar.bind(this);
 
         liveEditorPostMessage
-            ?.send<{ windowType: ILivePreviewWindowType }>("init")
+            ?.send<IVisualEditorInitEvent>("init")
             .then((data) => {
-                const { windowType = ILivePreviewWindowType.EDITOR } = data;
+                const {
+                    windowType = ILivePreviewWindowType.EDITOR,
+                    stackDetails,
+                } = data;
                 Config.set("windowType", windowType);
+                Config.set(
+                    "stackDetails.masterLocale",
+                    stackDetails.masterLocale
+                );
                 window.addEventListener(
                     "click",
                     this.handleMouseDownForVisualEditing
@@ -211,10 +225,15 @@ export class VisualEditor {
             FieldSchemaMap.getFieldSchema(content_type_uid, fieldPath).then(
                 (fieldSchema) => {
                     if (!this.customCursor) return;
+                    const { isDisabled: fieldDisabled } = isFieldDisabled(
+                        fieldSchema,
+                        eventDetails
+                    );
                     const fieldType = getFieldType(fieldSchema);
                     generateCustomCursor({
                         fieldType,
                         customCursor: this.customCursor,
+                        fieldDisabled,
                     });
                 }
             );

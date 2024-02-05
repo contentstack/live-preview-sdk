@@ -37,6 +37,7 @@ export declare interface IStackDetails {
      * is present in the HTML to extract the locale.
      */
     locale: string;
+    masterLocale: string;
 }
 
 export declare interface IInitStackDetails {
