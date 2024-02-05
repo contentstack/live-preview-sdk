@@ -37,6 +37,7 @@ export declare interface IStackDetails {
      * is present in the HTML to extract the locale.
      */
     locale: string;
+    masterLocale: string;
 }
 
 export declare interface IInitStackDetails {
@@ -223,3 +224,10 @@ export declare type OnEntryChangeConfig = {
 };
 
 export declare type OnEntryChangeCallbackUID = string;
+
+export interface IVisualEditorInitEvent {
+    windowType: ILivePreviewWindowType;
+    stackDetails: {
+        masterLocale: string;
+    };
+}

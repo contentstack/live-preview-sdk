@@ -1,8 +1,10 @@
 import { VisualEditorCslpEventDetails } from "../../types/liveEditor.types";
+import { FieldSchemaMap } from "./fieldSchemaMap";
 import {
     generateAddInstanceButton,
     getAddInstanceButtons,
 } from "./instanceButtons";
+import { isFieldDisabled } from "./isFieldDisabled";
 import liveEditorPostMessage from "./liveEditorPostMessage";
 import { LiveEditorPostMessageEvents } from "./types/postMessage.types";
 
@@ -126,51 +128,72 @@ export function handleAddButtonsForMultiple(
         true
     );
 
-    const previousButton = generateAddInstanceButton(() => {
-        liveEditorPostMessage?.send(LiveEditorPostMessageEvents.ADD_INSTANCE, {
-            fieldMetadata: eventDetails.fieldMetadata,
-            index: eventDetails.fieldMetadata.multipleFieldMetadata.index,
-        });
+    FieldSchemaMap.getFieldSchema(
+        eventDetails.fieldMetadata.content_type_uid,
+        eventDetails.fieldMetadata.fieldPath
+    ).then((fieldSchemaMap) => {
+        const { isDisabled: fieldDisabled } = isFieldDisabled(
+            fieldSchemaMap,
+            eventDetails
+        );
+
+        if (!fieldDisabled) {
+            const previousButton = generateAddInstanceButton(() => {
+                liveEditorPostMessage?.send(
+                    LiveEditorPostMessageEvents.ADD_INSTANCE,
+                    {
+                        fieldMetadata: eventDetails.fieldMetadata,
+                        index: eventDetails.fieldMetadata.multipleFieldMetadata
+                            .index,
+                    }
+                );
+            });
+            const nextButton = generateAddInstanceButton(() => {
+                liveEditorPostMessage?.send(
+                    LiveEditorPostMessageEvents.ADD_INSTANCE,
+                    {
+                        fieldMetadata: eventDetails.fieldMetadata,
+                        index:
+                            eventDetails.fieldMetadata.multipleFieldMetadata
+                                .index + 1,
+                    }
+                );
+            });
+
+            if (!visualEditorWrapper.contains(previousButton)) {
+                visualEditorWrapper.appendChild(previousButton);
+            }
+
+            if (!visualEditorWrapper.contains(nextButton)) {
+                visualEditorWrapper.appendChild(nextButton);
+            }
+
+            if (direction === "horizontal") {
+                const middleHeight =
+                    targetDOMDimension.top +
+                    (targetDOMDimension.bottom - targetDOMDimension.top) / 2 +
+                    window.scrollY;
+                previousButton.style.left = `${targetDOMDimension.left}px`;
+                previousButton.style.top = `${middleHeight}px`;
+
+                nextButton.style.left = `${targetDOMDimension.right}px`;
+                nextButton.style.top = `${middleHeight}px`;
+            } else {
+                const middleWidth =
+                    targetDOMDimension.left +
+                    (targetDOMDimension.right - targetDOMDimension.left) / 2;
+                previousButton.style.left = `${middleWidth}px`;
+                previousButton.style.top = `${
+                    targetDOMDimension.top + window.scrollY
+                }px`;
+
+                nextButton.style.left = `${middleWidth}px`;
+                nextButton.style.top = `${
+                    targetDOMDimension.bottom + window.scrollY
+                }px`;
+            }
+        }
     });
-    const nextButton = generateAddInstanceButton(() => {
-        liveEditorPostMessage?.send(LiveEditorPostMessageEvents.ADD_INSTANCE, {
-            fieldMetadata: eventDetails.fieldMetadata,
-            index: eventDetails.fieldMetadata.multipleFieldMetadata.index + 1,
-        });
-    });
-
-    if (!visualEditorWrapper.contains(previousButton)) {
-        visualEditorWrapper.appendChild(previousButton);
-    }
-
-    if (!visualEditorWrapper.contains(nextButton)) {
-        visualEditorWrapper.appendChild(nextButton);
-    }
-
-    if (direction === "horizontal") {
-        const middleHeight =
-            targetDOMDimension.top +
-            (targetDOMDimension.bottom - targetDOMDimension.top) / 2 +
-            window.scrollY;
-        previousButton.style.left = `${targetDOMDimension.left}px`;
-        previousButton.style.top = `${middleHeight}px`;
-
-        nextButton.style.left = `${targetDOMDimension.right}px`;
-        nextButton.style.top = `${middleHeight}px`;
-    } else {
-        const middleWidth =
-            targetDOMDimension.left +
-            (targetDOMDimension.right - targetDOMDimension.left) / 2;
-        previousButton.style.left = `${middleWidth}px`;
-        previousButton.style.top = `${
-            targetDOMDimension.top + window.scrollY
-        }px`;
-
-        nextButton.style.left = `${middleWidth}px`;
-        nextButton.style.top = `${
-            targetDOMDimension.bottom + window.scrollY
-        }px`;
-    }
 }
 
 export function removeAddInstanceButtons(

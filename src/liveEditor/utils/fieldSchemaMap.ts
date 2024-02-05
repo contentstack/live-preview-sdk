@@ -7,6 +7,9 @@ import {
 import liveEditorPostMessage from "./liveEditorPostMessage";
 import { LiveEditorPostMessageEvents } from "./types/postMessage.types";
 
+interface IFieldSchemaMapResponse {
+    fieldSchemaMap: ISchemaIndividualFieldMap;
+}
 /**
  * Represents a cache for field schemas. Field schemas are
  * used to easily get the field schema based on the field
@@ -17,6 +20,22 @@ export class FieldSchemaMap {
         [contentTypeUid: string]: ISchemaIndividualFieldMap;
     } = {};
 
+    private static fieldSchemaPromise: {
+        [contentTypeUid: string]: Promise<IFieldSchemaMapResponse> | undefined;
+    } = {};
+
+    private static async fetchFieldSchema(content_type_uid: string) {
+        if (!FieldSchemaMap.fieldSchemaPromise?.[content_type_uid]) {
+            FieldSchemaMap.fieldSchemaPromise[content_type_uid] =
+                liveEditorPostMessage?.send<IFieldSchemaMapResponse>(
+                    LiveEditorPostMessageEvents.GET_FIELD_SCHEMA,
+                    {
+                        contentTypeUid: content_type_uid,
+                    }
+                );
+        }
+        return FieldSchemaMap.fieldSchemaPromise[content_type_uid];
+    }
     /**
      * Retrieves the schema field map for a given content type and field Cslp.
      * @param contentTypeUid - The unique identifier of the content type.
@@ -33,11 +52,7 @@ export class FieldSchemaMap {
             );
         }
 
-        const data = await liveEditorPostMessage?.send<{
-            fieldSchemaMap: ISchemaIndividualFieldMap;
-        }>(LiveEditorPostMessageEvents.GET_FIELD_SCHEMA, {
-            contentTypeUid: contentTypeUid,
-        });
+        const data = await FieldSchemaMap.fetchFieldSchema(contentTypeUid);
 
         if (data?.fieldSchemaMap) {
             FieldSchemaMap.fieldSchema[contentTypeUid] = data.fieldSchemaMap;

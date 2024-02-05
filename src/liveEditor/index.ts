@@ -30,12 +30,13 @@ import liveEditorPostMessage from "./utils/liveEditorPostMessage";
 import { LiveEditorPostMessageEvents } from "./utils/types/postMessage.types";
 import { addCslpOutline, extractDetailsFromCslp } from "../utils/cslpdata";
 import Config from "../utils/configHandler";
-import { ILivePreviewWindowType } from "../types/types";
+import { ILivePreviewWindowType, IVisualEditorInitEvent } from "../types/types";
 import { inIframe } from "../utils/inIframe";
 import { getFieldType } from "./utils/getFieldType";
 import { generateCustomCursor } from "./utils/generateCustomCursor";
 import { VisualEditorCslpEventDetails } from "../types/liveEditor.types";
 import { getEntryUidFromCurrentPage } from "./utils/getEntryUidFromCurrentPage";
+import { isFieldDisabled } from "./utils/isFieldDisabled";
 
 export class VisualEditor {
     private customCursor: HTMLDivElement | null = null;
@@ -105,12 +106,19 @@ export class VisualEditor {
         this.addFocusedToolbar = this.addFocusedToolbar.bind(this);
 
         liveEditorPostMessage
-            ?.send<{ windowType: ILivePreviewWindowType }>("init", {
+            ?.send<IVisualEditorInitEvent>("init", {
                 isSSR: Config.get().ssr,
             })
             .then((data) => {
-                const { windowType = ILivePreviewWindowType.EDITOR } = data;
+                const {
+                    windowType = ILivePreviewWindowType.EDITOR,
+                    stackDetails,
+                } = data;
                 Config.set("windowType", windowType);
+                Config.set(
+                    "stackDetails.masterLocale",
+                    stackDetails?.masterLocale || "en-us"
+                );
                 window.addEventListener(
                     "click",
                     this.handleMouseDownForVisualEditing
@@ -213,10 +221,15 @@ export class VisualEditor {
             FieldSchemaMap.getFieldSchema(content_type_uid, fieldPath).then(
                 (fieldSchema) => {
                     if (!this.customCursor) return;
+                    const { isDisabled: fieldDisabled } = isFieldDisabled(
+                        fieldSchema,
+                        eventDetails
+                    );
                     const fieldType = getFieldType(fieldSchema);
                     generateCustomCursor({
                         fieldType,
                         customCursor: this.customCursor,
+                        fieldDisabled,
                     });
                 }
             );

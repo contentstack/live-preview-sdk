@@ -29,10 +29,12 @@ const cursor = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" v
 interface IGenerateCustomCursor {
     fieldType: FieldDataType | "loading" | "empty";
     customCursor: HTMLDivElement;
+    fieldDisabled?: boolean;
 }
 export const generateCustomCursor = ({
     fieldType,
     customCursor,
+    fieldDisabled = false,
 }: IGenerateCustomCursor) => {
     let icon = fieldType ? icons[fieldType] : "";
 
@@ -40,6 +42,8 @@ export const generateCustomCursor = ({
     if (prevDataIcon === fieldType) {
         return;
     }
-    customCursor.innerHTML = `<div class="visual-editor__cursor-wrapper"><div class="visual-editor__cursor-pointer">${cursor}</div><div class="visual-editor__cursor-icon">${icon}</div>`;
+    customCursor.innerHTML = `<div class="visual-editor__cursor-wrapper${
+        fieldDisabled ? " visual-editor__cursor-disabled" : ""
+    }"><div class="visual-editor__cursor-pointer">${cursor}</div><div class="visual-editor__cursor-icon">${icon}</div>`;
     customCursor.setAttribute("data-icon", fieldType);
 };

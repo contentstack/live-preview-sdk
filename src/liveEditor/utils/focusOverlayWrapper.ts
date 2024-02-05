@@ -7,7 +7,8 @@ import {
 } from "./constants";
 import { FieldSchemaMap } from "./fieldSchemaMap";
 import { cleanIndividualFieldResidual } from "./handleIndividualFields";
-import { caretSVG, deleteSVG, moveLeft, moveRight } from "./icon";
+import { caretSVG, deleteSVG, info, moveLeft, moveRight } from "./icon";
+import { isFieldDisabled } from "./isFieldDisabled";
 import liveEditorPostMessage from "./liveEditorPostMessage";
 import { getChildrenDirection } from "./multipleElementAddButton";
 import { LiveEditorPostMessageEvents } from "./types/postMessage.types";
@@ -90,6 +91,7 @@ export function addFocusOverlay(
         outlineDOM.style.height = `${targetElementDimension.height}px`;
         outlineDOM.style.width = `${targetElementDimension.width}px`;
         outlineDOM.style.left = `${targetElementDimension.left}px`;
+        outlineDOM.style.outlineColor = "#715cdd";
     }
 }
 
@@ -173,8 +175,11 @@ export function appendMultipleFieldToolbar(
         fieldMetadata.content_type_uid,
         fieldMetadata.fieldPath
     ).then((fieldSchema) => {
-        //@ts-ignore
-        if (fieldSchema?.multiple) {
+        const { isDisabled: fieldDisabled } = isFieldDisabled(
+            fieldSchema,
+            eventDetails
+        );
+        if (fieldSchema?.multiple && !fieldDisabled) {
             const multipleFieldToolbar = document.createElement("div");
             multipleFieldToolbar.classList.add(
                 "visual-editor__focused-toolbar__multiple-field-toolbar"
@@ -293,6 +298,11 @@ export function appendFieldPathDropdown(
         e.preventDefault();
 
         if (
+            (e.target as Element).classList.contains("visual-editor__tooltip")
+        ) {
+            return;
+        }
+        if (
             (e.target as Element).classList.contains(
                 "visual-editor__focused-toolbar__field-label-wrapper__parent-field"
             )
@@ -320,7 +330,28 @@ export function appendFieldPathDropdown(
         fieldMetadata.content_type_uid,
         fieldMetadata.fieldPath
     ).then((fieldSchema) => {
+        const { isDisabled: fieldDisabled, reason } = isFieldDisabled(
+            fieldSchema,
+            eventDetails
+        );
+        if (fieldDisabled) {
+            FieldLabelWrapper.classList.add(
+                "visual-editor__focused-toolbar--field-disabled"
+            );
+        }
         textDiv.innerText = fieldSchema.display_name;
+
+        if (fieldDisabled) {
+            caretIcon.innerHTML = info;
+            caretIcon.classList.add("visual-editor__tooltip");
+            caretIcon.setAttribute("data-tooltip", reason);
+        }
+        const outlineDOM = document.querySelector<HTMLDivElement>(
+            ".visual-editor__overlay--outline"
+        );
+        if (outlineDOM && fieldDisabled) {
+            outlineDOM.style.outlineColor = "#909090";
+        }
     });
 
     FieldLabelWrapper.appendChild(currentFieldItem);

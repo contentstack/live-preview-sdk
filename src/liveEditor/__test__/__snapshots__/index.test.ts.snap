@@ -52,7 +52,7 @@ exports[`Visual editor inline editing should add overlay to DOM when clicked 1`]
       <div
         class="visual-editor__overlay--outline"
         data-testid="visual-editor__overlay--outline"
-        style="top: 0px; height: 0px; width: 0px; left: 0px;"
+        style="top: 0px; height: 0px; width: 0px; left: 0px; outline-color: rgb(113, 92, 221);"
       />
       
     
@@ -308,7 +308,7 @@ exports[`visual editor DOM should have an overlay over the element 2`] = `
   <div
     class="visual-editor__overlay--outline"
     data-testid="visual-editor__overlay--outline"
-    style="top: 10px; left: 10px;"
+    style="top: 10px; left: 10px; outline-color: rgb(113, 92, 221);"
   />
   
     
