@@ -17,6 +17,7 @@ import { handleInitData } from "./utils/handleUserConfig";
 import { userInitData } from "./utils/defaults";
 import packageJson from "../package.json";
 import { replaceDocumentBody, updateDocumentBody } from "./utils/replaceHtml";
+import { sanitizeUrl } from "@braintree/sanitize-url";
 
 export default class LivePreview {
     /**
@@ -339,9 +340,22 @@ export default class LivePreview {
 
                 if (this.config.ssr) {
                     // Get the content from the server and replace the body
-
-                    const fetch_url = new URL(window.location.href);
-
+                    const previewURL = sanitizeUrl(window.location.href);
+                    if (previewURL === "about:blank") {
+                        throw new Error(
+                            "LIVE PREVIEW SDK: Invalid URL " +
+                                window.location.href
+                        );
+                    }
+                    const fetch_url = new URL(previewURL);
+                    if (
+                        fetch_url.protocol !== "https:" &&
+                        fetch_url.protocol !== "http:"
+                    ) {
+                        throw new Error(
+                            "LIVE PREVIEW SDK: Preview URL should have http or https"
+                        );
+                    }
                     fetch_url.searchParams.append("live_preview", hash);
                     fetch_url.searchParams.append(
                         "content_type_uid",

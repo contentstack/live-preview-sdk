@@ -59,6 +59,7 @@
         "url": "https://github.com/contentstack/live-preview-sdk.git"
     },
     "dependencies": {
+        "@braintree/sanitize-url": "^7.0.0",
         "just-camel-case": "^4.0.2",
         "morphdom": "^2.6.1",
         "mustache": "^4.2.0",
