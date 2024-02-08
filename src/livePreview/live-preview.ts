@@ -18,7 +18,6 @@ import Config, {
 import { addCslpOutline } from "../cslp/cslpdata";
 import { getUserInitData } from "../configManager/config.default";
 import { PublicLogger } from "../logger/logger";
-import { replaceDocumentBody, updateDocumentBody } from "../utils/replaceHtml";
 
 export default class LivePreview {
     /**
@@ -274,29 +273,7 @@ export default class LivePreview {
                     entry_uid: entryUid,
                 });
 
-                if (config.ssr) {
-                    // Get the content from the server and replace the body
-
-                    const fetch_url = new URL(window.location.href);
-
-                    fetch_url.searchParams.append("live_preview", hash);
-                    fetch_url.searchParams.append(
-                        "content_type_uid",
-                        contentTypeUid
-                    );
-                    fetch_url.searchParams.append("entry_uid", entryUid);
-
-                    fetch(fetch_url.toString(), {
-                        method: "GET",
-                    })
-                        .then((res) => res.text())
-                        .then((res) => {
-                            updateDocumentBody(document, res, {
-                                onPostOperation: this.createCslpTooltip,
-                                shouldReRunScripts: config.runScriptsOnUpdate,
-                            });
-                        });
-                } else {
+                if (!config.ssr) {
                     const config = Config.get();
                     config.onChange();
                 }
@@ -335,9 +312,10 @@ export default class LivePreview {
                 }
                 break;
             }
-            case "document-body-post-scripts-loaded": {
-                const { body } = e.data.data;
-                replaceDocumentBody(body, this.createCslpTooltip);
+            default: {
+                // ensure that the switch statement is exhaustive
+                const exhaustiveCheck: never = e.data;
+                return exhaustiveCheck; // TODO: add debug message while we are in development mode.
             }
         }
     }

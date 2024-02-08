@@ -177,8 +177,8 @@ export declare interface ILivePreviewMessageCommon {
 export type ILivePreviewReceivePostMessages =
     | IClientDataMessage
     | IInitAckMessage
-    | IHistoryMessage
-    | IDocWithScriptMessage;
+    | IHistoryMessage;
+
 export declare interface IClientDataMessage extends ILivePreviewMessageCommon {
     type: "client-data-send";
     data: {
@@ -199,14 +199,6 @@ export declare interface IHistoryMessage extends ILivePreviewMessageCommon {
     type: "history";
     data: {
         type: "forward" | "backward" | "reload";
-    };
-}
-
-export declare interface IDocWithScriptMessage
-    extends ILivePreviewMessageCommon {
-    type: "document-body-post-scripts-loaded";
-    data: {
-        body: string;
     };
 }
 
