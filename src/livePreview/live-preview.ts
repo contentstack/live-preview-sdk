@@ -1,26 +1,24 @@
-import packageJson from "../package.json";
-import { VisualEditor } from "./liveEditor";
+import packageJson from "../../package.json";
+import { VisualEditor } from "../liveEditor";
 import {
     IEditButtonPosition,
     IInitData,
     ILivePreviewModeConfig,
     ILivePreviewReceivePostMessages,
     ILivePreviewWindowType,
-} from "./types/types";
-import {
-    addLivePreviewQueryTags,
-    createMultipleEditButton,
-    createSingularEditButton,
-    getEditButtonPosition,
-} from "./utils";
+} from "../types/types";
+import { addLivePreviewQueryTags } from "../utils";
+import { getEditButtonPosition } from "./editButton/editButton";
+import { createMultipleEditButton } from "./editButton/editButton";
+import { createSingularEditButton } from "./editButton/editButton";
 import Config, {
     setConfigFromParams,
     updateConfigFromUrl,
-} from "./utils/configHandler";
-import { addCslpOutline } from "./utils/cslpdata";
-import { getUserInitData } from "./utils/defaults";
-import { PublicLogger } from "./utils/public-logger";
-import { replaceDocumentBody, updateDocumentBody } from "./utils/replaceHtml";
+} from "../configManager/configManager";
+import { addCslpOutline } from "../cslp/cslpdata";
+import { getUserInitData } from "../configManager/config.default";
+import { PublicLogger } from "../logger/logger";
+import { replaceDocumentBody, updateDocumentBody } from "../utils/replaceHtml";
 
 export default class LivePreview {
     /**

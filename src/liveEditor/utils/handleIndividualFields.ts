@@ -1,4 +1,4 @@
-import { VisualEditorCslpEventDetails } from "../../types/liveEditor.types";
+import { VisualEditorCslpEventDetails } from "../types/liveEditor.types";
 import {
     generateReplaceAssetButton,
     removeReplaceAssetButton,

@@ -1,5 +1,5 @@
-import { getDefaultConfig } from "../../../utils/defaults";
-import { PublicLogger } from "../../../utils/public-logger";
+import { getDefaultConfig } from "../../../configManager/config.default";
+import { PublicLogger } from "../../../logger/logger";
 import { IConfig } from "../../../types/types";
 import { generateStartEditingButton } from "../generateStartEditingButton";
 

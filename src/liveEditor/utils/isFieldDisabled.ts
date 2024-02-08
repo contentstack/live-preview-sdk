@@ -1,5 +1,5 @@
-import { VisualEditorCslpEventDetails } from "../../types/liveEditor.types";
-import Config from "../../utils/configHandler";
+import { VisualEditorCslpEventDetails } from "../types/liveEditor.types";
+import Config from "../../configManager/configManager";
 import { ISchemaFieldMap } from "./types/index.types";
 
 export const isFieldDisabled = (

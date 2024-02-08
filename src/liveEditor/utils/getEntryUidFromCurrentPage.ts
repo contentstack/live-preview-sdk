@@ -1,4 +1,4 @@
-import { extractDetailsFromCslp } from "../../utils/cslpdata";
+import { extractDetailsFromCslp } from "../../cslp/cslpdata";
 
 export function getEntryUidFromCurrentPage() {
     const elementsWithCslp = Array.from(

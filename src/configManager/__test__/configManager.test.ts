@@ -1,5 +1,5 @@
-import Config, { updateConfigFromUrl } from "../configHandler";
-import { getDefaultConfig } from "../defaults";
+import Config, { updateConfigFromUrl } from "../configManager";
+import { getDefaultConfig } from "../config.default";
 
 describe("Config", () => {
     beforeEach(() => {

@@ -6,7 +6,7 @@ import {
 import {
     IContentTypeRootBlocks,
     IPageSchema,
-} from "../../types/contentTypeSchema.types";
+} from "../../cms/types/contentTypeSchema.types";
 
 export function generateFieldSchemaMap(
     pageCT: IPageSchema

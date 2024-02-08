@@ -1,5 +1,5 @@
-import { shouldRenderEditButton } from ".";
-import { PublicLogger } from "./public-logger";
+import { shouldRenderEditButton } from "../livePreview/editButton/editButton";
+import { PublicLogger } from "../logger/logger";
 import {
     IClientUrlParams,
     IConfig,

@@ -3,8 +3,8 @@ import {
     CslpData,
     CslpDataMultipleFieldMetadata,
     CslpDataParentDetails,
-} from "../types/cslp.types";
-import Config from "./configHandler";
+} from "./types/cslp.types";
+import Config from "../configManager/configManager";
 
 /**
  * Extracts details from a CSLP value string.
@@ -107,6 +107,11 @@ function getMultipleFieldMetadata(
     };
 }
 
+/**
+ * Adds an outline to the clicked element and triggers a callback function.
+ * @param e - The MouseEvent object representing the click event.
+ * @param callback - An optional callback function that will be called with the CSLP tag and highlighted element as arguments.
+ */
 export function addCslpOutline(
     e: MouseEvent,
     callback?: (args: {

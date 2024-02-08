@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from "uuid";
 import camelCase from "just-camel-case";
-import packageJson from "../package.json";
+import packageJson from "../../package.json";
 
 import {
     IInitData,
@@ -8,11 +8,11 @@ import {
     OnEntryChangeCallback,
     OnEntryChangeCallbackUID,
     OnEntryChangeConfig,
-} from "./types/types";
-import LivePreview from "./live-preview";
-import { getUserInitData } from "./utils/defaults";
-import { PublicLogger } from "./utils/public-logger";
-import { setConfigFromParams } from "./utils/configHandler";
+} from "../types/types";
+import LivePreview from "../livePreview/live-preview";
+import { getUserInitData } from "../configManager/config.default";
+import { PublicLogger } from "../logger/logger";
+import { setConfigFromParams } from "../configManager/configManager";
 
 export class ContentstackLivePreview {
     static livePreview: LivePreview | null = null;

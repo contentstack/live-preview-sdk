@@ -1,5 +1,5 @@
 import { IConfig, IInitData } from "../types/types";
-import { getDefaultConfig, getUserInitData } from "./defaults";
+import { getDefaultConfig, getUserInitData } from "./config.default";
 import { handleInitData } from "./handleUserConfig";
 import { has as lodashHas, set as lodashSet } from "lodash";
 

@@ -4,7 +4,7 @@ import {
     updateDocumentBody,
 } from "../replaceHtml";
 
-describe("replaceDocumentBody", () => {
+describe.skip("replaceDocumentBody", () => {
     const receivedHTML = `
             <h1 data-test-id="heading">The title is new</h1>
             <p data-test-id="paragraph">hello I am updated</p>

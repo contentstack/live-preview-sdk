@@ -1,6 +1,6 @@
-import { CslpData } from "../../types/cslp.types";
-import { VisualEditorCslpEventDetails } from "../../types/liveEditor.types";
-import { extractDetailsFromCslp } from "../../utils/cslpdata";
+import { CslpData } from "../../cslp/types/cslp.types";
+import { VisualEditorCslpEventDetails } from "../types/liveEditor.types";
+import { extractDetailsFromCslp } from "../../cslp/cslpdata";
 import {
     DATA_CSLP_ATTR_SELECTOR,
     LIVE_PREVIEW_OUTLINE_WIDTH_IN_PX,

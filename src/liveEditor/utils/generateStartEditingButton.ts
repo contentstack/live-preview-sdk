@@ -1,6 +1,6 @@
-import Config from "../../utils/configHandler";
-import { extractDetailsFromCslp } from "../../utils/cslpdata";
-import { PublicLogger } from "../../utils/public-logger";
+import Config from "../../configManager/configManager";
+import { extractDetailsFromCslp } from "../../cslp/cslpdata";
+import { PublicLogger } from "../../logger/logger";
 
 const editIcon = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
 <g id="Edit">

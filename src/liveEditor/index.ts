@@ -28,13 +28,13 @@ import {
 } from "./utils/getCsDataOfElement";
 import liveEditorPostMessage from "./utils/liveEditorPostMessage";
 import { LiveEditorPostMessageEvents } from "./utils/types/postMessage.types";
-import { addCslpOutline, extractDetailsFromCslp } from "../utils/cslpdata";
-import Config from "../utils/configHandler";
+import { addCslpOutline, extractDetailsFromCslp } from "../cslp/cslpdata";
+import Config from "../configManager/configManager";
 import { ILivePreviewWindowType, IVisualEditorInitEvent } from "../types/types";
-import { inIframe } from "../utils/inIframe";
+import { inIframe } from "../common/inIframe";
 import { getFieldType } from "./utils/getFieldType";
 import { generateCustomCursor } from "./utils/generateCustomCursor";
-import { VisualEditorCslpEventDetails } from "../types/liveEditor.types";
+import { VisualEditorCslpEventDetails } from "./types/liveEditor.types";
 import { getEntryUidFromCurrentPage } from "./utils/getEntryUidFromCurrentPage";
 import { isFieldDisabled } from "./utils/isFieldDisabled";
 
