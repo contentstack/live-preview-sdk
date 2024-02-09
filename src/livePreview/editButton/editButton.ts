@@ -1,3 +1,4 @@
+import { inIframe } from "../../common/inIframe";
 import { PublicLogger } from "../../logger/logger";
 import { IConfigEditButton, IEditButtonPosition } from "../../types/types";
 
@@ -176,9 +177,6 @@ export const createMultipleEditButton = (
 
     return multipleDiv;
 };
-export function inIframe() {
-    return window.location !== window.parent.location;
-}
 
 export function shouldRenderEditButton(editButton: IConfigEditButton): boolean {
     if (!editButton.enable) {

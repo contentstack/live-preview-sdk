@@ -1,4 +1,4 @@
-import { toString } from "lodash";
+import { toString } from "lodash-es";
 import { CslpData } from "../../cslp/types/cslp.types";
 import liveEditorPostMessage from "./liveEditorPostMessage";
 import { LiveEditorPostMessageEvents } from "./types/postMessage.types";

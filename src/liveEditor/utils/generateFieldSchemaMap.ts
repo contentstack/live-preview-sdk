@@ -1,4 +1,4 @@
-import _ from "lodash";
+import { isEmpty, isUndefined } from "lodash-es";
 import {
     ISchemaIndividualFieldMap,
     ITraverseSchemaVisitor,
@@ -49,7 +49,7 @@ function traverseSchema(
     visitors: Array<ITraverseSchemaVisitor>
 ): void {
     function genPath(prefix: string, path: string) {
-        return _.isEmpty(prefix) ? path : [prefix, path].join(".");
+        return isEmpty(prefix) ? path : [prefix, path].join(".");
     }
 
     function traverse(fields: IContentTypeRootBlocks[], path: string) {
@@ -66,8 +66,8 @@ function traverseSchema(
             if (field.data_type === "group") traverse(field.schema, currPath);
             else if (
                 field.data_type === "global_field" &&
-                _.isUndefined(field.schema) === false &&
-                _.isEmpty(field.schema) === false
+                isUndefined(field.schema) === false &&
+                isEmpty(field.schema) === false
             )
                 traverse(field.schema, currPath);
             if (field.data_type === "blocks") {

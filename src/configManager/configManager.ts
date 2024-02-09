@@ -1,7 +1,7 @@
 import { IConfig, IInitData } from "../types/types";
 import { getDefaultConfig, getUserInitData } from "./config.default";
 import { handleInitData } from "./handleUserConfig";
-import { has as lodashHas, set as lodashSet } from "lodash";
+import { has as lodashHas, set as lodashSet } from "lodash-es";
 
 class Config {
     static config: IConfig = getDefaultConfig();

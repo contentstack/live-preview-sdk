@@ -1,4 +1,4 @@
-import _ from "lodash";
+import { throttle } from "lodash-es";
 
 import { generateStartEditingButton } from "./utils/generateStartEditingButton";
 import {
@@ -16,27 +16,27 @@ import {
     removeAddInstanceButtons,
 } from "./utils/multipleElementAddButton";
 
+import { inIframe } from "../common/inIframe";
+import Config from "../configManager/configManager";
+import { addCslpOutline } from "../cslp/cslpdata";
+import { ILivePreviewWindowType, IVisualEditorInitEvent } from "../types/types";
+import { VisualEditorCslpEventDetails } from "./types/liveEditor.types";
 import { FieldSchemaMap } from "./utils/fieldSchemaMap";
 import {
     addFocusOverlay,
     appendFocusedToolbar,
     hideFocusOverlay,
 } from "./utils/focusOverlayWrapper";
+import { generateCustomCursor } from "./utils/generateCustomCursor";
 import {
     getCsDataOfElement,
     getDOMEditStack,
 } from "./utils/getCsDataOfElement";
+import { getEntryUidFromCurrentPage } from "./utils/getEntryUidFromCurrentPage";
+import { getFieldType } from "./utils/getFieldType";
+import { isFieldDisabled } from "./utils/isFieldDisabled";
 import liveEditorPostMessage from "./utils/liveEditorPostMessage";
 import { LiveEditorPostMessageEvents } from "./utils/types/postMessage.types";
-import { addCslpOutline, extractDetailsFromCslp } from "../cslp/cslpdata";
-import Config from "../configManager/configManager";
-import { ILivePreviewWindowType, IVisualEditorInitEvent } from "../types/types";
-import { inIframe } from "../common/inIframe";
-import { getFieldType } from "./utils/getFieldType";
-import { generateCustomCursor } from "./utils/generateCustomCursor";
-import { VisualEditorCslpEventDetails } from "./types/liveEditor.types";
-import { getEntryUidFromCurrentPage } from "./utils/getEntryUidFromCurrentPage";
-import { isFieldDisabled } from "./utils/isFieldDisabled";
 
 export class VisualEditor {
     private customCursor: HTMLDivElement | null = null;
@@ -179,7 +179,7 @@ export class VisualEditor {
         this.previousSelectedEditableDOM = editableElement;
     };
 
-    handleMouseHover = _.throttle(async (event: MouseEvent) => {
+    handleMouseHover = throttle(async (event: MouseEvent) => {
         const eventDetails = getCsDataOfElement(event);
         if (!eventDetails) {
             this.resetCustomCursor();

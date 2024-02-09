@@ -1,4 +1,4 @@
-import _ from "lodash";
+import { isNil, isFinite, findLastIndex, findLast } from "lodash-es";
 import {
     CslpData,
     CslpDataMultipleFieldMetadata,
@@ -16,8 +16,8 @@ export function extractDetailsFromCslp(cslpValue: string): CslpData {
         cslpValue.split(".");
 
     const calculatedPath = fieldPath.filter((path) => {
-        const isEmpty = _.isNil(path);
-        const isNumber = _.isFinite(+path);
+        const isEmpty = isNil(path);
+        const isNumber = isFinite(+path);
         return (!isEmpty && !isNumber) || false;
     });
 
@@ -34,7 +34,7 @@ export function extractDetailsFromCslp(cslpValue: string): CslpData {
      * It represents the index of the field in the multiple field.
      * Hence, we pop it out.
      */
-    if (_.isFinite(+fieldPath[fieldPath.length - 1])) {
+    if (isFinite(+fieldPath[fieldPath.length - 1])) {
         fieldPath.pop();
     }
 
@@ -63,7 +63,7 @@ function getParentPathDetails(
     locale: string,
     fieldPath: string[]
 ): CslpDataParentDetails | null {
-    const index = _.findLastIndex(fieldPath, (path) => _.isFinite(+path));
+    const index = findLastIndex(fieldPath, (path) => isFinite(+path));
     if (index === -1) return null;
 
     const parentPath = fieldPath.slice(0, index);
@@ -99,11 +99,11 @@ function getMultipleFieldMetadata(
         fieldPath
     );
 
-    const index = _.findLast(fieldPath, (path) => _.isFinite(+path));
+    const index = findLast(fieldPath, (path) => isFinite(+path));
 
     return {
         parentDetails: parentDetails,
-        index: _.isNil(index) ? -1 : +index,
+        index: isNil(index) ? -1 : +index,
     };
 }
 

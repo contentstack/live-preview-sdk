@@ -1,4 +1,4 @@
-import { has, isEqual } from "lodash";
+import { has, isEqual } from "lodash-es";
 import {
     ISchemaFieldMap,
     ISchemaIndividualFieldMap,

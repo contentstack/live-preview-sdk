@@ -440,12 +440,11 @@ describe("cslp tooltip", () => {
                 return mockLocation;
             });
 
-        const parentLocationSpy = jest
-            .spyOn(window.parent, "location", "get")
+        const topLocationSpy = jest
+            .spyOn(window, "top", "get")
             .mockImplementation(() => {
                 const mockLocation = JSON.parse(JSON.stringify(location));
                 mockLocation.href = "https://example1.com";
-
                 return mockLocation;
             });
 
@@ -484,7 +483,7 @@ describe("cslp tooltip", () => {
         );
 
         locationSpy.mockRestore();
-        parentLocationSpy.mockRestore();
+        topLocationSpy.mockRestore();
     });
 
     test("should disable the edit button when the editButton config is disabled", async () => {
@@ -559,12 +558,11 @@ describe("cslp tooltip", () => {
                 return mockLocation;
             });
 
-        const parentLocationSpy = jest
-            .spyOn(window.parent, "location", "get")
+        const topLocationSpy = jest
+            .spyOn(window, "top", "get")
             .mockImplementation(() => {
                 const mockLocation = JSON.parse(JSON.stringify(location));
                 mockLocation.href = "https://example1.com";
-
                 return mockLocation;
             });
 
@@ -598,7 +596,7 @@ describe("cslp tooltip", () => {
         expect(tooltip?.getAttribute("current-data-cslp")).toBe(undefined);
 
         locationSpy.mockRestore();
-        parentLocationSpy.mockRestore();
+        topLocationSpy.mockRestore();
     });
 
     test("should enable the edit button when the editButton config is disabled for outside live preview panel but query parameter is passed", async () => {
