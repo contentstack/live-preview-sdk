@@ -5,11 +5,11 @@ import {
     getEditButtonPosition,
 } from "../editButton";
 
-export let editCallback: jest.Mock<void, [e: MouseEvent]> | undefined;
-export let linkCallback: jest.Mock<void, [e: MouseEvent]> | undefined;
+let editCallback: jest.Mock<void, [e: MouseEvent]> | undefined;
+let linkCallback: jest.Mock<void, [e: MouseEvent]> | undefined;
 let editButtonForHyperlink: HTMLDivElement | undefined;
-export let editButtonForNonHyperlink: HTMLDivElement | undefined;
-export let tooltipChild: HTMLCollectionOf<HTMLDivElement> | undefined;
+let editButtonForNonHyperlink: HTMLDivElement | undefined;
+let tooltipChild: HTMLCollectionOf<HTMLDivElement> | undefined;
 
 describe("Edit button", () => {
     beforeEach(() => {
