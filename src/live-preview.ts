@@ -16,7 +16,6 @@ import {
 import { handleInitData } from "./utils/handleUserConfig";
 import { userInitData } from "./utils/defaults";
 import packageJson from "../package.json";
-import { replaceDocumentBody, updateDocumentBody } from "./utils/replaceHtml";
 
 export default class LivePreview {
     /**
@@ -337,30 +336,7 @@ export default class LivePreview {
 
                 this.setConfigFromParams({ live_preview: hash });
 
-                if (this.config.ssr) {
-                    // Get the content from the server and replace the body
-
-                    const fetch_url = new URL(window.location.href);
-
-                    fetch_url.searchParams.append("live_preview", hash);
-                    fetch_url.searchParams.append(
-                        "content_type_uid",
-                        contentTypeUid
-                    );
-                    fetch_url.searchParams.append("entry_uid", entryUid);
-
-                    fetch(fetch_url.toString(), {
-                        method: "GET",
-                    })
-                        .then((res) => res.text())
-                        .then((res) => {
-                            updateDocumentBody(document, res, {
-                                onPostOperation: this.createCslpTooltip,
-                                shouldReRunScripts:
-                                    this.config.runScriptsOnUpdate,
-                            });
-                        });
-                } else {
+                if (!this.config.ssr) {
                     this.handleUserChange({
                         content_type_uid: contentTypeUid,
                         entry_uid: entryUid,
@@ -392,9 +368,10 @@ export default class LivePreview {
                 }
                 break;
             }
-            case "document-body-post-scripts-loaded": {
-                const { body } = e.data.data;
-                replaceDocumentBody(body, this.createCslpTooltip);
+            default: {
+                // ensure that the switch statement is exhaustive
+                const exhaustiveCheck: never = e.data;
+                return exhaustiveCheck; // TODO: add debug message while we are in development mode.
             }
         }
     }
