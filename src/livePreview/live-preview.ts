@@ -1,23 +1,27 @@
 import packageJson from "../../package.json";
+import { inIframe } from "../common/inIframe";
+import { getUserInitData } from "../configManager/config.default";
+import Config, { updateConfigFromUrl } from "../configManager/configManager";
+import { addCslpOutline, extractDetailsFromCslp } from "../cslp/cslpdata";
 import { VisualEditor } from "../liveEditor";
+import { PublicLogger } from "../logger/logger";
 import {
     IEditButtonPosition,
     IInitData,
     ILivePreviewModeConfig,
-    ILivePreviewReceivePostMessages,
     ILivePreviewWindowType,
 } from "../types/types";
 import { addLivePreviewQueryTags } from "../utils";
-import { getEditButtonPosition } from "./editButton/editButton";
-import { createMultipleEditButton } from "./editButton/editButton";
-import { createSingularEditButton } from "./editButton/editButton";
-import Config, {
-    setConfigFromParams,
-    updateConfigFromUrl,
-} from "../configManager/configManager";
-import { addCslpOutline } from "../cslp/cslpdata";
-import { getUserInitData } from "../configManager/config.default";
-import { PublicLogger } from "../logger/logger";
+import {
+    createMultipleEditButton,
+    createSingularEditButton,
+    getEditButtonPosition,
+} from "./editButton/editButton";
+import livePreviewPostMessage from "./eventManager/livePreviewEventManager";
+import {
+    useHistoryPostMessageEvent,
+    useOnEntryUpdatePostMessageEvent,
+} from "./eventManager/postMessageEvent.hooks";
 
 export default class LivePreview {
     /**
@@ -45,7 +49,6 @@ export default class LivePreview {
         this.scrollHandler = this.scrollHandler.bind(this);
         this.linkClickHandler = this.linkClickHandler.bind(this);
         this.setOnChangeCallback = this.setOnChangeCallback.bind(this);
-        this.resolveIncomingMessage = this.resolveIncomingMessage.bind(this);
         this.createCslpTooltip = this.createCslpTooltip.bind(this);
         this.requestDataSync = this.requestDataSync.bind(this);
         this.updateTooltipPosition = this.updateTooltipPosition.bind(this);
@@ -69,7 +72,6 @@ export default class LivePreview {
                 window.addEventListener("load", this.requestDataSync);
             }
 
-            window.addEventListener("message", this.resolveIncomingMessage);
             window.addEventListener("scroll", this.updateTooltipPosition);
             // render the hover outline only when edit button enable
             if (
@@ -197,31 +199,24 @@ export default class LivePreview {
         const cslpTag = this.tooltip.getAttribute("current-data-cslp");
 
         if (cslpTag) {
-            const [content_type_uid, entry_uid, locale, ...field] =
-                cslpTag.split(".");
+            const { content_type_uid, entry_uid, locale, fieldPathWithIndex } =
+                extractDetailsFromCslp(cslpTag);
 
-            // check if opened inside an iframe
-            if (window.location !== window.parent.location) {
-                window.parent.postMessage(
-                    {
-                        from: "live-preview",
-                        type: "scroll",
-                        data: {
-                            field: field.join("."),
-                            content_type_uid,
-                            entry_uid,
-                            locale,
-                        },
-                    },
-                    "*"
-                );
+            if (inIframe()) {
+                livePreviewPostMessage?.send("scroll", {
+                    field: fieldPathWithIndex,
+                    content_type_uid,
+                    entry_uid,
+                    locale,
+                });
             } else {
                 try {
+                    // Redirect to Contentstack edit page
                     const redirectUrl = this.generateRedirectUrl(
                         content_type_uid,
                         locale,
                         entry_uid,
-                        field.join(".")
+                        fieldPathWithIndex
                     );
 
                     window.open(redirectUrl, "_blank");
@@ -251,73 +246,6 @@ export default class LivePreview {
      */
     get hash(): string {
         return Config.get().hash;
-    }
-
-    private resolveIncomingMessage(
-        e: MessageEvent<ILivePreviewReceivePostMessages>
-    ) {
-        if (typeof e.data !== "object") return;
-
-        if (e.data.from !== "live-preview") return;
-
-        const config = Config.get();
-
-        switch (e.data.type) {
-            case "client-data-send": {
-                const { contentTypeUid, entryUid } = config.stackDetails;
-                const { hash } = e.data.data;
-
-                setConfigFromParams({
-                    live_preview: hash,
-                    content_type_uid: contentTypeUid,
-                    entry_uid: entryUid,
-                });
-
-                if (!config.ssr) {
-                    const config = Config.get();
-                    config.onChange();
-                }
-                break;
-            }
-            case "init-ack": {
-                const {
-                    contentTypeUid,
-                    entryUid,
-                    windowType = ILivePreviewWindowType.PREVIEW,
-                } = e.data.data;
-
-                const stackDetails = Config.get().stackDetails;
-
-                stackDetails.contentTypeUid = contentTypeUid;
-                stackDetails.entryUid = entryUid;
-
-                Config.set("stackDetails", stackDetails);
-                Config.set("windowType", windowType);
-
-                break;
-            }
-            case "history": {
-                switch (e.data.data.type) {
-                    case "forward": {
-                        window.history.forward();
-                        break;
-                    }
-                    case "backward": {
-                        window.history.back();
-                        break;
-                    }
-                    case "reload": {
-                        window.history.go();
-                    }
-                }
-                break;
-            }
-            default: {
-                // ensure that the switch statement is exhaustive
-                const exhaustiveCheck: never = e.data;
-                return exhaustiveCheck; // TODO: add debug message while we are in development mode.
-            }
-        }
     }
 
     private createCslpTooltip = () => {
@@ -365,36 +293,45 @@ export default class LivePreview {
         // add edit tooltip
         this.createCslpTooltip();
 
-        window.parent.postMessage(
-            {
-                from: "live-preview",
-                type: "init",
-                data: {
-                    config: {
-                        shouldReload: config.ssr,
-                        href: window.location.href,
-                        sdkVersion: packageJson.version,
-                    },
+        livePreviewPostMessage
+            ?.send<{
+                contentTypeUid: string;
+                entryUid: string;
+                windowType: ILivePreviewWindowType;
+            }>("init", {
+                config: {
+                    shouldReload: config.ssr,
+                    href: window.location.href,
+                    sdkVersion: packageJson.version,
                 },
-            },
-            "*"
-        );
+            })
+            .then((data) => {
+                const {
+                    contentTypeUid,
+                    entryUid,
+                    windowType = ILivePreviewWindowType.PREVIEW,
+                } = data;
+
+                const stackDetails = Config.get().stackDetails;
+
+                stackDetails.contentTypeUid = contentTypeUid;
+                stackDetails.entryUid = entryUid;
+
+                Config.set("stackDetails", stackDetails);
+                Config.set("windowType", windowType);
+            });
 
         // set timeout for client side (use to show warning: You are not editing this page)
         if (!config.ssr) {
             setInterval(() => {
-                window.parent.postMessage(
-                    {
-                        from: "live-preview",
-                        type: "check-entry-page",
-                        data: {
-                            href: window.location.href,
-                        },
-                    },
-                    "*"
-                );
+                livePreviewPostMessage?.send("check-entry-page", {
+                    href: window.location.href,
+                });
             }, 1500);
         }
+
+        useHistoryPostMessageEvent();
+        useOnEntryUpdatePostMessageEvent();
     }
 
     private updateTooltipPosition() {

@@ -174,34 +174,6 @@ export declare interface ILivePreviewMessageCommon {
     from: "live-preview";
 }
 
-export type ILivePreviewReceivePostMessages =
-    | IClientDataMessage
-    | IInitAckMessage
-    | IHistoryMessage;
-
-export declare interface IClientDataMessage extends ILivePreviewMessageCommon {
-    type: "client-data-send";
-    data: {
-        hash: string;
-    };
-}
-
-export declare interface IInitAckMessage extends ILivePreviewMessageCommon {
-    type: "init-ack";
-    data: {
-        contentTypeUid: string;
-        entryUid: string;
-        windowType: ILivePreviewWindowType;
-    };
-}
-
-export declare interface IHistoryMessage extends ILivePreviewMessageCommon {
-    type: "history";
-    data: {
-        type: "forward" | "backward" | "reload";
-    };
-}
-
 export declare interface IEditButtonPosition {
     upperBoundOfTooltip: number;
     leftBoundOfTooltip: number;
