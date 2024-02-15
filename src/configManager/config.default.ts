@@ -4,6 +4,7 @@ export function getUserInitData(): IInitData {
     return {
         ssr: true,
         enable: true,
+        debug: false,
         cleanCslpOnProduction: true,
         editButton: {
             enable: true,
@@ -40,6 +41,7 @@ export function getDefaultConfig(): IConfig {
     return {
         ssr: true,
         enable: true,
+        debug: false,
         cleanCslpOnProduction: true,
         editButton: {
             enable: true,

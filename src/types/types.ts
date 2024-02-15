@@ -70,6 +70,10 @@ export declare const enum ILivePreviewWindowType {
 export declare interface IConfig {
     ssr: boolean;
     enable: boolean;
+    /**
+     * @default false
+     */
+    debug: boolean;
     cleanCslpOnProduction: boolean;
     stackDetails: IStackDetails;
     clientUrlParams: IClientUrlParams;
@@ -106,6 +110,10 @@ export declare interface IInitData {
     ssr: boolean;
     runScriptsOnUpdate: boolean;
     enable: boolean;
+    /**
+     * @default false
+     */
+    debug: boolean;
     cleanCslpOnProduction: boolean;
     stackDetails: Partial<IInitStackDetails>;
     clientUrlParams: Partial<Omit<IClientUrlParams, "url">>;

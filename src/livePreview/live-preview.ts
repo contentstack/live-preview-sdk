@@ -54,8 +54,7 @@ export default class LivePreview {
         this.updateTooltipPosition = this.updateTooltipPosition.bind(this);
         this.removeDataCslp = this.removeDataCslp.bind(this);
 
-        // @ts-ignore
-        if (initData.debug) {
+        if (config.debug) {
             PublicLogger.debug(
                 "Contentstack Live Preview Debugging mode: config --",
                 config
