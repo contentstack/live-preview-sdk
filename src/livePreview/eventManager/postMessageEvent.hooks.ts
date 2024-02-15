@@ -1,5 +1,5 @@
 import Config, { setConfigFromParams } from "../../configManager/configManager";
-import liveEditorPostMessage from "../../liveEditor/utils/liveEditorPostMessage";
+import livePreviewPostMessage from "./livePreviewEventManager";
 
 import { LIVE_PREVIEW_POST_MESSAGE_EVENTS } from "./livePreviewEventManger.constant";
 import {
@@ -12,7 +12,7 @@ import {
  * The listener handles events for forward, backward, and reload actions on the browser history.
  */
 export function useHistoryPostMessageEvent(): void {
-    liveEditorPostMessage?.on<HistoryLivePreviewPostMessageEventData>(
+    livePreviewPostMessage?.on<HistoryLivePreviewPostMessageEventData>(
         LIVE_PREVIEW_POST_MESSAGE_EVENTS.HISTORY,
         (event) => {
             switch (event.data.type) {
@@ -41,9 +41,10 @@ export function useHistoryPostMessageEvent(): void {
  * Registers a post message event listener for updating the entry in the live preview.
  */
 export function useOnEntryUpdatePostMessageEvent(): void {
-    liveEditorPostMessage?.on<OnChangeLivePreviewPostMessageEventData>(
+    livePreviewPostMessage?.on<OnChangeLivePreviewPostMessageEventData>(
         LIVE_PREVIEW_POST_MESSAGE_EVENTS.ON_CHANGE,
         (event) => {
+            console.debug("jacobson hello");
             const config = Config.get();
 
             setConfigFromParams({
