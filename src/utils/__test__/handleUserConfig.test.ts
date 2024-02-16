@@ -4,38 +4,6 @@ import { IConfig, IInitData, IStackSdk } from "../types";
 
 // example Stack object
 
-/*
-{
-  "fetchOptions": {
-    "retryLimit": 5
-  },
-  "config": {
-    "protocol": "https",
-    "host": "cdn.contentstack.io",
-    "port": 443,
-    "version": "v3",
-    "urls": {
-      "sync": "/stacks/sync",
-      "content_types": "/content_types/",
-      "entries": "/entries/",
-      "assets": "/assets/",
-      "environments": "/environments/"
-    }
-  },
-  "cachePolicy": -1,
-  "provider": {},
-  "headers": {
-    "api_key": "blt8pfsahuae8dsdfji",
-    "access_token": "cstv7889p4tgy7h45bgvAA"
-  },
-  "environment": "preview",
-  "live_preview": {
-    "enable": true,
-    "management_token": "csa73f9wndsnfjdnybaevke9r38"
-  }
-}
-*/
-
 let config: IConfig;
 describe("handleInitData()", () => {
     beforeEach(() => {
