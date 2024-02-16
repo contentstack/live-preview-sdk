@@ -189,14 +189,6 @@ export declare interface IEditButtonPosition {
 
 // end of Post message types
 
-export declare type OnEntryChangeCallback = () => void;
-
-export declare type OnEntryChangeConfig = {
-    skipInitialRender?: boolean;
-};
-
-export declare type OnEntryChangeCallbackUID = string;
-
 export interface IVisualEditorInitEvent {
     windowType: ILivePreviewWindowType;
     stackDetails: {

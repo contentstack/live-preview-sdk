@@ -1,53 +1,61 @@
 import { v4 as uuidv4 } from "uuid";
-import camelCase from "just-camel-case";
-import packageJson from "../../package.json";
 
+import { isEmpty } from "lodash-es";
+import packageJson from "../../package.json";
+import { getUserInitData } from "../configManager/config.default";
+import Config, { updateConfigFromUrl } from "../configManager/configManager";
+import { VisualEditor } from "../liveEditor";
+import LivePreview from "../livePreview/live-preview";
+import { removeFromOnChangeSubscribers } from "../livePreview/removeFromOnChangeSubscribers";
 import {
-    IInitData,
-    IStackSdk,
     OnEntryChangeCallback,
+    OnEntryChangeCallbackSubscribers,
     OnEntryChangeCallbackUID,
     OnEntryChangeConfig,
-} from "../types/types";
-import LivePreview from "../livePreview/live-preview";
-import { getUserInitData } from "../configManager/config.default";
+    OnEntryChangeUnsubscribeParameters,
+} from "../livePreview/types/onEntryChangeCallback.type";
 import { PublicLogger } from "../logger/logger";
-import { setConfigFromParams } from "../configManager/configManager";
+import { IInitData } from "../types/types";
 
-export class ContentstackLivePreview {
-    static livePreview: LivePreview | null = null;
-    static userConfig: Partial<IInitData> | null = null;
-    static subscribers: { [uid: string]: OnEntryChangeCallback } = {};
-    static configs: {
-        params: ConstructorParameters<typeof URLSearchParams>[0];
-    } = {
-        params: {},
-    };
+class ContentstackLivePreview {
+    private static previewConstructors:
+        | {
+              livePreview: LivePreview;
+              liveEditor: VisualEditor;
+          }
+        | Record<string, never> = {};
 
+    /**
+     * The subscribers for the onEntryChange event. We store them here when the SDK is not initialized.
+     */
+    private static onEntryChangeCallbacks: OnEntryChangeCallbackSubscribers =
+        {};
+
+    /**
+     * Initializes the Live Preview SDK with the provided user configuration.
+     * If the SDK is already initialized, subsequent calls to this method will return the existing SDK instance.
+     * @param userConfig - The user configuration to initialize the SDK with. See {@link https://github.com/contentstack/live-preview-sdk/blob/main/docs/live-preview-configs.md#initconfig-iconfig|Live preview User config} for more details.
+     * @returns A promise that resolves to the constructors of the Live Preview SDK.
+     */
     static init(
         userConfig: Partial<IInitData> = getUserInitData()
-    ): Promise<LivePreview> | undefined {
-        if (typeof window !== "undefined") {
-            if (ContentstackLivePreview.livePreview) {
-                PublicLogger.warn(
-                    "You have already initialized the Live Preview SDK. So, any subsequent initialization returns the existing SDK instance."
-                );
-                return Promise.resolve(ContentstackLivePreview.livePreview);
-            } else {
-                ContentstackLivePreview.livePreview = new LivePreview(
-                    userConfig
-                );
-                ContentstackLivePreview.livePreview.setOnChangeCallback(
-                    ContentstackLivePreview.publish
-                );
+    ): Promise<typeof this.previewConstructors> {
+        // handle user config
+        Config.replace(userConfig);
+        updateConfigFromUrl();
 
-                setConfigFromParams(this.configs.params);
-                this.configs.params = {};
+        if (typeof window === "undefined") {
+            PublicLogger.warn("The SDK is not initialized in the browser.");
+            return Promise.resolve(this.previewConstructors);
+        }
 
-                return Promise.resolve(ContentstackLivePreview.livePreview);
-            }
+        if (this.isInitialized()) {
+            PublicLogger.warn(
+                "You have already initialized the Live Preview SDK. So, any subsequent initialization returns the existing SDK instance."
+            );
+            return Promise.resolve(this.previewConstructors);
         } else {
-            ContentstackLivePreview.userConfig = userConfig;
+            return this.initializePreview();
         }
     }
 
@@ -56,158 +64,154 @@ export class ContentstackLivePreview {
      * This hash could be used when data is fetched manually.
      */
     static get hash(): string {
-        if (!this.livePreview) {
-            const urlParams = new URLSearchParams(this.configs.params);
-            return urlParams.get("live_preview") ?? "";
+        if (!this.isInitialized()) {
+            updateConfigFromUrl(); // check if we could extract from the URL
         }
+        return Config.get().hash;
+    }
 
-        return this.livePreview.hash;
+    private static isInitialized(): boolean {
+        return !isEmpty(this.previewConstructors);
+    }
+
+    private static initializePreview() {
+        this.previewConstructors = {
+            livePreview: new LivePreview(),
+            liveEditor: new VisualEditor(),
+        };
+
+        // set up onEntryChange callbacks added when the SDK was not initialized
+        const livePreview = this.previewConstructors.livePreview;
+        Object.entries(this.onEntryChangeCallbacks).forEach(
+            ([callbackUid, callback]) => {
+                livePreview.subscribeToOnEntryChange(callback, callbackUid);
+            }
+        );
+
+        this.onEntryChangeCallbacks = {};
+
+        return Promise.resolve(this.previewConstructors);
     }
 
     /**
-     * Sets the live preview hash from the query param which is
-     * accessible via `hash` property.
-     * @param params query param in an object form
-     * @deprecated The SDK will automatically get the hash from the URL.
+     * Registers a callback function to be called when an entry changes.
+     * @param onChangeCallback The callback function to be called when an entry changes.
+     * @param config Optional configuration for the callback.
+     * @param config.skipInitialRender If true, the callback will not be called when it is first registered.
+     * @returns A unique identifier for the registered callback.
      *
-     */
-    static setConfigFromParams(
-        params: ConstructorParameters<typeof URLSearchParams>[0] = {}
-    ): void {
-        if (!this.livePreview) {
-            this.configs.params = params;
-            return;
-        }
-
-        setConfigFromParams(params);
-    }
-
-    private static publish(): void {
-        Object.values<OnEntryChangeCallback>(
-            ContentstackLivePreview.subscribers
-        ).forEach((func) => {
-            func();
-        });
-    }
-
-    private static subscribe(
-        callback: OnEntryChangeCallback
-    ): OnEntryChangeCallbackUID {
-        const callbackUid = uuidv4();
-        ContentstackLivePreview.subscribers[callbackUid] = callback;
-        return callbackUid;
-    }
-    /**
-     * @type {function}
-     * @param onChangeCallback A function param to fetch the data from contentstack database
-     * @param config An optional object param, pass {skipInitialRender:Boolean} to skip init call to onChangeCallback
-     * @returns Subscribed Callback UID
+     * @example
+     * ```js
+     * const callbackUid = ContentstackLivePreview.onEntryChange(() => {
+     *    console.log("Entry changed");
+     * });
+     *
+     * // Unsubscribe the callback
+     * ContentstackLivePreview.unsubscribeOnEntryChange(callbackUid);
+     * ```
      */
     static onEntryChange(
         onChangeCallback: OnEntryChangeCallback,
-        config?: OnEntryChangeConfig
+        config: OnEntryChangeConfig = {}
     ): OnEntryChangeCallbackUID {
-        const { skipInitialRender = false } = config || {};
-        if (ContentstackLivePreview.userConfig) {
-            ContentstackLivePreview.livePreview = new LivePreview(
-                ContentstackLivePreview.userConfig
+        const { skipInitialRender = false } = config;
+
+        const callbackUid = uuidv4();
+        if (this.isInitialized()) {
+            this.previewConstructors.livePreview.subscribeToOnEntryChange(
+                onChangeCallback,
+                callbackUid
             );
-            ContentstackLivePreview.livePreview.setOnChangeCallback(
-                ContentstackLivePreview.publish
-            );
-
-            setConfigFromParams(this.configs.params);
-
-            this.configs.params = {};
-
-            ContentstackLivePreview.userConfig = null;
+        } else {
+            this.onEntryChangeCallbacks[callbackUid] = onChangeCallback;
         }
-        const callbackUid = ContentstackLivePreview.subscribe(onChangeCallback);
+
         if (!skipInitialRender) {
             onChangeCallback();
         }
+
         return callbackUid;
     }
 
     /**
-     * @type {function}
-     * @param onChangeCallback A function param to fetch the data from contentstack database on content change.
-     * @returns Subscribed Callback UID
+     * Registers a callback function to be called when there is a change in the entry being edited in live preview mode. The difference between this and `onEntryChange` is that this callback will not be called when it is first registered.
+     * @param onChangeCallback The callback function to be called when there is a change in the entry.
+     * @returns A unique identifier for the registered callback.
+     *
+     * @example
+     * ```js
+     * const callbackUid = ContentstackLivePreview.onLiveEdit(() => {
+     *   console.log("Entry changed");
+     * });
+     *
+     * // Unsubscribe the callback
+     * ContentstackLivePreview.unsubscribeOnEntryChange(callbackUid);
+     * ```
+     *
      */
     static onLiveEdit(
         onChangeCallback: OnEntryChangeCallback
     ): OnEntryChangeCallbackUID {
-        return ContentstackLivePreview.onEntryChange(onChangeCallback, {
+        return this.onEntryChange(onChangeCallback, {
             skipInitialRender: true,
         });
     }
 
+    /**
+     * Unsubscribes from the entry change event.
+     * @param callback - The callback function to be unsubscribed.
+     *
+     * @example
+     * ```js
+     * // unsubscribing using the Callback UID
+     * const callbackUid = ContentstackLivePreview.onEntryChange(() => {
+     *  console.log("Entry changed");
+     * });
+     *
+     * // Unsubscribe the callback
+     * ContentstackLivePreview.unsubscribeOnEntryChange(callbackUid);
+     * ```
+     *
+     * @example
+     * ```js
+     * // unsubscribing using the callback function
+     * const callback = () => {console.log("Entry changed")};
+     * ContentstackLivePreview.onEntryChange(callback);
+     *
+     * // Unsubscribe the callback
+     * ContentstackLivePreview.unsubscribeOnEntryChange(callback);
+     * ```
+     *
+     * @example
+     * ```js
+     * // The same is applicable to onLiveEdit
+     * const callbackUid = ContentstackLivePreview.onLiveEdit(() => {
+     * console.log("Entry changed");
+     * });
+     *
+     * // Unsubscribe the callback
+     * ContentstackLivePreview.unsubscribeOnEntryChange(callbackUid);
+     * ```
+     *
+     *
+     */
     static unsubscribeOnEntryChange(
-        callback: string | OnEntryChangeCallback
+        callback: OnEntryChangeUnsubscribeParameters
     ): void {
-        if (typeof callback === "string") {
-            if (!ContentstackLivePreview.subscribers[callback]) {
-                PublicLogger.warn("No subscriber found with the given id.");
-            }
-            delete ContentstackLivePreview.subscribers[callback];
-        } else if (typeof callback === "function") {
-            const isCallbackDeleted = Object.entries<() => void>(
-                ContentstackLivePreview.subscribers
-            ).some(([uid, func]) => {
-                if (func === callback) {
-                    delete ContentstackLivePreview.subscribers[uid];
-                    return true;
-                }
-                return false;
-            });
-
-            if (!isCallbackDeleted) {
-                PublicLogger.warn(
-                    "No subscriber found with the given callback."
-                );
-            }
+        if (!this.isInitialized()) {
+            removeFromOnChangeSubscribers(
+                this.onEntryChangeCallbacks,
+                callback
+            );
+            return;
         }
+        this.previewConstructors.livePreview.unsubscribeOnEntryChange(callback);
     }
 
-    static async getGatsbyDataFormat(
-        sdkQuery: IStackSdk,
-        prefix: string
-    ): Promise<any> {
-        if (typeof sdkQuery.find === "function") {
-            return sdkQuery
-                .toJSON()
-                .find()
-                .then((result: { [key: string]: any }) => {
-                    return result.map((res: { [key: string]: any }) => {
-                        return res.map((entry: { [key: string]: any }) => {
-                            const dataTitle = camelCase(
-                                `${prefix}_${sdkQuery.content_type_uid}`
-                            );
-                            return { [dataTitle]: entry };
-                        });
-                    });
-                })
-                .catch((err: any) => {
-                    console.error(err);
-                });
-        } else if (typeof sdkQuery.fetch === "function") {
-            return sdkQuery
-                .toJSON()
-                .fetch()
-                .then((ent: { [key: string]: any }) => {
-                    const dataTitle = camelCase(
-                        `${prefix}_${sdkQuery.content_type_uid}`
-                    );
-                    const entry = { [dataTitle]: ent };
-
-                    return entry;
-                })
-                .catch((err: unknown) => {
-                    console.error(err);
-                });
-        }
-    }
-
+    /**
+     * Retrieves the version of the SDK.
+     * @returns The version of the SDK as a string.
+     */
     static getSdkVersion(): string {
         return packageJson.version;
     }

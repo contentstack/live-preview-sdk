@@ -10,7 +10,7 @@
     "scripts": {
         "build": "rimraf dist/ && webpack --config webpack.prod.js",
         "test": "jest",
-        "test:watch": "jest --watch",
+                "test:watch": "jest --watch",
         "test:coverage": "jest src --coverage --watchAll --coverageDirectory=\"coverage\"",
         "dev": "webpack --config webpack.dev.js",
         "prepare": "npm run build && husky install",
@@ -65,7 +65,6 @@
         "url": "https://github.com/contentstack/live-preview-sdk.git"
     },
     "dependencies": {
-        "just-camel-case": "^4.0.2",
         "lodash-es": "^4.17.21",
         "mustache": "^4.2.0",
         "uuid": "^8.3.2"

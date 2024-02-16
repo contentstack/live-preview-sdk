@@ -1,4 +1,7 @@
+import packageJson from "../../../package.json";
 import Config, { setConfigFromParams } from "../../configManager/configManager";
+import { PublicLogger } from "../../logger/logger";
+import { ILivePreviewWindowType } from "../../types/types";
 import livePreviewPostMessage from "./livePreviewEventManager";
 
 import { LIVE_PREVIEW_POST_MESSAGE_EVENTS } from "./livePreviewEventManger.constant";
@@ -54,6 +57,60 @@ export function useOnEntryUpdatePostMessageEvent(): void {
                 const config = Config.get();
                 config.onChange();
             }
+        }
+    );
+}
+
+export function sendInitializeLivePreviewPostMessageEvent(): void {
+    const config = Config.get();
+
+    livePreviewPostMessage
+        ?.send<{
+            contentTypeUid: string;
+            entryUid: string;
+            windowType: ILivePreviewWindowType;
+        }>(LIVE_PREVIEW_POST_MESSAGE_EVENTS.INIT, {
+            config: {
+                shouldReload: config.ssr,
+                href: window.location.href,
+                sdkVersion: packageJson.version,
+            },
+        })
+        .then((data) => {
+            const {
+                contentTypeUid,
+                entryUid,
+                windowType = ILivePreviewWindowType.PREVIEW,
+            } = data;
+
+            const stackDetails = Config.get().stackDetails;
+
+            stackDetails.contentTypeUid = contentTypeUid;
+            stackDetails.entryUid = entryUid;
+
+            Config.set("stackDetails", stackDetails);
+            Config.set("windowType", windowType);
+
+            // set timeout for client side (use to show warning: You are not editing this page)
+            if (!config.ssr) {
+                setInterval(() => {
+                    sendCurrentPageUrlPostMessageEvent();
+                }, 1500);
+            }
+
+            useHistoryPostMessageEvent();
+            useOnEntryUpdatePostMessageEvent();
+        })
+        .catch((e) => {
+            PublicLogger.error("Error while sending init message", e);
+        });
+}
+
+function sendCurrentPageUrlPostMessageEvent(): void {
+    livePreviewPostMessage?.send(
+        LIVE_PREVIEW_POST_MESSAGE_EVENTS.CHECK_ENTRY_PAGE,
+        {
+            href: window.location.href,
         }
     );
 }

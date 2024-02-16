@@ -1,6 +1,13 @@
 import { inIframe } from "../../common/inIframe";
+import Config from "../../configManager/configManager";
+import { addCslpOutline, extractDetailsFromCslp } from "../../cslp";
 import { PublicLogger } from "../../logger/logger";
-import { IConfigEditButton, IEditButtonPosition } from "../../types/types";
+import {
+    IConfigEditButton,
+    IEditButtonPosition,
+    ILivePreviewWindowType,
+} from "../../types/types";
+import livePreviewPostMessage from "../eventManager/livePreviewEventManager";
 
 function calculateEditButtonPosition(
     currentHoveredElement: HTMLElement,
@@ -229,4 +236,253 @@ export function getEditButtonPosition(
         currentHoveredElement,
         defaultPosition || "top"
     );
+}
+
+export class LivePreviewEditButton {
+    private tooltip: HTMLButtonElement | null = null;
+    private typeOfCurrentChild: "singular" | "multiple" = "singular";
+    private tooltipChild: {
+        singular: HTMLDivElement | null;
+        multiple: HTMLDivElement | null;
+    } = {
+        singular: null,
+        multiple: null,
+    };
+
+    constructor() {
+        this.createCslpTooltip = this.createCslpTooltip.bind(this);
+        this.updateTooltipPosition = this.updateTooltipPosition.bind(this);
+        this.addEditStyleOnHover = this.addEditStyleOnHover.bind(this);
+        this.scrollHandler = this.scrollHandler.bind(this);
+        this.generateRedirectUrl = this.generateRedirectUrl.bind(this);
+        this.linkClickHandler = this.linkClickHandler.bind(this);
+        this.destroy = this.destroy.bind(this);
+
+        if (this.createCslpTooltip()) {
+            this.updateTooltipPosition();
+
+            window.addEventListener("scroll", this.updateTooltipPosition);
+            window.addEventListener("mouseover", this.addEditStyleOnHover);
+        }
+    }
+
+    private createCslpTooltip(): boolean {
+        const config = Config.get();
+
+        if (
+            !document.getElementById("cslp-tooltip") &&
+            config.editButton.enable
+        ) {
+            const tooltip = document.createElement("button");
+            this.tooltip = tooltip;
+
+            this.tooltip.classList.add("cslp-tooltip");
+            this.tooltip.setAttribute("data-test-id", "cs-cslp-tooltip");
+            this.tooltip.id = "cslp-tooltip";
+
+            window.document.body.insertAdjacentElement(
+                "beforeend",
+                this.tooltip
+            );
+            this.tooltipChild.singular = createSingularEditButton(
+                this.scrollHandler
+            );
+            this.tooltipChild.multiple = createMultipleEditButton(
+                this.scrollHandler,
+                this.linkClickHandler
+            );
+
+            this.tooltip.appendChild(this.tooltipChild.singular);
+            return true;
+        }
+        return false;
+    }
+
+    private updateTooltipPosition() {
+        const config = Config.get();
+        const { elements } = config;
+
+        if (!elements.highlightedElement || !this.tooltip) return false;
+
+        const currentRectOfElement =
+            elements.highlightedElement.getBoundingClientRect();
+        const currentRectOfParentOfElement =
+            this.tooltip.parentElement?.getBoundingClientRect();
+
+        if (currentRectOfElement && currentRectOfParentOfElement) {
+            const editButtonPosition = getEditButtonPosition(
+                elements.highlightedElement,
+                config.editButton.position
+            );
+
+            let upperBoundOfTooltip = editButtonPosition.upperBoundOfTooltip;
+            const leftBoundOfTooltip = editButtonPosition.leftBoundOfTooltip;
+
+            // if scrolled and element is still visible, make sure tooltip is also visible
+            if (upperBoundOfTooltip < 0) {
+                if (currentRectOfElement.top < 0)
+                    upperBoundOfTooltip = currentRectOfElement.top;
+                else upperBoundOfTooltip = 0;
+            }
+
+            this.tooltip.style.top = upperBoundOfTooltip + "px";
+            this.tooltip.style.zIndex =
+                elements.highlightedElement.style.zIndex || "200";
+            this.tooltip.style.left = leftBoundOfTooltip + "px";
+
+            if (this.tooltipChild.singular && this.tooltipChild.multiple) {
+                if (
+                    elements.highlightedElement.hasAttribute("href") &&
+                    this.typeOfCurrentChild !== "multiple"
+                ) {
+                    this.tooltip.innerHTML = "";
+                    this.tooltip.appendChild(this.tooltipChild.multiple);
+                    this.typeOfCurrentChild = "multiple";
+                } else if (this.typeOfCurrentChild !== "singular") {
+                    this.tooltip.innerHTML = "";
+                    this.tooltip.appendChild(this.tooltipChild.singular);
+                    this.typeOfCurrentChild = "singular";
+                }
+            }
+            return true;
+        }
+
+        return false;
+    }
+
+    private addEditStyleOnHover(e: MouseEvent) {
+        const updateTooltipPosition: Parameters<typeof addCslpOutline>["1"] = ({
+            cslpTag,
+            highlightedElement,
+        }) => {
+            if (this.updateTooltipPosition()) {
+                this.tooltip?.setAttribute("current-data-cslp", cslpTag);
+                this.tooltip?.setAttribute(
+                    "current-href",
+                    highlightedElement.getAttribute("href") ?? ""
+                );
+            }
+        };
+
+        const config = Config.get();
+        if (
+            (config.windowType === ILivePreviewWindowType.PREVIEW ||
+                config.windowType === ILivePreviewWindowType.INDEPENDENT) &&
+            config.editButton.enable
+        ) {
+            addCslpOutline(e, updateTooltipPosition);
+        }
+    }
+
+    private scrollHandler() {
+        if (!this.tooltip) return;
+
+        const cslpTag = this.tooltip.getAttribute("current-data-cslp");
+
+        if (cslpTag) {
+            const { content_type_uid, entry_uid, locale, fieldPathWithIndex } =
+                extractDetailsFromCslp(cslpTag);
+
+            if (inIframe()) {
+                livePreviewPostMessage?.send("scroll", {
+                    field: fieldPathWithIndex,
+                    content_type_uid,
+                    entry_uid,
+                    locale,
+                });
+            } else {
+                try {
+                    // Redirect to Contentstack edit page
+                    const redirectUrl = this.generateRedirectUrl(
+                        content_type_uid,
+                        locale,
+                        entry_uid,
+                        fieldPathWithIndex
+                    );
+
+                    window.open(redirectUrl, "_blank");
+                } catch (error) {
+                    PublicLogger.error(error);
+                }
+            }
+        }
+    }
+
+    /**
+     * Generates the redirect URL for editing a specific entry in the Live Preview SDK.
+     * @param content_type_uid - The UID of the content type.
+     * @param locale - The locale of the entry (default: "en-us").
+     * @param entry_uid - The UID of the entry.
+     * @param preview_field - The field to be previewed.
+     * @returns The redirect URL for editing the entry.
+     */
+    private generateRedirectUrl(
+        content_type_uid: string,
+        locale = "en-us",
+        entry_uid: string,
+        preview_field: string
+    ): string {
+        const config = Config.get();
+        if (!config.stackDetails.apiKey) {
+            throw `To use edit tags, you must provide the stack API key. Specify the API key while initializing the Live Preview SDK.
+
+                ContentstackLivePreview.init({
+                    ...,
+                    stackDetails: {
+                        apiKey: 'your-api-key'
+                    },
+                    ...
+                })`;
+        }
+
+        if (!config.stackDetails.environment) {
+            throw `To use edit tags, you must provide the preview environment. Specify the preview environment while initializing the Live Preview SDK.
+
+                ContentstackLivePreview.init({
+                    ...,
+                    stackDetails: {
+                        environment: 'Your-environment'
+                    },
+                    ...
+                })`;
+        }
+
+        const protocol = String(config.clientUrlParams.protocol);
+        const host = String(config.clientUrlParams.host);
+        const port = String(config.clientUrlParams.port);
+        const environment = String(config.stackDetails.environment);
+
+        const urlHash = `!/stack/${
+            config.stackDetails.apiKey
+        }/content-type/${content_type_uid}/${
+            locale ?? "en-us"
+        }/entry/${entry_uid}/edit`;
+
+        const url = new URL(`${protocol}://${host}`);
+        url.port = port;
+        url.hash = urlHash;
+        url.searchParams.append("preview-field", preview_field);
+        url.searchParams.append("preview-locale", locale ?? "en-us");
+        url.searchParams.append("preview-environment", environment);
+
+        return `${url.origin}/${url.hash}${url.search}`;
+    }
+
+    private linkClickHandler() {
+        if (!this.tooltip) return;
+        const hrefAttribute = this.tooltip.getAttribute("current-href");
+
+        if (hrefAttribute) {
+            window.location.assign(hrefAttribute);
+        }
+    }
+
+    /**
+     * Destroys the edit button by removing event listeners and removing the tooltip.
+     */
+    destroy(): void {
+        window.removeEventListener("scroll", this.updateTooltipPosition);
+        window.removeEventListener("mouseover", this.addEditStyleOnHover);
+        this.tooltip?.remove();
+    }
 }
