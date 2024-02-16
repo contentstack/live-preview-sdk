@@ -19,7 +19,11 @@ import {
 import { inIframe } from "../common/inIframe";
 import Config from "../configManager/configManager";
 import { addCslpOutline } from "../cslp/cslpdata";
-import { ILivePreviewWindowType, IVisualEditorInitEvent } from "../types/types";
+import {
+    ILivePreviewModeConfig,
+    ILivePreviewWindowType,
+    IVisualEditorInitEvent,
+} from "../types/types";
 import { VisualEditorCslpEventDetails } from "./types/liveEditor.types";
 import { FieldSchemaMap } from "./utils/fieldSchemaMap";
 import {
@@ -105,6 +109,10 @@ export class VisualEditor {
         this.appendVisualEditorDOM();
         this.addFocusedToolbar = this.addFocusedToolbar.bind(this);
 
+        const config = Config.get();
+        if (!config.enable || config.mode < ILivePreviewModeConfig.EDITOR) {
+            return;
+        }
         liveEditorPostMessage
             ?.send<IVisualEditorInitEvent>("init", {
                 isSSR: Config.get().ssr,

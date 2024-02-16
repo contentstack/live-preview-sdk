@@ -44,7 +44,6 @@ export function useOnEntryUpdatePostMessageEvent(): void {
     livePreviewPostMessage?.on<OnChangeLivePreviewPostMessageEventData>(
         LIVE_PREVIEW_POST_MESSAGE_EVENTS.ON_CHANGE,
         (event) => {
-            console.debug("jacobson hello");
             const config = Config.get();
 
             setConfigFromParams({
