@@ -41,6 +41,10 @@ import { getFieldType } from "./utils/getFieldType";
 import { isFieldDisabled } from "./utils/isFieldDisabled";
 import liveEditorPostMessage from "./utils/liveEditorPostMessage";
 import { LiveEditorPostMessageEvents } from "./utils/types/postMessage.types";
+import {
+    useHistoryPostMessageEvent,
+    useOnEntryUpdatePostMessageEvent,
+} from "../livePreview/eventManager/postMessageEvent.hooks";
 
 export class VisualEditor {
     private customCursor: HTMLDivElement | null = null;
@@ -140,6 +144,10 @@ export class VisualEditor {
                     LiveEditorPostMessageEvents.GET_ENTRY_UID_IN_CURRENT_PAGE,
                     getEntryUidFromCurrentPage
                 );
+
+                // These events are used to sync the data when we made some changes in the entry without invoking live preview module.
+                useHistoryPostMessageEvent();
+                useOnEntryUpdatePostMessageEvent();
             })
             .catch(() => {
                 if (!inIframe()) {
