@@ -39,23 +39,23 @@ class ContentstackLivePreview {
      */
     static init(
         userConfig: Partial<IInitData> = getUserInitData()
-    ): Promise<typeof this.previewConstructors> {
+    ): Promise<typeof ContentstackLivePreview.previewConstructors> {
         // handle user config
         Config.replace(userConfig);
         updateConfigFromUrl();
 
         if (typeof window === "undefined") {
             PublicLogger.warn("The SDK is not initialized in the browser.");
-            return Promise.resolve(this.previewConstructors);
+            return Promise.resolve(ContentstackLivePreview.previewConstructors);
         }
 
-        if (this.isInitialized()) {
+        if (ContentstackLivePreview.isInitialized()) {
             PublicLogger.warn(
                 "You have already initialized the Live Preview SDK. So, any subsequent initialization returns the existing SDK instance."
             );
-            return Promise.resolve(this.previewConstructors);
+            return Promise.resolve(ContentstackLivePreview.previewConstructors);
         } else {
-            return this.initializePreview();
+            return ContentstackLivePreview.initializePreview();
         }
     }
 
@@ -64,33 +64,34 @@ class ContentstackLivePreview {
      * This hash could be used when data is fetched manually.
      */
     static get hash(): string {
-        if (!this.isInitialized()) {
+        if (!ContentstackLivePreview.isInitialized()) {
             updateConfigFromUrl(); // check if we could extract from the URL
         }
         return Config.get().hash;
     }
 
     private static isInitialized(): boolean {
-        return !isEmpty(this.previewConstructors);
+        return !isEmpty(ContentstackLivePreview.previewConstructors);
     }
 
     private static initializePreview() {
-        this.previewConstructors = {
+        ContentstackLivePreview.previewConstructors = {
             livePreview: new LivePreview(),
             liveEditor: new VisualEditor(),
         };
 
         // set up onEntryChange callbacks added when the SDK was not initialized
-        const livePreview = this.previewConstructors.livePreview;
-        Object.entries(this.onEntryChangeCallbacks).forEach(
+        const livePreview =
+            ContentstackLivePreview.previewConstructors.livePreview;
+        Object.entries(ContentstackLivePreview.onEntryChangeCallbacks).forEach(
             ([callbackUid, callback]) => {
                 livePreview.subscribeToOnEntryChange(callback, callbackUid);
             }
         );
 
-        this.onEntryChangeCallbacks = {};
+        ContentstackLivePreview.onEntryChangeCallbacks = {};
 
-        return Promise.resolve(this.previewConstructors);
+        return Promise.resolve(ContentstackLivePreview.previewConstructors);
     }
 
     /**
@@ -117,13 +118,15 @@ class ContentstackLivePreview {
         const { skipInitialRender = false } = config;
 
         const callbackUid = uuidv4();
-        if (this.isInitialized()) {
-            this.previewConstructors.livePreview.subscribeToOnEntryChange(
+
+        if (ContentstackLivePreview.isInitialized()) {
+            ContentstackLivePreview.previewConstructors.livePreview.subscribeToOnEntryChange(
                 onChangeCallback,
                 callbackUid
             );
         } else {
-            this.onEntryChangeCallbacks[callbackUid] = onChangeCallback;
+            ContentstackLivePreview.onEntryChangeCallbacks[callbackUid] =
+                onChangeCallback;
         }
 
         if (!skipInitialRender) {
@@ -152,7 +155,7 @@ class ContentstackLivePreview {
     static onLiveEdit(
         onChangeCallback: OnEntryChangeCallback
     ): OnEntryChangeCallbackUID {
-        return this.onEntryChange(onChangeCallback, {
+        return ContentstackLivePreview.onEntryChange(onChangeCallback, {
             skipInitialRender: true,
         });
     }
@@ -198,14 +201,16 @@ class ContentstackLivePreview {
     static unsubscribeOnEntryChange(
         callback: OnEntryChangeUnsubscribeParameters
     ): void {
-        if (!this.isInitialized()) {
+        if (!ContentstackLivePreview.isInitialized()) {
             removeFromOnChangeSubscribers(
-                this.onEntryChangeCallbacks,
+                ContentstackLivePreview.onEntryChangeCallbacks,
                 callback
             );
             return;
         }
-        this.previewConstructors.livePreview.unsubscribeOnEntryChange(callback);
+        ContentstackLivePreview.previewConstructors.livePreview.unsubscribeOnEntryChange(
+            callback
+        );
     }
 
     /**
