@@ -1,6 +1,5 @@
 import packageJson from "../../../package.json";
 import Config, { setConfigFromParams } from "../../configManager/configManager";
-import { PublicLogger } from "../../logger/logger";
 import { ILivePreviewWindowType } from "../../types/types";
 import livePreviewPostMessage from "./livePreviewEventManager";
 
@@ -85,8 +84,15 @@ export function sendInitializeLivePreviewPostMessageEvent(): void {
 
             const stackDetails = Config.get().stackDetails;
 
-            stackDetails.contentTypeUid = contentTypeUid;
-            stackDetails.entryUid = entryUid;
+            if (contentTypeUid && entryUid) {
+                stackDetails.contentTypeUid = contentTypeUid;
+                stackDetails.entryUid = entryUid;
+            } else {
+                // TODO: add debug logs that runs conditionally
+                // PublicLogger.debug(
+                //     "init message did not contain contentTypeUid or entryUid."
+                // );
+            }
 
             Config.set("stackDetails", stackDetails);
             Config.set("windowType", windowType);
@@ -102,15 +108,17 @@ export function sendInitializeLivePreviewPostMessageEvent(): void {
             useOnEntryUpdatePostMessageEvent();
         })
         .catch((e) => {
-            PublicLogger.error("Error while sending init message", e);
+            // TODO: add debug logs that runs conditionally
+            // PublicLogger.debug("Error while sending init message", e);
         });
 }
 
 function sendCurrentPageUrlPostMessageEvent(): void {
-    livePreviewPostMessage?.send(
-        LIVE_PREVIEW_POST_MESSAGE_EVENTS.CHECK_ENTRY_PAGE,
-        {
+    livePreviewPostMessage
+        ?.send(LIVE_PREVIEW_POST_MESSAGE_EVENTS.CHECK_ENTRY_PAGE, {
             href: window.location.href,
-        }
-    );
+        })
+        .catch(() => {
+            // TODO: add debug logs that runs conditionally
+        });
 }
