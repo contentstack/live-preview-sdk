@@ -1,5 +1,5 @@
 import { EventManager } from "@contentstack/advanced-post-message";
-import { LIVE_PREVIEW_CHANNEL_ID } from "./livePreviewEventManger.constant";
+import { LIVE_PREVIEW_CHANNEL_ID } from "./livePreviewEventManager.constant";
 
 let livePreviewPostMessage: EventManager | undefined;
 

@@ -2,8 +2,7 @@ import packageJson from "../../../package.json";
 import Config, { setConfigFromParams } from "../../configManager/configManager";
 import { ILivePreviewWindowType } from "../../types/types";
 import livePreviewPostMessage from "./livePreviewEventManager";
-
-import { LIVE_PREVIEW_POST_MESSAGE_EVENTS } from "./livePreviewEventManger.constant";
+import { LIVE_PREVIEW_POST_MESSAGE_EVENTS } from "./livePreviewEventManager.constant";
 import {
     HistoryLivePreviewPostMessageEventData,
     OnChangeLivePreviewPostMessageEventData,
