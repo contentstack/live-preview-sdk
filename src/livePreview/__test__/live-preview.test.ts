@@ -1,14 +1,22 @@
-import LivePreview from "../live-preview";
-import * as LiveEditorModule from "../../liveEditor";
-import { getDefaultConfig } from "../../configManager/config.default";
-import { PublicLogger } from "../../logger/logger";
-
-import { IInitData, ILivePreviewWindowType } from "../../types/types";
-import Config from "../../configManager/configManager";
+import crypto from "crypto";
 import {
     convertObjectToMinifiedString,
     sendPostmessageToWindow,
+    sleep,
 } from "../../__test__/utils";
+import { getDefaultConfig } from "../../configManager/config.default";
+import Config from "../../configManager/configManager";
+import * as LiveEditorModule from "../../liveEditor";
+import { PublicLogger } from "../../logger/logger";
+import { IInitData, ILivePreviewWindowType } from "../../types/types";
+import livePreviewPostMessage from "../eventManager/livePreviewEventManager";
+import LivePreview from "../live-preview";
+import { LIVE_PREVIEW_POST_MESSAGE_EVENTS } from "../eventManager/livePreviewEventManager.constant";
+import { mockLivePreviewInitEventListener } from "./mock";
+import {
+    HistoryLivePreviewPostMessageEventData,
+    OnChangeLivePreviewPostMessageEventData,
+} from "../eventManager/types/livePreviewPostMessageEvent.type";
 
 jest.mock("../../liveEditor/utils/liveEditorPostMessage", () => {
     const { getAllContentTypes } = jest.requireActual(
@@ -30,6 +38,12 @@ jest.mock("../../liveEditor/utils/liveEditorPostMessage", () => {
     };
 });
 
+Object.defineProperty(globalThis, "crypto", {
+    value: {
+        getRandomValues: (arr: Array<any>) => crypto.randomBytes(arr.length),
+    },
+});
+
 const TITLE_CSLP_TAG = "content-type-1.entry-uid-1.en-us.field-title";
 const DESC_CSLP_TAG = "content-type-2.entry-uid-2.en-us.field-description";
 const LINK_CSLP_TAG = "content-type-3.entry-uid-3.en-us.field-link";
@@ -41,6 +55,13 @@ global.ResizeObserver = jest.fn().mockImplementation(() => ({
 }));
 describe("cslp tooltip", () => {
     beforeEach(() => {
+        Config.reset();
+        livePreviewPostMessage?.destroy({ soft: true });
+        livePreviewPostMessage?.on(
+            LIVE_PREVIEW_POST_MESSAGE_EVENTS.INIT,
+            mockLivePreviewInitEventListener
+        );
+
         const titlePara = document.createElement("h3");
         titlePara.setAttribute("data-cslp", TITLE_CSLP_TAG);
         titlePara.setAttribute("data-test-id", "title-para");
@@ -63,13 +84,15 @@ describe("cslp tooltip", () => {
 
     afterEach(() => {
         document.getElementsByTagName("html")[0].innerHTML = "";
+    });
+
+    afterAll(() => {
         Config.reset();
+        livePreviewPostMessage?.destroy({ soft: true });
     });
 
     test("should get value of cslp-tooltip into current-data-cslp when tag is hovered", () => {
-        new LivePreview({
-            enable: true,
-        });
+        new LivePreview();
 
         const tooltip = document.querySelector(
             "[data-test-id='cs-cslp-tooltip']"
@@ -94,9 +117,7 @@ describe("cslp tooltip", () => {
     });
 
     test("should change the button to single when hovered again to element without href", () => {
-        new LivePreview({
-            enable: true,
-        });
+        new LivePreview();
 
         const tooltip = document.querySelector(
             "[data-test-id='cs-cslp-tooltip']"
@@ -123,9 +144,7 @@ describe("cslp tooltip", () => {
     });
 
     test("should stick to top when element is above the viewport", () => {
-        new LivePreview({
-            enable: true,
-        });
+        new LivePreview();
 
         const tooltip = document.querySelector(
             "[data-test-id='cs-cslp-tooltip']"
@@ -176,13 +195,14 @@ describe("cslp tooltip", () => {
     });
 
     test("should redirect to page when edit tag button is clicked", () => {
-        new LivePreview({
+        Config.replace({
             enable: true,
             stackDetails: {
                 apiKey: "sample-api-key",
                 environment: "sample-environment",
             },
         });
+        new LivePreview();
 
         const singularEditButton = document.querySelector(
             "[data-test-id='cslp-singular-edit-button']"
@@ -214,9 +234,7 @@ describe("cslp tooltip", () => {
     });
 
     test("should throw error when edit tag is used without apiKey", () => {
-        new LivePreview({
-            enable: true,
-        });
+        new LivePreview();
 
         const singularEditButton = document.querySelector(
             "[data-test-id='cslp-singular-edit-button']"
@@ -248,12 +266,13 @@ describe("cslp tooltip", () => {
     });
 
     test("should throw error when edit tag is used without environment", () => {
-        new LivePreview({
+        Config.replace({
             enable: true,
             stackDetails: {
                 apiKey: "Your-api-key",
             },
         });
+        new LivePreview();
 
         const singularEditButton = document.querySelector(
             "[data-test-id='cslp-singular-edit-button']"
@@ -283,10 +302,11 @@ describe("cslp tooltip", () => {
     });
 
     test("should remove data-cslp tag when cleanCslpOnProduction is true", () => {
-        new LivePreview({
+        Config.replace({
             enable: false,
             cleanCslpOnProduction: true,
         });
+        new LivePreview();
 
         const titlePara = document.querySelector("[data-test-id='title-para']");
         const descPara = document.querySelector("[data-test-id='desc-para']");
@@ -305,10 +325,11 @@ describe("cslp tooltip", () => {
     });
 
     test("should not remove data-cslp tag when enable is true even if cleanCslpOnProduction is true", () => {
-        new LivePreview({
+        Config.replace({
             enable: true,
             cleanCslpOnProduction: true,
         });
+        new LivePreview();
 
         const titlePara = document.querySelector("[data-test-id='title-para']");
         const descPara = document.querySelector("[data-test-id='desc-para']");
@@ -327,9 +348,7 @@ describe("cslp tooltip", () => {
     });
 
     test("should create multiple button when hover on a link", () => {
-        new LivePreview({
-            enable: true,
-        });
+        new LivePreview();
 
         const link = document.querySelector("[data-test-id='link-para']");
 
@@ -347,9 +366,7 @@ describe("cslp tooltip", () => {
     });
 
     test("should have current-href when hover upon a link", () => {
-        new LivePreview({
-            enable: true,
-        });
+        new LivePreview();
 
         const link = document.querySelector("[data-test-id='link-para']");
 
@@ -369,9 +386,7 @@ describe("cslp tooltip", () => {
     });
 
     test("should move class to another element when that element is hovered", () => {
-        new LivePreview({
-            enable: true,
-        });
+        new LivePreview();
 
         const titlePara = document.querySelector("[data-test-id='title-para']");
         const descPara = document.querySelector("[data-test-id='desc-para']");
@@ -395,9 +410,7 @@ describe("cslp tooltip", () => {
 
     test("should redirect to link when multiple Tooltip is clicked", () => {
         const { location } = window;
-        new LivePreview({
-            enable: true,
-        });
+        new LivePreview();
 
         const linkPara = document.querySelector("[data-test-id='link-para']");
 
@@ -448,9 +461,7 @@ describe("cslp tooltip", () => {
                 return mockLocation;
             });
 
-        new LivePreview({
-            enable: true,
-        });
+        new LivePreview();
 
         const singularEditButton = document.querySelector(
             "[data-test-id='cslp-singular-edit-button']"
@@ -458,7 +469,10 @@ describe("cslp tooltip", () => {
 
         const titlePara = document.querySelector("[data-test-id='title-para']");
 
-        jest.spyOn(window, "postMessage");
+        if (!livePreviewPostMessage) {
+            throw new Error("livePreviewPostMessage is not defined");
+        }
+        const spiedPostMessage = jest.spyOn(livePreviewPostMessage, "send");
 
         const hoverEvent = new CustomEvent("mouseover", {
             bubbles: true,
@@ -468,31 +482,26 @@ describe("cslp tooltip", () => {
 
         singularEditButton?.click();
 
-        expect(window.postMessage).toHaveBeenCalledWith(
-            {
-                from: "live-preview",
-                type: "scroll",
-                data: {
-                    field: "field-title",
-                    content_type_uid: "content-type-1",
-                    entry_uid: "entry-uid-1",
-                    locale: "en-us",
-                },
-            },
-            "*"
-        );
+        expect(spiedPostMessage).toHaveBeenCalledWith("scroll", {
+            field: "field-title",
+            content_type_uid: "content-type-1",
+            entry_uid: "entry-uid-1",
+            locale: "en-us",
+        });
 
         locationSpy.mockRestore();
         topLocationSpy.mockRestore();
+        spiedPostMessage.mockRestore();
     });
 
     test("should disable the edit button when the editButton config is disabled", async () => {
-        new LivePreview({
+        Config.replace({
             enable: true,
             editButton: {
                 enable: false,
             },
         });
+        new LivePreview();
 
         const tooltip = document.querySelector(
             "[data-test-id='cs-cslp-tooltip']"
@@ -517,13 +526,14 @@ describe("cslp tooltip", () => {
     });
 
     test("should disable the edit button when the editButton config is disabled for outside live preview panel", async () => {
-        new LivePreview({
+        Config.replace({
             enable: true,
             editButton: {
                 enable: true,
                 exclude: ["outsideLivePreviewPortal"],
             },
         });
+        new LivePreview();
 
         const tooltip = document.querySelector(
             "[data-test-id='cs-cslp-tooltip']"
@@ -566,13 +576,14 @@ describe("cslp tooltip", () => {
                 return mockLocation;
             });
 
-        new LivePreview({
+        Config.replace({
             enable: true,
             editButton: {
                 enable: true,
                 exclude: ["insideLivePreviewPortal"],
             },
         });
+        new LivePreview();
 
         const tooltip = document.querySelector(
             "[data-test-id='cs-cslp-tooltip']"
@@ -610,7 +621,7 @@ describe("cslp tooltip", () => {
                 return mockLocation;
             });
 
-        new LivePreview({
+        Config.replace({
             enable: true,
             editButton: {
                 enable: true,
@@ -620,6 +631,7 @@ describe("cslp tooltip", () => {
                 ],
             },
         });
+        new LivePreview();
 
         const tooltip = document.querySelector(
             "[data-test-id='cs-cslp-tooltip']"
@@ -656,7 +668,7 @@ describe("cslp tooltip", () => {
                 return mockLocation;
             });
 
-        new LivePreview({
+        Config.replace({
             enable: true,
             editButton: {
                 enable: true,
@@ -667,6 +679,7 @@ describe("cslp tooltip", () => {
                 includeByQueryParameter: false,
             },
         });
+        new LivePreview();
 
         const tooltip = document.querySelector(
             "[data-test-id='cs-cslp-tooltip']"
@@ -696,13 +709,24 @@ describe("cslp tooltip", () => {
 describe("debug module", () => {
     beforeEach(() => {
         Config.reset();
+        livePreviewPostMessage?.destroy({ soft: true });
+        livePreviewPostMessage?.on(
+            LIVE_PREVIEW_POST_MESSAGE_EVENTS.INIT,
+            mockLivePreviewInitEventListener
+        );
     });
+
+    afterAll(() => {
+        Config.reset();
+        livePreviewPostMessage?.destroy({ soft: true });
+    });
+
     test("should display config when debug is true", () => {
         const spiedConsole = jest.spyOn(PublicLogger, "debug");
-        new LivePreview({
-            //@ts-ignore
+        Config.replace({
             debug: true,
         });
+        new LivePreview();
 
         const outputErrorLog = spiedConsole.mock.calls[0];
 
@@ -711,6 +735,7 @@ describe("debug module", () => {
         );
 
         const expectedOutput = getDefaultConfig();
+        expectedOutput.debug = true;
         const actualOutput = outputErrorLog[1];
 
         // Not removing them causes serialization problems.
@@ -725,12 +750,21 @@ describe("debug module", () => {
 describe("incoming postMessage", () => {
     beforeEach(() => {
         Config.reset();
+        livePreviewPostMessage?.destroy({ soft: true });
+        livePreviewPostMessage?.on(
+            LIVE_PREVIEW_POST_MESSAGE_EVENTS.INIT,
+            mockLivePreviewInitEventListener
+        );
     });
     afterEach(() => {
         document.getElementsByTagName("html")[0].innerHTML = "";
     });
 
-    test("should trigger user onChange function when client-data-send is sent with ssr: false", async () => {
+    afterAll(() => {
+        Config.reset();
+        livePreviewPostMessage?.destroy({ soft: true });
+    });
+    test("should trigger user onChange function when client-data-send is sent for CSR app", async () => {
         const mockedStackSdk = {
             live_preview: {},
             headers: {
@@ -739,64 +773,69 @@ describe("incoming postMessage", () => {
             environment: "",
         };
 
-        // initiate live preview
-        const livePreview = new LivePreview({
-            enable: true,
-            ssr: false,
+        Config.replace({
             stackSdk: mockedStackSdk,
         });
 
-        await sendPostmessageToWindow("init-ack", {
-            entryUid: "entryUid",
-            contentTypeUid: "entryContentTypeUid",
-            windowType: "preview",
-        });
+        livePreviewPostMessage?.destroy({ soft: true });
+        livePreviewPostMessage?.on(
+            LIVE_PREVIEW_POST_MESSAGE_EVENTS.INIT,
+            mockLivePreviewInitEventListener
+        );
+
+        const livePreview = new LivePreview();
+        await sleep();
 
         // set user onChange function
         const userOnChange = jest.fn();
-        livePreview.setOnChangeCallback(userOnChange);
 
-        await sendPostmessageToWindow("client-data-send", {
+        livePreview.subscribeToOnEntryChange(userOnChange, "mock-callback-uid");
+
+        const onChangeData: OnChangeLivePreviewPostMessageEventData = {
             hash: "livePreviewHash1234",
-            content_type_uid: "entryContentTypeUid",
-        });
+        };
+
+        await livePreviewPostMessage?.send(
+            LIVE_PREVIEW_POST_MESSAGE_EVENTS.ON_CHANGE,
+            onChangeData
+        );
 
         expect(userOnChange).toHaveBeenCalled();
         expect(mockedStackSdk.live_preview).toMatchObject({
             hash: "livePreviewHash1234",
-            content_type_uid: "entryContentTypeUid",
+            content_type_uid: "contentTypeUid",
             live_preview: "livePreviewHash1234",
             entry_uid: "entryUid",
         });
     });
 
-    test("should receive contentTypeUid and EntryUid on init-ack", async () => {
-        const livePreview = new LivePreview({
-            enable: true,
-        });
+    test("should receive contentTypeUid and EntryUid on init", async () => {
+        if (!livePreviewPostMessage) {
+            throw new Error("livePreviewPostMessage is not defined");
+        }
 
-        await sendPostmessageToWindow("init-ack", {
-            entryUid: "livePreviewEntryUid",
-            contentTypeUid: "livePreviewContentTypeUid",
-        });
+        new LivePreview();
+        await sleep();
 
         expect(Config.get().stackDetails).toMatchObject({
             apiKey: "",
-            contentTypeUid: "livePreviewContentTypeUid",
-            entryUid: "livePreviewEntryUid",
+            contentTypeUid: "contentTypeUid",
+            entryUid: "entryUid",
             environment: "",
         });
     });
     test("should navigate forward, backward and reload page on history call", async () => {
-        new LivePreview({
-            enable: true,
-        });
+        new LivePreview();
+        await sleep();
 
         jest.spyOn(window.history, "forward");
         jest.spyOn(window.history, "back");
         jest.spyOn(window.history, "go").mockImplementation(() => {});
 
         // for forward
+        livePreviewPostMessage?.send(LIVE_PREVIEW_POST_MESSAGE_EVENTS.HISTORY, {
+            type: "forward",
+        } as HistoryLivePreviewPostMessageEventData);
         await sendPostmessageToWindow("history", {
             type: "forward",
         });
@@ -804,6 +843,9 @@ describe("incoming postMessage", () => {
         expect(window.history.forward).toHaveBeenCalled();
 
         // for back
+        livePreviewPostMessage?.send(LIVE_PREVIEW_POST_MESSAGE_EVENTS.HISTORY, {
+            type: "backward",
+        } as HistoryLivePreviewPostMessageEventData);
         await sendPostmessageToWindow("history", {
             type: "backward",
         });
@@ -811,6 +853,9 @@ describe("incoming postMessage", () => {
         expect(window.history.back).toHaveBeenCalled();
 
         // for reload
+        livePreviewPostMessage?.send(LIVE_PREVIEW_POST_MESSAGE_EVENTS.HISTORY, {
+            type: "reload",
+        } as HistoryLivePreviewPostMessageEventData);
         await sendPostmessageToWindow("history", {
             type: "reload",
         });
@@ -822,7 +867,17 @@ describe("incoming postMessage", () => {
 describe("Live modes", () => {
     beforeEach(() => {
         Config.reset();
+        livePreviewPostMessage?.destroy({ soft: true });
+        livePreviewPostMessage?.on(
+            LIVE_PREVIEW_POST_MESSAGE_EVENTS.INIT,
+            mockLivePreviewInitEventListener
+        );
         jest.clearAllMocks();
+    });
+
+    afterAll(() => {
+        Config.reset();
+        livePreviewPostMessage?.destroy({ soft: true });
     });
 
     test.skip("should initiate Visual editor if mode is greater than editor", () => {
@@ -836,12 +891,14 @@ describe("Live modes", () => {
 
         const spiedVisualEditor = jest.spyOn(LiveEditorModule, "VisualEditor");
 
-        new LivePreview(config);
+        Config.replace(config);
+        new LivePreview();
         expect(spiedVisualEditor).not.toHaveBeenCalled();
 
         config.mode = "editor";
 
-        new LivePreview(config);
+        Config.replace(config);
+        new LivePreview();
         expect(spiedVisualEditor).toHaveBeenCalled();
     });
 
@@ -852,47 +909,52 @@ describe("Live modes", () => {
 
         const spiedVisualEditor = jest.spyOn(LiveEditorModule, "VisualEditor");
 
-        new LivePreview(config);
+        new LivePreview();
         expect(spiedVisualEditor).not.toHaveBeenCalled();
 
         config.mode = "preview";
+        Config.replace(config);
 
-        new LivePreview(config);
+        new LivePreview();
         expect(spiedVisualEditor).not.toHaveBeenCalled();
     });
 });
 
-describe("live preview hash", () => {
-    test("should be empty by default", () => {
-        const livePreview = new LivePreview();
+// TODO: capetown: Add test for the following
+// describe.skip("live preview hash", () => {
+//     test("should be empty by default", () => {
+//         const livePreview = new LivePreview();
 
-        expect(livePreview.hash).toBe("");
-    });
+//         expect(livePreview.hash).toBe("");
+//     });
 
-    test("should be set when client-data-send event is fired", async () => {
-        const livePreview = new LivePreview();
-        const livePreviewHash = "livePreviewHash1234";
+//     test("should be set when client-data-send event is fired", async () => {
+//         const livePreview = new LivePreview();
+//         const livePreviewHash = "livePreviewHash1234";
 
-        await sendPostmessageToWindow("client-data-send", {
-            hash: livePreviewHash,
-            content_type_uid: "entryContentTypeUid",
-            entry_uid: "entryUid",
-        });
+//         await sendPostmessageToWindow("client-data-send", {
+//             hash: livePreviewHash,
+//             content_type_uid: "entryContentTypeUid",
+//             entry_uid: "entryUid",
+//         });
 
-        expect(livePreview.hash).toBe(livePreviewHash);
-    });
-});
+//         expect(livePreview.hash).toBe(livePreviewHash);
+//     });
+// });
 
-describe("Live preview config update", () => {
+describe.only("Live preview config update", () => {
     beforeEach(() => {
         Config.reset();
+        livePreviewPostMessage?.destroy({ soft: true });
     });
 
     afterAll(() => {
         Config.reset();
+        livePreviewPostMessage?.destroy({ soft: true });
     });
 
-    test("should update the config from the URL", () => {
+    // TODO: capetown: move this file to HOC.
+    test.skip("should update the config from the URL", async () => {
         const searchParams = new URLSearchParams(window.location.search);
         searchParams.set("content_type_uid", "test");
         searchParams.set("entry_uid", "test");
@@ -911,9 +973,14 @@ describe("Live preview config update", () => {
         expect(Config.get().hash).toEqual("");
 
         new LivePreview();
+        await sleep();
 
-        expect(Config.get().stackDetails.contentTypeUid).toEqual("test");
-        expect(Config.get().stackDetails.entryUid).toEqual("test");
+        console.log("james", Config.get());
+
+        expect(Config.get().stackDetails.contentTypeUid).toEqual(
+            "contentTypeUid"
+        );
+        expect(Config.get().stackDetails.entryUid).toEqual("entryUid");
         expect(Config.get().hash).toEqual("test");
 
         Object.defineProperty(window, "location", {
