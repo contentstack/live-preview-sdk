@@ -1,7 +1,7 @@
 import {
     IContentTypeRootBlocks,
     IModularBlockSingleBlock,
-} from "../../../types/contentTypeSchema.types";
+} from "../../../cms/types/contentTypeSchema.types";
 
 export type ISchemaIndividualFieldMap = Record<string, ISchemaFieldMap>;
 

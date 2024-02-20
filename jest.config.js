@@ -11,6 +11,9 @@ module.exports = {
         "^.+\\.(ts|tsx)$": "ts-jest",
     },
     coveragePathIgnorePatterns: ["__test__/"],
-    "collectCoverage": true,
-    "coverageReporters": ["html"],
+    collectCoverage: true,
+    coverageReporters: ["html"],
+    moduleNameMapper: {
+        "^lodash-es$": "lodash",
+    },
 };

@@ -1,9 +1,9 @@
 import ContentstackLivePreview from "../contentstack-live-preview-HOC";
-import { PublicLogger } from "../utils/public-logger";
-import { IInitData } from "../types/types";
-import { sendPostmessageToWindow } from "./utils";
-import packageJson from "../../package.json";
-import Config from "../utils/configHandler";
+import { PublicLogger } from "../../logger/logger";
+import { IInitData } from "../../types/types";
+import { sendPostmessageToWindow } from "../../__test__/utils";
+import packageJson from "../../../package.json";
+import Config from "../../configManager/configManager";
 
 describe("Live preview HOC Callback Pub Sub", () => {
     afterEach(() => {

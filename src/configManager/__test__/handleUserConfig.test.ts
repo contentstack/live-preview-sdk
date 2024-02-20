@@ -1,6 +1,6 @@
-import { getDefaultConfig } from "../defaults";
+import { getDefaultConfig } from "../config.default";
 import { handleInitData, handleUserConfig } from "../handleUserConfig";
-import { PublicLogger } from "../public-logger";
+import { PublicLogger } from "../../logger/logger";
 import {
     IConfig,
     IInitData,

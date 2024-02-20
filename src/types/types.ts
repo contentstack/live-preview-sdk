@@ -70,6 +70,10 @@ export declare const enum ILivePreviewWindowType {
 export declare interface IConfig {
     ssr: boolean;
     enable: boolean;
+    /**
+     * @default false
+     */
+    debug: boolean;
     cleanCslpOnProduction: boolean;
     stackDetails: IStackDetails;
     clientUrlParams: IClientUrlParams;
@@ -106,6 +110,10 @@ export declare interface IInitData {
     ssr: boolean;
     runScriptsOnUpdate: boolean;
     enable: boolean;
+    /**
+     * @default false
+     */
+    debug: boolean;
     cleanCslpOnProduction: boolean;
     stackDetails: Partial<IInitStackDetails>;
     clientUrlParams: Partial<Omit<IClientUrlParams, "url">>;
@@ -174,56 +182,12 @@ export declare interface ILivePreviewMessageCommon {
     from: "live-preview";
 }
 
-export type ILivePreviewReceivePostMessages =
-    | IClientDataMessage
-    | IInitAckMessage
-    | IHistoryMessage
-    | IDocWithScriptMessage;
-export declare interface IClientDataMessage extends ILivePreviewMessageCommon {
-    type: "client-data-send";
-    data: {
-        hash: string;
-    };
-}
-
-export declare interface IInitAckMessage extends ILivePreviewMessageCommon {
-    type: "init-ack";
-    data: {
-        contentTypeUid: string;
-        entryUid: string;
-        windowType: ILivePreviewWindowType;
-    };
-}
-
-export declare interface IHistoryMessage extends ILivePreviewMessageCommon {
-    type: "history";
-    data: {
-        type: "forward" | "backward" | "reload";
-    };
-}
-
-export declare interface IDocWithScriptMessage
-    extends ILivePreviewMessageCommon {
-    type: "document-body-post-scripts-loaded";
-    data: {
-        body: string;
-    };
-}
-
 export declare interface IEditButtonPosition {
     upperBoundOfTooltip: number;
     leftBoundOfTooltip: number;
 }
 
 // end of Post message types
-
-export declare type OnEntryChangeCallback = () => void;
-
-export declare type OnEntryChangeConfig = {
-    skipInitialRender?: boolean;
-};
-
-export declare type OnEntryChangeCallbackUID = string;
 
 export interface IVisualEditorInitEvent {
     windowType: ILivePreviewWindowType;

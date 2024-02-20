@@ -1,6 +1,6 @@
 import { getFieldSchemaMap } from "../../../__test__/data/fieldSchemaMap";
 import { sleep } from "../../../__test__/utils";
-import { VisualEditorCslpEventDetails } from "../../../types/liveEditor.types";
+import { VisualEditorCslpEventDetails } from "../../types/liveEditor.types";
 import { FieldSchemaMap } from "../fieldSchemaMap";
 import { getCsDataOfElement } from "../getCsDataOfElement";
 import { generateAddInstanceButton } from "../instanceButtons";

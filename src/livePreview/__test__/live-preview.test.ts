@@ -1,19 +1,19 @@
-import fetch from "jest-fetch-mock";
-
 import LivePreview from "../live-preview";
-import * as LiveEditorModule from "../liveEditor";
-import { getDefaultConfig } from "../utils/defaults";
-import { PublicLogger } from "../utils/public-logger";
+import * as LiveEditorModule from "../../liveEditor";
+import { getDefaultConfig } from "../../configManager/config.default";
+import { PublicLogger } from "../../logger/logger";
 
-import { IInitData, ILivePreviewWindowType } from "../types/types";
-import Config from "../utils/configHandler";
+import { IInitData, ILivePreviewWindowType } from "../../types/types";
+import Config from "../../configManager/configManager";
 import {
     convertObjectToMinifiedString,
     sendPostmessageToWindow,
-} from "./utils";
+} from "../../__test__/utils";
 
-jest.mock("../liveEditor/utils/liveEditorPostMessage", () => {
-    const { getAllContentTypes } = jest.requireActual("./data/contentType");
+jest.mock("../../liveEditor/utils/liveEditorPostMessage", () => {
+    const { getAllContentTypes } = jest.requireActual(
+        "../../__test__/data/contentType"
+    );
     const contentTypes = getAllContentTypes();
     return {
         __esModule: true,
@@ -440,12 +440,11 @@ describe("cslp tooltip", () => {
                 return mockLocation;
             });
 
-        const parentLocationSpy = jest
-            .spyOn(window.parent, "location", "get")
+        const topLocationSpy = jest
+            .spyOn(window, "top", "get")
             .mockImplementation(() => {
                 const mockLocation = JSON.parse(JSON.stringify(location));
                 mockLocation.href = "https://example1.com";
-
                 return mockLocation;
             });
 
@@ -484,7 +483,7 @@ describe("cslp tooltip", () => {
         );
 
         locationSpy.mockRestore();
-        parentLocationSpy.mockRestore();
+        topLocationSpy.mockRestore();
     });
 
     test("should disable the edit button when the editButton config is disabled", async () => {
@@ -559,12 +558,11 @@ describe("cslp tooltip", () => {
                 return mockLocation;
             });
 
-        const parentLocationSpy = jest
-            .spyOn(window.parent, "location", "get")
+        const topLocationSpy = jest
+            .spyOn(window, "top", "get")
             .mockImplementation(() => {
                 const mockLocation = JSON.parse(JSON.stringify(location));
                 mockLocation.href = "https://example1.com";
-
                 return mockLocation;
             });
 
@@ -598,7 +596,7 @@ describe("cslp tooltip", () => {
         expect(tooltip?.getAttribute("current-data-cslp")).toBe(undefined);
 
         locationSpy.mockRestore();
-        parentLocationSpy.mockRestore();
+        topLocationSpy.mockRestore();
     });
 
     test("should enable the edit button when the editButton config is disabled for outside live preview panel but query parameter is passed", async () => {
@@ -726,7 +724,6 @@ describe("debug module", () => {
 
 describe("incoming postMessage", () => {
     beforeEach(() => {
-        fetch.resetMocks();
         Config.reset();
     });
     afterEach(() => {
@@ -771,41 +768,6 @@ describe("incoming postMessage", () => {
             live_preview: "livePreviewHash1234",
             entry_uid: "entryUid",
         });
-    });
-
-    test("should fetch data when client-data-send is sent with ssr: true", async () => {
-        new LivePreview({
-            enable: true,
-            ssr: true,
-            stackDetails: {
-                apiKey: "iiyy",
-            },
-        });
-
-        await sendPostmessageToWindow("init-ack", {
-            entryUid: "entryUid",
-            contentTypeUid: "entryContentTypeUid",
-        });
-
-        const expectedLivePreviewDomBody = `
-            <div data-test-id="cslp-modified-body"><p>Modified Body</p></div>
-        `;
-        const expectedLivePreviewFetchUrl =
-            "http://localhost/?live_preview=livePreviewHash1234&content_type_uid=entryContentTypeUid&entry_uid=entryUid";
-
-        fetch.mockResponse(expectedLivePreviewDomBody);
-
-        await sendPostmessageToWindow("client-data-send", {
-            hash: "livePreviewHash1234",
-            content_type_uid: "entryContentTypeUid",
-        });
-
-        const livePreviewFetchUrl = fetch.mock.calls[0][0];
-
-        expect(livePreviewFetchUrl).toBe(expectedLivePreviewFetchUrl);
-        expect(document.body.children[0].outerHTML.trim()).toBe(
-            expectedLivePreviewDomBody.trim()
-        );
     });
 
     test("should receive contentTypeUid and EntryUid on init-ack", async () => {

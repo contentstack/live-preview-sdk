@@ -17,7 +17,7 @@ import {
     ISelectContentTypeSchema,
     ISingleLineTextBoxContentTypeSchema,
     IURLContentTypeSchema,
-} from "../../../types/contentTypeSchema.types";
+} from "../../../cms/types/contentTypeSchema.types";
 import { getFieldType } from "../getFieldType";
 import { FieldDataType, ISchemaFieldMap } from "../types/index.types";
 

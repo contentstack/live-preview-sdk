@@ -1,4 +1,4 @@
-import { IPageSchema } from "../../types/contentTypeSchema.types";
+import { IPageSchema } from "../../cms/types/contentTypeSchema.types";
 
 export function getAllContentTypes(): {
     all_fields: IPageSchema;

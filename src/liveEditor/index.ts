@@ -1,4 +1,4 @@
-import _ from "lodash";
+import { throttle } from "lodash-es";
 
 import { generateStartEditingButton } from "./utils/generateStartEditingButton";
 import {
@@ -16,27 +16,35 @@ import {
     removeAddInstanceButtons,
 } from "./utils/multipleElementAddButton";
 
+import { inIframe } from "../common/inIframe";
+import Config from "../configManager/configManager";
+import { addCslpOutline } from "../cslp/cslpdata";
+import {
+    ILivePreviewModeConfig,
+    ILivePreviewWindowType,
+    IVisualEditorInitEvent,
+} from "../types/types";
+import { VisualEditorCslpEventDetails } from "./types/liveEditor.types";
 import { FieldSchemaMap } from "./utils/fieldSchemaMap";
 import {
     addFocusOverlay,
     appendFocusedToolbar,
     hideFocusOverlay,
 } from "./utils/focusOverlayWrapper";
+import { generateCustomCursor } from "./utils/generateCustomCursor";
 import {
     getCsDataOfElement,
     getDOMEditStack,
 } from "./utils/getCsDataOfElement";
+import { getEntryUidFromCurrentPage } from "./utils/getEntryUidFromCurrentPage";
+import { getFieldType } from "./utils/getFieldType";
+import { isFieldDisabled } from "./utils/isFieldDisabled";
 import liveEditorPostMessage from "./utils/liveEditorPostMessage";
 import { LiveEditorPostMessageEvents } from "./utils/types/postMessage.types";
-import { addCslpOutline, extractDetailsFromCslp } from "../utils/cslpdata";
-import Config from "../utils/configHandler";
-import { ILivePreviewWindowType, IVisualEditorInitEvent } from "../types/types";
-import { inIframe } from "../utils/inIframe";
-import { getFieldType } from "./utils/getFieldType";
-import { generateCustomCursor } from "./utils/generateCustomCursor";
-import { VisualEditorCslpEventDetails } from "../types/liveEditor.types";
-import { getEntryUidFromCurrentPage } from "./utils/getEntryUidFromCurrentPage";
-import { isFieldDisabled } from "./utils/isFieldDisabled";
+import {
+    useHistoryPostMessageEvent,
+    useOnEntryUpdatePostMessageEvent,
+} from "../livePreview/eventManager/postMessageEvent.hooks";
 
 export class VisualEditor {
     private customCursor: HTMLDivElement | null = null;
@@ -105,6 +113,10 @@ export class VisualEditor {
         this.appendVisualEditorDOM();
         this.addFocusedToolbar = this.addFocusedToolbar.bind(this);
 
+        const config = Config.get();
+        if (!config.enable || config.mode < ILivePreviewModeConfig.EDITOR) {
+            return;
+        }
         liveEditorPostMessage
             ?.send<IVisualEditorInitEvent>("init", {
                 isSSR: Config.get().ssr,
@@ -132,6 +144,10 @@ export class VisualEditor {
                     LiveEditorPostMessageEvents.GET_ENTRY_UID_IN_CURRENT_PAGE,
                     getEntryUidFromCurrentPage
                 );
+
+                // These events are used to sync the data when we made some changes in the entry without invoking live preview module.
+                useHistoryPostMessageEvent();
+                useOnEntryUpdatePostMessageEvent();
             })
             .catch(() => {
                 if (!inIframe()) {
@@ -179,7 +195,7 @@ export class VisualEditor {
         this.previousSelectedEditableDOM = editableElement;
     };
 
-    handleMouseHover = _.throttle(async (event: MouseEvent) => {
+    handleMouseHover = throttle(async (event: MouseEvent) => {
         const eventDetails = getCsDataOfElement(event);
         if (!eventDetails) {
             this.resetCustomCursor();

@@ -1,4 +1,4 @@
-import { CslpData } from "./cslp.types";
+import { CslpData } from "../../cslp/types/cslp.types";
 
 export interface VisualEditorCslpEventDetails {
     editableElement: Element;
