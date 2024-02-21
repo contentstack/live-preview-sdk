@@ -2,10 +2,10 @@ import { VisualEditorCslpEventDetails } from "../types/liveEditor.types";
 import {
     generateReplaceAssetButton,
     removeReplaceAssetButton,
-} from "./assetButton";
+} from "./generateAssetButton";
 import { LIVE_EDITOR_FIELD_TYPE_ATTRIBUTE_KEY } from "./constants";
 import { FieldSchemaMap } from "./fieldSchemaMap";
-import { getExpectedFieldData, isEllipsisActive } from "./pseudoEditableField";
+import { getExpectedFieldData, isEllipsisActive } from "./generatePseudoEditableField";
 import { getFieldType } from "./getFieldType";
 import { handleFieldInput, handleFieldKeyDown } from "./handleFieldMouseDown";
 import liveEditorPostMessage from "./liveEditorPostMessage";
@@ -15,7 +15,7 @@ import {
 } from "./multipleElementAddButton";
 import { FieldDataType } from "./types/index.types";
 import { LiveEditorPostMessageEvents } from "./types/postMessage.types";
-import { generatePseudoEditableElement } from "./pseudoEditableField";
+import { generatePseudoEditableElement } from "./generatePseudoEditableField";
 
 /**
  * It handles all the fields based on their data type and its "multiple" property.
@@ -136,8 +136,7 @@ export async function handleIndividualFields(
                     );
                 }
             );
-
-            visualEditorWrapper?.appendChild(replaceButton);
+            
             return;
         }
 

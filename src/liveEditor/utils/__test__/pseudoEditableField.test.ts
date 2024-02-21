@@ -34,7 +34,7 @@ describe("getStyleOfAnElement", () => {
         elem.style.width = "100px";
 
         const style = getStyleOfAnElement(elem);
-        expect(style).toBe("display:block;visibility:visible;width:100px;");
+        expect(style).toEqual({ display: 'block', visibility: 'visible', width: '100px' });
     });
 
     test("it should not return filtered styles", () => {
@@ -57,9 +57,10 @@ describe("getStyleOfAnElement", () => {
         elem.style.marginBottom = "10px";
 
         const style = getStyleOfAnElement(elem);
-        expect(style).toBe("display:block;visibility:visible;width:100px;");
+        expect(style).toEqual({ display: 'block', visibility: 'visible', width: '100px' });
     });
 });
+
 
 describe("generatePseudoEditableElement", () => {
     test("it should generate a pseudo editable element", () => {

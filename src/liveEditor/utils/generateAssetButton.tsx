@@ -1,3 +1,6 @@
+import { render } from "preact";
+import ReplaceAssetButtonComponent from "../components/replaceAssetButton";
+
 /**
  * Removes all existing replace asset buttons from the provided visual editor wrapper element.
  * @param visualEditorWrapper - The visual editor wrapper element to remove replace asset buttons from.
@@ -28,15 +31,14 @@ export function generateReplaceAssetButton(
     targetElement: Element,
     onClickCallback: (event: MouseEvent) => void
 ): HTMLButtonElement {
-    const dimension = targetElement.getBoundingClientRect();
-    const replaceButton = document.createElement("button");
+   
+    const visualEditorWrapper = document.querySelector(".visual-editor__container");
+    const wrapper = document.createDocumentFragment();
+    render(<ReplaceAssetButtonComponent targetElement={targetElement} onClickCallback={onClickCallback}/>, wrapper);
+    
+    visualEditorWrapper?.appendChild(wrapper);
 
-    replaceButton.addEventListener("click", onClickCallback);
-    replaceButton.classList.add("visual-editor__replace-button");
-    replaceButton.setAttribute("data-testid", "visual-editor-replace-asset");
-    replaceButton.innerHTML = `Replace Asset`;
-    replaceButton.style.top = `${dimension.bottom + window.scrollY - 30}px`;
-    replaceButton.style.right = `${window.innerWidth - dimension.right}px`;
+    const replaceButton = document.querySelector(".visual-editor__replace-button") as HTMLButtonElement;
 
     return replaceButton;
 }

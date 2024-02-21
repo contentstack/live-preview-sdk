@@ -1,4 +1,3 @@
-import { CslpData } from "../../cslp/types/cslp.types";
 import { VisualEditorCslpEventDetails } from "../types/liveEditor.types";
 import { extractDetailsFromCslp } from "../../cslp/cslpdata";
 import {
@@ -7,11 +6,13 @@ import {
 } from "./constants";
 import { FieldSchemaMap } from "./fieldSchemaMap";
 import { cleanIndividualFieldResidual } from "./handleIndividualFields";
-import { caretSVG, deleteSVG, info, moveLeft, moveRight } from "./icon";
 import { isFieldDisabled } from "./isFieldDisabled";
 import liveEditorPostMessage from "./liveEditorPostMessage";
-import { getChildrenDirection } from "./multipleElementAddButton";
 import { LiveEditorPostMessageEvents } from "./types/postMessage.types";
+
+import MultipleFieldToolbarComponent from "../components/multipleFieldToolbar";
+import { render } from "preact";
+// import FieldLabelWrapperComponent from "../components/fieldLabelWrapper";
 
 /**
  * Adds a focus overlay to the target element.
@@ -154,18 +155,16 @@ export function hideFocusOverlay(elements: {
         }
     }
 }
+
 export function appendFocusedToolbar(
     eventDetails: VisualEditorCslpEventDetails,
     focusedToolbarElement: HTMLDivElement
 ) {
+    console.log('[IN SDK] : appendFocusedToolbar');
     appendFieldPathDropdown(eventDetails, focusedToolbarElement);
     appendMultipleFieldToolbar(eventDetails, focusedToolbarElement);
 }
-function closeOverlay() {
-    document
-        .querySelector<HTMLDivElement>(".visual-editor__overlay--top")
-        ?.click();
-}
+
 export function appendMultipleFieldToolbar(
     eventDetails: VisualEditorCslpEventDetails,
     focusedToolbarElement: HTMLDivElement
@@ -180,77 +179,24 @@ export function appendMultipleFieldToolbar(
             eventDetails
         );
         if (fieldSchema?.multiple && !fieldDisabled) {
-            const multipleFieldToolbar = document.createElement("div");
-            multipleFieldToolbar.classList.add(
-                "visual-editor__focused-toolbar__multiple-field-toolbar"
-            );
 
-            const buttonGroup = document.createElement("div");
-            buttonGroup.classList.add(
-                "visual-editor__focused-toolbar__button-group"
-            );
+            const wrapper = document.createDocumentFragment();
+            console.log('[IN SDK] : Rendering in wrapper');
+            
+            render(
+                <MultipleFieldToolbarComponent 
+                    fieldMetadata={fieldMetadata}
+                    targetElement={targetElement}
+                />, 
+                wrapper
+            )
 
-            const deleteSVGButton = document.createElement("button");
-            deleteSVGButton.classList.add(
-                "visual-editor__button",
-                "visual-editor__button--secondary"
-            );
-            deleteSVGButton.innerHTML = deleteSVG;
-            deleteSVGButton.addEventListener("click", (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                handleDeleteInstance(fieldMetadata);
-            });
-
-            const parentPath =
-                fieldMetadata?.multipleFieldMetadata?.parentDetails
-                    ?.parentCslpValue || "";
-
-            const addDirection = getChildrenDirection(
-                targetElement,
-                parentPath
-            );
-
-            const movePreviousButton = document.createElement("button");
-            movePreviousButton.classList.add(
-                "visual-editor__button",
-                "visual-editor__button--secondary"
-            );
-            movePreviousButton.innerHTML = moveLeft;
-            movePreviousButton.addEventListener("click", (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                handleMoveInstance(fieldMetadata, "previous");
-            });
-
-            const moveNextButton = document.createElement("button");
-            moveNextButton.classList.add(
-                "visual-editor__button",
-                "visual-editor__button--secondary"
-            );
-            moveNextButton.innerHTML = moveRight;
-            moveNextButton.addEventListener("click", (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                handleMoveInstance(fieldMetadata, "next");
-            });
-
-            if (addDirection === "vertical") {
-                movePreviousButton.classList.add("visual-editor__rotate--90");
-                moveNextButton.classList.add("visual-editor__rotate--90");
-            }
-
-            buttonGroup.append(
-                movePreviousButton,
-                moveNextButton,
-                deleteSVGButton
-            );
-            multipleFieldToolbar.append(buttonGroup);
-
-            focusedToolbarElement.append(multipleFieldToolbar);
+            focusedToolbarElement.append(wrapper);
+            console.log('[IN SDK] : Appending wrapper');
         }
     });
 }
+
 export function appendFieldPathDropdown(
     eventDetails: VisualEditorCslpEventDetails,
     focusedToolbarElement: HTMLDivElement
@@ -291,7 +237,7 @@ export function appendFieldPathDropdown(
     caretIcon.classList.add(
         "visual-editor__focused-toolbar__field-label-wrapper__caret"
     );
-    caretIcon.innerHTML = caretSVG;
+    caretIcon.innerHTML = 'caretSVG';
 
     currentFieldItem.append(textDiv, caretIcon);
     focusedToolbarElement.addEventListener("click", (e) => {
@@ -342,7 +288,7 @@ export function appendFieldPathDropdown(
         textDiv.innerText = fieldSchema.display_name;
 
         if (fieldDisabled) {
-            caretIcon.innerHTML = info;
+            caretIcon.innerHTML = 'infoSVG';
             caretIcon.classList.add("visual-editor__tooltip");
             caretIcon.setAttribute("data-tooltip", reason);
         }
@@ -379,34 +325,6 @@ export function appendFieldPathDropdown(
     });
 
     focusedToolbarElement.appendChild(FieldLabelWrapper);
-}
-
-function handleDeleteInstance(fieldMetadata: CslpData) {
-    liveEditorPostMessage
-        ?.send(LiveEditorPostMessageEvents.DELETE_INSTANCE, {
-            data:
-                fieldMetadata.fieldPathWithIndex +
-                "." +
-                fieldMetadata.multipleFieldMetadata.index,
-            fieldMetadata: fieldMetadata,
-        })
-        .finally(closeOverlay);
-}
-function handleMoveInstance(
-    fieldMetadata: CslpData,
-    direction: "previous" | "next"
-) {
-    //TODO: Disable first and last instance move
-    liveEditorPostMessage
-        ?.send(LiveEditorPostMessageEvents.MOVE_INSTANCE, {
-            data:
-                fieldMetadata.fieldPathWithIndex +
-                "." +
-                fieldMetadata.multipleFieldMetadata.index,
-            direction: direction,
-            fieldMetadata: fieldMetadata,
-        })
-        .finally(closeOverlay);
 }
 
 function collectParentCSLPPaths(

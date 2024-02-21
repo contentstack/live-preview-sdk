@@ -1,7 +1,7 @@
 import {
     generateReplaceAssetButton,
     removeReplaceAssetButton,
-} from "../assetButton";
+} from "../generateAssetButton";
 
 describe("generateReplaceAssetButton", () => {
     let targetElement: HTMLImageElement;

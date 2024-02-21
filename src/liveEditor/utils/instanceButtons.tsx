@@ -1,4 +1,5 @@
-const plusIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">\n<path d="M10.4688 4.375C10.4688 4.11612 10.259 3.90625 10.0001 3.90625C9.74121 3.90625 9.53135 4.11612 9.53135 4.375V9.27307H4.37402C4.11514 9.27307 3.90527 9.48294 3.90527 9.74182C3.90527 10.0007 4.11514 10.2106 4.37402 10.2106H9.53135V15.625C9.53135 15.8839 9.74121 16.0937 10.0001 16.0937C10.259 16.0937 10.4688 15.8839 10.4688 15.625V10.2106H15.6259C15.8847 10.2106 16.0946 10.0007 16.0946 9.74182C16.0946 9.48294 15.8847 9.27307 15.6259 9.27307H10.4688V4.375Z" fill="#475161"/>\n</svg>`;
+import { render } from "preact";
+import AddInstanceButtonComponent from "../components/addInstanceButton";
 
 /**
  * Generates a button element, when clicked, triggers the provided callback function.
@@ -8,11 +9,18 @@ const plusIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
 export function generateAddInstanceButton(
     onClickCallback: (event: MouseEvent) => void
 ): HTMLButtonElement {
-    const button = document.createElement("button");
-    button.innerHTML = plusIcon;
-    button.classList.add("visual-editor__add-button");
-    button.setAttribute("data-testid", "visual-editor-add-instance-button");
-    button.addEventListener("click", onClickCallback);
+    const visualEditorWrapper = document.querySelector(".visual-editor__container");
+    const wrapper = document.createDocumentFragment();
+    render(
+        <AddInstanceButtonComponent onClickCallback={onClickCallback} />,
+        wrapper
+    );
+    visualEditorWrapper?.appendChild(wrapper);
+
+    const button = document.querySelector(
+        ".visual-editor__add-button"
+    ) as HTMLButtonElement;
+    
     return button;
 }
 

@@ -2,6 +2,8 @@ import { toString } from "lodash-es";
 import { CslpData } from "../../cslp/types/cslp.types";
 import liveEditorPostMessage from "./liveEditorPostMessage";
 import { LiveEditorPostMessageEvents } from "./types/postMessage.types";
+import { render } from "preact";
+import PseudoEditableFieldComponent from "../components/pseudoEditableField";
 
 /**
  * Retrieves the expected field data based on the provided field metadata.
@@ -20,23 +22,14 @@ export async function getExpectedFieldData(
     return toString(data?.fieldData);
 }
 
-/**
- * Checks if the content of an element is truncated with ellipsis.
- *
- * @param element The HTML element to check.
- * @returns A boolean indicating whether the content is truncated with ellipsis.
- */
-export function isEllipsisActive(element: HTMLElement): boolean {
-    return element.offsetWidth < element.scrollWidth;
-}
 
 /**
  * Retrieves the computed style of an HTML element.
  *
  * @param element - The HTML element to retrieve the style from.
- * @returns A string representing the computed style of the element.
+ * @returns An object representing the computed style of the element.
  */
-export function getStyleOfAnElement(element: HTMLElement): string {
+export function getStyleOfAnElement(element: HTMLElement): { [key: string]: string } {
     const styleSheetDeclaration = window.getComputedStyle(element);
     const styleSheetArray = Array.from(styleSheetDeclaration);
 
@@ -59,15 +52,26 @@ export function getStyleOfAnElement(element: HTMLElement): string {
         "-webkit-user-modify",
     ];
 
-    return styleSheetArray
-        .map((style) => {
-            if (FILTER_STYLES.includes(style)) {
-                return "";
-            }
+    const styles: { [key: string]: string } = {};
+    styleSheetArray.forEach((style: string) => {
+        if (!FILTER_STYLES.includes(style)) {
             const styleValue = styleSheetDeclaration.getPropertyValue(style);
-            return `${style}:${styleValue};`;
-        })
-        .join("");
+            styles[style] = styleValue;
+        }
+    });
+
+    return styles;
+}
+
+
+/**
+ * Checks if the content of an element is truncated with ellipsis.
+ *
+ * @param element The HTML element to check.
+ * @returns A boolean indicating whether the content is truncated with ellipsis.
+ */
+export function isEllipsisActive(element: HTMLElement): boolean {
+    return element.offsetWidth < element.scrollWidth;
 }
 
 /**
@@ -92,24 +96,14 @@ export function generatePseudoEditableElement(
     config: { textContent: string }
 ): HTMLDivElement {
     const { editableElement } = elements;
-    const pseudoEditableElement = document.createElement("div");
-
-    pseudoEditableElement.classList.add(
-        "visual-editor__pseudo-editable-element"
-    );
-    pseudoEditableElement.setAttribute(
-        "data-testid",
-        "visual-editor__pseudo-editable-element"
-    );
-
-    const styles = getStyleOfAnElement(editableElement);
-    const { top, left } = editableElement.getBoundingClientRect();
-    pseudoEditableElement.style.cssText = styles;
-    pseudoEditableElement.style.position = "absolute";
-    pseudoEditableElement.style.top = `${top}px`;
-    pseudoEditableElement.style.left = `${left}px`;
-
-    pseudoEditableElement.textContent = config.textContent;
+    
+    const wrapper = document.createDocumentFragment();
+    render(<PseudoEditableFieldComponent 
+        editableElement={editableElement}
+        config={config}
+        />, wrapper)
+        
+    const pseudoEditableElement = document.querySelector(".visual-editor__pseudo-editable-element") as HTMLDivElement;
 
     // TODO: set up a observer for UI shift.
     return pseudoEditableElement;

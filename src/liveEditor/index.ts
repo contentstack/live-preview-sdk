@@ -1,12 +1,12 @@
 import { throttle } from "lodash-es";
 
 import { generateStartEditingButton } from "./utils/generateStartEditingButton";
-import {
-    generateFocusedToolbar,
-    generateVisualEditorCursor,
-    generateVisualEditorOverlay,
-    generateVisualEditorWrapper,
-} from "./utils/generateVisualEditorDom";
+// import {
+//     generateFocusedToolbar,
+//     generateVisualEditorCursor,
+//     generateVisualEditorOverlay,
+//     generateVisualEditorWrapper,
+// } from "./utils/generateVisualEditorDom";
 import {
     cleanIndividualFieldResidual,
     handleIndividualFields,
@@ -45,6 +45,7 @@ import {
     useHistoryPostMessageEvent,
     useOnEntryUpdatePostMessageEvent,
 } from "../livePreview/eventManager/postMessageEvent.hooks";
+import initUI from "./components/initUI";
 
 export class VisualEditor {
     private customCursor: HTMLDivElement | null = null;
@@ -102,19 +103,32 @@ export class VisualEditor {
 
     constructor() {
         this.handleMouseHover = this.handleMouseHover.bind(this);
-        this.hideCustomCursor = this.hideCustomCursor.bind(this);
+        // this.hideCustomCursor = this.hideCustomCursor.bind(this);
         this.handleCursorPosition = this.handleCursorPosition.bind(this);
         this.resetCustomCursor = this.resetCustomCursor.bind(this);
-        this.appendVisualEditorDOM = this.appendVisualEditorDOM.bind(this);
+        // this.appendVisualEditorDOM = this.appendVisualEditorDOM.bind(this);
         this.removeVisualEditorDOM = this.removeVisualEditorDOM.bind(this);
-        this.handleMouseDownForVisualEditing =
-            this.handleMouseDownForVisualEditing.bind(this);
+        this.handleMouseClick =
+            this.handleMouseClick.bind(this);
 
-        this.appendVisualEditorDOM();
+        // this.appendVisualEditorDOM();
+        
+        initUI();
+        this.visualEditorWrapper = document.querySelector(".visual-editor__container");
+        this.overlayWrapper = document.querySelector(".visual-editor__overlay__wrapper");
+        this.customCursor = document.querySelector(".visual-editor__cursor");
+
+        console.log('[IN SDK] : Wrappers', this.visualEditorWrapper, this.overlayWrapper, this.customCursor);
+        console.log('[IN SDK] : Wrapper types', typeof this.visualEditorWrapper, typeof this.overlayWrapper, typeof this.customCursor);
+        
         this.addFocusedToolbar = this.addFocusedToolbar.bind(this);
 
+        console.log('[IN SDK] : INIT : VisualEditor');
+        
         const config = Config.get();
+        console.log('[IN SDK] : config object', config);
         if (!config.enable || config.mode < ILivePreviewModeConfig.EDITOR) {
+            console.log('[IN SDK] : config RETURN', config);
             return;
         }
         liveEditorPostMessage
@@ -122,6 +136,8 @@ export class VisualEditor {
                 isSSR: Config.get().ssr,
             })
             .then((data) => {
+                console.log('[IN SDK] : adv-pos-message : WORKING');
+                
                 const {
                     windowType = ILivePreviewWindowType.EDITOR,
                     stackDetails,
@@ -133,7 +149,7 @@ export class VisualEditor {
                 );
                 window.addEventListener(
                     "click",
-                    this.handleMouseDownForVisualEditing
+                    this.handleMouseClick
                 );
                 window.addEventListener("mousemove", this.handleMouseHover);
                 window.addEventListener("mouseover", (event) => {
@@ -147,18 +163,23 @@ export class VisualEditor {
 
                 // These events are used to sync the data when we made some changes in the entry without invoking live preview module.
                 useHistoryPostMessageEvent();
-                useOnEntryUpdatePostMessageEvent();
+                useOnEntryUpdatePostMessageEvent()
+                
             })
-            .catch(() => {
+            .catch((e) => {
+                console.log('[IN SDK] : ', e);
+                
                 if (!inIframe()) {
                     generateStartEditingButton(this.visualEditorWrapper);
                 }
             });
     }
 
-    private handleMouseDownForVisualEditing = async (
+    private handleMouseClick = async (
         event: MouseEvent
     ): Promise<void> => {
+        console.log('[IN SDK] : in handleMouseClick');
+        
         event.preventDefault();
         const eventDetails = getCsDataOfElement(event);
         if (
@@ -284,21 +305,22 @@ export class VisualEditor {
         this.previousHoveredTargetDOM = editableElement;
     }, 10);
 
-    appendVisualEditorDOM = (): void => {
-        const visualEditorDOM = document.querySelector(
-            ".visual-editor__container"
-        );
-        if (!visualEditorDOM) {
-            this.customCursor = generateVisualEditorCursor();
-            this.overlayWrapper = generateVisualEditorOverlay(this.hideOverlay);
-            this.focusedToolbar = generateFocusedToolbar();
-            this.visualEditorWrapper = generateVisualEditorWrapper({
-                cursor: this.customCursor,
-                overlay: this.overlayWrapper,
-                toolbar: this.focusedToolbar,
-            });
-        }
-    };
+    // appendVisualEditorDOM = (): void => {
+    //     const visualEditorDOM = document.querySelector(
+    //         ".visual-editor__container"
+    //     );
+    //     if (!visualEditorDOM) {
+    //         this.customCursor = generateVisualEditorCursor();
+    //         this.overlayWrapper = generateVisualEditorOverlay(this.hideOverlay);
+    //         this.focusedToolbar = generateFocusedToolbar();
+    //         this.visualEditorWrapper = generateVisualEditorWrapper({
+    //             cursor: this.customCursor,
+    //             overlay: this.overlayWrapper,
+    //             toolbar: this.focusedToolbar,
+    //         });
+    //     }
+    // };
+
     handleCursorPosition = (event: MouseEvent): void => {
         if (this.customCursor) {
             const mouseY = event.clientY;
@@ -308,11 +330,13 @@ export class VisualEditor {
             this.customCursor.style.top = `${mouseY}px`;
         }
     };
-    hideCustomCursor = (): void => {
-        if (this.customCursor) {
-            this.customCursor.classList.remove("visible");
-        }
-    };
+    
+    // hideCustomCursor = (): void => {
+    //     if (this.customCursor) {
+    //         this.customCursor.classList.remove("visible");
+    //     }
+    // };
+
     resetCustomCursor = (): void => {
         if (this.customCursor) {
             generateCustomCursor({
@@ -321,6 +345,7 @@ export class VisualEditor {
             });
         }
     };
+    
     removeVisualEditorDOM = (): void => {
         const visualEditorDOM = document.querySelector(
             ".visual-editor__container"
@@ -335,7 +360,7 @@ export class VisualEditor {
     destroy = (): void => {
         window.removeEventListener(
             "click",
-            this.handleMouseDownForVisualEditing
+            this.handleMouseClick
         );
         window.removeEventListener("mousemove", this.handleMouseHover);
         this.resizeObserver.disconnect();
