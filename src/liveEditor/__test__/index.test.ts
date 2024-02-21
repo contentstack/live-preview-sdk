@@ -4,6 +4,7 @@ import { getFieldSchemaMap } from "../../__test__/data/fieldSchemaMap";
 import { sleep } from "../../__test__/utils";
 import { VisualEditor } from "../index";
 import { FieldSchemaMap } from "../utils/fieldSchemaMap";
+import Config from "../../configManager/configManager";
 
 jest.mock("../utils/liveEditorPostMessage", () => {
     const { getAllContentTypes } = jest.requireActual(
@@ -44,6 +45,7 @@ describe("Visual editor", () => {
             "all_fields",
             getFieldSchemaMap().all_fields
         );
+        Config.set("mode", 2);
     });
 
     afterEach(() => {

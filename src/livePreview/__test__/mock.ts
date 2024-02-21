@@ -1,4 +1,7 @@
-import { ILivePreviewWindowType } from "../../types/types";
+import {
+    ILivePreviewWindowType,
+    IVisualEditorInitEvent,
+} from "../../types/types";
 import { LivePreviewInitEventResponse } from "../eventManager/types/livePreviewPostMessageEvent.type";
 
 export function mockLivePreviewInitEventListener(): LivePreviewInitEventResponse {
@@ -6,5 +9,14 @@ export function mockLivePreviewInitEventListener(): LivePreviewInitEventResponse
         contentTypeUid: "contentTypeUid",
         entryUid: "entryUid",
         windowType: ILivePreviewWindowType.PREVIEW,
+    };
+}
+
+export function mockLiveEditorInitEventListener(): IVisualEditorInitEvent {
+    return {
+        stackDetails: {
+            masterLocale: "en-us",
+        },
+        windowType: ILivePreviewWindowType.EDITOR,
     };
 }

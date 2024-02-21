@@ -1,4 +1,5 @@
 export enum LiveEditorPostMessageEvents {
+    INIT = "init",
     ADD_INSTANCE = "add-instance",
     UPDATE_FIELD = "update-field",
     OPEN_ASSET_MODAL = "open-asset-modal",
