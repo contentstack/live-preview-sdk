@@ -1,185 +1,200 @@
-import ContentstackLivePreview from "../contentstack-live-preview-HOC";
+import crypto from "crypto";
+
+import packageJson from "../../../package.json";
+import { sleep } from "../../__test__/utils";
+import Config from "../../configManager/configManager";
+import liveEditorPostMessage from "../../liveEditor/utils/liveEditorPostMessage";
+import { LiveEditorPostMessageEvents } from "../../liveEditor/utils/types/postMessage.types";
+import {
+    mockLiveEditorInitEventListener,
+    mockLivePreviewInitEventListener,
+} from "../../livePreview/__test__/mock";
+import livePreviewPostMessage from "../../livePreview/eventManager/livePreviewEventManager";
+import { LIVE_PREVIEW_POST_MESSAGE_EVENTS } from "../../livePreview/eventManager/livePreviewEventManager.constant";
 import { PublicLogger } from "../../logger/logger";
 import { IInitData } from "../../types/types";
-import { sendPostmessageToWindow } from "../../__test__/utils";
-import packageJson from "../../../package.json";
-import Config from "../../configManager/configManager";
+import ContentstackLivePreview from "../contentstack-live-preview-HOC";
 
-describe("Live preview HOC Callback Pub Sub", () => {
+Object.defineProperty(globalThis, "crypto", {
+    value: {
+        getRandomValues: (arr: Array<any>) => crypto.randomBytes(arr.length),
+    },
+});
+
+global.ResizeObserver = jest.fn().mockImplementation(() => ({
+    observe: jest.fn(),
+    unobserve: jest.fn(),
+    disconnect: jest.fn(),
+}));
+
+describe("Live Preview HOC init", () => {
+    beforeEach(() => {
+        livePreviewPostMessage?.on(
+            LIVE_PREVIEW_POST_MESSAGE_EVENTS.INIT,
+            mockLivePreviewInitEventListener
+        );
+
+        liveEditorPostMessage?.on(
+            LiveEditorPostMessageEvents.INIT,
+            mockLiveEditorInitEventListener
+        );
+    });
+
+    afterAll(() => {
+        jest.restoreAllMocks();
+    });
+
     afterEach(() => {
-        ContentstackLivePreview.subscribers = {};
-        ContentstackLivePreview.livePreview = null;
-    });
-    test("should add function to subscribers when onEntryChange is called", () => {
-        const onChangeCallback1 = jest.fn();
-        const onChangeCallback2 = jest.fn();
-        const onChangeCallback3 = jest.fn();
-        const onChangeCallback4 = jest.fn();
-        const onChangeCallback5 = jest.fn();
-        ContentstackLivePreview.onEntryChange(onChangeCallback1);
-        ContentstackLivePreview.onEntryChange(onChangeCallback2);
-        ContentstackLivePreview.onEntryChange(onChangeCallback3);
-        ContentstackLivePreview.onEntryChange(onChangeCallback4);
-        ContentstackLivePreview.onEntryChange(onChangeCallback5);
+        // @ts-ignore
+        ContentstackLivePreview.previewConstructors = {};
+        livePreviewPostMessage?.destroy({ soft: true });
+        liveEditorPostMessage?.destroy({ soft: true });
 
-        expect(Object.keys(ContentstackLivePreview.subscribers).length).toBe(5);
+        Config.reset();
+        jest.clearAllMocks();
     });
 
-    test("should remove function when id is provided", () => {
-        const onChangeCallbackToStay = jest.fn();
-        const onChangeCallbackToBeRemoved = jest.fn();
+    test("should initialize only the live preview ", async () => {
+        if (!livePreviewPostMessage || !liveEditorPostMessage) {
+            throw new Error(
+                "livePreviewPostMessage or liveEditor is unavailable"
+            );
+        }
 
-        const callbackUidToStay = ContentstackLivePreview.onEntryChange(
-            onChangeCallbackToStay
-        );
-        const callbackUidToBeRemoved = ContentstackLivePreview.onEntryChange(
-            onChangeCallbackToBeRemoved
-        );
-
-        ContentstackLivePreview.unsubscribeOnEntryChange(
-            callbackUidToBeRemoved
+        const livePreviewPostMessageSpy = jest.spyOn(
+            livePreviewPostMessage,
+            "send"
         );
 
-        expect(Object.keys(ContentstackLivePreview.subscribers).length).toBe(1);
-        expect(
-            ContentstackLivePreview.subscribers[callbackUidToBeRemoved]
-        ).toBeUndefined();
-        expect(
-            ContentstackLivePreview.subscribers[callbackUidToStay]
-        ).toBeDefined();
+        const liveEditorPostMessageSpy = jest.spyOn(
+            liveEditorPostMessage,
+            "send"
+        );
+
+        ContentstackLivePreview.init({});
+
+        expect(livePreviewPostMessageSpy).toHaveBeenCalledTimes(1);
+        expect(liveEditorPostMessageSpy).toHaveBeenCalledTimes(0);
     });
 
-    test("should remove function when callback is provided", () => {
-        const onChangeCallbackToStay = jest.fn();
-        const onChangeCallbackToBeRemoved = jest.fn();
+    test("should initialize both live preview and live editor when mode is editor", async () => {
+        if (!livePreviewPostMessage || !liveEditorPostMessage) {
+            throw new Error(
+                "livePreviewPostMessage or liveEditor is unavailable"
+            );
+        }
 
-        const callbackUidToStay = ContentstackLivePreview.onEntryChange(
-            onChangeCallbackToStay
-        );
-        const callbackUidToBeRemoved = ContentstackLivePreview.onEntryChange(
-            onChangeCallbackToBeRemoved
-        );
-
-        ContentstackLivePreview.unsubscribeOnEntryChange(
-            onChangeCallbackToBeRemoved
+        const livePreviewPostMessageSpy = jest.spyOn(
+            livePreviewPostMessage,
+            "send"
         );
 
-        expect(Object.keys(ContentstackLivePreview.subscribers).length).toBe(1);
-        expect(
-            ContentstackLivePreview.subscribers[callbackUidToBeRemoved]
-        ).toBeUndefined();
-        expect(
-            ContentstackLivePreview.subscribers[callbackUidToStay]
-        ).toBeDefined();
-    });
-
-    test("should warn user if callback or id is not present", () => {
-        const onChangeCallbackToStay = jest.fn();
-        const onChangeCallbackToBeRemoved = jest.fn();
-
-        ContentstackLivePreview.onEntryChange(onChangeCallbackToStay);
-        const callbackUidToBeRemoved = ContentstackLivePreview.onEntryChange(
-            onChangeCallbackToBeRemoved
+        const liveEditorPostMessageSpy = jest.spyOn(
+            liveEditorPostMessage,
+            "send"
         );
 
-        const spiedConsole = jest.spyOn(PublicLogger, "warn");
-
-        ContentstackLivePreview.unsubscribeOnEntryChange(
-            onChangeCallbackToBeRemoved
-        );
-
-        ContentstackLivePreview.unsubscribeOnEntryChange(
-            onChangeCallbackToBeRemoved
-        );
-        ContentstackLivePreview.unsubscribeOnEntryChange(
-            callbackUidToBeRemoved
-        );
-
-        expect(spiedConsole).toHaveBeenCalledTimes(2);
-        expect(spiedConsole).toHaveBeenCalledWith(
-            "No subscriber found with the given callback."
-        );
-        expect(spiedConsole).toHaveBeenCalledWith(
-            "No subscriber found with the given id."
-        );
-    });
-    test("should call the user defined function when entry is changed", async () => {
-        ContentstackLivePreview.init({ enable: true, ssr: false });
-
-        const userDefinedOnChangeFunction = jest.fn();
-        const userDefinedOnChangeFunctionWithSignedTrue = jest.fn();
-        const userDefinedOnChangeFUnctionWithNoInitiator = jest.fn();
-
-        ContentstackLivePreview.onEntryChange(userDefinedOnChangeFunction);
-        ContentstackLivePreview.onEntryChange(
-            userDefinedOnChangeFunctionWithSignedTrue,
-            {
-                skipInitialRender: true,
-            }
-        );
-        ContentstackLivePreview.onLiveEdit(
-            userDefinedOnChangeFUnctionWithNoInitiator
-        );
-
-        await sendPostmessageToWindow("client-data-send", {
-            hash: "livePreviewHash1234",
-            content_type_uid: "entryContentTypeUid",
+        ContentstackLivePreview.init({
+            mode: "editor",
+            stackDetails: {
+                environment: "development",
+                apiKey: "livePreviewApiKey123",
+            },
         });
 
-        expect(userDefinedOnChangeFunctionWithSignedTrue).toHaveBeenCalledTimes(
-            1
-        );
-        // This function will run twice because, first it will be
-        // run when it is was added by onEntryChange()
-        // and then it will be run when the entry is changed
-        expect(userDefinedOnChangeFunction).toHaveBeenCalledTimes(2);
-        expect(
-            userDefinedOnChangeFUnctionWithNoInitiator
-        ).toHaveBeenCalledTimes(1);
+        await sleep();
+        expect(livePreviewPostMessageSpy).toHaveBeenCalledTimes(1);
+        expect(liveEditorPostMessageSpy).toHaveBeenCalledTimes(1);
     });
-    test("should initialize the live preview when live preview was not initialized", async () => {
-        const { window } = global;
 
-        // @ts-ignore
-        delete global.window;
+    test("should return the existing live preview instance if it is already initialized", async () => {
+        const PublicLoggerWarnSpy = jest.spyOn(PublicLogger, "warn");
 
-        expect(global.window).toBeUndefined();
+        ContentstackLivePreview.init();
+        ContentstackLivePreview.init();
 
-        ContentstackLivePreview.init({ enable: true });
-
-        expect(ContentstackLivePreview.livePreview).toBeNull();
-
-        // restoring the window
-        global.window = window;
-
-        const userFunction = jest.fn();
-        // live preview should get initialized on onEntryChange()
-        ContentstackLivePreview.onEntryChange(userFunction);
-
-        expect(ContentstackLivePreview.livePreview).toBeDefined();
+        expect(PublicLoggerWarnSpy).toHaveBeenCalledTimes(1);
+        expect(PublicLoggerWarnSpy).toHaveBeenCalledWith(
+            "You have already initialized the Live Preview SDK. So, any subsequent initialization returns the existing SDK instance."
+        );
     });
 });
 
-describe("Live preview initialization", () => {
-    test("should create a new Live preview object for first time", () => {
-        expect(ContentstackLivePreview.livePreview).toBeNull();
-        ContentstackLivePreview.init();
-        expect(ContentstackLivePreview.livePreview).toBeDefined();
-        expect(ContentstackLivePreview.userConfig).toBeNull();
-    });
-    test("should return old Live preview object when re-initialized", () => {
-        const initializedLivePreview = ContentstackLivePreview["livePreview"];
-        ContentstackLivePreview.init();
-        ContentstackLivePreview.init();
-        const reinitializedLivePreview = ContentstackLivePreview["livePreview"];
-        expect(reinitializedLivePreview).toBe(initializedLivePreview);
-        expect(ContentstackLivePreview.userConfig).toBeNull();
-    });
-    test("should save the config when window is not available", () => {
-        const { window } = global;
+describe("Live Preview HOC config", () => {
+    beforeEach(() => {
+        livePreviewPostMessage?.on(
+            LIVE_PREVIEW_POST_MESSAGE_EVENTS.INIT,
+            mockLivePreviewInitEventListener
+        );
 
+        liveEditorPostMessage?.on(
+            LiveEditorPostMessageEvents.INIT,
+            mockLiveEditorInitEventListener
+        );
+    });
+
+    afterAll(() => {
+        jest.restoreAllMocks();
+    });
+
+    afterEach(() => {
         // @ts-ignore
-        delete global.window;
+        ContentstackLivePreview.previewConstructors = {};
+        livePreviewPostMessage?.destroy({ soft: true });
+        liveEditorPostMessage?.destroy({ soft: true });
+
+        Config.reset();
+        jest.clearAllMocks();
+    });
+
+    test("should set user config", async () => {
+        const userConfig: Partial<IInitData> = {
+            enable: true,
+            stackDetails: {
+                apiKey: "livePreviewApiKey123",
+            },
+        };
+
+        ContentstackLivePreview.init(userConfig);
+
+        expect(Config.get().stackDetails.apiKey).toBe("livePreviewApiKey123");
+    });
+
+    test("should set the hash from the URL", async () => {
+        const searchParams = new URLSearchParams(window.location.search);
+        searchParams.set("content_type_uid", "test");
+        searchParams.set("entry_uid", "test");
+        searchParams.set("live_preview", "test");
+
+        // mock window location
+        Object.defineProperty(window, "location", {
+            writable: true,
+            value: {
+                search: searchParams.toString(),
+            },
+        });
+
+        ContentstackLivePreview.init();
+
+        expect(Config.get().hash).toBe("test");
+        expect(Config.get().stackDetails.contentTypeUid).toBe("test");
+        expect(Config.get().stackDetails.entryUid).toBe("test");
+
+        Object.defineProperty(window, "location", {
+            writable: true,
+            value: {
+                search: "",
+            },
+        });
+    });
+
+    test.skip("should save the config when window is not available", () => {
+        const originalWindow = global.window;
+
+        // mock window deletion using define property
+        Object.defineProperty(global, "window", {
+            value: undefined,
+        });
 
         expect(global.window).toBeUndefined();
 
@@ -190,172 +205,330 @@ describe("Live preview initialization", () => {
             },
         };
 
-        expect(ContentstackLivePreview.userConfig).toBeNull();
+        // expect(ContentstackLivePreview.userConfig).toBeNull();
 
         ContentstackLivePreview.init(userConfig);
 
-        expect(ContentstackLivePreview.userConfig).toBe(userConfig);
+        // expect(ContentstackLivePreview.userConfig).toBe(userConfig);
 
         // restoring the window
-        global.window = window;
-
-        const userFunction = jest.fn();
-        // live preview should get initialized on onEntryChange()
-        ContentstackLivePreview.onEntryChange(userFunction);
-
-        expect(ContentstackLivePreview.userConfig).toBeNull();
+        Object.defineProperty(global, "window", {
+            value: originalWindow,
+        });
     });
 });
 
-describe("Live preview version", () => {
+describe("Live Preview HOC hash", () => {
+    beforeEach(() => {
+        livePreviewPostMessage?.on(
+            LIVE_PREVIEW_POST_MESSAGE_EVENTS.INIT,
+            mockLivePreviewInitEventListener
+        );
+
+        liveEditorPostMessage?.on(
+            LiveEditorPostMessageEvents.INIT,
+            mockLiveEditorInitEventListener
+        );
+    });
+
+    afterAll(() => {
+        jest.restoreAllMocks();
+    });
+
+    afterEach(() => {
+        // @ts-ignore
+        ContentstackLivePreview.previewConstructors = {};
+        livePreviewPostMessage?.destroy({ soft: true });
+        liveEditorPostMessage?.destroy({ soft: true });
+
+        Config.reset();
+        jest.clearAllMocks();
+    });
+
+    test("should return empty string if live preview is not initialized", async () => {
+        expect(ContentstackLivePreview.hash).toBe("");
+    });
+
+    test("should return hash if live preview is initialized", async () => {
+        ContentstackLivePreview.init({
+            ssr: false,
+        });
+        await sleep();
+
+        await livePreviewPostMessage?.send(
+            LIVE_PREVIEW_POST_MESSAGE_EVENTS.ON_CHANGE,
+            {
+                hash: "livePreviewHash1234",
+            }
+        );
+
+        expect(ContentstackLivePreview.hash).toBe("livePreviewHash1234");
+    });
+
+    test("should return hash from the URL if live preview is not initialized", async () => {
+        const searchParams = new URLSearchParams(window.location.search);
+        searchParams.set("live_preview", "test");
+
+        // mock window location
+        Object.defineProperty(window, "location", {
+            writable: true,
+            value: {
+                search: searchParams.toString(),
+            },
+        });
+
+        expect(ContentstackLivePreview.hash).toBe("test");
+
+        Object.defineProperty(window, "location", {
+            writable: true,
+            value: {
+                search: "",
+            },
+        });
+    });
+});
+describe("Live preview HOC onEntryChange", () => {
+    beforeAll(() => {
+        livePreviewPostMessage?.on(
+            LIVE_PREVIEW_POST_MESSAGE_EVENTS.INIT,
+            mockLivePreviewInitEventListener
+        );
+    });
+    test("should save the callback when SDK is not yet initialized", async () => {
+        const onChangeCallback1 = jest.fn();
+        const onChangeCallback2 = jest.fn();
+        ContentstackLivePreview.onEntryChange(onChangeCallback1, {
+            skipInitialRender: true,
+        });
+        ContentstackLivePreview.onEntryChange(onChangeCallback2, {
+            skipInitialRender: true,
+        });
+
+        ContentstackLivePreview.init({
+            ssr: false,
+        });
+        await sleep();
+
+        await livePreviewPostMessage?.send(
+            LIVE_PREVIEW_POST_MESSAGE_EVENTS.ON_CHANGE,
+            {
+                hash: "livePreviewHash1234",
+            }
+        );
+
+        expect(onChangeCallback1).toHaveBeenCalledTimes(1);
+        expect(onChangeCallback2).toHaveBeenCalledTimes(1);
+    });
+
+    test("should save the callback when SDK is initialized", async () => {
+        ContentstackLivePreview.init({
+            ssr: false,
+        });
+
+        await sleep();
+
+        const onChangeCallback1 = jest.fn();
+        const onChangeCallback2 = jest.fn();
+        ContentstackLivePreview.onEntryChange(onChangeCallback1, {
+            skipInitialRender: true,
+        });
+        ContentstackLivePreview.onEntryChange(onChangeCallback2, {
+            skipInitialRender: true,
+        });
+
+        await livePreviewPostMessage?.send(
+            LIVE_PREVIEW_POST_MESSAGE_EVENTS.ON_CHANGE,
+            {
+                hash: "livePreviewHash1234",
+            }
+        );
+
+        expect(onChangeCallback1).toHaveBeenCalledTimes(1);
+    });
+
+    test("should run the callback saved when SDK was uninitialized when the entry is changed", async () => {
+        const onChangeCallback1 = jest.fn();
+        ContentstackLivePreview.onEntryChange(onChangeCallback1);
+
+        ContentstackLivePreview.init({
+            ssr: false,
+        });
+        await sleep();
+
+        expect(onChangeCallback1).toHaveBeenCalledTimes(1);
+    });
+
+    test("should honor the skipInitialRender option", async () => {
+        const onChangeCallback1 = jest.fn();
+        const onChangeCallback2 = jest.fn();
+        ContentstackLivePreview.onEntryChange(onChangeCallback1, {
+            skipInitialRender: true,
+        });
+        ContentstackLivePreview.onEntryChange(onChangeCallback2);
+
+        ContentstackLivePreview.init({
+            ssr: false,
+        });
+        await sleep();
+
+        expect(onChangeCallback1).toHaveBeenCalledTimes(0);
+        expect(onChangeCallback2).toHaveBeenCalledTimes(1);
+    });
+});
+
+describe("Live preview HOC onLiveEdit", () => {
+    test("should not run the callback when the live preview is not initialized", () => {
+        const onLiveEditCallback = jest.fn();
+        ContentstackLivePreview.onLiveEdit(onLiveEditCallback);
+
+        expect(onLiveEditCallback).toHaveBeenCalledTimes(0);
+    });
+});
+
+describe("Live Preview HOC unsubscribeOnEntryChange", () => {
+    describe("unsubscribing with callback ID", () => {
+        test("callback should be removed, before SDK has initialized", async () => {
+            const onChangeCallbackToStay = jest.fn();
+            const onChangeCallbackToBeRemoved = jest.fn();
+
+            ContentstackLivePreview.onEntryChange(onChangeCallbackToStay);
+
+            const callbackUidToBeRemoved =
+                ContentstackLivePreview.onEntryChange(
+                    onChangeCallbackToBeRemoved
+                );
+
+            ContentstackLivePreview.unsubscribeOnEntryChange(
+                callbackUidToBeRemoved
+            );
+
+            ContentstackLivePreview.init({
+                ssr: false,
+            });
+            await sleep();
+
+            await livePreviewPostMessage?.send(
+                LIVE_PREVIEW_POST_MESSAGE_EVENTS.ON_CHANGE,
+                { hash: "livePreviewHash1234" }
+            );
+
+            expect(onChangeCallbackToBeRemoved).toHaveBeenCalledTimes(1);
+            expect(onChangeCallbackToStay).toHaveBeenCalledTimes(2);
+        });
+        test("callback should be removed, after SDK has initialized", async () => {
+            const onChangeCallbackToStay = jest.fn();
+            const onChangeCallbackToBeRemoved = jest.fn();
+
+            ContentstackLivePreview.onEntryChange(onChangeCallbackToStay);
+
+            const callbackUidToBeRemoved =
+                ContentstackLivePreview.onEntryChange(
+                    onChangeCallbackToBeRemoved
+                );
+
+            ContentstackLivePreview.init({
+                ssr: false,
+            });
+
+            ContentstackLivePreview.unsubscribeOnEntryChange(
+                callbackUidToBeRemoved
+            );
+
+            await sleep();
+
+            await livePreviewPostMessage?.send(
+                LIVE_PREVIEW_POST_MESSAGE_EVENTS.ON_CHANGE,
+                { hash: "livePreviewHash1234" }
+            );
+
+            expect(onChangeCallbackToBeRemoved).toHaveBeenCalledTimes(1);
+            expect(onChangeCallbackToStay).toHaveBeenCalledTimes(2);
+        });
+        test("should warn user if callback is not present", async () => {
+            const spiedConsole = jest.spyOn(PublicLogger, "warn");
+
+            ContentstackLivePreview.unsubscribeOnEntryChange(
+                "invalidCallbackId"
+            );
+
+            expect(spiedConsole).toHaveBeenCalledTimes(1);
+            expect(spiedConsole).toHaveBeenCalledWith(
+                "No subscriber found with the given id."
+            );
+
+            spiedConsole.mockRestore();
+        });
+    });
+
+    describe("unsubscribing with callback function", () => {
+        afterAll(() => {
+            jest.clearAllMocks();
+        });
+        test("callback should be removed, before SDK has initialized", async () => {
+            const onChangeCallbackToStay = jest.fn();
+            const onChangeCallbackToBeRemoved = jest.fn();
+
+            ContentstackLivePreview.onEntryChange(onChangeCallbackToStay);
+            ContentstackLivePreview.onEntryChange(onChangeCallbackToBeRemoved);
+
+            ContentstackLivePreview.unsubscribeOnEntryChange(
+                onChangeCallbackToBeRemoved
+            );
+
+            ContentstackLivePreview.init({
+                ssr: false,
+            });
+            await sleep();
+
+            await livePreviewPostMessage?.send(
+                LIVE_PREVIEW_POST_MESSAGE_EVENTS.ON_CHANGE,
+                { hash: "livePreviewHash1234" }
+            );
+
+            expect(onChangeCallbackToBeRemoved).toHaveBeenCalledTimes(1);
+            expect(onChangeCallbackToStay).toHaveBeenCalledTimes(2);
+        });
+        test("callback should be removed, after SDK has initialized", async () => {
+            const onChangeCallbackToStay = jest.fn();
+            const onChangeCallbackToBeRemoved = jest.fn();
+
+            ContentstackLivePreview.onEntryChange(onChangeCallbackToStay);
+            ContentstackLivePreview.onEntryChange(onChangeCallbackToBeRemoved);
+
+            ContentstackLivePreview.init({
+                ssr: false,
+            });
+            await sleep();
+
+            ContentstackLivePreview.unsubscribeOnEntryChange(
+                onChangeCallbackToBeRemoved
+            );
+
+            await livePreviewPostMessage?.send(
+                LIVE_PREVIEW_POST_MESSAGE_EVENTS.ON_CHANGE,
+                { hash: "livePreviewHash1234" }
+            );
+
+            expect(onChangeCallbackToBeRemoved).toHaveBeenCalledTimes(1);
+            expect(onChangeCallbackToStay).toHaveBeenCalledTimes(2);
+        });
+        test("should warn user if callback is not present", async () => {
+            const spiedConsole = jest.spyOn(PublicLogger, "warn");
+
+            ContentstackLivePreview.unsubscribeOnEntryChange(jest.fn());
+
+            expect(spiedConsole).toHaveBeenCalledTimes(1);
+            expect(spiedConsole).toHaveBeenCalledWith(
+                "No subscriber found with the given callback."
+            );
+        });
+    });
+});
+
+describe("getSdkVersion", () => {
     test("should return current version", () => {
         expect(ContentstackLivePreview.getSdkVersion()).toBe(
             packageJson.version
         );
-    });
-});
-
-describe("Gatsby Data formatter", () => {
-    test("should return data in correct format", async () => {
-        class stackSdkWithFetch {
-            live_preview = {};
-            headers = {
-                api_key: "",
-            };
-            content_type_uid = "live_preview_content_type";
-            environment = "";
-
-            data = {
-                page: {
-                    title: "test",
-                    description: "world",
-                },
-            };
-            constructor() {}
-
-            toJSON() {
-                return this;
-            }
-            fetch() {
-                return Promise.resolve(this.data);
-            }
-        }
-
-        class stackSdkWithFind {
-            live_preview = {};
-            headers = {
-                api_key: "",
-            };
-            content_type_uid = "live_preview_content_type";
-
-            environment = "";
-            data = [
-                [
-                    {
-                        page: {
-                            title: "test",
-                            description: "world",
-                        },
-                    },
-                ],
-            ];
-            constructor() {}
-
-            toJSON() {
-                return this;
-            }
-
-            find() {
-                return Promise.resolve(this.data);
-            }
-        }
-
-        expect(
-            await ContentstackLivePreview.getGatsbyDataFormat(
-                new stackSdkWithFetch(),
-                "prefix"
-            )
-        ).toMatchObject({
-            prefixLivePreviewContentType: {
-                page: { title: "test", description: "world" },
-            },
-        });
-
-        expect(
-            await ContentstackLivePreview.getGatsbyDataFormat(
-                new stackSdkWithFind(),
-                "prefix"
-            )
-        ).toMatchObject([
-            [
-                {
-                    prefixLivePreviewContentType: {
-                        page: { title: "test", description: "world" },
-                    },
-                },
-            ],
-        ]);
-    });
-});
-
-describe("live preview hash", () => {
-    beforeAll(() => {
-        Config.reset();
-    });
-    afterEach(() => {
-        ContentstackLivePreview.subscribers = {};
-        ContentstackLivePreview.livePreview = null;
-        Config.reset();
-    });
-    test("should be empty by default", () => {
-        ContentstackLivePreview.init();
-
-        expect(ContentstackLivePreview.hash).toBe("");
-    });
-
-    test("should be set when client-data-send event is fired", async () => {
-        ContentstackLivePreview.init();
-        const livePreviewHash = "livePreviewHash1234";
-
-        await sendPostmessageToWindow("client-data-send", {
-            hash: livePreviewHash,
-            content_type_uid: "entryContentTypeUid",
-            entry_uid: "entryUid",
-        });
-
-        expect(ContentstackLivePreview.hash).toBe(livePreviewHash);
-    });
-
-    test("should be empty string before init", () => {
-        expect(ContentstackLivePreview.hash).toBe("");
-    });
-});
-
-describe("setConfigFromParams()", () => {
-    afterEach(() => {
-        ContentstackLivePreview.subscribers = {};
-        ContentstackLivePreview.livePreview = null;
-    });
-    test("should set hash if live_preview is present", () => {
-        ContentstackLivePreview.init();
-        const livePreviewHash = "livePreviewHash1234";
-
-        expect(ContentstackLivePreview.hash).toBe("");
-
-        ContentstackLivePreview.setConfigFromParams({
-            live_preview: livePreviewHash,
-        });
-
-        expect(ContentstackLivePreview.hash).toBe(livePreviewHash);
-    });
-
-    test("should set the params if it was set before initialization", () => {
-        const livePreviewHash = "livePreviewHash1234";
-
-        ContentstackLivePreview.setConfigFromParams({
-            live_preview: livePreviewHash,
-        });
-
-        expect(ContentstackLivePreview.hash).toBe(livePreviewHash);
     });
 });

@@ -2,10 +2,10 @@ import packageJson from "../../../package.json";
 import Config, { setConfigFromParams } from "../../configManager/configManager";
 import { ILivePreviewWindowType } from "../../types/types";
 import livePreviewPostMessage from "./livePreviewEventManager";
-
-import { LIVE_PREVIEW_POST_MESSAGE_EVENTS } from "./livePreviewEventManger.constant";
+import { LIVE_PREVIEW_POST_MESSAGE_EVENTS } from "./livePreviewEventManager.constant";
 import {
     HistoryLivePreviewPostMessageEventData,
+    LivePreviewInitEventResponse,
     OnChangeLivePreviewPostMessageEventData,
 } from "./types/livePreviewPostMessageEvent.type";
 
@@ -64,17 +64,16 @@ export function sendInitializeLivePreviewPostMessageEvent(): void {
     const config = Config.get();
 
     livePreviewPostMessage
-        ?.send<{
-            contentTypeUid: string;
-            entryUid: string;
-            windowType: ILivePreviewWindowType;
-        }>(LIVE_PREVIEW_POST_MESSAGE_EVENTS.INIT, {
-            config: {
-                shouldReload: config.ssr,
-                href: window.location.href,
-                sdkVersion: packageJson.version,
-            },
-        })
+        ?.send<LivePreviewInitEventResponse>(
+            LIVE_PREVIEW_POST_MESSAGE_EVENTS.INIT,
+            {
+                config: {
+                    shouldReload: config.ssr,
+                    href: window.location.href,
+                    sdkVersion: packageJson.version,
+                },
+            }
+        )
         .then((data) => {
             const {
                 contentTypeUid,
@@ -82,19 +81,18 @@ export function sendInitializeLivePreviewPostMessageEvent(): void {
                 windowType = ILivePreviewWindowType.PREVIEW,
             } = data;
 
-            const stackDetails = Config.get().stackDetails;
-
             if (contentTypeUid && entryUid) {
-                stackDetails.contentTypeUid = contentTypeUid;
-                stackDetails.entryUid = entryUid;
+                // TODO: we should not use this function. Instead we should have sideEffect run automatically when we set the config.
+                setConfigFromParams({
+                    content_type_uid: contentTypeUid,
+                    entry_uid: entryUid,
+                });
             } else {
                 // TODO: add debug logs that runs conditionally
                 // PublicLogger.debug(
                 //     "init message did not contain contentTypeUid or entryUid."
                 // );
             }
-
-            Config.set("stackDetails", stackDetails);
             Config.set("windowType", windowType);
 
             // set timeout for client side (use to show warning: You are not editing this page)

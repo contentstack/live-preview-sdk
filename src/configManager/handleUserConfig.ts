@@ -1,5 +1,4 @@
 import { shouldRenderEditButton } from "../livePreview/editButton/editButton";
-import { PublicLogger } from "../logger/logger";
 import {
     IClientUrlParams,
     IConfig,
@@ -43,161 +42,92 @@ const handleClientUrlParams = (
     existingConfig.clientUrlParams.url = `${existingConfig.clientUrlParams.protocol}://${existingConfig.clientUrlParams.host}:${existingConfig.clientUrlParams.port}`;
 };
 
-function isInitDataStackSdk(
-    initObj: Partial<IConfig> | Partial<IStackSdk>
-): initObj is IStackSdk {
-    return Object.prototype.hasOwnProperty.call(initObj, "cachePolicy");
-}
-
-function isInitDataCommon(
-    initObj: Partial<IConfig> | Partial<IStackSdk>
-): initObj is IInitData {
-    return !isInitDataStackSdk(initObj);
-}
+// TODO: add documentation mentioning that you cannot pass stack sdk in the init data
 
 export const handleInitData = (
-    initData: Partial<IInitData> | Partial<IStackSdk>,
+    initData: Partial<IInitData>,
     config: IConfig
 ): void => {
-    // only have stack sdk
-    if (isInitDataStackSdk(initData)) {
-        PublicLogger.warn(
-            "Deprecated: Do not pass the Stack object directly to the Live Preview SDK. Pass it using the config.stackSDK config object."
-        );
+    const stackSdk: Partial<IStackSdk> = initData.stackSdk || config.stackSdk;
 
-        const livePreviewObject = initData?.live_preview || {};
+    config.enable =
+        initData.enable ?? stackSdk.live_preview?.enable ?? config.enable;
 
-        // only stack indicates that user is running it on client side application
-        config.ssr = false;
+    config.ssr =
+        initData.ssr ??
+        stackSdk.live_preview?.ssr ??
+        (typeof initData.stackSdk === "object" ? false : true) ??
+        true;
 
-        config.runScriptsOnUpdate =
-            livePreviewObject.runScriptsOnUpdate ?? config.runScriptsOnUpdate;
+    config.runScriptsOnUpdate =
+        initData.runScriptsOnUpdate ??
+        stackSdk.live_preview?.runScriptsOnUpdate ??
+        config.runScriptsOnUpdate;
 
-        config.enable = livePreviewObject.enable ?? config.enable;
+    config.stackSdk = stackSdk as IStackSdk;
 
-        config.cleanCslpOnProduction =
-            livePreviewObject.cleanCslpOnProduction ??
-            config.cleanCslpOnProduction;
+    config.cleanCslpOnProduction =
+        initData.cleanCslpOnProduction ??
+        stackSdk.live_preview?.cleanCslpOnProduction ??
+        config.cleanCslpOnProduction;
 
-        config.editButton = {
-            enable: shouldRenderEditButton(
-                livePreviewObject.editButton ?? config.editButton
-            ),
-            // added extra check if exclude data passed by user is array or not
-            exclude:
-                Array.isArray(livePreviewObject.editButton?.exclude) &&
-                livePreviewObject.editButton?.exclude
-                    ? livePreviewObject.editButton?.exclude
-                    : config.editButton.exclude ?? [],
-            position:
-                livePreviewObject.editButton?.position ??
-                config.editButton.position ??
-                "top",
+    config.editButton = {
+        enable: shouldRenderEditButton(
+            initData.editButton ??
+                stackSdk.live_preview?.editButton ??
+                config.editButton
+        ),
+        // added extra check if exclude data passed by user is array or not
+        exclude:
+            Array.isArray(initData.editButton?.exclude) &&
+            initData.editButton?.exclude
+                ? initData.editButton?.exclude
+                : Array.isArray(stackSdk.live_preview?.exclude) &&
+                  stackSdk.live_preview?.exclude
+                ? stackSdk.live_preview?.exclude
+                : config.editButton.exclude ?? [],
+        position:
+            initData.editButton?.position ??
+            stackSdk.live_preview?.position ??
+            config.editButton.position ??
+            "top",
 
-            includeByQueryParameter:
-                livePreviewObject.editButton?.includeByQueryParameter ??
-                config.editButton.includeByQueryParameter ??
-                true,
-        };
+        includeByQueryParameter:
+            initData.editButton?.includeByQueryParameter ??
+            stackSdk.live_preview?.includeByQueryParameter ??
+            config.editButton.includeByQueryParameter ??
+            true,
+    };
+    // client URL params
+    handleClientUrlParams(
+        config,
+        initData.clientUrlParams ??
+            stackSdk.live_preview?.clientUrlParams ??
+            config.clientUrlParams
+    );
 
-        config.stackSdk = initData;
-
-        // stack details
-        if (
-            Object.prototype.hasOwnProperty.call(initData.headers, "api_key") &&
-            initData.headers.api_key
-        )
-            config.stackDetails.apiKey = initData.headers.api_key;
-
-        if (Object.prototype.hasOwnProperty.call(initData, "environment")) {
-            config.stackDetails.environment = initData.environment;
-        }
-
-        // client URL params
-        handleClientUrlParams(
-            config,
-            livePreviewObject.clientUrlParams ?? config.clientUrlParams
-        );
-    } else if (isInitDataCommon(initData)) {
-        const stackSdk: Partial<IStackSdk> =
-            initData.stackSdk || config.stackSdk;
-
-        config.enable =
-            initData.enable ?? stackSdk.live_preview?.enable ?? config.enable;
-
-        config.ssr =
-            initData.ssr ??
-            stackSdk.live_preview?.ssr ??
-            (typeof initData.stackSdk === "object" ? false : true) ??
-            true;
-
-        config.runScriptsOnUpdate =
-            initData.runScriptsOnUpdate ??
-            stackSdk.live_preview?.runScriptsOnUpdate ??
-            config.runScriptsOnUpdate;
-
-        config.stackSdk = stackSdk as IStackSdk;
-
-        config.cleanCslpOnProduction =
-            initData.cleanCslpOnProduction ??
-            stackSdk.live_preview?.cleanCslpOnProduction ??
-            config.cleanCslpOnProduction;
-
-        config.editButton = {
-            enable: shouldRenderEditButton(
-                initData.editButton ??
-                    stackSdk.live_preview?.editButton ??
-                    config.editButton
-            ),
-            // added extra check if exclude data passed by user is array or not
-            exclude:
-                Array.isArray(initData.editButton?.exclude) &&
-                initData.editButton?.exclude
-                    ? initData.editButton?.exclude
-                    : Array.isArray(stackSdk.live_preview?.exclude) &&
-                      stackSdk.live_preview?.exclude
-                    ? stackSdk.live_preview?.exclude
-                    : config.editButton.exclude ?? [],
-            position:
-                initData.editButton?.position ??
-                stackSdk.live_preview?.position ??
-                config.editButton.position ??
-                "top",
-
-            includeByQueryParameter:
-                initData.editButton?.includeByQueryParameter ??
-                stackSdk.live_preview?.includeByQueryParameter ??
-                config.editButton.includeByQueryParameter ??
-                true,
-        };
-        // client URL params
-        handleClientUrlParams(
-            config,
-            initData.clientUrlParams ??
-                stackSdk.live_preview?.clientUrlParams ??
-                config.clientUrlParams
-        );
-
-        if (initData.mode) {
-            switch (initData.mode) {
-                case "preview": {
-                    config.mode = ILivePreviewModeConfig.PREVIEW;
-                    break;
-                }
-                case "editor": {
-                    config.mode = ILivePreviewModeConfig.EDITOR;
-                    break;
-                }
-                default: {
-                    throw new TypeError(
-                        "Live Preview SDK: The mode must be either 'editor' or 'preview'"
-                    );
-                }
+    if (initData.mode) {
+        switch (initData.mode) {
+            case "preview": {
+                config.mode = ILivePreviewModeConfig.PREVIEW;
+                break;
+            }
+            case "editor": {
+                config.mode = ILivePreviewModeConfig.EDITOR;
+                break;
+            }
+            default: {
+                throw new TypeError(
+                    "Live Preview SDK: The mode must be either 'editor' or 'preview'"
+                );
             }
         }
-
-        handleStackDetails(initData, stackSdk, config);
     }
+
+    config.debug =
+        initData.debug ?? stackSdk.live_preview?.debug ?? config.debug;
+
+    handleStackDetails(initData, stackSdk, config);
 };
 
 function handleStackDetails(

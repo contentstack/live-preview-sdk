@@ -20,6 +20,10 @@ import { inIframe } from "../common/inIframe";
 import Config from "../configManager/configManager";
 import { addCslpOutline } from "../cslp/cslpdata";
 import {
+    useHistoryPostMessageEvent,
+    useOnEntryUpdatePostMessageEvent,
+} from "../livePreview/eventManager/postMessageEvent.hooks";
+import {
     ILivePreviewModeConfig,
     ILivePreviewWindowType,
     IVisualEditorInitEvent,
@@ -41,10 +45,6 @@ import { getFieldType } from "./utils/getFieldType";
 import { isFieldDisabled } from "./utils/isFieldDisabled";
 import liveEditorPostMessage from "./utils/liveEditorPostMessage";
 import { LiveEditorPostMessageEvents } from "./utils/types/postMessage.types";
-import {
-    useHistoryPostMessageEvent,
-    useOnEntryUpdatePostMessageEvent,
-} from "../livePreview/eventManager/postMessageEvent.hooks";
 
 export class VisualEditor {
     private customCursor: HTMLDivElement | null = null;

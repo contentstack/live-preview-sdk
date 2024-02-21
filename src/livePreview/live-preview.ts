@@ -47,6 +47,7 @@ export default class LivePreview {
                 window.addEventListener("load", this.requestDataSync);
             }
 
+            // TODO: capetown: add test cases for this condition.
             // TODO: mjrf: Check if we need the second condition here.
             // We are already handling the functions separately in the live editor.
             // render the hover outline only when edit button enable
