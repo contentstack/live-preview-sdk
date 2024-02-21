@@ -25,7 +25,6 @@ function initUI() : void {
         console.log('[IN SDK] : initUI : rendered root node');
     }
     
-
     return;
 
 }
