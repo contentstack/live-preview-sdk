@@ -1,56 +1,35 @@
 import {
     cleanIndividualFieldResidual,
     handleIndividualFields,
-} from "./handleIndividualFields";
+} from "./../handleIndividualFields";
 
 import {
     getCsDataOfElement,
     getDOMEditStack,
-} from "./getCsDataOfElement";
+} from "./../getCsDataOfElement";
 
 import {
     addFocusOverlay,
     appendFocusedToolbar,
-} from "./focusOverlayWrapper";
+} from "./../focusOverlayWrapper";
 
-import liveEditorPostMessage from "./liveEditorPostMessage";
+import { addCslpOutline } from "./../../../cslp/cslpdata";
 
-import { LiveEditorPostMessageEvents } from "./../utils/types/postMessage.types";
-import { VisualEditorCslpEventDetails } from "./../types/liveEditor.types";
+import liveEditorPostMessage from "./../liveEditorPostMessage";
 
-interface AllParams {
-    event: MouseEvent;
-    overlayWrapper: HTMLDivElement | null;
-    visualEditorWrapper: HTMLDivElement | null;
-    previousSelectedEditableDOM: Element | null;
-    focusedToolbar: HTMLDivElement | null;
-    resizeObserver: ResizeObserver;
-    eventDetails: VisualEditorCslpEventDetails;
-}
+import { LiveEditorPostMessageEvents } from "./../../utils/types/postMessage.types";
 
-interface InitEventListenersParams extends Omit<AllParams, "event" | "eventDetails"> {}
+import EventListenerHandlerParams from "./params";
 
-interface HandleMouseClickParams extends Omit<AllParams, "eventDetails"> {}
+export interface HandleMouseClickParams extends Omit<EventListenerHandlerParams, "eventDetails" | "customCursor" | "previousHoveredTargetDOM"> {}
 
-interface AddFocusOverlayParams extends Pick<AllParams, | "overlayWrapper" | "resizeObserver"> {
+
+interface AddFocusOverlayParams extends Pick<EventListenerHandlerParams, | "overlayWrapper" | "resizeObserver"> {
     editableElement : Element | null;
 }
 
-interface AddFocusedToolbarParams extends Pick<AllParams, "eventDetails" | "focusedToolbar" | "previousSelectedEditableDOM"> {}
+interface AddFocusedToolbarParams extends Pick<EventListenerHandlerParams, "eventDetails" | "focusedToolbar" | "previousSelectedEditableDOM"> {}
 
-
-export default function initEventListeners(params: InitEventListenersParams) {
-    window.addEventListener("click", (e) => {
-        handleMouseClick({
-            event: e as MouseEvent,
-            overlayWrapper: params.overlayWrapper,
-            visualEditorWrapper: params.visualEditorWrapper,
-            previousSelectedEditableDOM: params.previousSelectedEditableDOM,
-            focusedToolbar: params.focusedToolbar,
-            resizeObserver: params.resizeObserver
-        })
-    })
-}
 
 function addOverlay(params: AddFocusOverlayParams) {
     if (!params.overlayWrapper || !params.editableElement) return;
@@ -126,3 +105,5 @@ async function handleMouseClick(params: HandleMouseClickParams): Promise<void>  
 
     params.previousSelectedEditableDOM = editableElement;
 };
+
+export default handleMouseClick;

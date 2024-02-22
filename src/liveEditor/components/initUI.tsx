@@ -1,7 +1,12 @@
 import { h, render } from "preact";
 import VisualEditorComponent from "./visualEditor";
 
-function initUI() : void {
+interface InitUIParams {
+    previousSelectedEditableDOM: HTMLDivElement | null;
+    resizeObserver: ResizeObserver;
+}
+
+function initUI(props: InitUIParams) : void {
 
     console.log('[IN SDK] : initUI : creating root node');
 
@@ -16,11 +21,11 @@ function initUI() : void {
 
         document.body.appendChild(visualEditorWrapper);
         
-        const dummy = () => {
-            console.log('[IN SDK] : clicked visualEditorComponent');   
-        }
-
-        render(<VisualEditorComponent onClickHandler={dummy} />, visualEditorWrapper);
+        render(<VisualEditorComponent 
+            visualEditorWrapper={visualEditorWrapper}
+            previousSelectedEditableDOM={props.previousSelectedEditableDOM}
+            resizeObserver={props.resizeObserver}
+        />, visualEditorWrapper);
         
         console.log('[IN SDK] : initUI : rendered root node');
     }
