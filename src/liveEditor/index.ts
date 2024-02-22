@@ -46,6 +46,7 @@ import {
     useOnEntryUpdatePostMessageEvent,
 } from "../livePreview/eventManager/postMessageEvent.hooks";
 import initUI from "./components/initUI";
+import initEventListeners from "./utils/initEventListeners";
 
 export class VisualEditor {
     private customCursor: HTMLDivElement | null = null;
@@ -85,21 +86,21 @@ export class VisualEditor {
         this.previousSelectedEditableDOM = null;
     };
 
-    private addFocusedToolbar(eventDetails: VisualEditorCslpEventDetails) {
-        const { editableElement } = eventDetails;
+    // private addFocusedToolbar(eventDetails: VisualEditorCslpEventDetails) {
+    //     const { editableElement } = eventDetails;
 
-        if (!editableElement || !this.focusedToolbar) return;
+    //     if (!editableElement || !this.focusedToolbar) return;
 
-        // Don't append again if already present
-        if (
-            this.previousSelectedEditableDOM &&
-            this.previousSelectedEditableDOM === editableElement
-        ) {
-            return;
-        }
+    //     // Don't append again if already present
+    //     if (
+    //         this.previousSelectedEditableDOM &&
+    //         this.previousSelectedEditableDOM === editableElement
+    //     ) {
+    //         return;
+    //     }
 
-        appendFocusedToolbar(eventDetails, this.focusedToolbar);
-    }
+    //     appendFocusedToolbar(eventDetails, this.focusedToolbar);
+    // }
 
     constructor() {
         this.handleMouseHover = this.handleMouseHover.bind(this);
@@ -108,8 +109,8 @@ export class VisualEditor {
         this.resetCustomCursor = this.resetCustomCursor.bind(this);
         // this.appendVisualEditorDOM = this.appendVisualEditorDOM.bind(this);
         this.removeVisualEditorDOM = this.removeVisualEditorDOM.bind(this);
-        this.handleMouseClick =
-            this.handleMouseClick.bind(this);
+        // this.handleMouseClick =
+        //     this.handleMouseClick.bind(this);
 
         // this.appendVisualEditorDOM();
         
@@ -117,11 +118,11 @@ export class VisualEditor {
         this.visualEditorWrapper = document.querySelector(".visual-editor__container");
         this.overlayWrapper = document.querySelector(".visual-editor__overlay__wrapper");
         this.customCursor = document.querySelector(".visual-editor__cursor");
+        this.focusedToolbar = document.querySelector(".visual-editor__focused-toolbar");
 
         console.log('[IN SDK] : Wrappers', this.visualEditorWrapper, this.overlayWrapper, this.customCursor);
-        console.log('[IN SDK] : Wrapper types', typeof this.visualEditorWrapper, typeof this.overlayWrapper, typeof this.customCursor);
-        
-        this.addFocusedToolbar = this.addFocusedToolbar.bind(this);
+
+        // this.addFocusedToolbar = this.addFocusedToolbar.bind(this);
 
         console.log('[IN SDK] : INIT : VisualEditor');
         
@@ -147,10 +148,17 @@ export class VisualEditor {
                     "stackDetails.masterLocale",
                     stackDetails?.masterLocale || "en-us"
                 );
-                window.addEventListener(
-                    "click",
-                    this.handleMouseClick
-                );
+                initEventListeners({
+                    overlayWrapper: this.overlayWrapper,
+                    visualEditorWrapper: this.visualEditorWrapper,
+                    previousSelectedEditableDOM: this.previousSelectedEditableDOM,
+                    focusedToolbar: this.focusedToolbar,
+                    resizeObserver: this.resizeObserver,
+                })
+                // window.addEventListener(
+                //     "click",
+                //     this.handleMouseClick
+                // );
                 window.addEventListener("mousemove", this.handleMouseHover);
                 window.addEventListener("mouseover", (event) => {
                     addCslpOutline(event);
@@ -175,46 +183,46 @@ export class VisualEditor {
             });
     }
 
-    private handleMouseClick = async (
-        event: MouseEvent
-    ): Promise<void> => {
-        console.log('[IN SDK] : in handleMouseClick');
+    // private handleMouseClick = async (
+    //     event: MouseEvent
+    // ): Promise<void> => {
+    //     console.log('[IN SDK] : in handleMouseClick');
         
-        event.preventDefault();
-        const eventDetails = getCsDataOfElement(event);
-        if (
-            !eventDetails ||
-            !this.overlayWrapper ||
-            !this.visualEditorWrapper
-        ) {
-            return;
-        }
-        const { editableElement } = eventDetails;
+    //     event.preventDefault();
+    //     const eventDetails = getCsDataOfElement(event);
+    //     if (
+    //         !eventDetails ||
+    //         !this.overlayWrapper ||
+    //         !this.visualEditorWrapper
+    //     ) {
+    //         return;
+    //     }
+    //     const { editableElement } = eventDetails;
 
-        if (
-            this.previousSelectedEditableDOM &&
-            this.previousSelectedEditableDOM !== editableElement
-        ) {
-            cleanIndividualFieldResidual({
-                overlayWrapper: this.overlayWrapper,
-                previousSelectedEditableDOM: this.previousSelectedEditableDOM,
-                visualEditorWrapper: this.visualEditorWrapper,
-                focusedToolbar: this.focusedToolbar,
-            });
-        }
+    //     if (
+    //         this.previousSelectedEditableDOM &&
+    //         this.previousSelectedEditableDOM !== editableElement
+    //     ) {
+    //         cleanIndividualFieldResidual({
+    //             overlayWrapper: this.overlayWrapper,
+    //             previousSelectedEditableDOM: this.previousSelectedEditableDOM,
+    //             visualEditorWrapper: this.visualEditorWrapper,
+    //             focusedToolbar: this.focusedToolbar,
+    //         });
+    //     }
 
-        this.addOverlay(editableElement);
-        this.addFocusedToolbar(eventDetails);
-        liveEditorPostMessage?.send(LiveEditorPostMessageEvents.FOCUS_FIELD, {
-            DOMEditStack: getDOMEditStack(editableElement),
-        });
+    //     this.addOverlay(editableElement);
+    //     this.addFocusedToolbar(eventDetails);
+    //     liveEditorPostMessage?.send(LiveEditorPostMessageEvents.FOCUS_FIELD, {
+    //         DOMEditStack: getDOMEditStack(editableElement),
+    //     });
 
-        await handleIndividualFields(eventDetails, {
-            visualEditorWrapper: this.visualEditorWrapper,
-            lastEditedField: this.previousSelectedEditableDOM,
-        });
-        this.previousSelectedEditableDOM = editableElement;
-    };
+    //     await handleIndividualFields(eventDetails, {
+    //         visualEditorWrapper: this.visualEditorWrapper,
+    //         lastEditedField: this.previousSelectedEditableDOM,
+    //     });
+    //     this.previousSelectedEditableDOM = editableElement;
+    // };
 
     handleMouseHover = throttle(async (event: MouseEvent) => {
         const eventDetails = getCsDataOfElement(event);
@@ -358,10 +366,10 @@ export class VisualEditor {
 
     // TODO: write test cases
     destroy = (): void => {
-        window.removeEventListener(
-            "click",
-            this.handleMouseClick
-        );
+        // window.removeEventListener(
+        //     "click",
+        //     this.handleMouseClick
+        // );
         window.removeEventListener("mousemove", this.handleMouseHover);
         this.resizeObserver.disconnect();
         this.removeVisualEditorDOM();

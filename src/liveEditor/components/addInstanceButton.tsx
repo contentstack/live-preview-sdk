@@ -5,7 +5,6 @@ interface AddInstanceButtonProps {
 }
 
 function AddInstanceButtonComponent(props: AddInstanceButtonProps) {
-    console.log('[IN SDK] : UI : AddInstanceButtonComponent');
     
     return (
         <button className="visual-editor__add-button" data-testid="visual-editor-add-instance-button" onClick={(e) => {

@@ -105,9 +105,6 @@ export function handleAddButtonsForMultiple(
 ): void {
     const { editableElement, visualEditorWrapper } = elements;
 
-    console.log('[IN SDK] : handleAddButtonsForMultiple', visualEditorWrapper, typeof visualEditorWrapper);
-    
-
     const parentCslpValue =
         eventDetails.fieldMetadata.multipleFieldMetadata?.parentDetails
             ?.parentCslpValue;
@@ -162,10 +159,6 @@ export function handleAddButtonsForMultiple(
                     }
                 );
             });
-
-            console.log('[IN SDK] : handleAddButtonsForMultiple : prevButton ', previousButton);
-            console.log('[IN SDK] : handleAddButtonsForMultiple : nextButton ', nextButton);
-            
 
             if (!visualEditorWrapper.contains(previousButton)) {
                 visualEditorWrapper.appendChild(previousButton);

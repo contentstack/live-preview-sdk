@@ -96,6 +96,8 @@ export function generatePseudoEditableElement(
     config: { textContent: string }
 ): HTMLDivElement {
     const { editableElement } = elements;
+
+    console.log('[IN SDK] : in generatePseudoEditableElement');
     
     const wrapper = document.createDocumentFragment();
     render(<PseudoEditableFieldComponent 
