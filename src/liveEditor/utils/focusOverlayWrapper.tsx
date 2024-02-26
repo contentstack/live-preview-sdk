@@ -13,7 +13,6 @@ import { LiveEditorPostMessageEvents } from "./types/postMessage.types";
 import MultipleFieldToolbarComponent from "../components/multipleFieldToolbar";
 import { render } from "preact";
 import VisualEditorGlobalUtils from "../globals";
-// import FieldLabelWrapperComponent from "../components/fieldLabelWrapper";
 
 const caretIcon = `
 <svg
@@ -31,7 +30,6 @@ const caretIcon = `
     />
 </svg>
 `;
-
 
 const infoIcon = `
 <svg
@@ -56,7 +54,7 @@ const infoIcon = `
         fill="white"
     />
     </svg>
-`
+`;
 
 /**
  * Adds a focus overlay to the target element.
@@ -163,6 +161,7 @@ export function hideFocusOverlay(elements: {
     console.log("[IN SDK] : in hideFocusOverlay", VisualEditorGlobalUtils.previousSelectedEditableDOM);
 
     if (visualEditorOverlayWrapper) {
+        console.log("[IN SDK] : in hideFocusOverlay 123", visualEditorOverlayWrapper, visualEditorOverlayWrapper.classList);
         visualEditorOverlayWrapper.classList.remove("visible");
 
         if (VisualEditorGlobalUtils.previousSelectedEditableDOM) {
@@ -170,6 +169,8 @@ export function hideFocusOverlay(elements: {
                 "div.visual-editor__pseudo-editable-element"
             );
 
+            console.log('[IN SDK] : in hideFocusOverlay 2 : pseudoEditableElement ',  pseudoEditableElement);
+            
             if (
                 VisualEditorGlobalUtils.previousSelectedEditableDOM.hasAttribute("contenteditable") ||
                 pseudoEditableElement

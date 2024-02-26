@@ -1,14 +1,14 @@
-import { CaretIcon } from "./icons"
+// import { CaretIcon } from "./icons"
 
-import { CslpData } from "../../cslp/types/cslp.types"
-import { FunctionComponent } from "preact"
-import { useState } from "react"
+// import { CslpData } from "../../cslp/types/cslp.types"
+// import { FunctionComponent } from "preact"
+// import { useState } from "react"
 
 // const currentFieldItem = document.createElement("button");
 // currentFieldItem.classList.add(
-    // "visual-editor__focused-toolbar__field-label-wrapper__current-field",
-    // "visual-editor__button",
-    // "visual-editor__button--primary"
+//     "visual-editor__focused-toolbar__field-label-wrapper__current-field",
+//     "visual-editor__button",
+//     "visual-editor__button--primary"
 // );
 
 // const textDiv = document.createElement("div");

@@ -47,8 +47,7 @@ function closeOverlay() {
 }
 
 
-
-export function MultipleFieldToolbarComponent(props: MultipleFieldToolbarProps) {
+function MultipleFieldToolbarComponent(props: MultipleFieldToolbarProps) {
 
     const direction = useSignal("");
     const parentPath =

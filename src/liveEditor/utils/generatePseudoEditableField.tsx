@@ -108,6 +108,8 @@ export function generatePseudoEditableElement(
     
     const pseudoEditableElement = document.querySelector(".visual-editor__pseudo-editable-element") as HTMLDivElement;
 
+    console.log('[IN SDK] : generatePseudoEditableElement', pseudoEditableElement);
+
     // TODO: set up a observer for UI shift.
     return pseudoEditableElement;
 }

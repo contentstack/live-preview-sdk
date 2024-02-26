@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { h, render } from "preact";
 import VisualEditorComponent from "./visualEditor";
 

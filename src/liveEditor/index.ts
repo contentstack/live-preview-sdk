@@ -23,7 +23,6 @@ import {
 import initUI from "./components/initUI";
 import initEventListeners from "./utils/listeners/initEventListeners";
 import VisualEditorGlobalUtils from "./globals";
-initEventListeners
 
 
 export class VisualEditor {
