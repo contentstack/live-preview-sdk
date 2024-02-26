@@ -1,5 +1,6 @@
 import { getFieldSchemaMap } from "../../__test__/data/fieldSchemaMap";
 import { sleep } from "../../__test__/utils";
+import Config from "../../configManager/configManager";
 import { VisualEditor } from "../index";
 import { FieldSchemaMap } from "../utils/fieldSchemaMap";
 import liveEditorPostMessage from "../utils/liveEditorPostMessage";
@@ -161,6 +162,8 @@ describe("When an element is hovered in visual editor mode", () => {
             "all_fields",
             getFieldSchemaMap().all_fields
         );
+
+        Config.set("mode", 2);
     });
 
     beforeEach(() => {

@@ -11,6 +11,7 @@
         "build": "rimraf dist/ && webpack --config webpack.prod.js",
         "test": "jest",
         "test:watch": "jest --watch",
+        "test:watchAll": "jest --watchAll",
         "test:coverage": "jest src --coverage --watchAll --coverageDirectory=\"coverage\"",
         "dev": "webpack --config webpack.dev.js",
         "prepare": "npm run build && husky install",

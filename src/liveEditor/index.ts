@@ -4,6 +4,10 @@ import { generateStartEditingButton } from "./utils/generateStartEditingButton";
 import { inIframe } from "../common/inIframe";
 import Config from "../configManager/configManager";
 import {
+    useHistoryPostMessageEvent,
+    useOnEntryUpdatePostMessageEvent,
+} from "../livePreview/eventManager/postMessageEvent.hooks";
+import {
     ILivePreviewModeConfig,
     ILivePreviewWindowType,
     IVisualEditorInitEvent,
@@ -15,10 +19,6 @@ import {
 import { getEntryUidFromCurrentPage } from "./utils/getEntryUidFromCurrentPage";
 import liveEditorPostMessage from "./utils/liveEditorPostMessage";
 import { LiveEditorPostMessageEvents } from "./utils/types/postMessage.types";
-import {
-    useHistoryPostMessageEvent,
-    useOnEntryUpdatePostMessageEvent,
-} from "../livePreview/eventManager/postMessageEvent.hooks";
 
 import initUI from "./components/initUI";
 import initEventListeners from "./utils/listeners/initEventListeners";

@@ -84,51 +84,6 @@ describe("handleInitData()", () => {
         expect(config).toMatchObject(expectedOutput);
     });
 
-    test("must set data when only Stack is provided", () => {
-        const initData = {
-            live_preview: {
-                enable: true,
-            },
-            config: {},
-            headers: {
-                api_key: "bltanything",
-            },
-            environment: "",
-            cachePolicy: 1,
-        };
-
-        handleInitData(initData, config);
-        const expectedOutput = {
-            ssr: false,
-            enable: true,
-            cleanCslpOnProduction: true,
-            stackDetails: {
-                apiKey: "bltanything",
-                environment: "",
-                contentTypeUid: "",
-                entryUid: "",
-            },
-            clientUrlParams: {
-                protocol: "https",
-                host: "app.contentstack.com",
-                port: 443,
-                url: "https://app.contentstack.com:443",
-            },
-            stackSdk: {
-                live_preview: {
-                    enable: true,
-                },
-                config: {},
-                headers: {
-                    api_key: "bltanything",
-                },
-                environment: "",
-                cachePolicy: 1,
-            },
-        };
-        expect(config).toMatchObject(expectedOutput);
-    });
-
     test("must set SSR: true is stack SDK is not provided", () => {
         const initData: Partial<IInitData> = {
             enable: true,
@@ -163,27 +118,6 @@ describe("handleInitData()", () => {
 
         handleInitData(initData, config);
         expect(config.ssr).toBe(false);
-    });
-
-    test("should show depricated warning if stack object is passed directly", () => {
-        const initData: Partial<IStackSdk> = {
-            live_preview: {
-                enable: true,
-            },
-            headers: {
-                api_key: "bltanything",
-            },
-            environment: "",
-            cachePolicy: 1,
-        };
-
-        const spiedConsole = jest.spyOn(PublicLogger, "warn");
-
-        handleInitData(initData, config);
-
-        expect(spiedConsole).toHaveBeenCalledWith(
-            "Deprecated: Do not pass the Stack object directly to the Live Preview SDK. Pass it using the config.stackSDK config object."
-        );
     });
 
     describe("live mode", () => {

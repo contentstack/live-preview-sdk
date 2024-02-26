@@ -2,6 +2,7 @@ import crypto from "crypto";
 
 import { sleep } from "../../__test__/utils";
 import { VisualEditor } from "../index";
+import Config from "../../configManager/configManager";
 
 Object.defineProperty(globalThis, "crypto", {
     value: {
@@ -15,24 +16,16 @@ global.ResizeObserver = jest.fn().mockImplementation(() => ({
     disconnect: jest.fn(),
 }));
 describe("When outside the Visual editor, the Visual Editor", () => {
-    const mockedConsoleError = jest
-        .spyOn(console, "error")
-        .mockImplementation((...args) => {
-            if (
-                args.at(-1) !==
-                `contentstack-adv-post-message: No request listener found for event "init"`
-            ) {
-                console.error(...args);
-            }
-        });
-
+    beforeAll(() => {
+        Config.set("mode", 2);
+    });
     afterAll(() => {
-        mockedConsoleError.mockRestore();
+        Config.reset();
     });
     test("should have the start editing button", async () => {
         new VisualEditor();
 
-        await sleep();
+        await sleep(100);
 
         const startEditingButton = document.querySelector(
             `[data-testid="vcms-start-editing-btn"]`
