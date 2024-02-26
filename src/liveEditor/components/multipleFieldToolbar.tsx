@@ -59,10 +59,7 @@ export function MultipleFieldToolbarComponent(props: MultipleFieldToolbarProps) 
         props.targetElement,
         parentPath
     );
-
-    console.log('[IN SDK] : MultipleFieldToolbarComponent');
     
-
     return (
         <div className="visual-editor__focused-toolbar__multiple-field-toolbar">
 

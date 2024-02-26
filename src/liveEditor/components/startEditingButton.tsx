@@ -63,7 +63,6 @@ function getLiveEditorRedirectionUrl(): URL {
  * @param event - The mouse event that triggered the update.
  */
 function updateStartEditingHref(event: MouseEvent) {
-    console.log("[IN SDK] : clicked StartEditingButtonComponent");
 
     const startEditingButton = event.currentTarget as HTMLButtonElement;
     startEditingButton.setAttribute(

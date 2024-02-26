@@ -12,7 +12,51 @@ import { LiveEditorPostMessageEvents } from "./types/postMessage.types";
 
 import MultipleFieldToolbarComponent from "../components/multipleFieldToolbar";
 import { render } from "preact";
+import VisualEditorGlobalUtils from "../globals";
 // import FieldLabelWrapperComponent from "../components/fieldLabelWrapper";
+
+const caretIcon = `
+<svg
+    width="16"
+    height="16"
+    viewBox="0 0 16 16"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+>
+    <path
+        fill-rule="evenodd"
+        clip-rule="evenodd"
+        d="M2.73483 5.73483C2.88128 5.58839 3.11872 5.58839 3.26517 5.73483L8 10.4697L12.7348 5.73483C12.8813 5.58839 13.1187 5.58839 13.2652 5.73483C13.4116 5.88128 13.4116 6.11872 13.2652 6.26517L8.26516 11.2652C8.11872 11.4116 7.88128 11.4116 7.73484 11.2652L2.73483 6.26517C2.58839 6.11872 2.58839 5.88128 2.73483 5.73483Z"
+        fill="white"
+    />
+</svg>
+`;
+
+
+const infoIcon = `
+<svg
+    width="16"
+    height="16"
+    viewBox="0 0 16 16"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    >
+    <path
+        d="M8 5.5C7.72386 5.5 7.5 5.72386 7.5 6C7.5 6.27614 7.72386 6.5 8 6.5C8.27614 6.5 8.5 6.27614 8.5 6C8.5 5.72386 8.27614 5.5 8 5.5Z"
+        fill="white"
+    />
+    <path
+        d="M8 10.875C7.79289 10.875 7.625 10.7071 7.625 10.5V7.5C7.625 7.29289 7.79289 7.125 8 7.125C8.20711 7.125 8.375 7.29289 8.375 7.5V10.5C8.375 10.7071 8.20711 10.875 8 10.875Z"
+        fill="white"
+    />
+    <path
+        fill-rule="evenodd"
+        clip-rule="evenodd"
+        d="M14 8C14 11.3137 11.3137 14 8 14C4.68629 14 2 11.3137 2 8C2 4.68629 4.68629 2 8 2C11.3137 2 14 4.68629 14 8ZM13.25 8C13.25 10.8995 10.8995 13.25 8 13.25C5.10051 13.25 2.75 10.8995 2.75 8C2.75 5.10051 5.10051 2.75 8 2.75C10.8995 2.75 13.25 5.10051 13.25 8Z"
+        fill="white"
+    />
+    </svg>
+`
 
 /**
  * Adds a focus overlay to the target element.
@@ -24,6 +68,8 @@ export function addFocusOverlay(
     targetElement: Element,
     focusOverlayWrapper: HTMLDivElement
 ): void {
+    console.log("[IN SDK] : in addFocusOverlay");
+
     const targetElementDimension = targetElement.getBoundingClientRect();
 
     focusOverlayWrapper.classList.add("visible");
@@ -102,33 +148,35 @@ export function addFocusOverlay(
  * @param elements - An object containing references to the focus overlay wrapper, the previously selected editable DOM element, and the visual editor wrapper.
  */
 export function hideFocusOverlay(elements: {
-    previousSelectedEditableDOM: Element | null;
     visualEditorWrapper: HTMLDivElement | null;
     visualEditorOverlayWrapper: HTMLDivElement | null;
     focusedToolbar: HTMLDivElement | null;
 }): void {
+    
     const {
-        previousSelectedEditableDOM,
+
         visualEditorWrapper,
         visualEditorOverlayWrapper,
         focusedToolbar,
     } = elements;
 
+    console.log("[IN SDK] : in hideFocusOverlay", VisualEditorGlobalUtils.previousSelectedEditableDOM);
+
     if (visualEditorOverlayWrapper) {
         visualEditorOverlayWrapper.classList.remove("visible");
 
-        if (previousSelectedEditableDOM) {
+        if (VisualEditorGlobalUtils.previousSelectedEditableDOM) {
             const pseudoEditableElement = visualEditorWrapper?.querySelector(
                 "div.visual-editor__pseudo-editable-element"
             );
 
             if (
-                previousSelectedEditableDOM.hasAttribute("contenteditable") ||
+                VisualEditorGlobalUtils.previousSelectedEditableDOM.hasAttribute("contenteditable") ||
                 pseudoEditableElement
             ) {
                 const actualEditedElement =
                     pseudoEditableElement ||
-                    (previousSelectedEditableDOM as HTMLElement);
+                    (VisualEditorGlobalUtils.previousSelectedEditableDOM as HTMLElement);
 
                 liveEditorPostMessage?.send(
                     LiveEditorPostMessageEvents.UPDATE_FIELD,
@@ -138,7 +186,7 @@ export function hideFocusOverlay(elements: {
                                 ? actualEditedElement.innerText
                                 : actualEditedElement.textContent,
                         fieldMetadata: extractDetailsFromCslp(
-                            previousSelectedEditableDOM.getAttribute(
+                            VisualEditorGlobalUtils.previousSelectedEditableDOM.getAttribute(
                                 "data-cslp"
                             ) as string
                         ),
@@ -148,7 +196,6 @@ export function hideFocusOverlay(elements: {
 
             cleanIndividualFieldResidual({
                 overlayWrapper: visualEditorOverlayWrapper,
-                previousSelectedEditableDOM: previousSelectedEditableDOM,
                 visualEditorWrapper: visualEditorWrapper,
                 focusedToolbar: focusedToolbar,
             });
@@ -160,7 +207,7 @@ export function appendFocusedToolbar(
     eventDetails: VisualEditorCslpEventDetails,
     focusedToolbarElement: HTMLDivElement
 ) {
-    console.log('[IN SDK] : appendFocusedToolbar');
+    console.log("[IN SDK] : appendFocusedToolbar");
     appendFieldPathDropdown(eventDetails, focusedToolbarElement);
     appendMultipleFieldToolbar(eventDetails, focusedToolbarElement);
 }
@@ -181,18 +228,15 @@ export function appendMultipleFieldToolbar(
         if (fieldSchema?.multiple && !fieldDisabled) {
 
             const wrapper = document.createDocumentFragment();
-            console.log('[IN SDK] : Rendering in wrapper');
-            
             render(
-                <MultipleFieldToolbarComponent 
+                <MultipleFieldToolbarComponent
                     fieldMetadata={fieldMetadata}
                     targetElement={targetElement}
-                />, 
+                />,
                 wrapper
-            )
-
+            );
+            
             focusedToolbarElement.append(wrapper);
-            console.log('[IN SDK] : Appending wrapper');
         }
     });
 }
@@ -214,6 +258,7 @@ export function appendFieldPathDropdown(
 
     focusedToolbarElement.style.top = `${distanceFromTop}px`;
     focusedToolbarElement.style.left = `${distanceFromLeft}px`;
+    
     const parentPaths = collectParentCSLPPaths(targetElement, 2);
 
     const FieldLabelWrapper = document.createElement("div");
@@ -233,13 +278,13 @@ export function appendFieldPathDropdown(
     textDiv.innerText =
         fieldMetadata.fieldPath[fieldMetadata.fieldPath.length - 1];
 
-    const caretIcon = document.createElement("div");
-    caretIcon.classList.add(
+    const icon = document.createElement("div");
+    icon.classList.add(
         "visual-editor__focused-toolbar__field-label-wrapper__caret"
     );
-    caretIcon.innerHTML = 'caretSVG';
+    icon.innerHTML = caretIcon;
 
-    currentFieldItem.append(textDiv, caretIcon);
+    currentFieldItem.append(textDiv, icon);
     focusedToolbarElement.addEventListener("click", (e) => {
         e.preventDefault();
 
@@ -288,9 +333,9 @@ export function appendFieldPathDropdown(
         textDiv.innerText = fieldSchema.display_name;
 
         if (fieldDisabled) {
-            caretIcon.innerHTML = 'infoSVG';
-            caretIcon.classList.add("visual-editor__tooltip");
-            caretIcon.setAttribute("data-tooltip", reason);
+            icon.innerHTML = "infoSVG";
+            icon.classList.add("visual-editor__tooltip");
+            icon.setAttribute("data-tooltip", reason);
         }
         const outlineDOM = document.querySelector<HTMLDivElement>(
             ".visual-editor__overlay--outline"

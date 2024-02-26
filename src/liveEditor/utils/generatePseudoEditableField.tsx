@@ -97,14 +97,15 @@ export function generatePseudoEditableElement(
 ): HTMLDivElement {
     const { editableElement } = elements;
 
-    console.log('[IN SDK] : in generatePseudoEditableElement');
-    
+    const visualEditorWrapper = document.querySelector(".visual-editor__container");
     const wrapper = document.createDocumentFragment();
     render(<PseudoEditableFieldComponent 
         editableElement={editableElement}
         config={config}
-        />, wrapper)
-        
+        />, wrapper);
+
+    visualEditorWrapper?.appendChild(wrapper)
+    
     const pseudoEditableElement = document.querySelector(".visual-editor__pseudo-editable-element") as HTMLDivElement;
 
     // TODO: set up a observer for UI shift.

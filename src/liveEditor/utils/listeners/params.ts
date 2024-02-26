@@ -10,7 +10,6 @@ interface EventListenerHandlerParams {
     resizeObserver: ResizeObserver;
     eventDetails: VisualEditorCslpEventDetails;
     customCursor: HTMLDivElement | null;
-    previousHoveredTargetDOM: Element | null;
 }
 
 export default EventListenerHandlerParams;

@@ -1,11 +1,15 @@
+// @ts-nocheck
+import { createContext } from "preact";
+import { useState, useMemo, useContext } from "preact/hooks";
+
 import { hideFocusOverlay } from "../utils/focusOverlayWrapper";
 import EventListenerHandlerParams from "../utils/listeners/params";
+import VisualEditorGlobalUtils from "../globals";
 
 interface HideOverlayParams
     extends Pick<
         EventListenerHandlerParams,
         | "visualEditorWrapper"
-        | "previousSelectedEditableDOM"
         | "focusedToolbar"
         | "resizeObserver"
     > {
@@ -14,28 +18,27 @@ interface HideOverlayParams
 
 interface VisualEditorProps {
     visualEditorWrapper: HTMLDivElement | null;
-    previousSelectedEditableDOM: HTMLDivElement | null;
     resizeObserver: ResizeObserver;
 }
 
 function hideOverlay(params: HideOverlayParams) {
     hideFocusOverlay({
-        previousSelectedEditableDOM: params.previousSelectedEditableDOM,
         visualEditorWrapper: params.visualEditorWrapper,
         visualEditorOverlayWrapper: params.visualEditorOverlayWrapper,
         focusedToolbar: params.focusedToolbar,
     });
 
-    if (!params.previousSelectedEditableDOM) return;
-    params.resizeObserver.unobserve(params.previousSelectedEditableDOM);
-    params.previousSelectedEditableDOM = null;
+    console.log("[IN SDK] : hideOverlay", VisualEditorGlobalUtils.previousSelectedEditableDOM);
+
+    if (!VisualEditorGlobalUtils.previousSelectedEditableDOM) return;
+    params.resizeObserver.unobserve(VisualEditorGlobalUtils.previousSelectedEditableDOM);
+    VisualEditorGlobalUtils.previousSelectedEditableDOM = null;
 }
 
 function VisualEditorComponent(props: VisualEditorProps) {
+
     return (
         <>
-            <h4>In SDK : Preact JSX : VisualEditorComponent</h4>
-
             <div
                 className={`visual-editor__cursor`}
                 data-testid="visual-editor__cursor"
@@ -55,24 +58,22 @@ function VisualEditorComponent(props: VisualEditorProps) {
                         const focusedToolbar = document.querySelector(
                             ".visual-editor__focused-toolbar"
                         ) as HTMLDivElement;
-                        console.log("[IN SDK] : ONCLICK : ", focusedToolbar);
+                        console.log('[IN SDK] : DEBUG CLICK : ', focusedToolbar, VisualEditorGlobalUtils.previousSelectedEditableDOM, focusedToolbar);
+                        
 
                         hideOverlay({
                             visualEditorWrapper: props.visualEditorWrapper,
                             visualEditorOverlayWrapper: targetElement,
-                            previousSelectedEditableDOM:
-                                props.previousSelectedEditableDOM,
                             focusedToolbar: focusedToolbar,
                             resizeObserver: props.resizeObserver,
                         });
                     }
                 }}
-            ></div>
-
-            <div
-                className="visual-editor__overlay visual-editor__overlay--top"
-                data-testid="visual-editor__overlay--top"
             >
+                <div
+                    className="visual-editor__overlay visual-editor__overlay--top"
+                    data-testid="visual-editor__overlay--top"
+                ></div>
                 <div
                     data-testid="visual-editor__overlay--left"
                     className="visual-editor__overlay visual-editor__overlay--left"
@@ -90,6 +91,7 @@ function VisualEditorComponent(props: VisualEditorProps) {
                     className="visual-editor__overlay--outline"
                 ></div>
             </div>
+
             <div
                 className="visual-editor__focused-toolbar"
                 data-testid="visual-editor__focused-toolbar"

@@ -16,6 +16,7 @@ import {
 import { FieldDataType } from "./types/index.types";
 import { LiveEditorPostMessageEvents } from "./types/postMessage.types";
 import { generatePseudoEditableElement } from "./generatePseudoEditableField";
+import VisualEditorGlobalUtils from "../globals";
 
 /**
  * It handles all the fields based on their data type and its "multiple" property.
@@ -152,17 +153,18 @@ export async function handleIndividualFields(
 
 export function cleanIndividualFieldResidual(elements: {
     overlayWrapper: HTMLDivElement;
-    previousSelectedEditableDOM: Element;
     visualEditorWrapper: HTMLDivElement | null;
     focusedToolbar: HTMLDivElement | null;
 }): void {
+    
     const {
         overlayWrapper,
-        previousSelectedEditableDOM,
         visualEditorWrapper,
         focusedToolbar,
     } = elements;
 
+    console.log('[IN SDK] : cleanIndividualFieldResidual', focusedToolbar, VisualEditorGlobalUtils.previousSelectedEditableDOM);
+    
     removeAddInstanceButtons({
         eventTarget: null,
         visualEditorWrapper: visualEditorWrapper,
@@ -175,19 +177,19 @@ export function cleanIndividualFieldResidual(elements: {
         ".visual-editor__pseudo-editable-element"
     );
 
-    previousSelectedEditableDOM.removeAttribute(
+    VisualEditorGlobalUtils.previousSelectedEditableDOM!.removeAttribute(
         LIVE_EDITOR_FIELD_TYPE_ATTRIBUTE_KEY
     );
-    previousSelectedEditableDOM.removeAttribute("contenteditable");
-    previousSelectedEditableDOM.removeEventListener("input", handleFieldInput);
-    previousSelectedEditableDOM.removeEventListener(
+    VisualEditorGlobalUtils.previousSelectedEditableDOM!.removeAttribute("contenteditable");
+    VisualEditorGlobalUtils.previousSelectedEditableDOM!.removeEventListener("input", handleFieldInput);
+    VisualEditorGlobalUtils.previousSelectedEditableDOM!.removeEventListener(
         "keydown",
         handleFieldKeyDown
     );
 
     if (pseudoEditableElement) {
         pseudoEditableElement.remove();
-        (previousSelectedEditableDOM as HTMLElement).style.removeProperty(
+        (VisualEditorGlobalUtils.previousSelectedEditableDOM! as HTMLElement).style.removeProperty(
             "visibility"
         );
     }

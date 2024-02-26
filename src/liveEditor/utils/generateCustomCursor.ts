@@ -36,6 +36,7 @@ export const generateCustomCursor = ({
     customCursor,
     fieldDisabled = false,
 }: IGenerateCustomCursor) => {
+    
     let icon = fieldType ? icons[fieldType] : "";
 
     const prevDataIcon = customCursor.getAttribute("data-icon");

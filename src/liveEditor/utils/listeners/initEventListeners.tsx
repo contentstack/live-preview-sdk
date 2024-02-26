@@ -1,22 +1,20 @@
-
-import { VisualEditorCslpEventDetails } from "../../types/liveEditor.types";
-
 import EventListenerHandlerParams from "./params";
 
 import handleMouseClick from "./mouseClick";
 import handleMouseOver from "./mouseOver";
 import handleMouseHover from "./mouseHover";
+import VisualEditorGlobalUtils from "../../globals";
 
 interface InitEventListenersParams extends Omit<EventListenerHandlerParams, "event" | "eventDetails"> {}
 
 
-export default function initEventListeners(params: InitEventListenersParams) {
+function initEventListeners(params: InitEventListenersParams) {
     window.addEventListener("click", (event) => {
         handleMouseClick({
             event: event,
             overlayWrapper: params.overlayWrapper,
             visualEditorWrapper: params.visualEditorWrapper,
-            previousSelectedEditableDOM: params.previousSelectedEditableDOM,
+            previousSelectedEditableDOM: VisualEditorGlobalUtils.previousSelectedEditableDOM,
             focusedToolbar: params.focusedToolbar,
             resizeObserver: params.resizeObserver
         })
@@ -32,8 +30,6 @@ export default function initEventListeners(params: InitEventListenersParams) {
             overlayWrapper: params.overlayWrapper,
             visualEditorWrapper: params.visualEditorWrapper,
             customCursor: params.customCursor,
-            previousHoveredTargetDOM: params.previousHoveredTargetDOM
-
         });
     });
 
@@ -45,4 +41,4 @@ export default function initEventListeners(params: InitEventListenersParams) {
 
 }
 
-
+export default initEventListeners;

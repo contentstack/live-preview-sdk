@@ -7,6 +7,7 @@ import { isFieldDisabled } from "../isFieldDisabled";
 import { getFieldType } from "../getFieldType";
 
 import EventListenerHandlerParams from "./params";
+import VisualEditorGlobalUtils from "../../globals";
 
 function resetCustomCursor(customCursor: HTMLDivElement | null) : void {
     if (customCursor) {
@@ -31,7 +32,6 @@ function handleCursorPosition(event: MouseEvent, customCursor: HTMLDivElement | 
 
 export interface HandleMouseHoverParams extends Pick<EventListenerHandlerParams, "event" | "overlayWrapper" | "visualEditorWrapper"> {
     customCursor: HTMLDivElement | null,
-    previousHoveredTargetDOM: Element | null
 }
 
 
@@ -51,7 +51,7 @@ async function handleMouseHover(params: HandleMouseHoverParams) {
             return;
         }
         const { editableElement, fieldMetadata } = eventDetails;
-        if (params.previousHoveredTargetDOM !== editableElement) {
+        if (VisualEditorGlobalUtils.previousHoveredTargetDOM !== editableElement) {
             resetCustomCursor(params.customCursor);
             removeAddInstanceButtons({
                 eventTarget: params.event.target,
@@ -96,7 +96,7 @@ async function handleMouseHover(params: HandleMouseHoverParams) {
             handleCursorPosition(params.event, params.customCursor);
         }
     
-        if (params.previousHoveredTargetDOM === editableElement) {
+        if (VisualEditorGlobalUtils.previousHoveredTargetDOM === editableElement) {
             return;
         }
     
@@ -123,7 +123,7 @@ async function handleMouseHover(params: HandleMouseHoverParams) {
                 overlayWrapper: params.overlayWrapper,
             });
         }
-        params.previousHoveredTargetDOM = editableElement;
+        VisualEditorGlobalUtils.previousHoveredTargetDOM = editableElement;
     }, 10)(params);
 } 
 
