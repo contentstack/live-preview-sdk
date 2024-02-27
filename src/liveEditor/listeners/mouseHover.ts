@@ -7,7 +7,7 @@ import { isFieldDisabled } from "../utils/isFieldDisabled";
 import { getFieldType } from "../utils/getFieldType";
 
 import EventListenerHandlerParams from "./params";
-import VisualEditorGlobalUtils from "../globals";
+import VisualEditorGlobalState from "../globals";
 
 function resetCustomCursor(customCursor: HTMLDivElement | null) : void {
     if (customCursor) {
@@ -51,7 +51,7 @@ async function handleMouseHover(params: HandleMouseHoverParams) {
             return;
         }
         const { editableElement, fieldMetadata } = eventDetails;
-        if (VisualEditorGlobalUtils.previousHoveredTargetDOM !== editableElement) {
+        if (VisualEditorGlobalState.value.previousHoveredTargetDOM !== editableElement) {
             resetCustomCursor(params.customCursor);
             removeAddInstanceButtons({
                 eventTarget: params.event.target,
@@ -96,7 +96,7 @@ async function handleMouseHover(params: HandleMouseHoverParams) {
             handleCursorPosition(params.event, params.customCursor);
         }
     
-        if (VisualEditorGlobalUtils.previousHoveredTargetDOM === editableElement) {
+        if (VisualEditorGlobalState.value.previousHoveredTargetDOM === editableElement) {
             return;
         }
     
@@ -123,7 +123,7 @@ async function handleMouseHover(params: HandleMouseHoverParams) {
                 overlayWrapper: params.overlayWrapper,
             });
         }
-        VisualEditorGlobalUtils.previousHoveredTargetDOM = editableElement;
+        VisualEditorGlobalState.value.previousHoveredTargetDOM = editableElement;
     }, 10)(params);
 } 
 

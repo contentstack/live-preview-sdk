@@ -18,7 +18,7 @@ import { LiveEditorPostMessageEvents } from "./utils/types/postMessage.types";
 
 import initUI from "./components";
 import { addEventListeners, removeEventListeners } from "./listeners";
-import VisualEditorGlobalUtils from "./globals";
+import VisualEditorGlobalState from "./globals";
 
 export class VisualEditor {
     private customCursor: HTMLDivElement | null = null;
@@ -29,19 +29,19 @@ export class VisualEditor {
     private resizeObserver = new ResizeObserver(([entry]) => {
         if (
             !this.overlayWrapper ||
-            !VisualEditorGlobalUtils.previousSelectedEditableDOM
+            !VisualEditorGlobalState.value.previousSelectedEditableDOM
         )
             return;
 
         if (
             !entry.target.isSameNode(
-                VisualEditorGlobalUtils.previousSelectedEditableDOM
+                VisualEditorGlobalState.value.previousSelectedEditableDOM
             )
         )
             return;
 
         addFocusOverlay(
-            VisualEditorGlobalUtils.previousSelectedEditableDOM,
+            VisualEditorGlobalState.value.previousSelectedEditableDOM,
             this.overlayWrapper
         );
     });
@@ -95,7 +95,7 @@ export class VisualEditor {
                     overlayWrapper: this.overlayWrapper,
                     visualEditorContainer: this.visualEditorContainer,
                     previousSelectedEditableDOM:
-                        VisualEditorGlobalUtils.previousSelectedEditableDOM,
+                        VisualEditorGlobalState.value.previousSelectedEditableDOM,
                     focusedToolbar: this.focusedToolbar,
                     resizeObserver: this.resizeObserver,
                     customCursor: this.customCursor,
@@ -125,7 +125,7 @@ export class VisualEditor {
             overlayWrapper: this.overlayWrapper,
             visualEditorContainer: this.visualEditorContainer,
             previousSelectedEditableDOM:
-                VisualEditorGlobalUtils.previousSelectedEditableDOM,
+                VisualEditorGlobalState.value.previousSelectedEditableDOM,
             focusedToolbar: this.focusedToolbar,
             resizeObserver: this.resizeObserver,
             customCursor: this.customCursor,

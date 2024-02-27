@@ -1,4 +1,6 @@
-interface VisualEditorGlobalUtilsImpl {
+import { Signal, signal } from "@preact/signals";
+
+interface VisualEditorGlobalStateImpl {
     // customCursor: HTMLDivElement | null;
     // overlayWrapper: HTMLDivElement | null;
     previousSelectedEditableDOM: HTMLElement | Element | null;
@@ -7,13 +9,20 @@ interface VisualEditorGlobalUtilsImpl {
     // focusedToolbar: HTMLDivElement | null;
 }
 
-const VisualEditorGlobalUtils: VisualEditorGlobalUtilsImpl = {
-    // customCursor: null,
-    // overlayWrapper: null,
-    previousSelectedEditableDOM: null,
-    // visualEditorContainer: null,
-    previousHoveredTargetDOM: null,
-    // focusedToolbar: null
-};
+// const VisualEditorGlobalState.value: VisualEditorGlobalState.valueImpl = {
+//     // customCursor: null,
+//     // overlayWrapper: null,
+//     previousSelectedEditableDOM: null,
+//     // visualEditorContainer: null,
+//     previousHoveredTargetDOM: null,
+//     // focusedToolbar: null
+// };
 
-export default VisualEditorGlobalUtils;
+
+const VisualEditorGlobalState: Signal<VisualEditorGlobalStateImpl> = signal({
+    previousSelectedEditableDOM: null,
+    previousHoveredTargetDOM: null
+});
+
+export default VisualEditorGlobalState;
+

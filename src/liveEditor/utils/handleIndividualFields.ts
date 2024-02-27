@@ -16,7 +16,7 @@ import {
 import { FieldDataType } from "./types/index.types";
 import { LiveEditorPostMessageEvents } from "./types/postMessage.types";
 import { generatePseudoEditableElement } from "../generators/generatePseudoEditableField";
-import VisualEditorGlobalUtils from "../globals";
+import VisualEditorGlobalState from "../globals";
 
 /**
  * It handles all the fields based on their data type and its "multiple" property.
@@ -175,21 +175,21 @@ export function cleanIndividualFieldResidual(elements: {
         ".visual-editor__pseudo-editable-element"
     );
 
-    VisualEditorGlobalUtils.previousSelectedEditableDOM!.removeAttribute(
+    VisualEditorGlobalState.value.previousSelectedEditableDOM!.removeAttribute(
         LIVE_EDITOR_FIELD_TYPE_ATTRIBUTE_KEY
     );
-    VisualEditorGlobalUtils.previousSelectedEditableDOM!.removeAttribute("contenteditable");
-    VisualEditorGlobalUtils.previousSelectedEditableDOM!.removeEventListener("input", handleFieldInput);
-    VisualEditorGlobalUtils.previousSelectedEditableDOM!.removeEventListener(
+    VisualEditorGlobalState.value.previousSelectedEditableDOM!.removeAttribute("contenteditable");
+    VisualEditorGlobalState.value.previousSelectedEditableDOM!.removeEventListener("input", handleFieldInput);
+    VisualEditorGlobalState.value.previousSelectedEditableDOM!.removeEventListener(
         "keydown",
         handleFieldKeyDown
     );
 
     if (pseudoEditableElement) {
         pseudoEditableElement.remove();
-        console.log('[IN SDK] : DEBUG CLEAR INDIVIDUAL FIELD : ', pseudoEditableElement, VisualEditorGlobalUtils);
+        console.log('[IN SDK] : DEBUG CLEAR INDIVIDUAL FIELD : ', pseudoEditableElement, VisualEditorGlobalState.value);
         
-        (VisualEditorGlobalUtils.previousSelectedEditableDOM! as HTMLElement).style.removeProperty(
+        (VisualEditorGlobalState.value.previousSelectedEditableDOM! as HTMLElement).style.removeProperty(
             "visibility"
         );
     }

@@ -3,7 +3,7 @@ import EventListenerHandlerParams from "./params";
 import handleMouseClick from "./mouseClick";
 import handleMouseOver from "./mouseOver";
 import handleMouseHover from "./mouseHover";
-import VisualEditorGlobalUtils from "../globals";
+import VisualEditorGlobalState from "../globals";
 
 interface addEventListenersParams extends Omit<EventListenerHandlerParams, "event" | "eventDetails"> {}
 
@@ -15,7 +15,7 @@ export function addEventListeners(params: addEventListenersParams) {
             event: event,
             overlayWrapper: params.overlayWrapper,
             visualEditorContainer: params.visualEditorContainer,
-            previousSelectedEditableDOM: VisualEditorGlobalUtils.previousSelectedEditableDOM,
+            previousSelectedEditableDOM: VisualEditorGlobalState.value.previousSelectedEditableDOM,
             focusedToolbar: params.focusedToolbar,
             resizeObserver: params.resizeObserver
         })
@@ -48,7 +48,7 @@ export function removeEventListeners(params: RemoveEventListenersParams) {
             event: event,
             overlayWrapper: params.overlayWrapper,
             visualEditorContainer: params.visualEditorContainer,
-            previousSelectedEditableDOM: VisualEditorGlobalUtils.previousSelectedEditableDOM,
+            previousSelectedEditableDOM: VisualEditorGlobalState.value.previousSelectedEditableDOM,
             focusedToolbar: params.focusedToolbar,
             resizeObserver: params.resizeObserver
         })

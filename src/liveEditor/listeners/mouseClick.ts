@@ -16,7 +16,7 @@ import liveEditorPostMessage from "../utils/liveEditorPostMessage";
 import { LiveEditorPostMessageEvents } from "../utils/types/postMessage.types";
 
 import EventListenerHandlerParams from "./params";
-import VisualEditorGlobalUtils from "../globals";
+import VisualEditorGlobalState from "../globals";
 
 export interface HandleMouseClickParams
     extends Omit<
@@ -55,14 +55,14 @@ function addFocusedToolbar(params: AddFocusedToolbarParams) {
 
     console.log(
         "[IN SDK] : CHECK TOOLBAR : ",
-        VisualEditorGlobalUtils.previousSelectedEditableDOM,
+        VisualEditorGlobalState.value.previousSelectedEditableDOM,
         editableElement
     );
 
     // Don"t append again if already present
     if (
-        VisualEditorGlobalUtils.previousSelectedEditableDOM &&
-        VisualEditorGlobalUtils.previousSelectedEditableDOM === editableElement
+        VisualEditorGlobalState.value.previousSelectedEditableDOM &&
+        VisualEditorGlobalState.value.previousSelectedEditableDOM === editableElement
     ) {
         return;
     }
@@ -83,13 +83,13 @@ async function handleMouseClick(params: HandleMouseClickParams): Promise<void> {
     const { editableElement } = eventDetails;
     console.log(
         "[IN SDK] : HANDLE MOUSE CLICK : ",
-        VisualEditorGlobalUtils.previousSelectedEditableDOM,
-        editableElement, VisualEditorGlobalUtils.previousSelectedEditableDOM !== editableElement
+        VisualEditorGlobalState.value.previousSelectedEditableDOM,
+        editableElement, VisualEditorGlobalState.value.previousSelectedEditableDOM !== editableElement
     );
 
     if (
-        VisualEditorGlobalUtils.previousSelectedEditableDOM &&
-        VisualEditorGlobalUtils.previousSelectedEditableDOM !== editableElement
+        VisualEditorGlobalState.value.previousSelectedEditableDOM &&
+        VisualEditorGlobalState.value.previousSelectedEditableDOM !== editableElement
     ) {
         cleanIndividualFieldResidual({
             overlayWrapper: params.overlayWrapper,
@@ -116,14 +116,14 @@ async function handleMouseClick(params: HandleMouseClickParams): Promise<void> {
 
     await handleIndividualFields(eventDetails, {
         visualEditorContainer: params.visualEditorContainer,
-        lastEditedField: VisualEditorGlobalUtils.previousSelectedEditableDOM,
+        lastEditedField: VisualEditorGlobalState.value.previousSelectedEditableDOM,
     });
 
-    VisualEditorGlobalUtils.previousSelectedEditableDOM = editableElement;
+    VisualEditorGlobalState.value.previousSelectedEditableDOM = editableElement;
     console.log(
         "[IN SDK] : HANDLE MOUSE CLICK 2 : ",
-        VisualEditorGlobalUtils.previousSelectedEditableDOM,
-        editableElement, VisualEditorGlobalUtils.previousSelectedEditableDOM !== editableElement
+        VisualEditorGlobalState.value.previousSelectedEditableDOM,
+        editableElement, VisualEditorGlobalState.value.previousSelectedEditableDOM !== editableElement
     );
 }
 

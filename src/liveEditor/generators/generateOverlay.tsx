@@ -6,7 +6,7 @@ import { cleanIndividualFieldResidual } from "../utils/handleIndividualFields";
 import liveEditorPostMessage from "../utils/liveEditorPostMessage";
 import { LiveEditorPostMessageEvents } from "../utils/types/postMessage.types";
 
-import VisualEditorGlobalUtils from "../globals";
+import VisualEditorGlobalState from "../globals";
 
 /**
  * Adds a focus overlay to the target element.
@@ -106,20 +106,20 @@ export function hideFocusOverlay(elements: {
     if (visualEditorOverlayWrapper) {
         visualEditorOverlayWrapper.classList.remove("visible");
 
-        if (VisualEditorGlobalUtils.previousSelectedEditableDOM) {
+        if (VisualEditorGlobalState.value.previousSelectedEditableDOM) {
             const pseudoEditableElement = visualEditorContainer?.querySelector(
                 "div.visual-editor__pseudo-editable-element"
             );
 
             if (
-                VisualEditorGlobalUtils.previousSelectedEditableDOM.hasAttribute(
+                VisualEditorGlobalState.value.previousSelectedEditableDOM.hasAttribute(
                     "contenteditable"
                 ) ||
                 pseudoEditableElement
             ) {
                 const actualEditedElement =
                     pseudoEditableElement ||
-                    (VisualEditorGlobalUtils.previousSelectedEditableDOM as HTMLElement);
+                    (VisualEditorGlobalState.value.previousSelectedEditableDOM as HTMLElement);
 
                 liveEditorPostMessage?.send(
                     LiveEditorPostMessageEvents.UPDATE_FIELD,
@@ -129,7 +129,7 @@ export function hideFocusOverlay(elements: {
                                 ? actualEditedElement.innerText
                                 : actualEditedElement.textContent,
                         fieldMetadata: extractDetailsFromCslp(
-                            VisualEditorGlobalUtils.previousSelectedEditableDOM.getAttribute(
+                            VisualEditorGlobalState.value.previousSelectedEditableDOM.getAttribute(
                                 "data-cslp"
                             ) as string
                         ),

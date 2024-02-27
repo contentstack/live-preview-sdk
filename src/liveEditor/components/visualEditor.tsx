@@ -1,6 +1,6 @@
 import { hideFocusOverlay } from "../generators/generateOverlay";
 import EventListenerHandlerParams from "../listeners/params";
-import VisualEditorGlobalUtils from "../globals";
+import VisualEditorGlobalState from "../globals";
 
 interface HideOverlayParams
     extends Pick<
@@ -24,14 +24,14 @@ function hideOverlay(params: HideOverlayParams) {
 
     console.log(
         "[IN SDK] : hideOverlay",
-        VisualEditorGlobalUtils.previousSelectedEditableDOM
+        VisualEditorGlobalState.value.previousSelectedEditableDOM
     );
 
-    if (!VisualEditorGlobalUtils.previousSelectedEditableDOM) return;
+    if (!VisualEditorGlobalState.value.previousSelectedEditableDOM) return;
     params.resizeObserver.unobserve(
-        VisualEditorGlobalUtils.previousSelectedEditableDOM
+        VisualEditorGlobalState.value.previousSelectedEditableDOM
     );
-    VisualEditorGlobalUtils.previousSelectedEditableDOM = null;
+    VisualEditorGlobalState.value.previousSelectedEditableDOM = null;
 }
 
 function VisualEditorComponent(props: VisualEditorProps) {
@@ -53,7 +53,7 @@ function VisualEditorComponent(props: VisualEditorProps) {
                     ) as HTMLDivElement;
                     console.log(
                         "[IN SDK] : DEBUG CLICK : ",
-                        VisualEditorGlobalUtils.previousSelectedEditableDOM
+                        VisualEditorGlobalState.value.previousSelectedEditableDOM
                     );
 
                     hideOverlay({
