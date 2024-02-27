@@ -5,10 +5,11 @@ import handleMouseOver from "./mouseOver";
 import handleMouseHover from "./mouseHover";
 import VisualEditorGlobalUtils from "../globals";
 
-interface InitEventListenersParams extends Omit<EventListenerHandlerParams, "event" | "eventDetails"> {}
+interface addEventListenersParams extends Omit<EventListenerHandlerParams, "event" | "eventDetails"> {}
 
+interface RemoveEventListenersParams extends Omit<EventListenerHandlerParams, "event" | "eventDetails"> {}
 
-function initEventListeners(params: InitEventListenersParams) {
+export function addEventListeners(params: addEventListenersParams) {
     window.addEventListener("click", (event) => {
         handleMouseClick({
             event: event,
@@ -41,4 +42,28 @@ function initEventListeners(params: InitEventListenersParams) {
 
 }
 
-export default initEventListeners;
+export function removeEventListeners(params: RemoveEventListenersParams) {
+    window.removeEventListener("click", (event) => {
+        handleMouseClick({ 
+            event: event,
+            overlayWrapper: params.overlayWrapper,
+            visualEditorContainer: params.visualEditorContainer,
+            previousSelectedEditableDOM: VisualEditorGlobalUtils.previousSelectedEditableDOM,
+            focusedToolbar: params.focusedToolbar,
+            resizeObserver: params.resizeObserver
+        })
+    });
+
+    window.removeEventListener("mouseover", (event) => {
+        handleMouseOver(event);
+    });
+
+    window.removeEventListener("mousemove", (event) => {
+        handleMouseHover({
+            event: event as MouseEvent,
+            overlayWrapper: params.overlayWrapper,
+            visualEditorContainer: params.visualEditorContainer,
+            customCursor: params.customCursor,
+        });
+    });
+}

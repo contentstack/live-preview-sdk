@@ -46,8 +46,6 @@ export async function handleIndividualFields(
         fieldType
     );
 
-    console.log('[IN SDK] : in handleIndividualFields : ', elements);
-
     if (
         // @ts-ignore
         fieldSchema?.multiple ||

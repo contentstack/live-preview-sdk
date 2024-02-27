@@ -7,27 +7,19 @@ import AddInstanceButtonComponent from "../components/addInstanceButton";
  * @returns The generated button element.
  */
 export function generateAddInstanceButton(
-    onClickCallback: (event: MouseEvent) => void
+    onClickCallback: (event: MouseEvent) => void,
 ): HTMLButtonElement {
-    const visualEditorContainer = document.querySelector(".visual-editor__container");
+   
     const wrapper = document.createDocumentFragment();
-    let button = document.querySelector(
-        ".visual-editor__add-button"
-        ) as HTMLButtonElement;
 
-    if (!visualEditorContainer?.contains(button)) {
-        render(
-            <AddInstanceButtonComponent onClickCallback={onClickCallback} />,
-            wrapper
-        );
-        visualEditorContainer?.appendChild(wrapper);
-    }
+    render(
+        <AddInstanceButtonComponent onClickCallback={onClickCallback} />,
+        wrapper
+    );
 
-    button = document.querySelector(
-        ".visual-editor__add-button"
-        ) as HTMLButtonElement;
-
-    return button;
+    console.log('[IN SDK] : added AddInstanceButton');
+    
+    return wrapper as unknown as HTMLButtonElement;
 }
 
 export function getAddInstanceButtons(
