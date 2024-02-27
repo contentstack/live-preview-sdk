@@ -1,7 +1,5 @@
 import { extractDetailsFromCslp } from "../../cslp/cslpdata";
-import {
-    LIVE_PREVIEW_OUTLINE_WIDTH_IN_PX,
-} from "../utils/constants";
+import { LIVE_PREVIEW_OUTLINE_WIDTH_IN_PX } from "../utils/constants";
 import { cleanIndividualFieldResidual } from "../utils/handleIndividualFields";
 import liveEditorPostMessage from "../utils/liveEditorPostMessage";
 import { LiveEditorPostMessageEvents } from "../utils/types/postMessage.types";
@@ -100,8 +98,11 @@ export function hideFocusOverlay(elements: {
     visualEditorOverlayWrapper: HTMLDivElement | null;
     focusedToolbar: HTMLDivElement | null;
 }): void {
-    const { visualEditorContainer, visualEditorOverlayWrapper, focusedToolbar } =
-        elements;
+    const {
+        visualEditorContainer,
+        visualEditorOverlayWrapper,
+        focusedToolbar,
+    } = elements;
 
     if (visualEditorOverlayWrapper) {
         visualEditorOverlayWrapper.classList.remove("visible");
@@ -119,7 +120,8 @@ export function hideFocusOverlay(elements: {
             ) {
                 const actualEditedElement =
                     pseudoEditableElement ||
-                    (VisualEditorGlobalState.value.previousSelectedEditableDOM as HTMLElement);
+                    (VisualEditorGlobalState.value
+                        .previousSelectedEditableDOM as HTMLElement);
 
                 liveEditorPostMessage?.send(
                     LiveEditorPostMessageEvents.UPDATE_FIELD,
@@ -145,4 +147,3 @@ export function hideFocusOverlay(elements: {
         }
     }
 }
-

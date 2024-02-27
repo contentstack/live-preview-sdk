@@ -18,11 +18,9 @@ interface VisualEditorGlobalStateImpl {
 //     // focusedToolbar: null
 // };
 
-
 const VisualEditorGlobalState: Signal<VisualEditorGlobalStateImpl> = signal({
     previousSelectedEditableDOM: null,
-    previousHoveredTargetDOM: null
+    previousHoveredTargetDOM: null,
 });
 
 export default VisualEditorGlobalState;
-

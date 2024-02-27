@@ -5,15 +5,18 @@ interface AddInstanceButtonProps {
 }
 
 function AddInstanceButtonComponent(props: AddInstanceButtonProps) {
-    
     return (
-        <button className="visual-editor__add-button" data-testid="visual-editor-add-instance-button" onClick={(e) => {
-            const event = e as unknown as MouseEvent;
-            props.onClickCallback(event);
-        }}>
+        <button
+            className="visual-editor__add-button"
+            data-testid="visual-editor-add-instance-button"
+            onClick={(e) => {
+                const event = e as unknown as MouseEvent;
+                props.onClickCallback(event);
+            }}
+        >
             <PlusIcon />
         </button>
-    )
+    );
 }
 
 export default AddInstanceButtonComponent;

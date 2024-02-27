@@ -22,14 +22,15 @@ export async function getExpectedFieldData(
     return toString(data?.fieldData);
 }
 
-
 /**
  * Retrieves the computed style of an HTML element.
  *
  * @param element - The HTML element to retrieve the style from.
  * @returns An object representing the computed style of the element.
  */
-export function getStyleOfAnElement(element: HTMLElement): { [key: string]: string } {
+export function getStyleOfAnElement(element: HTMLElement): {
+    [key: string]: string;
+} {
     const styleSheetDeclaration = window.getComputedStyle(element);
     const styleSheetArray = Array.from(styleSheetDeclaration);
 
@@ -62,7 +63,6 @@ export function getStyleOfAnElement(element: HTMLElement): { [key: string]: stri
 
     return styles;
 }
-
 
 /**
  * Checks if the content of an element is truncated with ellipsis.
@@ -97,18 +97,23 @@ export function generatePseudoEditableElement(
 ): HTMLDivElement {
     const { editableElement } = elements;
 
-    const visualEditorContainer = document.querySelector(".visual-editor__container");
+    const visualEditorContainer = document.querySelector(
+        ".visual-editor__container"
+    );
     const wrapper = document.createDocumentFragment();
-    render(<PseudoEditableFieldComponent 
-        editableElement={editableElement}
-        config={config}
-        />, wrapper);
+    render(
+        <PseudoEditableFieldComponent
+            editableElement={editableElement}
+            config={config}
+        />,
+        wrapper
+    );
 
-    visualEditorContainer?.appendChild(wrapper)
-    
-    const pseudoEditableElement = document.querySelector(".visual-editor__pseudo-editable-element") as HTMLDivElement;
+    visualEditorContainer?.appendChild(wrapper);
 
-    console.log('[IN SDK] : generatePseudoEditableElement', pseudoEditableElement);
+    const pseudoEditableElement = document.querySelector(
+        ".visual-editor__pseudo-editable-element"
+    ) as HTMLDivElement;
 
     // TODO: set up a observer for UI shift.
     return pseudoEditableElement;

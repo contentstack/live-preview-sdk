@@ -46,13 +46,18 @@ function FieldLabelWrapperComponent(props: FieldLabelWrapperProps) {
                 disabled: fieldDisabled,
             });
 
-            const displayNames = await Promise.all(props.parentPaths.map(async (path) => {
-                const { content_type_uid, fieldPath } =
-                    extractDetailsFromCslp(path);
-                const fieldSchema = await FieldSchemaMap.getFieldSchema(content_type_uid, fieldPath);
-                return fieldSchema.display_name;
-            }));
-            
+            const displayNames = await Promise.all(
+                props.parentPaths.map(async (path) => {
+                    const { content_type_uid, fieldPath } =
+                        extractDetailsFromCslp(path);
+                    const fieldSchema = await FieldSchemaMap.getFieldSchema(
+                        content_type_uid,
+                        fieldPath
+                    );
+                    return fieldSchema.display_name;
+                })
+            );
+
             setDisplayNames(displayNames);
         };
 

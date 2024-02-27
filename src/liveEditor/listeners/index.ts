@@ -5,9 +5,11 @@ import handleMouseOver from "./mouseOver";
 import handleMouseHover from "./mouseHover";
 import VisualEditorGlobalState from "../globals";
 
-interface addEventListenersParams extends Omit<EventListenerHandlerParams, "event" | "eventDetails"> {}
+interface addEventListenersParams
+    extends Omit<EventListenerHandlerParams, "event" | "eventDetails"> {}
 
-interface RemoveEventListenersParams extends Omit<EventListenerHandlerParams, "event" | "eventDetails"> {}
+interface RemoveEventListenersParams
+    extends Omit<EventListenerHandlerParams, "event" | "eventDetails"> {}
 
 export function addEventListeners(params: addEventListenersParams) {
     window.addEventListener("click", (event) => {
@@ -15,10 +17,11 @@ export function addEventListeners(params: addEventListenersParams) {
             event: event,
             overlayWrapper: params.overlayWrapper,
             visualEditorContainer: params.visualEditorContainer,
-            previousSelectedEditableDOM: VisualEditorGlobalState.value.previousSelectedEditableDOM,
+            previousSelectedEditableDOM:
+                VisualEditorGlobalState.value.previousSelectedEditableDOM,
             focusedToolbar: params.focusedToolbar,
-            resizeObserver: params.resizeObserver
-        })
+            resizeObserver: params.resizeObserver,
+        });
     });
 
     window.addEventListener("mouseover", (event) => {
@@ -39,19 +42,19 @@ export function addEventListeners(params: addEventListenersParams) {
     //         onClick(visualEditorOverlayWrapper);
     //     }
     // });
-
 }
 
 export function removeEventListeners(params: RemoveEventListenersParams) {
     window.removeEventListener("click", (event) => {
-        handleMouseClick({ 
+        handleMouseClick({
             event: event,
             overlayWrapper: params.overlayWrapper,
             visualEditorContainer: params.visualEditorContainer,
-            previousSelectedEditableDOM: VisualEditorGlobalState.value.previousSelectedEditableDOM,
+            previousSelectedEditableDOM:
+                VisualEditorGlobalState.value.previousSelectedEditableDOM,
             focusedToolbar: params.focusedToolbar,
-            resizeObserver: params.resizeObserver
-        })
+            resizeObserver: params.resizeObserver,
+        });
     });
 
     window.removeEventListener("mouseover", (event) => {

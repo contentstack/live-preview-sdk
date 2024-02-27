@@ -5,7 +5,10 @@ import {
 } from "../generators/generateAssetButton";
 import { LIVE_EDITOR_FIELD_TYPE_ATTRIBUTE_KEY } from "./constants";
 import { FieldSchemaMap } from "./fieldSchemaMap";
-import { getExpectedFieldData, isEllipsisActive } from "../generators/generatePseudoEditableField";
+import {
+    getExpectedFieldData,
+    isEllipsisActive,
+} from "../generators/generatePseudoEditableField";
 import { getFieldType } from "./getFieldType";
 import { handleFieldInput, handleFieldKeyDown } from "./handleFieldMouseDown";
 import liveEditorPostMessage from "./liveEditorPostMessage";
@@ -99,9 +102,9 @@ export async function handleIndividualFields(
         // * title, single single_line, single multi_line, single number
         if (ALLOWED_INLINE_EDITABLE_FIELD.includes(fieldType)) {
             let actualEditableField = editableElement;
-            
+
             const actualFieldData =
-            editableElement.innerHTML || editableElement.textContent || "";
+                editableElement.innerHTML || editableElement.textContent || "";
             if (
                 actualFieldData !== config.expectedFieldData ||
                 isEllipsisActive(editableElement as HTMLElement)
@@ -137,7 +140,7 @@ export async function handleIndividualFields(
                     );
                 }
             );
-            
+
             return;
         }
 
@@ -156,12 +159,7 @@ export function cleanIndividualFieldResidual(elements: {
     visualEditorContainer: HTMLDivElement | null;
     focusedToolbar: HTMLDivElement | null;
 }): void {
-    
-    const {
-        overlayWrapper,
-        visualEditorContainer,
-        focusedToolbar,
-    } = elements;
+    const { overlayWrapper, visualEditorContainer, focusedToolbar } = elements;
 
     removeAddInstanceButtons({
         eventTarget: null,
@@ -178,8 +176,13 @@ export function cleanIndividualFieldResidual(elements: {
     VisualEditorGlobalState.value.previousSelectedEditableDOM!.removeAttribute(
         LIVE_EDITOR_FIELD_TYPE_ATTRIBUTE_KEY
     );
-    VisualEditorGlobalState.value.previousSelectedEditableDOM!.removeAttribute("contenteditable");
-    VisualEditorGlobalState.value.previousSelectedEditableDOM!.removeEventListener("input", handleFieldInput);
+    VisualEditorGlobalState.value.previousSelectedEditableDOM!.removeAttribute(
+        "contenteditable"
+    );
+    VisualEditorGlobalState.value.previousSelectedEditableDOM!.removeEventListener(
+        "input",
+        handleFieldInput
+    );
     VisualEditorGlobalState.value.previousSelectedEditableDOM!.removeEventListener(
         "keydown",
         handleFieldKeyDown
@@ -187,11 +190,11 @@ export function cleanIndividualFieldResidual(elements: {
 
     if (pseudoEditableElement) {
         pseudoEditableElement.remove();
-        console.log('[IN SDK] : DEBUG CLEAR INDIVIDUAL FIELD : ', pseudoEditableElement, VisualEditorGlobalState.value);
-        
-        (VisualEditorGlobalState.value.previousSelectedEditableDOM! as HTMLElement).style.removeProperty(
-            "visibility"
-        );
+
+        (
+            VisualEditorGlobalState.value
+                .previousSelectedEditableDOM! as HTMLElement
+        ).style.removeProperty("visibility");
     }
 
     if (focusedToolbar) {

@@ -7,9 +7,8 @@ import AddInstanceButtonComponent from "../components/addInstanceButton";
  * @returns The generated button element.
  */
 export function generateAddInstanceButton(
-    onClickCallback: (event: MouseEvent) => void,
+    onClickCallback: (event: MouseEvent) => void
 ): HTMLButtonElement {
-   
     const wrapper = document.createDocumentFragment();
 
     render(
@@ -17,8 +16,6 @@ export function generateAddInstanceButton(
         wrapper
     );
 
-    console.log('[IN SDK] : added AddInstanceButton');
-    
     return wrapper as unknown as HTMLButtonElement;
 }
 

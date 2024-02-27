@@ -3,15 +3,16 @@ import {
     handleIndividualFields,
 } from "../utils/handleIndividualFields";
 
-import { getCsDataOfElement, getDOMEditStack } from "../utils/getCsDataOfElement";
-
 import {
-    appendFocusedToolbar,
-} from "../generators/generateToolbar";
+    getCsDataOfElement,
+    getDOMEditStack,
+} from "../utils/getCsDataOfElement";
+
+import { appendFocusedToolbar } from "../generators/generateToolbar";
 
 import { addFocusOverlay } from "../generators/generateOverlay";
 
-import liveEditorPostMessage from "../utils/liveEditorPostMessage"; 
+import liveEditorPostMessage from "../utils/liveEditorPostMessage";
 
 import { LiveEditorPostMessageEvents } from "../utils/types/postMessage.types";
 
@@ -19,11 +20,7 @@ import EventListenerHandlerParams from "./params";
 import VisualEditorGlobalState from "../globals";
 
 export interface HandleMouseClickParams
-    extends Omit<
-        EventListenerHandlerParams,
-        "eventDetails" | "customCursor"
-    > {
-    }
+    extends Omit<EventListenerHandlerParams, "eventDetails" | "customCursor"> {}
 
 interface AddFocusOverlayParams
     extends Pick<
@@ -40,8 +37,6 @@ interface AddFocusedToolbarParams
     > {}
 
 function addOverlay(params: AddFocusOverlayParams) {
-    console.log('[IN SDK] : addOverlay', params);
-    
     if (!params.overlayWrapper || !params.editableElement) return;
 
     addFocusOverlay(params.editableElement, params.overlayWrapper);
@@ -53,16 +48,11 @@ function addFocusedToolbar(params: AddFocusedToolbarParams) {
 
     if (!editableElement || !params.focusedToolbar) return;
 
-    console.log(
-        "[IN SDK] : CHECK TOOLBAR : ",
-        VisualEditorGlobalState.value.previousSelectedEditableDOM,
-        editableElement
-    );
-
     // Don"t append again if already present
     if (
         VisualEditorGlobalState.value.previousSelectedEditableDOM &&
-        VisualEditorGlobalState.value.previousSelectedEditableDOM === editableElement
+        VisualEditorGlobalState.value.previousSelectedEditableDOM ===
+            editableElement
     ) {
         return;
     }
@@ -81,15 +71,11 @@ async function handleMouseClick(params: HandleMouseClickParams): Promise<void> {
         return;
     }
     const { editableElement } = eventDetails;
-    console.log(
-        "[IN SDK] : HANDLE MOUSE CLICK : ",
-        VisualEditorGlobalState.value.previousSelectedEditableDOM,
-        editableElement, VisualEditorGlobalState.value.previousSelectedEditableDOM !== editableElement
-    );
 
     if (
         VisualEditorGlobalState.value.previousSelectedEditableDOM &&
-        VisualEditorGlobalState.value.previousSelectedEditableDOM !== editableElement
+        VisualEditorGlobalState.value.previousSelectedEditableDOM !==
+            editableElement
     ) {
         cleanIndividualFieldResidual({
             overlayWrapper: params.overlayWrapper,
@@ -101,7 +87,7 @@ async function handleMouseClick(params: HandleMouseClickParams): Promise<void> {
     addOverlay({
         overlayWrapper: params.overlayWrapper,
         resizeObserver: params.resizeObserver,
-        editableElement: editableElement
+        editableElement: editableElement,
     });
 
     addFocusedToolbar({
@@ -113,18 +99,13 @@ async function handleMouseClick(params: HandleMouseClickParams): Promise<void> {
         DOMEditStack: getDOMEditStack(editableElement),
     });
 
-
     await handleIndividualFields(eventDetails, {
         visualEditorContainer: params.visualEditorContainer,
-        lastEditedField: VisualEditorGlobalState.value.previousSelectedEditableDOM,
+        lastEditedField:
+            VisualEditorGlobalState.value.previousSelectedEditableDOM,
     });
 
     VisualEditorGlobalState.value.previousSelectedEditableDOM = editableElement;
-    console.log(
-        "[IN SDK] : HANDLE MOUSE CLICK 2 : ",
-        VisualEditorGlobalState.value.previousSelectedEditableDOM,
-        editableElement, VisualEditorGlobalState.value.previousSelectedEditableDOM !== editableElement
-    );
 }
 
 export default handleMouseClick;

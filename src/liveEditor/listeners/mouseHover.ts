@@ -1,6 +1,9 @@
 import { throttle } from "lodash-es";
 import { getCsDataOfElement } from "../utils/getCsDataOfElement";
-import { handleAddButtonsForMultiple, removeAddInstanceButtons } from "../utils/multipleElementAddButton";
+import {
+    handleAddButtonsForMultiple,
+    removeAddInstanceButtons,
+} from "../utils/multipleElementAddButton";
 import { generateCustomCursor } from "../generators/generateCustomCursor";
 import { FieldSchemaMap } from "../utils/fieldSchemaMap";
 import { isFieldDisabled } from "../utils/isFieldDisabled";
@@ -9,17 +12,19 @@ import { getFieldType } from "../utils/getFieldType";
 import EventListenerHandlerParams from "./params";
 import VisualEditorGlobalState from "../globals";
 
-function resetCustomCursor(customCursor: HTMLDivElement | null) : void {
+function resetCustomCursor(customCursor: HTMLDivElement | null): void {
     if (customCursor) {
         generateCustomCursor({
             fieldType: "empty",
             customCursor: customCursor,
         });
     }
-};
+}
 
-function handleCursorPosition(event: MouseEvent, customCursor: HTMLDivElement | null) : void {
-    
+function handleCursorPosition(
+    event: MouseEvent,
+    customCursor: HTMLDivElement | null
+): void {
     if (customCursor) {
         const mouseY = event.clientY;
         const mouseX = event.clientX;
@@ -27,21 +32,22 @@ function handleCursorPosition(event: MouseEvent, customCursor: HTMLDivElement | 
         customCursor.style.left = `${mouseX}px`;
         customCursor.style.top = `${mouseY}px`;
     }
-};
-
-
-export interface HandleMouseHoverParams extends Pick<EventListenerHandlerParams, "event" | "overlayWrapper" | "visualEditorContainer"> {
-    customCursor: HTMLDivElement | null,
 }
 
+export interface HandleMouseHoverParams
+    extends Pick<
+        EventListenerHandlerParams,
+        "event" | "overlayWrapper" | "visualEditorContainer"
+    > {
+    customCursor: HTMLDivElement | null;
+}
 
 async function handleMouseHover(params: HandleMouseHoverParams) {
     throttle(async (params) => {
-        
         const eventDetails = getCsDataOfElement(params.event);
         if (!eventDetails) {
             resetCustomCursor(params.customCursor);
-    
+
             removeAddInstanceButtons({
                 eventTarget: params.event.target,
                 visualEditorContainer: params.visualEditorContainer,
@@ -51,7 +57,10 @@ async function handleMouseHover(params: HandleMouseHoverParams) {
             return;
         }
         const { editableElement, fieldMetadata } = eventDetails;
-        if (VisualEditorGlobalState.value.previousHoveredTargetDOM !== editableElement) {
+        if (
+            VisualEditorGlobalState.value.previousHoveredTargetDOM !==
+            editableElement
+        ) {
             resetCustomCursor(params.customCursor);
             removeAddInstanceButtons({
                 eventTarget: params.event.target,
@@ -59,9 +68,9 @@ async function handleMouseHover(params: HandleMouseHoverParams) {
                 overlayWrapper: params.overlayWrapper,
             });
         }
-    
+
         const { content_type_uid, fieldPath } = fieldMetadata;
-    
+
         if (params.customCursor) {
             if (!FieldSchemaMap.hasFieldSchema(content_type_uid, fieldPath)) {
                 generateCustomCursor({
@@ -69,7 +78,7 @@ async function handleMouseHover(params: HandleMouseHoverParams) {
                     customCursor: params.customCursor,
                 });
             }
-    
+
             /**
              * We called it seperately inside the code block to ensure that
              * the code will not wait for the promise to resolve.
@@ -91,20 +100,23 @@ async function handleMouseHover(params: HandleMouseHoverParams) {
                     });
                 }
             );
-    
+
             params.customCursor.classList.add("visible");
             handleCursorPosition(params.event, params.customCursor);
         }
-    
-        if (VisualEditorGlobalState.value.previousHoveredTargetDOM === editableElement) {
+
+        if (
+            VisualEditorGlobalState.value.previousHoveredTargetDOM ===
+            editableElement
+        ) {
             return;
         }
-    
+
         const fieldSchema = await FieldSchemaMap.getFieldSchema(
             content_type_uid,
             fieldPath
         );
-    
+
         if (
             fieldSchema.data_type === "block" ||
             fieldSchema.multiple ||
@@ -123,8 +135,9 @@ async function handleMouseHover(params: HandleMouseHoverParams) {
                 overlayWrapper: params.overlayWrapper,
             });
         }
-        VisualEditorGlobalState.value.previousHoveredTargetDOM = editableElement;
+        VisualEditorGlobalState.value.previousHoveredTargetDOM =
+            editableElement;
     }, 10)(params);
-} 
+}
 
 export default handleMouseHover;

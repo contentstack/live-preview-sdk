@@ -1,4 +1,3 @@
-
 import { VisualEditorCslpEventDetails } from "../types/liveEditor.types";
 
 interface EventListenerHandlerParams {

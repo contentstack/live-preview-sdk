@@ -8,7 +8,7 @@ import { MoveLeftIcon, MoveRightIcon, DeleteIcon } from "./icons";
 
 interface MultipleFieldToolbarProps {
     fieldMetadata: CslpData;
-    targetElement : Element;
+    targetElement: Element;
 }
 
 function handleDeleteInstance(fieldMetadata: CslpData) {
@@ -46,55 +46,60 @@ function closeOverlay() {
         ?.click();
 }
 
-
 function MultipleFieldToolbarComponent(props: MultipleFieldToolbarProps) {
-
     const direction = useSignal("");
     const parentPath =
-    props.fieldMetadata?.multipleFieldMetadata?.parentDetails
-        ?.parentCslpValue || "";
+        props.fieldMetadata?.multipleFieldMetadata?.parentDetails
+            ?.parentCslpValue || "";
 
-    direction.value = getChildrenDirection(
-        props.targetElement,
-        parentPath
-    );
-    
+    direction.value = getChildrenDirection(props.targetElement, parentPath);
+
     return (
         <div className="visual-editor__focused-toolbar__multiple-field-toolbar">
-
             <div className="visual-editor__focused-toolbar__button-group">
-
-                <button className={`visual-editor__button visual-editor__button--secondary ${direction.value === "vertical" ? "visual-editor__rotate--90" : ""}`} onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    handleMoveInstance(props.fieldMetadata, "previous");
-                }}>
-                    <MoveLeftIcon /> 
-                </button>
-                
-
-                <button className={`visual-editor__button visual-editor__button--secondary ${direction.value === "vertical" ? "visual-editor__rotate--90" : ""}`} onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    handleMoveInstance(props.fieldMetadata, "next");
-                }}>
-                    <MoveRightIcon /> 
+                <button
+                    className={`visual-editor__button visual-editor__button--secondary ${
+                        direction.value === "vertical"
+                            ? "visual-editor__rotate--90"
+                            : ""
+                    }`}
+                    onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        handleMoveInstance(props.fieldMetadata, "previous");
+                    }}
+                >
+                    <MoveLeftIcon />
                 </button>
 
-
-                <button className="visual-editor__button visual-editor__button--secondary" onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    handleDeleteInstance(props.fieldMetadata);
-                }}>
-                    <DeleteIcon /> 
+                <button
+                    className={`visual-editor__button visual-editor__button--secondary ${
+                        direction.value === "vertical"
+                            ? "visual-editor__rotate--90"
+                            : ""
+                    }`}
+                    onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        handleMoveInstance(props.fieldMetadata, "next");
+                    }}
+                >
+                    <MoveRightIcon />
                 </button>
 
-           </div>
-
+                <button
+                    className="visual-editor__button visual-editor__button--secondary"
+                    onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        handleDeleteInstance(props.fieldMetadata);
+                    }}
+                >
+                    <DeleteIcon />
+                </button>
+            </div>
         </div>
-    )
-
+    );
 }
 
 export default MultipleFieldToolbarComponent;

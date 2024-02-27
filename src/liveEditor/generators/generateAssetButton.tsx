@@ -31,14 +31,23 @@ export function generateReplaceAssetButton(
     targetElement: Element,
     onClickCallback: (event: MouseEvent) => void
 ): HTMLButtonElement {
-   
-    const visualEditorContainer = document.querySelector(".visual-editor__container");
+    const visualEditorContainer = document.querySelector(
+        ".visual-editor__container"
+    );
     const wrapper = document.createDocumentFragment();
-    render(<ReplaceAssetButtonComponent targetElement={targetElement} onClickCallback={onClickCallback}/>, wrapper);
-    
+    render(
+        <ReplaceAssetButtonComponent
+            targetElement={targetElement}
+            onClickCallback={onClickCallback}
+        />,
+        wrapper
+    );
+
     visualEditorContainer?.appendChild(wrapper);
 
-    const replaceButton = document.querySelector(".visual-editor__replace-button") as HTMLButtonElement;
+    const replaceButton = document.querySelector(
+        ".visual-editor__replace-button"
+    ) as HTMLButtonElement;
 
     return replaceButton;
 }

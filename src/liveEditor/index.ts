@@ -61,14 +61,8 @@ export class VisualEditor {
         this.focusedToolbar = document.querySelector(
             ".visual-editor__focused-toolbar"
         );
-        console.log("[IN SDK] : INIT : VisualEditor");
 
         const config = Config.get();
-        console.log(
-            "[IN SDK] : Config : ",
-            config,
-            ILivePreviewModeConfig.EDITOR
-        );
 
         if (!config.enable || config.mode < ILivePreviewModeConfig.EDITOR) {
             return;
@@ -79,8 +73,6 @@ export class VisualEditor {
                 isSSR: Config.get().ssr,
             })
             .then((data) => {
-                console.log("[IN SDK] : adv-pos-message : WORKING");
-
                 const {
                     windowType = ILivePreviewWindowType.EDITOR,
                     stackDetails,
@@ -95,7 +87,8 @@ export class VisualEditor {
                     overlayWrapper: this.overlayWrapper,
                     visualEditorContainer: this.visualEditorContainer,
                     previousSelectedEditableDOM:
-                        VisualEditorGlobalState.value.previousSelectedEditableDOM,
+                        VisualEditorGlobalState.value
+                            .previousSelectedEditableDOM,
                     focusedToolbar: this.focusedToolbar,
                     resizeObserver: this.resizeObserver,
                     customCursor: this.customCursor,
@@ -111,8 +104,6 @@ export class VisualEditor {
                 useOnEntryUpdatePostMessageEvent();
             })
             .catch((e) => {
-                console.log("[IN SDK] : ERROR ", e);
-
                 if (!inIframe()) {
                     generateStartEditingButton(this.visualEditorContainer);
                 }

@@ -108,8 +108,6 @@ export function handleAddButtonsForMultiple(
     const parentCslpValue =
         eventDetails.fieldMetadata.multipleFieldMetadata?.parentDetails
             ?.parentCslpValue;
-            
-    console.log("[IN SDK] : in handleAddButtonsForMultiple : ");
 
     if (!editableElement || !parentCslpValue) {
         return;
@@ -163,8 +161,10 @@ export function handleAddButtonsForMultiple(
                 );
             });
 
-            const previousButton = previousButtonWrapper.children[0] as HTMLButtonElement;
-            const nextButton = nextButtonWrapper.children[0] as HTMLButtonElement;
+            const previousButton = previousButtonWrapper
+                .children[0] as HTMLButtonElement;
+            const nextButton = nextButtonWrapper
+                .children[0] as HTMLButtonElement;
 
             if (!visualEditorContainer.contains(previousButton)) {
                 visualEditorContainer.appendChild(previousButtonWrapper);
@@ -184,22 +184,19 @@ export function handleAddButtonsForMultiple(
 
                 nextButton.style.left = `${targetDOMDimension.right}px`;
                 nextButton.style.top = `${middleHeight}px`;
-                console.log(`[IN SDK] : Reached styles horizontal : PREV BUTTON STYLES : top : ${previousButton.style.top}, left : ${previousButton.style.left} ||||| NEXT BUTTON STYLES : top : ${nextButton.style.top}, left : ${nextButton.style.left}`);
-                
             } else {
                 const middleWidth =
-                targetDOMDimension.left +
-                (targetDOMDimension.right - targetDOMDimension.left) / 2;
+                    targetDOMDimension.left +
+                    (targetDOMDimension.right - targetDOMDimension.left) / 2;
                 previousButton.style.left = `${middleWidth}px`;
                 previousButton.style.top = `${
                     targetDOMDimension.top + window.scrollY
                 }px`;
-                
+
                 nextButton.style.left = `${middleWidth}px`;
                 nextButton.style.top = `${
                     targetDOMDimension.bottom + window.scrollY
                 }px`;
-                console.log('[IN SDK] : Reached styles vertical');
             }
         }
     });

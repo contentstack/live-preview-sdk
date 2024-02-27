@@ -22,11 +22,6 @@ function hideOverlay(params: HideOverlayParams) {
         focusedToolbar: params.focusedToolbar,
     });
 
-    console.log(
-        "[IN SDK] : hideOverlay",
-        VisualEditorGlobalState.value.previousSelectedEditableDOM
-    );
-
     if (!VisualEditorGlobalState.value.previousSelectedEditableDOM) return;
     params.resizeObserver.unobserve(
         VisualEditorGlobalState.value.previousSelectedEditableDOM
@@ -35,7 +30,6 @@ function hideOverlay(params: HideOverlayParams) {
 }
 
 function VisualEditorComponent(props: VisualEditorProps) {
-
     return (
         <>
             <div
@@ -51,10 +45,6 @@ function VisualEditorComponent(props: VisualEditorProps) {
                     const focusedToolbar = document.querySelector(
                         ".visual-editor__focused-toolbar"
                     ) as HTMLDivElement;
-                    console.log(
-                        "[IN SDK] : DEBUG CLICK : ",
-                        VisualEditorGlobalState.value.previousSelectedEditableDOM
-                    );
 
                     hideOverlay({
                         visualEditorContainer: props.visualEditorContainer,
