@@ -55,7 +55,7 @@ export class VisualEditor {
         console.log('[IN SDK] : INIT : VisualEditor');
 
         const config = Config.get();
-        console.log('[IN SDK] : ', config, ILivePreviewModeConfig.EDITOR);
+        console.log('[IN SDK] : Config : ', config, ILivePreviewModeConfig.EDITOR);
         
         if (!config.enable || config.mode < ILivePreviewModeConfig.EDITOR) {
             return;
@@ -98,7 +98,7 @@ export class VisualEditor {
                 
             })
             .catch((e) => {
-                console.log('[IN SDK] : ', e);
+                console.log('[IN SDK] : ERROR ', e);
                 
                 if (!inIframe()) {
                     generateStartEditingButton(this.visualEditorWrapper);

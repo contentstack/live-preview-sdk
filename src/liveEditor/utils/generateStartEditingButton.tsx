@@ -2,7 +2,6 @@ import { render } from "preact";
 import { PublicLogger } from "../../logger/logger";
 import StartEditingButtonComponent from "../components/startEditingButton";
 
-
 /**
  * Generates a start editing button for the visual editor.
  *
@@ -17,14 +16,14 @@ export function generateStartEditingButton(
         return;
     }
 
-    console.log('[IN SDK] : generateStartEditingButton');
-    
     const wrapper = document.createDocumentFragment();
     render(<StartEditingButtonComponent />, wrapper);
 
     visualEditorWrapper.appendChild(wrapper);
 
-    const startEditingButton = document.querySelector(".visual-editor__start-editing-btn") as HTMLAnchorElement;
+    const startEditingButton = document.querySelector(
+        ".visual-editor__start-editing-btn"
+    ) as HTMLAnchorElement;
 
     return startEditingButton;
 }

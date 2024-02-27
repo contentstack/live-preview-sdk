@@ -108,6 +108,8 @@ export function handleAddButtonsForMultiple(
     const parentCslpValue =
         eventDetails.fieldMetadata.multipleFieldMetadata?.parentDetails
             ?.parentCslpValue;
+            
+    console.log("[IN SDK] : in handleAddButtonsForMultiple : ");
 
     if (!editableElement || !parentCslpValue) {
         return;
@@ -160,13 +162,15 @@ export function handleAddButtonsForMultiple(
                 );
             });
 
-            if (!visualEditorWrapper.contains(previousButton)) {
-                visualEditorWrapper.appendChild(previousButton);
-            }
+            console.log("[IN SDK] : in handleAddButtonsForMultiple : PrevButton", nextButton);
+            console.log("[IN SDK] : in handleAddButtonsForMultiple : NextButton", previousButton);
+            // if (!visualEditorWrapper.contains(previousButton)) {
+            //     visualEditorWrapper.appendChild(previousButton);
+            // }
 
-            if (!visualEditorWrapper.contains(nextButton)) {
-                visualEditorWrapper.appendChild(nextButton);
-            }
+            // if (!visualEditorWrapper.contains(nextButton)) {
+            //     visualEditorWrapper.appendChild(nextButton);
+            // }
 
             if (direction === "horizontal") {
                 const middleHeight =

@@ -13,6 +13,7 @@ import { LiveEditorPostMessageEvents } from "./types/postMessage.types";
 import MultipleFieldToolbarComponent from "../components/multipleFieldToolbar";
 import { render } from "preact";
 import VisualEditorGlobalUtils from "../globals";
+import FieldLabelWrapperComponent from "../components/fieldLabelWrapper";
 
 const caretIcon = `
 <svg
@@ -66,8 +67,6 @@ export function addFocusOverlay(
     targetElement: Element,
     focusOverlayWrapper: HTMLDivElement
 ): void {
-    console.log("[IN SDK] : in addFocusOverlay");
-
     const targetElementDimension = targetElement.getBoundingClientRect();
 
     focusOverlayWrapper.classList.add("visible");
@@ -150,18 +149,10 @@ export function hideFocusOverlay(elements: {
     visualEditorOverlayWrapper: HTMLDivElement | null;
     focusedToolbar: HTMLDivElement | null;
 }): void {
-    
-    const {
-
-        visualEditorWrapper,
-        visualEditorOverlayWrapper,
-        focusedToolbar,
-    } = elements;
-
-    console.log("[IN SDK] : in hideFocusOverlay", VisualEditorGlobalUtils.previousSelectedEditableDOM);
+    const { visualEditorWrapper, visualEditorOverlayWrapper, focusedToolbar } =
+        elements;
 
     if (visualEditorOverlayWrapper) {
-        console.log("[IN SDK] : in hideFocusOverlay 123", visualEditorOverlayWrapper, visualEditorOverlayWrapper.classList);
         visualEditorOverlayWrapper.classList.remove("visible");
 
         if (VisualEditorGlobalUtils.previousSelectedEditableDOM) {
@@ -169,10 +160,10 @@ export function hideFocusOverlay(elements: {
                 "div.visual-editor__pseudo-editable-element"
             );
 
-            console.log('[IN SDK] : in hideFocusOverlay 2 : pseudoEditableElement ',  pseudoEditableElement);
-            
             if (
-                VisualEditorGlobalUtils.previousSelectedEditableDOM.hasAttribute("contenteditable") ||
+                VisualEditorGlobalUtils.previousSelectedEditableDOM.hasAttribute(
+                    "contenteditable"
+                ) ||
                 pseudoEditableElement
             ) {
                 const actualEditedElement =
@@ -208,7 +199,6 @@ export function appendFocusedToolbar(
     eventDetails: VisualEditorCslpEventDetails,
     focusedToolbarElement: HTMLDivElement
 ) {
-    console.log("[IN SDK] : appendFocusedToolbar");
     appendFieldPathDropdown(eventDetails, focusedToolbarElement);
     appendMultipleFieldToolbar(eventDetails, focusedToolbarElement);
 }
@@ -227,7 +217,6 @@ export function appendMultipleFieldToolbar(
             eventDetails
         );
         if (fieldSchema?.multiple && !fieldDisabled) {
-
             const wrapper = document.createDocumentFragment();
             render(
                 <MultipleFieldToolbarComponent
@@ -236,7 +225,7 @@ export function appendMultipleFieldToolbar(
                 />,
                 wrapper
             );
-            
+
             focusedToolbarElement.append(wrapper);
         }
     });
@@ -259,33 +248,25 @@ export function appendFieldPathDropdown(
 
     focusedToolbarElement.style.top = `${distanceFromTop}px`;
     focusedToolbarElement.style.left = `${distanceFromLeft}px`;
-    
+
     const parentPaths = collectParentCSLPPaths(targetElement, 2);
 
-    const FieldLabelWrapper = document.createElement("div");
-    FieldLabelWrapper.classList.add(
-        "visual-editor__focused-toolbar__field-label-wrapper"
+    const wrapper = document.createDocumentFragment();
+    render(
+        <FieldLabelWrapperComponent
+            fieldMetadata={fieldMetadata}
+            eventDetails={eventDetails}
+            parentPaths={parentPaths}
+        />,
+        wrapper
     );
 
-    const currentFieldItem = document.createElement("button");
-    currentFieldItem.classList.add(
-        "visual-editor__focused-toolbar__field-label-wrapper__current-field",
-        "visual-editor__button",
-        "visual-editor__button--primary"
+    focusedToolbarElement.appendChild(wrapper);
+
+    const FieldLabelWrapper = document.querySelector(
+        ".visual-editor__focused-toolbar__field-label-wrapper"
     );
 
-    const textDiv = document.createElement("div");
-    textDiv.classList.add("visual-editor__focused-toolbar__text");
-    textDiv.innerText =
-        fieldMetadata.fieldPath[fieldMetadata.fieldPath.length - 1];
-
-    const icon = document.createElement("div");
-    icon.classList.add(
-        "visual-editor__focused-toolbar__field-label-wrapper__caret"
-    );
-    icon.innerHTML = caretIcon;
-
-    currentFieldItem.append(textDiv, icon);
     focusedToolbarElement.addEventListener("click", (e) => {
         e.preventDefault();
 
@@ -311,66 +292,14 @@ export function appendFieldPathDropdown(
             return;
         }
 
-        if (FieldLabelWrapper.classList.contains("field-label-dropdown-open")) {
-            FieldLabelWrapper.classList.remove("field-label-dropdown-open");
+        if (
+            FieldLabelWrapper?.classList.contains("field-label-dropdown-open")
+        ) {
+            FieldLabelWrapper?.classList.remove("field-label-dropdown-open");
             return;
         }
-        FieldLabelWrapper.classList.add("field-label-dropdown-open");
+        FieldLabelWrapper?.classList.add("field-label-dropdown-open");
     });
-
-    FieldSchemaMap.getFieldSchema(
-        fieldMetadata.content_type_uid,
-        fieldMetadata.fieldPath
-    ).then((fieldSchema) => {
-        const { isDisabled: fieldDisabled, reason } = isFieldDisabled(
-            fieldSchema,
-            eventDetails
-        );
-        if (fieldDisabled) {
-            FieldLabelWrapper.classList.add(
-                "visual-editor__focused-toolbar--field-disabled"
-            );
-        }
-        textDiv.innerText = fieldSchema.display_name;
-
-        if (fieldDisabled) {
-            icon.innerHTML = "infoSVG";
-            icon.classList.add("visual-editor__tooltip");
-            icon.setAttribute("data-tooltip", reason);
-        }
-        const outlineDOM = document.querySelector<HTMLDivElement>(
-            ".visual-editor__overlay--outline"
-        );
-        if (outlineDOM && fieldDisabled) {
-            outlineDOM.style.outlineColor = "#909090";
-        }
-    });
-
-    FieldLabelWrapper.appendChild(currentFieldItem);
-
-    parentPaths.forEach((path, index) => {
-        const parentFieldItem = document.createElement("button");
-        parentFieldItem.classList.add(
-            "visual-editor__focused-toolbar__field-label-wrapper__parent-field",
-            "visual-editor__button",
-            "visual-editor__button--secondary",
-            "visual-editor__focused-toolbar__text"
-        );
-
-        parentFieldItem.setAttribute("data-target-cslp", path);
-        parentFieldItem.style.top = `-${(index + 1) * 30}px`;
-        const { content_type_uid, fieldPath } = extractDetailsFromCslp(path);
-        parentFieldItem.innerText = fieldPath[fieldPath.length - 1];
-        FieldLabelWrapper.appendChild(parentFieldItem);
-        FieldSchemaMap.getFieldSchema(content_type_uid, fieldPath).then(
-            (fieldSchema) => {
-                parentFieldItem.innerText = fieldSchema.display_name;
-                return;
-            }
-        );
-    });
-
-    focusedToolbarElement.appendChild(FieldLabelWrapper);
 }
 
 function collectParentCSLPPaths(

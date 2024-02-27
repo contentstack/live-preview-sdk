@@ -1,52 +1,90 @@
-// import { CaretIcon } from "./icons"
+import { useEffect, useState } from "react";
+import { CslpData } from "../../cslp/types/cslp.types";
+import { VisualEditorCslpEventDetails } from "../types/liveEditor.types";
+import { FieldSchemaMap } from "../utils/fieldSchemaMap";
+import { isFieldDisabled } from "../utils/isFieldDisabled";
+import { CaretIcon, InfoIcon } from "./icons";
+import { extractDetailsFromCslp } from "../../cslp";
 
-// import { CslpData } from "../../cslp/types/cslp.types"
-// import { FunctionComponent } from "preact"
-// import { useState } from "react"
+interface FieldLabelWrapperProps {
+    fieldMetadata: CslpData;
+    eventDetails: VisualEditorCslpEventDetails;
+    parentPaths: string[];
+}
 
-// const currentFieldItem = document.createElement("button");
-// currentFieldItem.classList.add(
-//     "visual-editor__focused-toolbar__field-label-wrapper__current-field",
-//     "visual-editor__button",
-//     "visual-editor__button--primary"
-// );
+function FieldLabelWrapperComponent(props: FieldLabelWrapperProps) {
+    const [currentField, setCurrentField] = useState({
+        text: "",
+        icon: <CaretIcon />,
+        disabled: false,
+    });
+    const [displayNames, setDisplayNames] = useState<string[]>([]);
 
-// const textDiv = document.createElement("div");
-// textDiv.classList.add("visual-editor__focused-toolbar__text");
-// textDiv.innerText =
-//     fieldMetadata.fieldPath[fieldMetadata.fieldPath.length - 1];
+    useEffect(() => {
+        const fetchData = async () => {
+            const fieldSchema = await FieldSchemaMap.getFieldSchema(
+                props.fieldMetadata.content_type_uid,
+                props.fieldMetadata.fieldPath
+            );
+            const { isDisabled: fieldDisabled, reason } = isFieldDisabled(
+                fieldSchema,
+                props.eventDetails
+            );
 
-// const caretIcon = document.createElement("div");
-// caretIcon.classList.add(
-//     "visual-editor__focused-toolbar__field-label-wrapper__caret"
-// );
-// caretIcon.innerHTML = "caretSVG";
+            setCurrentField({
+                text: fieldSchema.display_name,
+                icon: fieldDisabled ? (
+                    <div
+                        className="visual-editor__tooltip"
+                        data-tooltip={reason}
+                    >
+                        <InfoIcon />
+                    </div>
+                ) : (
+                    <CaretIcon />
+                ),
+                disabled: fieldDisabled,
+            });
 
-// currentFieldItem.append(textDiv, caretIcon);
+            const displayNames = await Promise.all(props.parentPaths.map(async (path) => {
+                const { content_type_uid, fieldPath } =
+                    extractDetailsFromCslp(path);
+                const fieldSchema = await FieldSchemaMap.getFieldSchema(content_type_uid, fieldPath);
+                return fieldSchema.display_name;
+            }));
+            
+            setDisplayNames(displayNames);
+        };
 
-// interface CurrentFieldItemProps {
-//     text: String,
-//     icon: VNode<any>
+        fetchData();
+    }, [props]);
 
-// }
+    return (
+        <div
+            className={`visual-editor__focused-toolbar__field-label-wrapper ${
+                currentField.disabled
+                    ? "visual-editor__focused-toolbar--field-disabled"
+                    : ""
+            }`}
+        >
+            <div className="visual-editor__focused-toolbar__field-label-wrapper__current-field visual-editor__button visual-editor__button--primary">
+                <div className="visual-editor__focused-toolbar__text">
+                    {currentField.text}
+                </div>
+                {currentField.icon}
+            </div>
+            {props.parentPaths.map((path, index) => (
+                <div
+                    key={index}
+                    className="visual-editor__focused-toolbar__field-label-wrapper__parent-field visual-editor__button visual-editor__button--secondary visual-editor__focused-toolbar__text"
+                    data-target-cslp={path}
+                    style={{ top: `-${(index + 1) * 30}px` }}
+                >
+                    {displayNames[index]}
+                </div>
+            ))}
+        </div>
+    );
+}
 
-// function CurrentFieldItemComponent(props: CurrentFieldItemProps) {
-
-//     const [text, setText] = useState(props.text);
-//     const [icon, setIcon] = useState(props.icon);
-
-
-//     return (
-//         <div className="visual-editor__focused-toolbar__field-label-wrapper__current-field visual-editor__button visual-editor__button--primary">
-//             <div className="visual-editor__focused-toolbar__text">
-//                 {text}
-//             </div>
-//             <div className="visual-editor__focused-toolbar__field-label-wrapper__caret">
-//                 {icon}
-//             </div>
-//         </div>
-//     )
-// }
-
-
-
+export default FieldLabelWrapperComponent;

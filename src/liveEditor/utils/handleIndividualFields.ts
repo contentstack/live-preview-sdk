@@ -98,22 +98,17 @@ export async function handleIndividualFields(
             FieldDataType.NUMBER,
         ];
 
-        console.log('[IN SDK] : REACHED PSEUDO 0');
-
         // * title, single single_line, single multi_line, single number
         if (ALLOWED_INLINE_EDITABLE_FIELD.includes(fieldType)) {
             let actualEditableField = editableElement;
             
             const actualFieldData =
             editableElement.innerHTML || editableElement.textContent || "";
-            console.log('[IN SDK] : REACHED PSEUDO 1', actualEditableField, actualFieldData, 'CONFIG : ', config.expectedFieldData);
             if (
                 actualFieldData !== config.expectedFieldData ||
                 isEllipsisActive(editableElement as HTMLElement)
             ) {
                 // TODO: Testing will be don in the E2E.
-                console.log('[IN SDK] : REACHED PSEUDO 2');
-                
                 const pseudoEditableField = generatePseudoEditableElement(
                     { editableElement: editableElement as HTMLElement },
                     { textContent: config.expectedFieldData }
@@ -170,8 +165,6 @@ export function cleanIndividualFieldResidual(elements: {
         focusedToolbar,
     } = elements;
 
-    console.log('[IN SDK] : cleanIndividualFieldResidual', focusedToolbar, VisualEditorGlobalUtils.previousSelectedEditableDOM);
-    
     removeAddInstanceButtons({
         eventTarget: null,
         visualEditorWrapper: visualEditorWrapper,

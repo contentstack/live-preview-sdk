@@ -11,16 +11,22 @@ export function generateAddInstanceButton(
 ): HTMLButtonElement {
     const visualEditorWrapper = document.querySelector(".visual-editor__container");
     const wrapper = document.createDocumentFragment();
-    render(
-        <AddInstanceButtonComponent onClickCallback={onClickCallback} />,
-        wrapper
-    );
-    visualEditorWrapper?.appendChild(wrapper);
-
-    const button = document.querySelector(
+    let button = document.querySelector(
         ".visual-editor__add-button"
-    ) as HTMLButtonElement;
-    
+        ) as HTMLButtonElement;
+
+    if (!visualEditorWrapper?.contains(button)) {
+        render(
+            <AddInstanceButtonComponent onClickCallback={onClickCallback} />,
+            wrapper
+        );
+        visualEditorWrapper?.appendChild(wrapper);
+    }
+
+    button = document.querySelector(
+        ".visual-editor__add-button"
+        ) as HTMLButtonElement;
+
     return button;
 }
 
