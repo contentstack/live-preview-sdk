@@ -16,7 +16,6 @@ import {
 import { handleInitData } from "./utils/handleUserConfig";
 import { userInitData } from "./utils/defaults";
 import packageJson from "../package.json";
-import { replaceDocumentBody, updateDocumentBody } from "./utils/replaceHtml";
 
 export default class LivePreview {
     /**
@@ -64,6 +63,8 @@ export default class LivePreview {
 
     private tooltip: HTMLButtonElement | null = null; // this tooltip is responsible to redirect user to Contentstack edit page
     private currentElementBesideTooltip: HTMLElement | null = null; // this element helps to move tooltip with the scroll
+    private isHoveringOnTooltip = false;
+    private hideInterval: ReturnType<typeof setInterval> | null = null;
 
     private tooltipChild: {
         singular: HTMLDivElement | null;
@@ -78,6 +79,7 @@ export default class LivePreview {
         handleInitData(initData, this.config);
 
         this.addEditStyleOnHover = this.addEditStyleOnHover.bind(this);
+        this.removeEditButtonStyle = this.removeEditButtonStyle.bind(this);
         this.generateRedirectUrl = this.generateRedirectUrl.bind(this);
         this.scrollHandler = this.scrollHandler.bind(this);
         this.linkClickHandler = this.linkClickHandler.bind(this);
@@ -88,6 +90,9 @@ export default class LivePreview {
         this.requestDataSync = this.requestDataSync.bind(this);
         this.updateTooltipPosition = this.updateTooltipPosition.bind(this);
         this.removeDataCslp = this.removeDataCslp.bind(this);
+        this.toggleHoveringOnEditButton =
+            this.toggleHoveringOnEditButton.bind(this);
+        this.hideTooltip = this.hideTooltip.bind(this);
 
         // @ts-ignore
         if (initData.debug) {
@@ -157,12 +162,25 @@ export default class LivePreview {
             const cslpTag = element.getAttribute("data-cslp");
 
             if (trigger && cslpTag) {
-                if (this.currentElementBesideTooltip)
+                if (this.hideInterval) {
+                    clearInterval(this.hideInterval);
+                    this.hideInterval = null;
+                }
+                if (this.currentElementBesideTooltip) {
                     this.currentElementBesideTooltip.classList.remove(
                         "cslp-edit-mode"
                     );
+                    this.currentElementBesideTooltip.removeEventListener(
+                        "mouseleave",
+                        this.removeEditButtonStyle
+                    );
+                }
                 element.classList.add("cslp-edit-mode");
                 this.currentElementBesideTooltip = element;
+                this.currentElementBesideTooltip.addEventListener(
+                    "mouseleave",
+                    this.removeEditButtonStyle
+                );
 
                 if (this.updateTooltipPosition()) {
                     this.tooltip?.setAttribute("current-data-cslp", cslpTag);
@@ -177,6 +195,43 @@ export default class LivePreview {
                 element.classList.remove("cslp-edit-mode");
             }
         }
+    }
+
+    private removeEditButtonStyle(e: MouseEvent) {
+        if (!this.currentElementBesideTooltip || !this.tooltip) return false;
+        let trigger = true;
+        const eventTargets = e.composedPath();
+
+        for (const eventTarget of eventTargets) {
+            const element = eventTarget as HTMLElement;
+            if (element.nodeName === "BODY") break;
+            if (typeof element?.getAttribute !== "function") continue;
+
+            const cslpTag = element.getAttribute("data-cslp");
+
+            if (trigger && cslpTag) {
+                this.hideInterval = setInterval(this.hideTooltip, 500);
+                trigger = false;
+            } else if (!trigger) {
+                element.classList.remove("cslp-edit-mode");
+            }
+        }
+    }
+
+    private hideTooltip() {
+        if (
+            !this.currentElementBesideTooltip ||
+            !this.tooltip ||
+            this.isHoveringOnTooltip
+        )
+            return false;
+        this.currentElementBesideTooltip.classList.remove("cslp-edit-mode");
+        this.currentElementBesideTooltip.removeEventListener(
+            "mouseleave",
+            this.removeEditButtonStyle
+        );
+        this.currentElementBesideTooltip = null;
+        this.tooltip.style.top = "-100%";
     }
 
     private generateRedirectUrl(
@@ -337,30 +392,7 @@ export default class LivePreview {
 
                 this.setConfigFromParams({ live_preview: hash });
 
-                if (this.config.ssr) {
-                    // Get the content from the server and replace the body
-
-                    const fetch_url = new URL(window.location.href);
-
-                    fetch_url.searchParams.append("live_preview", hash);
-                    fetch_url.searchParams.append(
-                        "content_type_uid",
-                        contentTypeUid
-                    );
-                    fetch_url.searchParams.append("entry_uid", entryUid);
-
-                    fetch(fetch_url.toString(), {
-                        method: "GET",
-                    })
-                        .then((res) => res.text())
-                        .then((res) => {
-                            updateDocumentBody(document, res, {
-                                onPostOperation: this.createCslpTooltip,
-                                shouldReRunScripts:
-                                    this.config.runScriptsOnUpdate,
-                            });
-                        });
-                } else {
+                if (!this.config.ssr) {
                     this.handleUserChange({
                         content_type_uid: contentTypeUid,
                         entry_uid: entryUid,
@@ -392,9 +424,10 @@ export default class LivePreview {
                 }
                 break;
             }
-            case "document-body-post-scripts-loaded": {
-                const { body } = e.data.data;
-                replaceDocumentBody(body, this.createCslpTooltip);
+            default: {
+                // ensure that the switch statement is exhaustive
+                const exhaustiveCheck: never = e.data;
+                return exhaustiveCheck; // TODO: add debug message while we are in development mode.
             }
         }
     }
@@ -405,9 +438,20 @@ export default class LivePreview {
             this.config.editButton.enable
         ) {
             const tooltip = document.createElement("button");
+            const tooltipInnerContainer = document.createElement("div");
+            tooltipInnerContainer.classList.add("cslp-tooltip-inner-container");
+            tooltip.classList.add("cslp-tooltip");
             tooltip.classList.add("cslp-tooltip");
             tooltip.setAttribute("data-test-id", "cs-cslp-tooltip");
             tooltip.id = "cslp-tooltip";
+            tooltipInnerContainer.id = "cslp-tooltip-inner-container";
+            tooltip.addEventListener("mouseover", () => {
+                this.toggleHoveringOnEditButton(true);
+            });
+            tooltip.addEventListener("mouseleave", (e: MouseEvent) => {
+                this.toggleHoveringOnEditButton(false);
+                this.removeEditButtonStyle(e);
+            });
             window.document.body.insertAdjacentElement("beforeend", tooltip);
             this.tooltipChild.singular = createSingularEditButton(
                 this.scrollHandler
@@ -417,19 +461,20 @@ export default class LivePreview {
                 this.linkClickHandler
             );
 
-            tooltip.innerHTML = "";
-            tooltip.appendChild(this.tooltipChild.singular);
+            tooltipInnerContainer.innerHTML = "";
+            tooltipInnerContainer.appendChild(this.tooltipChild.singular);
+            tooltip.appendChild(tooltipInnerContainer);
             this.tooltip = tooltip;
         }
         this.updateTooltipPosition();
     };
 
+    private toggleHoveringOnEditButton = (isHoveringOnTooltip: boolean) => {
+        this.isHoveringOnTooltip = isHoveringOnTooltip;
+    };
+
     // Request parent for data sync when document loads
     private requestDataSync() {
-        this.handleUserChange({
-            live_preview: "init", // this is the hash of the live previewd
-        });
-
         // add edit tooltip
         this.createCslpTooltip();
 
@@ -498,14 +543,29 @@ export default class LivePreview {
             if (this.tooltipChild.singular && this.tooltipChild.multiple) {
                 if (this.currentElementBesideTooltip.hasAttribute("href")) {
                     if (this.tooltipCurrentChild !== "multiple") {
-                        this.tooltip.innerHTML = "";
-                        this.tooltip.appendChild(this.tooltipChild.multiple);
-                        this.tooltipCurrentChild = "multiple";
+                        const tooltipInnerContainer =
+                            this.tooltip.querySelector(
+                                "div.cslp-tooltip-inner-container"
+                            );
+                        if (tooltipInnerContainer) {
+                            tooltipInnerContainer.innerHTML = "";
+                            tooltipInnerContainer.appendChild(
+                                this.tooltipChild.multiple
+                            );
+                            this.tooltipCurrentChild = "multiple";
+                        }
                     }
                 } else if (this.tooltipCurrentChild !== "singular") {
-                    this.tooltip.innerHTML = "";
-                    this.tooltip.appendChild(this.tooltipChild.singular);
-                    this.tooltipCurrentChild = "singular";
+                    const tooltipInnerContainer = this.tooltip.querySelector(
+                        "div.cslp-tooltip-inner-container"
+                    );
+                    if (tooltipInnerContainer) {
+                        tooltipInnerContainer.innerHTML = "";
+                        tooltipInnerContainer.appendChild(
+                            this.tooltipChild.singular
+                        );
+                        this.tooltipCurrentChild = "singular";
+                    }
                 }
             }
             return true;
