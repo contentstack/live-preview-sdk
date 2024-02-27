@@ -2,10 +2,10 @@ import { VisualEditorCslpEventDetails } from "../types/liveEditor.types";
 import {
     generateReplaceAssetButton,
     removeReplaceAssetButton,
-} from "./generateAssetButton";
+} from "../generators/generateAssetButton";
 import { LIVE_EDITOR_FIELD_TYPE_ATTRIBUTE_KEY } from "./constants";
 import { FieldSchemaMap } from "./fieldSchemaMap";
-import { getExpectedFieldData, isEllipsisActive } from "./generatePseudoEditableField";
+import { getExpectedFieldData, isEllipsisActive } from "../generators/generatePseudoEditableField";
 import { getFieldType } from "./getFieldType";
 import { handleFieldInput, handleFieldKeyDown } from "./handleFieldMouseDown";
 import liveEditorPostMessage from "./liveEditorPostMessage";
@@ -15,7 +15,7 @@ import {
 } from "./multipleElementAddButton";
 import { FieldDataType } from "./types/index.types";
 import { LiveEditorPostMessageEvents } from "./types/postMessage.types";
-import { generatePseudoEditableElement } from "./generatePseudoEditableField";
+import { generatePseudoEditableElement } from "../generators/generatePseudoEditableField";
 import VisualEditorGlobalUtils from "../globals";
 
 /**
@@ -26,12 +26,12 @@ import VisualEditorGlobalUtils from "../globals";
 export async function handleIndividualFields(
     eventDetails: VisualEditorCslpEventDetails,
     elements: {
-        visualEditorWrapper: HTMLDivElement;
+        visualEditorContainer: HTMLDivElement;
         lastEditedField: Element | null;
     }
 ): Promise<void> {
     const { fieldMetadata, editableElement } = eventDetails;
-    const { visualEditorWrapper, lastEditedField } = elements;
+    const { visualEditorContainer, lastEditedField } = elements;
     const { content_type_uid, fieldPath } = fieldMetadata;
 
     const [fieldSchema, expectedFieldData] = await Promise.all([
@@ -58,21 +58,21 @@ export async function handleIndividualFields(
         if (lastEditedField !== editableElement) {
             handleAddButtonsForMultiple(eventDetails, {
                 editableElement: eventDetails.editableElement,
-                visualEditorWrapper: visualEditorWrapper,
+                visualEditorContainer: visualEditorContainer,
             });
         }
 
         // * fields could be handled as they are in a single instance
         if (eventDetails.fieldMetadata.multipleFieldMetadata.index > -1) {
             handleSingleField(
-                { editableElement, visualEditorWrapper },
+                { editableElement, visualEditorContainer },
                 { expectedFieldData }
             );
         }
         return;
     } else {
         handleSingleField(
-            { editableElement, visualEditorWrapper },
+            { editableElement, visualEditorContainer },
             { expectedFieldData }
         );
     }
@@ -83,11 +83,11 @@ export async function handleIndividualFields(
     function handleSingleField(
         elements: {
             editableElement: Element;
-            visualEditorWrapper: HTMLDivElement;
+            visualEditorContainer: HTMLDivElement;
         },
         config: { expectedFieldData: string }
     ) {
-        const { editableElement, visualEditorWrapper } = elements;
+        const { editableElement, visualEditorContainer } = elements;
         /**
          * The field that can be directly modified using contenteditable=true.
          * This includes all text fields like title and numbers.
@@ -116,7 +116,7 @@ export async function handleIndividualFields(
 
                 (editableElement as HTMLElement).style.visibility = "hidden";
 
-                visualEditorWrapper.appendChild(pseudoEditableField);
+                visualEditorContainer.appendChild(pseudoEditableField);
                 actualEditableField = pseudoEditableField;
             }
 
@@ -155,25 +155,25 @@ export async function handleIndividualFields(
 
 export function cleanIndividualFieldResidual(elements: {
     overlayWrapper: HTMLDivElement;
-    visualEditorWrapper: HTMLDivElement | null;
+    visualEditorContainer: HTMLDivElement | null;
     focusedToolbar: HTMLDivElement | null;
 }): void {
     
     const {
         overlayWrapper,
-        visualEditorWrapper,
+        visualEditorContainer,
         focusedToolbar,
     } = elements;
 
     removeAddInstanceButtons({
         eventTarget: null,
-        visualEditorWrapper: visualEditorWrapper,
+        visualEditorContainer: visualEditorContainer,
         overlayWrapper: overlayWrapper,
     });
 
-    removeReplaceAssetButton(visualEditorWrapper);
+    removeReplaceAssetButton(visualEditorContainer);
 
-    const pseudoEditableElement = visualEditorWrapper?.querySelector(
+    const pseudoEditableElement = visualEditorContainer?.querySelector(
         ".visual-editor__pseudo-editable-element"
     );
 

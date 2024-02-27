@@ -1,23 +1,23 @@
-import { hideFocusOverlay } from "../utils/focusOverlayWrapper";
-import EventListenerHandlerParams from "../utils/listeners/params";
+import { hideFocusOverlay } from "../generators/generateOverlay";
+import EventListenerHandlerParams from "../listeners/params";
 import VisualEditorGlobalUtils from "../globals";
 
 interface HideOverlayParams
     extends Pick<
         EventListenerHandlerParams,
-        "visualEditorWrapper" | "focusedToolbar" | "resizeObserver"
+        "visualEditorContainer" | "focusedToolbar" | "resizeObserver"
     > {
     visualEditorOverlayWrapper: HTMLDivElement | null;
 }
 
 interface VisualEditorProps {
-    visualEditorWrapper: HTMLDivElement | null;
+    visualEditorContainer: HTMLDivElement | null;
     resizeObserver: ResizeObserver;
 }
 
 function hideOverlay(params: HideOverlayParams) {
     hideFocusOverlay({
-        visualEditorWrapper: params.visualEditorWrapper,
+        visualEditorContainer: params.visualEditorContainer,
         visualEditorOverlayWrapper: params.visualEditorOverlayWrapper,
         focusedToolbar: params.focusedToolbar,
     });
@@ -57,7 +57,7 @@ function VisualEditorComponent(props: VisualEditorProps) {
                     );
 
                     hideOverlay({
-                        visualEditorWrapper: props.visualEditorWrapper,
+                        visualEditorContainer: props.visualEditorContainer,
                         visualEditorOverlayWrapper: targetElement,
                         focusedToolbar: focusedToolbar,
                         resizeObserver: props.resizeObserver,

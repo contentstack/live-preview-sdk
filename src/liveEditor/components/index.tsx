@@ -16,16 +16,16 @@ function initUI(props: InitUIParams) : void {
     );
     if (!visualEditorDOM) {
         
-        const visualEditorWrapper = document.createElement("div");
-        visualEditorWrapper.classList.add("visual-editor__container");
-        visualEditorWrapper.setAttribute("data-testid", "visual-editor__container");
+        const visualEditorContainer = document.createElement("div");
+        visualEditorContainer.classList.add("visual-editor__container");
+        visualEditorContainer.setAttribute("data-testid", "visual-editor__container");
 
-        document.body.appendChild(visualEditorWrapper);
+        document.body.appendChild(visualEditorContainer);
         
         render(<VisualEditorComponent 
-            visualEditorWrapper={visualEditorWrapper}
+            visualEditorContainer={visualEditorContainer}
             resizeObserver={props.resizeObserver}
-        />, visualEditorWrapper);
+        />, visualEditorContainer);
     }
     
     return;

@@ -5,13 +5,13 @@ import StartEditingButtonComponent from "../components/startEditingButton";
 /**
  * Generates a start editing button for the visual editor.
  *
- * @param visualEditorWrapper - The HTMLDivElement that wraps the visual editor.
- * @returns The generated HTMLAnchorElement representing the start editing button, or undefined if the visualEditorWrapper is null.
+ * @param visualEditorContainer - The HTMLDivElement that wraps the visual editor.
+ * @returns The generated HTMLAnchorElement representing the start editing button, or undefined if the visualEditorContainer is null.
  */
 export function generateStartEditingButton(
-    visualEditorWrapper: HTMLDivElement | null
+    visualEditorContainer: HTMLDivElement | null
 ): HTMLAnchorElement | undefined {
-    if (!visualEditorWrapper) {
+    if (!visualEditorContainer) {
         PublicLogger.warn("Live Editor overlay not found.");
         return;
     }
@@ -19,7 +19,7 @@ export function generateStartEditingButton(
     const wrapper = document.createDocumentFragment();
     render(<StartEditingButtonComponent />, wrapper);
 
-    visualEditorWrapper.appendChild(wrapper);
+    visualEditorContainer.appendChild(wrapper);
 
     const startEditingButton = document.querySelector(
         ".visual-editor__start-editing-btn"

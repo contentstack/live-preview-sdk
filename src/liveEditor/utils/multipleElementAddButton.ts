@@ -3,7 +3,7 @@ import { FieldSchemaMap } from "./fieldSchemaMap";
 import {
     generateAddInstanceButton,
     getAddInstanceButtons,
-} from "./instanceButtons";
+} from "../generators/generateAddInstanceButtons";
 import { isFieldDisabled } from "./isFieldDisabled";
 import liveEditorPostMessage from "./liveEditorPostMessage";
 import { LiveEditorPostMessageEvents } from "./types/postMessage.types";
@@ -100,10 +100,10 @@ export function handleAddButtonsForMultiple(
     eventDetails: VisualEditorCslpEventDetails,
     elements: {
         editableElement: Element | null;
-        visualEditorWrapper: HTMLDivElement | null;
+        visualEditorContainer: HTMLDivElement | null;
     }
 ): void {
-    const { editableElement, visualEditorWrapper } = elements;
+    const { editableElement, visualEditorContainer } = elements;
 
     const parentCslpValue =
         eventDetails.fieldMetadata.multipleFieldMetadata?.parentDetails
@@ -116,14 +116,14 @@ export function handleAddButtonsForMultiple(
     }
 
     const direction = getChildrenDirection(editableElement, parentCslpValue);
-    if (direction === "none" || !visualEditorWrapper) {
+    if (direction === "none" || !visualEditorContainer) {
         return;
     }
 
     const targetDOMDimension = editableElement.getBoundingClientRect();
     removeAddInstanceButtons(
         {
-            visualEditorWrapper: visualEditorWrapper,
+            visualEditorContainer: visualEditorContainer,
             eventTarget: null,
             overlayWrapper: null,
         },
@@ -164,12 +164,12 @@ export function handleAddButtonsForMultiple(
 
             console.log("[IN SDK] : in handleAddButtonsForMultiple : PrevButton", nextButton);
             console.log("[IN SDK] : in handleAddButtonsForMultiple : NextButton", previousButton);
-            // if (!visualEditorWrapper.contains(previousButton)) {
-            //     visualEditorWrapper.appendChild(previousButton);
+            // if (!visualEditorContainer.contains(previousButton)) {
+            //     visualEditorContainer.appendChild(previousButton);
             // }
 
-            // if (!visualEditorWrapper.contains(nextButton)) {
-            //     visualEditorWrapper.appendChild(nextButton);
+            // if (!visualEditorContainer.contains(nextButton)) {
+            //     visualEditorContainer.appendChild(nextButton);
             // }
 
             if (direction === "horizontal") {
@@ -202,28 +202,28 @@ export function handleAddButtonsForMultiple(
 
 export function removeAddInstanceButtons(
     elements: {
-        visualEditorWrapper: HTMLDivElement | null;
+        visualEditorContainer: HTMLDivElement | null;
         overlayWrapper: HTMLDivElement | null;
         eventTarget: EventTarget | null;
     },
     forceRemoveAll = false
 ): void {
-    const { visualEditorWrapper, overlayWrapper, eventTarget } = elements;
+    const { visualEditorContainer, overlayWrapper, eventTarget } = elements;
 
-    if (!visualEditorWrapper) {
+    if (!visualEditorContainer) {
         return;
     }
 
     if (forceRemoveAll) {
         const addInstanceButtons = getAddInstanceButtons(
-            visualEditorWrapper,
+            visualEditorContainer,
             true
         );
 
         addInstanceButtons.forEach((button) => button.remove());
     }
 
-    const addInstanceButtons = getAddInstanceButtons(visualEditorWrapper);
+    const addInstanceButtons = getAddInstanceButtons(visualEditorContainer);
 
     if (!addInstanceButtons) {
         return;

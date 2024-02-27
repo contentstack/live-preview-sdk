@@ -1,13 +1,13 @@
 import { throttle } from "lodash-es";
-import { getCsDataOfElement } from "../getCsDataOfElement";
-import { handleAddButtonsForMultiple, removeAddInstanceButtons } from "../multipleElementAddButton";
-import { generateCustomCursor } from "../generateCustomCursor";
-import { FieldSchemaMap } from "../fieldSchemaMap";
-import { isFieldDisabled } from "../isFieldDisabled";
-import { getFieldType } from "../getFieldType";
+import { getCsDataOfElement } from "../utils/getCsDataOfElement";
+import { handleAddButtonsForMultiple, removeAddInstanceButtons } from "../utils/multipleElementAddButton";
+import { generateCustomCursor } from "../generators/generateCustomCursor";
+import { FieldSchemaMap } from "../utils/fieldSchemaMap";
+import { isFieldDisabled } from "../utils/isFieldDisabled";
+import { getFieldType } from "../utils/getFieldType";
 
 import EventListenerHandlerParams from "./params";
-import VisualEditorGlobalUtils from "../../globals";
+import VisualEditorGlobalUtils from "../globals";
 
 function resetCustomCursor(customCursor: HTMLDivElement | null) : void {
     if (customCursor) {
@@ -30,7 +30,7 @@ function handleCursorPosition(event: MouseEvent, customCursor: HTMLDivElement | 
 };
 
 
-export interface HandleMouseHoverParams extends Pick<EventListenerHandlerParams, "event" | "overlayWrapper" | "visualEditorWrapper"> {
+export interface HandleMouseHoverParams extends Pick<EventListenerHandlerParams, "event" | "overlayWrapper" | "visualEditorContainer"> {
     customCursor: HTMLDivElement | null,
 }
 
@@ -44,7 +44,7 @@ async function handleMouseHover(params: HandleMouseHoverParams) {
     
             removeAddInstanceButtons({
                 eventTarget: params.event.target,
-                visualEditorWrapper: params.visualEditorWrapper,
+                visualEditorContainer: params.visualEditorContainer,
                 overlayWrapper: params.overlayWrapper,
             });
             handleCursorPosition(params.event, params.customCursor);
@@ -55,7 +55,7 @@ async function handleMouseHover(params: HandleMouseHoverParams) {
             resetCustomCursor(params.customCursor);
             removeAddInstanceButtons({
                 eventTarget: params.event.target,
-                visualEditorWrapper: params.visualEditorWrapper,
+                visualEditorContainer: params.visualEditorContainer,
                 overlayWrapper: params.overlayWrapper,
             });
         }
@@ -114,12 +114,12 @@ async function handleMouseHover(params: HandleMouseHoverParams) {
         ) {
             handleAddButtonsForMultiple(eventDetails, {
                 editableElement: editableElement,
-                visualEditorWrapper: params.visualEditorWrapper,
+                visualEditorContainer: params.visualEditorContainer,
             });
         } else {
             removeAddInstanceButtons({
                 eventTarget: params.event.target,
-                visualEditorWrapper: params.visualEditorWrapper,
+                visualEditorContainer: params.visualEditorContainer,
                 overlayWrapper: params.overlayWrapper,
             });
         }

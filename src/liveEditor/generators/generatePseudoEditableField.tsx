@@ -1,7 +1,7 @@
 import { toString } from "lodash-es";
 import { CslpData } from "../../cslp/types/cslp.types";
-import liveEditorPostMessage from "./liveEditorPostMessage";
-import { LiveEditorPostMessageEvents } from "./types/postMessage.types";
+import liveEditorPostMessage from "../utils/liveEditorPostMessage";
+import { LiveEditorPostMessageEvents } from "../utils/types/postMessage.types";
 import { render } from "preact";
 import PseudoEditableFieldComponent from "../components/pseudoEditableField";
 
@@ -97,14 +97,14 @@ export function generatePseudoEditableElement(
 ): HTMLDivElement {
     const { editableElement } = elements;
 
-    const visualEditorWrapper = document.querySelector(".visual-editor__container");
+    const visualEditorContainer = document.querySelector(".visual-editor__container");
     const wrapper = document.createDocumentFragment();
     render(<PseudoEditableFieldComponent 
         editableElement={editableElement}
         config={config}
         />, wrapper);
 
-    visualEditorWrapper?.appendChild(wrapper)
+    visualEditorContainer?.appendChild(wrapper)
     
     const pseudoEditableElement = document.querySelector(".visual-editor__pseudo-editable-element") as HTMLDivElement;
 

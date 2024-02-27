@@ -1,10 +1,10 @@
 
-import { VisualEditorCslpEventDetails } from "./../../types/liveEditor.types";
+import { VisualEditorCslpEventDetails } from "../types/liveEditor.types";
 
 interface EventListenerHandlerParams {
     event: MouseEvent;
     overlayWrapper: HTMLDivElement | null;
-    visualEditorWrapper: HTMLDivElement | null;
+    visualEditorContainer: HTMLDivElement | null;
     previousSelectedEditableDOM: Element | null;
     focusedToolbar: HTMLDivElement | null;
     resizeObserver: ResizeObserver;

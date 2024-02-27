@@ -1,21 +1,22 @@
 import {
     cleanIndividualFieldResidual,
     handleIndividualFields,
-} from "./../handleIndividualFields";
+} from "../utils/handleIndividualFields";
 
-import { getCsDataOfElement, getDOMEditStack } from "./../getCsDataOfElement";
+import { getCsDataOfElement, getDOMEditStack } from "../utils/getCsDataOfElement";
 
 import {
-    addFocusOverlay,
     appendFocusedToolbar,
-} from "./../focusOverlayWrapper";
+} from "../generators/generateToolbar";
 
-import liveEditorPostMessage from "./../liveEditorPostMessage"; 
+import { addFocusOverlay } from "../generators/generateOverlay";
 
-import { LiveEditorPostMessageEvents } from "./../../utils/types/postMessage.types";
+import liveEditorPostMessage from "../utils/liveEditorPostMessage"; 
+
+import { LiveEditorPostMessageEvents } from "../utils/types/postMessage.types";
 
 import EventListenerHandlerParams from "./params";
-import VisualEditorGlobalUtils from "../../globals";
+import VisualEditorGlobalUtils from "../globals";
 
 export interface HandleMouseClickParams
     extends Omit<
@@ -75,7 +76,7 @@ async function handleMouseClick(params: HandleMouseClickParams): Promise<void> {
     if (
         !eventDetails ||
         !params.overlayWrapper ||
-        !params.visualEditorWrapper
+        !params.visualEditorContainer
     ) {
         return;
     }
@@ -92,7 +93,7 @@ async function handleMouseClick(params: HandleMouseClickParams): Promise<void> {
     ) {
         cleanIndividualFieldResidual({
             overlayWrapper: params.overlayWrapper,
-            visualEditorWrapper: params.visualEditorWrapper,
+            visualEditorContainer: params.visualEditorContainer,
             focusedToolbar: params.focusedToolbar,
         });
     }
@@ -114,7 +115,7 @@ async function handleMouseClick(params: HandleMouseClickParams): Promise<void> {
 
 
     await handleIndividualFields(eventDetails, {
-        visualEditorWrapper: params.visualEditorWrapper,
+        visualEditorContainer: params.visualEditorContainer,
         lastEditedField: VisualEditorGlobalUtils.previousSelectedEditableDOM,
     });
 
