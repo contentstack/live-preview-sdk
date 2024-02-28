@@ -16,18 +16,9 @@ export function generateAddInstanceButton(
         wrapper
     );
 
-    return wrapper as unknown as HTMLButtonElement;
+    const button = wrapper.children[0] as HTMLButtonElement;
+    return button;
 }
-
-export function getAddInstanceButtons(
-    visualEditorContainer: HTMLDivElement,
-    getAllButtons: true
-): HTMLButtonElement[];
-
-export function getAddInstanceButtons(
-    visualEditorContainer: HTMLDivElement,
-    getAllButtons?: false
-): [HTMLButtonElement, HTMLButtonElement] | null;
 
 /**
  * Returns an array of HTMLButtonElement instances that can be used to add new instances to the visual editor.
