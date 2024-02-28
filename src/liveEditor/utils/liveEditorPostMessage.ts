@@ -6,7 +6,8 @@ let liveEditorPostMessage: EventManager | undefined;
 if (typeof window !== "undefined") {
     liveEditorPostMessage = new EventManager(LIVE_EDITOR_CHANNEL_ID, {
         target: window.parent,
-        debug: true,
+        debug: false,
+        // suppressErrors: true,
     });
 }
 

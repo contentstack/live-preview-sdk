@@ -1,6 +1,6 @@
 import { addCslpOutline } from "../../cslp";
 
-function handleMouseOver(event: MouseEvent) {
+function handleMouseOver(event: MouseEvent) : void {
     addCslpOutline(event);
 }
 

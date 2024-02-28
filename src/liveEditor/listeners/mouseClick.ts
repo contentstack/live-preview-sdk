@@ -19,22 +19,20 @@ import { LiveEditorPostMessageEvents } from "../utils/types/postMessage.types";
 import EventListenerHandlerParams from "./types";
 import { VisualEditor } from "..";
 
-export interface HandleEditorInteractionParams
-    extends Omit<EventListenerHandlerParams, "eventDetails" | "customCursor"> {}
+type HandleEditorInteractionParams = Omit<
+    EventListenerHandlerParams,
+    "eventDetails" | "customCursor"
+>;
 
-interface AddFocusOverlayParams
-    extends Pick<
-        EventListenerHandlerParams,
-        "overlayWrapper" | "resizeObserver"
-    > {
-    editableElement: Element;
-}
+type AddFocusOverlayParams = Pick<
+    EventListenerHandlerParams,
+    "overlayWrapper" | "resizeObserver"
+> & { editableElement: Element };
 
-interface AddFocusedToolbarParams
-    extends Pick<
-        EventListenerHandlerParams,
-        "eventDetails" | "focusedToolbar"
-    > {}
+type AddFocusedToolbarParams = Pick<
+    EventListenerHandlerParams,
+    "eventDetails" | "focusedToolbar"
+>;
 
 function addOverlay(params: AddFocusOverlayParams) {
     if (!params.overlayWrapper || !params.editableElement) return;
@@ -50,9 +48,10 @@ function addFocusedToolbar(params: AddFocusedToolbarParams) {
 
     // Don"t append again if already present
     if (
-        VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM &&
-        VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM ===
-            editableElement
+        VisualEditor.VisualEditorGlobalState.value
+            .previousSelectedEditableDOM &&
+        VisualEditor.VisualEditorGlobalState.value
+            .previousSelectedEditableDOM === editableElement
     ) {
         return;
     }
@@ -60,7 +59,9 @@ function addFocusedToolbar(params: AddFocusedToolbarParams) {
     appendFocusedToolbar(params.eventDetails, params.focusedToolbar);
 }
 
-async function handleEditorInteraction(params: HandleEditorInteractionParams): Promise<void> {
+async function handleEditorInteraction(
+    params: HandleEditorInteractionParams
+): Promise<void> {
     params.event.preventDefault();
     const eventDetails = getCsDataOfElement(params.event);
     if (
@@ -73,9 +74,10 @@ async function handleEditorInteraction(params: HandleEditorInteractionParams): P
     const { editableElement } = eventDetails;
 
     if (
-        VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM &&
-        VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM !==
-            editableElement
+        VisualEditor.VisualEditorGlobalState.value
+            .previousSelectedEditableDOM &&
+        VisualEditor.VisualEditorGlobalState.value
+            .previousSelectedEditableDOM !== editableElement
     ) {
         cleanIndividualFieldResidual({
             overlayWrapper: params.overlayWrapper,
@@ -102,10 +104,12 @@ async function handleEditorInteraction(params: HandleEditorInteractionParams): P
     await handleIndividualFields(eventDetails, {
         visualEditorContainer: params.visualEditorContainer,
         lastEditedField:
-            VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM,
+            VisualEditor.VisualEditorGlobalState.value
+                .previousSelectedEditableDOM,
     });
 
-    VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM = editableElement;
+    VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM =
+        editableElement;
 }
 
 export default handleEditorInteraction;

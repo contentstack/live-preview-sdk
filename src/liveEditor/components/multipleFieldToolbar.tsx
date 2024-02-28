@@ -46,7 +46,7 @@ function closeOverlay() {
         ?.click();
 }
 
-function MultipleFieldToolbarComponent(props: MultipleFieldToolbarProps) {
+function MultipleFieldToolbarComponent(props: MultipleFieldToolbarProps) : JSX.Element {
     const direction = useSignal("");
     const parentPath =
         props.fieldMetadata?.multipleFieldMetadata?.parentDetails

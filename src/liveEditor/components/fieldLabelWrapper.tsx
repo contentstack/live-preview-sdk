@@ -14,7 +14,7 @@ interface FieldLabelWrapperProps {
     parentPaths: string[];
 }
 
-function FieldLabelWrapperComponent(props: FieldLabelWrapperProps) {
+function FieldLabelWrapperComponent(props: FieldLabelWrapperProps) : JSX.Element {
     const [currentField, setCurrentField] = useState({
         text: "",
         icon: <CaretIcon />,

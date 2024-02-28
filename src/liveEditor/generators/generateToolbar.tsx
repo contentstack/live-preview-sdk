@@ -1,5 +1,4 @@
 import { VisualEditorCslpEventDetails } from "../types/liveEditor.types";
-import { extractDetailsFromCslp } from "../../cslp/cslpdata";
 import {
     DATA_CSLP_ATTR_SELECTOR,
     LIVE_PREVIEW_OUTLINE_WIDTH_IN_PX,
@@ -14,7 +13,7 @@ import FieldLabelWrapperComponent from "../components/fieldLabelWrapper";
 export function appendFocusedToolbar(
     eventDetails: VisualEditorCslpEventDetails,
     focusedToolbarElement: HTMLDivElement
-) {
+) : void {
     appendFieldPathDropdown(eventDetails, focusedToolbarElement);
     appendMultipleFieldToolbar(eventDetails, focusedToolbarElement);
 }
@@ -22,7 +21,7 @@ export function appendFocusedToolbar(
 export function appendMultipleFieldToolbar(
     eventDetails: VisualEditorCslpEventDetails,
     focusedToolbarElement: HTMLDivElement
-) {
+) : void {
     const { editableElement: targetElement, fieldMetadata } = eventDetails;
     FieldSchemaMap.getFieldSchema(
         fieldMetadata.content_type_uid,
@@ -50,7 +49,7 @@ export function appendMultipleFieldToolbar(
 export function appendFieldPathDropdown(
     eventDetails: VisualEditorCslpEventDetails,
     focusedToolbarElement: HTMLDivElement
-) {
+) : void {
     const { editableElement: targetElement, fieldMetadata } = eventDetails;
     const targetElementDimension = targetElement.getBoundingClientRect();
 

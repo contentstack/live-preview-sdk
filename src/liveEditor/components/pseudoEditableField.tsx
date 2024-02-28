@@ -5,7 +5,7 @@ interface PseudoEditableFieldProps {
     config: { textContent: string };
 }
 
-function PseudoEditableFieldComponent(props: PseudoEditableFieldProps) {
+function PseudoEditableFieldComponent(props: PseudoEditableFieldProps) : JSX.Element {
     const styles = convertToCamelCase(
         getStyleOfAnElement(props.editableElement)
     );

@@ -1,5 +1,3 @@
-import { fireEvent } from "@testing-library/preact";
-
 import {
     addFocusOverlay,
     hideFocusOverlay,
@@ -165,9 +163,6 @@ describe("addFocusOverlay", () => {
     //     //         cancelable: true,
     //     //     })
     //     // );
-
-    //     fireEvent.click(visualEditorOverlay);
-
     //     expect(hideOverlay).toHaveBeenCalledTimes(1);
     // });
 });

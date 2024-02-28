@@ -42,7 +42,7 @@ export interface HandleMouseHoverParams
     customCursor: HTMLDivElement | null;
 }
 
-async function handleMouseHover(params: HandleMouseHoverParams) {
+async function handleMouseHover(params: HandleMouseHoverParams) : Promise<void> {
     throttle(async (params) => {
         const eventDetails = getCsDataOfElement(params.event);
         if (!eventDetails) {

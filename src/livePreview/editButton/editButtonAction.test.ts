@@ -6,7 +6,6 @@ import { ILivePreviewWindowType } from "../../types/types";
 import { mockLivePreviewInitEventListener } from "../__test__/mock";
 import livePreviewPostMessage from "../eventManager/livePreviewEventManager";
 import { LIVE_PREVIEW_POST_MESSAGE_EVENTS } from "../eventManager/livePreviewEventManager.constant";
-import LivePreview from "../live-preview";
 import { LivePreviewEditButton } from "./editButton";
 
 Object.defineProperty(globalThis, "crypto", {

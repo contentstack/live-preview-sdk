@@ -3,7 +3,7 @@ import { EditIcon } from "./icons";
 import Config from "../../configManager/configManager";
 import { extractDetailsFromCslp } from "../../cslp/cslpdata";
 
-function StartEditingButtonComponent() {
+function StartEditingButtonComponent() : JSX.Element {
     return (
         <a
             href={getLiveEditorRedirectionUrl().toString()}

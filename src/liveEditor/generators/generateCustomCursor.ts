@@ -31,12 +31,12 @@ interface IGenerateCustomCursor {
     customCursor: HTMLDivElement;
     fieldDisabled?: boolean;
 }
-export const generateCustomCursor = ({
+export function generateCustomCursor({
     fieldType,
     customCursor,
     fieldDisabled = false,
-}: IGenerateCustomCursor) => {
-    let icon = fieldType ? icons[fieldType] : "";
+}: IGenerateCustomCursor) : void {
+    const icon = fieldType ? icons[fieldType] : "";
 
     const prevDataIcon = customCursor.getAttribute("data-icon");
     if (prevDataIcon === fieldType) {

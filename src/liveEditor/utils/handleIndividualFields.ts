@@ -129,7 +129,7 @@ export async function handleIndividualFields(
         }
 
         if (fieldSchema.data_type === "file") {
-            const replaceButton = generateReplaceAssetButton(
+            generateReplaceAssetButton(
                 editableElement,
                 () => {
                     liveEditorPostMessage?.send(

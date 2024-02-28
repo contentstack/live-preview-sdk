@@ -1,4 +1,4 @@
-export function CaretIcon() {
+export function CaretIcon() : JSX.Element {
     return (
         <svg
             width="16"
@@ -17,7 +17,7 @@ export function CaretIcon() {
     );
 }
 
-export function DeleteIcon() {
+export function DeleteIcon() : JSX.Element {
     return (
         <svg
             width="16"
@@ -44,7 +44,7 @@ export function DeleteIcon() {
     );
 }
 
-export function MoveLeftIcon() {
+export function MoveLeftIcon() : JSX.Element {
     return (
         <svg
             width="16"
@@ -69,7 +69,7 @@ export function MoveLeftIcon() {
     );
 }
 
-export function MoveRightIcon() {
+export function MoveRightIcon() : JSX.Element {
     return (
         <svg
             width="16"
@@ -94,7 +94,7 @@ export function MoveRightIcon() {
     );
 }
 
-export function InfoIcon() {
+export function InfoIcon() : JSX.Element {
     return (
         <svg
             width="16"
@@ -121,7 +121,7 @@ export function InfoIcon() {
     );
 }
 
-export function EditIcon() {
+export function EditIcon() : JSX.Element {
     return (
         <svg
             width="24"
@@ -143,7 +143,7 @@ export function EditIcon() {
     );
 }
 
-export function PlusIcon() {
+export function PlusIcon() : JSX.Element {
     return (
         <svg
             xmlns="http://www.w3.org/2000/svg"

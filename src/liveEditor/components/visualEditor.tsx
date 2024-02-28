@@ -15,7 +15,7 @@ interface VisualEditorProps {
     resizeObserver: ResizeObserver;
 }
 
-function hideOverlay(params: HideOverlayParams) {
+function hideOverlay(params: HideOverlayParams) : void {
     hideFocusOverlay({
         visualEditorContainer: params.visualEditorContainer,
         visualEditorOverlayWrapper: params.visualEditorOverlayWrapper,
@@ -29,7 +29,7 @@ function hideOverlay(params: HideOverlayParams) {
     VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM = null;
 }
 
-function VisualEditorComponent(props: VisualEditorProps) {
+function VisualEditorComponent(props: VisualEditorProps) : JSX.Element {
     
     return (
         <>

@@ -1,6 +1,6 @@
 import { extractDetailsFromCslp } from "../../cslp/cslpdata";
 
-export function getEntryUidFromCurrentPage() {
+export function getEntryUidFromCurrentPage() : any {
     const elementsWithCslp = Array.from(
         document.querySelectorAll("[data-cslp]")
     );
