@@ -1,4 +1,6 @@
+import classNames from "classnames";
 import { useEffect, useState } from "react";
+
 import { CslpData } from "../../cslp/types/cslp.types";
 import { VisualEditorCslpEventDetails } from "../types/liveEditor.types";
 import { FieldSchemaMap } from "../utils/fieldSchemaMap";
@@ -19,6 +21,14 @@ function FieldLabelWrapperComponent(props: FieldLabelWrapperProps) {
         disabled: false,
     });
     const [displayNames, setDisplayNames] = useState<string[]>([]);
+
+    function calculateTopOffset(index: number) {
+        const height = -30;  // from bottom
+        const offset = (index + 1) * height;
+
+        return `${offset}px`
+
+    }
 
     useEffect(() => {
         const fetchData = async () => {
@@ -64,13 +74,15 @@ function FieldLabelWrapperComponent(props: FieldLabelWrapperProps) {
         fetchData();
     }, [props]);
 
+    
     return (
         <div
-            className={`visual-editor__focused-toolbar__field-label-wrapper ${
-                currentField.disabled
-                    ? "visual-editor__focused-toolbar--field-disabled"
-                    : ""
-            }`}
+            className={classNames(
+                "visual-editor__focused-toolbar__field-label-wrapper",
+                {
+                    "visual-editor__focused-toolbar--field-disabled": currentField.disabled,
+                }
+            )}
         >
             <div className="visual-editor__focused-toolbar__field-label-wrapper__current-field visual-editor__button visual-editor__button--primary">
                 <div className="visual-editor__focused-toolbar__text">
@@ -83,7 +95,7 @@ function FieldLabelWrapperComponent(props: FieldLabelWrapperProps) {
                     key={index}
                     className="visual-editor__focused-toolbar__field-label-wrapper__parent-field visual-editor__button visual-editor__button--secondary visual-editor__focused-toolbar__text"
                     data-target-cslp={path}
-                    style={{ top: `-${(index + 1) * 30}px` }}
+                    style={{ top: calculateTopOffset(index) }}
                 >
                     {displayNames[index]}
                 </div>
