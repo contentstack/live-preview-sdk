@@ -1,11 +1,11 @@
 import { getDefaultConfig } from "../../../configManager/config.default";
 import { PublicLogger } from "../../../logger/logger";
 import { IConfig } from "../../../types/types";
-import { generateStartEditingButton } from "../generateStartEditingButton";
+import { generateStartEditingButton } from "./../../generators/generateStartEditingButton";
 
 describe("generateStartEditingButton", () => {
     let config: IConfig;
-    let visualEditorWrapper: HTMLDivElement;
+    let visualEditorContainer: HTMLDivElement;
 
     beforeEach(() => {
         config = getDefaultConfig();
@@ -13,25 +13,29 @@ describe("generateStartEditingButton", () => {
         config.stackDetails.apiKey = "bltapikey";
         config.stackDetails.environment = "bltenvironment";
 
-        visualEditorWrapper = document.createElement("div");
+        visualEditorContainer = document.createElement("div");
+        document.body.appendChild(visualEditorContainer);
     });
 
     afterEach(() => {
         jest.clearAllMocks();
+        document.body.removeChild(visualEditorContainer);
     });
 
     test("should  return an anchor tag", () => {
-        const button = generateStartEditingButton(visualEditorWrapper);
+        const button = generateStartEditingButton(visualEditorContainer);
         expect(button).toBeInstanceOf(HTMLAnchorElement);
     });
-    test("should append the button within visualEditorWrapper", () => {
-        expect(visualEditorWrapper.children.length).toBe(0);
-        generateStartEditingButton(visualEditorWrapper);
 
-        expect(visualEditorWrapper.children.length).toBe(1);
+    test("should append the button within visualEditorContainer", () => {
+        expect(visualEditorContainer.children.length).toBe(0);
+        generateStartEditingButton(visualEditorContainer);
+
+        expect(visualEditorContainer.children.length).toBe(1);
     });
+
     test("should update the href when clicked", () => {
-        const button = generateStartEditingButton(visualEditorWrapper);
+        const button = generateStartEditingButton(visualEditorContainer);
         button?.click();
 
         expect(button?.getAttribute("href")).toBe(
@@ -49,7 +53,7 @@ describe("generateStartEditingButton", () => {
 
         document.body.appendChild(h1);
 
-        const button = generateStartEditingButton(visualEditorWrapper);
+        const button = generateStartEditingButton(visualEditorContainer);
         button?.click();
 
         expect(button?.getAttribute("href")).toBe(
@@ -57,7 +61,7 @@ describe("generateStartEditingButton", () => {
         );
     });
 
-    test("should throw a warning if visualEditorWrapper is not found", () => {
+    test("should throw a warning if visualEditorContainer is not found", () => {
         const spiedWarn = jest.spyOn(PublicLogger, "warn");
 
         generateStartEditingButton(null);

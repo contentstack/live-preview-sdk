@@ -1,6 +1,6 @@
 interface ReplaceAssetButtonProp {
     targetElement: Element;
-    onClickCallback: (event: MouseEvent) => void;
+    onClickCallback: () => void;
 }
 
 function ReplaceAssetButtonComponent(props: ReplaceAssetButtonProp) {
@@ -14,6 +14,8 @@ function ReplaceAssetButtonComponent(props: ReplaceAssetButtonProp) {
                 top: `${dimension.bottom + window.scrollY - 30}px`,
                 right: `${window.innerWidth - dimension.right}px`,
             }}
+            onClick={props.onClickCallback}
+
         >
             Replace Asset
         </button>

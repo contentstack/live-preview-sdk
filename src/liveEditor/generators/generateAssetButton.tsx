@@ -29,7 +29,7 @@ export function removeReplaceAssetButton(
  */
 export function generateReplaceAssetButton(
     targetElement: Element,
-    onClickCallback: (event: MouseEvent) => void
+    onClickCallback: () => void
 ): HTMLButtonElement {
     const visualEditorContainer = document.querySelector(
         ".visual-editor__container"

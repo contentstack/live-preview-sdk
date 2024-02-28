@@ -242,6 +242,8 @@ export function removeAddInstanceButtons(
         (previousButton.contains(eventTarget as Node) ||
             nextButton.contains(eventTarget as Node))
     ) {
+        console.log('[TEST DEBUG] : REACHED');
+        
         return;
     }
 

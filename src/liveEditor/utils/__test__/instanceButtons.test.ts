@@ -1,17 +1,19 @@
 import {
     getAddInstanceButtons,
     generateAddInstanceButton,
-} from "../instanceButtons";
+} from "./../../generators/generateAddInstanceButtons";
 
 describe("generateAddInstanceButton", () => {
     test("should generate a button", () => {
-        const button = generateAddInstanceButton(() => {});
+        const buttonWrapper = generateAddInstanceButton(() => {});
+        const button = buttonWrapper.children[0] as HTMLElement;
         expect(button).toBeInstanceOf(HTMLButtonElement);
     });
 
     test("should call the callback when clicked", () => {
         const callback = jest.fn();
-        const button = generateAddInstanceButton(callback);
+        const buttonWrapper = generateAddInstanceButton(callback);
+        const button = buttonWrapper.children[0] as HTMLElement;
         button.click();
         expect(callback).toHaveBeenCalledTimes(1);
     });
@@ -23,15 +25,21 @@ describe("getAddInstanceButtons", () => {
     beforeEach(() => {
         wrapper = document.createElement("div");
         wrapper.innerHTML = `
-      <button class="visual-editor__add-button"></button>
-      <button class="visual-editor__add-button"></button>
-    `;
+            <button class="visual-editor__add-button"></button>
+            <button class="visual-editor__add-button"></button>
+        `;
+
+        document.body.appendChild(wrapper);
+    });
+
+    afterEach(() => {
+        document.body.removeChild(wrapper);
     });
 
     test("should return null if there are less than 2 buttons and we didn't ask for every buttons", () => {
         wrapper.innerHTML = `
-      <button class="visual-editor__add-button"></button>
-    `;
+            <button class="visual-editor__add-button"></button>
+        `;
         const result = getAddInstanceButtons(wrapper);
         expect(result).toBeNull();
     });

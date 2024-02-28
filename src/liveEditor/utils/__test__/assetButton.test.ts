@@ -1,13 +1,18 @@
 import {
     generateReplaceAssetButton,
     removeReplaceAssetButton,
-} from "../generateAssetButton";
+} from "./../../generators/generateAssetButton";
 
 describe("generateReplaceAssetButton", () => {
     let targetElement: HTMLImageElement;
+    let visualEditorContainer: HTMLDivElement;
     const onClickCallback = jest.fn();
 
     beforeEach(() => {
+        visualEditorContainer = document.createElement("div");
+        visualEditorContainer.classList.add("visual-editor__container");
+        document.body.appendChild(visualEditorContainer);
+
         targetElement = document.createElement("img");
         targetElement.src = "https://example.com/image.png";
 
@@ -22,7 +27,7 @@ describe("generateReplaceAssetButton", () => {
             left: 50,
         })) as any;
 
-        document.body.appendChild(targetElement);
+        visualEditorContainer.appendChild(targetElement);
     });
 
     afterEach(() => {
@@ -70,40 +75,43 @@ describe("generateReplaceAssetButton", () => {
 });
 
 describe("removeReplaceAssetButton", () => {
+    let visualEditorContainer: HTMLDivElement;
+
     it("should remove all existing replace asset buttons from the provided visual editor wrapper element", () => {
-        const visualEditorWrapper = document.createElement("div");
+        visualEditorContainer = document.createElement("div");
+        visualEditorContainer = document.createElement("div");
+        visualEditorContainer.classList.add("visual-editor__container");
+        document.body.appendChild(visualEditorContainer);
+
         const replaceButton1 = generateReplaceAssetButton(
-            visualEditorWrapper,
+            visualEditorContainer,
             jest.fn()
         );
         const replaceButton2 = generateReplaceAssetButton(
-            visualEditorWrapper,
+            visualEditorContainer,
             jest.fn()
         );
 
-        visualEditorWrapper.appendChild(replaceButton1);
-        visualEditorWrapper.appendChild(replaceButton2);
-
         expect(
-            visualEditorWrapper.querySelectorAll(
+            visualEditorContainer.querySelectorAll(
                 `[data-testid="visual-editor-replace-asset"]`
             ).length
         ).toBe(2);
 
-        removeReplaceAssetButton(visualEditorWrapper);
+        removeReplaceAssetButton(visualEditorContainer);
 
         expect(
-            visualEditorWrapper.querySelectorAll(
+            visualEditorContainer.querySelectorAll(
                 `[data-testid="visual-editor-replace-asset"]`
             ).length
         ).toBe(0);
     });
 
     it("should do nothing if the provided visual editor wrapper element is null", () => {
-        const visualEditorWrapper = null;
+        const visualEditorContainer = null;
 
         expect(() =>
-            removeReplaceAssetButton(visualEditorWrapper)
+            removeReplaceAssetButton(visualEditorContainer)
         ).not.toThrow();
     });
 });

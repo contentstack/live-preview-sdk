@@ -19,7 +19,7 @@ export function generateStartEditingButton(
     const wrapper = document.createDocumentFragment();
     render(<StartEditingButtonComponent />, wrapper);
 
-    visualEditorContainer.appendChild(wrapper);
+    visualEditorContainer?.appendChild(wrapper);
 
     const startEditingButton = document.querySelector(
         ".visual-editor__start-editing-btn"

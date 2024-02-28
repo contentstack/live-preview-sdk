@@ -30,10 +30,11 @@ function hideOverlay(params: HideOverlayParams) {
 }
 
 function VisualEditorComponent(props: VisualEditorProps) {
+    
     return (
         <>
             <div
-                className={`visual-editor__cursor`}
+                className="visual-editor__cursor"
                 data-testid="visual-editor__cursor"
             ></div>
             <div
