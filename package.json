@@ -35,6 +35,7 @@
         "@babel/preset-typescript": "^7.23.3",
         "@contentstack/advanced-post-message": "github:contentstack/adv-post-message#main",
         "@testing-library/jest-dom": "^5.14.1",
+        "@testing-library/preact": "^3.2.3",
         "@types/jest": "^27.0.1",
         "@types/jsdom": "^21.1.6",
         "@types/lodash-es": "^4.17.12",

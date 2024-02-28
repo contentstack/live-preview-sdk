@@ -8,8 +8,8 @@ module.exports = {
     setupFiles: ["<rootDir>/setupJest.ts"],
     testEnvironment: "jsdom",
     transform: {
-        "^.+\\.ts$": "ts-jest",
         "^.+\\.tsx$": "babel-jest",
+        "^.+\\.ts$": "ts-jest",
     },
     coveragePathIgnorePatterns: ["__test__/"],
     collectCoverage: true,
