@@ -7,88 +7,7 @@ import {
 import { isFieldDisabled } from "./isFieldDisabled";
 import liveEditorPostMessage from "./liveEditorPostMessage";
 import { LiveEditorPostMessageEvents } from "./types/postMessage.types";
-
-export function getChildrenDirection(
-    editableElement: Element,
-    parentCslpValue: string
-): "none" | "horizontal" | "vertical" {
-    if (!editableElement) {
-        return "none";
-    }
-
-    const parentElement = editableElement.closest(
-        `[data-cslp="${parentCslpValue}"]`
-    );
-
-    if (!parentElement) {
-        return "none";
-    }
-
-    const [firstChildElement, secondChildElement, removeClone] =
-        getChildElements(parentElement, parentCslpValue);
-
-    if (!firstChildElement) return "none";
-
-    // get horizontal and vertical position differences
-    const firstChildBounds = firstChildElement.getBoundingClientRect();
-    const secondChildBounds = secondChildElement.getBoundingClientRect();
-
-    const deltaX = Math.abs(firstChildBounds.left - secondChildBounds.left);
-    const deltaY = Math.abs(firstChildBounds.top - secondChildBounds.top);
-
-    const dir = deltaX > deltaY ? "horizontal" : "vertical";
-
-    // remove the clone that was created in case there was only one child
-    removeClone();
-
-    return dir;
-}
-
-/**
- * Gets the first and second child elements of the parent element.
- * @param parentElement The parent element that contains the child elements.
- * @param parentCslpValue The cslp value of the parent element.
- * @returns The first and second child elements and a function to remove the clone.
- */
-function getChildElements(
-    parentElement: Element,
-    parentCslpValue: string
-): [Element, Element, () => void] | [null, null, () => void] {
-    const childElements = parentElement.querySelectorAll(
-        `[data-cslp^="${parentCslpValue + "."}"]`
-    );
-
-    // filter out elements that does not end with "." + number
-    const filteredChildElements = Array.from(childElements).filter(
-        (childElement) =>
-            childElement.getAttribute("data-cslp")?.match(/\.\d+$/) !== null
-    );
-
-    const firstChild = filteredChildElements.at(0);
-    if (!firstChild) return [null, null, () => {}];
-
-    const secondChild = filteredChildElements.at(1);
-    if (secondChild) return [firstChild, secondChild, () => {}];
-
-    // create a dummy clone to get the direction
-    const firstChildClone = document.createElement(firstChild.tagName);
-    firstChildClone.setAttribute(
-        "class",
-        firstChild.getAttribute("class") ?? ""
-    );
-
-    const HIDE_ELEMENT_CSS =
-        "overflow: hidden !important; width: 0 !important; height: 0 !important; padding: 0 !important; border: 0 !important;";
-    firstChildClone.setAttribute("style", HIDE_ELEMENT_CSS);
-
-    parentElement.appendChild(firstChildClone);
-
-    function removeClone() {
-        parentElement.removeChild(firstChildClone);
-    }
-
-    return [firstChild, firstChildClone, removeClone];
-}
+import getChildrenDirection from "./getChildrenDirection";
 
 /**
  * The function that handles the add instance buttons for multiple fields.
@@ -138,7 +57,7 @@ export function handleAddButtonsForMultiple(
         );
 
         if (!fieldDisabled) {
-            const previousButtonWrapper = generateAddInstanceButton(() => {
+            const previousButton = generateAddInstanceButton(() => {
                 liveEditorPostMessage?.send(
                     LiveEditorPostMessageEvents.ADD_INSTANCE,
                     {
@@ -149,7 +68,7 @@ export function handleAddButtonsForMultiple(
                 );
             });
 
-            const nextButtonWrapper = generateAddInstanceButton(() => {
+            const nextButton = generateAddInstanceButton(() => {
                 liveEditorPostMessage?.send(
                     LiveEditorPostMessageEvents.ADD_INSTANCE,
                     {
@@ -161,17 +80,12 @@ export function handleAddButtonsForMultiple(
                 );
             });
 
-            const previousButton = previousButtonWrapper
-                .children[0] as HTMLButtonElement;
-            const nextButton = nextButtonWrapper
-                .children[0] as HTMLButtonElement;
-
             if (!visualEditorContainer.contains(previousButton)) {
-                visualEditorContainer.appendChild(previousButtonWrapper);
+                visualEditorContainer.appendChild(previousButton);
             }
 
             if (!visualEditorContainer.contains(nextButton)) {
-                visualEditorContainer.appendChild(nextButtonWrapper);
+                visualEditorContainer.appendChild(nextButton);
             }
 
             if (direction === "horizontal") {
@@ -222,7 +136,7 @@ export function removeAddInstanceButtons(
             true
         );
 
-        addInstanceButtons.forEach((button) => button.remove());
+        addInstanceButtons?.forEach((button) => button.remove());
     }
 
     const addInstanceButtons = getAddInstanceButtons(visualEditorContainer);
@@ -242,8 +156,6 @@ export function removeAddInstanceButtons(
         (previousButton.contains(eventTarget as Node) ||
             nextButton.contains(eventTarget as Node))
     ) {
-        console.log('[TEST DEBUG] : REACHED');
-        
         return;
     }
 

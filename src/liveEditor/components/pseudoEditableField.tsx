@@ -1,4 +1,4 @@
-import { getStyleOfAnElement } from "../generators/generatePseudoEditableField";
+import getStyleOfAnElement from "../utils/getStyleOfAnElement";
 
 interface PseudoEditableFieldProps {
     editableElement: HTMLElement;

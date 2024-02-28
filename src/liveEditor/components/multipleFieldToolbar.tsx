@@ -1,6 +1,6 @@
 import { useSignal } from "@preact/signals";
 import liveEditorPostMessage from "./../utils/liveEditorPostMessage";
-import { getChildrenDirection } from "./../utils/multipleElementAddButton";
+import getChildrenDirection from "../utils/getChildrenDirection";
 import { LiveEditorPostMessageEvents } from "./../utils/types/postMessage.types";
 import { CslpData } from "../../cslp/types/cslp.types";
 

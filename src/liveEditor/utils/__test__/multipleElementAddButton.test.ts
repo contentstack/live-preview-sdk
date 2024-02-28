@@ -5,22 +5,21 @@ import { FieldSchemaMap } from "../fieldSchemaMap";
 import { getCsDataOfElement } from "../getCsDataOfElement";
 import { generateAddInstanceButton } from "./../../generators/generateAddInstanceButtons";
 import {
-    getChildrenDirection,
     handleAddButtonsForMultiple,
     removeAddInstanceButtons,
 } from "../multipleElementAddButton";
+import getChildrenDirection from "../getChildrenDirection";
 
 describe("generateAddInstanceButton", () => {
     test("should generate a button", () => {
-        const buttonWrapper = generateAddInstanceButton(() => {});
-        const button = buttonWrapper.children[0];
+        const button = generateAddInstanceButton(() => {});
         expect(button.tagName).toBe("BUTTON");
     });
 
     test("should run the callback when the button is clicked", () => {
         const mockCallback = jest.fn();
-        const buttonWrapper = generateAddInstanceButton(mockCallback);
-        const button = buttonWrapper.children[0] as HTMLElement;
+        const button = generateAddInstanceButton(mockCallback);
+
         button.click();
         expect(mockCallback).toHaveBeenCalled();
     });

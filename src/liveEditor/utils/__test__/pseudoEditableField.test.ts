@@ -1,9 +1,9 @@
 import {
-    getExpectedFieldData,
-    getStyleOfAnElement,
     generatePseudoEditableElement,
 } from "./../../generators/generatePseudoEditableField";
+import getStyleOfAnElement from "../getStyleOfAnElement";
 import { LiveEditorPostMessageEvents } from "../types/postMessage.types";
+import { getExpectedFieldData } from "../getExpectedFieldData";
 
 jest.mock("../liveEditorPostMessage", () => {
     return {
