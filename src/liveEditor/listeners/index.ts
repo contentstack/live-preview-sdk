@@ -1,24 +1,22 @@
-import EventListenerHandlerParams from "./params";
+import EventListenerHandlerParams from "./types";
 
-import handleMouseClick from "./mouseClick";
+import handleEditorInteraction from "./mouseClick";
 import handleMouseOver from "./mouseOver";
 import handleMouseHover from "./mouseHover";
-import VisualEditorGlobalState from "../globals";
+import { VisualEditor } from "..";
 
-interface addEventListenersParams
-    extends Omit<EventListenerHandlerParams, "event" | "eventDetails"> {}
+type AddEventListenersParams = Omit<EventListenerHandlerParams, "event" | "eventDetails">;
 
-interface RemoveEventListenersParams
-    extends Omit<EventListenerHandlerParams, "event" | "eventDetails"> {}
+type RemoveEventListenersParams = Omit<EventListenerHandlerParams, "event" | "eventDetails">;
 
-export function addEventListeners(params: addEventListenersParams) {
+export function addEventListeners(params: AddEventListenersParams) {
     window.addEventListener("click", (event) => {
-        handleMouseClick({
+        handleEditorInteraction({
             event: event,
             overlayWrapper: params.overlayWrapper,
             visualEditorContainer: params.visualEditorContainer,
             previousSelectedEditableDOM:
-                VisualEditorGlobalState.value.previousSelectedEditableDOM,
+                VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM,
             focusedToolbar: params.focusedToolbar,
             resizeObserver: params.resizeObserver,
         });
@@ -46,12 +44,12 @@ export function addEventListeners(params: addEventListenersParams) {
 
 export function removeEventListeners(params: RemoveEventListenersParams) {
     window.removeEventListener("click", (event) => {
-        handleMouseClick({
+        handleEditorInteraction({
             event: event,
             overlayWrapper: params.overlayWrapper,
             visualEditorContainer: params.visualEditorContainer,
             previousSelectedEditableDOM:
-                VisualEditorGlobalState.value.previousSelectedEditableDOM,
+                VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM,
             focusedToolbar: params.focusedToolbar,
             resizeObserver: params.resizeObserver,
         });

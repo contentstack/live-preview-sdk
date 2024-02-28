@@ -1,3 +1,5 @@
+import { Signal, signal } from "@preact/signals";
+
 import { generateStartEditingButton } from "./generators/generateStartEditingButton";
 import { inIframe } from "../common/inIframe";
 import Config from "../configManager/configManager";
@@ -18,7 +20,11 @@ import { LiveEditorPostMessageEvents } from "./utils/types/postMessage.types";
 
 import initUI from "./components";
 import { addEventListeners, removeEventListeners } from "./listeners";
-import VisualEditorGlobalState from "./globals";
+
+interface VisualEditorGlobalStateImpl {
+    previousSelectedEditableDOM: HTMLElement | Element | null;
+    previousHoveredTargetDOM: Element | null;
+}
 
 export class VisualEditor {
     private customCursor: HTMLDivElement | null = null;
@@ -26,22 +32,28 @@ export class VisualEditor {
     private visualEditorContainer: HTMLDivElement | null = null;
     private focusedToolbar: HTMLDivElement | null = null;
 
+    static VisualEditorGlobalState: Signal<VisualEditorGlobalStateImpl> = signal({
+        previousSelectedEditableDOM: null,
+        previousHoveredTargetDOM: null,
+    });
+
+
     private resizeObserver = new ResizeObserver(([entry]) => {
         if (
             !this.overlayWrapper ||
-            !VisualEditorGlobalState.value.previousSelectedEditableDOM
+            !VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM
         )
             return;
 
         if (
             !entry.target.isSameNode(
-                VisualEditorGlobalState.value.previousSelectedEditableDOM
+                VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM
             )
         )
             return;
 
         addFocusOverlay(
-            VisualEditorGlobalState.value.previousSelectedEditableDOM,
+            VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM,
             this.overlayWrapper
         );
     });
@@ -87,7 +99,7 @@ export class VisualEditor {
                     overlayWrapper: this.overlayWrapper,
                     visualEditorContainer: this.visualEditorContainer,
                     previousSelectedEditableDOM:
-                        VisualEditorGlobalState.value
+                        VisualEditor.VisualEditorGlobalState.value
                             .previousSelectedEditableDOM,
                     focusedToolbar: this.focusedToolbar,
                     resizeObserver: this.resizeObserver,
@@ -116,7 +128,7 @@ export class VisualEditor {
             overlayWrapper: this.overlayWrapper,
             visualEditorContainer: this.visualEditorContainer,
             previousSelectedEditableDOM:
-                VisualEditorGlobalState.value.previousSelectedEditableDOM,
+                VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM,
             focusedToolbar: this.focusedToolbar,
             resizeObserver: this.resizeObserver,
             customCursor: this.customCursor,

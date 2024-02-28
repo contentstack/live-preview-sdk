@@ -1,6 +1,6 @@
 import { hideFocusOverlay } from "../generators/generateOverlay";
-import EventListenerHandlerParams from "../listeners/params";
-import VisualEditorGlobalState from "../globals";
+import EventListenerHandlerParams from "../listeners/types";
+import { VisualEditor } from "..";
 
 interface HideOverlayParams
     extends Pick<
@@ -22,11 +22,11 @@ function hideOverlay(params: HideOverlayParams) {
         focusedToolbar: params.focusedToolbar,
     });
 
-    if (!VisualEditorGlobalState.value.previousSelectedEditableDOM) return;
+    if (!VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM) return;
     params.resizeObserver.unobserve(
-        VisualEditorGlobalState.value.previousSelectedEditableDOM
+        VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM
     );
-    VisualEditorGlobalState.value.previousSelectedEditableDOM = null;
+    VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM = null;
 }
 
 function VisualEditorComponent(props: VisualEditorProps) {

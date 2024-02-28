@@ -9,8 +9,8 @@ import { FieldSchemaMap } from "../utils/fieldSchemaMap";
 import { isFieldDisabled } from "../utils/isFieldDisabled";
 import { getFieldType } from "../utils/getFieldType";
 
-import EventListenerHandlerParams from "./params";
-import VisualEditorGlobalState from "../globals";
+import EventListenerHandlerParams from "./types";
+import { VisualEditor } from "..";
 
 function resetCustomCursor(customCursor: HTMLDivElement | null): void {
     if (customCursor) {
@@ -58,8 +58,8 @@ async function handleMouseHover(params: HandleMouseHoverParams) {
         }
         const { editableElement, fieldMetadata } = eventDetails;
         if (
-            VisualEditorGlobalState.value.previousHoveredTargetDOM !==
-            editableElement
+            VisualEditor.VisualEditorGlobalState.value
+                .previousHoveredTargetDOM !== editableElement
         ) {
             resetCustomCursor(params.customCursor);
             removeAddInstanceButtons({
@@ -106,8 +106,8 @@ async function handleMouseHover(params: HandleMouseHoverParams) {
         }
 
         if (
-            VisualEditorGlobalState.value.previousHoveredTargetDOM ===
-            editableElement
+            VisualEditor.VisualEditorGlobalState.value
+                .previousHoveredTargetDOM === editableElement
         ) {
             return;
         }
@@ -135,7 +135,7 @@ async function handleMouseHover(params: HandleMouseHoverParams) {
                 overlayWrapper: params.overlayWrapper,
             });
         }
-        VisualEditorGlobalState.value.previousHoveredTargetDOM =
+        VisualEditor.VisualEditorGlobalState.value.previousHoveredTargetDOM =
             editableElement;
     }, 10)(params);
 }

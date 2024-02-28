@@ -16,10 +16,10 @@ import liveEditorPostMessage from "../utils/liveEditorPostMessage";
 
 import { LiveEditorPostMessageEvents } from "../utils/types/postMessage.types";
 
-import EventListenerHandlerParams from "./params";
-import VisualEditorGlobalState from "../globals";
+import EventListenerHandlerParams from "./types";
+import { VisualEditor } from "..";
 
-export interface HandleMouseClickParams
+export interface HandleEditorInteractionParams
     extends Omit<EventListenerHandlerParams, "eventDetails" | "customCursor"> {}
 
 interface AddFocusOverlayParams
@@ -50,8 +50,8 @@ function addFocusedToolbar(params: AddFocusedToolbarParams) {
 
     // Don"t append again if already present
     if (
-        VisualEditorGlobalState.value.previousSelectedEditableDOM &&
-        VisualEditorGlobalState.value.previousSelectedEditableDOM ===
+        VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM &&
+        VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM ===
             editableElement
     ) {
         return;
@@ -60,7 +60,7 @@ function addFocusedToolbar(params: AddFocusedToolbarParams) {
     appendFocusedToolbar(params.eventDetails, params.focusedToolbar);
 }
 
-async function handleMouseClick(params: HandleMouseClickParams): Promise<void> {
+async function handleEditorInteraction(params: HandleEditorInteractionParams): Promise<void> {
     params.event.preventDefault();
     const eventDetails = getCsDataOfElement(params.event);
     if (
@@ -73,8 +73,8 @@ async function handleMouseClick(params: HandleMouseClickParams): Promise<void> {
     const { editableElement } = eventDetails;
 
     if (
-        VisualEditorGlobalState.value.previousSelectedEditableDOM &&
-        VisualEditorGlobalState.value.previousSelectedEditableDOM !==
+        VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM &&
+        VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM !==
             editableElement
     ) {
         cleanIndividualFieldResidual({
@@ -102,10 +102,10 @@ async function handleMouseClick(params: HandleMouseClickParams): Promise<void> {
     await handleIndividualFields(eventDetails, {
         visualEditorContainer: params.visualEditorContainer,
         lastEditedField:
-            VisualEditorGlobalState.value.previousSelectedEditableDOM,
+            VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM,
     });
 
-    VisualEditorGlobalState.value.previousSelectedEditableDOM = editableElement;
+    VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM = editableElement;
 }
 
-export default handleMouseClick;
+export default handleEditorInteraction;
