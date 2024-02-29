@@ -1,3 +1,4 @@
+import camelCase from 'just-camel-case';
 import getStyleOfAnElement from "../utils/getStyleOfAnElement";
 
 interface PseudoEditableFieldProps {
@@ -30,10 +31,7 @@ function convertToCamelCase(styles: { [key: string]: string }): {
     [key: string]: string;
 } {
     return Object.keys(styles).reduce((acc, key) => {
-        const camelCasedKey = key.replace(/-([a-z])/g, (g) =>
-            g[1].toUpperCase()
-        ) as string;
-        acc[camelCasedKey] = styles[key];
+        acc[camelCase(key)] = styles[key];
         return acc;
     }, {} as { [key: string]: string });
 }
