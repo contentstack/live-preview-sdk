@@ -1,9 +1,9 @@
 import {
-    getExpectedFieldData,
-    getStyleOfAnElement,
     generatePseudoEditableElement,
-} from "../pseudoEditableField";
+} from "./../../generators/generatePseudoEditableField";
+import getStyleOfAnElement from "../getStyleOfAnElement";
 import { LiveEditorPostMessageEvents } from "../types/postMessage.types";
+import { getExpectedFieldData } from "../getExpectedFieldData";
 
 jest.mock("../liveEditorPostMessage", () => {
     return {
@@ -34,7 +34,11 @@ describe("getStyleOfAnElement", () => {
         elem.style.width = "100px";
 
         const style = getStyleOfAnElement(elem);
-        expect(style).toBe("display:block;visibility:visible;width:100px;");
+        expect(style).toEqual({
+            display: "block",
+            visibility: "visible",
+            width: "100px",
+        });
     });
 
     test("it should not return filtered styles", () => {
@@ -57,11 +61,27 @@ describe("getStyleOfAnElement", () => {
         elem.style.marginBottom = "10px";
 
         const style = getStyleOfAnElement(elem);
-        expect(style).toBe("display:block;visibility:visible;width:100px;");
+        expect(style).toEqual({
+            display: "block",
+            visibility: "visible",
+            width: "100px",
+        });
     });
 });
 
 describe("generatePseudoEditableElement", () => {
+    let visualEditorContainer: HTMLDivElement;
+
+    beforeEach(() => {
+        visualEditorContainer = document.createElement("div");
+        visualEditorContainer.classList.add("visual-editor__container");
+        document.body.appendChild(visualEditorContainer);
+    });
+
+    afterEach(() => {
+        document.body.removeChild(visualEditorContainer);
+    });
+
     test("it should generate a pseudo editable element", () => {
         const editableElement = document.createElement("div");
 

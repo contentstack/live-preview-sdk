@@ -11,7 +11,8 @@
         // "checkJs": true,                             /* Report errors in .js files. */
         "exactOptionalPropertyTypes": true,
         "resolveJsonModule": true,
-        // "jsx": "preserve",                           /* Specify JSX code generation: 'preserve', 'react-native', 'react', 'react-jsx' or 'react-jsxdev'. */
+        "jsx": "preserve",
+        // "jsx": "react-jsx",                           /* Specify JSX code generation: 'preserve', 'react-native', 'react', 'react-jsx' or 'react-jsxdev'. */
         "declaration": true /* Generates corresponding '.d.ts' file. */,
         "declarationMap": true /* Generates a sourcemap for each corresponding '.d.ts' file. */,
         "sourceMap": true /* Generates corresponding '.map' file. */,
@@ -73,6 +74,7 @@
         /* Advanced Options */
         "skipLibCheck": true /* Skip type checking of declaration files. */,
         "forceConsistentCasingInFileNames": true /* Disallow inconsistently-cased references to the same file. */
+        
     },
     "exclude": ["node_modules", "dist", "**/__test__"]
 }

@@ -15,6 +15,12 @@ module.exports = {
     module: {
         rules: [
             {
+                test: /\.tsx$/,
+                exclude: /node_modules/,
+                include: [path.resolve(__dirname, "src")],
+                use: "babel-loader"
+            },
+            {
                 test: /\.ts$/,
                 use: "ts-loader",
                 include: [path.resolve(__dirname, "src")],
@@ -24,10 +30,17 @@ module.exports = {
                 use: [MiniCssExtractPlugin.loader, "css-loader"],
                 include: [path.resolve(__dirname, "src")],
             },
+
         ],
     },
     resolve: {
-        extensions: [".json", ".js", ".ts", ".css"],
+        extensions: [".json", ".js", ".ts", ".css", ".jsx", ".tsx"],
+        alias: {
+            "react": "preact/compat",
+            "react-dom/test-utils": "preact/test-utils",
+            "react-dom": "preact/compat",     // Must be below test-utils
+            "react/jsx-runtime": "preact/jsx-runtime"
+        },
     },
     devtool: "source-map",
 };

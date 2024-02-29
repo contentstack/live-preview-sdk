@@ -1,4 +1,4 @@
-import { generateCustomCursor } from "../generateCustomCursor";
+import { generateCustomCursor } from "./../../generators/generateCustomCursor";
 import { FieldDataType } from "../types/index.types";
 
 describe("generateCustomCursor", () => {
