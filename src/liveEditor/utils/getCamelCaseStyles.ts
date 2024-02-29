@@ -1,4 +1,4 @@
-import camelCase from 'just-camel-case';
+import camelCase from "just-camel-case";
 
 export default function getCamelCaseStyles(styles: { [key: string]: string }): {
     [key: string]: string;

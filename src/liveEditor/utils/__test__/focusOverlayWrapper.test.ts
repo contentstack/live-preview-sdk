@@ -25,7 +25,7 @@ jest.mock("../handleIndividualFields", () => {
     };
 });
 
-jest.mock('../../globals', () => ({
+jest.mock("../../globals", () => ({
     value: {
         previousSelectedEditableDOM: null,
         previousHoveredTargetDOM: null
@@ -301,7 +301,7 @@ describe("hideFocusOverlay", () => {
         
         expect(focusOverlayWrapper.classList.contains("visible")).toBe(true);
         
-        // We'll always click one of the overlays, so we can just grab the first one
+        // We"ll always click one of the overlays, so we can just grab the first one
         singleFocusOverlay = focusOverlayWrapper.querySelector(
             `[data-testid="visual-editor__overlay--top"]`
         ) as HTMLDivElement;
