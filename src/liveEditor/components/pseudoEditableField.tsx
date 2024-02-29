@@ -1,4 +1,4 @@
-import camelCase from 'just-camel-case';
+import getCamelCaseStyles from "../utils/getCamelCaseStyles";
 import getStyleOfAnElement from "../utils/getStyleOfAnElement";
 
 interface PseudoEditableFieldProps {
@@ -7,7 +7,7 @@ interface PseudoEditableFieldProps {
 }
 
 function PseudoEditableFieldComponent(props: PseudoEditableFieldProps) : JSX.Element {
-    const styles = convertToCamelCase(
+    const styles = getCamelCaseStyles(
         getStyleOfAnElement(props.editableElement)
     );
     const { top, left } = props.editableElement.getBoundingClientRect();
@@ -25,15 +25,6 @@ function PseudoEditableFieldComponent(props: PseudoEditableFieldProps) : JSX.Ele
             {props.config.textContent}
         </div>
     );
-}
-
-function convertToCamelCase(styles: { [key: string]: string }): {
-    [key: string]: string;
-} {
-    return Object.keys(styles).reduce((acc, key) => {
-        acc[camelCase(key)] = styles[key];
-        return acc;
-    }, {} as { [key: string]: string });
 }
 
 export default PseudoEditableFieldComponent;
