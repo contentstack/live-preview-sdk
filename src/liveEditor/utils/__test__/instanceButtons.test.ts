@@ -60,7 +60,7 @@ describe("getAddInstanceButtons", () => {
     `;
         const result = getAddInstanceButtons(wrapper, true);
         expect(result).toHaveLength(4);
-        expect(result[0]).toBeInstanceOf(HTMLButtonElement);
-        expect(result[1]).toBeInstanceOf(HTMLButtonElement);
+        expect(result![0]).toBeInstanceOf(HTMLButtonElement);
+        expect(result![1]).toBeInstanceOf(HTMLButtonElement);
     });
 });
