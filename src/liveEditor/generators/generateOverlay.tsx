@@ -5,6 +5,7 @@ import liveEditorPostMessage from "../utils/liveEditorPostMessage";
 import { LiveEditorPostMessageEvents } from "../utils/types/postMessage.types";
 
 import { VisualEditor } from "..";
+import EventListenerHandlerParams from "../listeners/types";
 
 /**
  * Adds a focus overlay to the target element.
@@ -146,4 +147,26 @@ export function hideFocusOverlay(elements: {
             });
         }
     }
+}
+
+interface HideOverlayParams
+    extends Pick<
+        EventListenerHandlerParams,
+        "visualEditorContainer" | "focusedToolbar" | "resizeObserver"
+    > {
+    visualEditorOverlayWrapper: HTMLDivElement | null;
+}
+
+export function hideOverlay(params: HideOverlayParams) : void {
+    hideFocusOverlay({
+        visualEditorContainer: params.visualEditorContainer,
+        visualEditorOverlayWrapper: params.visualEditorOverlayWrapper,
+        focusedToolbar: params.focusedToolbar,
+    });
+
+    if (!VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM) return;
+    params.resizeObserver.unobserve(
+        VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM
+    );
+    VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM = null;
 }

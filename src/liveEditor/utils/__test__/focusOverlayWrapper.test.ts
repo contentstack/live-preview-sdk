@@ -42,7 +42,6 @@ describe("addFocusOverlay", () => {
     let visualEditorContainer: HTMLDivElement;
     let targetElement: HTMLElement;
     let focusOverlayWrapper: HTMLDivElement;
-    const mockOnClickCallback = jest.fn();
 
     beforeEach(() => {
         initUI({
