@@ -312,7 +312,7 @@ describe("visual editor DOM", () => {
 
         expect(visualEditorContainer).toBeDefined();
 
-        visualEditor.removeVisualEditorDOM();
+        visualEditor.destroy();
 
         visualEditorContainer = document.querySelector(
             `[data-testid="visual-editor__container"]`

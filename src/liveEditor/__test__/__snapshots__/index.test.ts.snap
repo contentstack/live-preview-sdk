@@ -19,43 +19,31 @@ exports[`Visual editor inline editing should add overlay to DOM when clicked 1`]
       class="visual-editor__overlay__wrapper visible"
       data-testid="visual-editor__overlay__wrapper"
     >
-      
-        
       <div
         class="visual-editor__overlay visual-editor__overlay--top"
         data-testid="visual-editor__overlay--top"
         style="top: 0px; left: 0px; width: 100%; height: calc(0px - 2px);"
       />
-      
-        
       <div
         class="visual-editor__overlay visual-editor__overlay--left"
         data-testid="visual-editor__overlay--left"
         style="left: 0px; top: calc(0px - 2px); height: calc(0px + 4px); width: calc(0px - 2px);"
       />
-      
-        
       <div
         class="visual-editor__overlay visual-editor__overlay--right"
         data-testid="visual-editor__overlay--right"
         style="left: calc(0px + 2px); top: calc(0px - 2px); height: calc(0px + 4px); width: calc(1024px - 2px);"
       />
-      
-        
       <div
         class="visual-editor__overlay visual-editor__overlay--bottom"
         data-testid="visual-editor__overlay--bottom"
         style="top: calc(0px + 2px); height: calc(0px - 2px); left: 0px; width: 100%;"
       />
-      
-        
       <div
         class="visual-editor__overlay--outline"
         data-testid="visual-editor__overlay--outline"
         style="top: 0px; height: 0px; width: 0px; left: 0px; outline-color: rgb(113, 92, 221);"
       />
-      
-    
     </div>
     <div
       class="visual-editor__focused-toolbar"
@@ -65,31 +53,29 @@ exports[`Visual editor inline editing should add overlay to DOM when clicked 1`]
       <div
         class="visual-editor__focused-toolbar__field-label-wrapper"
       >
-        <button
+        <div
           class="visual-editor__focused-toolbar__field-label-wrapper__current-field visual-editor__button visual-editor__button--primary"
         >
           <div
             class="visual-editor__focused-toolbar__text"
-          />
-          <div
-            class="visual-editor__focused-toolbar__field-label-wrapper__caret"
           >
-            <svg
-              fill="none"
-              height="16"
-              viewBox="0 0 16 16"
-              width="16"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                clip-rule="evenodd"
-                d="M2.73483 5.73483C2.88128 5.58839 3.11872 5.58839 3.26517 5.73483L8 10.4697L12.7348 5.73483C12.8813 5.58839 13.1187 5.58839 13.2652 5.73483C13.4116 5.88128 13.4116 6.11872 13.2652 6.26517L8.26516 11.2652C8.11872 11.4116 7.88128 11.4116 7.73484 11.2652L2.73483 6.26517C2.58839 6.11872 2.58839 5.88128 2.73483 5.73483Z"
-                fill="white"
-                fill-rule="evenodd"
-              />
-            </svg>
+            
           </div>
-        </button>
+          <svg
+            fill="none"
+            height="16"
+            viewBox="0 0 16 16"
+            width="16"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              clip-rule="evenodd"
+              d="M2.73483 5.73483C2.88128 5.58839 3.11872 5.58839 3.26517 5.73483L8 10.4697L12.7348 5.73483C12.8813 5.58839 13.1187 5.58839 13.2652 5.73483C13.4116 5.88128 13.4116 6.11872 13.2652 6.26517L8.26516 11.2652C8.11872 11.4116 7.88128 11.4116 7.73484 11.2652L2.73483 6.26517C2.58839 6.11872 2.58839 5.88128 2.73483 5.73483Z"
+              fill="white"
+              fill-rule="evenodd"
+            />
+          </svg>
+        </div>
       </div>
     </div>
   </div>
@@ -103,7 +89,15 @@ exports[`Visual editor on click, the sdk inline elements must be contenteditable
 />
 `;
 
-exports[`Visual editor on click, the sdk inline elements must be contenteditable file should render a replacer and remove when it is not 2`] = `undefined`;
+exports[`Visual editor on click, the sdk inline elements must be contenteditable file should render a replacer and remove when it is not 2`] = `
+<button
+  class="visual-editor__replace-button"
+  data-testid="visual-editor-replace-asset"
+  style="top: -30px; right: 1024px;"
+>
+  Replace Asset
+</button>
+`;
 
 exports[`Visual editor on click, the sdk inline elements must be contenteditable multi line should be contenteditable 1`] = `
 <h1
@@ -136,38 +130,26 @@ exports[`Visual editor on click, the sdk should do nothing if data-cslp not avai
       class="visual-editor__overlay__wrapper"
       data-testid="visual-editor__overlay__wrapper"
     >
-      
-        
       <div
         class="visual-editor__overlay visual-editor__overlay--top"
         data-testid="visual-editor__overlay--top"
       />
-      
-        
       <div
         class="visual-editor__overlay visual-editor__overlay--left"
         data-testid="visual-editor__overlay--left"
       />
-      
-        
       <div
         class="visual-editor__overlay visual-editor__overlay--right"
         data-testid="visual-editor__overlay--right"
       />
-      
-        
       <div
         class="visual-editor__overlay visual-editor__overlay--bottom"
         data-testid="visual-editor__overlay--bottom"
       />
-      
-        
       <div
         class="visual-editor__overlay--outline"
         data-testid="visual-editor__overlay--outline"
       />
-      
-    
     </div>
     <div
       class="visual-editor__focused-toolbar"
@@ -190,38 +172,26 @@ exports[`Visual editor should append a visual editor container to the DOM 1`] = 
     class="visual-editor__overlay__wrapper"
     data-testid="visual-editor__overlay__wrapper"
   >
-    
-        
     <div
       class="visual-editor__overlay visual-editor__overlay--top"
       data-testid="visual-editor__overlay--top"
     />
-    
-        
     <div
       class="visual-editor__overlay visual-editor__overlay--left"
       data-testid="visual-editor__overlay--left"
     />
-    
-        
     <div
       class="visual-editor__overlay visual-editor__overlay--right"
       data-testid="visual-editor__overlay--right"
     />
-    
-        
     <div
       class="visual-editor__overlay visual-editor__overlay--bottom"
       data-testid="visual-editor__overlay--bottom"
     />
-    
-        
     <div
       class="visual-editor__overlay--outline"
       data-testid="visual-editor__overlay--outline"
     />
-    
-    
   </div>
   <div
     class="visual-editor__focused-toolbar"
@@ -235,38 +205,26 @@ exports[`visual editor DOM should have an overlay over the element 1`] = `
   class="visual-editor__overlay__wrapper"
   data-testid="visual-editor__overlay__wrapper"
 >
-  
-        
   <div
     class="visual-editor__overlay visual-editor__overlay--top"
     data-testid="visual-editor__overlay--top"
   />
-  
-        
   <div
     class="visual-editor__overlay visual-editor__overlay--left"
     data-testid="visual-editor__overlay--left"
   />
-  
-        
   <div
     class="visual-editor__overlay visual-editor__overlay--right"
     data-testid="visual-editor__overlay--right"
   />
-  
-        
   <div
     class="visual-editor__overlay visual-editor__overlay--bottom"
     data-testid="visual-editor__overlay--bottom"
   />
-  
-        
   <div
     class="visual-editor__overlay--outline"
     data-testid="visual-editor__overlay--outline"
   />
-  
-    
 </div>
 `;
 
@@ -275,42 +233,30 @@ exports[`visual editor DOM should have an overlay over the element 2`] = `
   class="visual-editor__overlay__wrapper visible"
   data-testid="visual-editor__overlay__wrapper"
 >
-  
-        
   <div
     class="visual-editor__overlay visual-editor__overlay--top"
     data-testid="visual-editor__overlay--top"
     style="top: 0px; left: 0px; width: 100%; height: calc(10px - 2px);"
   />
-  
-        
   <div
     class="visual-editor__overlay visual-editor__overlay--left"
     data-testid="visual-editor__overlay--left"
     style="left: 0px; top: calc(10px - 2px); height: calc(undefinedpx + 4px); width: calc(10px - 2px);"
   />
-  
-        
   <div
     class="visual-editor__overlay visual-editor__overlay--right"
     data-testid="visual-editor__overlay--right"
     style="left: calc(20px + 2px); top: calc(10px - 2px); height: calc(undefinedpx + 4px); width: calc(1004px - 2px);"
   />
-  
-        
   <div
     class="visual-editor__overlay visual-editor__overlay--bottom"
     data-testid="visual-editor__overlay--bottom"
     style="top: calc(20px + 2px); height: calc(-20px - 2px); left: 0px; width: 100%;"
   />
-  
-        
   <div
     class="visual-editor__overlay--outline"
     data-testid="visual-editor__overlay--outline"
     style="top: 10px; left: 10px; outline-color: rgb(113, 92, 221);"
   />
-  
-    
 </div>
 `;
