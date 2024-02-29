@@ -1,49 +1,13 @@
 import { useSignal } from "@preact/signals";
-import liveEditorPostMessage from "./../utils/liveEditorPostMessage";
 import getChildrenDirection from "../utils/getChildrenDirection";
-import { LiveEditorPostMessageEvents } from "./../utils/types/postMessage.types";
 import { CslpData } from "../../cslp/types/cslp.types";
 
 import { MoveLeftIcon, MoveRightIcon, DeleteIcon } from "./icons";
+import { handleDeleteInstance, handleMoveInstance } from "../utils/instanceHandlers";
 
 interface MultipleFieldToolbarProps {
     fieldMetadata: CslpData;
     targetElement: Element;
-}
-
-function handleDeleteInstance(fieldMetadata: CslpData) {
-    liveEditorPostMessage
-        ?.send(LiveEditorPostMessageEvents.DELETE_INSTANCE, {
-            data:
-                fieldMetadata.fieldPathWithIndex +
-                "." +
-                fieldMetadata.multipleFieldMetadata.index,
-            fieldMetadata: fieldMetadata,
-        })
-        .finally(closeOverlay);
-}
-
-function handleMoveInstance(
-    fieldMetadata: CslpData,
-    direction: "previous" | "next"
-) {
-    //TODO: Disable first and last instance move
-    liveEditorPostMessage
-        ?.send(LiveEditorPostMessageEvents.MOVE_INSTANCE, {
-            data:
-                fieldMetadata.fieldPathWithIndex +
-                "." +
-                fieldMetadata.multipleFieldMetadata.index,
-            direction: direction,
-            fieldMetadata: fieldMetadata,
-        })
-        .finally(closeOverlay);
-}
-
-function closeOverlay() {
-    document
-        .querySelector<HTMLDivElement>(".visual-editor__overlay--top")
-        ?.click();
 }
 
 function MultipleFieldToolbarComponent(props: MultipleFieldToolbarProps) : JSX.Element {
@@ -55,9 +19,10 @@ function MultipleFieldToolbarComponent(props: MultipleFieldToolbarProps) : JSX.E
     direction.value = getChildrenDirection(props.targetElement, parentPath);
 
     return (
-        <div className="visual-editor__focused-toolbar__multiple-field-toolbar">
+        <div className="visual-editor__focused-toolbar__multiple-field-toolbar" data-testid="visual-editor__focused-toolbar__multiple-field-toolbar">
             <div className="visual-editor__focused-toolbar__button-group">
                 <button
+                    data-testid="visual-editor__focused-toolbar__multiple-field-toolbar__move-left-button"
                     className={`visual-editor__button visual-editor__button--secondary ${
                         direction.value === "vertical"
                             ? "visual-editor__rotate--90"
@@ -73,6 +38,7 @@ function MultipleFieldToolbarComponent(props: MultipleFieldToolbarProps) : JSX.E
                 </button>
 
                 <button
+                    data-testid="visual-editor__focused-toolbar__multiple-field-toolbar__move-right-button"
                     className={`visual-editor__button visual-editor__button--secondary ${
                         direction.value === "vertical"
                             ? "visual-editor__rotate--90"
@@ -88,6 +54,7 @@ function MultipleFieldToolbarComponent(props: MultipleFieldToolbarProps) : JSX.E
                 </button>
 
                 <button
+                    data-testid="visual-editor__focused-toolbar__multiple-field-toolbar__delete-button"
                     className="visual-editor__button visual-editor__button--secondary"
                     onClick={(e) => {
                         e.preventDefault();
