@@ -185,8 +185,6 @@ describe("hideFocusOverlay", () => {
             `[data-testid="visual-editor__overlay--top"]`
         ) as HTMLDivElement;
 
-        console.log("[TEST DEBUG] : ", singleFocusOverlay);
-
         addFocusOverlay(editedElement, focusOverlayWrapper);
     });
 

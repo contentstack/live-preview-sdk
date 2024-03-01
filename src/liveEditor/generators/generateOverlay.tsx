@@ -105,11 +105,6 @@ export function hideFocusOverlay(elements: {
         focusedToolbar,
     } = elements;
 
-    console.log(
-        "[TEST DEBUG] : in hideFocusOverlay : ",
-        visualEditorOverlayWrapper
-    );
-
     if (visualEditorOverlayWrapper) {
         visualEditorOverlayWrapper.classList.remove("visible");
 
@@ -147,8 +142,6 @@ export function hideFocusOverlay(elements: {
                     }
                 );
             }
-
-            console.log("[TEST DEBUG] : cleanIndividualFieldResidual");
 
             cleanIndividualFieldResidual({
                 overlayWrapper: visualEditorOverlayWrapper,
