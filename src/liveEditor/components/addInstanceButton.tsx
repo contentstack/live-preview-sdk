@@ -4,7 +4,9 @@ interface AddInstanceButtonProps {
     onClickCallback: (event: MouseEvent) => void;
 }
 
-function AddInstanceButtonComponent(props: AddInstanceButtonProps) : JSX.Element {
+function AddInstanceButtonComponent(
+    props: AddInstanceButtonProps
+): JSX.Element {
     return (
         <button
             className="visual-editor__add-button"

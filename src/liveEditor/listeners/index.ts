@@ -5,18 +5,25 @@ import handleMouseOver from "./mouseOver";
 import handleMouseHover from "./mouseHover";
 import { VisualEditor } from "..";
 
-type AddEventListenersParams = Omit<EventListenerHandlerParams, "event" | "eventDetails">;
+type AddEventListenersParams = Omit<
+    EventListenerHandlerParams,
+    "event" | "eventDetails"
+>;
 
-type RemoveEventListenersParams = Omit<EventListenerHandlerParams, "event" | "eventDetails">;
+type RemoveEventListenersParams = Omit<
+    EventListenerHandlerParams,
+    "event" | "eventDetails"
+>;
 
-export function addEventListeners(params: AddEventListenersParams) {
+export function addEventListeners(params: AddEventListenersParams): void {
     window.addEventListener("click", (event) => {
         handleEditorInteraction({
             event: event,
             overlayWrapper: params.overlayWrapper,
             visualEditorContainer: params.visualEditorContainer,
             previousSelectedEditableDOM:
-                VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM,
+                VisualEditor.VisualEditorGlobalState.value
+                    .previousSelectedEditableDOM,
             focusedToolbar: params.focusedToolbar,
             resizeObserver: params.resizeObserver,
         });
@@ -42,14 +49,15 @@ export function addEventListeners(params: AddEventListenersParams) {
     // });
 }
 
-export function removeEventListeners(params: RemoveEventListenersParams) {
+export function removeEventListeners(params: RemoveEventListenersParams): void {
     window.removeEventListener("click", (event) => {
         handleEditorInteraction({
             event: event,
             overlayWrapper: params.overlayWrapper,
             visualEditorContainer: params.visualEditorContainer,
             previousSelectedEditableDOM:
-                VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM,
+                VisualEditor.VisualEditorGlobalState.value
+                    .previousSelectedEditableDOM,
             focusedToolbar: params.focusedToolbar,
             resizeObserver: params.resizeObserver,
         });

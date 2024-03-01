@@ -5,7 +5,7 @@ import { ISchemaFieldMap } from "./types/index.types";
 export const isFieldDisabled = (
     fieldSchemaMap: ISchemaFieldMap,
     eventDetails: VisualEditorCslpEventDetails
-) : any => {
+): any => {
     const masterLocale = Config.get()?.stackDetails?.masterLocale || "en-us";
     const updateRestrictDueToRole = Boolean(
         fieldSchemaMap?.field_metadata?.updateRestrict

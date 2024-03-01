@@ -5,15 +5,13 @@ import {
 
 describe("generateAddInstanceButton", () => {
     test("should generate a button", () => {
-        const buttonWrapper = generateAddInstanceButton(() => {});
-        const button = buttonWrapper.children[0] as HTMLElement;
+        const button = generateAddInstanceButton(() => {});
         expect(button).toBeInstanceOf(HTMLButtonElement);
     });
 
     test("should call the callback when clicked", () => {
         const callback = jest.fn();
-        const buttonWrapper = generateAddInstanceButton(callback);
-        const button = buttonWrapper.children[0] as HTMLElement;
+        const button = generateAddInstanceButton(callback);
         button.click();
         expect(callback).toHaveBeenCalledTimes(1);
     });
@@ -60,7 +58,7 @@ describe("getAddInstanceButtons", () => {
     `;
         const result = getAddInstanceButtons(wrapper, true);
         expect(result).toHaveLength(4);
-        expect(result[0]).toBeInstanceOf(HTMLButtonElement);
-        expect(result[1]).toBeInstanceOf(HTMLButtonElement);
+        expect(result![0]).toBeInstanceOf(HTMLButtonElement);
+        expect(result![1]).toBeInstanceOf(HTMLButtonElement);
     });
 });

@@ -8,16 +8,19 @@ const mockResizeObserver = {
 };
 
 describe("VisualEditorComponent", () => {
-
     test("should render the component", () => {
         initUI({
-            resizeObserver: mockResizeObserver
-        })
+            resizeObserver: mockResizeObserver,
+        });
 
         const container = document.querySelector(".visual-editor__container");
         const cursor = document.querySelector(".visual-editor__cursor");
-        const overlay = document.querySelector(".visual-editor__overlay__wrapper");
-        const toolbar = document.querySelector(".visual-editor__focused-toolbar");
+        const overlay = document.querySelector(
+            ".visual-editor__overlay__wrapper"
+        );
+        const toolbar = document.querySelector(
+            ".visual-editor__focused-toolbar"
+        );
 
         // Check if all expected elements are rendered
         expect(container).toBeInTheDocument();
@@ -25,5 +28,4 @@ describe("VisualEditorComponent", () => {
         expect(overlay).toBeInTheDocument();
         expect(toolbar).toBeInTheDocument();
     });
-
 });

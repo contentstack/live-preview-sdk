@@ -3,7 +3,9 @@ interface ReplaceAssetButtonProp {
     onClickCallback: () => void;
 }
 
-function ReplaceAssetButtonComponent(props: ReplaceAssetButtonProp) : JSX.Element {
+function ReplaceAssetButtonComponent(
+    props: ReplaceAssetButtonProp
+): JSX.Element {
     const dimension = props.targetElement.getBoundingClientRect();
 
     return (
@@ -15,7 +17,6 @@ function ReplaceAssetButtonComponent(props: ReplaceAssetButtonProp) : JSX.Elemen
                 right: `${window.innerWidth - dimension.right}px`,
             }}
             onClick={props.onClickCallback}
-
         >
             Replace Asset
         </button>

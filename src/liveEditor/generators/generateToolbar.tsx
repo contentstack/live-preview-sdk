@@ -13,7 +13,7 @@ import FieldLabelWrapperComponent from "../components/fieldLabelWrapper";
 export function appendFocusedToolbar(
     eventDetails: VisualEditorCslpEventDetails,
     focusedToolbarElement: HTMLDivElement
-) : void {
+): void {
     appendFieldPathDropdown(eventDetails, focusedToolbarElement);
     appendMultipleFieldToolbar(eventDetails, focusedToolbarElement);
 }
@@ -21,7 +21,7 @@ export function appendFocusedToolbar(
 export function appendMultipleFieldToolbar(
     eventDetails: VisualEditorCslpEventDetails,
     focusedToolbarElement: HTMLDivElement
-) : void {
+): void {
     const { editableElement: targetElement, fieldMetadata } = eventDetails;
     FieldSchemaMap.getFieldSchema(
         fieldMetadata.content_type_uid,
@@ -49,7 +49,7 @@ export function appendMultipleFieldToolbar(
 export function appendFieldPathDropdown(
     eventDetails: VisualEditorCslpEventDetails,
     focusedToolbarElement: HTMLDivElement
-) : void {
+): void {
     const { editableElement: targetElement, fieldMetadata } = eventDetails;
     const targetElementDimension = targetElement.getBoundingClientRect();
 

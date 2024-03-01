@@ -83,14 +83,8 @@ describe("removeReplaceAssetButton", () => {
         visualEditorContainer.classList.add("visual-editor__container");
         document.body.appendChild(visualEditorContainer);
 
-        generateReplaceAssetButton(
-            visualEditorContainer,
-            jest.fn()
-        );
-        generateReplaceAssetButton(
-            visualEditorContainer,
-            jest.fn()
-        );
+        generateReplaceAssetButton(visualEditorContainer, jest.fn());
+        generateReplaceAssetButton(visualEditorContainer, jest.fn());
 
         expect(
             visualEditorContainer.querySelectorAll(

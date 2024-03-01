@@ -32,28 +32,31 @@ export class VisualEditor {
     private visualEditorContainer: HTMLDivElement | null = null;
     private focusedToolbar: HTMLDivElement | null = null;
 
-    static VisualEditorGlobalState: Signal<VisualEditorGlobalStateImpl> = signal({
-        previousSelectedEditableDOM: null,
-        previousHoveredTargetDOM: null,
-    });
-
+    static VisualEditorGlobalState: Signal<VisualEditorGlobalStateImpl> =
+        signal({
+            previousSelectedEditableDOM: null,
+            previousHoveredTargetDOM: null,
+        });
 
     private resizeObserver = new ResizeObserver(([entry]) => {
         if (
             !this.overlayWrapper ||
-            !VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM
+            !VisualEditor.VisualEditorGlobalState.value
+                .previousSelectedEditableDOM
         )
             return;
 
         if (
             !entry.target.isSameNode(
-                VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM
+                VisualEditor.VisualEditorGlobalState.value
+                    .previousSelectedEditableDOM
             )
         )
             return;
 
         addFocusOverlay(
-            VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM,
+            VisualEditor.VisualEditorGlobalState.value
+                .previousSelectedEditableDOM,
             this.overlayWrapper
         );
     });
@@ -128,7 +131,8 @@ export class VisualEditor {
             overlayWrapper: this.overlayWrapper,
             visualEditorContainer: this.visualEditorContainer,
             previousSelectedEditableDOM:
-                VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM,
+                VisualEditor.VisualEditorGlobalState.value
+                    .previousSelectedEditableDOM,
             focusedToolbar: this.focusedToolbar,
             resizeObserver: this.resizeObserver,
             customCursor: this.customCursor,

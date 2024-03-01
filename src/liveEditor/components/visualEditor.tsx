@@ -1,36 +1,11 @@
-import { hideFocusOverlay } from "../generators/generateOverlay";
-import EventListenerHandlerParams from "../listeners/types";
-import { VisualEditor } from "..";
-
-interface HideOverlayParams
-    extends Pick<
-        EventListenerHandlerParams,
-        "visualEditorContainer" | "focusedToolbar" | "resizeObserver"
-    > {
-    visualEditorOverlayWrapper: HTMLDivElement | null;
-}
+import { hideOverlay } from "../generators/generateOverlay";
 
 interface VisualEditorProps {
     visualEditorContainer: HTMLDivElement | null;
     resizeObserver: ResizeObserver;
 }
 
-function hideOverlay(params: HideOverlayParams) : void {
-    hideFocusOverlay({
-        visualEditorContainer: params.visualEditorContainer,
-        visualEditorOverlayWrapper: params.visualEditorOverlayWrapper,
-        focusedToolbar: params.focusedToolbar,
-    });
-
-    if (!VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM) return;
-    params.resizeObserver.unobserve(
-        VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM
-    );
-    VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM = null;
-}
-
-function VisualEditorComponent(props: VisualEditorProps) : JSX.Element {
-    
+function VisualEditorComponent(props: VisualEditorProps): JSX.Element {
     return (
         <>
             <div
