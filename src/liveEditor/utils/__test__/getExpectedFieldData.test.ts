@@ -23,13 +23,11 @@ jest.mock("../../utils/liveEditorPostMessage", () => {
     };
 });
 
-
-const mockFieldMetadata : CslpData = {
+const mockFieldMetadata: CslpData = {
     entry_uid: "bltapikey",
     content_type_uid: "all_fields",
     locale: "en-us",
-    cslpValue:
-        "all_fields.bltapikey.en-us.multi_line_textbox_multiple_.0",
+    cslpValue: "all_fields.bltapikey.en-us.multi_line_textbox_multiple_.0",
     fieldPath: "multi_line_textbox_multiple_",
     fieldPathWithIndex: "multi_line_textbox_multiple_",
     multipleFieldMetadata: {
@@ -66,11 +64,10 @@ describe("getExpectedFieldData", () => {
                         },
                         index: 0,
                     },
-                }
+                },
             }
         );
 
         expect(liveEditorPostMessage?.send).toHaveBeenCalledTimes(1);
-
     });
 });
