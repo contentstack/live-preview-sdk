@@ -1,12 +1,14 @@
+import "@testing-library/jest-dom/extend-expect";
+import { fireEvent } from "@testing-library/preact";
 import {
     addFocusOverlay,
     hideFocusOverlay,
 } from "./../../generators/generateOverlay";
-// import { generateVisualEditorOverlay } from "../generateVisualEditorDom";
-import { cleanIndividualFieldResidual } from "../handleIndividualFields";
-import liveEditorPostMessage from "../liveEditorPostMessage";
-import { LiveEditorPostMessageEvents } from "../types/postMessage.types";
 import initUI from "../../components";
+import { cleanIndividualFieldResidual } from "../handleIndividualFields";
+import { LiveEditorPostMessageEvents } from "../types/postMessage.types";
+import liveEditorPostMessage from "../liveEditorPostMessage";
+import { VisualEditor } from "../..";
 
 jest.mock("../liveEditorPostMessage", () => {
     return {
@@ -25,13 +27,6 @@ jest.mock("../handleIndividualFields", () => {
     };
 });
 
-jest.mock("../../globals", () => ({
-    value: {
-        previousSelectedEditableDOM: null,
-        previousHoveredTargetDOM: null
-    },
-}));
-
 const mockResizeObserver = {
     observe: jest.fn(),
     unobserve: jest.fn(),
@@ -42,6 +37,16 @@ describe("addFocusOverlay", () => {
     let visualEditorContainer: HTMLDivElement;
     let targetElement: HTMLElement;
     let focusOverlayWrapper: HTMLDivElement;
+
+    jest.mock("../../generators/generateOverlay", () => {
+        const originalModule = jest.requireActual(
+            "../../generators/generateOverlay"
+        );
+        return {
+            ...originalModule,
+            hideOverlay: jest.fn(),
+        };
+    });
 
     beforeEach(() => {
         initUI({
@@ -82,24 +87,17 @@ describe("addFocusOverlay", () => {
         expect(focusOverlayWrapper.classList.contains("visible")).toBe(true);
     });
 
-    // disabling .toMatchSnapshot() method
     test("should set the top overlay to the correct dimensions", () => {
-        let visualEditorOverlayWrapper = document.querySelector(
-            `[data-testid="visual-editor__overlay__wrapper"]`
-        );
-
-        // expect(visualEditorOverlayWrapper).toMatchSnapshot();
+        expect(focusOverlayWrapper).toMatchSnapshot();
 
         addFocusOverlay(targetElement, focusOverlayWrapper);
 
-        visualEditorOverlayWrapper = document.querySelector(
-            `[data-testid="visual-editor__overlay__wrapper"]`
-        );
+        focusOverlayWrapper = document.querySelector(
+            ".visual-editor__overlay__wrapper"
+        ) as HTMLDivElement;
 
-        // expect(visualEditorOverlayWrapper).toMatchSnapshot();
-        expect(visualEditorOverlayWrapper?.classList.contains("visible")).toBe(
-            true
-        );
+        expect(focusOverlayWrapper).toMatchSnapshot();
+        expect(focusOverlayWrapper?.classList.contains("visible")).toBe(true);
 
         const visualEditorWrapperTopOverlay = document.querySelector(
             `[data-testid="visual-editor__overlay--top"]`
@@ -148,22 +146,6 @@ describe("addFocusOverlay", () => {
             "calc(1004px - 2px)"
         );
     });
-
-
-    // test("should run onClickCallback when the focus overlay is clicked", () => {
-    //     addFocusOverlay(targetElement, focusOverlayWrapper);
-    //     const visualEditorOverlay = document.querySelector(
-    //         `[data-testid="visual-editor__overlay"]`
-    //     ) as HTMLDivElement;
-
-    //     // visualEditorOverlay?.dispatchEvent(
-    //     //     new MouseEvent("click", {
-    //     //         bubbles: true,
-    //     //         cancelable: true,
-    //     //     })
-    //     // );
-    //     expect(hideOverlay).toHaveBeenCalledTimes(1);
-    // });
 });
 
 describe("hideFocusOverlay", () => {
@@ -173,7 +155,6 @@ describe("hideFocusOverlay", () => {
     let singleFocusOverlay: HTMLDivElement;
 
     beforeEach(() => {
-
         initUI({
             resizeObserver: mockResizeObserver,
         });
@@ -203,6 +184,8 @@ describe("hideFocusOverlay", () => {
         singleFocusOverlay = focusOverlayWrapper.querySelector(
             `[data-testid="visual-editor__overlay--top"]`
         ) as HTMLDivElement;
+
+        console.log("[TEST DEBUG] : ", singleFocusOverlay);
 
         addFocusOverlay(editedElement, focusOverlayWrapper);
     });
@@ -244,11 +227,13 @@ describe("hideFocusOverlay", () => {
         expect(focusOverlayWrapper.classList.contains("visible")).toBe(true);
     });
 
+    // TODO
     test("should send update field event to the parent if the focused element is an inline editable element", () => {
         editedElement.setAttribute("contenteditable", "true");
 
         expect(focusOverlayWrapper.classList.contains("visible")).toBe(true);
-        singleFocusOverlay.click();
+        fireEvent.click(singleFocusOverlay);
+        fireEvent.click(singleFocusOverlay);
 
         expect(focusOverlayWrapper.classList.contains("visible")).toBe(false);
         expect(liveEditorPostMessage?.send).toHaveBeenCalledTimes(1);
@@ -270,46 +255,15 @@ describe("hideFocusOverlay", () => {
     });
 
     test("should run cleanup function", () => {
-        initUI({
-            resizeObserver: mockResizeObserver,
-        });
-        visualEditorContainer = document.querySelector(
-            ".visual-editor__container"
-        ) as HTMLDivElement;
-
-        focusOverlayWrapper = document.querySelector(
-            ".visual-editor__overlay__wrapper"
-        ) as HTMLDivElement;
-
-        editedElement = document.createElement("p");
-        editedElement.setAttribute(
-            "data-cslp",
-            "all_fields.blt58a50b4cebae75c5.en-us.title"
-        );
-        editedElement.innerHTML = "Hello World!";
-        editedElement.getBoundingClientRect = jest.fn(() => ({
-            left: 10,
-            right: 20,
-            top: 10,
-            bottom: 20,
-        })) as any;
-
-        visualEditorContainer.appendChild(editedElement);
-        
-        addFocusOverlay(editedElement, focusOverlayWrapper);
-        
-        expect(focusOverlayWrapper.classList.contains("visible")).toBe(true);
-        
-        // We"ll always click one of the overlays, so we can just grab the first one
-        singleFocusOverlay = focusOverlayWrapper.querySelector(
-            `[data-testid="visual-editor__overlay--top"]`
-        ) as HTMLDivElement;
-        
-        singleFocusOverlay.click();
+        // We"ll always click one of the overlays, so we can just grab the first one. Manually pointing the global state to the editedElement as we are not simulating mouse click on window here.
+        VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM =
+            editedElement;
+        fireEvent.click(focusOverlayWrapper);
 
         expect(cleanIndividualFieldResidual).toHaveBeenCalledTimes(1);
     });
 
+    // TODO
     test("should hide the overlay if the escape key is pressed", () => {
         expect(focusOverlayWrapper.classList.contains("visible")).toBe(true);
 

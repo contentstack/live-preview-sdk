@@ -5,38 +5,26 @@ exports[`addFocusOverlay should set the top overlay to the correct dimensions 1`
   class="visual-editor__overlay__wrapper"
   data-testid="visual-editor__overlay__wrapper"
 >
-  
-        
   <div
     class="visual-editor__overlay visual-editor__overlay--top"
     data-testid="visual-editor__overlay--top"
   />
-  
-        
   <div
     class="visual-editor__overlay visual-editor__overlay--left"
     data-testid="visual-editor__overlay--left"
   />
-  
-        
   <div
     class="visual-editor__overlay visual-editor__overlay--right"
     data-testid="visual-editor__overlay--right"
   />
-  
-        
   <div
     class="visual-editor__overlay visual-editor__overlay--bottom"
     data-testid="visual-editor__overlay--bottom"
   />
-  
-        
   <div
     class="visual-editor__overlay--outline"
     data-testid="visual-editor__overlay--outline"
   />
-  
-    
 </div>
 `;
 
@@ -45,42 +33,30 @@ exports[`addFocusOverlay should set the top overlay to the correct dimensions 2`
   class="visual-editor__overlay__wrapper visible"
   data-testid="visual-editor__overlay__wrapper"
 >
-  
-        
   <div
     class="visual-editor__overlay visual-editor__overlay--top"
     data-testid="visual-editor__overlay--top"
     style="top: 0px; left: 0px; width: 100%; height: calc(10px - 2px);"
   />
-  
-        
   <div
     class="visual-editor__overlay visual-editor__overlay--left"
     data-testid="visual-editor__overlay--left"
     style="left: 0px; top: calc(10px - 2px); height: calc(undefinedpx + 4px); width: calc(10px - 2px);"
   />
-  
-        
   <div
     class="visual-editor__overlay visual-editor__overlay--right"
     data-testid="visual-editor__overlay--right"
     style="left: calc(20px + 2px); top: calc(10px - 2px); height: calc(undefinedpx + 4px); width: calc(1004px - 2px);"
   />
-  
-        
   <div
     class="visual-editor__overlay visual-editor__overlay--bottom"
     data-testid="visual-editor__overlay--bottom"
     style="top: calc(20px + 2px); height: calc(-20px - 2px); left: 0px; width: 100%;"
   />
-  
-        
   <div
     class="visual-editor__overlay--outline"
     data-testid="visual-editor__overlay--outline"
     style="top: 10px; left: 10px; outline-color: rgb(113, 92, 221);"
   />
-  
-    
 </div>
 `;
