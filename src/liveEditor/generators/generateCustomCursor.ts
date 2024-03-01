@@ -35,7 +35,7 @@ export function generateCustomCursor({
     fieldType,
     customCursor,
     fieldDisabled = false,
-}: IGenerateCustomCursor) : void {
+}: IGenerateCustomCursor): void {
     const icon = fieldType ? icons[fieldType] : "";
 
     const prevDataIcon = customCursor.getAttribute("data-icon");
@@ -46,4 +46,4 @@ export function generateCustomCursor({
         fieldDisabled ? " visual-editor__cursor-disabled" : ""
     }"><div class="visual-editor__cursor-pointer">${cursor}</div><div class="visual-editor__cursor-icon">${icon}</div>`;
     customCursor.setAttribute("data-icon", fieldType);
-};
+}

@@ -105,10 +105,18 @@ export function hideFocusOverlay(elements: {
         focusedToolbar,
     } = elements;
 
+    console.log(
+        "[TEST DEBUG] : in hideFocusOverlay : ",
+        visualEditorOverlayWrapper
+    );
+
     if (visualEditorOverlayWrapper) {
         visualEditorOverlayWrapper.classList.remove("visible");
 
-        if (VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM) {
+        if (
+            VisualEditor.VisualEditorGlobalState.value
+                .previousSelectedEditableDOM
+        ) {
             const pseudoEditableElement = visualEditorContainer?.querySelector(
                 "div.visual-editor__pseudo-editable-element"
             );
@@ -140,6 +148,8 @@ export function hideFocusOverlay(elements: {
                 );
             }
 
+            console.log("[TEST DEBUG] : cleanIndividualFieldResidual");
+
             cleanIndividualFieldResidual({
                 overlayWrapper: visualEditorOverlayWrapper,
                 visualEditorContainer: visualEditorContainer,
@@ -157,16 +167,18 @@ interface HideOverlayParams
     visualEditorOverlayWrapper: HTMLDivElement | null;
 }
 
-export function hideOverlay(params: HideOverlayParams) : void {
+export function hideOverlay(params: HideOverlayParams): void {
     hideFocusOverlay({
         visualEditorContainer: params.visualEditorContainer,
         visualEditorOverlayWrapper: params.visualEditorOverlayWrapper,
         focusedToolbar: params.focusedToolbar,
     });
 
-    if (!VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM) return;
+    if (!VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM)
+        return;
     params.resizeObserver.unobserve(
         VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM
     );
-    VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM = null;
+    VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM =
+        null;
 }

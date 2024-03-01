@@ -1,7 +1,4 @@
-import {
-    generatePseudoEditableElement,
-} from "./../../generators/generatePseudoEditableField";
-
+import { generatePseudoEditableElement } from "./../../generators/generatePseudoEditableField";
 
 describe("generatePseudoEditableElement", () => {
     let visualEditorContainer: HTMLDivElement;
@@ -48,4 +45,3 @@ describe("generatePseudoEditableElement", () => {
         expect(editableElement.style.cssText).toBe("width: 100px;");
     });
 });
-

@@ -20,7 +20,10 @@ describe("IconComponents", () => {
             expect(svgElement).toHaveAttribute("width", "16");
             expect(svgElement).toHaveAttribute("height", "16");
             expect(svgElement).toHaveAttribute("fill", "none");
-            expect(svgElement).toHaveAttribute("data-testid", "visual-editor__caret-icon")
+            expect(svgElement).toHaveAttribute(
+                "data-testid",
+                "visual-editor__caret-icon"
+            );
             expect(strokeAttribute).toBeNull();
         });
     });
@@ -34,7 +37,10 @@ describe("IconComponents", () => {
             expect(svgElement).toHaveAttribute("width", "16");
             expect(svgElement).toHaveAttribute("height", "16");
             expect(svgElement).toHaveAttribute("fill", "none");
-            expect(svgElement).toHaveAttribute("data-testid", "visual-editor__delete-icon")
+            expect(svgElement).toHaveAttribute(
+                "data-testid",
+                "visual-editor__delete-icon"
+            );
             expect(strokeAttribute).toBeNull();
         });
     });
@@ -48,7 +54,10 @@ describe("IconComponents", () => {
             expect(svgElement).toHaveAttribute("width", "16");
             expect(svgElement).toHaveAttribute("height", "16");
             expect(svgElement).toHaveAttribute("fill", "none");
-            expect(svgElement).toHaveAttribute("data-testid", "visual-editor__move-left-icon")
+            expect(svgElement).toHaveAttribute(
+                "data-testid",
+                "visual-editor__move-left-icon"
+            );
             expect(strokeAttribute).toBeNull();
         });
     });
@@ -62,7 +71,10 @@ describe("IconComponents", () => {
             expect(svgElement).toHaveAttribute("width", "16");
             expect(svgElement).toHaveAttribute("height", "16");
             expect(svgElement).toHaveAttribute("fill", "none");
-            expect(svgElement).toHaveAttribute("data-testid", "visual-editor__move-right-icon")
+            expect(svgElement).toHaveAttribute(
+                "data-testid",
+                "visual-editor__move-right-icon"
+            );
             expect(strokeAttribute).toBeNull();
         });
     });
@@ -76,7 +88,10 @@ describe("IconComponents", () => {
             expect(svgElement).toHaveAttribute("width", "16");
             expect(svgElement).toHaveAttribute("height", "16");
             expect(svgElement).toHaveAttribute("fill", "none");
-            expect(svgElement).toHaveAttribute("data-testid", "visual-editor__info-icon")
+            expect(svgElement).toHaveAttribute(
+                "data-testid",
+                "visual-editor__info-icon"
+            );
             expect(strokeAttribute).toBeNull();
         });
     });
@@ -90,7 +105,10 @@ describe("IconComponents", () => {
             expect(svgElement).toHaveAttribute("width", "24");
             expect(svgElement).toHaveAttribute("height", "24");
             expect(svgElement).toHaveAttribute("fill", "none");
-            expect(svgElement).toHaveAttribute("data-testid", "visual-editor__edit-icon")
+            expect(svgElement).toHaveAttribute(
+                "data-testid",
+                "visual-editor__edit-icon"
+            );
             expect(strokeAttribute).toBeNull();
         });
     });
@@ -104,7 +122,10 @@ describe("IconComponents", () => {
             expect(svgElement).toHaveAttribute("width", "20");
             expect(svgElement).toHaveAttribute("height", "20");
             expect(svgElement).toHaveAttribute("fill", "none");
-            expect(svgElement).toHaveAttribute("data-testid", "visual-editor__plus-icon")
+            expect(svgElement).toHaveAttribute(
+                "data-testid",
+                "visual-editor__plus-icon"
+            );
             expect(strokeAttribute).toBeNull();
         });
     });

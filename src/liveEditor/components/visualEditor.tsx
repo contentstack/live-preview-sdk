@@ -5,8 +5,7 @@ interface VisualEditorProps {
     resizeObserver: ResizeObserver;
 }
 
-function VisualEditorComponent(props: VisualEditorProps) : JSX.Element {
-    
+function VisualEditorComponent(props: VisualEditorProps): JSX.Element {
     return (
         <>
             <div

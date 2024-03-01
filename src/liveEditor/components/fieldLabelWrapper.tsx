@@ -14,7 +14,9 @@ interface FieldLabelWrapperProps {
     parentPaths: string[];
 }
 
-function FieldLabelWrapperComponent(props: FieldLabelWrapperProps) : JSX.Element {
+function FieldLabelWrapperComponent(
+    props: FieldLabelWrapperProps
+): JSX.Element {
     const [currentField, setCurrentField] = useState({
         text: "",
         icon: <CaretIcon />,
@@ -23,11 +25,9 @@ function FieldLabelWrapperComponent(props: FieldLabelWrapperProps) : JSX.Element
     const [displayNames, setDisplayNames] = useState<string[]>([]);
 
     function calculateTopOffset(index: number) {
-        const height = -30;  // from bottom
+        const height = -30; // from bottom
         const offset = (index + 1) * height;
-
-        return `${offset}px`
-
+        return `${offset}px`;
     }
 
     useEffect(() => {
@@ -74,13 +74,13 @@ function FieldLabelWrapperComponent(props: FieldLabelWrapperProps) : JSX.Element
         fetchData();
     }, [props]);
 
-    
     return (
         <div
             className={classNames(
                 "visual-editor__focused-toolbar__field-label-wrapper",
                 {
-                    "visual-editor__focused-toolbar--field-disabled": currentField.disabled,
+                    "visual-editor__focused-toolbar--field-disabled":
+                        currentField.disabled,
                 }
             )}
         >

@@ -5,9 +5,7 @@ import {
 } from "../generators/generateAssetButton";
 import { LIVE_EDITOR_FIELD_TYPE_ATTRIBUTE_KEY } from "./constants";
 import { FieldSchemaMap } from "./fieldSchemaMap";
-import {
-    isEllipsisActive,
-} from "../generators/generatePseudoEditableField";
+import { isEllipsisActive } from "../generators/generatePseudoEditableField";
 import { getFieldType } from "./getFieldType";
 import { handleFieldInput, handleFieldKeyDown } from "./handleFieldMouseDown";
 import liveEditorPostMessage from "./liveEditorPostMessage";
@@ -129,17 +127,14 @@ export async function handleIndividualFields(
         }
 
         if (fieldSchema.data_type === "file") {
-            generateReplaceAssetButton(
-                editableElement,
-                () => {
-                    liveEditorPostMessage?.send(
-                        LiveEditorPostMessageEvents.OPEN_ASSET_MODAL,
-                        {
-                            fieldMetadata: eventDetails.fieldMetadata,
-                        }
-                    );
-                }
-            );
+            generateReplaceAssetButton(editableElement, () => {
+                liveEditorPostMessage?.send(
+                    LiveEditorPostMessageEvents.OPEN_ASSET_MODAL,
+                    {
+                        fieldMetadata: eventDetails.fieldMetadata,
+                    }
+                );
+            });
 
             return;
         }

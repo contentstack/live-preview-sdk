@@ -1,4 +1,4 @@
-export function CaretIcon() : JSX.Element {
+export function CaretIcon(): JSX.Element {
     return (
         <svg
             data-testid="visual-editor__caret-icon"
@@ -18,7 +18,7 @@ export function CaretIcon() : JSX.Element {
     );
 }
 
-export function DeleteIcon() : JSX.Element {
+export function DeleteIcon(): JSX.Element {
     return (
         <svg
             data-testid="visual-editor__delete-icon"
@@ -46,7 +46,7 @@ export function DeleteIcon() : JSX.Element {
     );
 }
 
-export function MoveLeftIcon() : JSX.Element {
+export function MoveLeftIcon(): JSX.Element {
     return (
         <svg
             data-testid="visual-editor__move-left-icon"
@@ -72,7 +72,7 @@ export function MoveLeftIcon() : JSX.Element {
     );
 }
 
-export function MoveRightIcon() : JSX.Element {
+export function MoveRightIcon(): JSX.Element {
     return (
         <svg
             data-testid="visual-editor__move-right-icon"
@@ -98,7 +98,7 @@ export function MoveRightIcon() : JSX.Element {
     );
 }
 
-export function InfoIcon() : JSX.Element {
+export function InfoIcon(): JSX.Element {
     return (
         <svg
             data-testid="visual-editor__info-icon"
@@ -126,7 +126,7 @@ export function InfoIcon() : JSX.Element {
     );
 }
 
-export function EditIcon() : JSX.Element {
+export function EditIcon(): JSX.Element {
     return (
         <svg
             data-testid="visual-editor__edit-icon"
@@ -149,7 +149,7 @@ export function EditIcon() : JSX.Element {
     );
 }
 
-export function PlusIcon() : JSX.Element {
+export function PlusIcon(): JSX.Element {
     return (
         <svg
             data-testid="visual-editor__plus-icon"

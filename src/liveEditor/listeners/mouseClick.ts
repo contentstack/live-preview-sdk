@@ -63,6 +63,7 @@ async function handleEditorInteraction(
     params: HandleEditorInteractionParams
 ): Promise<void> {
     params.event.preventDefault();
+
     const eventDetails = getCsDataOfElement(params.event);
     if (
         !eventDetails ||

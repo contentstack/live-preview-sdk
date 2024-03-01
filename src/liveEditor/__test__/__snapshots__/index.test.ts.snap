@@ -62,6 +62,7 @@ exports[`Visual editor inline editing should add overlay to DOM when clicked 1`]
             
           </div>
           <svg
+            data-testid="visual-editor__caret-icon"
             fill="none"
             height="16"
             viewBox="0 0 16 16"
