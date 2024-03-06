@@ -190,17 +190,15 @@ export function shouldRenderEditButton(editButton: IConfigEditButton): boolean {
         PublicLogger.error(error);
     }
 
-    // case if inside live preview
+    // case if inside live preview or inside live editor
     if (
-        inIframe() &&
+        inIframe() ||
         editButton.exclude?.find(
             (exclude) => exclude === "insideLivePreviewPortal"
         )
     ) {
         return false;
-    } else if (inIframe()) {
-        return true;
-    }
+    } 
 
     // case outside live preview
     if (
