@@ -6,7 +6,7 @@ export const isFieldDisabled = (
     fieldSchemaMap: ISchemaFieldMap,
     eventDetails: VisualEditorCslpEventDetails
 ): any => {
-    const masterLocale = Config.get()?.stackDetails?.masterLocale || "en-us";
+    const masterLocale = Config.get("state.stackDetails.masterLocale") as unknown as string || "en-us";
     const updateRestrictDueToRole = Boolean(
         fieldSchemaMap?.field_metadata?.updateRestrict
     );

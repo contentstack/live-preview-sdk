@@ -6,7 +6,7 @@ let livePreviewPostMessage: EventManager | undefined;
 if (typeof window !== "undefined") {
     livePreviewPostMessage = new EventManager(LIVE_PREVIEW_CHANNEL_ID, {
         target: window.parent,
-        debug: false,
+        debug: true,
         suppressErrors: true,
     });
 }

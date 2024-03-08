@@ -21,7 +21,6 @@ export default class LivePreview {
     private subscribers: OnEntryChangeCallbackSubscribers = {};
 
     constructor() {
-        const config = Config.get();
 
         this.requestDataSync = this.requestDataSync.bind(this);
         this.subscribeToOnEntryChange =
@@ -30,14 +29,14 @@ export default class LivePreview {
         this.unsubscribeOnEntryChange =
             this.unsubscribeOnEntryChange.bind(this);
 
-        if (config.debug) {
+        if (Config.get("state.debug")) {
             PublicLogger.debug(
                 "Contentstack Live Preview Debugging mode: config --",
-                config
+                Config.config
             );
         }
 
-        if (config.enable) {
+        if (Config.get("state.enable")) {
             if (
                 typeof document !== undefined &&
                 document.readyState === "complete"
@@ -51,15 +50,16 @@ export default class LivePreview {
             // TODO: mjrf: Check if we need the second condition here.
             // We are already handling the functions separately in the live editor.
             // render the hover outline only when edit button enable
+
             if (
-                config.editButton.enable ||
-                config.mode >= ILivePreviewModeConfig.EDITOR
+                Config.get("state.editButton.enable") ||
+                Config.get("state.mode") as unknown as number >= ILivePreviewModeConfig.EDITOR
             ) {
                 new LivePreviewEditButton();
             }
 
             //NOTE - I think we are already handling the link click event here. Let's move it to a function.
-            if (config.ssr) {
+            if (Config.get("state.ssr")) {
                 // NOTE: what are we doing here?
                 window.addEventListener("load", (e) => {
                     const allATags = document.querySelectorAll("a");
@@ -87,20 +87,20 @@ export default class LivePreview {
                     }
                 });
             }
-        } else if (config.cleanCslpOnProduction) {
+        } else if (Config.get("state.cleanCslpOnProduction")) {
             removeDataCslp();
         }
     }
 
     // Request parent for data sync when document loads
     private requestDataSync() {
-        const config = Config.get();
+        const config = Config.get("state");
 
-        Config.set("onChange", this.publish);
-
+        Config.set("state.onChange", this.publish);
+        
         //! TODO: we replaced the handleOnChange() with this.
         //! I don't think we need this. Confirm and remove it.
-        config.onChange();
+        config.onChange!();
 
         sendInitializeLivePreviewPostMessageEvent();
     }

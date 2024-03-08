@@ -163,7 +163,7 @@ describe("When an element is hovered in visual editor mode", () => {
             getFieldSchemaMap().all_fields
         );
 
-        Config.set("mode", 2);
+        Config.set("state.mode", 2);
     });
 
     beforeEach(() => {

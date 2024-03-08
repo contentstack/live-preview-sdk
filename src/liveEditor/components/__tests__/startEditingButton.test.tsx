@@ -3,16 +3,17 @@ import { render, fireEvent } from "@testing-library/preact";
 import StartEditingButtonComponent from "../startEditingButton";
 import { IConfig } from "../../../types/types";
 import { getDefaultConfig } from "../../../configManager/config.default";
+import { DeepSignal } from "deepsignal";
+import Config from "../../../configManager/configManager";
 
 describe("StartEditingButtonComponent", () => {
-    let config: IConfig;
+    let config: DeepSignal<IConfig>;
     let visualEditorContainer: HTMLDivElement;
 
     beforeEach(() => {
-        config = getDefaultConfig();
 
-        config.stackDetails.apiKey = "bltapikey";
-        config.stackDetails.environment = "bltenvironment";
+        Config.set("state.stackDetails.apiKey", "bltapikey");
+        Config.set("state.stackDetails.environment", "bltenvironment");
 
         visualEditorContainer = document.createElement("div");
         document.body.appendChild(visualEditorContainer);

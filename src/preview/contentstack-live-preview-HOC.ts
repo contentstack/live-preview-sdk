@@ -67,7 +67,7 @@ class ContentstackLivePreview {
         if (!ContentstackLivePreview.isInitialized()) {
             updateConfigFromUrl(); // check if we could extract from the URL
         }
-        return Config.get().hash;
+        return Config.get("state.hash") as unknown as string;
     }
 
     private static isInitialized(): boolean {

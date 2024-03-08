@@ -119,7 +119,10 @@ export function addCslpOutline(
         highlightedElement: HTMLElement;
     }) => void
 ): void {
-    const config = Config.get();
+
+    const elements = Config.get("state.elements") as unknown as {
+        highlightedElement: HTMLElement | null;
+    };
 
     let trigger = true;
     const eventTargets = e.composedPath();
@@ -132,15 +135,15 @@ export function addCslpOutline(
         const cslpTag = element.getAttribute("data-cslp");
 
         if (trigger && cslpTag) {
-            if (config.elements.highlightedElement)
-                config.elements.highlightedElement.classList.remove(
+            if (elements.highlightedElement)
+                elements.highlightedElement.classList.remove(
                     "cslp-edit-mode"
                 );
             element.classList.add("cslp-edit-mode");
 
-            const updatedElements = config.elements;
+            const updatedElements = elements;
             updatedElements.highlightedElement = element;
-            Config.set("elements", updatedElements);
+            Config.set("state.elements", updatedElements);
 
             callback?.({
                 cslpTag: cslpTag,

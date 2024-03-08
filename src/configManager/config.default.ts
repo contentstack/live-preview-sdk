@@ -1,4 +1,4 @@
-import { IConfig, IInitData, ILivePreviewWindowType } from "../types/types";
+import { IClientUrlParams, IConfig, IConfigEditButton, IInitData, ILivePreviewModeConfig, ILivePreviewWindowType, IStackDetails, IStackSdk } from "../types/types";
 
 export function getUserInitData(): IInitData {
     return {
@@ -48,10 +48,10 @@ export function getDefaultConfig(): IConfig {
             exclude: [],
             position: "top",
             includeByQueryParameter: true,
-        },
+        } as IConfigEditButton,
 
-        hash: "",
-        mode: 1,
+        hash: "" as string,
+        mode: 1 as ILivePreviewModeConfig, 
         windowType: ILivePreviewWindowType.INDEPENDENT,
 
         stackDetails: {
@@ -62,29 +62,31 @@ export function getDefaultConfig(): IConfig {
             locale: "en-us",
             branch: "main",
             masterLocale: "en-us",
-        },
+        } as IStackDetails,
 
         clientUrlParams: {
             protocol: "https",
             host: "app.contentstack.com",
             port: 443,
             url: "https://app.contentstack.com:443",
-        },
+        } as IClientUrlParams, 
         stackSdk: {
             live_preview: {},
             headers: {
                 api_key: "",
             },
             environment: "",
-        },
+        } as IStackSdk,
         runScriptsOnUpdate: false,
 
         onChange() {
-            // this is intentional
+            return;
         },
 
         elements: {
             highlightedElement: null,
-        },
+        }
     };
+
+    
 }

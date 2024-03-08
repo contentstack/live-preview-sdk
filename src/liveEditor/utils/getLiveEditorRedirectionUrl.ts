@@ -1,12 +1,14 @@
 import Config from "../../configManager/configManager";
 import { extractDetailsFromCslp } from "../../cslp";
+import { IClientUrlParams, IStackDetails } from "../../types/types";
 
 /**
  * Returns the redirection URL for the Live Editor.
  * @returns {URL} The redirection URL.
  */
 export default function getLiveEditorRedirectionUrl(): URL {
-    const { stackDetails, clientUrlParams } = Config.get();
+    const stackDetails = Config.get("state.stackDetails") as unknown as IStackDetails;
+    const clientUrlParams = Config.get("state.clientUrlParams") as unknown as IClientUrlParams;
     const { branch, apiKey, environment, locale } = stackDetails;
     const { url: appUrl } = clientUrlParams;
 

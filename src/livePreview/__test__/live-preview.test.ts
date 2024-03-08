@@ -79,7 +79,7 @@ describe("cslp tooltip", () => {
         document.body.appendChild(descPara);
         document.body.appendChild(linkPara);
 
-        Config.set("windowType", ILivePreviewWindowType.PREVIEW);
+        Config.set("state.windowType", ILivePreviewWindowType.PREVIEW);
     });
 
     afterEach(() => {

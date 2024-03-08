@@ -45,7 +45,7 @@ describe("Visual editor", () => {
             "all_fields",
             getFieldSchemaMap().all_fields
         );
-        Config.set("mode", 2);
+        Config.set("state.mode", 2);
     });
 
     afterEach(() => {
