@@ -372,40 +372,40 @@ describe("handleInitData()", () => {
     });
 });
 
-// describe("handleClientUrlParams()", () => {
-//     beforeEach(() => {
-//         Config.reset();
-//     });
+describe("handleClientUrlParams()", () => {
+    beforeEach(() => {
+        Config.reset();
+    });
 
-//     afterEach(() => {
-//         Config.reset();
-//     })
+    afterEach(() => {
+        Config.reset();
+    })
 
-//     test("must modify host and url accordingly", () => {
-//         handleUserConfig.clientUrlParams({
-//             host: "example.com/",
-//             protocol: "http",
-//         });
+    test("must modify host and url accordingly", () => {
+        handleUserConfig.clientUrlParams({
+            host: "example.com/",
+            protocol: "http",
+        });
 
-//         const expectedOutputForHttp = {
-//             protocol: "http",
-//             host: "example.com",
-//             port: 80,
-//             url: "http://example.com:80",
-//         };
-//         expect(Config.get("clientUrlParams")).toMatchObject(expectedOutputForHttp);
+        const expectedOutputForHttp = {
+            protocol: "http",
+            host: "example.com",
+            port: 80,
+            url: "http://example.com:80",
+        };
+        expect(Config.get("clientUrlParams")).toMatchObject(expectedOutputForHttp);
 
-//         handleUserConfig.clientUrlParams({
-//             host: "example.com/",
-//             protocol: "https",
-//         });
+        handleUserConfig.clientUrlParams({
+            host: "example.com/",
+            protocol: "https",
+        });
 
-//         const expectedOutputForHttps = {
-//             protocol: "https",
-//             host: "example.com",
-//             port: 443,
-//             url: "https://example.com:443",
-//         };
-//         expect(Config.get("clientUrlParams")).toMatchObject(expectedOutputForHttps);
-//     });
-// });
+        const expectedOutputForHttps = {
+            protocol: "https",
+            host: "example.com",
+            port: 443,
+            url: "https://example.com:443",
+        };
+        expect(Config.get("clientUrlParams")).toMatchObject(expectedOutputForHttps);
+    });
+});
