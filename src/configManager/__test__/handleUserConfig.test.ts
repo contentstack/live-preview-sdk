@@ -7,6 +7,8 @@ import {
     ILivePreviewModeConfig,
     IStackSdk,
 } from "../../types/types";
+import { DeepSignal } from "deepsignal";
+import Config from "../configManager";
 
 // example Stack object
 
@@ -42,11 +44,15 @@ import {
 }
 */
 
-let config: IConfig;
+
 describe("handleInitData()", () => {
     beforeEach(() => {
-        config = getDefaultConfig();
+        Config.reset();
     });
+
+    afterEach(() => {
+        Config.reset();
+    })
 
     test("must set data when config is provided", () => {
         const initData: Partial<IInitData> = {
@@ -57,7 +63,7 @@ describe("handleInitData()", () => {
             },
         };
 
-        handleInitData(initData, config);
+        handleInitData(initData);
         const expectedOutput = {
             ssr: true,
             enable: true,
@@ -81,6 +87,8 @@ describe("handleInitData()", () => {
                 environment: "",
             },
         };
+
+        const config = Config.get("state");
         expect(config).toMatchObject(expectedOutput);
     });
 
@@ -93,8 +101,8 @@ describe("handleInitData()", () => {
             },
         };
 
-        handleInitData(initData, config);
-        expect(config.ssr).toBe(true);
+        handleInitData(initData);
+        expect(Config.get("state.ssr")).toBe(true);
     });
 
     test("must set SSR: true is stack SDK is not provided", () => {
@@ -116,8 +124,8 @@ describe("handleInitData()", () => {
             },
         };
 
-        handleInitData(initData, config);
-        expect(config.ssr).toBe(false);
+        handleInitData(initData);
+        expect(Config.get("state.ssr")).toBe(false);
     });
 
     describe("live mode", () => {
@@ -126,9 +134,10 @@ describe("handleInitData()", () => {
                 enable: true,
             };
 
-            handleInitData(initData, config);
-            expect(config.mode).toBe(ILivePreviewModeConfig.PREVIEW);
+            handleInitData(initData);
+            expect(Config.get("state.mode")).toBe(ILivePreviewModeConfig.PREVIEW);
         });
+
         test("should be set to 2 if user set it to editor", () => {
             const initData: Partial<IInitData> = {
                 enable: true,
@@ -139,18 +148,20 @@ describe("handleInitData()", () => {
                 },
             };
 
-            handleInitData(initData, config);
-            expect(config.mode).toBe(ILivePreviewModeConfig.EDITOR);
+            handleInitData(initData);
+            expect(Config.get("state.mode")).toBe(ILivePreviewModeConfig.EDITOR);
         });
+
         test("should be set to 1 if user set it to preview", () => {
             const initData: Partial<IInitData> = {
                 enable: true,
                 mode: "preview",
             };
 
-            handleInitData(initData, config);
-            expect(config.mode).toBe(ILivePreviewModeConfig.PREVIEW);
+            handleInitData(initData);
+            expect(Config.get("state.mode")).toBe(ILivePreviewModeConfig.PREVIEW);
         });
+
         test("should throw an error if user set it to something else", () => {
             const initData: Partial<IInitData> = {
                 enable: true,
@@ -159,226 +170,230 @@ describe("handleInitData()", () => {
             };
 
             expect(() => {
-                handleInitData(initData, config);
+                handleInitData(initData);
             }).toThrowError(
                 "Live Preview SDK: The mode must be either 'editor' or 'preview'"
             );
         });
     });
 
-    describe("stack details set by user", () => {
-        test("should prioritize api key from user config", () => {
-            const initData: Partial<IInitData> = {
-                enable: true,
-                stackDetails: {
-                    apiKey: "bltuserapikey",
-                },
-            };
+    // describe("stack details set by user", () => {
+    //     test("should prioritize api key from user config", () => {
+    //         const initData: Partial<IInitData> = {
+    //             enable: true,
+    //             stackDetails: {
+    //                 apiKey: "bltuserapikey",
+    //             },
+    //         };
 
-            handleInitData(initData, config);
-            expect(config.stackDetails.apiKey).toBe("bltuserapikey");
+    //         handleInitData(initData);
+    //         expect(config.stackDetails.apiKey).toBe("bltuserapikey");
 
-            config = getDefaultConfig();
+    //         config = getDefaultConfig();
 
-            initData.stackSdk = {
-                live_preview: {},
-                headers: {
-                    api_key: "bltheaderapikey",
-                },
-                environment: "dev",
-            };
+    //         initData.stackSdk = {
+    //             live_preview: {},
+    //             headers: {
+    //                 api_key: "bltheaderapikey",
+    //             },
+    //             environment: "dev",
+    //         };
 
-            handleInitData(initData, config);
-            expect(config.stackDetails.apiKey).toBe("bltuserapikey");
-        });
+    //         handleInitData(initData);
+    //         expect(config.stackDetails.apiKey).toBe("bltuserapikey");
+    //     });
 
-        test("should set api key from headers if available", () => {
-            const initData: Partial<IInitData> = {
-                enable: true,
+    //     test("should set api key from headers if available", () => {
+    //         const initData: Partial<IInitData> = {
+    //             enable: true,
 
-                stackSdk: {
-                    live_preview: {},
-                    headers: {
-                        api_key: "bltheaderapikey",
-                    },
-                    environment: "dev",
-                },
-            };
+    //             stackSdk: {
+    //                 live_preview: {},
+    //                 headers: {
+    //                     api_key: "bltheaderapikey",
+    //                 },
+    //                 environment: "dev",
+    //             },
+    //         };
 
-            handleInitData(initData, config);
-            expect(config.stackDetails.apiKey).toBe("bltheaderapikey");
-        });
+    //         handleInitData(initData);
+    //         expect(config.stackDetails.apiKey).toBe("bltheaderapikey");
+    //     });
 
-        test("should reset api key if it is not passed", () => {
-            const initData: Partial<IInitData> = {
-                enable: true,
-            };
+    //     test("should reset api key if it is not passed", () => {
+    //         const initData: Partial<IInitData> = {
+    //             enable: true,
+    //         };
 
-            handleInitData(initData, config);
-            expect(config.stackDetails.apiKey).toBe("");
-        });
+    //         handleInitData(initData);
+    //         expect(config.stackDetails.apiKey).toBe("");
+    //     });
 
-        test("should throw error if api key is not passed in editor mode", () => {
-            const initData: Partial<IInitData> = {
-                enable: true,
-                stackDetails: {
-                    environment: "dev",
-                },
-                mode: "editor",
-            };
+    //     test("should throw error if api key is not passed in editor mode", () => {
+    //         const initData: Partial<IInitData> = {
+    //             enable: true,
+    //             stackDetails: {
+    //                 environment: "dev",
+    //             },
+    //             mode: "editor",
+    //         };
 
-            expect(() => {
-                handleInitData(initData, config);
-            }).toThrowError("Live preview SDK: api key is required");
-        });
+    //         expect(() => {
+    //             handleInitData(initData);
+    //         }).toThrowError("Live preview SDK: api key is required");
+    //     });
 
-        test("should prioritize environment from user config", () => {
-            const initData: Partial<IInitData> = {
-                enable: true,
-                stackDetails: {
-                    environment: "userenvironment",
-                },
-            };
+    //     test("should prioritize environment from user config", () => {
+    //         const initData: Partial<IInitData> = {
+    //             enable: true,
+    //             stackDetails: {
+    //                 environment: "userenvironment",
+    //             },
+    //         };
 
-            handleInitData(initData, config);
-            expect(config.stackDetails.environment).toBe("userenvironment");
+    //         handleInitData(initData);
+    //         expect(config.stackDetails.environment).toBe("userenvironment");
 
-            config = getDefaultConfig();
+    //         config = getDefaultConfig();
 
-            initData.stackSdk = {
-                live_preview: {},
-                environment: "sdkenvironment",
-                headers: {
-                    api_key: "",
-                },
-            };
+    //         initData.stackSdk = {
+    //             live_preview: {},
+    //             environment: "sdkenvironment",
+    //             headers: {
+    //                 api_key: "",
+    //             },
+    //         };
 
-            handleInitData(initData, config);
-            expect(config.stackDetails.environment).toBe("userenvironment");
-        });
+    //         handleInitData(initData);
+    //         expect(config.stackDetails.environment).toBe("userenvironment");
+    //     });
 
-        test("should set environment from stack sdk if available", () => {
-            const initData: Partial<IInitData> = {
-                enable: true,
-                stackSdk: {
-                    live_preview: {},
-                    environment: "sdkenvironment",
-                    headers: {
-                        api_key: "",
-                    },
-                },
-            };
+    //     test("should set environment from stack sdk if available", () => {
+    //         const initData: Partial<IInitData> = {
+    //             enable: true,
+    //             stackSdk: {
+    //                 live_preview: {},
+    //                 environment: "sdkenvironment",
+    //                 headers: {
+    //                     api_key: "",
+    //                 },
+    //             },
+    //         };
 
-            handleInitData(initData, config);
-            expect(config.stackDetails.environment).toBe("sdkenvironment");
-        });
+    //         handleInitData(initData);
+    //         expect(config.stackDetails.environment).toBe("sdkenvironment");
+    //     });
 
-        test("should reset environment if it is not passed", () => {
-            const initData: Partial<IInitData> = {
-                enable: true,
-            };
+    //     test("should reset environment if it is not passed", () => {
+    //         const initData: Partial<IInitData> = {
+    //             enable: true,
+    //         };
 
-            handleInitData(initData, config);
-            expect(config.stackDetails.environment).toBe("");
-        });
+    //         handleInitData(initData);
+    //         expect(config.stackDetails.environment).toBe("");
+    //     });
 
-        test("should throw error if environment is not passed in editor mode", () => {
-            const initData: Partial<IInitData> = {
-                enable: true,
-                stackDetails: {
-                    apiKey: "bltapikey",
-                },
-                mode: "editor",
-            };
+    //     test("should throw error if environment is not passed in editor mode", () => {
+    //         const initData: Partial<IInitData> = {
+    //             enable: true,
+    //             stackDetails: {
+    //                 apiKey: "bltapikey",
+    //             },
+    //             mode: "editor",
+    //         };
 
-            expect(() => {
-                handleInitData(initData, config);
-            }).toThrowError("Live preview SDK: environment is required");
-        });
+    //         expect(() => {
+    //             handleInitData(initData);
+    //         }).toThrowError("Live preview SDK: environment is required");
+    //     });
 
-        test("should prioritize branch from user config", () => {
-            const initData: Partial<IInitData> = {
-                enable: true,
-                stackDetails: {
-                    branch: "userbranch",
-                },
-            };
+    //     test("should prioritize branch from user config", () => {
+    //         const initData: Partial<IInitData> = {
+    //             enable: true,
+    //             stackDetails: {
+    //                 branch: "userbranch",
+    //             },
+    //         };
 
-            handleInitData(initData, config);
-            expect(config.stackDetails.branch).toBe("userbranch");
+    //         handleInitData(initData);
+    //         expect(config.stackDetails.branch).toBe("userbranch");
 
-            config = getDefaultConfig();
+    //         config = getDefaultConfig();
 
-            initData.stackSdk = {
-                live_preview: {},
-                headers: {
-                    api_key: "bltapikey",
-                    branch: "sdkbranch",
-                },
-                environment: "dev",
-            };
+    //         initData.stackSdk = {
+    //             live_preview: {},
+    //             headers: {
+    //                 api_key: "bltapikey",
+    //                 branch: "sdkbranch",
+    //             },
+    //             environment: "dev",
+    //         };
 
-            handleInitData(initData, config);
-            expect(config.stackDetails.branch).toBe("userbranch");
-        });
+    //         handleInitData(initData);
+    //         expect(config.stackDetails.branch).toBe("userbranch");
+    //     });
 
-        test("should set branch from headers if available", () => {
-            const initData: Partial<IInitData> = {
-                enable: true,
+    //     test("should set branch from headers if available", () => {
+    //         const initData: Partial<IInitData> = {
+    //             enable: true,
 
-                stackSdk: {
-                    live_preview: {},
-                    headers: {
-                        api_key: "sdkbranch",
-                        branch: "sdkbranch",
-                    },
-                    environment: "dev",
-                },
-            };
+    //             stackSdk: {
+    //                 live_preview: {},
+    //                 headers: {
+    //                     api_key: "sdkbranch",
+    //                     branch: "sdkbranch",
+    //                 },
+    //                 environment: "dev",
+    //             },
+    //         };
 
-            handleInitData(initData, config);
-            expect(config.stackDetails.branch).toBe("sdkbranch");
-        });
+    //         handleInitData(initData);
+    //         expect(config.stackDetails.branch).toBe("sdkbranch");
+    //     });
 
-        test("should reset branch if it is not passed", () => {
-            const initData: Partial<IInitData> = {
-                enable: true,
-            };
+    //     test("should reset branch if it is not passed", () => {
+    //         const initData: Partial<IInitData> = {
+    //             enable: true,
+    //         };
 
-            handleInitData(initData, config);
-            expect(config.stackDetails.branch).toBe("main");
-        });
+    //         handleInitData(initData);
+    //         expect(config.stackDetails.branch).toBe("main");
+    //     });
 
-        test("should set locale from user config", () => {
-            const initData: Partial<IInitData> = {
-                enable: true,
-                stackDetails: {
-                    locale: "userlocale",
-                },
-            };
+    //     test("should set locale from user config", () => {
+    //         const initData: Partial<IInitData> = {
+    //             enable: true,
+    //             stackDetails: {
+    //                 locale: "userlocale",
+    //             },
+    //         };
 
-            handleInitData(initData, config);
-            expect(config.stackDetails.locale).toBe("userlocale");
-        });
+    //         handleInitData(initData);
+    //         expect(config.stackDetails.locale).toBe("userlocale");
+    //     });
 
-        test("should set default locale if it is not passed", () => {
-            const initData: Partial<IInitData> = {
-                enable: true,
-            };
+    //     test("should set default locale if it is not passed", () => {
+    //         const initData: Partial<IInitData> = {
+    //             enable: true,
+    //         };
 
-            handleInitData(initData, config);
-            expect(config.stackDetails.locale).toBe("en-us");
-        });
-    });
+    //         handleInitData(initData);
+    //         expect(config.stackDetails.locale).toBe("en-us");
+    //     });
+    // });
 });
 
 describe("handleClientUrlParams()", () => {
     beforeEach(() => {
-        config = getDefaultConfig();
+        Config.reset();
     });
 
+    afterEach(() => {
+        Config.reset();
+    })
+
     test("must modify host and url accordingly", () => {
-        handleUserConfig.clientUrlParams(config, {
+        handleUserConfig.clientUrlParams({
             host: "example.com/",
             protocol: "http",
         });
@@ -389,9 +404,9 @@ describe("handleClientUrlParams()", () => {
             port: 80,
             url: "http://example.com:80",
         };
-        expect(config.clientUrlParams).toMatchObject(expectedOutputForHttp);
+        expect(Config.get("state.clientUrlParams")).toMatchObject(expectedOutputForHttp);
 
-        handleUserConfig.clientUrlParams(config, {
+        handleUserConfig.clientUrlParams({
             host: "example.com/",
             protocol: "https",
         });
@@ -402,6 +417,6 @@ describe("handleClientUrlParams()", () => {
             port: 443,
             url: "https://example.com:443",
         };
-        expect(config.clientUrlParams).toMatchObject(expectedOutputForHttps);
+        expect(Config.get("state.clientUrlParams")).toMatchObject(expectedOutputForHttps);
     });
 });

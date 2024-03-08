@@ -70,8 +70,9 @@ export const handleInitData = (initData: Partial<IInitData>): void => {
     Config.set(
         "state.ssr",
         stackSdk.live_preview?.ssr ??
-            (typeof initData.stackSdk === "object" ? false : true) ??
-            true
+        initData.ssr ??
+        (typeof initData.stackSdk === "object" ? false : true) ??
+        true
     );
 
     Config.set(
@@ -80,10 +81,10 @@ export const handleInitData = (initData: Partial<IInitData>): void => {
             stackSdk.live_preview?.runScriptsOnUpdate ??
             Config.get("state.runScriptsOnUpdate")
     );
-
+    
     Config.set(
         "state.stackSdk",
-        initData.stackSdk as unknown as DeepSignal<IStackSdk>
+        initData.stackSdk ?? Config.get("state.stackSdk")
     );
 
     Config.set(
