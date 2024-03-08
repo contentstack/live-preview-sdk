@@ -46,7 +46,6 @@ export function useOnEntryUpdatePostMessageEvent(): void {
     livePreviewPostMessage?.on<OnChangeLivePreviewPostMessageEventData>(
         LIVE_PREVIEW_POST_MESSAGE_EVENTS.ON_CHANGE,
         (event) => {
-
             setConfigFromParams({
                 live_preview: event.data.hash,
             });
@@ -60,7 +59,6 @@ export function useOnEntryUpdatePostMessageEvent(): void {
 }
 
 export function sendInitializeLivePreviewPostMessageEvent(): void {
-
     livePreviewPostMessage
         ?.send<LivePreviewInitEventResponse>(
             LIVE_PREVIEW_POST_MESSAGE_EVENTS.INIT,

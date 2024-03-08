@@ -424,9 +424,10 @@ export class LivePreviewEditButton {
         entry_uid: string,
         preview_field: string
     ): string {
-
         const stackDetails = Config.get("stackDetails") as IStackDetails;
-        const clientUrlParams = Config.get("clientUrlParams") as IClientUrlParams;
+        const clientUrlParams = Config.get(
+            "clientUrlParams"
+        ) as IClientUrlParams;
 
         if (!stackDetails.apiKey) {
             throw `To use edit tags, you must provide the stack API key. Specify the API key while initializing the Live Preview SDK.

@@ -1,8 +1,5 @@
 import { handleInitData, handleUserConfig } from "../handleUserConfig";
-import {
-    IInitData,
-    ILivePreviewModeConfig,
-} from "../../types/types";
+import { IInitData, ILivePreviewModeConfig } from "../../types/types";
 import Config from "../configManager";
 
 // example Stack object
@@ -39,7 +36,6 @@ import Config from "../configManager";
 }
 */
 
-
 describe("handleInitData()", () => {
     beforeEach(() => {
         Config.reset();
@@ -47,7 +43,7 @@ describe("handleInitData()", () => {
 
     afterEach(() => {
         Config.reset();
-    })
+    });
 
     test("must set data when config is provided", () => {
         const initData: Partial<IInitData> = {
@@ -245,7 +241,9 @@ describe("handleInitData()", () => {
             };
 
             handleInitData(initData);
-            expect(Config.get("stackDetails.environment")).toBe("userenvironment");
+            expect(Config.get("stackDetails.environment")).toBe(
+                "userenvironment"
+            );
 
             initData.stackSdk = {
                 live_preview: {},
@@ -256,7 +254,9 @@ describe("handleInitData()", () => {
             };
 
             handleInitData(initData);
-            expect(Config.get("stackDetails.environment")).toBe("userenvironment");
+            expect(Config.get("stackDetails.environment")).toBe(
+                "userenvironment"
+            );
         });
 
         test("should set environment from stack sdk if available", () => {
@@ -272,7 +272,9 @@ describe("handleInitData()", () => {
             };
 
             handleInitData(initData);
-            expect(Config.get("stackDetails.environment")).toBe("sdkenvironment");
+            expect(Config.get("stackDetails.environment")).toBe(
+                "sdkenvironment"
+            );
         });
 
         test("should reset environment if it is not passed", () => {
@@ -379,7 +381,7 @@ describe("handleClientUrlParams()", () => {
 
     afterEach(() => {
         Config.reset();
-    })
+    });
 
     test("must modify host and url accordingly", () => {
         handleUserConfig.clientUrlParams({
@@ -393,7 +395,9 @@ describe("handleClientUrlParams()", () => {
             port: 80,
             url: "http://example.com:80",
         };
-        expect(Config.get("clientUrlParams")).toMatchObject(expectedOutputForHttp);
+        expect(Config.get("clientUrlParams")).toMatchObject(
+            expectedOutputForHttp
+        );
 
         handleUserConfig.clientUrlParams({
             host: "example.com/",
@@ -406,6 +410,8 @@ describe("handleClientUrlParams()", () => {
             port: 443,
             url: "https://example.com:443",
         };
-        expect(Config.get("clientUrlParams")).toMatchObject(expectedOutputForHttps);
+        expect(Config.get("clientUrlParams")).toMatchObject(
+            expectedOutputForHttps
+        );
     });
 });

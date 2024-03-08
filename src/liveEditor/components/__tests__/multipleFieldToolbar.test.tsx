@@ -1,10 +1,5 @@
 import "@testing-library/jest-dom/extend-expect";
-import {
-    render,
-    cleanup,
-    fireEvent,
-    getByTestId,
-} from "@testing-library/preact";
+import { render, cleanup, fireEvent } from "@testing-library/preact";
 
 import MultipleFieldToolbarComponent from "../multipleFieldToolbar";
 import {

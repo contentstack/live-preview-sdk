@@ -217,7 +217,6 @@ describe("When an element is hovered in visual editor mode", () => {
         });
     });
 
-
     describe("single line field", () => {
         let singleLineField: HTMLParagraphElement;
         let visualEditor: VisualEditor;

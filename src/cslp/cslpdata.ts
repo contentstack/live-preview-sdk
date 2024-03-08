@@ -119,7 +119,6 @@ export function addCslpOutline(
         highlightedElement: HTMLElement;
     }) => void
 ): void {
-
     const elements = Config.get("elements") as unknown as {
         highlightedElement: HTMLElement | null;
     };
@@ -136,9 +135,7 @@ export function addCslpOutline(
 
         if (trigger && cslpTag) {
             if (elements.highlightedElement)
-                elements.highlightedElement.classList.remove(
-                    "cslp-edit-mode"
-                );
+                elements.highlightedElement.classList.remove("cslp-edit-mode");
             element.classList.add("cslp-edit-mode");
 
             const updatedElements = elements;

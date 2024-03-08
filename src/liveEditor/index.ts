@@ -77,7 +77,11 @@ export class VisualEditor {
             ".visual-editor__focused-toolbar"
         );
 
-        if (!Config.get("enable") || Config.get("mode") as unknown as number < ILivePreviewModeConfig.EDITOR) {
+        if (
+            !Config.get("enable") ||
+            (Config.get("mode") as unknown as number) <
+                ILivePreviewModeConfig.EDITOR
+        ) {
             return;
         }
 

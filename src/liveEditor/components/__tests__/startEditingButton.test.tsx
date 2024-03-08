@@ -1,15 +1,12 @@
 import "@testing-library/jest-dom/extend-expect";
 import { render, fireEvent } from "@testing-library/preact";
 import StartEditingButtonComponent from "../startEditingButton";
-import { IConfig } from "../../../types/types";
-import { DeepSignal } from "deepsignal";
 import Config from "../../../configManager/configManager";
 
 describe("StartEditingButtonComponent", () => {
     let visualEditorContainer: HTMLDivElement;
 
     beforeEach(() => {
-
         Config.reset();
         Config.set("stackDetails.apiKey", "bltapikey");
         Config.set("stackDetails.environment", "bltenvironment");

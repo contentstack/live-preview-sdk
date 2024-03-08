@@ -1,15 +1,18 @@
-import { DeepSignal, deepSignal } from "deepsignal";
+import { DeepSignal } from "deepsignal";
 import { IConfig, IInitData } from "../types/types";
 import { getDefaultConfig, getUserInitData } from "./config.default";
 import { handleInitData } from "./handleUserConfig";
-import { has as lodashHas, set as lodashSet, get as lodashGet  } from "lodash-es";
+import {
+    has as lodashHas,
+    set as lodashSet,
+    get as lodashGet,
+} from "lodash-es";
 
 class Config {
-   
     static config: DeepSignal<{
         state: IConfig | {};
     }> = {
-        state : getDefaultConfig()
+        state: getDefaultConfig(),
     };
 
     static replace(userInput: Partial<IInitData> = getUserInitData()): void {
@@ -19,13 +22,12 @@ class Config {
     static set(key: string, value: any): void {
         if (!lodashHas(this.config.state, key)) {
             throw new Error(`Invalid key: ${key}`);
-        }  
+        }
         lodashSet(this.config.state, key, value);
-        
     }
-    
+
     static get(key?: string): DeepSignal<Partial<IConfig>> {
-        if(key === undefined) {
+        if (key === undefined) {
             return this.config.state;
         }
         return lodashGet(this.config.state, key);
@@ -73,13 +75,14 @@ export function updateConfigFromUrl(): void {
 export function setConfigFromParams(
     params: ConstructorParameters<typeof URLSearchParams>[0] = {}
 ): void {
-
     const urlParams = new URLSearchParams(params);
     const live_preview = urlParams.get("live_preview");
     const content_type_uid = urlParams.get("content_type_uid");
     const entry_uid = urlParams.get("entry_uid");
 
-    const stackSdkLivePreview = Config.get("stackSdk.live_preview") as { [key: string]: any } & Partial<IConfig>;;
+    const stackSdkLivePreview = Config.get("stackSdk.live_preview") as {
+        [key: string]: any;
+    } & Partial<IConfig>;
 
     if (live_preview) {
         Config.set("hash", live_preview);
@@ -98,5 +101,4 @@ export function setConfigFromParams(
     }
 
     Config.set("stackSdk.live_preview", stackSdkLivePreview);
-    
 }

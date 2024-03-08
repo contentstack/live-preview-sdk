@@ -1,7 +1,5 @@
-import { DeepSignal } from "deepsignal";
 import {
     IClientUrlParams,
-    IConfig,
     IInitData,
     ILivePreviewModeConfig,
     IStackSdk,
@@ -38,10 +36,10 @@ const handleClientUrlParams = (userConfig: Partial<IClientUrlParams>): void => {
 
     // build url
     let host = Config.get("clientUrlParams.host") as unknown as string;
-    let protocol = Config.get(
+    const protocol = Config.get(
         "clientUrlParams.protocol"
     ) as unknown as string;
-    let port = Config.get("clientUrlParams.port") as unknown as
+    const port = Config.get("clientUrlParams.port") as unknown as
         | string
         | number;
 
@@ -57,22 +55,19 @@ const handleClientUrlParams = (userConfig: Partial<IClientUrlParams>): void => {
 
 export const handleInitData = (initData: Partial<IInitData>): void => {
     const stackSdk: IStackSdk =
-        initData.stackSdk ||
-        (Config.get("stackSdk") as unknown as IStackSdk);
+        initData.stackSdk || (Config.get("stackSdk") as unknown as IStackSdk);
 
     Config.set(
         "enable",
-        initData.enable ??
-            stackSdk.live_preview?.enable ??
-            Config.get("enable")
+        initData.enable ?? stackSdk.live_preview?.enable ?? Config.get("enable")
     );
 
     Config.set(
         "ssr",
         stackSdk.live_preview?.ssr ??
-        initData.ssr ??
-        (typeof initData.stackSdk === "object" ? false : true) ??
-        true
+            initData.ssr ??
+            (typeof initData.stackSdk === "object" ? false : true) ??
+            true
     );
 
     Config.set(
@@ -81,11 +76,8 @@ export const handleInitData = (initData: Partial<IInitData>): void => {
             stackSdk.live_preview?.runScriptsOnUpdate ??
             Config.get("runScriptsOnUpdate")
     );
-    
-    Config.set(
-        "stackSdk",
-        initData.stackSdk ?? Config.get("stackSdk")
-    );
+
+    Config.set("stackSdk", initData.stackSdk ?? Config.get("stackSdk"));
 
     Config.set(
         "cleanCslpOnProduction",
@@ -152,9 +144,7 @@ export const handleInitData = (initData: Partial<IInitData>): void => {
 
     Config.set(
         "debug",
-        initData.debug ??
-            stackSdk.live_preview?.debug ??
-            Config.get("debug")
+        initData.debug ?? stackSdk.live_preview?.debug ?? Config.get("debug")
     );
 
     handleStackDetails(initData, stackSdk);

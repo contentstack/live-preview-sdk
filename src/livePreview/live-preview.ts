@@ -21,7 +21,6 @@ export default class LivePreview {
     private subscribers: OnEntryChangeCallbackSubscribers = {};
 
     constructor() {
-
         this.requestDataSync = this.requestDataSync.bind(this);
         this.subscribeToOnEntryChange =
             this.subscribeToOnEntryChange.bind(this);
@@ -53,7 +52,8 @@ export default class LivePreview {
 
             if (
                 Config.get("editButton.enable") ||
-                Config.get("mode") as unknown as number >= ILivePreviewModeConfig.EDITOR
+                (Config.get("mode") as unknown as number) >=
+                    ILivePreviewModeConfig.EDITOR
             ) {
                 new LivePreviewEditButton();
             }
@@ -97,7 +97,7 @@ export default class LivePreview {
         const config = Config.get();
 
         Config.set("onChange", this.publish);
-        
+
         //! TODO: we replaced the handleOnChange() with this.
         //! I don't think we need this. Confirm and remove it.
         config.onChange!();

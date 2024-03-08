@@ -1,14 +1,9 @@
 import crypto from "crypto";
-import {
-    convertObjectToMinifiedString,
-    sendPostmessageToWindow,
-    sleep,
-} from "../../__test__/utils";
+import { sendPostmessageToWindow, sleep } from "../../__test__/utils";
 import { getDefaultConfig } from "../../configManager/config.default";
 import Config from "../../configManager/configManager";
-import * as LiveEditorModule from "../../liveEditor";
 import { PublicLogger } from "../../logger/logger";
-import { IInitData, ILivePreviewWindowType } from "../../types/types";
+import { ILivePreviewWindowType } from "../../types/types";
 import livePreviewPostMessage from "../eventManager/livePreviewEventManager";
 import LivePreview from "../live-preview";
 import { LIVE_PREVIEW_POST_MESSAGE_EVENTS } from "../eventManager/livePreviewEventManager.constant";

@@ -8,7 +8,9 @@ import { IClientUrlParams, IStackDetails } from "../../types/types";
  */
 export default function getLiveEditorRedirectionUrl(): URL {
     const stackDetails = Config.get("stackDetails") as unknown as IStackDetails;
-    const clientUrlParams = Config.get("clientUrlParams") as unknown as IClientUrlParams;
+    const clientUrlParams = Config.get(
+        "clientUrlParams"
+    ) as unknown as IClientUrlParams;
     const { branch, apiKey, environment, locale } = stackDetails;
     const { url: appUrl } = clientUrlParams;
 
@@ -36,6 +38,6 @@ export default function getLiveEditorRedirectionUrl(): URL {
     } else if (locale) {
         completeURL.searchParams.set("locale", locale);
     }
-    
+
     return completeURL;
 }
