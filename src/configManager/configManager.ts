@@ -16,20 +16,23 @@ class Config {
         handleInitData(userInput);
     }
 
-    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
     static set(key: string, value: any): void {
-        if (!lodashHas(this.config, key)) {
+        if (!lodashHas(this.config.state, key)) {
             throw new Error(`Invalid key: ${key}`);
         }  
-        lodashSet(this.config, key, value);
+        lodashSet(this.config.state, key, value);
+        
     }
     
-    static get(key: string): DeepSignal<Partial<IConfig>> {
-        return lodashGet(this.config, key);
+    static get(key?: string): DeepSignal<Partial<IConfig>> {
+        if(key === undefined) {
+            return this.config.state;
+        }
+        return lodashGet(this.config.state, key);
     }
 
     static reset(): void {
-        this.set("state", getDefaultConfig());
+        lodashSet(this.config, "state", getDefaultConfig());
     }
 }
 
@@ -76,24 +79,24 @@ export function setConfigFromParams(
     const content_type_uid = urlParams.get("content_type_uid");
     const entry_uid = urlParams.get("entry_uid");
 
-    const stackSdkLivePreview = Config.get("state.stackSdk.live_preview") as { [key: string]: any } & Partial<IConfig>;;
+    const stackSdkLivePreview = Config.get("stackSdk.live_preview") as { [key: string]: any } & Partial<IConfig>;;
 
     if (live_preview) {
-        Config.set("state.hash", live_preview);
+        Config.set("hash", live_preview);
         stackSdkLivePreview.hash = live_preview;
         stackSdkLivePreview.live_preview = live_preview;
     }
 
     if (content_type_uid) {
-        Config.set("state.stackDetails.contentTypeUid", content_type_uid);
+        Config.set("stackDetails.contentTypeUid", content_type_uid);
         stackSdkLivePreview.content_type_uid = content_type_uid;
     }
 
     if (entry_uid) {
-        Config.set("state.stackDetails.entryUid", entry_uid);
+        Config.set("stackDetails.entryUid", entry_uid);
         stackSdkLivePreview.entry_uid = entry_uid;
     }
 
-    Config.set("state.stackSdk.live_preview", stackSdkLivePreview);
+    Config.set("stackSdk.live_preview", stackSdkLivePreview);
     
 }

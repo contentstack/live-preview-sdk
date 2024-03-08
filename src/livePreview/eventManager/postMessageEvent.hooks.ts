@@ -51,8 +51,8 @@ export function useOnEntryUpdatePostMessageEvent(): void {
                 live_preview: event.data.hash,
             });
 
-            if (!Config.get("state.ssr")) {
-                const config = Config.get("state");
+            if (!Config.get("ssr")) {
+                const config = Config.get();
                 config.onChange!();
             }
         }
@@ -66,7 +66,7 @@ export function sendInitializeLivePreviewPostMessageEvent(): void {
             LIVE_PREVIEW_POST_MESSAGE_EVENTS.INIT,
             {
                 config: {
-                    shouldReload: Config.get("state.ssr"),
+                    shouldReload: Config.get("ssr"),
                     href: window.location.href,
                     sdkVersion: packageJson.version,
                 },
@@ -91,10 +91,10 @@ export function sendInitializeLivePreviewPostMessageEvent(): void {
                 //     "init message did not contain contentTypeUid or entryUid."
                 // );
             }
-            Config.set("state.windowType", windowType);
+            Config.set("windowType", windowType);
 
             // set timeout for client side (use to show warning: You are not editing this page)
-            if (!Config.get("state.ssr")) {
+            if (!Config.get("ssr")) {
                 setInterval(() => {
                     sendCurrentPageUrlPostMessageEvent();
                 }, 1500);

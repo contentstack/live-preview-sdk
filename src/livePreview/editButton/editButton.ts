@@ -3,9 +3,11 @@ import Config from "../../configManager/configManager";
 import { addCslpOutline, extractDetailsFromCslp } from "../../cslp";
 import { PublicLogger } from "../../logger/logger";
 import {
+    IClientUrlParams,
     IConfigEditButton,
     IEditButtonPosition,
     ILivePreviewWindowType,
+    IStackDetails,
 } from "../../types/types";
 import livePreviewPostMessage from "../eventManager/livePreviewEventManager";
 
@@ -198,7 +200,7 @@ export function shouldRenderEditButton(editButton: IConfigEditButton): boolean {
         )
     ) {
         return false;
-    } 
+    }
 
     // case outside live preview
     if (
@@ -265,11 +267,9 @@ export class LivePreviewEditButton {
     }
 
     private createCslpTooltip(): boolean {
-        const config = Config.get();
-
         if (
             !document.getElementById("cslp-tooltip") &&
-            config.editButton.enable
+            Config.get("editButton.enable")
         ) {
             const tooltip = document.createElement("button");
             this.tooltip = tooltip;
@@ -297,8 +297,9 @@ export class LivePreviewEditButton {
     }
 
     private updateTooltipPosition() {
-        const config = Config.get();
-        const { elements } = config;
+        const elements = Config.get("elements") as {
+            highlightedElement: HTMLElement | null;
+        };
 
         if (!elements.highlightedElement || !this.tooltip) return false;
 
@@ -310,7 +311,7 @@ export class LivePreviewEditButton {
         if (currentRectOfElement && currentRectOfParentOfElement) {
             const editButtonPosition = getEditButtonPosition(
                 elements.highlightedElement,
-                config.editButton.position
+                Config.get("editButton.position") as string
             );
 
             let upperBoundOfTooltip = editButtonPosition.upperBoundOfTooltip;
@@ -362,11 +363,14 @@ export class LivePreviewEditButton {
             }
         };
 
-        const config = Config.get();
+        const windowType = Config.get(
+            "windowType"
+        ) as unknown as ILivePreviewWindowType;
+
         if (
-            (config.windowType === ILivePreviewWindowType.PREVIEW ||
-                config.windowType === ILivePreviewWindowType.INDEPENDENT) &&
-            config.editButton.enable
+            (windowType === ILivePreviewWindowType.PREVIEW ||
+                windowType === ILivePreviewWindowType.INDEPENDENT) &&
+            Config.get("editButton.enable")
         ) {
             addCslpOutline(e, updateTooltipPosition);
         }
@@ -420,8 +424,11 @@ export class LivePreviewEditButton {
         entry_uid: string,
         preview_field: string
     ): string {
-        const config = Config.get();
-        if (!config.stackDetails.apiKey) {
+
+        const stackDetails = Config.get("stackDetails") as IStackDetails;
+        const clientUrlParams = Config.get("clientUrlParams") as IClientUrlParams;
+
+        if (!stackDetails.apiKey) {
             throw `To use edit tags, you must provide the stack API key. Specify the API key while initializing the Live Preview SDK.
 
                 ContentstackLivePreview.init({
@@ -433,7 +440,7 @@ export class LivePreviewEditButton {
                 })`;
         }
 
-        if (!config.stackDetails.environment) {
+        if (!stackDetails.environment) {
             throw `To use edit tags, you must provide the preview environment. Specify the preview environment while initializing the Live Preview SDK.
 
                 ContentstackLivePreview.init({
@@ -445,13 +452,13 @@ export class LivePreviewEditButton {
                 })`;
         }
 
-        const protocol = String(config.clientUrlParams.protocol);
-        const host = String(config.clientUrlParams.host);
-        const port = String(config.clientUrlParams.port);
-        const environment = String(config.stackDetails.environment);
+        const protocol = String(clientUrlParams.protocol);
+        const host = String(clientUrlParams.host);
+        const port = String(clientUrlParams.port);
+        const environment = String(stackDetails.environment);
 
         const urlHash = `!/stack/${
-            config.stackDetails.apiKey
+            stackDetails.apiKey
         }/content-type/${content_type_uid}/${
             locale ?? "en-us"
         }/entry/${entry_uid}/edit`;

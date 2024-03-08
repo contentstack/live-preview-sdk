@@ -162,11 +162,11 @@ describe("When an element is hovered in visual editor mode", () => {
             "all_fields",
             getFieldSchemaMap().all_fields
         );
-
-        Config.set("state.mode", 2);
     });
 
     beforeEach(() => {
+        Config.reset();
+        Config.set("mode", 2);
         mousemoveEvent = new Event("mousemove", {
             bubbles: true,
             cancelable: true,
@@ -174,6 +174,7 @@ describe("When an element is hovered in visual editor mode", () => {
     });
 
     afterEach(() => {
+        Config.reset();
         jest.clearAllMocks();
         document.getElementsByTagName("html")[0].innerHTML = "";
     });
@@ -215,6 +216,7 @@ describe("When an element is hovered in visual editor mode", () => {
             expect(customCursor?.classList.contains("visible")).toBeTruthy();
         });
     });
+
 
     describe("single line field", () => {
         let singleLineField: HTMLParagraphElement;

@@ -77,20 +77,20 @@ export class VisualEditor {
             ".visual-editor__focused-toolbar"
         );
 
-        if (!Config.get("state.enable") || Config.get("state.mode") as unknown as number < ILivePreviewModeConfig.EDITOR) {
+        if (!Config.get("enable") || Config.get("mode") as unknown as number < ILivePreviewModeConfig.EDITOR) {
             return;
         }
 
         liveEditorPostMessage
             ?.send<IVisualEditorInitEvent>("init", {
-                isSSR: Config.get("state.ssr"),
+                isSSR: Config.get("ssr"),
             })
             .then((data) => {
                 const {
                     windowType = ILivePreviewWindowType.EDITOR,
                     stackDetails,
                 } = data;
-                Config.set("state.windowType", windowType);
+                Config.set("windowType", windowType);
                 Config.set(
                     "stackDetails.masterLocale",
                     stackDetails?.masterLocale || "en-us"

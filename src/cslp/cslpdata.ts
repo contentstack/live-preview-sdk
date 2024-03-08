@@ -120,7 +120,7 @@ export function addCslpOutline(
     }) => void
 ): void {
 
-    const elements = Config.get("state.elements") as unknown as {
+    const elements = Config.get("elements") as unknown as {
         highlightedElement: HTMLElement | null;
     };
 
@@ -143,7 +143,7 @@ export function addCslpOutline(
 
             const updatedElements = elements;
             updatedElements.highlightedElement = element;
-            Config.set("state.elements", updatedElements);
+            Config.set("elements", updatedElements);
 
             callback?.({
                 cslpTag: cslpTag,

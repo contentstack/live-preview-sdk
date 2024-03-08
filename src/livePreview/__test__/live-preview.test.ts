@@ -53,6 +53,7 @@ global.ResizeObserver = jest.fn().mockImplementation(() => ({
     unobserve: jest.fn(),
     disconnect: jest.fn(),
 }));
+
 describe("cslp tooltip", () => {
     beforeEach(() => {
         Config.reset();
@@ -79,7 +80,7 @@ describe("cslp tooltip", () => {
         document.body.appendChild(descPara);
         document.body.appendChild(linkPara);
 
-        Config.set("state.windowType", ILivePreviewWindowType.PREVIEW);
+        Config.set("windowType", ILivePreviewWindowType.PREVIEW);
     });
 
     afterEach(() => {
@@ -300,7 +301,7 @@ describe("debug module", () => {
 
         const expectedOutput = getDefaultConfig();
         expectedOutput.debug = true;
-        const actualOutput = outputErrorLog[1];
+        const actualOutput = outputErrorLog[1]["state"];
 
         // Not removing them causes serialization problems.
         // @ts-ignore

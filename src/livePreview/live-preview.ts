@@ -29,14 +29,14 @@ export default class LivePreview {
         this.unsubscribeOnEntryChange =
             this.unsubscribeOnEntryChange.bind(this);
 
-        if (Config.get("state.debug")) {
+        if (Config.get("debug")) {
             PublicLogger.debug(
                 "Contentstack Live Preview Debugging mode: config --",
                 Config.config
             );
         }
 
-        if (Config.get("state.enable")) {
+        if (Config.get("enable")) {
             if (
                 typeof document !== undefined &&
                 document.readyState === "complete"
@@ -52,14 +52,14 @@ export default class LivePreview {
             // render the hover outline only when edit button enable
 
             if (
-                Config.get("state.editButton.enable") ||
-                Config.get("state.mode") as unknown as number >= ILivePreviewModeConfig.EDITOR
+                Config.get("editButton.enable") ||
+                Config.get("mode") as unknown as number >= ILivePreviewModeConfig.EDITOR
             ) {
                 new LivePreviewEditButton();
             }
 
             //NOTE - I think we are already handling the link click event here. Let's move it to a function.
-            if (Config.get("state.ssr")) {
+            if (Config.get("ssr")) {
                 // NOTE: what are we doing here?
                 window.addEventListener("load", (e) => {
                     const allATags = document.querySelectorAll("a");
@@ -87,16 +87,16 @@ export default class LivePreview {
                     }
                 });
             }
-        } else if (Config.get("state.cleanCslpOnProduction")) {
+        } else if (Config.get("cleanCslpOnProduction")) {
             removeDataCslp();
         }
     }
 
     // Request parent for data sync when document loads
     private requestDataSync() {
-        const config = Config.get("state");
+        const config = Config.get();
 
-        Config.set("state.onChange", this.publish);
+        Config.set("onChange", this.publish);
         
         //! TODO: we replaced the handleOnChange() with this.
         //! I don't think we need this. Confirm and remove it.
