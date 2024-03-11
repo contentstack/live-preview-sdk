@@ -174,10 +174,14 @@ describe("When an element is hovered in visual editor mode", () => {
     });
 
     afterEach(() => {
-        Config.reset();
         jest.clearAllMocks();
         document.getElementsByTagName("html")[0].innerHTML = "";
     });
+
+    afterAll(() => {
+        Config.reset();
+    });
+
     describe("title field", () => {
         let titleField: HTMLParagraphElement;
         let visualEditor: VisualEditor;

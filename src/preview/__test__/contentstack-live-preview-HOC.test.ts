@@ -29,6 +29,8 @@ global.ResizeObserver = jest.fn().mockImplementation(() => ({
 
 describe("Live Preview HOC init", () => {
     beforeEach(() => {
+        Config.reset();
+
         livePreviewPostMessage?.on(
             LIVE_PREVIEW_POST_MESSAGE_EVENTS.INIT,
             mockLivePreviewInitEventListener
@@ -49,9 +51,11 @@ describe("Live Preview HOC init", () => {
         ContentstackLivePreview.previewConstructors = {};
         livePreviewPostMessage?.destroy({ soft: true });
         liveEditorPostMessage?.destroy({ soft: true });
-
-        Config.reset();
         jest.clearAllMocks();
+    });
+
+    afterAll(() => {
+        Config.reset();
     });
 
     test("should initialize only the live preview ", async () => {
@@ -122,6 +126,8 @@ describe("Live Preview HOC init", () => {
 
 describe("Live Preview HOC config", () => {
     beforeEach(() => {
+        Config.reset();
+
         livePreviewPostMessage?.on(
             LIVE_PREVIEW_POST_MESSAGE_EVENTS.INIT,
             mockLivePreviewInitEventListener
@@ -142,9 +148,11 @@ describe("Live Preview HOC config", () => {
         ContentstackLivePreview.previewConstructors = {};
         livePreviewPostMessage?.destroy({ soft: true });
         liveEditorPostMessage?.destroy({ soft: true });
-
-        Config.reset();
         jest.clearAllMocks();
+    });
+
+    afterAll(() => {
+        Config.reset();
     });
 
     test("should set user config", async () => {

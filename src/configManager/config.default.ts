@@ -1,9 +1,4 @@
-import {
-    IConfig,
-    IInitData,
-    ILivePreviewModeConfig,
-    ILivePreviewWindowType,
-} from "../types/types";
+import { IConfig, IInitData, ILivePreviewWindowType } from "../types/types";
 
 export function getUserInitData(): IInitData {
     return {
@@ -55,8 +50,8 @@ export function getDefaultConfig(): IConfig {
             includeByQueryParameter: true,
         },
 
-        hash: "" as string,
-        mode: 1 as ILivePreviewModeConfig,
+        hash: "",
+        mode: 1,
         windowType: ILivePreviewWindowType.INDEPENDENT,
 
         stackDetails: {

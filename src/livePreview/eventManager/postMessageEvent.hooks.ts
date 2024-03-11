@@ -49,10 +49,9 @@ export function useOnEntryUpdatePostMessageEvent(): void {
             setConfigFromParams({
                 live_preview: event.data.hash,
             });
-
-            if (!Config.get("ssr")) {
-                const config = Config.get();
-                config.onChange!();
+            const { ssr, onChange } = Config.get();
+            if (!ssr) {
+                onChange!();
             }
         }
     );
@@ -64,7 +63,7 @@ export function sendInitializeLivePreviewPostMessageEvent(): void {
             LIVE_PREVIEW_POST_MESSAGE_EVENTS.INIT,
             {
                 config: {
-                    shouldReload: Config.get("ssr"),
+                    shouldReload: Config.get().ssr,
                     href: window.location.href,
                     sdkVersion: packageJson.version,
                 },
@@ -92,7 +91,7 @@ export function sendInitializeLivePreviewPostMessageEvent(): void {
             Config.set("windowType", windowType);
 
             // set timeout for client side (use to show warning: You are not editing this page)
-            if (!Config.get("ssr")) {
+            if (!Config.get().ssr) {
                 setInterval(() => {
                     sendCurrentPageUrlPostMessageEvent();
                 }, 1500);

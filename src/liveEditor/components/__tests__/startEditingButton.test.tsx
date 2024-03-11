@@ -16,9 +16,12 @@ describe("StartEditingButtonComponent", () => {
     });
 
     afterEach(() => {
-        Config.reset();
         jest.clearAllMocks();
         document.body.removeChild(visualEditorContainer);
+    });
+
+    afterAll(() => {
+        Config.reset();
     });
 
     it("renders correctly with EditIcon and Start Editing text", () => {

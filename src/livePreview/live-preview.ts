@@ -1,6 +1,6 @@
 import Config from "../configManager/configManager";
 import { PublicLogger } from "../logger/logger";
-import { ILivePreviewModeConfig } from "../types/types";
+import { IConfig, ILivePreviewModeConfig } from "../types/types";
 import { addLivePreviewQueryTags } from "../utils";
 import { LivePreviewEditButton } from "./editButton/editButton";
 import { sendInitializeLivePreviewPostMessageEvent } from "./eventManager/postMessageEvent.hooks";
@@ -28,14 +28,16 @@ export default class LivePreview {
         this.unsubscribeOnEntryChange =
             this.unsubscribeOnEntryChange.bind(this);
 
-        if (Config.get("debug")) {
+        const config = Config.get();
+
+        if (config.debug) {
             PublicLogger.debug(
                 "Contentstack Live Preview Debugging mode: config --",
                 Config.config
             );
         }
 
-        if (Config.get("enable")) {
+        if (config.enable) {
             if (
                 typeof document !== undefined &&
                 document.readyState === "complete"
@@ -51,15 +53,14 @@ export default class LivePreview {
             // render the hover outline only when edit button enable
 
             if (
-                Config.get("editButton.enable") ||
-                (Config.get("mode") as unknown as number) >=
-                    ILivePreviewModeConfig.EDITOR
+                config.editButton.enable ||
+                config.mode >= ILivePreviewModeConfig.EDITOR
             ) {
                 new LivePreviewEditButton();
             }
 
             //NOTE - I think we are already handling the link click event here. Let's move it to a function.
-            if (Config.get("ssr")) {
+            if (config.ssr) {
                 // NOTE: what are we doing here?
                 window.addEventListener("load", (e) => {
                     const allATags = document.querySelectorAll("a");
@@ -87,7 +88,7 @@ export default class LivePreview {
                     }
                 });
             }
-        } else if (Config.get("cleanCslpOnProduction")) {
+        } else if (config.cleanCslpOnProduction) {
             removeDataCslp();
         }
     }
@@ -100,7 +101,7 @@ export default class LivePreview {
 
         //! TODO: we replaced the handleOnChange() with this.
         //! I don't think we need this. Confirm and remove it.
-        config.onChange!();
+        config.onChange();
 
         sendInitializeLivePreviewPostMessageEvent();
     }

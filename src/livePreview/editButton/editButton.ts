@@ -269,7 +269,7 @@ export class LivePreviewEditButton {
     private createCslpTooltip(): boolean {
         if (
             !document.getElementById("cslp-tooltip") &&
-            Config.get("editButton.enable")
+            Config.get().editButton.enable
         ) {
             const tooltip = document.createElement("button");
             this.tooltip = tooltip;
@@ -297,9 +297,7 @@ export class LivePreviewEditButton {
     }
 
     private updateTooltipPosition() {
-        const elements = Config.get("elements") as {
-            highlightedElement: HTMLElement | null;
-        };
+        const { elements, editButton } = Config.get();
 
         if (!elements.highlightedElement || !this.tooltip) return false;
 
@@ -310,8 +308,8 @@ export class LivePreviewEditButton {
 
         if (currentRectOfElement && currentRectOfParentOfElement) {
             const editButtonPosition = getEditButtonPosition(
-                elements.highlightedElement,
-                Config.get("editButton.position") as string
+                elements.highlightedElement as HTMLElement,
+                editButton.position as unknown as string
             );
 
             let upperBoundOfTooltip = editButtonPosition.upperBoundOfTooltip;
@@ -350,6 +348,7 @@ export class LivePreviewEditButton {
     }
 
     private addEditStyleOnHover(e: MouseEvent) {
+        const { windowType, editButton } = Config.get();
         const updateTooltipPosition: Parameters<typeof addCslpOutline>["1"] = ({
             cslpTag,
             highlightedElement,
@@ -363,14 +362,10 @@ export class LivePreviewEditButton {
             }
         };
 
-        const windowType = Config.get(
-            "windowType"
-        ) as unknown as ILivePreviewWindowType;
-
         if (
             (windowType === ILivePreviewWindowType.PREVIEW ||
                 windowType === ILivePreviewWindowType.INDEPENDENT) &&
-            Config.get("editButton.enable")
+            editButton.enable
         ) {
             addCslpOutline(e, updateTooltipPosition);
         }
@@ -424,10 +419,7 @@ export class LivePreviewEditButton {
         entry_uid: string,
         preview_field: string
     ): string {
-        const stackDetails = Config.get("stackDetails") as IStackDetails;
-        const clientUrlParams = Config.get(
-            "clientUrlParams"
-        ) as IClientUrlParams;
+        const { stackDetails, clientUrlParams } = Config.get();
 
         if (!stackDetails.apiKey) {
             throw `To use edit tags, you must provide the stack API key. Specify the API key while initializing the Live Preview SDK.

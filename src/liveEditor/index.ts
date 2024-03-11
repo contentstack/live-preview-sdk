@@ -77,17 +77,15 @@ export class VisualEditor {
             ".visual-editor__focused-toolbar"
         );
 
-        if (
-            !Config.get("enable") ||
-            (Config.get("mode") as unknown as number) <
-                ILivePreviewModeConfig.EDITOR
-        ) {
+        const config = Config.get();
+
+        if (!config.enable || config.mode < ILivePreviewModeConfig.EDITOR) {
             return;
         }
 
         liveEditorPostMessage
             ?.send<IVisualEditorInitEvent>("init", {
-                isSSR: Config.get("ssr"),
+                isSSR: config.ssr,
             })
             .then((data) => {
                 const {
@@ -120,7 +118,7 @@ export class VisualEditor {
                 useHistoryPostMessageEvent();
                 useOnEntryUpdatePostMessageEvent();
             })
-            .catch((e) => {
+            .catch(() => {
                 if (!inIframe()) {
                     generateStartEditingButton(this.visualEditorContainer);
                 }

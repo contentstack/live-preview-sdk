@@ -1,18 +1,14 @@
-import { DeepSignal } from "deepsignal";
+import { DeepSignal, deepSignal } from "deepsignal";
 import { IConfig, IInitData } from "../types/types";
 import { getDefaultConfig, getUserInitData } from "./config.default";
 import { handleInitData } from "./handleUserConfig";
-import {
-    has as lodashHas,
-    set as lodashSet,
-    get as lodashGet,
-} from "lodash-es";
+import { has as lodashHas, set as lodashSet } from "lodash-es";
 
 class Config {
-    static config: DeepSignal<{
-        state: IConfig | {};
-    }> = {
-        state: getDefaultConfig(),
+    static config: {
+        state: DeepSignal<IConfig>;
+    } = {
+        state: deepSignal(getDefaultConfig()),
     };
 
     static replace(userInput: Partial<IInitData> = getUserInitData()): void {
@@ -26,11 +22,8 @@ class Config {
         lodashSet(this.config.state, key, value);
     }
 
-    static get(key?: string): DeepSignal<Partial<IConfig>> {
-        if (key === undefined) {
-            return this.config.state;
-        }
-        return lodashGet(this.config.state, key);
+    static get(): DeepSignal<IConfig> {
+        return this.config.state;
     }
 
     static reset(): void {
@@ -80,9 +73,7 @@ export function setConfigFromParams(
     const content_type_uid = urlParams.get("content_type_uid");
     const entry_uid = urlParams.get("entry_uid");
 
-    const stackSdkLivePreview = Config.get("stackSdk.live_preview") as {
-        [key: string]: any;
-    } & Partial<IConfig>;
+    const stackSdkLivePreview = Config.get().stackSdk.live_preview;
 
     if (live_preview) {
         Config.set("hash", live_preview);

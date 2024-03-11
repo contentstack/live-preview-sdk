@@ -5,6 +5,7 @@ import {
     CslpDataParentDetails,
 } from "./types/cslp.types";
 import Config from "../configManager/configManager";
+import { DeepSignal } from "deepsignal";
 
 /**
  * Extracts details from a CSLP value string.
@@ -119,9 +120,7 @@ export function addCslpOutline(
         highlightedElement: HTMLElement;
     }) => void
 ): void {
-    const elements = Config.get("elements") as unknown as {
-        highlightedElement: HTMLElement | null;
-    };
+    const elements = Config.get().elements;
 
     let trigger = true;
     const eventTargets = e.composedPath();
@@ -139,7 +138,8 @@ export function addCslpOutline(
             element.classList.add("cslp-edit-mode");
 
             const updatedElements = elements;
-            updatedElements.highlightedElement = element;
+            updatedElements.highlightedElement =
+                element as DeepSignal<HTMLElement>;
             Config.set("elements", updatedElements);
 
             callback?.({
