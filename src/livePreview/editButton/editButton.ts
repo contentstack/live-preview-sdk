@@ -192,9 +192,6 @@ export function shouldRenderEditButton(editButton: IConfigEditButton): boolean {
         PublicLogger.error(error);
     }
 
-    console.log('[IN SDK] : WINDOWTYPE : ', Config.get().windowType);
-    
-
     // case if inside live preview or inside live editor
     if (
         inIframe() ||

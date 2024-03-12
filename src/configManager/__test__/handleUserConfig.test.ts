@@ -38,8 +38,7 @@ import { DeepSignal } from "deepsignal";
 */
 
 describe("handleInitData()", () => {
-
-    let config : DeepSignal<IConfig>;
+    let config: DeepSignal<IConfig>;
 
     beforeEach(() => {
         Config.reset();
@@ -245,9 +244,7 @@ describe("handleInitData()", () => {
             };
 
             handleInitData(initData);
-            expect(config.stackDetails.environment).toBe(
-                "userenvironment"
-            );
+            expect(config.stackDetails.environment).toBe("userenvironment");
 
             initData.stackSdk = {
                 live_preview: {},
@@ -258,9 +255,7 @@ describe("handleInitData()", () => {
             };
 
             handleInitData(initData);
-            expect(config.stackDetails.environment).toBe(
-                "userenvironment"
-            );
+            expect(config.stackDetails.environment).toBe("userenvironment");
         });
 
         test("should set environment from stack sdk if available", () => {
@@ -276,9 +271,7 @@ describe("handleInitData()", () => {
             };
 
             handleInitData(initData);
-            expect(config.stackDetails.environment).toBe(
-                "sdkenvironment"
-            );
+            expect(config.stackDetails.environment).toBe("sdkenvironment");
         });
 
         test("should reset environment if it is not passed", () => {
