@@ -15,9 +15,11 @@ import {
 import livePreviewPostMessage from "../eventManager/livePreviewEventManager";
 
 effect(function handleWindowTypeChange() {
+    // we need to specify when to run this effect.
+    // here, we run it when the value of windowType changes
     Config.get().windowType;
     if (LivePreviewEditButton) {
-        LivePreviewEditButton.toggleEditButtonElement();
+        toggleEditButtonElement();
     }
 });
 
@@ -204,6 +206,81 @@ export function getEditButtonPosition(
     );
 }
 
+export function shouldRenderEditButton(): boolean {
+    const config = Config.get();
+
+    if (!config.editButton.enable) {
+        if (config.editButton.enable === undefined)
+            PublicLogger.error(
+                "enable key is required inside editButton object"
+            );
+        return false;
+    }
+
+    // return boolean in case of cslp-buttons query added in url
+    try {
+        const currentLocation = new URL(window.location.href);
+        const cslpButtonQueryValue =
+            currentLocation.searchParams.get("cslp-buttons");
+
+        if (
+            cslpButtonQueryValue !== null &&
+            config.editButton.includeByQueryParameter !== false
+        )
+            return cslpButtonQueryValue === "false" ? false : true;
+    } catch (error) {
+        PublicLogger.error(error);
+    }
+
+    const iFrameCheck = inIframe();
+
+    // case outside live preview
+    if (
+        config.editButton.exclude?.find(
+            (exclude) => exclude === "outsideLivePreviewPortal"
+        )
+    ) {
+        return false;
+    }
+
+    // case if inside live preview
+    if (
+        iFrameCheck &&
+        config.editButton.exclude?.find(
+            (exclude) => exclude === "insideLivePreviewPortal"
+        )
+    ) {
+        return false;
+    } else if (iFrameCheck) {
+        // case if inside live editor
+        if (config.windowType === "editor") {
+            return false;
+        }
+
+        // case if independent site
+        return true;
+    }
+
+    // Priority list => 1. cslpEditButton query value 2.  Inside live preview  3. renderCslpButtonByDefault value selected by user
+    return true;
+}
+
+export function toggleEditButtonElement() {
+    const render = shouldRenderEditButton();
+    const exists = doesEditButtonExist();
+
+    if (render && !exists) {
+        LivePreviewEditButton.livePreviewEditButton =
+            new LivePreviewEditButton();
+    } else if (!render && exists) {
+        LivePreviewEditButton.livePreviewEditButton?.destroy();
+    }
+}
+
+export function doesEditButtonExist() {
+    return document.getElementById("cslp-tooltip") !== null;
+}
+
 export class LivePreviewEditButton {
     private tooltip: HTMLButtonElement | null = null;
     private typeOfCurrentChild: "singular" | "multiple" = "singular";
@@ -239,7 +316,7 @@ export class LivePreviewEditButton {
         if (
             !document.getElementById("cslp-tooltip") &&
             editButton.enable &&
-            LivePreviewEditButton.shouldRenderEditButton()
+            shouldRenderEditButton()
         ) {
             const tooltip = document.createElement("button");
             this.tooltip = tooltip;
@@ -252,6 +329,7 @@ export class LivePreviewEditButton {
                 "beforeend",
                 this.tooltip
             );
+
             this.tooltipChild.singular = createSingularEditButton(
                 this.scrollHandler
             );
@@ -264,84 +342,6 @@ export class LivePreviewEditButton {
             return true;
         }
         return false;
-    }
-
-    static doesEditButtonExist() {
-        return document.getElementById("cslp-tooltip") !== null;
-    }
-
-    static shouldRenderEditButton(): boolean {
-        const config = Config.get();
-
-        if (!config.editButton.enable) {
-            if (config.editButton.enable === undefined)
-                PublicLogger.error(
-                    "enable key is required inside editButton object"
-                );
-            return false;
-        }
-
-        // return boolean in case of cslp-buttons query added in url
-        try {
-            const currentLocation = new URL(window.location.href);
-            const cslpButtonQueryValue =
-                currentLocation.searchParams.get("cslp-buttons");
-
-            if (
-                cslpButtonQueryValue !== null &&
-                config.editButton.includeByQueryParameter !== false
-            )
-                return cslpButtonQueryValue === "false" ? false : true;
-        } catch (error) {
-            PublicLogger.error(error);
-        }
-
-        const iFrameCheck = inIframe();
-
-        // case if inside live preview
-        if (
-            iFrameCheck &&
-            config.editButton.exclude?.find(
-                (exclude) => exclude === "insideLivePreviewPortal"
-            )
-        ) {
-            return false;
-        } else if (iFrameCheck) {
-            // case if inside live editor
-            if (config.windowType === "editor") {
-                return false;
-            }
-
-            return true;
-        }
-
-        // case outside live preview
-        if (
-            config.editButton.exclude?.find(
-                (exclude) => exclude === "outsideLivePreviewPortal"
-            )
-        ) {
-            return false;
-        }
-
-        // Priority list => 1. cslpEditButton query value 2.  Inside live preview  3. renderCslpButtonByDefault value selected by user
-        return true;
-    }
-
-    static toggleEditButtonElement() {
-        const render = LivePreviewEditButton.shouldRenderEditButton();
-        const exists = LivePreviewEditButton.doesEditButtonExist();
-
-        if ((render && exists) || (!render && !exists)) {
-            return;
-        }
-
-        if (render && !exists) {
-            LivePreviewEditButton.livePreviewEditButton =
-                new LivePreviewEditButton();
-        } else if (!render && exists) {
-            LivePreviewEditButton.livePreviewEditButton?.destroy();
-        }
     }
 
     private updateTooltipPosition() {
@@ -532,6 +532,6 @@ export class LivePreviewEditButton {
     destroy(): void {
         window.removeEventListener("scroll", this.updateTooltipPosition);
         window.removeEventListener("mouseover", this.addEditStyleOnHover);
-        this.tooltip?.parentNode?.removeChild(this.tooltip);
+        this.tooltip?.remove();
     }
 }
