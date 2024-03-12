@@ -42,6 +42,7 @@ describe("Edit button", () => {
         expect(editCallback).toBeCalled();
     });
 });
+
 describe("getEditButtonPosition: Edit button", () => {
     beforeAll(() => {
         const titlePara = document.createElement("h3");
@@ -173,6 +174,7 @@ describe("getEditButtonPosition: Edit button", () => {
         ).toStrictEqual({ upperBoundOfTooltip: 36.75, leftBoundOfTooltip: 53 });
     });
 });
+
 describe("Edit button for Link", () => {
     beforeEach(() => {
         editCallback = jest.fn();

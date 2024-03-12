@@ -472,7 +472,9 @@ describe("cslp tooltip", () => {
                 includeByQueryParameter: false,
             },
         });
-        new LivePreviewEditButton();
+
+        LivePreviewEditButton.livePreviewEditButton =
+            new LivePreviewEditButton();
 
         const tooltip = document.querySelector(
             "[data-test-id='cs-cslp-tooltip']"
