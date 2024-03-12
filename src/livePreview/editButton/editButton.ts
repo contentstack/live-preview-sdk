@@ -192,6 +192,9 @@ export function shouldRenderEditButton(editButton: IConfigEditButton): boolean {
         PublicLogger.error(error);
     }
 
+    console.log('[IN SDK] : WINDOWTYPE : ', Config.get().windowType);
+    
+
     // case if inside live preview or inside live editor
     if (
         inIframe() ||
@@ -309,7 +312,7 @@ export class LivePreviewEditButton {
         if (currentRectOfElement && currentRectOfParentOfElement) {
             const editButtonPosition = getEditButtonPosition(
                 elements.highlightedElement as HTMLElement,
-                editButton.position as unknown as string
+                editButton.position
             );
 
             let upperBoundOfTooltip = editButtonPosition.upperBoundOfTooltip;

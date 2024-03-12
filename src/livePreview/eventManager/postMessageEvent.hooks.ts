@@ -51,7 +51,7 @@ export function useOnEntryUpdatePostMessageEvent(): void {
             });
             const { ssr, onChange } = Config.get();
             if (!ssr) {
-                onChange!();
+                onChange();
             }
         }
     );
