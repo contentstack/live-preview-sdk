@@ -1,12 +1,7 @@
-import { getDefaultConfig } from "../config.default";
 import { handleInitData, handleUserConfig } from "../handleUserConfig";
-import { PublicLogger } from "../../logger/logger";
-import {
-    IConfig,
-    IInitData,
-    ILivePreviewModeConfig,
-    IStackSdk,
-} from "../../types/types";
+import { IConfig, IInitData, ILivePreviewModeConfig } from "../../types/types";
+import Config from "../configManager";
+import { DeepSignal } from "deepsignal";
 
 // example Stack object
 
@@ -42,10 +37,16 @@ import {
 }
 */
 
-let config: IConfig;
 describe("handleInitData()", () => {
+    let config: DeepSignal<IConfig>;
+
     beforeEach(() => {
-        config = getDefaultConfig();
+        Config.reset();
+        config = Config.get();
+    });
+
+    afterAll(() => {
+        Config.reset();
     });
 
     test("must set data when config is provided", () => {
@@ -57,7 +58,7 @@ describe("handleInitData()", () => {
             },
         };
 
-        handleInitData(initData, config);
+        handleInitData(initData);
         const expectedOutput = {
             ssr: true,
             enable: true,
@@ -81,6 +82,7 @@ describe("handleInitData()", () => {
                 environment: "",
             },
         };
+
         expect(config).toMatchObject(expectedOutput);
     });
 
@@ -93,7 +95,7 @@ describe("handleInitData()", () => {
             },
         };
 
-        handleInitData(initData, config);
+        handleInitData(initData);
         expect(config.ssr).toBe(true);
     });
 
@@ -116,7 +118,7 @@ describe("handleInitData()", () => {
             },
         };
 
-        handleInitData(initData, config);
+        handleInitData(initData);
         expect(config.ssr).toBe(false);
     });
 
@@ -126,9 +128,10 @@ describe("handleInitData()", () => {
                 enable: true,
             };
 
-            handleInitData(initData, config);
+            handleInitData(initData);
             expect(config.mode).toBe(ILivePreviewModeConfig.PREVIEW);
         });
+
         test("should be set to 2 if user set it to editor", () => {
             const initData: Partial<IInitData> = {
                 enable: true,
@@ -139,18 +142,20 @@ describe("handleInitData()", () => {
                 },
             };
 
-            handleInitData(initData, config);
+            handleInitData(initData);
             expect(config.mode).toBe(ILivePreviewModeConfig.EDITOR);
         });
+
         test("should be set to 1 if user set it to preview", () => {
             const initData: Partial<IInitData> = {
                 enable: true,
                 mode: "preview",
             };
 
-            handleInitData(initData, config);
+            handleInitData(initData);
             expect(config.mode).toBe(ILivePreviewModeConfig.PREVIEW);
         });
+
         test("should throw an error if user set it to something else", () => {
             const initData: Partial<IInitData> = {
                 enable: true,
@@ -159,7 +164,7 @@ describe("handleInitData()", () => {
             };
 
             expect(() => {
-                handleInitData(initData, config);
+                handleInitData(initData);
             }).toThrowError(
                 "Live Preview SDK: The mode must be either 'editor' or 'preview'"
             );
@@ -175,10 +180,8 @@ describe("handleInitData()", () => {
                 },
             };
 
-            handleInitData(initData, config);
+            handleInitData(initData);
             expect(config.stackDetails.apiKey).toBe("bltuserapikey");
-
-            config = getDefaultConfig();
 
             initData.stackSdk = {
                 live_preview: {},
@@ -188,7 +191,7 @@ describe("handleInitData()", () => {
                 environment: "dev",
             };
 
-            handleInitData(initData, config);
+            handleInitData(initData);
             expect(config.stackDetails.apiKey).toBe("bltuserapikey");
         });
 
@@ -205,7 +208,7 @@ describe("handleInitData()", () => {
                 },
             };
 
-            handleInitData(initData, config);
+            handleInitData(initData);
             expect(config.stackDetails.apiKey).toBe("bltheaderapikey");
         });
 
@@ -214,7 +217,7 @@ describe("handleInitData()", () => {
                 enable: true,
             };
 
-            handleInitData(initData, config);
+            handleInitData(initData);
             expect(config.stackDetails.apiKey).toBe("");
         });
 
@@ -228,7 +231,7 @@ describe("handleInitData()", () => {
             };
 
             expect(() => {
-                handleInitData(initData, config);
+                handleInitData(initData);
             }).toThrowError("Live preview SDK: api key is required");
         });
 
@@ -240,10 +243,8 @@ describe("handleInitData()", () => {
                 },
             };
 
-            handleInitData(initData, config);
+            handleInitData(initData);
             expect(config.stackDetails.environment).toBe("userenvironment");
-
-            config = getDefaultConfig();
 
             initData.stackSdk = {
                 live_preview: {},
@@ -253,7 +254,7 @@ describe("handleInitData()", () => {
                 },
             };
 
-            handleInitData(initData, config);
+            handleInitData(initData);
             expect(config.stackDetails.environment).toBe("userenvironment");
         });
 
@@ -269,7 +270,7 @@ describe("handleInitData()", () => {
                 },
             };
 
-            handleInitData(initData, config);
+            handleInitData(initData);
             expect(config.stackDetails.environment).toBe("sdkenvironment");
         });
 
@@ -278,7 +279,7 @@ describe("handleInitData()", () => {
                 enable: true,
             };
 
-            handleInitData(initData, config);
+            handleInitData(initData);
             expect(config.stackDetails.environment).toBe("");
         });
 
@@ -292,7 +293,7 @@ describe("handleInitData()", () => {
             };
 
             expect(() => {
-                handleInitData(initData, config);
+                handleInitData(initData);
             }).toThrowError("Live preview SDK: environment is required");
         });
 
@@ -304,10 +305,8 @@ describe("handleInitData()", () => {
                 },
             };
 
-            handleInitData(initData, config);
+            handleInitData(initData);
             expect(config.stackDetails.branch).toBe("userbranch");
-
-            config = getDefaultConfig();
 
             initData.stackSdk = {
                 live_preview: {},
@@ -318,7 +317,7 @@ describe("handleInitData()", () => {
                 environment: "dev",
             };
 
-            handleInitData(initData, config);
+            handleInitData(initData);
             expect(config.stackDetails.branch).toBe("userbranch");
         });
 
@@ -336,7 +335,7 @@ describe("handleInitData()", () => {
                 },
             };
 
-            handleInitData(initData, config);
+            handleInitData(initData);
             expect(config.stackDetails.branch).toBe("sdkbranch");
         });
 
@@ -345,7 +344,7 @@ describe("handleInitData()", () => {
                 enable: true,
             };
 
-            handleInitData(initData, config);
+            handleInitData(initData);
             expect(config.stackDetails.branch).toBe("main");
         });
 
@@ -357,7 +356,7 @@ describe("handleInitData()", () => {
                 },
             };
 
-            handleInitData(initData, config);
+            handleInitData(initData);
             expect(config.stackDetails.locale).toBe("userlocale");
         });
 
@@ -366,19 +365,26 @@ describe("handleInitData()", () => {
                 enable: true,
             };
 
-            handleInitData(initData, config);
+            handleInitData(initData);
             expect(config.stackDetails.locale).toBe("en-us");
         });
     });
 });
 
 describe("handleClientUrlParams()", () => {
+    let config: DeepSignal<IConfig>;
+
     beforeEach(() => {
-        config = getDefaultConfig();
+        Config.reset();
+        config = Config.get();
+    });
+
+    afterAll(() => {
+        Config.reset();
     });
 
     test("must modify host and url accordingly", () => {
-        handleUserConfig.clientUrlParams(config, {
+        handleUserConfig.clientUrlParams({
             host: "example.com/",
             protocol: "http",
         });
@@ -389,9 +395,10 @@ describe("handleClientUrlParams()", () => {
             port: 80,
             url: "http://example.com:80",
         };
+
         expect(config.clientUrlParams).toMatchObject(expectedOutputForHttp);
 
-        handleUserConfig.clientUrlParams(config, {
+        handleUserConfig.clientUrlParams({
             host: "example.com/",
             protocol: "https",
         });

@@ -80,7 +80,7 @@ export function getDefaultConfig(): IConfig {
         runScriptsOnUpdate: false,
 
         onChange() {
-            // this is intentional
+            return;
         },
 
         elements: {

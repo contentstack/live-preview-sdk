@@ -1,6 +1,6 @@
 import Config from "../configManager/configManager";
 import { PublicLogger } from "../logger/logger";
-import { ILivePreviewModeConfig } from "../types/types";
+import { IConfig, ILivePreviewModeConfig } from "../types/types";
 import { addLivePreviewQueryTags } from "../utils";
 import { LivePreviewEditButton } from "./editButton/editButton";
 import { sendInitializeLivePreviewPostMessageEvent } from "./eventManager/postMessageEvent.hooks";
@@ -21,8 +21,6 @@ export default class LivePreview {
     private subscribers: OnEntryChangeCallbackSubscribers = {};
 
     constructor() {
-        const config = Config.get();
-
         this.requestDataSync = this.requestDataSync.bind(this);
         this.subscribeToOnEntryChange =
             this.subscribeToOnEntryChange.bind(this);
@@ -30,10 +28,12 @@ export default class LivePreview {
         this.unsubscribeOnEntryChange =
             this.unsubscribeOnEntryChange.bind(this);
 
+        const config = Config.get();
+
         if (config.debug) {
             PublicLogger.debug(
                 "Contentstack Live Preview Debugging mode: config --",
-                config
+                Config.config
             );
         }
 
@@ -51,6 +51,7 @@ export default class LivePreview {
             // TODO: mjrf: Check if we need the second condition here.
             // We are already handling the functions separately in the live editor.
             // render the hover outline only when edit button enable
+
             if (
                 config.editButton.enable ||
                 config.mode >= ILivePreviewModeConfig.EDITOR

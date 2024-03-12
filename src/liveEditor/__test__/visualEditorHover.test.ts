@@ -162,11 +162,11 @@ describe("When an element is hovered in visual editor mode", () => {
             "all_fields",
             getFieldSchemaMap().all_fields
         );
-
-        Config.set("mode", 2);
     });
 
     beforeEach(() => {
+        Config.reset();
+        Config.set("mode", 2);
         mousemoveEvent = new Event("mousemove", {
             bubbles: true,
             cancelable: true,
@@ -177,6 +177,11 @@ describe("When an element is hovered in visual editor mode", () => {
         jest.clearAllMocks();
         document.getElementsByTagName("html")[0].innerHTML = "";
     });
+
+    afterAll(() => {
+        Config.reset();
+    });
+
     describe("title field", () => {
         let titleField: HTMLParagraphElement;
         let visualEditor: VisualEditor;

@@ -1,29 +1,33 @@
+import { DeepSignal, deepSignal } from "deepsignal";
 import { IConfig, IInitData } from "../types/types";
 import { getDefaultConfig, getUserInitData } from "./config.default";
 import { handleInitData } from "./handleUserConfig";
 import { has as lodashHas, set as lodashSet } from "lodash-es";
 
 class Config {
-    static config: IConfig = getDefaultConfig();
+    static config: {
+        state: DeepSignal<IConfig>;
+    } = {
+        state: deepSignal(getDefaultConfig()),
+    };
 
     static replace(userInput: Partial<IInitData> = getUserInitData()): void {
-        handleInitData(userInput, this.config);
+        handleInitData(userInput);
     }
 
-    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
     static set(key: string, value: any): void {
-        if (!lodashHas(this.config, key)) {
+        if (!lodashHas(this.config.state, key)) {
             throw new Error(`Invalid key: ${key}`);
         }
-        lodashSet(this.config, key, value);
+        lodashSet(this.config.state, key, value);
     }
 
-    static get(): IConfig {
-        return this.config;
+    static get(): DeepSignal<IConfig> {
+        return this.config.state;
     }
 
     static reset(): void {
-        this.config = getDefaultConfig();
+        lodashSet(this.config, "state", getDefaultConfig());
     }
 }
 
