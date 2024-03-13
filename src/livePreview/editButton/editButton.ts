@@ -1,4 +1,4 @@
-import { inIframe } from "../../common/inIframe";
+import inIframe from "../../common/inIframe";
 import Config from "../../configManager/configManager";
 import { addCslpOutline, extractDetailsFromCslp } from "../../cslp";
 import { PublicLogger } from "../../logger/logger";

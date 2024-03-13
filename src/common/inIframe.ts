@@ -1,4 +1,4 @@
-export function inIframe(): boolean {
+export default function inIframe(): boolean {
     try {
         return window.self !== window.top;
     } catch (e) {

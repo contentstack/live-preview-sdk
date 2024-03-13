@@ -1,7 +1,7 @@
 import { Signal, signal } from "@preact/signals";
 
 import { generateStartEditingButton } from "./generators/generateStartEditingButton";
-import { inIframe } from "../common/inIframe";
+import inIframe from "../common/inIframe";
 import Config from "../configManager/configManager";
 import {
     useHistoryPostMessageEvent,
