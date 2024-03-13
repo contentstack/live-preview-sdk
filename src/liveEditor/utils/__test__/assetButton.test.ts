@@ -39,7 +39,7 @@ describe("generateReplaceAssetButton", () => {
         jest.restoreAllMocks();
     });
 
-    it("should generate a button element with the correct class and text content", () => {
+    test("should generate a button element with the correct class and text content", () => {
         const replaceButton = generateReplaceAssetButton(
             targetElement,
             onClickCallback
@@ -52,7 +52,7 @@ describe("generateReplaceAssetButton", () => {
         expect(replaceButton.textContent).toBe("Replace Asset");
     });
 
-    it("should attach a click event listener to the generated button", () => {
+    test("should attach a click event listener to the generated button", () => {
         const replaceButton = generateReplaceAssetButton(
             targetElement,
             onClickCallback
@@ -63,7 +63,7 @@ describe("generateReplaceAssetButton", () => {
         expect(onClickCallback).toHaveBeenCalled();
     });
 
-    it("should position the button correctly", () => {
+    test("should position the button correctly", () => {
         const replaceButton = generateReplaceAssetButton(
             targetElement,
             onClickCallback
@@ -77,7 +77,7 @@ describe("generateReplaceAssetButton", () => {
 describe("removeReplaceAssetButton", () => {
     let visualEditorContainer: HTMLDivElement;
 
-    it("should remove all existing replace asset buttons from the provided visual editor wrapper element", () => {
+    test("should remove all existing replace asset buttons from the provided visual editor wrapper element", () => {
         visualEditorContainer = document.createElement("div");
         visualEditorContainer = document.createElement("div");
         visualEditorContainer.classList.add("visual-editor__container");
@@ -101,7 +101,7 @@ describe("removeReplaceAssetButton", () => {
         ).toBe(0);
     });
 
-    it("should do nothing if the provided visual editor wrapper element is null", () => {
+    test("should do nothing if the provided visual editor wrapper element is null", () => {
         const visualEditorContainer = null;
 
         expect(() =>

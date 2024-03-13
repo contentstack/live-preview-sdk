@@ -15,6 +15,7 @@ global.ResizeObserver = jest.fn().mockImplementation(() => ({
     unobserve: jest.fn(),
     disconnect: jest.fn(),
 }));
+
 describe("When outside the Visual editor, the Visual Editor", () => {
     beforeAll(() => {
         Config.set("mode", 2);

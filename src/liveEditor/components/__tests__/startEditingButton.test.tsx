@@ -24,7 +24,7 @@ describe("StartEditingButtonComponent", () => {
         Config.reset();
     });
 
-    it("renders correctly with EditIcon and Start Editing text", () => {
+    test("renders correctly with EditIcon and Start Editing text", () => {
         const { getByText, getByTestId } = render(
             <StartEditingButtonComponent />
         );

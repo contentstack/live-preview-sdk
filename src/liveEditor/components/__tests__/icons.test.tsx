@@ -12,7 +12,7 @@ import {
 
 describe("IconComponents", () => {
     describe("CaretIcon", () => {
-        it("renders with correct dimensions, fill, and stroke colors", () => {
+        test("renders with correct dimensions, fill, and stroke colors", () => {
             const { container } = render(<CaretIcon />);
             const svgElement = container.querySelector("svg");
             const strokeAttribute = svgElement?.getAttribute("stroke");
@@ -29,7 +29,7 @@ describe("IconComponents", () => {
     });
 
     describe("DeleteIcon", () => {
-        it("renders with correct dimensions, fill, and stroke colors", () => {
+        test("renders with correct dimensions, fill, and stroke colors", () => {
             const { container } = render(<DeleteIcon />);
             const svgElement = container.querySelector("svg");
             const strokeAttribute = svgElement?.getAttribute("stroke");
@@ -46,7 +46,7 @@ describe("IconComponents", () => {
     });
 
     describe("MoveLeftIcon", () => {
-        it("renders with correct dimensions, fill, and stroke colors", () => {
+        test("renders with correct dimensions, fill, and stroke colors", () => {
             const { container } = render(<MoveLeftIcon />);
             const svgElement = container.querySelector("svg");
             const strokeAttribute = svgElement?.getAttribute("stroke");
@@ -63,7 +63,7 @@ describe("IconComponents", () => {
     });
 
     describe("MoveRightIcon", () => {
-        it("renders with correct dimensions, fill, and stroke colors", () => {
+        test("renders with correct dimensions, fill, and stroke colors", () => {
             const { container } = render(<MoveRightIcon />);
             const svgElement = container.querySelector("svg");
             const strokeAttribute = svgElement?.getAttribute("stroke");
@@ -80,7 +80,7 @@ describe("IconComponents", () => {
     });
 
     describe("InfoIcon", () => {
-        it("renders with correct dimensions, fill, and stroke colors", () => {
+        test("renders with correct dimensions, fill, and stroke colors", () => {
             const { container } = render(<InfoIcon />);
             const svgElement = container.querySelector("svg");
             const strokeAttribute = svgElement?.getAttribute("stroke");
@@ -97,7 +97,7 @@ describe("IconComponents", () => {
     });
 
     describe("EditIcon", () => {
-        it("renders with correct dimensions, fill, and stroke colors", () => {
+        test("renders with correct dimensions, fill, and stroke colors", () => {
             const { container } = render(<EditIcon />);
             const svgElement = container.querySelector("svg");
             const strokeAttribute = svgElement?.getAttribute("stroke");
@@ -114,7 +114,7 @@ describe("IconComponents", () => {
     });
 
     describe("PlusIcon", () => {
-        it("renders with correct dimensions, fill, and stroke colors", () => {
+        test("renders with correct dimensions, fill, and stroke colors", () => {
             const { container } = render(<PlusIcon />);
             const svgElement = container.querySelector("svg");
             const strokeAttribute = svgElement?.getAttribute("stroke");

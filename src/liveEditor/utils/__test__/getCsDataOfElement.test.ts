@@ -122,7 +122,7 @@ describe("getCsDataOfElement", () => {
 });
 
 describe("getDOMEditStack", () => {
-    it("get dom edit stack should provide stack", () => {
+    test("get dom edit stack should provide stack", () => {
         const stack = [
             {
                 ct: "page",

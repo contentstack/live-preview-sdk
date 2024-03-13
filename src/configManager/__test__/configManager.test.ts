@@ -111,7 +111,7 @@ describe("update config from url", () => {
         Config.reset();
     });
 
-    it("should update config from url if available", () => {
+    test("should update config from url if available", () => {
         const searchParams = new URLSearchParams(window.location.search);
         searchParams.set("content_type_uid", "test");
         searchParams.set("entry_uid", "test");
@@ -138,7 +138,7 @@ describe("update config from url", () => {
         expect(config.hash).toEqual("test");
     });
 
-    it("should be default config if url params are not available", () => {
+    test("should be default config if url params are not available", () => {
         expect(config.stackDetails.contentTypeUid).toEqual("");
         expect(config.stackDetails.entryUid).toEqual("");
         expect(config.hash).toEqual("");

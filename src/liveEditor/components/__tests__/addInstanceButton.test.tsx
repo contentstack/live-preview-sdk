@@ -10,7 +10,7 @@ import AddInstanceButtonComponent from "../addInstanceButton";
 describe("AddInstanceButtonComponent", () => {
     afterEach(cleanup);
 
-    it("renders button with proper class and icon", () => {
+    test("renders button with proper class and icon", () => {
         const onClickCallback = jest.fn();
         render(
             <AddInstanceButtonComponent onClickCallback={onClickCallback} />
@@ -26,7 +26,7 @@ describe("AddInstanceButtonComponent", () => {
         expect(buttonElement.querySelector("path")).toBeTruthy();
     });
 
-    it("calls onClickCallback when button is clicked", () => {
+    test("calls onClickCallback when button is clicked", () => {
         const onClickCallback = jest.fn();
         render(
             <AddInstanceButtonComponent onClickCallback={onClickCallback} />
