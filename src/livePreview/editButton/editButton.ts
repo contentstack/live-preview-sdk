@@ -1,4 +1,5 @@
-import inIframe from "../../common/inIframe";
+import { effect } from "@preact/signals";
+import { inIframe } from "../../common/inIframe";
 import Config from "../../configManager/configManager";
 import { addCslpOutline, extractDetailsFromCslp } from "../../cslp";
 import { PublicLogger } from "../../logger/logger";
@@ -6,10 +7,21 @@ import {
     IClientUrlParams,
     IConfigEditButton,
     IEditButtonPosition,
+    ILivePreviewMode,
+    ILivePreviewModeConfig,
     ILivePreviewWindowType,
     IStackDetails,
 } from "../../types/types";
 import livePreviewPostMessage from "../eventManager/livePreviewEventManager";
+
+effect(function handleWindowTypeChange() {
+    // we need to specify when to run this effect.
+    // here, we run it when the value of windowType changes
+    Config.get().windowType;
+    if (LivePreviewEditButton) {
+        toggleEditButtonElement();
+    }
+});
 
 function calculateEditButtonPosition(
     currentHoveredElement: HTMLElement,
@@ -126,6 +138,7 @@ export const createSingularEditButton = (
 
     return singularEditButton;
 };
+
 export const createMultipleEditButton = (
     editCallback: (e: MouseEvent) => void,
     linkCallback: (e: MouseEvent) => void
@@ -169,51 +182,6 @@ export const createMultipleEditButton = (
     return multipleDiv;
 };
 
-export function shouldRenderEditButton(editButton: IConfigEditButton): boolean {
-    if (!editButton.enable) {
-        if (editButton.enable === undefined)
-            PublicLogger.error(
-                "enable key is required inside editButton object"
-            );
-        return false;
-    }
-
-    // return boolean in case of cslp-buttons query added in url
-    try {
-        const currentLocation = new URL(window.location.href);
-        const cslpButtonQueryValue =
-            currentLocation.searchParams.get("cslp-buttons");
-        if (
-            cslpButtonQueryValue !== null &&
-            editButton.includeByQueryParameter !== false
-        )
-            return cslpButtonQueryValue === "false" ? false : true;
-    } catch (error) {
-        PublicLogger.error(error);
-    }
-
-    // case if inside live preview or inside live editor
-    if (
-        inIframe() ||
-        editButton.exclude?.find(
-            (exclude) => exclude === "insideLivePreviewPortal"
-        )
-    ) {
-        return false;
-    }
-
-    // case outside live preview
-    if (
-        editButton.exclude?.find(
-            (exclude) => exclude === "outsideLivePreviewPortal"
-        )
-    ) {
-        return false;
-    }
-
-    // Priority list => 1. cslpEditButton query value 2.  Inside live preview  3. renderCslpButtonByDefault value selected by user
-    return true;
-}
 export function getEditButtonPosition(
     currentHoveredElement: HTMLElement | null,
     defaultPosition: string | undefined
@@ -238,6 +206,81 @@ export function getEditButtonPosition(
     );
 }
 
+export function shouldRenderEditButton(): boolean {
+    const config = Config.get();
+
+    if (!config.editButton.enable) {
+        if (config.editButton.enable === undefined)
+            PublicLogger.error(
+                "enable key is required inside editButton object"
+            );
+        return false;
+    }
+
+    // return boolean in case of cslp-buttons query added in url
+    try {
+        const currentLocation = new URL(window.location.href);
+        const cslpButtonQueryValue =
+            currentLocation.searchParams.get("cslp-buttons");
+
+        if (
+            cslpButtonQueryValue !== null &&
+            config.editButton.includeByQueryParameter !== false
+        )
+            return cslpButtonQueryValue === "false" ? false : true;
+    } catch (error) {
+        PublicLogger.error(error);
+    }
+
+    const iFrameCheck = inIframe();
+
+    // case outside live preview
+    if (
+        config.editButton.exclude?.find(
+            (exclude) => exclude === "outsideLivePreviewPortal"
+        )
+    ) {
+        return false;
+    }
+
+    // case if inside live preview
+    if (
+        iFrameCheck &&
+        config.editButton.exclude?.find(
+            (exclude) => exclude === "insideLivePreviewPortal"
+        )
+    ) {
+        return false;
+    } else if (iFrameCheck) {
+        // case if inside live editor
+        if (config.windowType === "editor") {
+            return false;
+        }
+
+        // case if independent site
+        return true;
+    }
+
+    // Priority list => 1. cslpEditButton query value 2.  Inside live preview  3. renderCslpButtonByDefault value selected by user
+    return true;
+}
+
+export function toggleEditButtonElement() {
+    const render = shouldRenderEditButton();
+    const exists = doesEditButtonExist();
+
+    if (render && !exists) {
+        LivePreviewEditButton.livePreviewEditButton =
+            new LivePreviewEditButton();
+    } else if (!render && exists) {
+        LivePreviewEditButton.livePreviewEditButton?.destroy();
+    }
+}
+
+export function doesEditButtonExist() {
+    return document.getElementById("cslp-tooltip") !== null;
+}
+
 export class LivePreviewEditButton {
     private tooltip: HTMLButtonElement | null = null;
     private typeOfCurrentChild: "singular" | "multiple" = "singular";
@@ -248,6 +291,7 @@ export class LivePreviewEditButton {
         singular: null,
         multiple: null,
     };
+    static livePreviewEditButton: LivePreviewEditButton | null = null;
 
     constructor() {
         this.createCslpTooltip = this.createCslpTooltip.bind(this);
@@ -267,9 +311,12 @@ export class LivePreviewEditButton {
     }
 
     private createCslpTooltip(): boolean {
+        const editButton = Config.get().editButton;
+
         if (
             !document.getElementById("cslp-tooltip") &&
-            Config.get().editButton.enable
+            editButton.enable &&
+            shouldRenderEditButton()
         ) {
             const tooltip = document.createElement("button");
             this.tooltip = tooltip;
@@ -282,6 +329,7 @@ export class LivePreviewEditButton {
                 "beforeend",
                 this.tooltip
             );
+
             this.tooltipChild.singular = createSingularEditButton(
                 this.scrollHandler
             );
@@ -297,7 +345,8 @@ export class LivePreviewEditButton {
     }
 
     private updateTooltipPosition() {
-        const { elements, editButton } = Config.get();
+        const editButton = Config.get().editButton;
+        const elements = Config.get().elements;
 
         if (!elements.highlightedElement || !this.tooltip) return false;
 
@@ -348,7 +397,6 @@ export class LivePreviewEditButton {
     }
 
     private addEditStyleOnHover(e: MouseEvent) {
-        const { windowType, editButton } = Config.get();
         const updateTooltipPosition: Parameters<typeof addCslpOutline>["1"] = ({
             cslpTag,
             highlightedElement,
@@ -361,6 +409,9 @@ export class LivePreviewEditButton {
                 );
             }
         };
+
+        const editButton = Config.get().editButton;
+        const windowType = Config.get().windowType;
 
         if (
             (windowType === ILivePreviewWindowType.PREVIEW ||
@@ -419,9 +470,9 @@ export class LivePreviewEditButton {
         entry_uid: string,
         preview_field: string
     ): string {
-        const { stackDetails, clientUrlParams } = Config.get();
+        const config = Config.get();
 
-        if (!stackDetails.apiKey) {
+        if (!config.stackDetails.apiKey) {
             throw `To use edit tags, you must provide the stack API key. Specify the API key while initializing the Live Preview SDK.
 
                 ContentstackLivePreview.init({
@@ -433,7 +484,7 @@ export class LivePreviewEditButton {
                 })`;
         }
 
-        if (!stackDetails.environment) {
+        if (!config.stackDetails.environment) {
             throw `To use edit tags, you must provide the preview environment. Specify the preview environment while initializing the Live Preview SDK.
 
                 ContentstackLivePreview.init({
@@ -445,13 +496,13 @@ export class LivePreviewEditButton {
                 })`;
         }
 
-        const protocol = String(clientUrlParams.protocol);
-        const host = String(clientUrlParams.host);
-        const port = String(clientUrlParams.port);
-        const environment = String(stackDetails.environment);
+        const protocol = String(config.clientUrlParams.protocol);
+        const host = String(config.clientUrlParams.host);
+        const port = String(config.clientUrlParams.port);
+        const environment = String(config.stackDetails.environment);
 
         const urlHash = `!/stack/${
-            stackDetails.apiKey
+            config.stackDetails.apiKey
         }/content-type/${content_type_uid}/${
             locale ?? "en-us"
         }/entry/${entry_uid}/edit`;

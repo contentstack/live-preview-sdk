@@ -56,7 +56,8 @@ export default class LivePreview {
                 config.editButton.enable ||
                 config.mode >= ILivePreviewModeConfig.EDITOR
             ) {
-                new LivePreviewEditButton();
+                LivePreviewEditButton.livePreviewEditButton =
+                    new LivePreviewEditButton();
             }
 
             //NOTE - I think we are already handling the link click event here. Let's move it to a function.
