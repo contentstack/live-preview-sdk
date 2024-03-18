@@ -12,6 +12,8 @@ import {
     HistoryLivePreviewPostMessageEventData,
     OnChangeLivePreviewPostMessageEventData,
 } from "../eventManager/types/livePreviewPostMessageEvent.type";
+import * as postMessageEventHooks from "../eventManager/postMessageEvent.hooks";
+import * as livePreviewProductionCleanup from "../livePreviewProductionCleanup";
 
 jest.mock("../../liveEditor/utils/liveEditorPostMessage", () => {
     const { getAllContentTypes } = jest.requireActual(
@@ -421,5 +423,72 @@ describe("incoming postMessage", () => {
         });
 
         expect(window.history.go).toHaveBeenCalled();
+    });
+});
+
+describe("testing window event listeners", () => {
+    let addEventListenerMock: any;
+    let sendInitEvent: any;
+    let livePreviewInstance: LivePreview;
+
+    beforeEach(() => {
+        Config.reset();
+        livePreviewPostMessage?.destroy({ soft: true });
+        livePreviewPostMessage?.on(
+            LIVE_PREVIEW_POST_MESSAGE_EVENTS.INIT,
+            mockLivePreviewInitEventListener
+        );
+
+        const titlePara = document.createElement("h3");
+        titlePara.setAttribute("data-cslp", TITLE_CSLP_TAG);
+        titlePara.setAttribute("data-test-id", "title-para");
+
+        const descPara = document.createElement("p");
+        descPara.setAttribute("data-cslp", DESC_CSLP_TAG);
+        descPara.setAttribute("data-test-id", "desc-para");
+
+        const linkPara = document.createElement("a");
+        linkPara.setAttribute("data-cslp", LINK_CSLP_TAG);
+        linkPara.setAttribute("href", "https://www.example.com");
+        linkPara.setAttribute("data-test-id", "link-para");
+
+        document.body.appendChild(titlePara);
+        document.body.appendChild(descPara);
+        document.body.appendChild(linkPara);
+
+        Config.set("windowType", ILivePreviewWindowType.PREVIEW);
+
+        addEventListenerMock = jest.spyOn(window, "addEventListener");
+        sendInitEvent = jest.spyOn(
+            postMessageEventHooks,
+            "sendInitializeLivePreviewPostMessageEvent"
+        );
+        livePreviewInstance = new LivePreview();
+    });
+
+    afterEach(() => {
+        document.getElementsByTagName("html")[0].innerHTML = "";
+    });
+
+    afterAll(() => {
+        Config.reset();
+        livePreviewPostMessage?.destroy({ soft: true });
+    });
+
+    test("attaches a load event to call requestDataSync if document is not yet loaded", () => {
+        Object.defineProperty(document, "readyState", {
+            value: "loading",
+            writable: false,
+        });
+
+        Config.replace({
+            enable: true,
+        });
+
+        expect(addEventListenerMock).toHaveBeenCalledWith(
+            "load",
+            expect.any(Function)
+        );
+        expect(sendInitEvent).toBeCalled();
     });
 });
