@@ -1,4 +1,4 @@
-import inIframe from "../inIframe";
+import { inIframe } from "../inIframe";
 
 describe("inIframe", () => {
     let windowSpy: any;
@@ -32,10 +32,9 @@ describe("inIframe", () => {
     });
 
     test("should return true in case of any error", () => {
-        windowSpy.mockImplementation(() => undefined);
-        windowSpy.mockImplementation(() => ({
-            top: "test-top",
-        }));
+        windowSpy.mockImplementation(() => {
+            throw new Error("Test error");
+        });
 
         expect(inIframe()).toBe(true);
     });
