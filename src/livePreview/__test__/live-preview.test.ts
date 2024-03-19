@@ -1,4 +1,5 @@
 import crypto from "crypto";
+import { fireEvent, waitFor } from "@testing-library/preact";
 import { sleep } from "../../__test__/utils";
 import { getDefaultConfig } from "../../configManager/config.default";
 import Config from "../../configManager/configManager";
@@ -493,11 +494,16 @@ describe("testing window event listeners", () => {
         expect(sendInitEvent).toBeCalled();
     });
 
-    test("should handle link click event if ssr is set to true", () => {
+    test("should handle link click event if ssr is set to true", async () => {
         Config.replace({
             enable: true,
             ssr: true,
         });
+
+        const targetElement = document.createElement("a");
+        targetElement.href = "http://localhost:3000/";
+        
+        document.body.appendChild(targetElement);
 
         livePreviewInstance = new LivePreview();
 
@@ -506,6 +512,7 @@ describe("testing window event listeners", () => {
             expect.any(Function)
         );
 
+        fireEvent.click(targetElement);
         expect(addLivePreviewQueryTags).toBeCalled();
     });
 });
