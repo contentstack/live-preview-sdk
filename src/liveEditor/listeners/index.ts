@@ -1,7 +1,6 @@
 import EventListenerHandlerParams from "./types";
 
 import handleEditorInteraction from "./mouseClick";
-import handleMouseOver from "./mouseOver";
 import handleMouseHover from "./mouseHover";
 import { VisualEditor } from "..";
 
@@ -27,10 +26,6 @@ export function addEventListeners(params: AddEventListenersParams): void {
             focusedToolbar: params.focusedToolbar,
             resizeObserver: params.resizeObserver,
         });
-    });
-
-    window.addEventListener("mouseover", (event) => {
-        handleMouseOver(event);
     });
 
     window.addEventListener("mousemove", (event) => {
@@ -61,10 +56,6 @@ export function removeEventListeners(params: RemoveEventListenersParams): void {
             focusedToolbar: params.focusedToolbar,
             resizeObserver: params.resizeObserver,
         });
-    });
-
-    window.removeEventListener("mouseover", (event) => {
-        handleMouseOver(event);
     });
 
     window.removeEventListener("mousemove", (event) => {
