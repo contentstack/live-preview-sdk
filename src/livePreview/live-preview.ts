@@ -37,7 +37,7 @@ export default class LivePreview {
             );
         }
 
-        if (config.enable) {          
+        if (config.enable) {
             if (
                 typeof document !== undefined &&
                 document.readyState === "complete"
@@ -71,7 +71,7 @@ export default class LivePreview {
                         targetHref &&
                         targetHref.includes(docOrigin) &&
                         !targetHref.includes("live_preview")
-                    ) { 
+                    ) {
                         const newUrl = addLivePreviewQueryTags(target.href);
                         event.target.href = newUrl || target.href;
                     }

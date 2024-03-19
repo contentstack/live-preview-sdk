@@ -36,8 +36,8 @@ jest.mock("../../liveEditor/utils/liveEditorPostMessage", () => {
 });
 
 jest.mock("../../utils", () => ({
-    addLivePreviewQueryTags: jest.fn()
-}))
+    addLivePreviewQueryTags: jest.fn(),
+}));
 
 Object.defineProperty(globalThis, "crypto", {
     value: {
@@ -422,10 +422,7 @@ describe("incoming postMessage", () => {
 
         await sleep(0);
         expect(window.history.go).toHaveBeenCalled();
-
     });
-
-
 });
 
 describe("testing window event listeners", () => {
@@ -482,7 +479,7 @@ describe("testing window event listeners", () => {
         Config.replace({
             enable: true,
         });
-        
+
         sendInitEvent = jest.spyOn(
             postMessageEventHooks,
             "sendInitializeLivePreviewPostMessageEvent"
@@ -497,10 +494,9 @@ describe("testing window event listeners", () => {
     });
 
     test("should handle link click event if ssr is set to true", () => {
-
         Config.replace({
             enable: true,
-            ssr: true
+            ssr: true,
         });
 
         livePreviewInstance = new LivePreview();
@@ -512,6 +508,4 @@ describe("testing window event listeners", () => {
 
         expect(addLivePreviewQueryTags).toBeCalled();
     });
-
- 
 });
