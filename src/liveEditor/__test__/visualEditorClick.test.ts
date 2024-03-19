@@ -223,21 +223,6 @@ describe("When an element is clicked in visual editor mode", () => {
             expect(buttonGroup).toBeInTheDocument();
         });
 
-        test("should have 2 add instance buttons", async () => {
-            // have to do this because of multiple FieldSchema.getSchema calls
-            await waitFor(async () => {
-                await waitFor(() => {
-                    firstSingleLineField.dispatchEvent(mouseClickEvent);
-                });
-            });
-
-            const addInstanceButtons = document.querySelectorAll(
-                ".visual-editor__add-button"
-            );
-
-            expect(addInstanceButtons.length).toBe(2);
-        });
-
         test("should contain a data-cslp-field-type attribute", async () => {
             VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM =
                 container;

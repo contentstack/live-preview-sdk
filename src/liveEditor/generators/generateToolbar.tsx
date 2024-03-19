@@ -78,13 +78,13 @@ export function appendFieldPathDropdown(
 
     focusedToolbarElement.appendChild(wrapper);
 
-    const FieldLabelWrapper = document.querySelector(
+    const FieldLabelWrapper = focusedToolbarElement.querySelector(
         ".visual-editor__focused-toolbar__field-label-wrapper"
     );
 
     focusedToolbarElement.addEventListener("click", (e) => {
         e.preventDefault();
-
+        
         if (
             (e.target as Element).classList.contains("visual-editor__tooltip")
         ) {
@@ -100,7 +100,7 @@ export function appendFieldPathDropdown(
             ) as string;
             const parentElement = targetElement.closest(
                 `[${DATA_CSLP_ATTR_SELECTOR}="${cslp}"]`
-            ) as HTMLElement;
+            ) as HTMLElement;            
             if (parentElement) {
                 parentElement.click();
             }
