@@ -1,5 +1,5 @@
 import crypto from "crypto";
-import { sendPostmessageToWindow, sleep } from "../../__test__/utils";
+import { sleep } from "../../__test__/utils";
 import { getDefaultConfig } from "../../configManager/config.default";
 import Config from "../../configManager/configManager";
 import { PublicLogger } from "../../logger/logger";
@@ -14,6 +14,7 @@ import {
 } from "../eventManager/types/livePreviewPostMessageEvent.type";
 import * as postMessageEventHooks from "../eventManager/postMessageEvent.hooks";
 import * as livePreviewProductionCleanup from "../livePreviewProductionCleanup";
+import { addLivePreviewQueryTags } from "../../utils";
 
 jest.mock("../../liveEditor/utils/liveEditorPostMessage", () => {
     const { getAllContentTypes } = jest.requireActual(
@@ -34,6 +35,10 @@ jest.mock("../../liveEditor/utils/liveEditorPostMessage", () => {
         },
     };
 });
+
+jest.mock("../../utils", () => ({
+    addLivePreviewQueryTags: jest.fn()
+}))
 
 Object.defineProperty(globalThis, "crypto", {
     value: {
@@ -386,6 +391,7 @@ describe("incoming postMessage", () => {
             environment: "",
         });
     });
+
     test("should navigate forward, backward and reload page on history call", async () => {
         new LivePreview();
         await sleep();
@@ -398,9 +404,7 @@ describe("incoming postMessage", () => {
         livePreviewPostMessage?.send(LIVE_PREVIEW_POST_MESSAGE_EVENTS.HISTORY, {
             type: "forward",
         } as HistoryLivePreviewPostMessageEventData);
-        await sendPostmessageToWindow("history", {
-            type: "forward",
-        });
+        await sleep(0);
 
         expect(window.history.forward).toHaveBeenCalled();
 
@@ -408,22 +412,21 @@ describe("incoming postMessage", () => {
         livePreviewPostMessage?.send(LIVE_PREVIEW_POST_MESSAGE_EVENTS.HISTORY, {
             type: "backward",
         } as HistoryLivePreviewPostMessageEventData);
-        await sendPostmessageToWindow("history", {
-            type: "backward",
-        });
 
+        await sleep(0);
         expect(window.history.back).toHaveBeenCalled();
 
         // for reload
         livePreviewPostMessage?.send(LIVE_PREVIEW_POST_MESSAGE_EVENTS.HISTORY, {
             type: "reload",
         } as HistoryLivePreviewPostMessageEventData);
-        await sendPostmessageToWindow("history", {
-            type: "reload",
-        });
 
+        await sleep(0);
         expect(window.history.go).toHaveBeenCalled();
+
     });
+
+
 });
 
 describe("testing window event listeners", () => {
@@ -459,14 +462,10 @@ describe("testing window event listeners", () => {
         Config.set("windowType", ILivePreviewWindowType.PREVIEW);
 
         addEventListenerMock = jest.spyOn(window, "addEventListener");
-        sendInitEvent = jest.spyOn(
-            postMessageEventHooks,
-            "sendInitializeLivePreviewPostMessageEvent"
-        );
-        livePreviewInstance = new LivePreview();
     });
 
     afterEach(() => {
+        jest.restoreAllMocks();
         document.getElementsByTagName("html")[0].innerHTML = "";
     });
 
@@ -475,15 +474,21 @@ describe("testing window event listeners", () => {
         livePreviewPostMessage?.destroy({ soft: true });
     });
 
-    test("attaches a load event to call requestDataSync if document is not yet loaded", () => {
+    test("should attach a load event to call requestDataSync if document is not yet loaded", () => {
         Object.defineProperty(document, "readyState", {
             value: "loading",
-            writable: false,
+            writable: true,
         });
 
         Config.replace({
             enable: true,
         });
+        
+        sendInitEvent = jest.spyOn(
+            postMessageEventHooks,
+            "sendInitializeLivePreviewPostMessageEvent"
+        );
+        livePreviewInstance = new LivePreview();
 
         expect(addEventListenerMock).toHaveBeenCalledWith(
             "load",
@@ -491,4 +496,23 @@ describe("testing window event listeners", () => {
         );
         expect(sendInitEvent).toBeCalled();
     });
+
+    test("should handle link click event if ssr is set to true", () => {
+
+        Config.replace({
+            enable: true,
+            ssr: true
+        });
+
+        livePreviewInstance = new LivePreview();
+
+        expect(addEventListenerMock).toHaveBeenCalledWith(
+            "click",
+            expect.any(Function)
+        );
+
+        expect(addLivePreviewQueryTags).toBeCalled();
+    });
+
+ 
 });

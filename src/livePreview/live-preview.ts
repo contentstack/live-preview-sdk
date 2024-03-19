@@ -37,7 +37,7 @@ export default class LivePreview {
             );
         }
 
-        if (config.enable) {
+        if (config.enable) {          
             if (
                 typeof document !== undefined &&
                 document.readyState === "complete"
@@ -62,18 +62,6 @@ export default class LivePreview {
 
             //NOTE - I think we are already handling the link click event here. Let's move it to a function.
             if (config.ssr) {
-                // NOTE: what are we doing here?
-                window.addEventListener("load", (e) => {
-                    const allATags = document.querySelectorAll("a");
-                    allATags.forEach((tag) => {
-                        const docOrigin: string = document.location.origin;
-                        if (tag.href && tag.href.includes(docOrigin)) {
-                            const newUrl = addLivePreviewQueryTags(tag.href);
-                            tag.href = newUrl;
-                        }
-                    });
-                });
-
                 // Setting the query params to all the click events related to current domain
                 window.addEventListener("click", (event: any) => {
                     const target: any = event.target;
@@ -83,7 +71,7 @@ export default class LivePreview {
                         targetHref &&
                         targetHref.includes(docOrigin) &&
                         !targetHref.includes("live_preview")
-                    ) {
+                    ) { 
                         const newUrl = addLivePreviewQueryTags(target.href);
                         event.target.href = newUrl || target.href;
                     }
