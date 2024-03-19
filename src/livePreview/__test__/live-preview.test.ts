@@ -13,7 +13,6 @@ import {
     OnChangeLivePreviewPostMessageEventData,
 } from "../eventManager/types/livePreviewPostMessageEvent.type";
 import * as postMessageEventHooks from "../eventManager/postMessageEvent.hooks";
-import * as livePreviewProductionCleanup from "../livePreviewProductionCleanup";
 import { addLivePreviewQueryTags } from "../../utils";
 
 jest.mock("../../liveEditor/utils/liveEditorPostMessage", () => {
