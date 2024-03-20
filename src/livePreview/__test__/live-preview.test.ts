@@ -1,5 +1,6 @@
 import crypto from "crypto";
-import { sendPostmessageToWindow, sleep } from "../../__test__/utils";
+import { fireEvent, waitFor } from "@testing-library/preact";
+import { sleep } from "../../__test__/utils";
 import { getDefaultConfig } from "../../configManager/config.default";
 import Config from "../../configManager/configManager";
 import { PublicLogger } from "../../logger/logger";
@@ -12,6 +13,8 @@ import {
     HistoryLivePreviewPostMessageEventData,
     OnChangeLivePreviewPostMessageEventData,
 } from "../eventManager/types/livePreviewPostMessageEvent.type";
+import * as postMessageEventHooks from "../eventManager/postMessageEvent.hooks";
+import { addLivePreviewQueryTags } from "../../utils";
 
 jest.mock("../../liveEditor/utils/liveEditorPostMessage", () => {
     const { getAllContentTypes } = jest.requireActual(
@@ -32,6 +35,10 @@ jest.mock("../../liveEditor/utils/liveEditorPostMessage", () => {
         },
     };
 });
+
+jest.mock("../../utils", () => ({
+    addLivePreviewQueryTags: jest.fn(),
+}));
 
 Object.defineProperty(globalThis, "crypto", {
     value: {
@@ -384,6 +391,7 @@ describe("incoming postMessage", () => {
             environment: "",
         });
     });
+
     test("should navigate forward, backward and reload page on history call", async () => {
         new LivePreview();
         await sleep();
@@ -396,9 +404,7 @@ describe("incoming postMessage", () => {
         livePreviewPostMessage?.send(LIVE_PREVIEW_POST_MESSAGE_EVENTS.HISTORY, {
             type: "forward",
         } as HistoryLivePreviewPostMessageEventData);
-        await sendPostmessageToWindow("history", {
-            type: "forward",
-        });
+        await sleep(0);
 
         expect(window.history.forward).toHaveBeenCalled();
 
@@ -406,20 +412,107 @@ describe("incoming postMessage", () => {
         livePreviewPostMessage?.send(LIVE_PREVIEW_POST_MESSAGE_EVENTS.HISTORY, {
             type: "backward",
         } as HistoryLivePreviewPostMessageEventData);
-        await sendPostmessageToWindow("history", {
-            type: "backward",
-        });
 
+        await sleep(0);
         expect(window.history.back).toHaveBeenCalled();
 
         // for reload
         livePreviewPostMessage?.send(LIVE_PREVIEW_POST_MESSAGE_EVENTS.HISTORY, {
             type: "reload",
         } as HistoryLivePreviewPostMessageEventData);
-        await sendPostmessageToWindow("history", {
-            type: "reload",
+
+        await sleep(0);
+        expect(window.history.go).toHaveBeenCalled();
+    });
+});
+
+describe("testing window event listeners", () => {
+    let addEventListenerMock: any;
+    let sendInitEvent: any;
+    let livePreviewInstance: LivePreview;
+
+    beforeEach(() => {
+        Config.reset();
+        livePreviewPostMessage?.destroy({ soft: true });
+        livePreviewPostMessage?.on(
+            LIVE_PREVIEW_POST_MESSAGE_EVENTS.INIT,
+            mockLivePreviewInitEventListener
+        );
+
+        const titlePara = document.createElement("h3");
+        titlePara.setAttribute("data-cslp", TITLE_CSLP_TAG);
+        titlePara.setAttribute("data-test-id", "title-para");
+
+        const descPara = document.createElement("p");
+        descPara.setAttribute("data-cslp", DESC_CSLP_TAG);
+        descPara.setAttribute("data-test-id", "desc-para");
+
+        const linkPara = document.createElement("a");
+        linkPara.setAttribute("data-cslp", LINK_CSLP_TAG);
+        linkPara.setAttribute("href", "https://www.example.com");
+        linkPara.setAttribute("data-test-id", "link-para");
+
+        document.body.appendChild(titlePara);
+        document.body.appendChild(descPara);
+        document.body.appendChild(linkPara);
+
+        Config.set("windowType", ILivePreviewWindowType.PREVIEW);
+
+        addEventListenerMock = jest.spyOn(window, "addEventListener");
+    });
+
+    afterEach(() => {
+        jest.restoreAllMocks();
+        document.getElementsByTagName("html")[0].innerHTML = "";
+    });
+
+    afterAll(() => {
+        Config.reset();
+        livePreviewPostMessage?.destroy({ soft: true });
+    });
+
+    test("should attach a load event to call requestDataSync if document is not yet loaded", () => {
+        Object.defineProperty(document, "readyState", {
+            value: "loading",
+            writable: true,
         });
 
-        expect(window.history.go).toHaveBeenCalled();
+        Config.replace({
+            enable: true,
+        });
+
+        sendInitEvent = jest.spyOn(
+            postMessageEventHooks,
+            "sendInitializeLivePreviewPostMessageEvent"
+        );
+        livePreviewInstance = new LivePreview();
+
+        expect(addEventListenerMock).toHaveBeenCalledWith(
+            "load",
+            expect.any(Function)
+        );
+        expect(sendInitEvent).toBeCalled();
+    });
+
+    test("should handle link click event if ssr is set to true", async () => {
+        Config.replace({
+            enable: true,
+            ssr: true,
+        });
+
+        const targetElement = document.createElement("a");
+        targetElement.href = "http://localhost:3000/";
+        
+        document.body.appendChild(targetElement);
+
+        livePreviewInstance = new LivePreview();
+
+        expect(addEventListenerMock).toHaveBeenCalledWith(
+            "click",
+            expect.any(Function)
+        );
+
+        fireEvent.click(targetElement);
+        expect(addLivePreviewQueryTags).toBeCalled();
     });
 });

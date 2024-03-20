@@ -44,7 +44,7 @@ describe("MultipleFieldToolbarComponent", () => {
         cleanup();
     });
 
-    it("renders toolbar buttons correctly", () => {
+    test("renders toolbar buttons correctly", () => {
         const { getByTestId } = render(
             <MultipleFieldToolbarComponent
                 fieldMetadata={mockFieldMetadata}
@@ -67,7 +67,7 @@ describe("MultipleFieldToolbarComponent", () => {
         expect(deleteButton).toBeInTheDocument();
     });
 
-    it("calls handleMoveInstance with 'previous' when move left button is clicked", () => {
+    test("calls handleMoveInstance with 'previous' when move left button is clicked", () => {
         const { getByTestId } = render(
             <MultipleFieldToolbarComponent
                 fieldMetadata={mockFieldMetadata}
@@ -89,7 +89,7 @@ describe("MultipleFieldToolbarComponent", () => {
         );
     });
 
-    it("calls handleMoveInstance with 'next' when move right button is clicked", () => {
+    test("calls handleMoveInstance with 'next' when move right button is clicked", () => {
         const { getByTestId } = render(
             <MultipleFieldToolbarComponent
                 fieldMetadata={mockFieldMetadata}
@@ -111,7 +111,7 @@ describe("MultipleFieldToolbarComponent", () => {
         );
     });
 
-    it("calls handleDeleteInstance when delete button is clicked", () => {
+    test("calls handleDeleteInstance when delete button is clicked", () => {
         const { getByTestId } = render(
             <MultipleFieldToolbarComponent
                 fieldMetadata={mockFieldMetadata}

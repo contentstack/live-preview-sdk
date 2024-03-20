@@ -8,7 +8,7 @@ jest.mock("./../../utils/getStyleOfAnElement");
 describe("PseudoEditableFieldComponent", () => {
     afterEach(cleanup);
 
-    it("renders correctly with provided props", () => {
+    test("renders correctly with provided props", () => {
         (getStyleOfAnElement as jest.Mock).mockReturnValue({
             "font-size": "16px",
             color: "red",

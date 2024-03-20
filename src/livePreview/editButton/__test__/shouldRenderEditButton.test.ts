@@ -1,12 +1,10 @@
 import "@testing-library/jest-dom/extend-expect";
-import { inIframe } from "../../../common/inIframe";
 import Config from "../../../configManager/configManager";
 import { shouldRenderEditButton } from "../editButton";
 
 jest.mock("../../../common/inIframe", () => ({
     __esModule: true,
-    ...jest.requireActual("../../../common/inIframe"),
-    inIframe: jest.fn(),
+    inIframe: jest.fn().mockReturnValue(true),
 }));
 
 describe("shouldRenderEditButton", () => {
@@ -80,8 +78,6 @@ describe("shouldRenderEditButton", () => {
             },
         });
 
-        (inIframe as jest.Mock).mockReturnValueOnce(true);
-
         expect(shouldRenderEditButton()).toBe(false);
     });
 
@@ -95,8 +91,6 @@ describe("shouldRenderEditButton", () => {
             },
         });
 
-        (inIframe as jest.Mock).mockReturnValueOnce(true);
-
         expect(shouldRenderEditButton()).toBe(false);
     });
 
@@ -109,8 +103,6 @@ describe("shouldRenderEditButton", () => {
         });
 
         Config.set("windowType", "editor");
-
-        (inIframe as jest.Mock).mockReturnValueOnce(true);
         expect(shouldRenderEditButton()).toBe(false);
     });
 
@@ -123,8 +115,6 @@ describe("shouldRenderEditButton", () => {
         });
 
         Config.set("windowType", "independent");
-
-        (inIframe as jest.Mock).mockReturnValueOnce(true);
         expect(shouldRenderEditButton()).toBe(true);
     });
 });

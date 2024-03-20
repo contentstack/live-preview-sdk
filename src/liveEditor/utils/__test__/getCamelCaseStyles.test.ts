@@ -1,13 +1,13 @@
 import getCamelCaseStyles from "./../getCamelCaseStyles";
 
 describe("getCamelCaseStyles", () => {
-    it("returns an empty object when provided with an empty object", () => {
+    test("returns an empty object when provided with an empty object", () => {
         const styles = {};
         const result = getCamelCaseStyles(styles);
         expect(result).toEqual({});
     });
 
-    it("converts kebab-case styles to camelCase", () => {
+    test("converts kebab-case styles to camelCase", () => {
         const styles = {
             "font-size": "16px",
             "margin-top": "10px",
@@ -19,7 +19,7 @@ describe("getCamelCaseStyles", () => {
         });
     });
 
-    it("leaves camelCase styles unchanged", () => {
+    test("leaves camelCase styles unchanged", () => {
         const styles = {
             fontSize: "16px",
             marginTop: "10px",
@@ -28,7 +28,7 @@ describe("getCamelCaseStyles", () => {
         expect(result).toEqual(styles);
     });
 
-    it("converts PascalCase styles to camelCase", () => {
+    test("converts PascalCase styles to camelCase", () => {
         const styles = {
             FontSize: "16px",
             MarginTop: "10px",
@@ -40,7 +40,7 @@ describe("getCamelCaseStyles", () => {
         });
     });
 
-    it("handles mixed-case styles", () => {
+    test("handles mixed-case styles", () => {
         const styles = {
             FontSize: "16px",
             "margin-top": "10px",
@@ -54,7 +54,7 @@ describe("getCamelCaseStyles", () => {
         });
     });
 
-    it("handles numeric keys", () => {
+    test("handles numeric keys", () => {
         const styles = {
             "123": "value",
             width: "100px",

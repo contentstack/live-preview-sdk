@@ -18,7 +18,7 @@ targetElement.getBoundingClientRect = jest.fn(() => ({
 }));
 
 describe("ReplaceAssetButtonComponent", () => {
-    it("renders button with correct text", () => {
+    test("renders button with correct text", () => {
         const { getByText } = render(
             <ReplaceAssetButtonComponent
                 targetElement={targetElement}
@@ -29,7 +29,7 @@ describe("ReplaceAssetButtonComponent", () => {
         expect(getByText("Replace Asset")).toBeInTheDocument();
     });
 
-    it("applies correct top and right style based on targetElement", () => {
+    test("applies correct top and right style based on targetElement", () => {
         const { getByTestId } = render(
             <ReplaceAssetButtonComponent
                 targetElement={targetElement}
@@ -41,7 +41,7 @@ describe("ReplaceAssetButtonComponent", () => {
         expect(button).toHaveStyle("right: 924px");
     });
 
-    it("calls onClickCallback with the correct event when button is clicked", () => {
+    test("calls onClickCallback with the correct event when button is clicked", () => {
         const onClickMock = jest.fn();
         const { getByTestId } = render(
             <ReplaceAssetButtonComponent

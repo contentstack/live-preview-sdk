@@ -15,7 +15,7 @@ const mockResizeObserver = {
 };
 
 describe("VisualEditorComponent", () => {
-    it("renders VisualEditorComponent correctly", () => {
+    test("renders VisualEditorComponent correctly", () => {
         const { getByTestId } = render(
             <VisualEditorComponent
                 visualEditorContainer={document.createElement("div")}
@@ -32,7 +32,7 @@ describe("VisualEditorComponent", () => {
         ).toBeInTheDocument();
     });
 
-    it("hides overlay and unobserves element on click", () => {
+    test("hides overlay and unobserves element on click", () => {
         const visualEditorContainer = document.createElement("div");
         const { getByTestId } = render(
             <VisualEditorComponent
@@ -52,7 +52,7 @@ describe("VisualEditorComponent", () => {
         });
     });
 
-    it("hides overlay without throwing error if VisualEditorGlobalState is null", () => {
+    test("hides overlay without throwing error if VisualEditorGlobalState is null", () => {
         const visualEditorContainer = document.createElement("div");
         VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM =
             null;
@@ -72,7 +72,7 @@ describe("VisualEditorComponent", () => {
         expect(() => {}).not.toThrow();
     });
 
-    it("unobserves element if VisualEditorGlobalState is null", () => {
+    test("unobserves element if VisualEditorGlobalState is null", () => {
         const visualEditorContainer = document.createElement("div");
         const targetElement = document.createElement("div");
         VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM =

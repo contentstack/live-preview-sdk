@@ -1,3 +1,5 @@
+import crypto from "crypto";
+
 import { getFieldSchemaMap } from "../../../__test__/data/fieldSchemaMap";
 import { sleep } from "../../../__test__/utils";
 import { VisualEditorCslpEventDetails } from "../../types/liveEditor.types";
@@ -9,6 +11,34 @@ import {
     removeAddInstanceButtons,
 } from "../multipleElementAddButton";
 import getChildrenDirection from "../getChildrenDirection";
+import liveEditorPostMessage from "../liveEditorPostMessage";
+import { LiveEditorPostMessageEvents } from "../types/postMessage.types";
+
+Object.defineProperty(globalThis, "crypto", {
+    value: {
+        getRandomValues: (arr: Array<any>) => crypto.randomBytes(arr.length),
+    },
+});
+
+jest.mock("../liveEditorPostMessage", () => {
+    const { getAllContentTypes } = jest.requireActual(
+        "../../../__test__/data/contentType"
+    );
+    const contentTypes = getAllContentTypes();
+    return {
+        __esModule: true,
+        default: {
+            send: jest.fn().mockImplementation((eventName: string) => {
+                if (eventName === "init")
+                    return Promise.resolve({
+                        contentTypes,
+                    });
+                return Promise.resolve();
+            }),
+            on: jest.fn(),
+        },
+    };
+});
 
 describe("generateAddInstanceButton", () => {
     test("should generate a button", () => {
@@ -131,12 +161,6 @@ describe("getChildrenDirection", () => {
 });
 
 describe("handleAddButtonsForMultiple", () => {
-    let firstChild: HTMLElement;
-    let secondChild: HTMLElement;
-    let container: HTMLElement;
-    let visualEditorContainer: HTMLDivElement;
-    let eventDetails: VisualEditorCslpEventDetails;
-
     beforeAll(() => {
         FieldSchemaMap.setFieldSchema(
             "all_fields",
@@ -144,167 +168,307 @@ describe("handleAddButtonsForMultiple", () => {
         );
     });
 
-    beforeEach(() => {
-        visualEditorContainer = document.createElement("div");
-        visualEditorContainer.classList.add("visual-editor__container");
-        document.body.appendChild(visualEditorContainer);
+    describe("component render and UI logic", () => {
+        let firstChild: HTMLElement;
+        let secondChild: HTMLElement;
+        let container: HTMLElement;
+        let visualEditorContainer: HTMLDivElement;
+        let eventDetails: VisualEditorCslpEventDetails;
 
-        firstChild = document.createElement("div");
-        firstChild.setAttribute(
-            "data-cslp",
-            "all_fields.bltapikey.en-us.group.0"
-        );
+        beforeEach(() => {
+            visualEditorContainer = document.createElement("div");
+            visualEditorContainer.classList.add("visual-editor__container");
+            document.body.appendChild(visualEditorContainer);
 
-        secondChild = document.createElement("div");
-        secondChild.setAttribute(
-            "data-cslp",
-            "all_fields.bltapikey.en-us.group.1"
-        );
+            firstChild = document.createElement("div");
+            firstChild.setAttribute(
+                "data-cslp",
+                "all_fields.bltapikey.en-us.group.0"
+            );
 
-        firstChild.getBoundingClientRect = jest.fn().mockReturnValue({
-            left: 10,
-            right: 20,
-            top: 10,
-            bottom: 20,
+            secondChild = document.createElement("div");
+            secondChild.setAttribute(
+                "data-cslp",
+                "all_fields.bltapikey.en-us.group.1"
+            );
+
+            firstChild.getBoundingClientRect = jest.fn().mockReturnValue({
+                left: 10,
+                right: 20,
+                top: 10,
+                bottom: 20,
+            });
+
+            secondChild.getBoundingClientRect = jest.fn().mockReturnValue({
+                left: 20,
+                right: 30,
+                top: 10,
+                bottom: 20,
+            });
+
+            container = document.createElement("div");
+            container.setAttribute(
+                "data-cslp",
+                "all_fields.bltapikey.en-us.group"
+            );
+            container.appendChild(firstChild);
+            container.appendChild(secondChild);
+
+            visualEditorContainer.appendChild(container);
+
+            const mouseEvent = new MouseEvent("click", {
+                bubbles: true,
+                cancelable: true,
+            });
+            firstChild.dispatchEvent(mouseEvent);
+
+            eventDetails = getCsDataOfElement(
+                mouseEvent
+            ) as VisualEditorCslpEventDetails;
         });
 
-        secondChild.getBoundingClientRect = jest.fn().mockReturnValue({
-            left: 20,
-            right: 30,
-            top: 10,
-            bottom: 20,
+        afterEach(() => {
+            document.getElementsByTagName("body")[0].innerHTML = "";
+            jest.resetAllMocks();
         });
 
-        container = document.createElement("div");
-        container.setAttribute("data-cslp", "all_fields.bltapikey.en-us.group");
-        container.appendChild(firstChild);
-        container.appendChild(secondChild);
+        test("should not add buttons if the editable element is not found", () => {
+            handleAddButtonsForMultiple(eventDetails, {
+                editableElement: null,
+                visualEditorContainer: visualEditorContainer,
+            });
 
-        visualEditorContainer.appendChild(container);
+            const addInstanceButtons = visualEditorContainer.querySelectorAll(
+                `[data-testid="visual-editor-add-instance-button"]`
+            );
 
-        const mouseEvent = new MouseEvent("click", {
-            bubbles: true,
-            cancelable: true,
+            expect(addInstanceButtons.length).toBe(0);
         });
-        firstChild.dispatchEvent(mouseEvent);
 
-        eventDetails = getCsDataOfElement(
-            mouseEvent
-        ) as VisualEditorCslpEventDetails;
+        test("should not add buttons if the direction is none", () => {
+            container.removeAttribute("data-cslp");
+            handleAddButtonsForMultiple(eventDetails, {
+                editableElement: firstChild,
+                visualEditorContainer,
+            });
+
+            const addInstanceButtons = visualEditorContainer.querySelectorAll(
+                `[data-testid="visual-editor-add-instance-button"]`
+            );
+
+            expect(addInstanceButtons.length).toBe(0);
+        });
+
+        test("should not add buttons if the visual editor wrapper is not found", () => {
+            handleAddButtonsForMultiple(eventDetails, {
+                editableElement: firstChild,
+                visualEditorContainer: null,
+            });
+
+            const addInstanceButtons = visualEditorContainer.querySelectorAll(
+                `[data-testid="visual-editor-add-instance-button"]`
+            );
+
+            expect(addInstanceButtons.length).toBe(0);
+        });
+
+        test("should append the buttons to the visual editor wrapper", async () => {
+            handleAddButtonsForMultiple(eventDetails, {
+                editableElement: firstChild,
+                visualEditorContainer,
+            });
+
+            await sleep(0);
+            const addInstanceButtons = visualEditorContainer.querySelectorAll(
+                `[data-testid="visual-editor-add-instance-button"]`
+            );
+
+            expect(addInstanceButtons.length).toBe(2);
+        });
+
+        test("should add the buttons to the center if the direction is horizontal", async () => {
+            handleAddButtonsForMultiple(eventDetails, {
+                editableElement: firstChild,
+                visualEditorContainer,
+            });
+            await sleep(0);
+
+            const addInstanceButtons = visualEditorContainer.querySelectorAll(
+                `[data-testid="visual-editor-add-instance-button"]`
+            );
+
+            const previousButton = addInstanceButtons[0] as HTMLButtonElement;
+            const nextButton = addInstanceButtons[1] as HTMLButtonElement;
+
+            expect(previousButton.style.left).toBe("10px");
+            expect(previousButton.style.top).toBe("15px");
+
+            expect(nextButton.style.left).toBe("20px");
+            expect(nextButton.style.top).toBe("15px");
+        });
+
+        test("should add the buttons to the middle if the direction is vertical", async () => {
+            firstChild.getBoundingClientRect = jest.fn().mockReturnValue({
+                left: 10,
+                right: 20,
+                top: 10,
+                bottom: 20,
+            });
+
+            secondChild.getBoundingClientRect = jest.fn().mockReturnValue({
+                left: 10,
+                right: 20,
+                top: 20,
+                bottom: 30,
+            });
+            handleAddButtonsForMultiple(eventDetails, {
+                editableElement: firstChild,
+                visualEditorContainer,
+            });
+            await sleep(0);
+
+            const addInstanceButtons = visualEditorContainer.querySelectorAll(
+                `[data-testid="visual-editor-add-instance-button"]`
+            );
+
+            const previousButton = addInstanceButtons[0] as HTMLButtonElement;
+            const nextButton = addInstanceButtons[1] as HTMLButtonElement;
+
+            expect(previousButton.style.left).toBe("15px");
+            expect(previousButton.style.top).toBe("10px");
+
+            expect(nextButton.style.left).toBe("15px");
+            expect(nextButton.style.top).toBe("20px");
+        });
     });
 
-    afterEach(() => {
-        document.getElementsByTagName("body")[0].innerHTML = "";
-        jest.resetAllMocks();
-    });
+    describe("click event on add instance button", () => {
+        let firstChild: HTMLElement;
+        let secondChild: HTMLElement;
+        let container: HTMLElement;
+        let visualEditorContainer: HTMLDivElement;
+        let eventDetails: VisualEditorCslpEventDetails;
 
-    test("should not add buttons if the editable element is not found", () => {
-        handleAddButtonsForMultiple(eventDetails, {
-            editableElement: null,
-            visualEditorContainer: visualEditorContainer,
+        beforeEach(() => {
+            visualEditorContainer = document.createElement("div");
+            visualEditorContainer.classList.add("visual-editor__container");
+            document.body.appendChild(visualEditorContainer);
+
+            firstChild = document.createElement("div");
+            firstChild.setAttribute(
+                "data-cslp",
+                "all_fields.bltapikey.en-us.group.0"
+            );
+
+            secondChild = document.createElement("div");
+            secondChild.setAttribute(
+                "data-cslp",
+                "all_fields.bltapikey.en-us.group.1"
+            );
+
+            firstChild.getBoundingClientRect = jest.fn().mockReturnValue({
+                left: 10,
+                right: 20,
+                top: 10,
+                bottom: 20,
+            });
+
+            secondChild.getBoundingClientRect = jest.fn().mockReturnValue({
+                left: 20,
+                right: 30,
+                top: 10,
+                bottom: 20,
+            });
+
+            container = document.createElement("div");
+            container.setAttribute(
+                "data-cslp",
+                "all_fields.bltapikey.en-us.group"
+            );
+            container.appendChild(firstChild);
+            container.appendChild(secondChild);
+
+            visualEditorContainer.appendChild(container);
+
+            const mouseEvent = new MouseEvent("click", {
+                bubbles: true,
+                cancelable: true,
+            });
+            firstChild.dispatchEvent(mouseEvent);
+
+            eventDetails = getCsDataOfElement(
+                mouseEvent
+            ) as VisualEditorCslpEventDetails;
         });
 
-        const addInstanceButtons = visualEditorContainer.querySelectorAll(
-            `[data-testid="visual-editor-add-instance-button"]`
-        );
-
-        expect(addInstanceButtons.length).toBe(0);
-    });
-
-    test("should not add buttons if the direction is none", () => {
-        container.removeAttribute("data-cslp");
-        handleAddButtonsForMultiple(eventDetails, {
-            editableElement: firstChild,
-            visualEditorContainer,
+        afterEach(() => {
+            document.getElementsByTagName("body")[0].innerHTML = "";
+            jest.resetAllMocks();
         });
 
-        const addInstanceButtons = visualEditorContainer.querySelectorAll(
-            `[data-testid="visual-editor-add-instance-button"]`
-        );
+        test("should send an add instance message to the parent", async () => {
+            handleAddButtonsForMultiple(eventDetails, {
+                editableElement: firstChild,
+                visualEditorContainer,
+            });
 
-        expect(addInstanceButtons.length).toBe(0);
-    });
+            await sleep(0);
+            const addInstanceButtons = visualEditorContainer.querySelectorAll(
+                `[data-testid="visual-editor-add-instance-button"]`
+            );
 
-    test("should not add buttons if the visual editor wrapper is not found", () => {
-        handleAddButtonsForMultiple(eventDetails, {
-            editableElement: firstChild,
-            visualEditorContainer: null,
+            expect(addInstanceButtons.length).toBe(2);
+
+            (addInstanceButtons[0] as HTMLButtonElement).click();
+
+            expect(liveEditorPostMessage?.send).toBeCalledWith(
+                LiveEditorPostMessageEvents.ADD_INSTANCE,
+                {
+                    fieldMetadata: {
+                        entry_uid: "bltapikey",
+                        content_type_uid: "all_fields",
+                        locale: "en-us",
+                        cslpValue: "all_fields.bltapikey.en-us.group.0",
+                        fieldPath: "group",
+                        fieldPathWithIndex: "group",
+                        multipleFieldMetadata: {
+                            parentDetails: {
+                                parentPath: "group",
+                                parentCslpValue:
+                                    "all_fields.bltapikey.en-us.group",
+                            },
+                            index: 0,
+                        },
+                    },
+                    index: 0,
+                }
+            );
+
+            (addInstanceButtons[1] as HTMLButtonElement).click();
+
+            expect(liveEditorPostMessage?.send).lastCalledWith(
+                LiveEditorPostMessageEvents.ADD_INSTANCE,
+                {
+                    fieldMetadata: {
+                        entry_uid: "bltapikey",
+                        content_type_uid: "all_fields",
+                        locale: "en-us",
+                        cslpValue: "all_fields.bltapikey.en-us.group.0",
+                        fieldPath: "group",
+                        fieldPathWithIndex: "group",
+                        multipleFieldMetadata: {
+                            parentDetails: {
+                                parentPath: "group",
+                                parentCslpValue:
+                                    "all_fields.bltapikey.en-us.group",
+                            },
+                            index: 0,
+                        },
+                    },
+                    index: 1,
+                }
+            );
         });
-
-        const addInstanceButtons = visualEditorContainer.querySelectorAll(
-            `[data-testid="visual-editor-add-instance-button"]`
-        );
-
-        expect(addInstanceButtons.length).toBe(0);
-    });
-
-    test("should append the buttons to the visual editor wrapper", async () => {
-        handleAddButtonsForMultiple(eventDetails, {
-            editableElement: firstChild,
-            visualEditorContainer,
-        });
-
-        await sleep(0);
-        const addInstanceButtons = visualEditorContainer.querySelectorAll(
-            `[data-testid="visual-editor-add-instance-button"]`
-        );
-
-        expect(addInstanceButtons.length).toBe(2);
-    });
-
-    test("should add the buttons to the center if the direction is horizontal", async () => {
-        handleAddButtonsForMultiple(eventDetails, {
-            editableElement: firstChild,
-            visualEditorContainer,
-        });
-        await sleep(0);
-
-        const addInstanceButtons = visualEditorContainer.querySelectorAll(
-            `[data-testid="visual-editor-add-instance-button"]`
-        );
-
-        const previousButton = addInstanceButtons[0] as HTMLButtonElement;
-        const nextButton = addInstanceButtons[1] as HTMLButtonElement;
-
-        expect(previousButton.style.left).toBe("10px");
-        expect(previousButton.style.top).toBe("15px");
-
-        expect(nextButton.style.left).toBe("20px");
-        expect(nextButton.style.top).toBe("15px");
-    });
-
-    test("should add the buttons to the middle if the direction is vertical", async () => {
-        firstChild.getBoundingClientRect = jest.fn().mockReturnValue({
-            left: 10,
-            right: 20,
-            top: 10,
-            bottom: 20,
-        });
-
-        secondChild.getBoundingClientRect = jest.fn().mockReturnValue({
-            left: 10,
-            right: 20,
-            top: 20,
-            bottom: 30,
-        });
-        handleAddButtonsForMultiple(eventDetails, {
-            editableElement: firstChild,
-            visualEditorContainer,
-        });
-        await sleep(0);
-
-        const addInstanceButtons = visualEditorContainer.querySelectorAll(
-            `[data-testid="visual-editor-add-instance-button"]`
-        );
-
-        const previousButton = addInstanceButtons[0] as HTMLButtonElement;
-        const nextButton = addInstanceButtons[1] as HTMLButtonElement;
-
-        expect(previousButton.style.left).toBe("15px");
-        expect(previousButton.style.top).toBe("10px");
-
-        expect(nextButton.style.left).toBe("15px");
-        expect(nextButton.style.top).toBe("20px");
     });
 });
 

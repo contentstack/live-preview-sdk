@@ -54,7 +54,7 @@ describe("FieldLabelWrapperComponent", () => {
         },
     };
 
-    const mockEditableElement: VisualEditorCslpEventDetails = {
+    const mockEventDetails: VisualEditorCslpEventDetails = {
         editableElement: document.createElement("div"),
         cslpData: "",
         fieldMetadata: mockFieldMetadata,
@@ -66,7 +66,7 @@ describe("FieldLabelWrapperComponent", () => {
         const { getByText } = render(
             <FieldLabelWrapperComponent
                 fieldMetadata={mockFieldMetadata}
-                eventDetails={mockEditableElement}
+                eventDetails={mockEventDetails}
                 parentPaths={parentPaths}
             />
         );
@@ -83,7 +83,7 @@ describe("FieldLabelWrapperComponent", () => {
         const { getByTestId } = render(
             <FieldLabelWrapperComponent
                 fieldMetadata={mockFieldMetadata}
-                eventDetails={mockEditableElement}
+                eventDetails={mockEventDetails}
                 parentPaths={[]}
             />
         );
@@ -95,7 +95,7 @@ describe("FieldLabelWrapperComponent", () => {
         const { container } = render(
             <FieldLabelWrapperComponent
                 fieldMetadata={mockFieldMetadata}
-                eventDetails={mockEditableElement}
+                eventDetails={mockEventDetails}
                 parentPaths={[]}
             />
         );
