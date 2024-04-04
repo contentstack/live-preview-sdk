@@ -27,6 +27,7 @@ export declare interface IStackSdk {
 export declare interface IStackDetails {
     apiKey: string;
     environment: string;
+    branch: string;
     contentTypeUid: string;
     entryUid: string;
 }
@@ -34,6 +35,7 @@ export declare interface IStackDetails {
 export declare interface IInitStackDetails {
     apiKey: string;
     environment: string;
+    branch: string;
 }
 export declare interface IConfig {
     ssr: boolean;
