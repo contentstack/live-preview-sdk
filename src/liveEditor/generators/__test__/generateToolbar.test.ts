@@ -74,8 +74,6 @@ describe("appendFieldPathDropdown", () => {
         expect(fieldLabelWrapper?.classList.toString()).toBe(
             "visual-editor__focused-toolbar__field-label-wrapper"
         );
-
-        console.log(fieldLabelWrapper?.classList.toString());
     });
 
     test("should click the closest parent if focused toolbar is a parent field", () => {
