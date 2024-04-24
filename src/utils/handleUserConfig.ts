@@ -107,6 +107,10 @@ export const handleInitData = (
             config.stackDetails.environment = initData.environment;
         }
 
+        if (Object.prototype.hasOwnProperty.call(initData, "branch")) {
+            config.stackDetails.branch = initData.branch;
+        }
+
         // client URL params
         handleClientUrlParams(
             config,
@@ -174,6 +178,11 @@ export const handleInitData = (
             initData.stackDetails?.environment ??
             stackSdk.environment ??
             config.stackDetails.environment;
+
+        config.stackDetails.branch =
+            initData.stackDetails?.branch ??
+            config.stackDetails.branch ??
+            "main";
 
         // client URL params
         handleClientUrlParams(

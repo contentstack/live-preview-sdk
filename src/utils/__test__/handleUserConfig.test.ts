@@ -22,6 +22,7 @@ describe("handleInitData()", () => {
             stackDetails: {
                 apiKey: "",
                 environment: "",
+                branch: "main",
                 contentTypeUid: "",
                 entryUid: "",
             },
@@ -52,6 +53,7 @@ describe("handleInitData()", () => {
             stackDetails: {
                 apiKey: "bltanything",
                 environment: "",
+                branch: "main",
             },
         };
 
@@ -63,6 +65,7 @@ describe("handleInitData()", () => {
             stackDetails: {
                 apiKey: "bltanything",
                 environment: "",
+                branch: "main",
                 contentTypeUid: "",
                 entryUid: "",
             },
@@ -202,6 +205,7 @@ describe("handleClientUrlParams()", () => {
             stackDetails: {
                 apiKey: "",
                 environment: "",
+                branch: "main",
                 contentTypeUid: "",
                 entryUid: "",
             },

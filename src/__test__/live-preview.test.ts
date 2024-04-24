@@ -145,7 +145,7 @@ describe("cslp tooltip", () => {
         expect(tooltip.style.top).toBe(`${expectedTop}px`);
     });
 
-    test("should redirect to page when edit tag button is clicked", () => {
+    test("should redirect to page when edit tag button is clicked with default branch", () => {
         new LivePreview({
             enable: true,
             stackDetails: {
@@ -176,7 +176,46 @@ describe("cslp tooltip", () => {
         singularEditButton?.click();
 
         const expectedRedirectUrl =
-            "https://app.contentstack.com/#!/stack/sample-api-key/content-type/content-type-1/en-us/entry/entry-uid-1/edit?preview-field=field-title&preview-locale=en-us&preview-environment=sample-environment";
+            "https://app.contentstack.com/#!/stack/sample-api-key/content-type/content-type-1/en-us/entry/entry-uid-1/edit?branch=main&preview-field=field-title&preview-locale=en-us&preview-environment=sample-environment";
+
+        expect(window.open).toHaveBeenCalledWith(expectedRedirectUrl, "_blank");
+
+        descPara?.dispatchEvent(hoverEvent);
+    });
+
+    test("should redirect to page when edit tag button is clicked with added branch", () => {
+        new LivePreview({
+            enable: true,
+            stackDetails: {
+                apiKey: "sample-api-key",
+                environment: "sample-environment",
+                branch: "dev",
+            },
+        });
+
+        const singularEditButton = document.querySelector(
+            "[data-test-id='cslp-singular-edit-button']"
+        ) as HTMLDivElement;
+
+        const titlePara = document.querySelector("[data-test-id='title-para']");
+        const descPara = document.querySelector("[data-test-id='desc-para']");
+
+        jest.spyOn(window, "open").mockImplementation(
+            (url?: string | URL, target?: string, features?: string) => {
+                return {} as Window;
+            }
+        );
+
+        const hoverEvent = new CustomEvent("mouseover", {
+            bubbles: true,
+        });
+
+        titlePara?.dispatchEvent(hoverEvent);
+
+        singularEditButton?.click();
+
+        const expectedRedirectUrl =
+            "https://app.contentstack.com/#!/stack/sample-api-key/content-type/content-type-1/en-us/entry/entry-uid-1/edit?branch=dev&preview-field=field-title&preview-locale=en-us&preview-environment=sample-environment";
 
         expect(window.open).toHaveBeenCalledWith(expectedRedirectUrl, "_blank");
 
