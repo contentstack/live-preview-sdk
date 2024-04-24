@@ -179,7 +179,7 @@ describe("hideFocusOverlay", () => {
             bottom: 20,
         })) as any;
 
-        visualEditorContainer.appendChild(editedElement);
+        document.body.appendChild(editedElement);
 
         singleFocusOverlay = focusOverlayWrapper.querySelector(
             `[data-testid="visual-editor__overlay--top"]`
@@ -225,20 +225,31 @@ describe("hideFocusOverlay", () => {
         expect(focusOverlayWrapper.classList.contains("visible")).toBe(true);
     });
 
-    // TODO
-    test("should send update field event to the parent if the focused element is an inline editable element", () => {
+    test("should send update field event to the parent if the focused element is an inline editable element", async () => {
         editedElement.setAttribute("contenteditable", "true");
 
-        expect(focusOverlayWrapper.classList.contains("visible")).toBe(true);
-        fireEvent.click(singleFocusOverlay);
-        fireEvent.click(singleFocusOverlay);
+        // We"ll always click one of the overlays, so we can just grab the first one. Manually pointing the global state to the editedElement as we are not simulating mouse click on window here.
+        VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM =
+            editedElement;
 
+        // already called addFocusOverlay, hence visible is set to true
+        expect(focusOverlayWrapper.classList.contains("visible")).toBe(true);
+
+        await fireEvent.change(editedElement, {
+            target: { innerHTML: "New text" },
+        });
+
+        expect(editedElement.textContent).toBe("New text");
+
+        // close the overlay
+        await fireEvent.click(focusOverlayWrapper);
         expect(focusOverlayWrapper.classList.contains("visible")).toBe(false);
+
         expect(liveEditorPostMessage?.send).toHaveBeenCalledTimes(1);
         expect(liveEditorPostMessage?.send).toHaveBeenCalledWith(
             LiveEditorPostMessageEvents.UPDATE_FIELD,
             {
-                data: editedElement.innerHTML,
+                data: editedElement.textContent,
                 fieldMetadata: {
                     content_type_uid: "all_fields",
                     cslpValue: "all_fields.blt58a50b4cebae75c5.en-us.title",

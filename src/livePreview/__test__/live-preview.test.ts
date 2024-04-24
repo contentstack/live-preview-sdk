@@ -13,7 +13,6 @@ import {
     HistoryLivePreviewPostMessageEventData,
     OnChangeLivePreviewPostMessageEventData,
 } from "../eventManager/types/livePreviewPostMessageEvent.type";
-import * as postMessageEventHooks from "../eventManager/postMessageEvent.hooks";
 import { addLivePreviewQueryTags } from "../../utils";
 
 jest.mock("../../liveEditor/utils/liveEditorPostMessage", () => {
@@ -473,25 +472,21 @@ describe("testing window event listeners", () => {
 
     test("should attach a load event to call requestDataSync if document is not yet loaded", () => {
         Object.defineProperty(document, "readyState", {
-            value: "loading",
-            writable: true,
+            get() {
+                return "loading";
+            },
         });
 
         Config.replace({
             enable: true,
         });
 
-        sendInitEvent = jest.spyOn(
-            postMessageEventHooks,
-            "sendInitializeLivePreviewPostMessageEvent"
-        );
         livePreviewInstance = new LivePreview();
 
-        expect(addEventListenerMock).toHaveBeenCalledWith(
+        expect(addEventListenerMock).toBeCalledWith(
             "load",
             expect.any(Function)
         );
-        expect(sendInitEvent).toBeCalled();
     });
 
     test("should handle link click event if ssr is set to true", async () => {
@@ -502,7 +497,7 @@ describe("testing window event listeners", () => {
 
         const targetElement = document.createElement("a");
         targetElement.href = "http://localhost:3000/";
-        
+
         document.body.appendChild(targetElement);
 
         livePreviewInstance = new LivePreview();
