@@ -68,7 +68,6 @@ export async function handleIndividualFields(
                 { expectedFieldData }
             );
         }
-        return;
     } else {
         handleSingleField(
             { editableElement, visualEditorContainer },
