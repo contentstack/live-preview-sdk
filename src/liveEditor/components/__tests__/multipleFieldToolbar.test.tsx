@@ -28,6 +28,9 @@ const mockFieldMetadata: CslpData = {
             parentCslpValue: "",
         },
     },
+    instance: {
+        fieldPathWithIndex: "",
+    },
 };
 
 describe("MultipleFieldToolbarComponent", () => {

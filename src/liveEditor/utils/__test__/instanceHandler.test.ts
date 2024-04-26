@@ -35,6 +35,9 @@ describe("instanceHandlers", () => {
                     parentCslpValue: "",
                 },
             },
+            instance: {
+                fieldPathWithIndex: "",
+            },
         };
 
         await handleDeleteInstance(mockFieldMetadata);
@@ -66,6 +69,9 @@ describe("instanceHandlers", () => {
                     parentPath: "",
                     parentCslpValue: "",
                 },
+            },
+            instance: {
+                fieldPathWithIndex: "",
             },
         };
 

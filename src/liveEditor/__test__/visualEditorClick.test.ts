@@ -672,6 +672,9 @@ describe("When an element is clicked in visual editor mode", () => {
                             parentDetails: null,
                             index: -1,
                         },
+                        instance: {
+                            fieldPathWithIndex: "rich_text_editor",
+                        },
                     },
                     cslpData: "all_fields.bltapikey.en-us.rich_text_editor",
                 }
@@ -1190,6 +1193,9 @@ describe("When an element is clicked in visual editor mode", () => {
                         multipleFieldMetadata: {
                             parentDetails: null,
                             index: -1,
+                        },
+                        instance: {
+                            fieldPathWithIndex: "markdown",
                         },
                     },
                     cslpData: "all_fields.bltapikey.en-us.markdown",
@@ -2461,6 +2467,9 @@ describe("When an element is clicked in visual editor mode", () => {
                             parentDetails: null,
                             index: -1,
                         },
+                        instance: {
+                            fieldPathWithIndex: "link.href",
+                        }
                     },
                     cslpData: "all_fields.bltapikey.en-us.link.href",
                 }
@@ -2990,6 +2999,9 @@ describe("When an element is clicked in visual editor mode", () => {
                             },
                             index: 0,
                         },
+                        instance: {
+                            fieldPathWithIndex: "group_multiple_.0",
+                        }
                     },
                     cslpData: "all_fields.bltapikey.en-us.group_multiple_.0",
                 }

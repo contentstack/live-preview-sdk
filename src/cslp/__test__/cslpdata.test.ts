@@ -20,6 +20,9 @@ describe("extractDetailsFromCslp", () => {
                 },
                 index: 0,
             },
+            instance: {
+                fieldPathWithIndex: "field1.field2.0.field3",
+            }
         };
         expect(extractDetailsFromCslp(cslpValue)).toEqual(expected);
     });
@@ -38,6 +41,9 @@ describe("extractDetailsFromCslp", () => {
                 parentDetails: null,
                 index: -1,
             },
+            instance: {
+                fieldPathWithIndex: "field1.field2.field3",
+            }
         };
         expect(extractDetailsFromCslp(cslpValue)).toEqual(expected);
     });
@@ -58,6 +64,9 @@ describe("extractDetailsFromCslp", () => {
                 },
                 index: 0,
             },
+            instance: {
+                fieldPathWithIndex: "field.0",
+            }
         };
         expect(extractDetailsFromCslp(cslpValue)).toEqual(expected);
     });
@@ -81,6 +90,9 @@ describe("extractDetailsFromCslp", () => {
                 },
                 index: 3,
             },
+            instance: {
+                fieldPathWithIndex: "field1.0.field3.field4.3",
+            }
         };
         expect(extractDetailsFromCslp(cslpValue)).toEqual(expected);
     });

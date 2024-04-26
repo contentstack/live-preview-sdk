@@ -38,6 +38,9 @@ const mockFieldMetadata: CslpData = {
         },
         index: 0,
     },
+    instance: {
+        fieldPathWithIndex: "multi_line_textbox_multiple_.0",
+    },
 };
 
 describe("getExpectedFieldData", () => {
@@ -64,6 +67,9 @@ describe("getExpectedFieldData", () => {
                         },
                         index: 0,
                     },
+                    instance: {
+                        fieldPathWithIndex: "multi_line_textbox_multiple_.0",
+                    }
                 },
             }
         );

@@ -52,6 +52,9 @@ describe("appendFieldPathDropdown", () => {
                     parentCslpValue: "",
                 },
             },
+            instance: {
+                fieldPathWithIndex: "",
+            }
         };
 
         mockEventDetails = {

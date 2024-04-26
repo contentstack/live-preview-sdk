@@ -52,6 +52,9 @@ describe("FieldLabelWrapperComponent", () => {
                 parentCslpValue: "",
             },
         },
+        instance: {
+            fieldPathWithIndex: "",
+        },
     };
 
     const mockEventDetails: VisualEditorCslpEventDetails = {
