@@ -258,6 +258,7 @@ describe("hideFocusOverlay", () => {
                     fieldPathWithIndex: "title",
                     locale: "en-us",
                     multipleFieldMetadata: { index: -1, parentDetails: null },
+                    instance: { fieldPathWithIndex: "title" },
                 },
             }
         );

@@ -439,6 +439,10 @@ describe("handleAddButtonsForMultiple", () => {
                             },
                             index: 0,
                         },
+                        instance: {
+                            fieldPathWithIndex: "group.0",
+                        },
+                        }
                     },
                     index: 0,
                 }
@@ -463,6 +467,9 @@ describe("handleAddButtonsForMultiple", () => {
                                     "all_fields.bltapikey.en-us.group",
                             },
                             index: 0,
+                        },
+                        instance: {
+                            fieldPathWithIndex: "group.0",
                         },
                     },
                     index: 1,

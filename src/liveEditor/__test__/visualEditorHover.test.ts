@@ -384,6 +384,10 @@ describe("When an element is hovered in visual editor mode", () => {
                                 parentPath: "single_line_textbox_multiple_",
                             },
                         },
+                        instance: {
+                            fieldPathWithIndex: "single_line_textbox_multiple_.0",
+                        },
+                        }
                     },
                     index: 0,
                 }
@@ -409,6 +413,9 @@ describe("When an element is hovered in visual editor mode", () => {
                                 parentPath: "single_line_textbox_multiple_",
                             },
                         },
+                        instance: {
+                            fieldPathWithIndex: "single_line_textbox_multiple_.0",
+                        }
                     },
                     index: 1,
                 }
@@ -590,6 +597,9 @@ describe("When an element is hovered in visual editor mode", () => {
                             },
                             index: 0,
                         },
+                        instance: {
+                            fieldPathWithIndex: "multi_line_textbox_multiple_.0",
+                        }
                     },
                     index: 0,
                 }
@@ -615,6 +625,9 @@ describe("When an element is hovered in visual editor mode", () => {
                             },
                             index: 0,
                         },
+                        instance: {
+                            fieldPathWithIndex: "multi_line_textbox_multiple_.0",
+                        }
                     },
                     index: 1,
                 }
@@ -797,6 +810,9 @@ describe("When an element is hovered in visual editor mode", () => {
                             },
                             index: 0,
                         },
+                        instance: {
+                            fieldPathWithIndex: "rich_text_editor_multiple_.0",
+                        }
                     },
                     index: 0,
                 }
@@ -822,6 +838,9 @@ describe("When an element is hovered in visual editor mode", () => {
                             },
                             index: 0,
                         },
+                        instance: {
+                            fieldPathWithIndex: "rich_text_editor_multiple_.0",
+                        }
                     },
                     index: 1,
                 }
@@ -1002,6 +1021,9 @@ describe("When an element is hovered in visual editor mode", () => {
                             },
                             index: 0,
                         },
+                        instance: {
+                            fieldPathWithIndex: "json_rich_text_editor_multiple_.0",
+                        }
                     },
                     index: 0,
                 }
@@ -1027,6 +1049,9 @@ describe("When an element is hovered in visual editor mode", () => {
                             },
                             index: 0,
                         },
+                        instance: {
+                            fieldPathWithIndex: "json_rich_text_editor_multiple_.0",
+                        }
                     },
                     index: 1,
                 }
@@ -1209,6 +1234,9 @@ describe("When an element is hovered in visual editor mode", () => {
                             },
                             index: 0,
                         },
+                        instance: {
+                            fieldPathWithIndex: "markdown_multiple_.0",
+                        }
                     },
                     index: 0,
                 }
@@ -1234,6 +1262,9 @@ describe("When an element is hovered in visual editor mode", () => {
                             },
                             index: 0,
                         },
+                        instance: {
+                            fieldPathWithIndex: "markdown_multiple_.0",
+                        }
                     },
                     index: 1,
                 }
@@ -1414,6 +1445,9 @@ describe("When an element is hovered in visual editor mode", () => {
                             },
                             index: 0,
                         },
+                        instance: {
+                            fieldPathWithIndex: "select_multiple_.0",
+                        }
                     },
                     index: 0,
                 }
@@ -1439,6 +1473,9 @@ describe("When an element is hovered in visual editor mode", () => {
                             },
                             index: 0,
                         },
+                        instance: {
+                            fieldPathWithIndex: "select_multiple_.0",
+                        }
                     },
                     index: 1,
                 }
@@ -1617,6 +1654,9 @@ describe("When an element is hovered in visual editor mode", () => {
                             },
                             index: 0,
                         },
+                        instance: {
+                            fieldPathWithIndex: "number_multiple_.0",
+                        }
                     },
                     index: 0,
                 }
@@ -1642,6 +1682,9 @@ describe("When an element is hovered in visual editor mode", () => {
                             },
                             index: 0,
                         },
+                        instance: {
+                            fieldPathWithIndex: "number_multiple_.0",
+                        }
                     },
                     index: 1,
                 }
@@ -1913,6 +1956,9 @@ describe("When an element is hovered in visual editor mode", () => {
                             },
                             index: 0,
                         },
+                        instance: {
+                            fieldPathWithIndex: "file_multiple_.0",
+                        }
                     },
                     index: 0,
                 }
@@ -1938,6 +1984,9 @@ describe("When an element is hovered in visual editor mode", () => {
                             },
                             index: 0,
                         },
+                        instance: {
+                            fieldPathWithIndex: "file_multiple_.0",
+                        }
                     },
                     index: 1,
                 }
@@ -2200,6 +2249,9 @@ describe("When an element is hovered in visual editor mode", () => {
                             },
                             index: 0,
                         },
+                        instance: {
+                            fieldPathWithIndex: "link_multiple_.0",
+                        }
                     },
                     index: 0,
                 }
@@ -2225,6 +2277,9 @@ describe("When an element is hovered in visual editor mode", () => {
                             },
                             index: 0,
                         },
+                        instance: {
+                            fieldPathWithIndex: "link_multiple_.0",
+                        }
                     },
                     index: 1,
                 }
@@ -2403,6 +2458,9 @@ describe("When an element is hovered in visual editor mode", () => {
                             },
                             index: 0,
                         },
+                        instance: {
+                            fieldPathWithIndex: "reference_multiple_.0",
+                        }
                     },
                     index: 0,
                 }
@@ -2429,6 +2487,9 @@ describe("When an element is hovered in visual editor mode", () => {
                             },
                             index: 0,
                         },
+                        instance: {
+                            fieldPathWithIndex: "reference_multiple_.0",
+                        }
                     },
                     index: 1,
                 }
@@ -2657,6 +2718,9 @@ describe("When an element is hovered in visual editor mode", () => {
                             },
                             index: 0,
                         },
+                        instance: {
+                            fieldPathWithIndex: "group_multiple_.0",
+                        }
                     },
                     index: 0,
                 }
@@ -2683,6 +2747,9 @@ describe("When an element is hovered in visual editor mode", () => {
                             },
                             index: 0,
                         },
+                        instance: {
+                            fieldPathWithIndex: "group_multiple_.0",
+                        }
                     },
                     index: 1,
                 }

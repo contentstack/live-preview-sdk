@@ -15,7 +15,7 @@ import { DeepSignal } from "deepsignal";
 export function extractDetailsFromCslp(cslpValue: string): CslpData {
     const [content_type_uid, entry_uid, locale, ...fieldPath] =
         cslpValue.split(".");
-
+    const instancePathWithInstance = fieldPath.join(".");
     const calculatedPath = fieldPath.filter((path) => {
         const isEmpty = isNil(path);
         const isNumber = isFinite(+path);
@@ -47,6 +47,9 @@ export function extractDetailsFromCslp(cslpValue: string): CslpData {
         fieldPath: calculatedPath.join("."),
         fieldPathWithIndex: fieldPath.join("."),
         multipleFieldMetadata: multipleFieldMetadata,
+        instance: {
+            fieldPathWithIndex: instancePathWithInstance
+        },
     };
 }
 

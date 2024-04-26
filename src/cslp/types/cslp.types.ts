@@ -14,6 +14,9 @@ export interface CslpData {
      */
     fieldPathWithIndex: string;
     multipleFieldMetadata: CslpDataMultipleFieldMetadata;
+    instance: {
+        fieldPathWithIndex: string;
+    }
 }
 
 export interface CslpDataMultipleFieldMetadata {

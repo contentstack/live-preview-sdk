@@ -149,6 +149,9 @@ describe("When an inline element is edited in visual editor mode", () => {
                             parentDetails: null,
                             index: -1,
                         },
+                        instance: {
+                            fieldPathWithIndex: "single_line",
+                        }
                     },
                 }
             );
@@ -280,6 +283,9 @@ describe("When an inline element is edited in visual editor mode", () => {
                             },
                             index: 0,
                         },
+                        instance: {
+                            fieldPathWithIndex: "single_line_textbox_multiple_.0",
+                        }
                     },
                 }
             );
@@ -328,6 +334,9 @@ describe("When an inline element is edited in visual editor mode", () => {
                             },
                             index: 1,
                         },
+                        instance: {
+                            fieldPathWithIndex: "single_line_textbox_multiple_.1",
+                        }
                     },
                 }
             );
@@ -420,6 +429,9 @@ describe("When an inline element is edited in visual editor mode", () => {
                             parentDetails: null,
                             index: -1,
                         },
+                        instance: {
+                            fieldPathWithIndex: "multi_line",
+                        }
                     },
                 }
             );
@@ -552,6 +564,9 @@ describe("When an inline element is edited in visual editor mode", () => {
                             },
                             index: 0,
                         },
+                        instance: {
+                            fieldPathWithIndex: "single_line_textbox_multiple_.0",
+                        }
                     },
                 }
             );
@@ -600,6 +615,9 @@ describe("When an inline element is edited in visual editor mode", () => {
                             },
                             index: 1,
                         },
+                        instance: {
+                            fieldPathWithIndex: "single_line_textbox_multiple_.1",
+                        }
                     },
                 }
             );

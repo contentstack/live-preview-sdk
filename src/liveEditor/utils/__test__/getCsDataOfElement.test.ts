@@ -79,6 +79,7 @@ describe("getCsDataOfElement", () => {
                 fieldPath: "title",
                 fieldPathWithIndex: "title",
                 multipleFieldMetadata: { parentDetails: null, index: -1 },
+                instance: { fieldPathWithIndex: "title" },
             },
         });
     });
@@ -116,6 +117,7 @@ describe("getCsDataOfElement", () => {
                 fieldPath: "title",
                 fieldPathWithIndex: "title",
                 multipleFieldMetadata: { parentDetails: null, index: -1 },
+                instance: { fieldPathWithIndex: "title" },
             },
         });
     });
