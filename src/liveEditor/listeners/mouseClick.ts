@@ -87,17 +87,20 @@ async function handleEditorInteraction(
         });
     }
 
-    addOverlay({
-        overlayWrapper: params.overlayWrapper,
-        resizeObserver: params.resizeObserver,
-        editableElement: editableElement,
-    });
-
-    addFocusedToolbar({
-        eventDetails: eventDetails,
-        focusedToolbar: params.focusedToolbar,
-    });
-
+    if(!editableElement.classList.contains('visual-editor__empty-block-parent') 
+        && !editableElement.classList.contains('visual-editor__empty-block')){
+        addOverlay({
+            overlayWrapper: params.overlayWrapper,
+            resizeObserver: params.resizeObserver,
+            editableElement: editableElement,
+        });
+    
+        addFocusedToolbar({
+            eventDetails: eventDetails,
+            focusedToolbar: params.focusedToolbar,
+        });
+    }
+    
     liveEditorPostMessage?.send(LiveEditorPostMessageEvents.FOCUS_FIELD, {
         DOMEditStack: getDOMEditStack(editableElement),
     });

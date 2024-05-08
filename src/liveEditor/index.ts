@@ -20,10 +20,13 @@ import { LiveEditorPostMessageEvents } from "./utils/types/postMessage.types";
 
 import initUI from "./components";
 import { addEventListeners, removeEventListeners } from "./listeners";
+import { generateEmptyBlocks, removeEmptyBlocks } from "./generators/generateEmptyBlock";
+import { debounce, isEqual } from "lodash-es";
 
 interface VisualEditorGlobalStateImpl {
     previousSelectedEditableDOM: HTMLElement | Element | null;
     previousHoveredTargetDOM: Element | null;
+    previousEmptyBlockParents: Element[] | [];
 }
 
 export class VisualEditor {
@@ -36,6 +39,7 @@ export class VisualEditor {
         signal({
             previousSelectedEditableDOM: null,
             previousHoveredTargetDOM: null,
+            previousEmptyBlockParents: []
         });
 
     private resizeObserver = new ResizeObserver(([entry]) => {
@@ -60,6 +64,30 @@ export class VisualEditor {
             this.overlayWrapper
         );
     });
+
+    private mutationObserver = new MutationObserver(debounce(() => {
+
+        const emptyBlockParents = Array.from(document.querySelectorAll(
+            ".visual-editor__empty-block-parent"
+        ));
+
+        const previousEmptyBlockParents = VisualEditor.VisualEditorGlobalState.value.previousEmptyBlockParents as Element[];
+
+        if(!isEqual(emptyBlockParents, previousEmptyBlockParents)) {
+
+            const noMoreEmptyBlockParent = previousEmptyBlockParents.filter(x => !emptyBlockParents.includes(x));
+            const newEmptyBlockParent = emptyBlockParents.filter(x => !previousEmptyBlockParents.includes(x));
+
+            removeEmptyBlocks(noMoreEmptyBlockParent);
+            generateEmptyBlocks(newEmptyBlockParent);
+
+            VisualEditor.VisualEditorGlobalState.value = {
+                ...VisualEditor.VisualEditorGlobalState.value,
+                previousEmptyBlockParents: emptyBlockParents
+            };
+        }
+    }, 100, { trailing: true }));
+
 
     constructor() {
         initUI({
@@ -109,11 +137,16 @@ export class VisualEditor {
                     customCursor: this.customCursor,
                 });
 
+                this.mutationObserver.observe(document.body , {
+                    childList: true,
+                    subtree: true,
+                });
+
                 liveEditorPostMessage?.on(
                     LiveEditorPostMessageEvents.GET_ENTRY_UID_IN_CURRENT_PAGE,
                     getEntryUidFromCurrentPage
                 );
-
+               
                 // These events are used to sync the data when we made some changes in the entry without invoking live preview module.
                 useHistoryPostMessageEvent();
                 useOnEntryUpdatePostMessageEvent();
@@ -138,6 +171,7 @@ export class VisualEditor {
             customCursor: this.customCursor,
         });
         this.resizeObserver.disconnect();
+        this.mutationObserver.disconnect();
 
         if (this.visualEditorContainer) {
             window.document.body.removeChild(this.visualEditorContainer);
