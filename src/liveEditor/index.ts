@@ -65,7 +65,7 @@ export class VisualEditor {
         );
     });
 
-    private mutationObserver = new MutationObserver(debounce(() => {
+    private mutationObserver = new MutationObserver(debounce(async () => {
 
         const emptyBlockParents = Array.from(document.querySelectorAll(
             ".visual-editor__empty-block-parent"
@@ -79,7 +79,7 @@ export class VisualEditor {
             const newEmptyBlockParent = emptyBlockParents.filter(x => !previousEmptyBlockParents.includes(x));
 
             removeEmptyBlocks(noMoreEmptyBlockParent);
-            generateEmptyBlocks(newEmptyBlockParent);
+            await generateEmptyBlocks(newEmptyBlockParent);
 
             VisualEditor.VisualEditorGlobalState.value = {
                 ...VisualEditor.VisualEditorGlobalState.value,

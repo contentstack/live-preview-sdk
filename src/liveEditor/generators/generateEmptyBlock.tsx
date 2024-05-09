@@ -1,13 +1,14 @@
 import { hydrate } from "preact";
 import { EmptyBlock } from "../components/emptyBlock";
 import { extractDetailsFromCslp } from "../../cslp";
+import { FieldSchemaMap } from "../utils/fieldSchemaMap";
 
 
-export function generateEmptyBlocks(
+export async function generateEmptyBlocks(
     emptyBlockParents: Element[] | []
-): void {
+): Promise<void> {
 
-  emptyBlockParents?.forEach((emptyBlockParent) => {
+  for (const emptyBlockParent of emptyBlockParents) {
 
     const cslpData = emptyBlockParent.getAttribute("data-cslp");
     if (!cslpData) {
@@ -15,12 +16,17 @@ export function generateEmptyBlocks(
     }
     const fieldMetadata = extractDetailsFromCslp(cslpData);
 
+    const fieldSchema = await FieldSchemaMap.getFieldSchema(
+      fieldMetadata.content_type_uid,
+      fieldMetadata.fieldPath
+    );
+
     hydrate(<EmptyBlock details={{
-      editableElement: emptyBlockParent,
-      cslpData,
+      fieldSchema,
       fieldMetadata
     }}/>, emptyBlockParent);
-  });
+
+  }
 }
 
 export function removeEmptyBlocks(
