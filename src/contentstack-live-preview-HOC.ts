@@ -1,6 +1,7 @@
 import { v4 as uuidv4 } from "uuid";
 import camelCase from "just-camel-case";
 import packageJson from "../package.json";
+import "./styles/index";
 
 import {
     IInitData,

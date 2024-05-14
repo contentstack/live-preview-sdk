@@ -1,5 +1,4 @@
 import ContentstackLivePreviewHOC from "./contentstack-live-preview-HOC";
-import "./styles.css";
 
 export const ContentstackLivePreview = ContentstackLivePreviewHOC;
 
