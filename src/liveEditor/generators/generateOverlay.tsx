@@ -65,14 +65,14 @@ export function addFocusOverlay(
         ".visual-editor__overlay--right"
     );
     if (rightOverlayDOM) {
-        rightOverlayDOM.style.left = `calc(${targetElementDimension.right}px + ${LIVE_PREVIEW_OUTLINE_WIDTH_IN_PX}px)`;
+        rightOverlayDOM.style.right = "0";
         rightOverlayDOM.style.top = `calc(${distanceFromTop}px - ${LIVE_PREVIEW_OUTLINE_WIDTH_IN_PX}px)`;
         rightOverlayDOM.style.height = `calc(${
             targetElementDimension.height
         }px + ${2 * LIVE_PREVIEW_OUTLINE_WIDTH_IN_PX}px)`;
         rightOverlayDOM.style.width = `calc(${
             window.innerWidth - targetElementDimension.right
-        }px - ${LIVE_PREVIEW_OUTLINE_WIDTH_IN_PX}px)`;
+        }px - ${2 * LIVE_PREVIEW_OUTLINE_WIDTH_IN_PX}px)`;
     }
 
     const outlineDOM = focusOverlayWrapper.querySelector<HTMLDivElement>(
