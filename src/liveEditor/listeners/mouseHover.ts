@@ -1,7 +1,6 @@
 import { throttle } from "lodash-es";
 import { getCsDataOfElement } from "../utils/getCsDataOfElement";
 import {
-    handleAddButtonsForMultiple,
     removeAddInstanceButtons,
 } from "../utils/multipleElementAddButton";
 import { generateCustomCursor } from "../generators/generateCustomCursor";
@@ -125,29 +124,7 @@ async function handleMouseHover(params: HandleMouseHoverParams): Promise<void> {
             return;
         }
 
-        const fieldSchema = await FieldSchemaMap.getFieldSchema(
-            content_type_uid,
-            fieldPath
-        );
 
-        if (
-            fieldSchema.data_type === "block" ||
-            fieldSchema.multiple ||
-            (fieldSchema.data_type === "reference" &&
-                // @ts-ignore
-                fieldSchema.field_metadata.ref_multiple)
-        ) {
-            handleAddButtonsForMultiple(eventDetails, {
-                editableElement: editableElement,
-                visualEditorContainer: params.visualEditorContainer,
-            });
-        } else {
-            removeAddInstanceButtons({
-                eventTarget: params.event.target,
-                visualEditorContainer: params.visualEditorContainer,
-                overlayWrapper: params.overlayWrapper,
-            });
-        }
         VisualEditor.VisualEditorGlobalState.value.previousHoveredTargetDOM =
             editableElement;
     }, 10)(params);

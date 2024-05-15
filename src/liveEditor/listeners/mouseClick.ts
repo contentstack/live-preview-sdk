@@ -18,6 +18,8 @@ import { LiveEditorPostMessageEvents } from "../utils/types/postMessage.types";
 
 import EventListenerHandlerParams from "./types";
 import { VisualEditor } from "..";
+import { FieldSchemaMap } from "../utils/fieldSchemaMap";
+import { handleAddButtonsForMultiple, removeAddInstanceButtons } from "../utils/multipleElementAddButton";
 
 type HandleEditorInteractionParams = Omit<
     EventListenerHandlerParams,
@@ -87,7 +89,7 @@ async function handleEditorInteraction(
         });
     }
 
-    if(!editableElement.classList.contains('visual-editor__empty-block-parent') 
+    if(!editableElement.classList.contains('visual-editor__empty-block-parent')
         && !editableElement.classList.contains('visual-editor__empty-block')){
         addOverlay({
             overlayWrapper: params.overlayWrapper,
@@ -99,6 +101,32 @@ async function handleEditorInteraction(
             eventDetails: eventDetails,
             focusedToolbar: params.focusedToolbar,
         });
+
+        const { content_type_uid, fieldPath } = eventDetails.fieldMetadata;
+
+        const fieldSchema = await FieldSchemaMap.getFieldSchema(
+            content_type_uid,
+            fieldPath
+        );
+
+        if (
+            fieldSchema.data_type === "block" ||
+            fieldSchema.multiple ||
+            (fieldSchema.data_type === "reference" &&
+                // @ts-ignore
+                fieldSchema.field_metadata.ref_multiple)
+        ) {
+            handleAddButtonsForMultiple(eventDetails, {
+                editableElement: editableElement,
+                visualEditorContainer: params.visualEditorContainer,
+            });
+        } else {
+            removeAddInstanceButtons({
+                eventTarget: params.event.target,
+                visualEditorContainer: params.visualEditorContainer,
+                overlayWrapper: params.overlayWrapper,
+            });
+        }
     }
     
     liveEditorPostMessage?.send(LiveEditorPostMessageEvents.FOCUS_FIELD, {
