@@ -16,6 +16,6 @@ class LightLivePreviewHoC {
 
 export const ContentstackLivePreview = DEVELOPMENT
     ? ContentstackLivePreviewHOC
-    : (LightLivePreviewHoC as unknown);
+    : (LightLivePreviewHoC as unknown as typeof ContentstackLivePreviewHOC);
 
 export default ContentstackLivePreview;
