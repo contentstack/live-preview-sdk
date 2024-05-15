@@ -1,4 +1,5 @@
-module.exports = {
+export default {
+    testEnvironment: "jsdom",
     roots: ["<rootDir>/src"],
     testMatch: [
         "**/__tests__/**/*.+(ts|tsx|js)",
@@ -6,9 +7,8 @@ module.exports = {
     ],
     automock: false,
     setupFiles: ["<rootDir>/setupJest.ts"],
-    testEnvironment: "jsdom",
     transform: {
-        "^.+\\.(ts|tsx)$": "ts-jest",
+        "^.+\\.(ts|tsx)$": 'ts-jest',
     },
     coveragePathIgnorePatterns: ["__test__/"],
     "collectCoverage": true,

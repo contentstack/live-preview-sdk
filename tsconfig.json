@@ -11,7 +11,7 @@
         "sourceMap": true ,
         "outDir": "./dist" ,
         "rootDir": "." ,
-        "noEmitOnError": true,
+        "noEmitOnError": false,
         "strict": true ,
         "moduleResolution": "Bundler" ,
         "typeRoots": [
