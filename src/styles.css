@@ -450,3 +450,10 @@ div.multiple div.cslp-tooltip-child:hover:before {
     padding-block: 0px;
     letter-spacing: 0.01rem;
   }
+
+.visual-editor__hover-outline {
+    position: absolute;
+    pointer-events: none;
+    outline: 2px dashed #6C5CE7;
+    transition: all 0.2s ease-in;
+}
