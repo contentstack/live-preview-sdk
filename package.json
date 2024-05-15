@@ -1,14 +1,30 @@
 {
     "name": "@contentstack/live-preview-utils",
     "version": "1.4.2",
-    "types": "dist/src/index.d.ts",
     "description": "Contentstack provides the Live Preview SDK to establish a communication channel between the various Contentstack SDKs and your website, transmitting  live changes to the preview pane.",
-    "main": "dist/index.js",
+    "type": "module",
+    "types": "dist/legacy/index.d.ts",
+    "main": "dist/legacy/index.cjs",
+    "module": "dist/legacy/index.js",
+    "exports": {
+        ".": {
+            "import": {
+                "types": "./dist/modern/index.d.ts",
+                "default": "./dist/modern/index.js"
+            },
+            "require": {
+                "types": "./dist/modern/index.d.cts",
+                "default": "./dist/modern/index.cjs"
+            }
+        },
+        "./package.json": "./package.json"
+    },
     "files": [
         "dist"
     ],
+    "sideEffects": false,
     "scripts": {
-        "build": "webpack --config webpack.prod.js",
+        "build": "rimraf dist && tsup",
         "test": "jest",
         "test:coverage": "jest src --coverage --watchAll --coverageDirectory=\"coverage\"",
         "dev": "webpack --config webpack.dev.js",
@@ -36,9 +52,9 @@
         "@typescript-eslint/parser": "^4.31.1",
         "babel-loader": "^8.0.5",
         "css-loader": "^5.2.2",
+        "esbuild-plugin-file-path-extensions": "^2.1.0",
         "eslint": "^7.32.0",
         "eslint-config-prettier": "^8.6.0",
-        "goober": "^2.1.14",
         "husky": "^8.0.0",
         "jest": "^27.2.0",
         "jest-fetch-mock": "^3.0.3",
@@ -48,9 +64,11 @@
         "style-loader": "^2.0.0",
         "ts-jest": "^27.0.5",
         "ts-loader": "^9.4.2",
+        "ts-node": "^10.9.2",
+        "tsup": "^8.0.1",
         "typedoc": "^0.23.25",
-        "typescript": "^4.4.3",
-        "webpack": "^5.53.0",
+        "typescript": "^5.2.2",
+        "webpack": "^5.91.0",
         "webpack-cli": "^4.8.0",
         "webpack-dev-server": "^4.7.4",
         "webpack-merge": "^5.8.0"
@@ -60,6 +78,7 @@
         "url": "https://github.com/contentstack/live-preview-sdk.git"
     },
     "dependencies": {
+        "goober": "^2.1.14",
         "just-camel-case": "^4.0.2",
         "morphdom": "^2.6.1",
         "mustache": "^4.2.0",

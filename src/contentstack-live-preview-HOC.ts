@@ -1,7 +1,6 @@
 import { v4 as uuidv4 } from "uuid";
 import camelCase from "just-camel-case";
-import packageJson from "../package.json";
-import "./styles/index";
+import "./styles/live_preview";
 
 import {
     IInitData,
@@ -211,10 +210,8 @@ export class ContentstackLivePreview {
     }
 
     static getSdkVersion(): string {
-        return packageJson.version;
+        return process.env.PACKAGE_VERSION!;
     }
 }
 
 export default ContentstackLivePreview;
-
-module.exports = ContentstackLivePreview;

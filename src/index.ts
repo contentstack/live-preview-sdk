@@ -1,6 +1,21 @@
 import ContentstackLivePreviewHOC from "./contentstack-live-preview-HOC";
 
-export const ContentstackLivePreview = ContentstackLivePreviewHOC;
+const DEVELOPMENT = process.env.NODE_ENV === "development";
+
+class LightLivePreviewHoC {
+    static init() {}
+    static onLiveEdit() {}
+    static onEntryChange(callback: () => void) {
+        return callback();
+    }
+    static get hash(): string {
+        return "";
+    }
+    static setConfigFromParams() {}
+}
+
+export const ContentstackLivePreview = DEVELOPMENT
+    ? ContentstackLivePreviewHOC
+    : (LightLivePreviewHoC as unknown);
 
 export default ContentstackLivePreview;
-module.exports = ContentstackLivePreview;

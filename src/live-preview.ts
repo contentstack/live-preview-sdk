@@ -15,7 +15,6 @@ import {
 } from "./utils/types";
 import { handleInitData } from "./utils/handleUserConfig";
 import { userInitData } from "./utils/defaults";
-import packageJson from "../package.json";
 
 export default class LivePreview {
     /**
@@ -489,7 +488,7 @@ export default class LivePreview {
                     config: {
                         shouldReload: this.config.ssr,
                         href: window.location.href,
-                        sdkVersion: packageJson.version,
+                        sdkVersion: process.env.PACKAGE_VERSION,
                     },
                 },
             },
