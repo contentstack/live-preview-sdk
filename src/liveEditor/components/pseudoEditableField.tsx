@@ -12,11 +12,13 @@ function PseudoEditableFieldComponent(
     const styles = getCamelCaseStyles(
         getStyleOfAnElement(props.editableElement)
     );
-    const { top, left } = props.editableElement.getBoundingClientRect();
+    // Get the offsetTop and offsetLeft of the editable element and set the position of the pseudo editable element
+    // The pseudo editable element is positioned absolutely at the same location as the editable element
+    const { offsetTop, offsetLeft } = props.editableElement;
 
     styles.position = "absolute";
-    styles.top = `${top}px`;
-    styles.left = `${left}px`;
+    styles.top = `${offsetTop}px`;
+    styles.left = `${offsetLeft}px`;
 
     return (
         <div
