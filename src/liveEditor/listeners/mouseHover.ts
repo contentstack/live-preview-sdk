@@ -11,6 +11,16 @@ import { getFieldType } from "../utils/getFieldType";
 
 import EventListenerHandlerParams from "./types";
 import { VisualEditor } from "..";
+import { addHoverOutline } from "../generators/generateHoverOutline";
+
+export interface HandleMouseHoverParams
+    extends Pick<
+        EventListenerHandlerParams,
+        "event" | "overlayWrapper" | "visualEditorContainer"
+    > {
+    customCursor: HTMLDivElement | null;
+}
+
 
 function resetCustomCursor(customCursor: HTMLDivElement | null): void {
     if (customCursor) {
@@ -34,12 +44,10 @@ function handleCursorPosition(
     }
 }
 
-export interface HandleMouseHoverParams
-    extends Pick<
-        EventListenerHandlerParams,
-        "event" | "overlayWrapper" | "visualEditorContainer"
-    > {
-    customCursor: HTMLDivElement | null;
+function addOutline(params: any): void {
+    if(!params.event || !params.event.target) return;
+
+    addHoverOutline(params.event.target);
 }
 
 async function handleMouseHover(params: HandleMouseHoverParams): Promise<void> {
@@ -103,6 +111,11 @@ async function handleMouseHover(params: HandleMouseHoverParams): Promise<void> {
 
             params.customCursor.classList.add("visible");
             handleCursorPosition(params.event, params.customCursor);
+        }
+
+        if(!editableElement.classList.contains('visual-editor__empty-block-parent') 
+            && !editableElement.classList.contains('visual-editor__empty-block')){
+            addOutline(params);
         }
 
         if (

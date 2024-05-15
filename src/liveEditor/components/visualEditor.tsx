@@ -51,7 +51,11 @@ function VisualEditorComponent(props: VisualEditorProps): JSX.Element {
                     className="visual-editor__overlay--outline"
                 ></div>
             </div>
-
+            
+            <div
+                className="visual-editor__hover-outline"
+                data-testid="visual-editor__hover-outline">
+            </div>
             <div
                 className="visual-editor__focused-toolbar"
                 data-testid="visual-editor__focused-toolbar"
