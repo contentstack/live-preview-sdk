@@ -1,4 +1,4 @@
-import { v4 as uuidv4 } from "uuid";
+import { v4 } from "uuid";
 import camelCase from "./utils/camelCase";
 
 import {
@@ -110,7 +110,7 @@ const ContentstackLivePreview: ICSLivePreview = {
         });
     },
     subscribe(callback: OnEntryChangeCallback): OnEntryChangeCallbackUID {
-        const callbackUid = uuidv4();
+        const callbackUid = v4();
         ContentstackLivePreview.subscribers[callbackUid] = callback;
         return callbackUid;
     },

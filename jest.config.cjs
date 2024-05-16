@@ -1,4 +1,4 @@
-export default {
+module.exports = {
     testEnvironment: "jsdom",
     roots: ["<rootDir>/src"],
     testMatch: [
@@ -7,10 +7,11 @@ export default {
     ],
     automock: false,
     setupFiles: ["<rootDir>/setupJest.ts"],
-    transform: {
-        "^.+\\.(ts|tsx)$": 'ts-jest',
+    preset: "ts-jest",
+    moduleNameMapper: {
+        uuid: require.resolve("uuid"),
     },
     coveragePathIgnorePatterns: ["__test__/"],
-    "collectCoverage": true,
-    "coverageReporters": ["html"],
+    collectCoverage: true,
+    coverageReporters: ["html"],
 };
