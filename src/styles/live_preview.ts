@@ -7,12 +7,21 @@ export const livePreviewStyles = () => {
             position: relative !important;
         `,
         "cslp-tooltip": css`
+            background: transparent;
+            height: 35px;
+            width: 72px;
+            position: fixed;
+            z-index: 200 !important;
+            top: -100%;
+            border: 0;
+            display: flex;
+            padding: 0;
+        `,
+        "cslp-tooltip-inner-container": css`
             padding: 0;
             display: flex;
             outline: none;
             border: none;
-            z-index: 200 !important;
-            position: fixed;
             margin: 0;
             height: 35px;
             width: 72px;

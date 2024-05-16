@@ -444,7 +444,9 @@ export default class LivePreview {
         ) {
             const tooltip = document.createElement("button");
             const tooltipInnerContainer = document.createElement("div");
-            tooltipInnerContainer.classList.add("cslp-tooltip-inner-container");
+            tooltipInnerContainer.classList.add(
+                livePreviewStyles()["cslp-tooltip-inner-container"]
+            );
             tooltip.classList.add(livePreviewStyles()["cslp-tooltip"]);
             tooltip.classList.add(livePreviewStyles()["cslp-tooltip"]);
             tooltip.setAttribute("data-test-id", "cs-cslp-tooltip");
@@ -550,7 +552,11 @@ export default class LivePreview {
                     if (this.tooltipCurrentChild !== "multiple") {
                         const tooltipInnerContainer =
                             this.tooltip.querySelector(
-                                "div.cslp-tooltip-inner-container"
+                                `div.${
+                                    livePreviewStyles()[
+                                        "cslp-tooltip-inner-container"
+                                    ]
+                                }`
                             );
                         if (tooltipInnerContainer) {
                             tooltipInnerContainer.innerHTML = "";
@@ -562,7 +568,9 @@ export default class LivePreview {
                     }
                 } else if (this.tooltipCurrentChild !== "singular") {
                     const tooltipInnerContainer = this.tooltip.querySelector(
-                        "div.cslp-tooltip-inner-container"
+                        `div.${
+                            livePreviewStyles()["cslp-tooltip-inner-container"]
+                        }`
                     );
                     if (tooltipInnerContainer) {
                         tooltipInnerContainer.innerHTML = "";
