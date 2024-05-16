@@ -3,7 +3,6 @@ import { PublicLogger } from "../utils/public-logger";
 import { IInitData } from "../utils/types";
 import { sendPostmessageToWindow } from "./utils";
 import packageJson from "../../package.json";
-const ContentstackLivePreview2 = ContentstackLivePreview;
 
 describe("Live preview HOC Callback Pub Sub", () => {
     afterEach(() => {

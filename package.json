@@ -25,7 +25,9 @@
     "sideEffects": false,
     "scripts": {
         "build": "rimraf dist && tsup",
+        "build-webpack": "rimraf dist && webpack --config webpack.prod.js",
         "test": "jest",
+        "test:watch": "jest --watch",
         "test:coverage": "jest src --coverage --watchAll --coverageDirectory=\"coverage\"",
         "dev": "webpack --config webpack.dev.js",
         "prepare": "npm run build && husky install",

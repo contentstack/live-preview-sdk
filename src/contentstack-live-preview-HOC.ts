@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from "uuid";
-import camelCase from "just-camel-case";
+import camelCase from "./utils/camelCase";
 
 import {
     IInitData,
@@ -12,17 +12,41 @@ import LivePreview from "./live-preview";
 import { userInitData } from "./utils/defaults";
 import { PublicLogger } from "./utils/public-logger";
 
-export class ContentstackLivePreview {
-    static livePreview: LivePreview | null = null;
-    static userConfig: Partial<IInitData> | null = null;
-    static subscribers: { [uid: string]: OnEntryChangeCallback } = {};
-    static configs: {
+export interface ICSLivePreview {
+    livePreview: LivePreview | null;
+    userConfig: Partial<IInitData> | null;
+    subscribers: { [uid: string]: OnEntryChangeCallback };
+    configs: {
         params: ConstructorParameters<typeof URLSearchParams>[0];
-    } = {
-        params: {},
     };
+    init: (userConfig?: Partial<IInitData>) => Promise<LivePreview> | undefined;
+    hash: string;
+    setConfigFromParams(
+        params: ConstructorParameters<typeof URLSearchParams>[0]
+    ): void;
+    publish(): void;
+    subscribe(callback: OnEntryChangeCallback): OnEntryChangeCallbackUID;
+    onEntryChange(
+        onChangeCallback: OnEntryChangeCallback,
+        config?: OnEntryChangeConfig
+    ): OnEntryChangeCallbackUID;
+    onLiveEdit(
+        onChangeCallback: OnEntryChangeCallback
+    ): OnEntryChangeCallbackUID;
+    unsubscribeOnEntryChange(callback: string | OnEntryChangeCallback): void;
+    getGatsbyDataFormat(sdkQuery: IStackSdk, prefix: string): Promise<any>;
+    getSdkVersion(): string;
+}
 
-    static init(
+const ContentstackLivePreview: ICSLivePreview = {
+    livePreview: null,
+    userConfig: null,
+    subscribers: {},
+    configs: {
+        params: {},
+    },
+
+    init(
         userConfig: Partial<IInitData> = userInitData
     ): Promise<LivePreview> | undefined {
         if (typeof window !== "undefined") {
@@ -40,68 +64,63 @@ export class ContentstackLivePreview {
                 );
 
                 ContentstackLivePreview.livePreview.setConfigFromParams(
-                    this.configs.params
+                    ContentstackLivePreview.configs.params
                 );
-                this.configs.params = {};
+                ContentstackLivePreview.configs.params = {};
 
                 return Promise.resolve(ContentstackLivePreview.livePreview);
             }
         } else {
             ContentstackLivePreview.userConfig = userConfig;
         }
-    }
+    },
 
-    /**
-     * It is the live preview hash.
-     * This hash could be used when data is fetched manually.
-     */
-    static get hash(): string {
-        if (!this.livePreview) {
-            const urlParams = new URLSearchParams(this.configs.params);
+    get hash(): string {
+        if (!ContentstackLivePreview.livePreview) {
+            const urlParams = new URLSearchParams(
+                ContentstackLivePreview.configs.params
+            );
             return urlParams.get("live_preview") ?? "";
         }
 
-        return this.livePreview.hash;
-    }
+        return ContentstackLivePreview.livePreview.hash;
+    },
 
     /**
      * Sets the live preview hash from the query param which is
      * accessible via `hash` property.
      * @param params query param in an object form
      */
-    static setConfigFromParams(
+    setConfigFromParams(
         params: ConstructorParameters<typeof URLSearchParams>[0] = {}
     ): void {
-        if (!this.livePreview) {
-            this.configs.params = params;
+        if (!ContentstackLivePreview.livePreview) {
+            ContentstackLivePreview.configs.params = params;
             return;
         }
 
-        this.livePreview.setConfigFromParams(params);
-    }
+        ContentstackLivePreview.livePreview.setConfigFromParams(params);
+    },
 
-    private static publish(): void {
+    publish(): void {
         Object.values<OnEntryChangeCallback>(
             ContentstackLivePreview.subscribers
         ).forEach((func) => {
             func();
         });
-    }
-
-    private static subscribe(
-        callback: OnEntryChangeCallback
-    ): OnEntryChangeCallbackUID {
+    },
+    subscribe(callback: OnEntryChangeCallback): OnEntryChangeCallbackUID {
         const callbackUid = uuidv4();
         ContentstackLivePreview.subscribers[callbackUid] = callback;
         return callbackUid;
-    }
+    },
     /**
      * @type {function}
      * @param onChangeCallback A function param to fetch the data from contentstack database
      * @param config An optional object param, pass {skipInitialRender:Boolean} to skip init call to onChangeCallback
      * @returns Subscribed Callback UID
      */
-    static onEntryChange(
+    onEntryChange(
         onChangeCallback: OnEntryChangeCallback,
         config?: OnEntryChangeConfig
     ): OnEntryChangeCallbackUID {
@@ -115,10 +134,10 @@ export class ContentstackLivePreview {
             );
 
             ContentstackLivePreview.livePreview.setConfigFromParams(
-                this.configs.params
+                ContentstackLivePreview.configs.params
             );
 
-            this.configs.params = {};
+            ContentstackLivePreview.configs.params = {};
 
             ContentstackLivePreview.userConfig = null;
         }
@@ -127,24 +146,20 @@ export class ContentstackLivePreview {
             onChangeCallback();
         }
         return callbackUid;
-    }
-
+    },
     /**
      * @type {function}
      * @param onChangeCallback A function param to fetch the data from contentstack database on content change.
      * @returns Subscribed Callback UID
      */
-    static onLiveEdit(
+    onLiveEdit(
         onChangeCallback: OnEntryChangeCallback
     ): OnEntryChangeCallbackUID {
         return ContentstackLivePreview.onEntryChange(onChangeCallback, {
             skipInitialRender: true,
         });
-    }
-
-    static unsubscribeOnEntryChange(
-        callback: string | OnEntryChangeCallback
-    ): void {
+    },
+    unsubscribeOnEntryChange(callback: string | OnEntryChangeCallback): void {
         if (typeof callback === "string") {
             if (!ContentstackLivePreview.subscribers[callback]) {
                 PublicLogger.warn("No subscriber found with the given id.");
@@ -167,9 +182,8 @@ export class ContentstackLivePreview {
                 );
             }
         }
-    }
-
-    static async getGatsbyDataFormat(
+    },
+    async getGatsbyDataFormat(
         sdkQuery: IStackSdk,
         prefix: string
     ): Promise<any> {
@@ -206,11 +220,10 @@ export class ContentstackLivePreview {
                     console.error(err);
                 });
         }
-    }
-
-    static getSdkVersion(): string {
+    },
+    getSdkVersion(): string {
         return process.env.PACKAGE_VERSION!;
-    }
-}
+    },
+};
 
 export default ContentstackLivePreview;

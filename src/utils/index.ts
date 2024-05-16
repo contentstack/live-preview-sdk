@@ -83,7 +83,7 @@ export const createMultipleEditButton = (
 
     const multipleDiv = document.createElement("div");
     multipleDiv.appendChild(multipleEditFragment);
-    multipleDiv.classList.add(livePreviewStyles["multiple"]);
+    multipleDiv.classList.add(livePreviewStyles()["multiple"]);
 
     return multipleDiv;
 };

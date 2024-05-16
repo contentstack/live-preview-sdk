@@ -1,21 +1,23 @@
-import ContentstackLivePreviewHOC from "./contentstack-live-preview-HOC";
+import ContentstackLivePreviewHOC, {
+    ICSLivePreview,
+} from "./contentstack-live-preview-HOC";
 
 const DEVELOPMENT = process.env.NODE_ENV === "development";
 
-class LightLivePreviewHoC {
-    static init() {}
-    static onLiveEdit() {}
-    static onEntryChange(callback: () => void) {
+const LightLivePreviewHoC = {
+    init() {},
+    onLiveEdit() {},
+    onEntryChange(callback: () => void) {
         return callback();
-    }
-    static get hash(): string {
+    },
+    get hash(): string {
         return "";
-    }
-    static setConfigFromParams() {}
-}
+    },
+    setConfigFromParams() {},
+};
 
 export const ContentstackLivePreview = DEVELOPMENT
     ? ContentstackLivePreviewHOC
-    : (LightLivePreviewHoC as unknown as typeof ContentstackLivePreviewHOC);
+    : (LightLivePreviewHoC as unknown as ICSLivePreview);
 
 export default ContentstackLivePreview;

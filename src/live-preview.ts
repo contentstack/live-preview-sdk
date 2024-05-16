@@ -169,14 +169,14 @@ export default class LivePreview {
                 }
                 if (this.currentElementBesideTooltip) {
                     this.currentElementBesideTooltip.classList.remove(
-                        livePreviewStyles["cslp-edit-mode"]
+                        livePreviewStyles()["cslp-edit-mode"]
                     );
                     this.currentElementBesideTooltip.removeEventListener(
                         "mouseleave",
                         this.removeEditButtonStyle
                     );
                 }
-                element.classList.add(livePreviewStyles["cslp-edit-mode"]);
+                element.classList.add(livePreviewStyles()["cslp-edit-mode"]);
                 this.currentElementBesideTooltip = element;
                 this.currentElementBesideTooltip.addEventListener(
                     "mouseleave",
@@ -193,7 +193,7 @@ export default class LivePreview {
 
                 trigger = false;
             } else if (!trigger) {
-                element.classList.remove(livePreviewStyles["cslp-edit-mode"]);
+                element.classList.remove(livePreviewStyles()["cslp-edit-mode"]);
             }
         }
     }
@@ -214,7 +214,7 @@ export default class LivePreview {
                 this.hideInterval = setInterval(this.hideTooltip, 500);
                 trigger = false;
             } else if (!trigger) {
-                element.classList.remove(livePreviewStyles["cslp-edit-mode"]);
+                element.classList.remove(livePreviewStyles()["cslp-edit-mode"]);
             }
         }
     }
@@ -227,7 +227,7 @@ export default class LivePreview {
         )
             return false;
         this.currentElementBesideTooltip.classList.remove(
-            livePreviewStyles["cslp-edit-mode"]
+            livePreviewStyles()["cslp-edit-mode"]
         );
         this.currentElementBesideTooltip.removeEventListener(
             "mouseleave",
@@ -445,8 +445,8 @@ export default class LivePreview {
             const tooltip = document.createElement("button");
             const tooltipInnerContainer = document.createElement("div");
             tooltipInnerContainer.classList.add("cslp-tooltip-inner-container");
-            tooltip.classList.add(livePreviewStyles["cslp-tooltip"]);
-            tooltip.classList.add(livePreviewStyles["cslp-tooltip"]);
+            tooltip.classList.add(livePreviewStyles()["cslp-tooltip"]);
+            tooltip.classList.add(livePreviewStyles()["cslp-tooltip"]);
             tooltip.setAttribute("data-test-id", "cs-cslp-tooltip");
             tooltip.id = "cslp-tooltip";
             tooltipInnerContainer.id = "cslp-tooltip-inner-container";

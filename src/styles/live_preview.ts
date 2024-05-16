@@ -1,6 +1,6 @@
 import * as goober from "goober";
 
-export const livePreviewStyles = {
+export const livePreviewStyles = () => ({
     "cslp-edit-mode": goober.css`
         outline: 1px dashed #6c5ce7 !important;
         position: relative !important;
@@ -77,4 +77,4 @@ export const livePreviewStyles = {
             opacity: 1;
         }
     `,
-};
+});
