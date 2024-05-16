@@ -6,6 +6,7 @@ import { LiveEditorPostMessageEvents } from "../utils/types/postMessage.types";
 
 import { VisualEditor } from "..";
 import EventListenerHandlerParams from "../listeners/types";
+import { max } from "lodash-es";
 
 /**
  * Adds a focus overlay to the target element.
@@ -65,14 +66,15 @@ export function addFocusOverlay(
         ".visual-editor__overlay--right"
     );
     if (rightOverlayDOM) {
-        rightOverlayDOM.style.right = "0";
+        const left = targetElementDimension.right + 
+            (window.innerWidth - targetElementDimension.right >= LIVE_PREVIEW_OUTLINE_WIDTH_IN_PX ? 
+                LIVE_PREVIEW_OUTLINE_WIDTH_IN_PX : 0);
+        rightOverlayDOM.style.left = `${left}px`;
         rightOverlayDOM.style.top = `calc(${distanceFromTop}px - ${LIVE_PREVIEW_OUTLINE_WIDTH_IN_PX}px)`;
         rightOverlayDOM.style.height = `calc(${
             targetElementDimension.height
         }px + ${2 * LIVE_PREVIEW_OUTLINE_WIDTH_IN_PX}px)`;
-        rightOverlayDOM.style.width = `calc(${
-            window.innerWidth - targetElementDimension.right
-        }px - ${2 * LIVE_PREVIEW_OUTLINE_WIDTH_IN_PX}px)`;
+        rightOverlayDOM.style.width = `${window.innerWidth - left}px`;
     }
 
     const outlineDOM = focusOverlayWrapper.querySelector<HTMLDivElement>(
