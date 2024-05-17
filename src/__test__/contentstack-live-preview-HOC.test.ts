@@ -4,6 +4,11 @@ import { IInitData } from "../utils/types";
 import { sendPostmessageToWindow } from "./utils";
 import packageJson from "../../package.json";
 
+jest.mock("post-robot", () => ({
+    on: jest.fn(),
+    send: jest.fn(),
+}));
+
 describe("Live preview HOC Callback Pub Sub", () => {
     afterEach(() => {
         ContentstackLivePreview.subscribers = {};
