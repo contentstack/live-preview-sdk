@@ -1,7 +1,11 @@
-const path = require("path");
-const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+import path from 'path';
+import MiniCssExtractPlugin from "mini-css-extract-plugin";
+import { dirname } from 'path';
+import { fileURLToPath } from 'url';
+    
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
-module.exports = {
+export default {
     entry: path.resolve(__dirname, "src", "index.ts"),
     output: {
         globalObject: "this",
@@ -11,19 +15,18 @@ module.exports = {
         filename: "index.js",
         chunkFilename: "[name].js",
     },
-    plugins: [new MiniCssExtractPlugin()],
+    optimization: {
+        sideEffects: true,
+        usedExports: false,
+    },
+    plugins: [],
     module: {
         rules: [
             {
                 test: /\.ts$/,
                 use: "ts-loader",
                 include: [path.resolve(__dirname, "src")],
-            },
-            {
-                test: /\.css$/,
-                use: [MiniCssExtractPlugin.loader, "css-loader"],
-                include: [path.resolve(__dirname, "src")],
-            },
+            }
         ],
     },
     resolve: {
