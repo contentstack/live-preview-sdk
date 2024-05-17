@@ -34,7 +34,6 @@ export function handleWebCompare() {
                 element.hasAttributes() &&
                 voidElements.has(element.tagName.toLowerCase())
             ) {
-                console.log("send-cslp", element, element.attributes);
                 let attributes = "";
                 for (const attr of element.attributes) {
                     attributes += `${attr.name} -> ${attr.value}\n`;
@@ -47,7 +46,7 @@ export function handleWebCompare() {
         return map;
     });
 
-    const mergeColors = (className = ".green") => {
+    const mergeColors = (className = ".cs-compare--added") => {
         const elements = Array.from(document.querySelectorAll(className));
         for (let i = 1; i < elements.length; i++) {
             const prev = elements[i - 1];
@@ -59,19 +58,19 @@ export function handleWebCompare() {
 
     postRobot.on("diff-value", async ({ data }) => {
         const { diff, type } = data;
-        const color = type === "base" ? "red" : "green";
+        const operation = type === "base" ? "removed" : "added";
         const elements = Array.from(document.querySelectorAll("[data-cslp]"));
         for (const element of elements) {
             const path = element.getAttribute("data-cslp")!;
             if (!diff[path]) continue;
 
             if (voidElements.has(element.tagName.toLowerCase())) {
-                element.classList.add(`void-${color}`);
+                element.classList.add(`cs-compare__void--${operation}`);
             } else {
                 element.innerHTML = diff[path];
             }
         }
 
-        mergeColors(`.${color}`);
+        mergeColors(`.cs-compare--${operation}`);
     });
 }
