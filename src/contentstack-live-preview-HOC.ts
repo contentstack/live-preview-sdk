@@ -1,4 +1,4 @@
-import { v4 as uuidv4 } from "uuid";
+import { v4 } from "uuid";
 import camelCase from "./utils/camelCase";
 
 import {
@@ -11,6 +11,7 @@ import {
 import LivePreview from "./live-preview";
 import { userInitData } from "./utils/defaults";
 import { PublicLogger } from "./utils/public-logger";
+import { handleWebCompare } from "./compare";
 
 export interface ICSLivePreview {
     livePreview: LivePreview | null;
@@ -56,6 +57,8 @@ const ContentstackLivePreview: ICSLivePreview = {
                 );
                 return Promise.resolve(ContentstackLivePreview.livePreview);
             } else {
+                handleWebCompare();
+
                 ContentstackLivePreview.livePreview = new LivePreview(
                     userConfig
                 );
@@ -110,7 +113,7 @@ const ContentstackLivePreview: ICSLivePreview = {
         });
     },
     subscribe(callback: OnEntryChangeCallback): OnEntryChangeCallbackUID {
-        const callbackUid = uuidv4();
+        const callbackUid = v4();
         ContentstackLivePreview.subscribers[callbackUid] = callback;
         return callbackUid;
     },
