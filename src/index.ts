@@ -2,10 +2,6 @@ import ContentstackLivePreviewHOC, {
     ICSLivePreview,
 } from "./contentstack-live-preview-HOC";
 
-const SHOULD_KEEP_SDK = !(
-    process.env.PURGE_PREVIEW_SDK || process.env.REACT_APP_PURGE_PREVIEW_SDK
-);
-
 const LightLivePreviewHoC = {
     init() {},
     onLiveEdit() {},
@@ -18,8 +14,9 @@ const LightLivePreviewHoC = {
     setConfigFromParams() {},
 };
 
-export const ContentstackLivePreview = SHOULD_KEEP_SDK
-    ? ContentstackLivePreviewHOC
-    : (LightLivePreviewHoC as unknown as ICSLivePreview);
+export const ContentstackLivePreview =
+    process.env.PURGE_PREVIEW_SDK || process.env.REACT_APP_PURGE_PREVIEW_SDK
+        ? (LightLivePreviewHoC as unknown as ICSLivePreview)
+        : ContentstackLivePreviewHOC;
 
 export default ContentstackLivePreview;
