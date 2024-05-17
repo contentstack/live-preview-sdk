@@ -11,6 +11,7 @@ import {
 import LivePreview from "./live-preview";
 import { userInitData } from "./utils/defaults";
 import { PublicLogger } from "./utils/public-logger";
+import { handleWebCompare } from "./compare";
 
 export interface ICSLivePreview {
     livePreview: LivePreview | null;
@@ -56,6 +57,8 @@ const ContentstackLivePreview: ICSLivePreview = {
                 );
                 return Promise.resolve(ContentstackLivePreview.livePreview);
             } else {
+                handleWebCompare();
+
                 ContentstackLivePreview.livePreview = new LivePreview(
                     userConfig
                 );

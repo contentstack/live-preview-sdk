@@ -49,6 +49,7 @@
         "@testing-library/jest-dom": "^5.14.1",
         "@types/jest": "^27.0.1",
         "@types/mustache": "^4.2.2",
+        "@types/post-robot": "^10.0.6",
         "@types/uuid": "^8.3.1",
         "@typescript-eslint/eslint-plugin": "^4.31.1",
         "@typescript-eslint/parser": "^4.31.1",
@@ -85,6 +86,7 @@
         "just-camel-case": "^4.0.2",
         "morphdom": "^2.6.1",
         "mustache": "^4.2.0",
+        "post-robot": "^8.0.31",
         "uuid": "^8.3.2"
     },
     "lint-staged": {
