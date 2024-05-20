@@ -1,5 +1,6 @@
 import postRobot from "post-robot";
 import { loadCompareGlobalStyle } from "./styles/compare";
+import { registerCompareElement } from "./utils/compare";
 
 const voidElements = new Set([
     "area",
@@ -19,14 +20,19 @@ const voidElements = new Set([
     "wbr",
 ]);
 
+const LEAF_CSLP_SELECTOR = "[data-cslp]:not(:has([data-cslp]))";
+
 export function handleWebCompare() {
     loadCompareGlobalStyle();
+    registerCompareElement();
     postRobot.on("send-current-base-route", async () => {
         return { url: window.location.href.split("?")[0] };
     });
 
     postRobot.on("send-cslp-data", async () => {
-        const elements = Array.from(document.querySelectorAll("[data-cslp]"));
+        const elements = Array.from(
+            document.querySelectorAll(LEAF_CSLP_SELECTOR)
+        );
         const map: Record<string, string> = {};
         for (const element of elements) {
             const cslp = element.getAttribute("data-cslp")!;
@@ -59,7 +65,9 @@ export function handleWebCompare() {
     postRobot.on("diff-value", async ({ data }) => {
         const { diff, type } = data;
         const operation = type === "base" ? "removed" : "added";
-        const elements = Array.from(document.querySelectorAll("[data-cslp]"));
+        const elements = Array.from(
+            document.querySelectorAll(LEAF_CSLP_SELECTOR)
+        );
         for (const element of elements) {
             const path = element.getAttribute("data-cslp")!;
             if (!diff[path]) continue;
