@@ -1,3 +1,5 @@
+const DIFF_WRAPPER = "cs-compare";
+
 export function registerCompareElement() {
     class Compare extends HTMLSpanElement {
         constructor() {
@@ -5,5 +7,7 @@ export function registerCompareElement() {
         }
     }
 
-    customElements.define("cs-compare", Compare);
+    if (!customElements.get(DIFF_WRAPPER)) {
+        customElements.define(DIFF_WRAPPER, Compare);
+    }
 }
