@@ -126,7 +126,8 @@ export async function handleIndividualFields(
         }
 
         if (fieldSchema.data_type === "file") {
-            generateReplaceAssetButton(editableElement, () => {
+            generateReplaceAssetButton(editableElement, (event) => {
+                event.stopPropagation();
                 liveEditorPostMessage?.send(
                     LiveEditorPostMessageEvents.OPEN_ASSET_MODAL,
                     {

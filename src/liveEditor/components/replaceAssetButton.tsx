@@ -1,24 +1,20 @@
+import { ReplaceAssetIcon } from "./icons";
+
 interface ReplaceAssetButtonProp {
     targetElement: Element;
-    onClickCallback: () => void;
+    onClickCallback: (event: any) => void;
 }
 
 function ReplaceAssetButtonComponent(
     props: ReplaceAssetButtonProp
 ): JSX.Element {
-    const dimension = props.targetElement.getBoundingClientRect();
-
     return (
         <button
-            className="visual-editor__replace-button"
+            className="visual-editor__replace-button visual-editor__button visual-editor__button--secondary"
             data-testid="visual-editor-replace-asset"
-            style={{
-                top: `${dimension.bottom + window.scrollY - 30}px`,
-                right: `${window.innerWidth - dimension.right}px`,
-            }}
             onClick={props.onClickCallback}
         >
-            Replace Asset
+            <ReplaceAssetIcon />
         </button>
     );
 }
