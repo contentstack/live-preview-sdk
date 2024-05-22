@@ -129,14 +129,6 @@ div.multiple div.cslp-tooltip-child:hover:before {
     position: absolute;
     transition: all 0.2s ease-in;
 }
-.visual-editor__replace-button {
-    position: absolute;
-    background: #715cdd;
-    color: #fff;
-    border: 1px solid transparent;
-    pointer-events: all;
-    border-radius: 4px;
-}
 .cslp-tooltip {
     /* visibility: hidden; */
 }

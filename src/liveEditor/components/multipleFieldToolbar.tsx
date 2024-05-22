@@ -11,6 +11,8 @@ import {
 interface MultipleFieldToolbarProps {
     fieldMetadata: CslpData;
     targetElement: Element;
+    isMultiple: boolean;
+    isDisabled: boolean;
 }
 
 function MultipleFieldToolbarComponent(
@@ -29,49 +31,49 @@ function MultipleFieldToolbarComponent(
             data-testid="visual-editor__focused-toolbar__multiple-field-toolbar"
         >
             <div className="visual-editor__focused-toolbar__button-group">
-                <button
-                    data-testid="visual-editor__focused-toolbar__multiple-field-toolbar__move-left-button"
-                    className={`visual-editor__button visual-editor__button--secondary ${
-                        direction.value === "vertical"
+                {props.isMultiple && !props.isDisabled && (<>
+                    <button
+                        data-testid="visual-editor__focused-toolbar__multiple-field-toolbar__move-left-button"
+                        className={`visual-editor__button visual-editor__button--secondary ${direction.value === "vertical"
                             ? "visual-editor__rotate--90"
                             : ""
-                    }`}
-                    onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        handleMoveInstance(props.fieldMetadata, "previous");
-                    }}
-                >
-                    <MoveLeftIcon />
-                </button>
+                            }`}
+                        onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            handleMoveInstance(props.fieldMetadata, "previous");
+                        }}
+                    >
+                        <MoveLeftIcon />
+                    </button>
 
-                <button
-                    data-testid="visual-editor__focused-toolbar__multiple-field-toolbar__move-right-button"
-                    className={`visual-editor__button visual-editor__button--secondary ${
-                        direction.value === "vertical"
+                    <button
+                        data-testid="visual-editor__focused-toolbar__multiple-field-toolbar__move-right-button"
+                        className={`visual-editor__button visual-editor__button--secondary ${direction.value === "vertical"
                             ? "visual-editor__rotate--90"
                             : ""
-                    }`}
-                    onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        handleMoveInstance(props.fieldMetadata, "next");
-                    }}
-                >
-                    <MoveRightIcon />
-                </button>
+                            }`}
+                        onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            handleMoveInstance(props.fieldMetadata, "next");
+                        }}
+                    >
+                        <MoveRightIcon />
+                    </button>
 
-                <button
-                    data-testid="visual-editor__focused-toolbar__multiple-field-toolbar__delete-button"
-                    className="visual-editor__button visual-editor__button--secondary"
-                    onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        handleDeleteInstance(props.fieldMetadata);
-                    }}
-                >
-                    <DeleteIcon />
-                </button>
+                    <button
+                        data-testid="visual-editor__focused-toolbar__multiple-field-toolbar__delete-button"
+                        className="visual-editor__button visual-editor__button--secondary"
+                        onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            handleDeleteInstance(props.fieldMetadata);
+                        }}
+                    >
+                        <DeleteIcon />
+                    </button>
+                </>)}
             </div>
         </div>
     );
