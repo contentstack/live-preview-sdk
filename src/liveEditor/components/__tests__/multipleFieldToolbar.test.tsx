@@ -52,6 +52,8 @@ describe("MultipleFieldToolbarComponent", () => {
             <MultipleFieldToolbarComponent
                 fieldMetadata={mockFieldMetadata}
                 targetElement={targetElement}
+                isMultiple={false}
+                isDisabled={false}
             />
         );
 
@@ -75,6 +77,8 @@ describe("MultipleFieldToolbarComponent", () => {
             <MultipleFieldToolbarComponent
                 fieldMetadata={mockFieldMetadata}
                 targetElement={targetElement}
+                isMultiple={false}
+                isDisabled={false}
             />
         );
 
@@ -97,6 +101,8 @@ describe("MultipleFieldToolbarComponent", () => {
             <MultipleFieldToolbarComponent
                 fieldMetadata={mockFieldMetadata}
                 targetElement={targetElement}
+                isMultiple={false}
+                isDisabled={false}
             />
         );
 
@@ -119,6 +125,8 @@ describe("MultipleFieldToolbarComponent", () => {
             <MultipleFieldToolbarComponent
                 fieldMetadata={mockFieldMetadata}
                 targetElement={targetElement}
+                isMultiple={false}
+                isDisabled={false}
             />
         );
 
