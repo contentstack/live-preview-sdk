@@ -457,3 +457,7 @@ div.multiple div.cslp-tooltip-child:hover:before {
     outline: 2px dashed #6C5CE7;
     transition: all 0.2s ease-in;
 }
+
+.visual-editor__default-cursor--disabled {
+    cursor: none;
+}
