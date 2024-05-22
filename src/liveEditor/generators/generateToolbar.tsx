@@ -31,18 +31,18 @@ export function appendMultipleFieldToolbar(
             fieldSchema,
             eventDetails
         );
-        if (fieldSchema?.multiple && !fieldDisabled) {
-            const wrapper = document.createDocumentFragment();
-            render(
-                <MultipleFieldToolbarComponent
-                    fieldMetadata={fieldMetadata}
-                    targetElement={targetElement}
-                />,
-                wrapper
-            );
+        const wrapper = document.createDocumentFragment();
+        render(
+            <MultipleFieldToolbarComponent
+                fieldMetadata={fieldMetadata}
+                targetElement={targetElement}
+                isMultiple={fieldSchema.multiple || false}
+                isDisabled={fieldDisabled}
+            />,
+            wrapper
+        );
 
-            focusedToolbarElement.append(wrapper);
-        }
+        focusedToolbarElement.append(wrapper);
     });
 }
 
