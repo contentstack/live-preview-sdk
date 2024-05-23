@@ -8,6 +8,8 @@ export function registerCompareElement() {
     }
 
     if (!customElements.get(DIFF_WRAPPER)) {
-        customElements.define(DIFF_WRAPPER, Compare);
+        customElements.define(DIFF_WRAPPER, Compare, {
+            extends: "span",
+        });
     }
 }
