@@ -49,12 +49,45 @@ function addOutline(params: any): void {
     addHoverOutline(params.event.target);
 }
 
+function hideDefaultCursor(): void {
+    if(document?.body && !document.body.classList.contains('visual-editor__default-cursor--disabled'))
+        document.body.classList.add('visual-editor__default-cursor--disabled');
+}
+
+function showDefaultCursor(): void {
+    if(document?.body && document.body.classList.contains('visual-editor__default-cursor--disabled'))
+        document.body.classList.remove('visual-editor__default-cursor--disabled');
+}
+
+function hideCustomCursor(customCursor: HTMLDivElement | null): void {
+    showDefaultCursor();
+    customCursor?.classList.remove("visible");
+}
+
+function showCustomCursor(customCursor: HTMLDivElement | null): void {
+    hideDefaultCursor();
+    customCursor?.classList.add("visible");
+}
+
+function isOverlay(target: HTMLElement): boolean {
+    return target.classList.contains("visual-editor__overlay");
+}
+
+function isContentEditable(target: HTMLElement): boolean {
+    if(target.hasAttribute('contenteditable'))
+        return target.getAttribute('contenteditable') === 'true';
+    return false;
+}
+
 async function handleMouseHover(params: HandleMouseHoverParams): Promise<void> {
     throttle(async (params) => {
         const eventDetails = getCsDataOfElement(params.event);
         if (!eventDetails) {
+            if(isOverlay(params.event.target) || isContentEditable(params.event.target)){
+                hideCustomCursor(params.customCursor);
+                return;
+            }
             resetCustomCursor(params.customCursor);
-
             removeAddInstanceButtons({
                 eventTarget: params.event.target,
                 visualEditorContainer: params.visualEditorContainer,
@@ -63,22 +96,29 @@ async function handleMouseHover(params: HandleMouseHoverParams): Promise<void> {
             handleCursorPosition(params.event, params.customCursor);
             return;
         }
-        const { editableElement, fieldMetadata } = eventDetails;
-        if (
-            VisualEditor.VisualEditorGlobalState.value
-                .previousHoveredTargetDOM !== editableElement
-        ) {
-            resetCustomCursor(params.customCursor);
-            removeAddInstanceButtons({
-                eventTarget: params.event.target,
-                visualEditorContainer: params.visualEditorContainer,
-                overlayWrapper: params.overlayWrapper,
-            });
-        }
 
+        const { editableElement, fieldMetadata } = eventDetails;
         const { content_type_uid, fieldPath } = fieldMetadata;
 
+        if(VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM
+            && VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM.isSameNode(editableElement)) {
+            hideCustomCursor(params.customCursor);
+            return;
+        }
+
         if (params.customCursor) {
+            if (
+                VisualEditor.VisualEditorGlobalState.value
+                    .previousHoveredTargetDOM !== editableElement
+            ) {
+                resetCustomCursor(params.customCursor);
+                removeAddInstanceButtons({
+                    eventTarget: params.event.target,
+                    visualEditorContainer: params.visualEditorContainer,
+                    overlayWrapper: params.overlayWrapper,
+                });
+            }
+
             if (!FieldSchemaMap.hasFieldSchema(content_type_uid, fieldPath)) {
                 generateCustomCursor({
                     fieldType: "loading",
@@ -108,8 +148,8 @@ async function handleMouseHover(params: HandleMouseHoverParams): Promise<void> {
                 }
             );
 
-            params.customCursor.classList.add("visible");
             handleCursorPosition(params.event, params.customCursor);
+            showCustomCursor(params.customCursor);
         }
 
         if(!editableElement.classList.contains('visual-editor__empty-block-parent') 
@@ -123,7 +163,6 @@ async function handleMouseHover(params: HandleMouseHoverParams): Promise<void> {
         ) {
             return;
         }
-
 
         VisualEditor.VisualEditorGlobalState.value.previousHoveredTargetDOM =
             editableElement;

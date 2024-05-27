@@ -27,6 +27,7 @@ export default function getStyleOfAnElement(element: HTMLElement): {
         "margin-top",
         "margin-bottom",
         "-webkit-user-modify",
+        "cursor",
     ];
 
     const styles: { [key: string]: string } = {};
