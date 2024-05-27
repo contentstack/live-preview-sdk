@@ -39,10 +39,6 @@ export function generateCustomCursor({
     const icon = fieldType ? icons[fieldType] : "";
 
     const prevDataIcon = customCursor.getAttribute("data-icon");
-    if(document?.body) {
-        //TEMP: To handle this conditionally
-        document.body.classList.add('visual-editor__default-cursor--disabled');
-    }
     if (prevDataIcon === fieldType) {
         return;
     }
