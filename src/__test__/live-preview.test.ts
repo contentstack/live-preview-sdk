@@ -733,9 +733,6 @@ describe("incoming postMessage", () => {
     test("should trigger user onChange function when client-data-send is sent with ssr: false", async () => {
         const mockedStackSdk = {
             live_preview: {},
-            headers: {
-                api_key: "",
-            },
             environment: "",
         };
 

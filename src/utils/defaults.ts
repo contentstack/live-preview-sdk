@@ -24,9 +24,6 @@ export const userInitData: IInitData = {
     },
     stackSdk: {
         live_preview: {},
-        headers: {
-            api_key: "",
-        },
         environment: "",
     },
     runScriptsOnUpdate: false,
