@@ -97,11 +97,6 @@ export const handleInitData = (
         config.stackSdk = initData;
 
         // stack details
-        if (
-            Object.prototype.hasOwnProperty.call(initData.headers, "api_key") &&
-            initData.headers.api_key
-        )
-            config.stackDetails.apiKey = initData.headers.api_key;
 
         if (Object.prototype.hasOwnProperty.call(initData, "environment")) {
             config.stackDetails.environment = initData.environment;
@@ -170,9 +165,7 @@ export const handleInitData = (
         };
 
         config.stackDetails.apiKey =
-            initData.stackDetails?.apiKey ??
-            stackSdk.headers?.api_key ??
-            config.stackDetails.apiKey;
+            initData.stackDetails?.apiKey ?? config.stackDetails.apiKey;
 
         config.stackDetails.environment =
             initData.stackDetails?.environment ??

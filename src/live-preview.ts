@@ -51,9 +51,6 @@ export default class LivePreview {
         },
         stackSdk: {
             live_preview: {},
-            headers: {
-                api_key: "",
-            },
             environment: "",
         },
 
