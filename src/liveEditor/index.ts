@@ -14,7 +14,7 @@ import {
 } from "../types/types";
 
 import { addFocusOverlay } from "./generators/generateOverlay";
-import { getEntryUidFromCurrentPage } from "./utils/getEntryUidFromCurrentPage";
+import { getEntryIdentifiersInCurrentPage } from "./utils/getEntryIdentifiersInCurrentPage";
 import liveEditorPostMessage from "./utils/liveEditorPostMessage";
 import { LiveEditorPostMessageEvents } from "./utils/types/postMessage.types";
 
@@ -143,8 +143,8 @@ export class VisualEditor {
                 });
 
                 liveEditorPostMessage?.on(
-                    LiveEditorPostMessageEvents.GET_ENTRY_UID_IN_CURRENT_PAGE,
-                    getEntryUidFromCurrentPage
+                    LiveEditorPostMessageEvents.GET_ALL_ENTRIES_IN_CURRENT_PAGE,
+                    getEntryIdentifiersInCurrentPage
                 );
                
                 // These events are used to sync the data when we made some changes in the entry without invoking live preview module.
