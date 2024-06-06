@@ -6,6 +6,7 @@ export enum LiveEditorPostMessageEvents {
     OPEN_QUICK_FORM = "open-quick-form",
     GET_FIELD_SCHEMA = "get-field-schema",
     GET_FIELD_DATA = "get-field-data",
+    GET_FIELD_PATH_WITH_UID = "get-field-path-with-uid",
     FOCUS_FIELD = "focus-field",
     DELETE_INSTANCE = "delete-instance",
     MOVE_INSTANCE = "move-instance",

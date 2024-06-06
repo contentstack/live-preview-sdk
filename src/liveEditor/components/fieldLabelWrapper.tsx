@@ -7,6 +7,7 @@ import { FieldSchemaMap } from "../utils/fieldSchemaMap";
 import { isFieldDisabled } from "../utils/isFieldDisabled";
 import { CaretIcon, InfoIcon } from "./icons";
 import { extractDetailsFromCslp } from "../../cslp";
+import { getFieldPathWithUid } from "../utils/getFieldPathWithUid";
 
 interface FieldLabelWrapperProps {
     fieldMetadata: CslpData;
@@ -58,8 +59,9 @@ function FieldLabelWrapperComponent(
 
             const displayNames = await Promise.all(
                 props.parentPaths.map(async (path) => {
+                    const pathWithUid = await getFieldPathWithUid(path);
                     const { content_type_uid, fieldPath } =
-                        extractDetailsFromCslp(path);
+                        extractDetailsFromCslp(pathWithUid);
                     const fieldSchema = await FieldSchemaMap.getFieldSchema(
                         content_type_uid,
                         fieldPath
