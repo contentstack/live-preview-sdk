@@ -48,7 +48,7 @@ export function extractDetailsFromCslp(cslpValue: string): CslpData {
         fieldPathWithIndex: fieldPath.join("."),
         multipleFieldMetadata: multipleFieldMetadata,
         instance: {
-            fieldPathWithIndex: instancePathWithInstance
+            fieldPathWithIndex: instancePathWithInstance,
         },
     };
 }

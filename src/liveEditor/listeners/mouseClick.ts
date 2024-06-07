@@ -19,7 +19,10 @@ import { LiveEditorPostMessageEvents } from "../utils/types/postMessage.types";
 import EventListenerHandlerParams from "./types";
 import { VisualEditor } from "..";
 import { FieldSchemaMap } from "../utils/fieldSchemaMap";
-import { handleAddButtonsForMultiple, removeAddInstanceButtons } from "../utils/multipleElementAddButton";
+import {
+    handleAddButtonsForMultiple,
+    removeAddInstanceButtons,
+} from "../utils/multipleElementAddButton";
 
 type HandleEditorInteractionParams = Omit<
     EventListenerHandlerParams,
@@ -89,14 +92,18 @@ async function handleEditorInteraction(
         });
     }
 
-    if(!editableElement.classList.contains('visual-editor__empty-block-parent')
-        && !editableElement.classList.contains('visual-editor__empty-block')){
+    if (
+        !editableElement.classList.contains(
+            "visual-editor__empty-block-parent"
+        ) &&
+        !editableElement.classList.contains("visual-editor__empty-block")
+    ) {
         addOverlay({
             overlayWrapper: params.overlayWrapper,
             resizeObserver: params.resizeObserver,
             editableElement: editableElement,
         });
-    
+
         addFocusedToolbar({
             eventDetails: eventDetails,
             focusedToolbar: params.focusedToolbar,
@@ -128,7 +135,7 @@ async function handleEditorInteraction(
             });
         }
     }
-    
+
     liveEditorPostMessage?.send(LiveEditorPostMessageEvents.FOCUS_FIELD, {
         DOMEditStack: getDOMEditStack(editableElement),
     });

@@ -1,11 +1,16 @@
-import { VisualEditorCslpEventDetails } from "../types/liveEditor.types";
+import { VisualEditor } from "..";
 import {
     generateReplaceAssetButton,
     removeReplaceAssetButton,
 } from "../generators/generateAssetButton";
+import {
+    generatePseudoEditableElement,
+    isEllipsisActive,
+} from "../generators/generatePseudoEditableField";
+import { VisualEditorCslpEventDetails } from "../types/liveEditor.types";
 import { LIVE_EDITOR_FIELD_TYPE_ATTRIBUTE_KEY } from "./constants";
 import { FieldSchemaMap } from "./fieldSchemaMap";
-import { isEllipsisActive } from "../generators/generatePseudoEditableField";
+import { getExpectedFieldData } from "./getExpectedFieldData";
 import { getFieldType } from "./getFieldType";
 import { handleFieldInput, handleFieldKeyDown } from "./handleFieldMouseDown";
 import liveEditorPostMessage from "./liveEditorPostMessage";
@@ -15,9 +20,6 @@ import {
 } from "./multipleElementAddButton";
 import { FieldDataType } from "./types/index.types";
 import { LiveEditorPostMessageEvents } from "./types/postMessage.types";
-import { generatePseudoEditableElement } from "../generators/generatePseudoEditableField";
-import { VisualEditor } from "..";
-import { getExpectedFieldData } from "./getExpectedFieldData";
 
 /**
  * It handles all the fields based on their data type and its "multiple" property.
@@ -64,13 +66,19 @@ export async function handleIndividualFields(
         // * fields could be handled as they are in a single instance
         if (eventDetails.fieldMetadata.multipleFieldMetadata.index > -1) {
             handleSingleField(
-                { editableElement, visualEditorContainer },
+                {
+                    editableElement,
+                    visualEditorContainer,
+                },
                 { expectedFieldData }
             );
         }
     } else {
         handleSingleField(
-            { editableElement, visualEditorContainer },
+            {
+                editableElement,
+                visualEditorContainer,
+            },
             { expectedFieldData }
         );
     }
@@ -98,7 +106,7 @@ export async function handleIndividualFields(
 
         // * title, single single_line, single multi_line, single number
         if (ALLOWED_INLINE_EDITABLE_FIELD.includes(fieldType)) {
-            let actualEditableField = editableElement;
+            let actualEditableField = editableElement as HTMLElement;
 
             const actualFieldData =
                 editableElement.innerHTML || editableElement.textContent || "";
@@ -121,6 +129,8 @@ export async function handleIndividualFields(
             actualEditableField.setAttribute("contenteditable", "true");
             actualEditableField.addEventListener("input", handleFieldInput);
             actualEditableField.addEventListener("keydown", handleFieldKeyDown);
+            // focus on the contenteditable element to start accepting input
+            actualEditableField.focus();
 
             return;
         }

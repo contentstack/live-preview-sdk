@@ -6,7 +6,6 @@ import { LiveEditorPostMessageEvents } from "../utils/types/postMessage.types";
 
 import { VisualEditor } from "..";
 import EventListenerHandlerParams from "../listeners/types";
-import { max } from "lodash-es";
 
 /**
  * Adds a focus overlay to the target element.
@@ -38,14 +37,12 @@ export function addFocusOverlay(
         ".visual-editor__overlay--bottom"
     );
     if (bottomOverlayDOM) {
-        bottomOverlayDOM.style.top = `calc(${
-            targetElementDimension.bottom + window.scrollY
-        }px + ${LIVE_PREVIEW_OUTLINE_WIDTH_IN_PX}px)`;
-        bottomOverlayDOM.style.height = `calc(${
-            window.document.body.scrollHeight -
+        bottomOverlayDOM.style.top = `calc(${targetElementDimension.bottom + window.scrollY
+            }px + ${LIVE_PREVIEW_OUTLINE_WIDTH_IN_PX}px)`;
+        bottomOverlayDOM.style.height = `calc(${window.document.body.scrollHeight -
             targetElementDimension.bottom -
             window.scrollY
-        }px - ${LIVE_PREVIEW_OUTLINE_WIDTH_IN_PX}px)`;
+            }px - ${LIVE_PREVIEW_OUTLINE_WIDTH_IN_PX}px)`;
         bottomOverlayDOM.style.left = "0";
         bottomOverlayDOM.style.width = "100%";
     }
@@ -56,9 +53,8 @@ export function addFocusOverlay(
     if (leftOverlayDOM) {
         leftOverlayDOM.style.left = "0";
         leftOverlayDOM.style.top = `calc(${distanceFromTop}px - ${LIVE_PREVIEW_OUTLINE_WIDTH_IN_PX}px)`;
-        leftOverlayDOM.style.height = `calc(${
-            targetElementDimension.height
-        }px + ${2 * LIVE_PREVIEW_OUTLINE_WIDTH_IN_PX}px)`;
+        leftOverlayDOM.style.height = `calc(${targetElementDimension.height
+            }px + ${2 * LIVE_PREVIEW_OUTLINE_WIDTH_IN_PX}px)`;
         leftOverlayDOM.style.width = `calc(${targetElementDimension.left}px - ${LIVE_PREVIEW_OUTLINE_WIDTH_IN_PX}px)`;
     }
 
@@ -66,14 +62,13 @@ export function addFocusOverlay(
         ".visual-editor__overlay--right"
     );
     if (rightOverlayDOM) {
-        const left = targetElementDimension.right + 
-            (window.innerWidth - targetElementDimension.right >= LIVE_PREVIEW_OUTLINE_WIDTH_IN_PX ? 
+        const left = targetElementDimension.right +
+            (window.innerWidth - targetElementDimension.right >= LIVE_PREVIEW_OUTLINE_WIDTH_IN_PX ?
                 LIVE_PREVIEW_OUTLINE_WIDTH_IN_PX : 0);
         rightOverlayDOM.style.left = `${left}px`;
         rightOverlayDOM.style.top = `calc(${distanceFromTop}px - ${LIVE_PREVIEW_OUTLINE_WIDTH_IN_PX}px)`;
-        rightOverlayDOM.style.height = `calc(${
-            targetElementDimension.height
-        }px + ${2 * LIVE_PREVIEW_OUTLINE_WIDTH_IN_PX}px)`;
+        rightOverlayDOM.style.height = `calc(${targetElementDimension.height
+            }px + ${2 * LIVE_PREVIEW_OUTLINE_WIDTH_IN_PX}px)`;
         rightOverlayDOM.style.width = `${window.innerWidth - left}px`;
     }
 
@@ -81,9 +76,8 @@ export function addFocusOverlay(
         ".visual-editor__overlay--outline"
     );
     if (outlineDOM) {
-        outlineDOM.style.top = `${
-            targetElementDimension.top + window.scrollY
-        }px`;
+        outlineDOM.style.top = `${targetElementDimension.top + window.scrollY
+            }px`;
         outlineDOM.style.height = `${targetElementDimension.height}px`;
         outlineDOM.style.width = `${targetElementDimension.width}px`;
         outlineDOM.style.left = `${targetElementDimension.left}px`;
