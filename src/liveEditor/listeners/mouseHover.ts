@@ -1,8 +1,6 @@
 import { throttle } from "lodash-es";
 import { getCsDataOfElement } from "../utils/getCsDataOfElement";
-import {
-    removeAddInstanceButtons,
-} from "../utils/multipleElementAddButton";
+import { removeAddInstanceButtons } from "../utils/multipleElementAddButton";
 import { generateCustomCursor } from "../generators/generateCustomCursor";
 import { FieldSchemaMap } from "../utils/fieldSchemaMap";
 import { isFieldDisabled } from "../utils/isFieldDisabled";
@@ -19,7 +17,6 @@ export interface HandleMouseHoverParams
     > {
     customCursor: HTMLDivElement | null;
 }
-
 
 function resetCustomCursor(customCursor: HTMLDivElement | null): void {
     if (customCursor) {
@@ -44,19 +41,31 @@ function handleCursorPosition(
 }
 
 function addOutline(params: any): void {
-    if(!params.event || !params.event.target) return;
+    if (!params.event || !params.event.target) return;
 
     addHoverOutline(params.event.target);
 }
 
 function hideDefaultCursor(): void {
-    if(document?.body && !document.body.classList.contains('visual-editor__default-cursor--disabled'))
-        document.body.classList.add('visual-editor__default-cursor--disabled');
+    if (
+        document?.body &&
+        !document.body.classList.contains(
+            "visual-editor__default-cursor--disabled"
+        )
+    )
+        document.body.classList.add("visual-editor__default-cursor--disabled");
 }
 
 function showDefaultCursor(): void {
-    if(document?.body && document.body.classList.contains('visual-editor__default-cursor--disabled'))
-        document.body.classList.remove('visual-editor__default-cursor--disabled');
+    if (
+        document?.body &&
+        document.body.classList.contains(
+            "visual-editor__default-cursor--disabled"
+        )
+    )
+        document.body.classList.remove(
+            "visual-editor__default-cursor--disabled"
+        );
 }
 
 function hideCustomCursor(customCursor: HTMLDivElement | null): void {
@@ -74,8 +83,8 @@ function isOverlay(target: HTMLElement): boolean {
 }
 
 function isContentEditable(target: HTMLElement): boolean {
-    if(target.hasAttribute('contenteditable'))
-        return target.getAttribute('contenteditable') === 'true';
+    if (target.hasAttribute("contenteditable"))
+        return target.getAttribute("contenteditable") === "true";
     return false;
 }
 
@@ -83,7 +92,10 @@ async function handleMouseHover(params: HandleMouseHoverParams): Promise<void> {
     throttle(async (params) => {
         const eventDetails = getCsDataOfElement(params.event);
         if (!eventDetails) {
-            if(isOverlay(params.event.target) || isContentEditable(params.event.target)){
+            if (
+                isOverlay(params.event.target) ||
+                isContentEditable(params.event.target)
+            ) {
                 hideCustomCursor(params.customCursor);
                 return;
             }
@@ -100,8 +112,13 @@ async function handleMouseHover(params: HandleMouseHoverParams): Promise<void> {
         const { editableElement, fieldMetadata } = eventDetails;
         const { content_type_uid, fieldPath } = fieldMetadata;
 
-        if(VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM
-            && VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM.isSameNode(editableElement)) {
+        if (
+            VisualEditor.VisualEditorGlobalState.value
+                .previousSelectedEditableDOM &&
+            VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM.isSameNode(
+                editableElement
+            )
+        ) {
             hideCustomCursor(params.customCursor);
             return;
         }
@@ -152,8 +169,12 @@ async function handleMouseHover(params: HandleMouseHoverParams): Promise<void> {
             showCustomCursor(params.customCursor);
         }
 
-        if(!editableElement.classList.contains('visual-editor__empty-block-parent') 
-            && !editableElement.classList.contains('visual-editor__empty-block')){
+        if (
+            !editableElement.classList.contains(
+                "visual-editor__empty-block-parent"
+            ) &&
+            !editableElement.classList.contains("visual-editor__empty-block")
+        ) {
             addOutline(params);
         }
 

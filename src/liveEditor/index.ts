@@ -13,15 +13,19 @@ import {
     IVisualEditorInitEvent,
 } from "../types/types";
 
-import { addFocusOverlay } from "./generators/generateOverlay";
+import { addFocusOverlay, hideOverlay } from "./generators/generateOverlay";
 import { getEntryIdentifiersInCurrentPage } from "./utils/getEntryIdentifiersInCurrentPage";
 import liveEditorPostMessage from "./utils/liveEditorPostMessage";
 import { LiveEditorPostMessageEvents } from "./utils/types/postMessage.types";
 
 import initUI from "./components";
 import { addEventListeners, removeEventListeners } from "./listeners";
-import { generateEmptyBlocks, removeEmptyBlocks } from "./generators/generateEmptyBlock";
+import {
+    generateEmptyBlocks,
+    removeEmptyBlocks,
+} from "./generators/generateEmptyBlock";
 import { debounce, isEqual } from "lodash-es";
+import { addKeyboardShortcuts } from "./listeners/keyboardShortcuts";
 
 interface VisualEditorGlobalStateImpl {
     previousSelectedEditableDOM: HTMLElement | Element | null;
@@ -39,7 +43,7 @@ export class VisualEditor {
         signal({
             previousSelectedEditableDOM: null,
             previousHoveredTargetDOM: null,
-            previousEmptyBlockParents: []
+            previousEmptyBlockParents: [],
         });
 
     private resizeObserver = new ResizeObserver(([entry]) => {
@@ -65,29 +69,41 @@ export class VisualEditor {
         );
     });
 
-    private mutationObserver = new MutationObserver(debounce(async () => {
+    private mutationObserver = new MutationObserver(
+        debounce(
+            async () => {
+                const emptyBlockParents = Array.from(
+                    document.querySelectorAll(
+                        ".visual-editor__empty-block-parent"
+                    )
+                );
 
-        const emptyBlockParents = Array.from(document.querySelectorAll(
-            ".visual-editor__empty-block-parent"
-        ));
+                const previousEmptyBlockParents = VisualEditor
+                    .VisualEditorGlobalState.value
+                    .previousEmptyBlockParents as Element[];
 
-        const previousEmptyBlockParents = VisualEditor.VisualEditorGlobalState.value.previousEmptyBlockParents as Element[];
+                if (!isEqual(emptyBlockParents, previousEmptyBlockParents)) {
+                    const noMoreEmptyBlockParent =
+                        previousEmptyBlockParents.filter(
+                            (x) => !emptyBlockParents.includes(x)
+                        );
+                    const newEmptyBlockParent = emptyBlockParents.filter(
+                        (x) => !previousEmptyBlockParents.includes(x)
+                    );
 
-        if(!isEqual(emptyBlockParents, previousEmptyBlockParents)) {
+                    removeEmptyBlocks(noMoreEmptyBlockParent);
+                    await generateEmptyBlocks(newEmptyBlockParent);
 
-            const noMoreEmptyBlockParent = previousEmptyBlockParents.filter(x => !emptyBlockParents.includes(x));
-            const newEmptyBlockParent = emptyBlockParents.filter(x => !previousEmptyBlockParents.includes(x));
-
-            removeEmptyBlocks(noMoreEmptyBlockParent);
-            await generateEmptyBlocks(newEmptyBlockParent);
-
-            VisualEditor.VisualEditorGlobalState.value = {
-                ...VisualEditor.VisualEditorGlobalState.value,
-                previousEmptyBlockParents: emptyBlockParents
-            };
-        }
-    }, 100, { trailing: true }));
-
+                    VisualEditor.VisualEditorGlobalState.value = {
+                        ...VisualEditor.VisualEditorGlobalState.value,
+                        previousEmptyBlockParents: emptyBlockParents,
+                    };
+                }
+            },
+            100,
+            { trailing: true }
+        )
+    );
 
     constructor() {
         initUI({
@@ -110,7 +126,6 @@ export class VisualEditor {
         if (!config.enable || config.mode < ILivePreviewModeConfig.EDITOR) {
             return;
         }
-
         liveEditorPostMessage
             ?.send<IVisualEditorInitEvent>("init", {
                 isSSR: config.ssr,
@@ -137,7 +152,14 @@ export class VisualEditor {
                     customCursor: this.customCursor,
                 });
 
-                this.mutationObserver.observe(document.body , {
+                addKeyboardShortcuts({
+                    overlayWrapper: this.overlayWrapper,
+                    visualEditorContainer: this.visualEditorContainer,
+                    focusedToolbar: this.focusedToolbar,
+                    resizeObserver: this.resizeObserver,
+                });
+
+                this.mutationObserver.observe(document.body, {
                     childList: true,
                     subtree: true,
                 });
@@ -146,7 +168,7 @@ export class VisualEditor {
                     LiveEditorPostMessageEvents.GET_ALL_ENTRIES_IN_CURRENT_PAGE,
                     getEntryIdentifiersInCurrentPage
                 );
-               
+
                 // These events are used to sync the data when we made some changes in the entry without invoking live preview module.
                 useHistoryPostMessageEvent();
                 useOnEntryUpdatePostMessageEvent();

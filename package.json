@@ -36,6 +36,7 @@
         "@contentstack/advanced-post-message": "github:contentstack/adv-post-message#main",
         "@testing-library/jest-dom": "^5.14.1",
         "@testing-library/preact": "^3.2.3",
+        "@testing-library/user-event": "^14.5.2",
         "@types/jest": "^27.0.1",
         "@types/jsdom": "^21.1.6",
         "@types/lodash-es": "^4.17.12",
