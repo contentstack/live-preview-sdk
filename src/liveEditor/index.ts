@@ -1,6 +1,5 @@
 import { Signal, signal } from "@preact/signals";
 
-import { generateStartEditingButton } from "./generators/generateStartEditingButton";
 import { inIframe } from "../common/inIframe";
 import Config from "../configManager/configManager";
 import {
@@ -12,19 +11,20 @@ import {
     ILivePreviewWindowType,
     IVisualEditorInitEvent,
 } from "../types/types";
+import { generateStartEditingButton } from "./generators/generateStartEditingButton";
 
-import { addFocusOverlay, hideOverlay } from "./generators/generateOverlay";
+import { addFocusOverlay } from "./generators/generateOverlay";
 import { getEntryIdentifiersInCurrentPage } from "./utils/getEntryIdentifiersInCurrentPage";
 import liveEditorPostMessage from "./utils/liveEditorPostMessage";
 import { LiveEditorPostMessageEvents } from "./utils/types/postMessage.types";
 
+import { debounce, isEqual } from "lodash-es";
 import initUI from "./components";
-import { addEventListeners, removeEventListeners } from "./listeners";
 import {
     generateEmptyBlocks,
     removeEmptyBlocks,
 } from "./generators/generateEmptyBlock";
-import { debounce, isEqual } from "lodash-es";
+import { addEventListeners, removeEventListeners } from "./listeners";
 import { addKeyboardShortcuts } from "./listeners/keyboardShortcuts";
 
 interface VisualEditorGlobalStateImpl {
@@ -45,6 +45,12 @@ export class VisualEditor {
             previousHoveredTargetDOM: null,
             previousEmptyBlockParents: [],
         });
+
+    /**
+     * This array is used to store the cleanup functions for the fields that get unfocused.
+     * This allows us to clean up the field-specific event listeners and other things when a field is unfocused.
+     */
+    static VisualEditorUnfocusFieldCleanups: (() => void)[] = [];
 
     private resizeObserver = new ResizeObserver(([entry]) => {
         if (

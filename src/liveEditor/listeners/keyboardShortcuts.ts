@@ -1,3 +1,4 @@
+import { VisualEditor } from "..";
 import { hideOverlay } from "../generators/generateOverlay";
 import EventListenerHandlerParams from "./types";
 

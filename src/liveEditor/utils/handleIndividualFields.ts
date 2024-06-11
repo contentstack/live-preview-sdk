@@ -3,6 +3,8 @@ import {
     generateReplaceAssetButton,
     removeReplaceAssetButton,
 } from "../generators/generateAssetButton";
+import { generateDatePicker } from "../generators/generateDatePicker";
+import { hideOverlay } from "../generators/generateOverlay";
 import {
     generatePseudoEditableElement,
     isEllipsisActive,
@@ -31,10 +33,19 @@ export async function handleIndividualFields(
     elements: {
         visualEditorContainer: HTMLDivElement;
         lastEditedField: Element | null;
+        focusedToolbar: HTMLDivElement | null;
+        overlayWrapper: HTMLDivElement | null;
+        resizeObserver: ResizeObserver;
     }
 ): Promise<void> {
     const { fieldMetadata, editableElement } = eventDetails;
-    const { visualEditorContainer, lastEditedField } = elements;
+    const {
+        visualEditorContainer,
+        lastEditedField,
+        focusedToolbar,
+        overlayWrapper,
+        resizeObserver,
+    } = elements;
     const { content_type_uid, fieldPath } = fieldMetadata;
 
     const [fieldSchema, expectedFieldData] = await Promise.all([
@@ -148,6 +159,41 @@ export async function handleIndividualFields(
 
             return;
         }
+
+        if (fieldSchema.data_type === FieldDataType.ISODATE) {
+            const setValue = async (value: string) => {
+                liveEditorPostMessage?.send(
+                    LiveEditorPostMessageEvents.UPDATE_FIELD,
+                    {
+                        data: value,
+                        fieldMetadata: eventDetails.fieldMetadata,
+                    }
+                );
+                hideOverlay({
+                    visualEditorContainer: visualEditorContainer,
+                    visualEditorOverlayWrapper: overlayWrapper,
+                    focusedToolbar: focusedToolbar,
+                    resizeObserver: resizeObserver,
+                });
+            };
+            const cleanupDateField = generateDatePicker(
+                editableElement as HTMLElement,
+                fieldSchema,
+                expectedFieldData,
+                setValue,
+                () => {
+                    hideOverlay({
+                        visualEditorContainer: visualEditorContainer,
+                        visualEditorOverlayWrapper: overlayWrapper,
+                        focusedToolbar: focusedToolbar,
+                        resizeObserver: resizeObserver,
+                    });
+                }
+            );
+            VisualEditor.VisualEditorUnfocusFieldCleanups.push(
+                cleanupDateField
+            );
+        }
     }
 
     liveEditorPostMessage?.send(LiveEditorPostMessageEvents.OPEN_QUICK_FORM, {
@@ -201,5 +247,10 @@ export function cleanIndividualFieldResidual(elements: {
 
     if (focusedToolbar) {
         focusedToolbar.innerHTML = "";
+    }
+
+    while (VisualEditor.VisualEditorUnfocusFieldCleanups.length > 0) {
+        const cleanup = VisualEditor.VisualEditorUnfocusFieldCleanups.pop();
+        cleanup && cleanup();
     }
 }

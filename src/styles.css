@@ -1,3 +1,5 @@
+@import "@contentstack/venus-components/build/main.css";
+
 .cslp-edit-mode {
     outline: 1px dashed #6c5ce7 !important;
     position: relative !important;
@@ -268,6 +270,11 @@ div.multiple div.cslp-tooltip-child:hover:before {
     position: relative;
 }
 
+.visual-editor__fields-container {
+    z-index: 201;
+    position: relative;
+}
+
 .visual-editor__button {
     background-color: transparent;
     border: 1px solid transparent;
@@ -418,35 +425,35 @@ div.multiple div.cslp-tooltip-child:hover:before {
     flex-direction: column;
     gap: 1rem;
     min-height: 100px;
-  }
-  
-  .visual-editor__empty-block-title {
+}
+
+.visual-editor__empty-block-title {
     font-size: 0.95rem;
     font-family: Inter;
     font-weight: 400;
     line-height: 100%;
     color: #647696;
-  }
-  
-  .visual-editor__empty-block-add-button {
+}
+
+.visual-editor__empty-block-add-button {
     height: 32px;
     border-radius: 4px;
-    background: #F9F8FF;
-    border-color: #6C5CE7;
+    background: #f9f8ff;
+    border-color: #6c5ce7;
     border-width: 1px;
     padding: 8px 16px 8px 16px;
     font-size: 0.9rem;
     font-family: Inter;
     font-weight: 600;
-    color: #6C5CE7;
+    color: #6c5ce7;
     padding-block: 0px;
     letter-spacing: 0.01rem;
-  }
+}
 
 .visual-editor__hover-outline {
     position: absolute;
     pointer-events: none;
-    outline: 2px dashed #6C5CE7;
+    outline: 2px dashed #6c5ce7;
     transition: all 0.2s ease-in;
 }
 
