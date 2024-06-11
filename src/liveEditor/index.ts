@@ -46,6 +46,12 @@ export class VisualEditor {
             previousEmptyBlockParents: [],
         });
 
+    /**
+     * This array is used to store the cleanup functions for the fields that get unfocused.
+     * This allows us to clean up the field-specific event listeners and other things when a field is unfocused.
+     */
+    static VisualEditorUnfocusFieldCleanups: (() => void)[] = [];
+
     private resizeObserver = new ResizeObserver(([entry]) => {
         if (
             !this.overlayWrapper ||

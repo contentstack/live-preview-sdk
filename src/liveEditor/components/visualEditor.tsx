@@ -1,3 +1,4 @@
+import { VisualEditor } from "..";
 import { hideOverlay } from "../generators/generateOverlay";
 
 interface VisualEditorProps {
@@ -21,6 +22,10 @@ function VisualEditorComponent(props: VisualEditorProps): JSX.Element {
                     const focusedToolbar = document.querySelector(
                         ".visual-editor__focused-toolbar"
                     ) as HTMLDivElement;
+
+                    VisualEditor.VisualEditorUnfocusFieldCleanups.forEach((cleanup) => {
+                        cleanup();
+                    });
 
                     hideOverlay({
                         visualEditorContainer: props.visualEditorContainer,
@@ -51,7 +56,7 @@ function VisualEditorComponent(props: VisualEditorProps): JSX.Element {
                     className="visual-editor__overlay--outline"
                 ></div>
             </div>
-            
+
             <div
                 className="visual-editor__hover-outline"
                 data-testid="visual-editor__hover-outline">

@@ -145,6 +145,9 @@ async function handleEditorInteraction(
         lastEditedField:
             VisualEditor.VisualEditorGlobalState.value
                 .previousSelectedEditableDOM,
+        focusedToolbar: params.focusedToolbar,
+        overlayWrapper: params.overlayWrapper,
+        resizeObserver: params.resizeObserver,
     });
 
     VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM =

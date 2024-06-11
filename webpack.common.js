@@ -28,7 +28,6 @@ module.exports = {
             {
                 test: /\.css$/,
                 use: [MiniCssExtractPlugin.loader, "css-loader"],
-                include: [path.resolve(__dirname, "src")],
             },
 
         ],
