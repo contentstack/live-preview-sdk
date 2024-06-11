@@ -65,6 +65,11 @@ function VisualEditorComponent(props: VisualEditorProps): JSX.Element {
                 className="visual-editor__focused-toolbar"
                 data-testid="visual-editor__focused-toolbar"
             ></div>
+
+            <div
+                className="visual-editor__fields-container"
+                data-testid="visual-editor__fields-container"
+            ></div>
         </>
     );
 }

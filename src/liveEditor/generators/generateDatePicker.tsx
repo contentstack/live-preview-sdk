@@ -1,7 +1,7 @@
 import {
     DateTimePicker2
 } from "@contentstack/venus-components";
-import { autoUpdate, computePosition, offset } from "@floating-ui/dom";
+import { autoUpdate, computePosition, flip, offset } from "@floating-ui/dom";
 import { format } from "date-fns";
 import { render } from "preact";
 import { convertToISO8601UTC } from "../utils/convertToISO8601UTC";
@@ -11,17 +11,17 @@ export function generateDatePicker(
     fieldSchema: Record<string, any>,
     value: string,
     setValue: (value: string) => Promise<void>,
+    onCancel: () => void,
 ): ReturnType<typeof autoUpdate> {
     const startDate = fieldSchema.startDate;
     const endDate = fieldSchema.endDate;
     const hideTime = fieldSchema.fieldMetadata?.hideTime;
 
-    const container = document.querySelector(".visual-editor__container");
+    const container = document.querySelector(".visual-editor__fields-container");
     const datePickerContainer = document.createElement("div");
     datePickerContainer.style.position = "absolute";
     datePickerContainer.style.top = "0";
     datePickerContainer.style.left = "0";
-    datePickerContainer.style.zIndex = "9999";
     datePickerContainer.style.backgroundColor = "#fff"
 
     container?.appendChild(datePickerContainer);
@@ -29,7 +29,7 @@ export function generateDatePicker(
 
     const cleanupAutoUpdate = autoUpdate(editableElement, datePickerContainer, () =>
         computePosition(editableElement, datePickerContainer, {
-            middleware: [offset(10)]
+            middleware: [offset(10), flip()]
         }).then(({ x, y }) => {
             Object.assign(datePickerContainer.style, {
                 left: `${x}px`,
@@ -49,6 +49,7 @@ export function generateDatePicker(
             onDone={({ date, time }: { date: any; time: any }) => {
                 setValue(parseDateFromDateTimePicker(date, time))
             }}
+            onCancel={onCancel}
             datePickerProps={{
                 version: "v2",
                 inputMaskProps: {

@@ -180,7 +180,15 @@ export async function handleIndividualFields(
                 editableElement as HTMLElement,
                 fieldSchema,
                 expectedFieldData,
-                setValue
+                setValue,
+                () => {
+                    hideOverlay({
+                        visualEditorContainer: visualEditorContainer,
+                        visualEditorOverlayWrapper: overlayWrapper,
+                        focusedToolbar: focusedToolbar,
+                        resizeObserver: resizeObserver,
+                    });
+                }
             );
             VisualEditor.VisualEditorUnfocusFieldCleanups.push(
                 cleanupDateField

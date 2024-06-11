@@ -270,6 +270,11 @@ div.multiple div.cslp-tooltip-child:hover:before {
     position: relative;
 }
 
+.visual-editor__fields-container {
+    z-index: 201;
+    position: relative;
+}
+
 .visual-editor__button {
     background-color: transparent;
     border: 1px solid transparent;
