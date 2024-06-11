@@ -1,15 +1,10 @@
-import { computePosition, autoUpdate, offset } from "@floating-ui/dom";
 import {
-    DatePicker,
-    DateTimePicker,
-    DateTimePicker2,
-    DateTimepicker2,
-    TimePicker,
-    TimePicker2,
+    DateTimePicker2
 } from "@contentstack/venus-components";
+import { autoUpdate, computePosition, offset } from "@floating-ui/dom";
+import { format } from "date-fns";
 import { render } from "preact";
 import { convertToISO8601UTC } from "../utils/convertToISO8601UTC";
-import { format } from "date-fns";
 
 export function generateDatePicker(
     editableElement: HTMLElement,
@@ -53,7 +48,6 @@ export function generateDatePicker(
             initialDate={value ? new Date(value) : ""}
             onDone={({ date, time }: { date: any; time: any }) => {
                 setValue(parseDateFromDateTimePicker(date, time))
-                cleanup();
             }}
             datePickerProps={{
                 version: "v2",

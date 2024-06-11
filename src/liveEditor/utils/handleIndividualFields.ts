@@ -240,4 +240,9 @@ export function cleanIndividualFieldResidual(elements: {
     if (focusedToolbar) {
         focusedToolbar.innerHTML = "";
     }
+
+    while (VisualEditor.VisualEditorUnfocusFieldCleanups.length > 0) {
+        const cleanup = VisualEditor.VisualEditorUnfocusFieldCleanups.pop();
+        cleanup && cleanup();
+    }
 }

@@ -25,11 +25,6 @@ export function addKeyboardShortcuts({
                 focusedToolbar: focusedToolbar,
                 resizeObserver: resizeObserver,
             });
-            while (VisualEditor.VisualEditorUnfocusFieldCleanups.length > 0) {
-                const cleanup =
-                    VisualEditor.VisualEditorUnfocusFieldCleanups.pop();
-                cleanup && cleanup();
-            }
         }
     });
 }
