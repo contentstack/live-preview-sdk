@@ -1,3 +1,4 @@
+import { livePreviewStyles } from "../styles/live_preview";
 import { PublicLogger } from "./public-logger";
 import { IConfigEditButton, IEditButtonPosition } from "./types";
 
@@ -82,7 +83,7 @@ export const createMultipleEditButton = (
 
     const multipleDiv = document.createElement("div");
     multipleDiv.appendChild(multipleEditFragment);
-    multipleDiv.classList.add("multiple");
+    multipleDiv.classList.add(livePreviewStyles()["multiple"]);
 
     return multipleDiv;
 };
