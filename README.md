@@ -15,7 +15,7 @@ npm install @contentstack/live-preview-utils
 Alternatively, if you want to include the package directly in your website HTML code, use the following command:
 
 ```html
-<script src="https://unpkg.com/@contentstack/live-preview-utils@2.0.0/dist/index.js"></script>
+<script src="https://unpkg.com/@contentstack/live-preview-utils@2.0.0/dist/legacy/index.js"></script>
 ```
 
 # Initializing the SDK
@@ -47,15 +47,6 @@ Alternatively, if you want to initialize the SDK directly inside the HTML tag, u
 </script>
 ```
 
-# [Live Editing](https://www.contentstack.com/docs/developers/set-up-live-preview/set-up-live-preview-for-your-website/#live-editing-for-entries-optional-)
-
-Live Preview provides edit tags that allow you to edit your content in real-time. Live edit tags are identified as the data-cslp attribute within the HTML tags. The styles for the live edit tags are available in the @contentstack/live-preview-utils/dist/main.css file.
-
-To use live edit tags within your stack, you need to include them in your main index.js file as follows:
-
-```javascript
-import "@contentstack/live-preview-utils/dist/main.css";
-```
 
 # License
 
