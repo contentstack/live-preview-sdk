@@ -10,16 +10,15 @@ export default function getLiveEditorRedirectionUrl(): URL {
     const { branch, apiKey, environment, locale } = stackDetails;
     const { url: appUrl } = clientUrlParams;
 
-    const completeURL = new URL(
-        `/live-editor/stack/${apiKey}/environment/${environment}`,
-        appUrl
-    );
-
+    const searchParams = new URLSearchParams();
     if (branch) {
-        completeURL.searchParams.set("branch", branch);
+        searchParams.set("branch", branch);
+    }
+    if (environment) {
+        searchParams.set("environment", environment);
     }
 
-    completeURL.searchParams.set("target-url", window.location.href);
+    searchParams.set("target-url", window.location.href);
 
     // get the locale from the data cslp attribute
     const elementWithDataCslp = document.querySelector(`[data-cslp]`);
@@ -30,10 +29,14 @@ export default function getLiveEditorRedirectionUrl(): URL {
         ) as string;
         const { locale } = extractDetailsFromCslp(cslpData);
 
-        completeURL.searchParams.set("locale", locale);
+        searchParams.set("locale", locale);
     } else if (locale) {
-        completeURL.searchParams.set("locale", locale);
+        searchParams.set("locale", locale);
     }
 
+    const completeURL = new URL(
+        `/#!/stack/${apiKey}/visual-editor?${searchParams.toString()}`,
+        appUrl
+    );
     return completeURL;
 }
