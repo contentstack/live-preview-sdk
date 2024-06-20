@@ -2,7 +2,7 @@ import ContentstackLivePreview from "../contentstack-live-preview-HOC";
 import { PublicLogger } from "../utils/public-logger";
 import { IInitData } from "../utils/types";
 import { sendPostmessageToWindow } from "./utils";
-import packageJson from "../../package.json" assert { type: "json" };
+import packageJson from "../../package.json";
 
 jest.mock("post-robot", () => ({
     on: jest.fn(),
