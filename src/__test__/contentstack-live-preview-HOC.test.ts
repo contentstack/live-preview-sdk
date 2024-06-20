@@ -2,7 +2,7 @@ import ContentstackLivePreview from "../contentstack-live-preview-HOC";
 import { PublicLogger } from "../utils/public-logger";
 import { IInitData } from "../utils/types";
 import { sendPostmessageToWindow } from "./utils";
-import packageJson from "../../package.json";
+import packageJson from "../../package.json" assert { type: "json" };
 
 jest.mock("post-robot", () => ({
     on: jest.fn(),
@@ -224,9 +224,6 @@ describe("Gatsby Data formatter", () => {
     test("should return data in correct format", async () => {
         class stackSdkWithFetch {
             live_preview = {};
-            headers = {
-                api_key: "",
-            };
             content_type_uid = "live_preview_content_type";
             environment = "";
 
@@ -248,9 +245,6 @@ describe("Gatsby Data formatter", () => {
 
         class stackSdkWithFind {
             live_preview = {};
-            headers = {
-                api_key: "",
-            };
             content_type_uid = "live_preview_content_type";
 
             environment = "";

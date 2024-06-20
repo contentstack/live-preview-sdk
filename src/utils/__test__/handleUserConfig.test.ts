@@ -35,9 +35,6 @@ describe("handleInitData()", () => {
             },
             stackSdk: {
                 live_preview: {},
-                headers: {
-                    api_key: "",
-                },
                 environment: "",
             },
 
@@ -76,9 +73,6 @@ describe("handleInitData()", () => {
                 url: "https://app.contentstack.com:443",
             },
             stackSdk: {
-                headers: {
-                    api_key: "",
-                },
                 environment: "",
             },
         };
@@ -91,9 +85,6 @@ describe("handleInitData()", () => {
                 enable: true,
             },
             config: {},
-            headers: {
-                api_key: "bltanything",
-            },
             environment: "",
             cachePolicy: 1,
         };
@@ -104,7 +95,7 @@ describe("handleInitData()", () => {
             enable: true,
             cleanCslpOnProduction: true,
             stackDetails: {
-                apiKey: "bltanything",
+                apiKey: "",
                 environment: "",
                 contentTypeUid: "",
                 entryUid: "",
@@ -120,9 +111,6 @@ describe("handleInitData()", () => {
                     enable: true,
                 },
                 config: {},
-                headers: {
-                    api_key: "bltanything",
-                },
                 environment: "",
                 cachePolicy: 1,
             },
@@ -154,9 +142,6 @@ describe("handleInitData()", () => {
                 live_preview: {
                     enable: true,
                 },
-                headers: {
-                    api_key: "bltanything",
-                },
                 environment: "",
                 cachePolicy: 1,
             },
@@ -170,9 +155,6 @@ describe("handleInitData()", () => {
         const initData: Partial<IStackSdk> = {
             live_preview: {
                 enable: true,
-            },
-            headers: {
-                api_key: "bltanything",
             },
             environment: "",
             cachePolicy: 1,
@@ -218,9 +200,6 @@ describe("handleClientUrlParams()", () => {
             },
             stackSdk: {
                 live_preview: {},
-                headers: {
-                    api_key: "",
-                },
                 environment: "",
             },
 

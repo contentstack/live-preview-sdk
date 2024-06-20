@@ -1,6 +1,6 @@
 import { defineConfig } from 'tsup'
 import { esbuildPluginFilePathExtensions } from 'esbuild-plugin-file-path-extensions'
-import packageJson from './package.json';
+import packageJson from './package.json' assert { type: "json" };
 
 export default defineConfig([
   modernConfig({ entry: [ 'src/*.ts', 'src/styles/*.ts', 'src/utils/*.ts' ]}),
