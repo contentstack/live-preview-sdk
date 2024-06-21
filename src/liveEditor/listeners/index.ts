@@ -1,8 +1,10 @@
 import EventListenerHandlerParams from "./types";
-
-import handleEditorInteraction from "./mouseClick";
-import handleMouseHover from "./mouseHover";
 import { VisualEditor } from "..";
+import handleEditorInteraction from "./mouseClick";
+import handleMouseHover, {
+    hideCustomCursor,
+    showCustomCursor,
+} from "./mouseHover";
 
 type AddEventListenersParams = Omit<
     EventListenerHandlerParams,
@@ -37,11 +39,13 @@ export function addEventListeners(params: AddEventListenersParams): void {
         });
     });
 
-    // window.addEventListener("keydown", (event) => {
-    //     if (event.key === "Escape") {
-    //         onClick(visualEditorOverlayWrapper);
-    //     }
-    // });
+    document.documentElement.addEventListener("mouseleave", () => {
+        hideCustomCursor(params.customCursor);
+    });
+
+    document.documentElement.addEventListener("mouseenter", () => {
+        showCustomCursor(params.customCursor);
+    });
 }
 
 export function removeEventListeners(params: RemoveEventListenersParams): void {
