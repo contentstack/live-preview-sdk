@@ -68,12 +68,12 @@ function showDefaultCursor(): void {
         );
 }
 
-function hideCustomCursor(customCursor: HTMLDivElement | null): void {
+export function hideCustomCursor(customCursor: HTMLDivElement | null): void {
     showDefaultCursor();
     customCursor?.classList.remove("visible");
 }
 
-function showCustomCursor(customCursor: HTMLDivElement | null): void {
+export function showCustomCursor(customCursor: HTMLDivElement | null): void {
     hideDefaultCursor();
     customCursor?.classList.add("visible");
 }
