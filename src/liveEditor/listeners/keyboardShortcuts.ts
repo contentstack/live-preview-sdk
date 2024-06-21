@@ -18,6 +18,7 @@ export function addKeyboardShortcuts({
         const event = e as KeyboardEvent;
         // un-focusses the focussed canvas item and removes the overlay
         if (event.key === "Escape") {
+            // previously, this was achieved by clicking on overlayWrapper
             hideOverlay({
                 visualEditorOverlayWrapper: overlayWrapper,
                 visualEditorContainer,
