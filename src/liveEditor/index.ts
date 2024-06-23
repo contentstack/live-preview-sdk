@@ -26,6 +26,7 @@ import {
 } from "./generators/generateEmptyBlock";
 import { debounce, isEqual } from "lodash-es";
 import { addKeyboardShortcuts } from "./listeners/keyboardShortcuts";
+import { useHideFocusOverlayPostMessageEvent } from "./eventManager/useHideFocusOverlayPostMessageEvent";
 
 interface VisualEditorGlobalStateImpl {
     previousSelectedEditableDOM: HTMLElement | Element | null;
@@ -168,6 +169,13 @@ export class VisualEditor {
                     LiveEditorPostMessageEvents.GET_ALL_ENTRIES_IN_CURRENT_PAGE,
                     getEntryIdentifiersInCurrentPage
                 );
+
+                useHideFocusOverlayPostMessageEvent({
+                    overlayWrapper: this.overlayWrapper,
+                    visualEditorContainer: this.visualEditorContainer,
+                    focusedToolbar: this.focusedToolbar,
+                    resizeObserver: this.resizeObserver,
+                });
 
                 // These events are used to sync the data when we made some changes in the entry without invoking live preview module.
                 useHistoryPostMessageEvent();

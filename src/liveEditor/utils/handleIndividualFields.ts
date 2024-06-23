@@ -8,7 +8,10 @@ import {
     isEllipsisActive,
 } from "../generators/generatePseudoEditableField";
 import { VisualEditorCslpEventDetails } from "../types/liveEditor.types";
-import { LIVE_EDITOR_FIELD_TYPE_ATTRIBUTE_KEY } from "./constants";
+import {
+    ALLOWED_INLINE_EDITABLE_FIELD,
+    LIVE_EDITOR_FIELD_TYPE_ATTRIBUTE_KEY,
+} from "./constants";
 import { FieldSchemaMap } from "./fieldSchemaMap";
 import { getExpectedFieldData } from "./getExpectedFieldData";
 import { getFieldType } from "./getFieldType";
@@ -94,15 +97,6 @@ export async function handleIndividualFields(
         config: { expectedFieldData: string }
     ) {
         const { editableElement, visualEditorContainer } = elements;
-        /**
-         * The field that can be directly modified using contenteditable=true.
-         * This includes all text fields like title and numbers.
-         */
-        const ALLOWED_INLINE_EDITABLE_FIELD: FieldDataType[] = [
-            FieldDataType.SINGLELINE,
-            FieldDataType.MULTILINE,
-            FieldDataType.NUMBER,
-        ];
 
         // * title, single single_line, single multi_line, single number
         if (ALLOWED_INLINE_EDITABLE_FIELD.includes(fieldType)) {

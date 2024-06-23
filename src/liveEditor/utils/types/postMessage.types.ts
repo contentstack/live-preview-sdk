@@ -8,7 +8,10 @@ export enum LiveEditorPostMessageEvents {
     GET_FIELD_DATA = "get-field-data",
     GET_FIELD_PATH_WITH_UID = "get-field-path-with-uid",
     FOCUS_FIELD = "focus-field",
+    OPEN_FIELD_EDIT_MODAL = "open-field-edit-modal",
     DELETE_INSTANCE = "delete-instance",
     MOVE_INSTANCE = "move-instance",
+    // FROM visual editor
     GET_ALL_ENTRIES_IN_CURRENT_PAGE = "get-entries-in-current-page",
+    HIDE_FOCUS_OVERLAY = "hide-focus-overlay",
 }
