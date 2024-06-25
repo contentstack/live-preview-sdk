@@ -18,9 +18,6 @@ export declare interface IClientUrlParams {
 export declare interface IStackSdk {
     live_preview: { [key: string]: any } & Partial<IConfig>;
     [key: string]: any;
-    headers: {
-        api_key: string;
-    };
     environment: string;
 }
 
