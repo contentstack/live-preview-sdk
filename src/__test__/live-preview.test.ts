@@ -702,6 +702,44 @@ describe("cslp tooltip", () => {
 
         locationSpy.mockRestore();
     });
+
+    test("should re-render the edit button tooltip if not already available even when edit button is enabled", async () => {
+        new LivePreview({
+            enable: true,
+            editButton: {
+                enable: true,
+            },
+        });
+
+        let tooltip = document.querySelector(
+            "[data-test-id='cs-cslp-tooltip']"
+        );
+        const tooltipParent = tooltip?.parentNode;
+        // deleting the tooltip
+        tooltipParent?.removeChild(tooltip as Node);
+
+        expect(
+            document.querySelector("[data-test-id='cs-cslp-tooltip']")
+        ).toBeNull();
+
+        const titlePara = document.querySelector("[data-test-id='title-para']");
+        const descPara = document.querySelector("[data-test-id='desc-para']");
+
+        const hoverEvent = new CustomEvent("mouseover", {
+            bubbles: true,
+        });
+
+        titlePara?.dispatchEvent(hoverEvent);
+
+        tooltip = document.querySelector("[data-test-id='cs-cslp-tooltip']");
+        expect(tooltip).toBeDefined();
+
+        expect(tooltip?.getAttribute("current-data-cslp")).toBe(TITLE_CSLP_TAG);
+
+        descPara?.dispatchEvent(hoverEvent);
+
+        expect(tooltip?.getAttribute("current-data-cslp")).toBe(DESC_CSLP_TAG);
+    });
 });
 
 describe("debug module", () => {
@@ -733,9 +771,6 @@ describe("incoming postMessage", () => {
     test("should trigger user onChange function when client-data-send is sent with ssr: false", async () => {
         const mockedStackSdk = {
             live_preview: {},
-            headers: {
-                api_key: "",
-            },
             environment: "",
         };
 

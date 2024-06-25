@@ -51,9 +51,6 @@ export default class LivePreview {
         },
         stackSdk: {
             live_preview: {},
-            headers: {
-                api_key: "",
-            },
             environment: "",
         },
 
@@ -163,6 +160,10 @@ export default class LivePreview {
             const cslpTag = element.getAttribute("data-cslp");
 
             if (trigger && cslpTag) {
+                // in case where the Edit button is not available in the body element
+                if (!document.getElementById("cslp-tooltip")) {
+                    this.createCslpTooltip();
+                }
                 if (this.hideInterval) {
                     clearInterval(this.hideInterval);
                     this.hideInterval = null;
