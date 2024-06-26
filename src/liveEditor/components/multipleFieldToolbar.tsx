@@ -11,10 +11,13 @@ import { UrlIcon } from "./icons/url";
 import liveEditorPostMessage from "../utils/liveEditorPostMessage";
 import { LiveEditorPostMessageEvents } from "../utils/types/postMessage.types";
 import { ALLOWED_MODAL_EDITABLE_FIELD } from "../utils/constants";
+import { getFieldType } from "../utils/getFieldType";
+import { FieldDataType, ISchemaFieldMap } from "../utils/types/index.types";
+import { JsonRteIcon } from "./icons/fields/json-rte";
 
 interface MultipleFieldToolbarProps {
     fieldMetadata: CslpData;
-    fieldSchema: Record<string, any>;
+    fieldSchema: ISchemaFieldMap;
     targetElement: Element;
     isMultiple: boolean;
     isDisabled: boolean;
@@ -23,11 +26,14 @@ interface MultipleFieldToolbarProps {
 function handleEdit(fieldMetadata: CslpData) {
     liveEditorPostMessage?.send(
         LiveEditorPostMessageEvents.OPEN_FIELD_EDIT_MODAL,
-        {
-            data: fieldMetadata,
-        }
+        { fieldMetadata }
     );
 }
+
+const fieldIcons: Partial<Record<FieldDataType, React.FC>> = {
+    link: UrlIcon,
+    json_rte: JsonRteIcon,
+};
 
 function FieldToolbarComponent(props: MultipleFieldToolbarProps): JSX.Element {
     const direction = useSignal("");
@@ -37,9 +43,9 @@ function FieldToolbarComponent(props: MultipleFieldToolbarProps): JSX.Element {
 
     direction.value = getChildrenDirection(props.targetElement, parentPath);
 
-    const isModalEditable = ALLOWED_MODAL_EDITABLE_FIELD.includes(
-        props.fieldSchema?.data_type
-    );
+    const fieldType = getFieldType(props.fieldSchema);
+    const isModalEditable = ALLOWED_MODAL_EDITABLE_FIELD.includes(fieldType);
+    const Icon = fieldIcons[fieldType];
 
     // TODO use correct icons for different fields
     const editButton = (
@@ -52,7 +58,7 @@ function FieldToolbarComponent(props: MultipleFieldToolbarProps): JSX.Element {
                 handleEdit(props.fieldMetadata);
             }}
         >
-            <UrlIcon />
+            {Icon && <Icon />}
         </button>
     );
 
@@ -62,60 +68,65 @@ function FieldToolbarComponent(props: MultipleFieldToolbarProps): JSX.Element {
             data-testid="visual-editor__focused-toolbar__multiple-field-toolbar"
         >
             <div className="visual-editor__focused-toolbar__button-group">
-                {props.isMultiple && !props.isDisabled ? (
-                    <>
-                        <button
-                            data-testid="visual-editor__focused-toolbar__multiple-field-toolbar__move-left-button"
-                            className={`visual-editor__button visual-editor__button--secondary ${
-                                direction.value === "vertical"
-                                    ? "visual-editor__rotate--90"
-                                    : ""
-                            }`}
-                            onClick={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                handleMoveInstance(
-                                    props.fieldMetadata,
-                                    "previous"
-                                );
-                            }}
-                        >
-                            <MoveLeftIcon />
-                        </button>
+                {!props.isDisabled ? (
+                    props.isMultiple ? (
+                        <>
+                            <button
+                                data-testid="visual-editor__focused-toolbar__multiple-field-toolbar__move-left-button"
+                                className={`visual-editor__button visual-editor__button--secondary ${
+                                    direction.value === "vertical"
+                                        ? "visual-editor__rotate--90"
+                                        : ""
+                                }`}
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    handleMoveInstance(
+                                        props.fieldMetadata,
+                                        "previous"
+                                    );
+                                }}
+                            >
+                                <MoveLeftIcon />
+                            </button>
 
-                        <button
-                            data-testid="visual-editor__focused-toolbar__multiple-field-toolbar__move-right-button"
-                            className={`visual-editor__button visual-editor__button--secondary ${
-                                direction.value === "vertical"
-                                    ? "visual-editor__rotate--90"
-                                    : ""
-                            }`}
-                            onClick={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                handleMoveInstance(props.fieldMetadata, "next");
-                            }}
-                        >
-                            <MoveRightIcon />
-                        </button>
+                            <button
+                                data-testid="visual-editor__focused-toolbar__multiple-field-toolbar__move-right-button"
+                                className={`visual-editor__button visual-editor__button--secondary ${
+                                    direction.value === "vertical"
+                                        ? "visual-editor__rotate--90"
+                                        : ""
+                                }`}
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    handleMoveInstance(
+                                        props.fieldMetadata,
+                                        "next"
+                                    );
+                                }}
+                            >
+                                <MoveRightIcon />
+                            </button>
 
-                        {isModalEditable ? editButton : null}
+                            {isModalEditable ? editButton : null}
 
-                        <button
-                            data-testid="visual-editor__focused-toolbar__multiple-field-toolbar__delete-button"
-                            className="visual-editor__button visual-editor__button--secondary"
-                            onClick={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                handleDeleteInstance(props.fieldMetadata);
-                            }}
-                        >
-                            <DeleteIcon />
-                        </button>
-                    </>
-                ) : (
-                    <>{isModalEditable ? editButton : null}</>
-                )}
+                            <button
+                                data-testid="visual-editor__focused-toolbar__multiple-field-toolbar__delete-button"
+                                className="visual-editor__button visual-editor__button--secondary"
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    handleDeleteInstance(props.fieldMetadata);
+                                }}
+                            >
+                                <DeleteIcon />
+                            </button>
+                        </>
+                    ) : (
+                        <>{isModalEditable ? editButton : null}</>
+                    )
+                ) : null}
             </div>
         </div>
     );
