@@ -6,7 +6,7 @@ import {
 import { FieldSchemaMap } from "../utils/fieldSchemaMap";
 import { isFieldDisabled } from "../utils/isFieldDisabled";
 
-import MultipleFieldToolbarComponent from "../components/multipleFieldToolbar";
+import FieldToolbarComponent from "../components/multipleFieldToolbar";
 import { render } from "preact";
 import FieldLabelWrapperComponent from "../components/fieldLabelWrapper";
 
@@ -15,10 +15,10 @@ export function appendFocusedToolbar(
     focusedToolbarElement: HTMLDivElement
 ): void {
     appendFieldPathDropdown(eventDetails, focusedToolbarElement);
-    appendMultipleFieldToolbar(eventDetails, focusedToolbarElement);
+    appendFieldToolbar(eventDetails, focusedToolbarElement);
 }
 
-export function appendMultipleFieldToolbar(
+export function appendFieldToolbar(
     eventDetails: VisualEditorCslpEventDetails,
     focusedToolbarElement: HTMLDivElement
 ): void {
@@ -33,8 +33,9 @@ export function appendMultipleFieldToolbar(
         );
         const wrapper = document.createDocumentFragment();
         render(
-            <MultipleFieldToolbarComponent
+            <FieldToolbarComponent
                 fieldMetadata={fieldMetadata}
+                fieldSchema={fieldSchema}
                 targetElement={targetElement}
                 isMultiple={fieldSchema.multiple || false}
                 isDisabled={fieldDisabled}

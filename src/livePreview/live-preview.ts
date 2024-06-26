@@ -1,6 +1,6 @@
 import Config from "../configManager/configManager";
 import { PublicLogger } from "../logger/logger";
-import { IConfig, ILivePreviewModeConfig } from "../types/types";
+import { ILivePreviewModeConfig } from "../types/types";
 import { addLivePreviewQueryTags } from "../utils";
 import { LivePreviewEditButton } from "./editButton/editButton";
 import { sendInitializeLivePreviewPostMessageEvent } from "./eventManager/postMessageEvent.hooks";

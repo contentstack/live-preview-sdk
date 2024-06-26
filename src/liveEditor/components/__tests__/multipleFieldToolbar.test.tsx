@@ -1,7 +1,7 @@
 import "@testing-library/jest-dom/extend-expect";
 import { render, cleanup, fireEvent } from "@testing-library/preact";
 
-import MultipleFieldToolbarComponent from "../multipleFieldToolbar";
+import FieldToolbarComponent from "../multipleFieldToolbar";
 import {
     handleMoveInstance,
     handleDeleteInstance,
@@ -13,6 +13,8 @@ jest.mock("../../utils/instanceHandlers", () => ({
     handleMoveInstance: jest.fn(),
     handleDeleteInstance: jest.fn(),
 }));
+
+// TODO - add mock field schema
 
 const mockFieldMetadata: CslpData = {
     entry_uid: "",
@@ -49,7 +51,7 @@ describe("MultipleFieldToolbarComponent", () => {
 
     test("renders toolbar buttons correctly", () => {
         const { getByTestId } = render(
-            <MultipleFieldToolbarComponent
+            <FieldToolbarComponent
                 fieldMetadata={mockFieldMetadata}
                 targetElement={targetElement}
                 isMultiple={false}
@@ -74,7 +76,7 @@ describe("MultipleFieldToolbarComponent", () => {
 
     test("calls handleMoveInstance with 'previous' when move left button is clicked", () => {
         const { getByTestId } = render(
-            <MultipleFieldToolbarComponent
+            <FieldToolbarComponent
                 fieldMetadata={mockFieldMetadata}
                 targetElement={targetElement}
                 isMultiple={false}
@@ -98,7 +100,7 @@ describe("MultipleFieldToolbarComponent", () => {
 
     test("calls handleMoveInstance with 'next' when move right button is clicked", () => {
         const { getByTestId } = render(
-            <MultipleFieldToolbarComponent
+            <FieldToolbarComponent
                 fieldMetadata={mockFieldMetadata}
                 targetElement={targetElement}
                 isMultiple={false}
@@ -122,7 +124,7 @@ describe("MultipleFieldToolbarComponent", () => {
 
     test("calls handleDeleteInstance when delete button is clicked", () => {
         const { getByTestId } = render(
-            <MultipleFieldToolbarComponent
+            <FieldToolbarComponent
                 fieldMetadata={mockFieldMetadata}
                 targetElement={targetElement}
                 isMultiple={false}
