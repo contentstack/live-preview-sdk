@@ -1,5 +1,6 @@
 import { throttle } from "lodash-es";
 
+// To account for animation(transition) delay
 const makeHoverOutlineClickable = 
   throttle((hoverOutline: HTMLElement, cslpValue: string) => {
       hoverOutline.setAttribute('data-cslp', cslpValue);
@@ -10,6 +11,7 @@ const makeHoverOutlineClickable =
 /**
  * Adds a hover outline to the target element.
  * @param targetElement - The element to add the hover outline to.
+ * @param isAnchorElement - Boolean to check for anchor elements.
  * @returns void
  */
 export function addHoverOutline(
