@@ -445,9 +445,12 @@ div.multiple div.cslp-tooltip-child:hover:before {
 
 .visual-editor__hover-outline {
     position: absolute;
-    pointer-events: none;
     outline: 2px dashed #6C5CE7;
     transition: all 0.2s ease-in;
+}
+
+.visual-editor__hover-outline--unclickable {
+    pointer-events: none;
 }
 
 .visual-editor__default-cursor--disabled {
