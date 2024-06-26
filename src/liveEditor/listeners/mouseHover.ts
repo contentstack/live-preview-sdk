@@ -43,7 +43,9 @@ function handleCursorPosition(
 function addOutline(params: any): void {
     if (!params.event || !params.event.target) return;
 
-    addHoverOutline(params.event.target);
+    const hoveredElement = params.event.target as HTMLElement;
+    const isValidAnchorElement = hoveredElement.tagName === 'A' && hoveredElement.hasAttribute('data-cslp');
+    addHoverOutline(hoveredElement, isValidAnchorElement);
 }
 
 function hideDefaultCursor(): void {
