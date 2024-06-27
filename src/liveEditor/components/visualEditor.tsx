@@ -53,7 +53,7 @@ function VisualEditorComponent(props: VisualEditorProps): JSX.Element {
             </div>
             
             <div
-                className="visual-editor__hover-outline"
+                className="visual-editor__hover-outline visual-editor__hover-outline--unclickable"
                 data-testid="visual-editor__hover-outline">
             </div>
             <div

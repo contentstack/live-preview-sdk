@@ -32,7 +32,9 @@ export function addHoverOutline(
     else if(!targetElement.isSameNode(hoverOutline)) {
       makeHoverOutlineClickable.cancel();
       hoverOutline.removeAttribute('data-cslp');
-      hoverOutline.classList.add('visual-editor__hover-outline--unclickable');
+      if(!hoverOutline.classList.contains('visual-editor__hover-outline--unclickable')){
+        hoverOutline.classList.add('visual-editor__hover-outline--unclickable');
+      }
     }
 
     hoverOutline.style.top = `${targetElementDimension.top + window.scrollY}px`;
