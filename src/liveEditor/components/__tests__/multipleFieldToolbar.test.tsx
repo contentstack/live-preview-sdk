@@ -1,13 +1,14 @@
 import "@testing-library/jest-dom/extend-expect";
 import { render, cleanup, fireEvent } from "@testing-library/preact";
 
-import FieldToolbarComponent from "../multipleFieldToolbar";
+import FieldToolbarComponent from "../FieldToolbar";
 import {
     handleMoveInstance,
     handleDeleteInstance,
 } from "../../utils/instanceHandlers";
 
 import { CslpData } from "../../../cslp/types/cslp.types";
+import { ISchemaFieldMap } from "../../utils/types/index.types";
 
 jest.mock("../../utils/instanceHandlers", () => ({
     handleMoveInstance: jest.fn(),
@@ -35,6 +36,23 @@ const mockFieldMetadata: CslpData = {
     },
 };
 
+const mockLinkFieldSchema: ISchemaFieldMap = {
+    data_type: "link",
+    display_name: "Link",
+    uid: "link",
+    field_metadata: {
+        description: "",
+        default_value: {
+            title: "Example",
+            url: "https://www.example.com",
+        },
+    },
+    mandatory: false,
+    multiple: false,
+    non_localizable: false,
+    unique: false,
+};
+
 describe("MultipleFieldToolbarComponent", () => {
     let targetElement: HTMLDivElement;
 
@@ -53,6 +71,7 @@ describe("MultipleFieldToolbarComponent", () => {
         const { getByTestId } = render(
             <FieldToolbarComponent
                 fieldMetadata={mockFieldMetadata}
+                fieldSchema={mockLinkFieldSchema}
                 targetElement={targetElement}
                 isMultiple={false}
                 isDisabled={false}
@@ -78,6 +97,7 @@ describe("MultipleFieldToolbarComponent", () => {
         const { getByTestId } = render(
             <FieldToolbarComponent
                 fieldMetadata={mockFieldMetadata}
+                fieldSchema={mockLinkFieldSchema}
                 targetElement={targetElement}
                 isMultiple={false}
                 isDisabled={false}
@@ -102,6 +122,7 @@ describe("MultipleFieldToolbarComponent", () => {
         const { getByTestId } = render(
             <FieldToolbarComponent
                 fieldMetadata={mockFieldMetadata}
+                fieldSchema={mockLinkFieldSchema}
                 targetElement={targetElement}
                 isMultiple={false}
                 isDisabled={false}
@@ -126,6 +147,7 @@ describe("MultipleFieldToolbarComponent", () => {
         const { getByTestId } = render(
             <FieldToolbarComponent
                 fieldMetadata={mockFieldMetadata}
+                fieldSchema={mockLinkFieldSchema}
                 targetElement={targetElement}
                 isMultiple={false}
                 isDisabled={false}
