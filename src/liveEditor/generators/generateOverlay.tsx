@@ -62,7 +62,7 @@ export function addFocusOverlay(
         rightOverlayDOM.style.left = `${targetElementDimension.right}px`;
         rightOverlayDOM.style.top = `${distanceFromTop}px`;
         rightOverlayDOM.style.height = `${targetElementDimension.height}px`;
-        rightOverlayDOM.style.width = `${window.innerWidth - targetElementDimension.right}px`;
+        rightOverlayDOM.style.width = `${document.documentElement.clientWidth - targetElementDimension.right}px`;
     }
 
     const outlineDOM = focusOverlayWrapper.querySelector<HTMLDivElement>(
