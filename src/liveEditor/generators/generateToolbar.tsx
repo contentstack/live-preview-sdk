@@ -6,7 +6,7 @@ import {
 import { FieldSchemaMap } from "../utils/fieldSchemaMap";
 import { isFieldDisabled } from "../utils/isFieldDisabled";
 
-import FieldToolbarComponent from "../components/multipleFieldToolbar";
+import FieldToolbarComponent from "../components/FieldToolbar";
 import { render } from "preact";
 import FieldLabelWrapperComponent from "../components/fieldLabelWrapper";
 
