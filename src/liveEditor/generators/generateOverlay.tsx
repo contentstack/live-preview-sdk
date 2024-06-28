@@ -1,5 +1,4 @@
 import { extractDetailsFromCslp } from "../../cslp/cslpdata";
-import { LIVE_PREVIEW_OUTLINE_WIDTH_IN_PX } from "../utils/constants";
 import { cleanIndividualFieldResidual } from "../utils/handleIndividualFields";
 import liveEditorPostMessage from "../utils/liveEditorPostMessage";
 import { LiveEditorPostMessageEvents } from "../utils/types/postMessage.types";
@@ -30,19 +29,18 @@ export function addFocusOverlay(
         topOverlayDOM.style.top = "0";
         topOverlayDOM.style.left = "0";
         topOverlayDOM.style.width = "100%";
-        topOverlayDOM.style.height = `calc(${distanceFromTop}px - ${LIVE_PREVIEW_OUTLINE_WIDTH_IN_PX}px)`;
+        topOverlayDOM.style.height = `calc(${distanceFromTop}px)`;
     }
 
     const bottomOverlayDOM = focusOverlayWrapper.querySelector<HTMLDivElement>(
         ".visual-editor__overlay--bottom"
     );
     if (bottomOverlayDOM) {
-        bottomOverlayDOM.style.top = `calc(${targetElementDimension.bottom + window.scrollY
-            }px + ${LIVE_PREVIEW_OUTLINE_WIDTH_IN_PX}px)`;
-        bottomOverlayDOM.style.height = `calc(${window.document.body.scrollHeight -
+        bottomOverlayDOM.style.top = `${targetElementDimension.bottom + window.scrollY}px`;
+        bottomOverlayDOM.style.height = `${window.document.body.scrollHeight -
             targetElementDimension.bottom -
             window.scrollY
-            }px - ${LIVE_PREVIEW_OUTLINE_WIDTH_IN_PX}px)`;
+            }px`;
         bottomOverlayDOM.style.left = "0";
         bottomOverlayDOM.style.width = "100%";
     }
@@ -52,32 +50,26 @@ export function addFocusOverlay(
     );
     if (leftOverlayDOM) {
         leftOverlayDOM.style.left = "0";
-        leftOverlayDOM.style.top = `calc(${distanceFromTop}px - ${LIVE_PREVIEW_OUTLINE_WIDTH_IN_PX}px)`;
-        leftOverlayDOM.style.height = `calc(${targetElementDimension.height
-            }px + ${2 * LIVE_PREVIEW_OUTLINE_WIDTH_IN_PX}px)`;
-        leftOverlayDOM.style.width = `calc(${targetElementDimension.left}px - ${LIVE_PREVIEW_OUTLINE_WIDTH_IN_PX}px)`;
+        leftOverlayDOM.style.top = `${distanceFromTop}px`;
+        leftOverlayDOM.style.height = `${targetElementDimension.height}px`;
+        leftOverlayDOM.style.width = `${targetElementDimension.left}px`;
     }
 
     const rightOverlayDOM = focusOverlayWrapper.querySelector<HTMLDivElement>(
         ".visual-editor__overlay--right"
     );
     if (rightOverlayDOM) {
-        const left = targetElementDimension.right +
-            (window.innerWidth - targetElementDimension.right >= LIVE_PREVIEW_OUTLINE_WIDTH_IN_PX ?
-                LIVE_PREVIEW_OUTLINE_WIDTH_IN_PX : 0);
-        rightOverlayDOM.style.left = `${left}px`;
-        rightOverlayDOM.style.top = `calc(${distanceFromTop}px - ${LIVE_PREVIEW_OUTLINE_WIDTH_IN_PX}px)`;
-        rightOverlayDOM.style.height = `calc(${targetElementDimension.height
-            }px + ${2 * LIVE_PREVIEW_OUTLINE_WIDTH_IN_PX}px)`;
-        rightOverlayDOM.style.width = `${window.innerWidth - left}px`;
+        rightOverlayDOM.style.left = `${targetElementDimension.right}px`;
+        rightOverlayDOM.style.top = `${distanceFromTop}px`;
+        rightOverlayDOM.style.height = `${targetElementDimension.height}px`;
+        rightOverlayDOM.style.width = `${document.documentElement.clientWidth - targetElementDimension.right}px`;
     }
 
     const outlineDOM = focusOverlayWrapper.querySelector<HTMLDivElement>(
         ".visual-editor__overlay--outline"
     );
     if (outlineDOM) {
-        outlineDOM.style.top = `${targetElementDimension.top + window.scrollY
-            }px`;
+        outlineDOM.style.top = `${targetElementDimension.top + window.scrollY}px`;
         outlineDOM.style.height = `${targetElementDimension.height}px`;
         outlineDOM.style.width = `${targetElementDimension.width}px`;
         outlineDOM.style.left = `${targetElementDimension.left}px`;
