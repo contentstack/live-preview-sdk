@@ -1,7 +1,7 @@
 import "@testing-library/jest-dom/extend-expect";
 import { render, cleanup, fireEvent } from "@testing-library/preact";
 
-import FieldToolbarComponent from "../multipleFieldToolbar";
+import FieldToolbarComponent from "../FieldToolbar";
 import {
     handleMoveInstance,
     handleDeleteInstance,

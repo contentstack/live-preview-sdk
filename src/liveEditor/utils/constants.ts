@@ -24,7 +24,6 @@ export const ALLOWED_MODAL_EDITABLE_FIELD: FieldDataType[] = [
     FieldDataType.HTML_RTE,
     FieldDataType.MARKDOWN_RTE,
     FieldDataType.JSON_RTE,
-    FieldDataType.SELECT,
     FieldDataType.CUSTOM_FIELD,
     FieldDataType.LINK,
     FieldDataType.ISODATE,
