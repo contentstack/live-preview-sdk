@@ -23,6 +23,7 @@ import {
     handleAddButtonsForMultiple,
     removeAddInstanceButtons,
 } from "../utils/multipleElementAddButton";
+import { isFieldDisabled } from "../utils/isFieldDisabled";
 
 type HandleEditorInteractionParams = Omit<
     EventListenerHandlerParams,
@@ -32,7 +33,7 @@ type HandleEditorInteractionParams = Omit<
 type AddFocusOverlayParams = Pick<
     EventListenerHandlerParams,
     "overlayWrapper" | "resizeObserver"
-> & { editableElement: Element };
+> & { editableElement: Element; isFieldDisabled?: boolean };
 
 type AddFocusedToolbarParams = Pick<
     EventListenerHandlerParams,
@@ -42,7 +43,11 @@ type AddFocusedToolbarParams = Pick<
 function addOverlay(params: AddFocusOverlayParams) {
     if (!params.overlayWrapper || !params.editableElement) return;
 
-    addFocusOverlay(params.editableElement, params.overlayWrapper);
+    addFocusOverlay(
+        params.editableElement,
+        params.overlayWrapper,
+        params.isFieldDisabled
+    );
     params.resizeObserver.observe(params.editableElement);
 }
 
@@ -115,6 +120,17 @@ async function handleEditorInteraction(
             content_type_uid,
             fieldPath
         );
+
+        // after field schema is available re-add disabled overlay
+        const { isDisabled } = isFieldDisabled(fieldSchema, eventDetails);
+        if (isDisabled) {
+            addOverlay({
+                overlayWrapper: params.overlayWrapper,
+                resizeObserver: params.resizeObserver,
+                editableElement: editableElement,
+                isFieldDisabled: true,
+            });
+        }
 
         if (
             fieldSchema.data_type === "block" ||

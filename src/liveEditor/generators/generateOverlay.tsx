@@ -14,7 +14,8 @@ import EventListenerHandlerParams from "../listeners/types";
  */
 export function addFocusOverlay(
     targetElement: Element,
-    focusOverlayWrapper: HTMLDivElement
+    focusOverlayWrapper: HTMLDivElement,
+    disabled?: boolean,
 ): void {
     const targetElementDimension = targetElement.getBoundingClientRect();
 
@@ -73,7 +74,7 @@ export function addFocusOverlay(
         outlineDOM.style.height = `${targetElementDimension.height}px`;
         outlineDOM.style.width = `${targetElementDimension.width}px`;
         outlineDOM.style.left = `${targetElementDimension.left}px`;
-        outlineDOM.style.outlineColor = "#715cdd";
+        outlineDOM.style.outlineColor = disabled ? "#909090" : "#715cdd";
     }
 }
 

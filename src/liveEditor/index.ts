@@ -27,6 +27,9 @@ import {
 import { debounce, isEqual } from "lodash-es";
 import { addKeyboardShortcuts } from "./listeners/keyboardShortcuts";
 import { useHideFocusOverlayPostMessageEvent } from "./eventManager/useHideFocusOverlayPostMessageEvent";
+import { extractDetailsFromCslp } from "../cslp";
+import { FieldSchemaMap } from "./utils/fieldSchemaMap";
+import { isFieldDisabled } from "./utils/isFieldDisabled";
 
 interface VisualEditorGlobalStateImpl {
     previousSelectedEditableDOM: HTMLElement | Element | null;
@@ -68,6 +71,38 @@ export class VisualEditor {
                 .previousSelectedEditableDOM,
             this.overlayWrapper
         );
+
+        const editableElement = entry.target.closest("[data-cslp]");
+        if (!editableElement) {
+            return;
+        }
+        const cslpData = editableElement.getAttribute("data-cslp");
+        if (!cslpData) {
+            return;
+        }
+        const fieldMetadata = extractDetailsFromCslp(cslpData);
+
+        FieldSchemaMap.getFieldSchema(
+            fieldMetadata.content_type_uid,
+            fieldMetadata.fieldPath
+        ).then((fieldSchema) => {
+            if (!fieldSchema) {
+                return;
+            }
+            const { isDisabled } = isFieldDisabled(fieldSchema, {
+                editableElement,
+                fieldMetadata,
+                cslpData,
+            });
+            if (isDisabled) {
+                addFocusOverlay(
+                    VisualEditor.VisualEditorGlobalState.value
+                        .previousSelectedEditableDOM as HTMLElement,
+                    this.overlayWrapper as HTMLDivElement,
+                    isDisabled
+                );
+            }
+        });
     });
 
     private mutationObserver = new MutationObserver(
