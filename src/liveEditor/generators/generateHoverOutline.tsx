@@ -16,7 +16,8 @@ const makeHoverOutlineClickable =
  */
 export function addHoverOutline(
   targetElement: Element,
-  isAnchorElement: boolean
+  isAnchorElement: boolean,
+  disabled?: boolean,
 ): void {
 
   const targetElementDimension = targetElement.getBoundingClientRect();
@@ -35,6 +36,13 @@ export function addHoverOutline(
       if(!hoverOutline.classList.contains('visual-editor__hover-outline--unclickable')){
         hoverOutline.classList.add('visual-editor__hover-outline--unclickable');
       }
+    }
+
+    if (disabled) {
+      hoverOutline.classList.add("visual-editor__hover-outline--disabled");
+    }
+    else {
+      hoverOutline.classList.remove("visual-editor__hover-outline--disabled");
     }
 
     hoverOutline.style.top = `${targetElementDimension.top + window.scrollY}px`;

@@ -40,12 +40,17 @@ function handleCursorPosition(
     }
 }
 
-function addOutline(params: any): void {
+function addOutline(
+    params: HandleMouseHoverParams,
+    isFieldDisabled?: boolean
+): void {
     if (!params.event || !params.event.target) return;
 
     const hoveredElement = params.event.target as HTMLElement;
-    const isValidAnchorElement = hoveredElement.tagName === 'A' && hoveredElement.hasAttribute('data-cslp');
-    addHoverOutline(hoveredElement, isValidAnchorElement);
+    const isValidAnchorElement =
+        hoveredElement.tagName === "A" &&
+        hoveredElement.hasAttribute("data-cslp");
+    addHoverOutline(hoveredElement, isValidAnchorElement, isFieldDisabled);
 }
 
 function hideDefaultCursor(): void {
@@ -91,12 +96,13 @@ function isContentEditable(target: HTMLElement): boolean {
 }
 
 async function handleMouseHover(params: HandleMouseHoverParams): Promise<void> {
-    throttle(async (params) => {
+    throttle(async (params: HandleMouseHoverParams) => {
         const eventDetails = getCsDataOfElement(params.event);
+        const eventTarget = params.event.target as HTMLElement | null;
         if (!eventDetails) {
             if (
-                isOverlay(params.event.target) ||
-                isContentEditable(params.event.target)
+                eventTarget &&
+                (isOverlay(eventTarget) || isContentEditable(eventTarget))
             ) {
                 hideCustomCursor(params.customCursor);
                 return;
@@ -178,6 +184,13 @@ async function handleMouseHover(params: HandleMouseHoverParams): Promise<void> {
             !editableElement.classList.contains("visual-editor__empty-block")
         ) {
             addOutline(params);
+            FieldSchemaMap.getFieldSchema(content_type_uid, fieldPath).then(
+                (fieldSchema) => {
+                    const { isDisabled: fieldDisabled, reason } =
+                        isFieldDisabled(fieldSchema, eventDetails);
+                    addOutline(params, fieldDisabled);
+                }
+            );
         }
 
         if (

@@ -463,6 +463,10 @@ div.multiple div.cslp-tooltip-child:hover:before {
     pointer-events: none;
 }
 
+.visual-editor__hover-outline--disabled {
+    outline: 2px dashed #909090;
+}
+
 .visual-editor__default-cursor--disabled {
     cursor: none;
 }

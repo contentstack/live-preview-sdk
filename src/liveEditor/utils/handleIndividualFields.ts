@@ -16,6 +16,7 @@ import { FieldSchemaMap } from "./fieldSchemaMap";
 import { getExpectedFieldData } from "./getExpectedFieldData";
 import { getFieldType } from "./getFieldType";
 import { handleFieldInput, handleFieldKeyDown } from "./handleFieldMouseDown";
+import { isFieldDisabled } from "./isFieldDisabled";
 import liveEditorPostMessage from "./liveEditorPostMessage";
 import {
     handleAddButtonsForMultiple,
@@ -47,6 +48,8 @@ export async function handleIndividualFields(
 
     const fieldType = getFieldType(fieldSchema);
 
+    const { isDisabled: disabled } = isFieldDisabled(fieldSchema, eventDetails);
+
     editableElement.setAttribute(
         LIVE_EDITOR_FIELD_TYPE_ATTRIBUTE_KEY,
         fieldType
@@ -73,7 +76,7 @@ export async function handleIndividualFields(
                     editableElement,
                     visualEditorContainer,
                 },
-                { expectedFieldData }
+                { expectedFieldData, disabled }
             );
         }
     } else {
@@ -82,7 +85,7 @@ export async function handleIndividualFields(
                 editableElement,
                 visualEditorContainer,
             },
-            { expectedFieldData }
+            { expectedFieldData, disabled }
         );
     }
 
@@ -94,9 +97,13 @@ export async function handleIndividualFields(
             editableElement: Element;
             visualEditorContainer: HTMLDivElement;
         },
-        config: { expectedFieldData: string }
+        config: { expectedFieldData: string; disabled?: boolean }
     ) {
         const { editableElement, visualEditorContainer } = elements;
+
+        if (config.disabled) {
+            return;
+        }
 
         // * title, single single_line, single multi_line, single number
         if (ALLOWED_INLINE_EDITABLE_FIELD.includes(fieldType)) {
