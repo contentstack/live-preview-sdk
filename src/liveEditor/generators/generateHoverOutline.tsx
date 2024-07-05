@@ -39,8 +39,10 @@ export function addHoverOutline(
     }
 
     if (disabled) {
-      // console.log('disabled', disabled, targetElement)
       hoverOutline.classList.add("visual-editor__hover-outline--disabled");
+    }
+    else {
+      hoverOutline.classList.remove("visual-editor__hover-outline--disabled");
     }
 
     hoverOutline.style.top = `${targetElementDimension.top + window.scrollY}px`;

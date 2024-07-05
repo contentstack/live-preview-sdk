@@ -107,14 +107,12 @@ function FieldLabelWrapperComponent(
                 className="visual-editor__focused-toolbar__field-label-wrapper__current-field visual-editor__button visual-editor__button--primary"
                 disabled={areDisplayNamesLoading}
             >
-                <div className="visual-editor__focused-toolbar__text">
-                    {currentField.text}
-                </div>
-                {areDisplayNamesLoading ? (
-                    <LoadingIcon height={14} width={14} />
-                ) : (
-                    currentField.icon
-                )}
+                {currentField.text ? (
+                    <div className="visual-editor__focused-toolbar__text">
+                        {currentField.text}
+                    </div>
+                ) : null}
+                {areDisplayNamesLoading ? <LoadingIcon /> : currentField.icon}
             </button>
             {props.parentPaths.map((path, index) => (
                 <button

@@ -188,12 +188,6 @@ async function handleMouseHover(params: HandleMouseHoverParams): Promise<void> {
                 (fieldSchema) => {
                     const { isDisabled: fieldDisabled, reason } =
                         isFieldDisabled(fieldSchema, eventDetails);
-                    // console.log(
-                    //     "reference fieldSchema",
-                    //     fieldSchema,
-                    //     fieldDisabled,
-                    //     reason
-                    // );
                     addOutline(params, fieldDisabled);
                 }
             );
