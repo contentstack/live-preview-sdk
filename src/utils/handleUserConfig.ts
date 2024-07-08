@@ -173,9 +173,7 @@ export const handleInitData = (
             config.stackDetails.environment;
 
         config.stackDetails.branch =
-            initData.stackDetails?.branch ??
-            config.stackDetails.branch ??
-            "main";
+            initData.stackDetails?.branch ?? config.stackDetails.branch;
 
         // client URL params
         handleClientUrlParams(
