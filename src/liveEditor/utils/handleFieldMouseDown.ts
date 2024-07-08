@@ -21,6 +21,14 @@ export function handleFieldKeyDown(e: Event): void {
 
     if (fieldType === FieldDataType.NUMBER) {
         handleNumericFieldKeyDown(event);
+    } else if (fieldType === FieldDataType.SINGLELINE) {
+        handleSingleLineFieldKeyDown(event);
+    }
+}
+
+function handleSingleLineFieldKeyDown(e: KeyboardEvent) {
+    if (e.code === "Enter") {
+        e.preventDefault();
     }
 }
 

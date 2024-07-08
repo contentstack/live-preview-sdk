@@ -22,7 +22,7 @@ import {
     handleAddButtonsForMultiple,
     removeAddInstanceButtons,
 } from "./multipleElementAddButton";
-import { FieldDataType } from "./types/index.types";
+import { normalizeNonBreakingSpace } from "./normalizeNonBreakingSpace";
 import { LiveEditorPostMessageEvents } from "./types/postMessage.types";
 
 /**
@@ -34,6 +34,7 @@ export async function handleIndividualFields(
     eventDetails: VisualEditorCslpEventDetails,
     elements: {
         visualEditorContainer: HTMLDivElement;
+        resizeObserver: ResizeObserver;
         lastEditedField: Element | null;
     }
 ): Promise<void> {
@@ -63,6 +64,7 @@ export async function handleIndividualFields(
             fieldSchema.field_metadata.ref_multiple)
     ) {
         if (lastEditedField !== editableElement) {
+            // TODO this internally does a getFieldSchema message again, which is not necessary
             handleAddButtonsForMultiple(eventDetails, {
                 editableElement: eventDetails.editableElement,
                 visualEditorContainer: visualEditorContainer,
@@ -75,6 +77,7 @@ export async function handleIndividualFields(
                 {
                     editableElement,
                     visualEditorContainer,
+                    resizeObserver: elements.resizeObserver,
                 },
                 { expectedFieldData, disabled }
             );
@@ -84,6 +87,7 @@ export async function handleIndividualFields(
             {
                 editableElement,
                 visualEditorContainer,
+                resizeObserver: elements.resizeObserver,
             },
             { expectedFieldData, disabled }
         );
@@ -96,6 +100,7 @@ export async function handleIndividualFields(
         elements: {
             editableElement: Element;
             visualEditorContainer: HTMLDivElement;
+            resizeObserver: ResizeObserver;
         },
         config: { expectedFieldData: string; disabled?: boolean }
     ) {
@@ -109,10 +114,17 @@ export async function handleIndividualFields(
         if (ALLOWED_INLINE_EDITABLE_FIELD.includes(fieldType)) {
             let actualEditableField = editableElement as HTMLElement;
 
-            const actualFieldData =
+            const textContent =
                 editableElement.innerHTML || editableElement.textContent || "";
+
+            // ensure non-breaking space (nbsp) is replaced with space and
+            // all whitespace chars are standardized
+            const fieldData = normalizeNonBreakingSpace(textContent);
+            const expectedData = normalizeNonBreakingSpace(
+                config.expectedFieldData
+            );
             if (
-                actualFieldData !== config.expectedFieldData ||
+                fieldData !== expectedData ||
                 isEllipsisActive(editableElement as HTMLElement)
             ) {
                 // TODO: Testing will be don in the E2E.
@@ -123,8 +135,17 @@ export async function handleIndividualFields(
 
                 (editableElement as HTMLElement).style.visibility = "hidden";
 
+                // set field type attribute to the pseudo editable field
+                // ensures proper keydown handling similar to the actual editable field
+                pseudoEditableField.setAttribute(
+                    LIVE_EDITOR_FIELD_TYPE_ATTRIBUTE_KEY,
+                    fieldType
+                );
                 visualEditorContainer.appendChild(pseudoEditableField);
                 actualEditableField = pseudoEditableField;
+
+                // we will unobserve this in hideOverlay
+                elements.resizeObserver.observe(pseudoEditableField);
             }
 
             actualEditableField.setAttribute("contenteditable", "true");
@@ -161,6 +182,7 @@ export function cleanIndividualFieldResidual(elements: {
     overlayWrapper: HTMLDivElement;
     visualEditorContainer: HTMLDivElement | null;
     focusedToolbar: HTMLDivElement | null;
+    resizeObserver: ResizeObserver;
 }): void {
     const { overlayWrapper, visualEditorContainer, focusedToolbar } = elements;
 
@@ -192,6 +214,7 @@ export function cleanIndividualFieldResidual(elements: {
     );
 
     if (pseudoEditableElement) {
+        elements.resizeObserver.unobserve(pseudoEditableElement);
         pseudoEditableElement.remove();
 
         (

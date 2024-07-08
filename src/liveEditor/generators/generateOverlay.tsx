@@ -15,7 +15,7 @@ import EventListenerHandlerParams from "../listeners/types";
 export function addFocusOverlay(
     targetElement: Element,
     focusOverlayWrapper: HTMLDivElement,
-    disabled?: boolean,
+    disabled?: boolean
 ): void {
     const targetElementDimension = targetElement.getBoundingClientRect();
 
@@ -37,11 +37,14 @@ export function addFocusOverlay(
         ".visual-editor__overlay--bottom"
     );
     if (bottomOverlayDOM) {
-        bottomOverlayDOM.style.top = `${targetElementDimension.bottom + window.scrollY}px`;
-        bottomOverlayDOM.style.height = `${window.document.body.scrollHeight -
+        bottomOverlayDOM.style.top = `${
+            targetElementDimension.bottom + window.scrollY
+        }px`;
+        bottomOverlayDOM.style.height = `${
+            window.document.body.scrollHeight -
             targetElementDimension.bottom -
             window.scrollY
-            }px`;
+        }px`;
         bottomOverlayDOM.style.left = "0";
         bottomOverlayDOM.style.width = "100%";
     }
@@ -63,14 +66,18 @@ export function addFocusOverlay(
         rightOverlayDOM.style.left = `${targetElementDimension.right}px`;
         rightOverlayDOM.style.top = `${distanceFromTop}px`;
         rightOverlayDOM.style.height = `${targetElementDimension.height}px`;
-        rightOverlayDOM.style.width = `${document.documentElement.clientWidth - targetElementDimension.right}px`;
+        rightOverlayDOM.style.width = `${
+            document.documentElement.clientWidth - targetElementDimension.right
+        }px`;
     }
 
     const outlineDOM = focusOverlayWrapper.querySelector<HTMLDivElement>(
         ".visual-editor__overlay--outline"
     );
     if (outlineDOM) {
-        outlineDOM.style.top = `${targetElementDimension.top + window.scrollY}px`;
+        outlineDOM.style.top = `${
+            targetElementDimension.top + window.scrollY
+        }px`;
         outlineDOM.style.height = `${targetElementDimension.height}px`;
         outlineDOM.style.width = `${targetElementDimension.width}px`;
         outlineDOM.style.left = `${targetElementDimension.left}px`;
@@ -83,15 +90,12 @@ export function addFocusOverlay(
  * @param event - The mouse event that triggered the function.
  * @param elements - An object containing references to the focus overlay wrapper, the previously selected editable DOM element, and the visual editor wrapper.
  */
-export function hideFocusOverlay(elements: {
-    visualEditorContainer: HTMLDivElement | null;
-    visualEditorOverlayWrapper: HTMLDivElement | null;
-    focusedToolbar: HTMLDivElement | null;
-}): void {
+export function hideFocusOverlay(elements: HideOverlayParams): void {
     const {
         visualEditorContainer,
         visualEditorOverlayWrapper,
         focusedToolbar,
+        resizeObserver,
     } = elements;
 
     if (visualEditorOverlayWrapper) {
@@ -136,6 +140,7 @@ export function hideFocusOverlay(elements: {
                 overlayWrapper: visualEditorOverlayWrapper,
                 visualEditorContainer: visualEditorContainer,
                 focusedToolbar: focusedToolbar,
+                resizeObserver: resizeObserver,
             });
         }
     }
@@ -154,6 +159,7 @@ export function hideOverlay(params: HideOverlayParams): void {
         visualEditorContainer: params.visualEditorContainer,
         visualEditorOverlayWrapper: params.visualEditorOverlayWrapper,
         focusedToolbar: params.focusedToolbar,
+        resizeObserver: params.resizeObserver,
     });
 
     if (!VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM)
