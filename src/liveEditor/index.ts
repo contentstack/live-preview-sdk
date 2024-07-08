@@ -13,7 +13,7 @@ import {
     IVisualEditorInitEvent,
 } from "../types/types";
 
-import { addFocusOverlay, hideOverlay } from "./generators/generateOverlay";
+import { addFocusOverlay } from "./generators/generateOverlay";
 import { getEntryIdentifiersInCurrentPage } from "./utils/getEntryIdentifiersInCurrentPage";
 import liveEditorPostMessage from "./utils/liveEditorPostMessage";
 import { LiveEditorPostMessageEvents } from "./utils/types/postMessage.types";
@@ -51,35 +51,51 @@ export class VisualEditor {
         });
 
     private resizeObserver = new ResizeObserver(([entry]) => {
-        if (
-            !this.overlayWrapper ||
-            !VisualEditor.VisualEditorGlobalState.value
-                .previousSelectedEditableDOM
-        )
-            return;
+        const previousSelectedEditableDOM =
+            VisualEditor.VisualEditorGlobalState.value
+                .previousSelectedEditableDOM;
+        if (!this.overlayWrapper || !previousSelectedEditableDOM) return;
 
+        // if previous selected editable element is not same as the current
+        // target and the target is also not psuedo-editable then return
         if (
             !entry.target.isSameNode(
                 VisualEditor.VisualEditorGlobalState.value
                     .previousSelectedEditableDOM
+            ) &&
+            !entry.target.classList.contains(
+                "visual-editor__pseudo-editable-element"
             )
         )
             return;
 
-        addFocusOverlay(
-            VisualEditor.VisualEditorGlobalState.value
-                .previousSelectedEditableDOM,
-            this.overlayWrapper
+        const isPsuedoEditableElement = entry.target.classList.contains(
+            "visual-editor__pseudo-editable-element"
         );
 
-        const editableElement = entry.target.closest("[data-cslp]");
-        if (!editableElement) {
+        // the "actual" editable element when the current target is psuedo-editable
+        // is the previous selected editable element instead of the closest data-cslp element
+        // (cant use closest because the psuedo editable is absolute positioned)
+        // (Note - why do we even need the closest? we do an early exit if entry.target
+        // is not the previous selected editable element, needs more investigation)
+        const editableElement = isPsuedoEditableElement
+            ? previousSelectedEditableDOM
+            : entry.target.closest("[data-cslp]");
+
+        if (isPsuedoEditableElement) {
+            addFocusOverlay(entry.target, this.overlayWrapper);
+        } else {
+            addFocusOverlay(previousSelectedEditableDOM, this.overlayWrapper);
+        }
+
+        // Obtain field schema using cslp and then update the overlay if field is disabled
+        const cslpData =
+            editableElement && editableElement.getAttribute("data-cslp");
+
+        if (!editableElement || !cslpData) {
             return;
         }
-        const cslpData = editableElement.getAttribute("data-cslp");
-        if (!cslpData) {
-            return;
-        }
+
         const fieldMetadata = extractDetailsFromCslp(cslpData);
 
         FieldSchemaMap.getFieldSchema(
@@ -96,8 +112,7 @@ export class VisualEditor {
             });
             if (isDisabled) {
                 addFocusOverlay(
-                    VisualEditor.VisualEditorGlobalState.value
-                        .previousSelectedEditableDOM as HTMLElement,
+                    editableElement,
                     this.overlayWrapper as HTMLDivElement,
                     isDisabled
                 );

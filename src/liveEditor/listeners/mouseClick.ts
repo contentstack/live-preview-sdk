@@ -94,7 +94,21 @@ async function handleEditorInteraction(
             overlayWrapper: params.overlayWrapper,
             visualEditorContainer: params.visualEditorContainer,
             focusedToolbar: params.focusedToolbar,
+            resizeObserver: params.resizeObserver,
         });
+    }
+
+    // when previous and current selected element is same, return.
+    // this also avoids inserting psuedo-editable field (field data is
+    // not equal to text content in DOM) when performing mouse
+    // selections in the content editable
+    const previousSelectedElement =
+        VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM;
+    if (
+        previousSelectedElement &&
+        previousSelectedElement === editableElement
+    ) {
+        return;
     }
 
     if (
@@ -158,6 +172,7 @@ async function handleEditorInteraction(
 
     await handleIndividualFields(eventDetails, {
         visualEditorContainer: params.visualEditorContainer,
+        resizeObserver: params.resizeObserver,
         lastEditedField:
             VisualEditor.VisualEditorGlobalState.value
                 .previousSelectedEditableDOM,
