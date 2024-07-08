@@ -281,15 +281,7 @@ export default class LivePreview {
         const url = new URL(`${protocol}://${host}`);
         url.port = port;
         url.hash = urlHash;
-        console.log(
-            "🚀 ~ LivePreview ~ this.config.stackDetails.branch:1",
-            this.config.stackDetails.branch
-        );
         if (this.config.stackDetails.branch) {
-            console.log(
-                "🚀 ~ LivePreview ~ this.config.stackDetails.branch:2",
-                this.config.stackDetails.branch
-            );
             url.searchParams.append("branch", branch);
         }
         url.searchParams.append("preview-field", preview_field);
