@@ -86,11 +86,8 @@ function FieldLabelWrapperComponent(
         fetchData();
     }, [props]);
 
-    // keep the dropdown button disabled till the parent path display
-    // names have loaded (displayNames should have at least 2 value -
-    // current field plus one - for the dropdown to be enabled)
     const areDisplayNamesLoading = Boolean(
-        props.parentPaths.length !== 0 && Object.values(displayNames).length < 2
+        Object.values(displayNames).length < props.parentPaths.length + 1
     );
 
     return (
