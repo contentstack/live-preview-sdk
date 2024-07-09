@@ -176,7 +176,7 @@ describe("cslp tooltip", () => {
         singularEditButton?.click();
 
         const expectedRedirectUrl =
-            "https://app.contentstack.com/#!/stack/sample-api-key/content-type/content-type-1/en-us/entry/entry-uid-1/edit?branch=main&preview-field=field-title&preview-locale=en-us&preview-environment=sample-environment";
+            "https://app.contentstack.com/#!/stack/sample-api-key/content-type/content-type-1/en-us/entry/entry-uid-1/edit?preview-field=field-title&preview-locale=en-us&preview-environment=sample-environment";
 
         expect(window.open).toHaveBeenCalledWith(expectedRedirectUrl, "_blank");
 

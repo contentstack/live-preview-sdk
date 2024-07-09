@@ -38,7 +38,7 @@ export default class LivePreview {
         stackDetails: {
             apiKey: "",
             environment: "",
-            branch: "main",
+            branch: "",
             contentTypeUid: "",
             entryUid: "",
         },
@@ -281,7 +281,9 @@ export default class LivePreview {
         const url = new URL(`${protocol}://${host}`);
         url.port = port;
         url.hash = urlHash;
-        url.searchParams.append("branch", branch);
+        if (this.config.stackDetails.branch) {
+            url.searchParams.append("branch", branch);
+        }
         url.searchParams.append("preview-field", preview_field);
         url.searchParams.append("preview-locale", locale ?? "en-us");
         url.searchParams.append("preview-environment", environment);
