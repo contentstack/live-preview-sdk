@@ -14,7 +14,7 @@ export const userInitData: IInitData = {
     stackDetails: {
         apiKey: "",
         environment: "",
-        branch: "main",
+        branch: "",
     },
 
     clientUrlParams: {
