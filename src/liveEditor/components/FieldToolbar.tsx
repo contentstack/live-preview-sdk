@@ -2,16 +2,24 @@ import { useSignal } from "@preact/signals";
 import { CslpData } from "../../cslp/types/cslp.types";
 import getChildrenDirection from "../utils/getChildrenDirection";
 
-import { ALLOWED_MODAL_EDITABLE_FIELD } from "../utils/constants";
+import {
+    ALLOWED_MODAL_EDITABLE_FIELD,
+    ALLOWED_REPLACE_FIELDS,
+} from "../utils/constants";
 import { getFieldType } from "../utils/getFieldType";
 import {
     handleDeleteInstance,
     handleMoveInstance,
 } from "../utils/instanceHandlers";
 import liveEditorPostMessage from "../utils/liveEditorPostMessage";
-import { ISchemaFieldMap } from "../utils/types/index.types";
+import { FieldDataType, ISchemaFieldMap } from "../utils/types/index.types";
 import { LiveEditorPostMessageEvents } from "../utils/types/postMessage.types";
-import { DeleteIcon, EditIcon, MoveLeftIcon, MoveRightIcon } from "./icons";
+import {
+    DeleteIcon,
+    MoveLeftIcon,
+    MoveRightIcon,
+    ReplaceAssetIcon,
+} from "./icons";
 import { fieldIcons } from "./icons/fields";
 
 interface MultipleFieldToolbarProps {
@@ -20,6 +28,28 @@ interface MultipleFieldToolbarProps {
     targetElement: Element;
     isMultiple: boolean;
     isDisabled: boolean;
+}
+
+function handleEditReference(fieldMetadata: CslpData) {
+    const isMultipleInstance =
+        fieldMetadata.multipleFieldMetadata.index > -1 &&
+        fieldMetadata.fieldPathWithIndex ===
+            fieldMetadata.multipleFieldMetadata.parentDetails?.parentPath;
+    const entryPath = isMultipleInstance
+        ? fieldMetadata.instance.fieldPathWithIndex
+        : fieldMetadata.fieldPathWithIndex;
+
+    liveEditorPostMessage?.send(
+        LiveEditorPostMessageEvents.OPEN_REFERENCE_MODAL,
+        {
+            entry_uid: fieldMetadata.entry_uid,
+            content_type_uid: fieldMetadata.content_type_uid,
+            locale: fieldMetadata.locale,
+            fieldPath: fieldMetadata.fieldPath,
+            fieldPathWithIndex: fieldMetadata.fieldPathWithIndex,
+            entryPath,
+        }
+    );
 }
 
 function handleEdit(fieldMetadata: CslpData) {
@@ -48,13 +78,16 @@ function FieldToolbarComponent(
 
     const fieldType = getFieldType(fieldSchema);
     const isModalEditable = ALLOWED_MODAL_EDITABLE_FIELD.includes(fieldType);
+    const isReplaceAllowed = ALLOWED_REPLACE_FIELDS.includes(fieldType);
     const Icon = fieldIcons[fieldType];
 
     const editButton = Icon ? (
         <button
             data-testid="visual-editor__focused-toolbar__multiple-field-toolbar__edit-button"
             className="visual-editor__button visual-editor__button--secondary"
-            onClick={(e) => {
+            onClick={(e: React.MouseEvent) => {
+                // TODO the listener for field path is attached to the common parent requiring
+                // propagation to be stopped, should ideally only attach onClick to fieldpath dropdown
                 e.preventDefault();
                 e.stopPropagation();
                 handleEdit(props.fieldMetadata);
@@ -63,6 +96,23 @@ function FieldToolbarComponent(
             {Icon && <Icon />}
         </button>
     ) : null;
+
+    const replaceButton = (
+        <button
+            className="visual-editor__replace-button visual-editor__button visual-editor__button--secondary"
+            data-testid="visual-editor-replace-asset"
+            onClick={(e: React.MouseEvent) => {
+                e.stopPropagation();
+                e.preventDefault();
+                if (fieldType === FieldDataType.REFERENCE) {
+                    handleEditReference(props.fieldMetadata);
+                    return;
+                }
+            }}
+        >
+            <ReplaceAssetIcon />
+        </button>
+    );
 
     // field is disabled, no actions needed
     if (isDisabled) {
@@ -122,6 +172,7 @@ function FieldToolbarComponent(
                         </button>
 
                         {isModalEditable ? editButton : null}
+                        {isReplaceAllowed ? replaceButton : null}
 
                         <button
                             data-testid="visual-editor__focused-toolbar__multiple-field-toolbar__delete-button"
@@ -136,7 +187,10 @@ function FieldToolbarComponent(
                         </button>
                     </>
                 ) : (
-                    <>{isModalEditable ? editButton : null}</>
+                    <>
+                        {isModalEditable ? editButton : null}
+                        {isReplaceAllowed ? replaceButton : null}
+                    </>
                 )}
             </div>
         </div>
