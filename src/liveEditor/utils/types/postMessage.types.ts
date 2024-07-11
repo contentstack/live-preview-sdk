@@ -3,6 +3,7 @@ export enum LiveEditorPostMessageEvents {
     ADD_INSTANCE = "add-instance",
     UPDATE_FIELD = "update-field",
     OPEN_ASSET_MODAL = "open-asset-modal",
+    OPEN_REFERENCE_MODAL = "open-reference-modal",
     OPEN_QUICK_FORM = "open-quick-form",
     GET_FIELD_SCHEMA = "get-field-schema",
     GET_FIELD_DATA = "get-field-data",

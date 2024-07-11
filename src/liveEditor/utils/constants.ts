@@ -28,3 +28,8 @@ export const ALLOWED_MODAL_EDITABLE_FIELD: FieldDataType[] = [
     FieldDataType.LINK,
     FieldDataType.ISODATE,
 ];
+
+// TODO - migrate asset here as well
+export const ALLOWED_REPLACE_FIELDS: FieldDataType[] = [
+    FieldDataType.REFERENCE,
+];
