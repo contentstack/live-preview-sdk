@@ -99,10 +99,10 @@ async function handleEditorInteraction(
         previousSelectedElement === editableElement
     ) {
         return;
-    } else {
-        VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM =
-        editableElement;
     }
+
+    VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM =
+        editableElement;
 
     if (
         !editableElement.classList.contains(
