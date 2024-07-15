@@ -25,6 +25,7 @@ export function addHoverOutline(
   const hoverOutline = document.querySelector<HTMLDivElement>(".visual-editor__hover-outline");
 
   if (hoverOutline) {
+    hoverOutline.classList.remove("visual-editor__hover-outline--hidden");
 
     if(isAnchorElement){
       const cslpValue = targetElement.getAttribute('data-cslp') || '';

@@ -63,6 +63,8 @@ describe("FieldLabelWrapperComponent", () => {
         fieldMetadata: mockFieldMetadata,
     };
 
+    const mockGetParentEditable = () => document.createElement("div");
+
     test("renders current field and parent fields correctly", async () => {
         const parentPaths = ["parentPath1", "parentPath2", "parentPath3"];
 
@@ -71,6 +73,7 @@ describe("FieldLabelWrapperComponent", () => {
                 fieldMetadata={mockFieldMetadata}
                 eventDetails={mockEventDetails}
                 parentPaths={parentPaths}
+                getParentEditableElement={mockGetParentEditable}
             />
         );
 
@@ -88,6 +91,7 @@ describe("FieldLabelWrapperComponent", () => {
                 fieldMetadata={mockFieldMetadata}
                 eventDetails={mockEventDetails}
                 parentPaths={[]}
+                getParentEditableElement={mockGetParentEditable}
             />
         );
 
@@ -100,6 +104,7 @@ describe("FieldLabelWrapperComponent", () => {
                 fieldMetadata={mockFieldMetadata}
                 eventDetails={mockEventDetails}
                 parentPaths={[]}
+                getParentEditableElement={mockGetParentEditable}
             />
         );
         await waitFor(() => {

@@ -22,6 +22,7 @@ interface FieldLabelWrapperProps {
     fieldMetadata: CslpData;
     eventDetails: VisualEditorCslpEventDetails;
     parentPaths: string[];
+    getParentEditableElement: (cslp: string) => HTMLElement | null;
 }
 
 function FieldLabelWrapperComponent(
@@ -35,6 +36,7 @@ function FieldLabelWrapperComponent(
     const [displayNames, setDisplayNames] = useState<Record<string, string>>(
         {}
     );
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
     function calculateTopOffset(index: number) {
         const height = -30; // from bottom
@@ -90,6 +92,14 @@ function FieldLabelWrapperComponent(
         Object.values(displayNames).length < props.parentPaths.length + 1
     );
 
+    const onParentPathClick = (cslp: string) => {
+        const parentElement = props.getParentEditableElement(cslp);
+        if (parentElement) {
+            // emulate clicking on the parent element
+            parentElement.click();
+        }
+    };
+
     return (
         <div
             className={classNames(
@@ -97,8 +107,12 @@ function FieldLabelWrapperComponent(
                 {
                     "visual-editor__focused-toolbar--field-disabled":
                         currentField.disabled,
+                },
+                {
+                    "field-label-dropdown-open": isDropdownOpen,
                 }
             )}
+            onClick={() => setIsDropdownOpen((prev) => !prev)}
         >
             <button
                 className="visual-editor__focused-toolbar__field-label-wrapper__current-field visual-editor__button visual-editor__button--primary"
@@ -117,6 +131,7 @@ function FieldLabelWrapperComponent(
                     className="visual-editor__focused-toolbar__field-label-wrapper__parent-field visual-editor__button visual-editor__button--secondary visual-editor__focused-toolbar__text"
                     data-target-cslp={path}
                     style={{ top: calculateTopOffset(index) }}
+                    onClick={() => onParentPathClick(path)}
                 >
                     {displayNames[path]}
                 </button>

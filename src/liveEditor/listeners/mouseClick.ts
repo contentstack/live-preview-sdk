@@ -51,7 +51,7 @@ function addOverlay(params: AddFocusOverlayParams) {
     params.resizeObserver.observe(params.editableElement);
 }
 
-function addFocusedToolbar(params: AddFocusedToolbarParams) {
+export function addFocusedToolbar(params: AddFocusedToolbarParams): void {
     const { editableElement } = params.eventDetails;
 
     if (!editableElement || !params.focusedToolbar) return;
