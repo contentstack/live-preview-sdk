@@ -30,6 +30,7 @@ import { useHideFocusOverlayPostMessageEvent } from "./eventManager/useHideFocus
 import { extractDetailsFromCslp } from "../cslp";
 import { FieldSchemaMap } from "./utils/fieldSchemaMap";
 import { isFieldDisabled } from "./utils/isFieldDisabled";
+import { updateFocussedState } from "./utils/updateFocussedState";
 
 interface VisualEditorGlobalStateImpl {
     previousSelectedEditableDOM: HTMLElement | Element | null;
@@ -50,24 +51,27 @@ export class VisualEditor {
             previousEmptyBlockParents: [],
         });
 
+    // TODO handle the position changes of elements
+    // this currently does not work when only the position changes
     private resizeObserver = new ResizeObserver(([entry]) => {
         const previousSelectedEditableDOM =
             VisualEditor.VisualEditorGlobalState.value
                 .previousSelectedEditableDOM;
-        if (!this.overlayWrapper || !previousSelectedEditableDOM) return;
+
+        if (!this.overlayWrapper || !previousSelectedEditableDOM) {
+            return;
+        }
 
         // if previous selected editable element is not same as the current
         // target and the target is also not psuedo-editable then return
         if (
-            !entry.target.isSameNode(
-                VisualEditor.VisualEditorGlobalState.value
-                    .previousSelectedEditableDOM
-            ) &&
+            !entry.target.isSameNode(previousSelectedEditableDOM) &&
             !entry.target.classList.contains(
                 "visual-editor__pseudo-editable-element"
             )
-        )
+        ) {
             return;
+        }
 
         const isPsuedoEditableElement = entry.target.classList.contains(
             "visual-editor__pseudo-editable-element"
@@ -78,17 +82,30 @@ export class VisualEditor {
         // (cant use closest because the psuedo editable is absolute positioned)
         // (Note - why do we even need the closest? we do an early exit if entry.target
         // is not the previous selected editable element, needs more investigation)
-        const editableElement = isPsuedoEditableElement
-            ? previousSelectedEditableDOM
-            : entry.target.closest("[data-cslp]");
+        const editableElement = (
+            isPsuedoEditableElement
+                ? previousSelectedEditableDOM
+                : entry.target.closest("[data-cslp]")
+        ) as HTMLElement | null;
 
         if (isPsuedoEditableElement) {
+            // if the current target is psuedo-editable, then the resizing occurred by typing
+            // into the psuedo editable, simply update the focus overlay
             addFocusOverlay(entry.target, this.overlayWrapper);
-        } else {
-            addFocusOverlay(previousSelectedEditableDOM, this.overlayWrapper);
+
+            // TODO check if we can now resize the actual editable element
+            // when psuedo editable element is resized, avoid infinite loops
+        } else if (editableElement) {
+            updateFocussedState({
+                editableElement,
+                visualEditorContainer: this.visualEditorContainer,
+                overlayWrapper: this.overlayWrapper,
+                focusedToolbar: this.focusedToolbar,
+                resizeObserver: this.resizeObserver,
+            });
         }
 
-        // Obtain field schema using cslp and then update the overlay if field is disabled
+        // update the overlay if field is disabled
         const cslpData =
             editableElement && editableElement.getAttribute("data-cslp");
 

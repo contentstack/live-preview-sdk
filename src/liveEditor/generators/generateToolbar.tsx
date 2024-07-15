@@ -73,49 +73,17 @@ export function appendFieldPathDropdown(
             fieldMetadata={fieldMetadata}
             eventDetails={eventDetails}
             parentPaths={parentPaths}
+            getParentEditableElement={(cslp: string) => {
+                const parentElement = targetElement.closest(
+                    `[${DATA_CSLP_ATTR_SELECTOR}="${cslp}"]`
+                ) as HTMLElement | null;
+                return parentElement;
+            }}
         />,
         wrapper
     );
 
     focusedToolbarElement.appendChild(wrapper);
-
-    const FieldLabelWrapper = focusedToolbarElement.querySelector(
-        ".visual-editor__focused-toolbar__field-label-wrapper"
-    );
-
-    focusedToolbarElement.addEventListener("click", (e) => {
-        e.preventDefault();
-
-        if (
-            (e.target as Element).classList.contains("visual-editor__tooltip")
-        ) {
-            return;
-        }
-        if (
-            (e.target as Element).classList.contains(
-                "visual-editor__focused-toolbar__field-label-wrapper__parent-field"
-            )
-        ) {
-            const cslp = (e.target as Element).getAttribute(
-                "data-target-cslp"
-            ) as string;
-            const parentElement = targetElement.closest(
-                `[${DATA_CSLP_ATTR_SELECTOR}="${cslp}"]`
-            ) as HTMLElement;
-            if (parentElement) {
-                parentElement.click();
-            }
-            return;
-        }
-
-        if (
-            FieldLabelWrapper?.classList.contains("field-label-dropdown-open")
-        ) {
-            FieldLabelWrapper?.classList.remove("field-label-dropdown-open");
-            return;
-        }
-        FieldLabelWrapper?.classList.add("field-label-dropdown-open");
-    });
 }
 
 function collectParentCSLPPaths(

@@ -30,7 +30,14 @@ interface MultipleFieldToolbarProps {
     isDisabled: boolean;
 }
 
-function handleEditReference(fieldMetadata: CslpData) {
+function handleReplaceAsset(fieldMetadata: CslpData) {
+    // TODO avoid sending whole fieldMetadata
+    liveEditorPostMessage?.send(LiveEditorPostMessageEvents.OPEN_ASSET_MODAL, {
+        fieldMetadata,
+    });
+}
+
+function handleReplaceReference(fieldMetadata: CslpData) {
     const isMultipleInstance =
         fieldMetadata.multipleFieldMetadata.index > -1 &&
         fieldMetadata.fieldPathWithIndex ===
@@ -100,12 +107,15 @@ function FieldToolbarComponent(
     const replaceButton = (
         <button
             className="visual-editor__replace-button visual-editor__button visual-editor__button--secondary"
-            data-testid="visual-editor-replace-asset"
+            data-testid={`visual-editor-replace-${fieldType}`}
             onClick={(e: React.MouseEvent) => {
                 e.stopPropagation();
                 e.preventDefault();
                 if (fieldType === FieldDataType.REFERENCE) {
-                    handleEditReference(props.fieldMetadata);
+                    handleReplaceReference(props.fieldMetadata);
+                    return;
+                } else if (fieldType === FieldDataType.FILE) {
+                    handleReplaceAsset(props.fieldMetadata);
                     return;
                 }
             }}
@@ -120,10 +130,16 @@ function FieldToolbarComponent(
     }
 
     // field is multiple but an instance is not selected
-    // instead the whole field (all instances) is selected
+    // instead the whole field (all instances) is selected.
+    // Currently, when whole featured_blogs is selected in canvas,
+    // the fieldPathWithIndex and instance.fieldPathWithIndex are the same
+    // cannot rely on -1 index, as the non-negative index then refers to the index of
+    // the featured_blogs block in page_components
     if (
-        fieldSchema.multiple &&
-        fieldMetadata.multipleFieldMetadata?.index === -1
+        (isMultiple &&
+            fieldMetadata.fieldPathWithIndex ===
+                fieldMetadata.instance.fieldPathWithIndex) ||
+        (isMultiple && fieldMetadata.multipleFieldMetadata?.index === -1)
     ) {
         return null;
     }

@@ -75,6 +75,21 @@ function showDefaultCursor(): void {
         );
 }
 
+export function hideHoverOutline(
+    visualEditorContainer: HTMLDivElement | null
+): void {
+    if (!visualEditorContainer) {
+        return;
+    }
+    const hoverOutline = visualEditorContainer.querySelector(
+        ".visual-editor__hover-outline"
+    );
+    if (!hoverOutline) {
+        return;
+    }
+    hoverOutline.classList.add("visual-editor__hover-outline--hidden");
+}
+
 export function hideCustomCursor(customCursor: HTMLDivElement | null): void {
     showDefaultCursor();
     customCursor?.classList.remove("visible");

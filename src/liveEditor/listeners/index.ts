@@ -3,6 +3,7 @@ import { VisualEditor } from "..";
 import handleEditorInteraction from "./mouseClick";
 import handleMouseHover, {
     hideCustomCursor,
+    hideHoverOutline,
     showCustomCursor,
 } from "./mouseHover";
 
@@ -41,6 +42,7 @@ export function addEventListeners(params: AddEventListenersParams): void {
 
     document.documentElement.addEventListener("mouseleave", () => {
         hideCustomCursor(params.customCursor);
+        hideHoverOutline(params.visualEditorContainer);
     });
 
     document.documentElement.addEventListener("mouseenter", () => {

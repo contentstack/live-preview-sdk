@@ -156,20 +156,6 @@ export async function handleIndividualFields(
 
             return;
         }
-
-        if (fieldSchema.data_type === "file") {
-            generateReplaceAssetButton(editableElement, (event) => {
-                event.stopPropagation();
-                liveEditorPostMessage?.send(
-                    LiveEditorPostMessageEvents.OPEN_ASSET_MODAL,
-                    {
-                        fieldMetadata: eventDetails.fieldMetadata,
-                    }
-                );
-            });
-
-            return;
-        }
     }
 
     liveEditorPostMessage?.send(LiveEditorPostMessageEvents.OPEN_QUICK_FORM, {
@@ -186,41 +172,45 @@ export function cleanIndividualFieldResidual(elements: {
 }): void {
     const { overlayWrapper, visualEditorContainer, focusedToolbar } = elements;
 
-    removeAddInstanceButtons({
-        eventTarget: null,
-        visualEditorContainer: visualEditorContainer,
-        overlayWrapper: overlayWrapper,
-    });
+    removeAddInstanceButtons(
+        {
+            eventTarget: null,
+            visualEditorContainer: visualEditorContainer,
+            overlayWrapper: overlayWrapper,
+        },
+        true
+    );
 
-    removeReplaceAssetButton(visualEditorContainer);
+    const previousSelectedEditableDOM =
+        VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM;
+    if (previousSelectedEditableDOM) {
+        previousSelectedEditableDOM.removeAttribute(
+            LIVE_EDITOR_FIELD_TYPE_ATTRIBUTE_KEY
+        );
+        previousSelectedEditableDOM.removeAttribute("contenteditable");
+        previousSelectedEditableDOM.removeEventListener(
+            "input",
+            handleFieldInput
+        );
+        previousSelectedEditableDOM.removeEventListener(
+            "keydown",
+            handleFieldKeyDown
+        );
+
+        elements.resizeObserver.unobserve(previousSelectedEditableDOM);
+    }
 
     const pseudoEditableElement = visualEditorContainer?.querySelector(
         ".visual-editor__pseudo-editable-element"
     );
-
-    VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM!.removeAttribute(
-        LIVE_EDITOR_FIELD_TYPE_ATTRIBUTE_KEY
-    );
-    VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM!.removeAttribute(
-        "contenteditable"
-    );
-    VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM!.removeEventListener(
-        "input",
-        handleFieldInput
-    );
-    VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM!.removeEventListener(
-        "keydown",
-        handleFieldKeyDown
-    );
-
     if (pseudoEditableElement) {
         elements.resizeObserver.unobserve(pseudoEditableElement);
         pseudoEditableElement.remove();
-
-        (
-            VisualEditor.VisualEditorGlobalState.value
-                .previousSelectedEditableDOM! as HTMLElement
-        ).style.removeProperty("visibility");
+        if (previousSelectedEditableDOM) {
+            (previousSelectedEditableDOM as HTMLElement).style.removeProperty(
+                "visibility"
+            );
+        }
     }
 
     if (focusedToolbar) {
