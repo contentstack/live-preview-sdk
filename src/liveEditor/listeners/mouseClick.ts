@@ -56,16 +56,6 @@ function addFocusedToolbar(params: AddFocusedToolbarParams) {
 
     if (!editableElement || !params.focusedToolbar) return;
 
-    // Don"t append again if already present
-    if (
-        VisualEditor.VisualEditorGlobalState.value
-            .previousSelectedEditableDOM &&
-        VisualEditor.VisualEditorGlobalState.value
-            .previousSelectedEditableDOM === editableElement
-    ) {
-        return;
-    }
-
     appendFocusedToolbar(params.eventDetails, params.focusedToolbar);
 }
 
@@ -109,6 +99,9 @@ async function handleEditorInteraction(
         previousSelectedElement === editableElement
     ) {
         return;
+    } else {
+        VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM =
+        editableElement;
     }
 
     if (
@@ -173,13 +166,8 @@ async function handleEditorInteraction(
     await handleIndividualFields(eventDetails, {
         visualEditorContainer: params.visualEditorContainer,
         resizeObserver: params.resizeObserver,
-        lastEditedField:
-            VisualEditor.VisualEditorGlobalState.value
-                .previousSelectedEditableDOM,
+        lastEditedField: previousSelectedElement
     });
-
-    VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM =
-        editableElement;
 }
 
 export default handleEditorInteraction;
