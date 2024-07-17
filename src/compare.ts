@@ -81,4 +81,26 @@ export function handleWebCompare() {
 
         mergeColors(`.cs-compare--${operation}`);
     });
+
+    postRobot.on("remove-diff", async () => {
+        // unwrap the cs-compare tags
+        const elements = Array.from(document.querySelectorAll("cs-compare"));
+        for (const element of elements) {
+            const parent = element.parentElement!;
+            while (element.firstChild) {
+                parent.insertBefore(element.firstChild, element);
+            }
+            parent.removeChild(element);
+        }
+        // remove classes cs-compare__void--added and cs-compare__void--removed
+        const voidElements = Array.from(
+            document.querySelectorAll(
+                ".cs-compare__void--added, .cs-compare__void--removed"
+            )
+        );
+        for (const element of voidElements) {
+            element.classList.remove("cs-compare__void--added");
+            element.classList.remove("cs-compare__void--removed");
+        }
+    });
 }
