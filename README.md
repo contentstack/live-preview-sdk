@@ -15,8 +15,19 @@ npm install @contentstack/live-preview-utils
 Alternatively, if you want to include the package directly in your website HTML code, use the following command:
 
 ```html
-<script src="https://unpkg.com/@contentstack/live-preview-utils@2.0.2/dist/legacy/index.js"></script>
+<script type='module'>
+     import ContentstackLivePreview from 'https://esm.sh/@contentstack/live-preview-utils@2.0.2';
+
+     ContentstackLivePreview.init({
+        stackDetails: {
+            apiKey: "your-stack-api-key",
+        },
+    });
+</script>
 ```
+> [!NOTE]
+> This step involves incorporating the package into your HTML code and initializing it, eliminating the need for re-initialization in the subsequent step.
+
 
 # Initializing the SDK
 
@@ -33,18 +44,6 @@ ContentstackLivePreview.init({
         apiKey: "your-stack-api-key",
     },
 });
-```
-
-Alternatively, if you want to initialize the SDK directly inside the HTML tag, use the ContentstackLivePreview.init() method as follows:
-
-```html
-<script>
-    ContentstackLivePreview.init({
-        stackDetails: {
-            apiKey: "your-stack-api-key",
-        },
-    });
-</script>
 ```
 
 
