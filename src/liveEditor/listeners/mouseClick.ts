@@ -149,6 +149,7 @@ async function handleEditorInteraction(
             handleAddButtonsForMultiple(eventDetails, {
                 editableElement: editableElement,
                 visualEditorContainer: params.visualEditorContainer,
+                resizeObserver: params.resizeObserver,
             });
         } else {
             removeAddInstanceButtons({

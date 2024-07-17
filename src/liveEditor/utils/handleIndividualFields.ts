@@ -39,7 +39,7 @@ export async function handleIndividualFields(
     }
 ): Promise<void> {
     const { fieldMetadata, editableElement } = eventDetails;
-    const { visualEditorContainer, lastEditedField } = elements;
+    const { visualEditorContainer, lastEditedField, resizeObserver } = elements;
     const { content_type_uid, fieldPath } = fieldMetadata;
 
     const [fieldSchema, expectedFieldData] = await Promise.all([
@@ -68,6 +68,7 @@ export async function handleIndividualFields(
             handleAddButtonsForMultiple(eventDetails, {
                 editableElement: eventDetails.editableElement,
                 visualEditorContainer: visualEditorContainer,
+                resizeObserver: resizeObserver,
             });
         }
 

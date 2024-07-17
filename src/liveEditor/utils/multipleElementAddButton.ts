@@ -8,6 +8,8 @@ import { isFieldDisabled } from "./isFieldDisabled";
 import liveEditorPostMessage from "./liveEditorPostMessage";
 import { LiveEditorPostMessageEvents } from "./types/postMessage.types";
 import getChildrenDirection from "./getChildrenDirection";
+import { hideFocusOverlay } from "../generators/generateOverlay";
+import { hideHoverOutline } from "../listeners/mouseHover";
 
 /**
  * The function that handles the add instance buttons for multiple fields.
@@ -20,9 +22,10 @@ export function handleAddButtonsForMultiple(
     elements: {
         editableElement: Element | null;
         visualEditorContainer: HTMLDivElement | null;
+        resizeObserver: ResizeObserver;
     }
 ): void {
-    const { editableElement, visualEditorContainer } = elements;
+    const { editableElement, visualEditorContainer, resizeObserver } = elements;
 
     const parentCslpValue =
         eventDetails.fieldMetadata.multipleFieldMetadata?.parentDetails
@@ -47,6 +50,23 @@ export function handleAddButtonsForMultiple(
         true
     );
 
+    const overlayWrapper = visualEditorContainer.querySelector(
+        ".visual-editor__overlay__wrapper"
+    );
+    const focusedToolbar = visualEditorContainer.querySelector(
+        ".visual-editor__focused-toolbar"
+    );
+
+    const hideOverlayAndHoverOutline = () => {
+        hideHoverOutline(visualEditorContainer);
+        hideFocusOverlay({
+            visualEditorContainer: visualEditorContainer,
+            visualEditorOverlayWrapper: overlayWrapper as HTMLDivElement,
+            focusedToolbar: focusedToolbar as HTMLDivElement,
+            resizeObserver,
+        });
+    };
+
     FieldSchemaMap.getFieldSchema(
         eventDetails.fieldMetadata.content_type_uid,
         eventDetails.fieldMetadata.fieldPath
@@ -64,8 +84,8 @@ export function handleAddButtonsForMultiple(
                         fieldMetadata: eventDetails.fieldMetadata,
                         index: eventDetails.fieldMetadata.multipleFieldMetadata
                             .index,
-                    }
-                );
+                    })
+                    .then(hideOverlayAndHoverOutline);
             });
 
             const nextButton = generateAddInstanceButton(() => {
@@ -76,8 +96,8 @@ export function handleAddButtonsForMultiple(
                         index:
                             eventDetails.fieldMetadata.multipleFieldMetadata
                                 .index + 1,
-                    }
-                );
+                    })
+                    .then(hideOverlayAndHoverOutline);
             });
 
             if (!visualEditorContainer.contains(previousButton)) {
