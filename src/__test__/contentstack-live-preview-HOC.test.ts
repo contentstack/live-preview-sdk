@@ -224,9 +224,6 @@ describe("Gatsby Data formatter", () => {
     test("should return data in correct format", async () => {
         class stackSdkWithFetch {
             live_preview = {};
-            headers = {
-                api_key: "",
-            };
             content_type_uid = "live_preview_content_type";
             environment = "";
 
@@ -248,9 +245,6 @@ describe("Gatsby Data formatter", () => {
 
         class stackSdkWithFind {
             live_preview = {};
-            headers = {
-                api_key: "",
-            };
             content_type_uid = "live_preview_content_type";
 
             environment = "";
