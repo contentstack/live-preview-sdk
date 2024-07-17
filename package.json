@@ -86,7 +86,7 @@
         "just-camel-case": "^4.0.2",
         "morphdom": "^2.6.1",
         "mustache": "^4.2.0",
-        "post-robot": "^8.0.31",
+        "post-robot": "^10.0.46",
         "uuid": "^8.3.2"
     },
     "lint-staged": {
