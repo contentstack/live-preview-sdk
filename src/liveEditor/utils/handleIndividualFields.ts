@@ -1,9 +1,5 @@
 import { VisualEditor } from "..";
 import {
-    generateReplaceAssetButton,
-    removeReplaceAssetButton,
-} from "../generators/generateAssetButton";
-import {
     generatePseudoEditableElement,
     isEllipsisActive,
 } from "../generators/generatePseudoEditableField";
@@ -13,7 +9,7 @@ import {
     LIVE_EDITOR_FIELD_TYPE_ATTRIBUTE_KEY,
 } from "./constants";
 import { FieldSchemaMap } from "./fieldSchemaMap";
-import { getExpectedFieldData } from "./getExpectedFieldData";
+import { getFieldData } from "./getFieldData";
 import { getFieldType } from "./getFieldType";
 import { handleFieldInput, handleFieldKeyDown } from "./handleFieldMouseDown";
 import { isFieldDisabled } from "./isFieldDisabled";
@@ -40,11 +36,23 @@ export async function handleIndividualFields(
 ): Promise<void> {
     const { fieldMetadata, editableElement } = eventDetails;
     const { visualEditorContainer, lastEditedField, resizeObserver } = elements;
-    const { content_type_uid, fieldPath } = fieldMetadata;
+    const {
+        content_type_uid,
+        entry_uid,
+        locale,
+        fieldPath,
+        fieldPathWithIndex,
+    } = fieldMetadata;
 
+    // if the fieldPathWithIndex is the same as instance fieldPathWithIndex, it indicates
+    // that the whole multiple field is selected and we need the value of the whole multiple field
+    const entryPath =
+        fieldPathWithIndex === fieldMetadata.instance.fieldPathWithIndex
+            ? fieldPathWithIndex
+            : fieldMetadata.instance.fieldPathWithIndex;
     const [fieldSchema, expectedFieldData] = await Promise.all([
         FieldSchemaMap.getFieldSchema(content_type_uid, fieldPath),
-        getExpectedFieldData(fieldMetadata),
+        getFieldData({ content_type_uid, entry_uid, locale }, entryPath),
     ]);
 
     const fieldType = getFieldType(fieldSchema);
@@ -64,12 +72,18 @@ export async function handleIndividualFields(
             fieldSchema.field_metadata.ref_multiple)
     ) {
         if (lastEditedField !== editableElement) {
-            // TODO this internally does a getFieldSchema message again, which is not necessary
-            handleAddButtonsForMultiple(eventDetails, {
-                editableElement: eventDetails.editableElement,
-                visualEditorContainer: visualEditorContainer,
-                resizeObserver: resizeObserver,
-            });
+            handleAddButtonsForMultiple(
+                eventDetails,
+                {
+                    editableElement: eventDetails.editableElement,
+                    visualEditorContainer: visualEditorContainer,
+                    resizeObserver: resizeObserver,
+                },
+                {
+                    expectedFieldData,
+                    disabled,
+                }
+            );
         }
 
         // * fields could be handled as they are in a single instance
@@ -198,6 +212,8 @@ export function cleanIndividualFieldResidual(elements: {
             handleFieldKeyDown
         );
 
+        // Note - this happens in two places, 1. hideOverlay and 2. here
+        // TODO maybe see all usages of both functions and try to do it in one place
         elements.resizeObserver.unobserve(previousSelectedEditableDOM);
     }
 

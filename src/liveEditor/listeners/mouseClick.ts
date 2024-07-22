@@ -19,10 +19,6 @@ import { LiveEditorPostMessageEvents } from "../utils/types/postMessage.types";
 import EventListenerHandlerParams from "./types";
 import { VisualEditor } from "..";
 import { FieldSchemaMap } from "../utils/fieldSchemaMap";
-import {
-    handleAddButtonsForMultiple,
-    removeAddInstanceButtons,
-} from "../utils/multipleElementAddButton";
 import { isFieldDisabled } from "../utils/isFieldDisabled";
 
 type HandleEditorInteractionParams = Omit<
@@ -139,25 +135,28 @@ async function handleEditorInteraction(
             });
         }
 
-        if (
-            fieldSchema.data_type === "block" ||
-            fieldSchema.multiple ||
-            (fieldSchema.data_type === "reference" &&
-                // @ts-ignore
-                fieldSchema.field_metadata.ref_multiple)
-        ) {
-            handleAddButtonsForMultiple(eventDetails, {
-                editableElement: editableElement,
-                visualEditorContainer: params.visualEditorContainer,
-                resizeObserver: params.resizeObserver,
-            });
-        } else {
-            removeAddInstanceButtons({
-                eventTarget: params.event.target,
-                visualEditorContainer: params.visualEditorContainer,
-                overlayWrapper: params.overlayWrapper,
-            });
-        }
+        // This is most probably redundant code, as the handleIndividualFields function
+        // takes care of this
+        // TODO: Remove this
+        // if (
+        //     fieldSchema.data_type === "block" ||
+        //     fieldSchema.multiple ||
+        //     (fieldSchema.data_type === "reference" &&
+        //         // @ts-ignore
+        //         fieldSchema.field_metadata.ref_multiple)
+        // ) {
+        //     handleAddButtonsForMultiple(eventDetails, {
+        //         editableElement: editableElement,
+        //         visualEditorContainer: params.visualEditorContainer,
+        //         resizeObserver: params.resizeObserver,
+        //     });
+        // } else {
+        //     removeAddInstanceButtons({
+        //         eventTarget: params.event.target,
+        //         visualEditorContainer: params.visualEditorContainer,
+        //         overlayWrapper: params.overlayWrapper,
+        //     });
+        // }
     }
 
     liveEditorPostMessage?.send(LiveEditorPostMessageEvents.FOCUS_FIELD, {
