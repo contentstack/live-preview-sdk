@@ -1,6 +1,6 @@
 import { CslpData } from "../../cslp/types/cslp.types";
-import liveEditorPostMessage from "../utils/liveEditorPostMessage";
-import { LiveEditorPostMessageEvents } from "../utils/types/postMessage.types";
+import liveEditorPostMessage from "./liveEditorPostMessage";
+import { LiveEditorPostMessageEvents } from "./types/postMessage.types";
 
 /**
  * Retrieves the expected field data based on the provided field metadata.

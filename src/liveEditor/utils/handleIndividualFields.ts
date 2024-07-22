@@ -9,7 +9,7 @@ import {
     LIVE_EDITOR_FIELD_TYPE_ATTRIBUTE_KEY,
 } from "./constants";
 import { FieldSchemaMap } from "./fieldSchemaMap";
-import { getFieldData } from "./getExpectedFieldData";
+import { getFieldData } from "./getFieldData";
 import { getFieldType } from "./getFieldType";
 import { handleFieldInput, handleFieldKeyDown } from "./handleFieldMouseDown";
 import { isFieldDisabled } from "./isFieldDisabled";
