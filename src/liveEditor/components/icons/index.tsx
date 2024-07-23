@@ -1,3 +1,10 @@
+type IconProps = { disabled?: boolean };
+
+const generateIconStyles = ({ disabled = false }: IconProps) => ({
+    opacity: disabled ? 0.5 : 1,
+    cursor: disabled ? "not-allowed" : "pointer",
+});
+
 export function CaretIcon(): JSX.Element {
     return (
         <svg
@@ -46,7 +53,7 @@ export function DeleteIcon(): JSX.Element {
     );
 }
 
-export function MoveLeftIcon(): JSX.Element {
+export function MoveLeftIcon(props: IconProps): JSX.Element {
     return (
         <svg
             data-testid="visual-editor__move-left-icon"
@@ -55,6 +62,7 @@ export function MoveLeftIcon(): JSX.Element {
             viewBox="0 0 16 16"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
+            style={generateIconStyles(props)}
         >
             <path
                 fill-rule="evenodd"
@@ -72,7 +80,7 @@ export function MoveLeftIcon(): JSX.Element {
     );
 }
 
-export function MoveRightIcon(): JSX.Element {
+export function MoveRightIcon(props: IconProps): JSX.Element {
     return (
         <svg
             data-testid="visual-editor__move-right-icon"
@@ -81,6 +89,7 @@ export function MoveRightIcon(): JSX.Element {
             viewBox="0 0 16 16"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
+            style={generateIconStyles(props)}
         >
             <path
                 fill-rule="evenodd"
@@ -171,19 +180,21 @@ export function PlusIcon(): JSX.Element {
 
 export function ReplaceAssetIcon(): JSX.Element {
     return (
-        <svg 
-            data-testid="visual-editor__replace-asset-icon" 
-            width="16" 
-            height="16" 
-            viewBox="0 0 16 16" 
-            fill="none" 
+        <svg
+            data-testid="visual-editor__replace-asset-icon"
+            width="16"
+            height="16"
+            viewBox="0 0 16 16"
+            fill="none"
             xmlns="http://www.w3.org/2000/svg"
         >
-            <path 
-                d="M13.8903 3.99632L11.5039 1.60984C11.3574 1.46339 11.12 1.46339 10.9735 1.60984C10.8271 1.75628 10.8271 1.99372 10.9735 2.14017L12.7198 3.88649H2.87506C2.39181 3.88649 2.00006 4.27824 2.00006 4.76149V6.13114C2.00006 6.33825 2.16795 6.50614 2.37506 6.50614C2.58217 6.50614 2.75006 6.33825 2.75006 6.13114V4.76149C2.75006 4.69245 2.80603 4.63649 2.87506 4.63649H12.7198L10.9735 6.38281C10.8271 6.52925 10.8271 6.76669 10.9735 6.91314C11.12 7.05958 11.3574 7.05958 11.5039 6.91314L13.8903 4.52665C14.0368 4.3802 14.0368 4.14277 13.8903 3.99632Z" fill="#475161" 
+            <path
+                d="M13.8903 3.99632L11.5039 1.60984C11.3574 1.46339 11.12 1.46339 10.9735 1.60984C10.8271 1.75628 10.8271 1.99372 10.9735 2.14017L12.7198 3.88649H2.87506C2.39181 3.88649 2.00006 4.27824 2.00006 4.76149V6.13114C2.00006 6.33825 2.16795 6.50614 2.37506 6.50614C2.58217 6.50614 2.75006 6.33825 2.75006 6.13114V4.76149C2.75006 4.69245 2.80603 4.63649 2.87506 4.63649H12.7198L10.9735 6.38281C10.8271 6.52925 10.8271 6.76669 10.9735 6.91314C11.12 7.05958 11.3574 7.05958 11.5039 6.91314L13.8903 4.52665C14.0368 4.3802 14.0368 4.14277 13.8903 3.99632Z"
+                fill="#475161"
             />
-            <path 
-                d="M2.10983 12.0054L4.49632 14.3919C4.64277 14.5383 4.8802 14.5383 5.02665 14.3919C5.1731 14.2455 5.1731 14.008 5.02665 13.8616L3.28033 12.1152H13.1251C13.6084 12.1152 14.0001 11.7235 14.0001 11.2402V9.87059C14.0001 9.66348 13.8322 9.49559 13.6251 9.49559C13.418 9.49559 13.2501 9.66348 13.2501 9.87059V11.2402C13.2501 11.3093 13.1942 11.3652 13.1251 11.3652H3.28033L5.02665 9.61893C5.1731 9.47248 5.1731 9.23504 5.02665 9.0886C4.8802 8.94215 4.64277 8.94215 4.49632 9.0886L2.10983 11.4751C1.96339 11.6215 1.96339 11.859 2.10983 12.0054Z" fill="#475161" 
+            <path
+                d="M2.10983 12.0054L4.49632 14.3919C4.64277 14.5383 4.8802 14.5383 5.02665 14.3919C5.1731 14.2455 5.1731 14.008 5.02665 13.8616L3.28033 12.1152H13.1251C13.6084 12.1152 14.0001 11.7235 14.0001 11.2402V9.87059C14.0001 9.66348 13.8322 9.49559 13.6251 9.49559C13.418 9.49559 13.2501 9.66348 13.2501 9.87059V11.2402C13.2501 11.3093 13.1942 11.3652 13.1251 11.3652H3.28033L5.02665 9.61893C5.1731 9.47248 5.1731 9.23504 5.02665 9.0886C4.8802 8.94215 4.64277 8.94215 4.49632 9.0886L2.10983 11.4751C1.96339 11.6215 1.96339 11.859 2.10983 12.0054Z"
+                fill="#475161"
             />
         </svg>
     );
