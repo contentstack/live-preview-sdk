@@ -65,6 +65,9 @@ function FieldLabelWrapperComponent(
             const currentFieldDisplayName =
                 displayNames?.[props.fieldMetadata.cslpValue] ??
                 fieldSchema.display_name;
+
+            const hasParentPaths = !!props?.parentPaths?.length;
+
             setCurrentField({
                 text: currentFieldDisplayName,
                 icon: fieldDisabled ? (
@@ -74,8 +77,10 @@ function FieldLabelWrapperComponent(
                     >
                         <InfoIcon />
                     </div>
-                ) : (
+                ) : hasParentPaths ? (
                     <CaretIcon />
+                ) : (
+                    <></>
                 ),
                 disabled: fieldDisabled,
             });
