@@ -144,6 +144,12 @@ function FieldToolbarComponent(
         return null;
     }
 
+    const totalElementCount = targetElement?.parentNode?.childElementCount ?? 1;
+    const indexOfElement = fieldMetadata?.multipleFieldMetadata?.index;
+
+    const disableMoveLeft = indexOfElement === 0; // first element
+    const disableMoveRight = indexOfElement === totalElementCount - 1; // last element
+
     return (
         <div
             className="visual-editor__focused-toolbar__multiple-field-toolbar"
@@ -167,8 +173,9 @@ function FieldToolbarComponent(
                                     "previous"
                                 );
                             }}
+                            disabled={disableMoveLeft}
                         >
-                            <MoveLeftIcon />
+                            <MoveLeftIcon disabled={disableMoveLeft} />
                         </button>
 
                         <button
@@ -183,8 +190,9 @@ function FieldToolbarComponent(
                                 e.stopPropagation();
                                 handleMoveInstance(props.fieldMetadata, "next");
                             }}
+                            disabled={disableMoveRight}
                         >
-                            <MoveRightIcon />
+                            <MoveRightIcon disabled={disableMoveRight} />
                         </button>
 
                         {isModalEditable ? editButton : null}
