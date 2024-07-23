@@ -18,7 +18,6 @@ import {
     handleAddButtonsForMultiple,
     removeAddInstanceButtons,
 } from "./multipleElementAddButton";
-import { normalizeNonBreakingSpace } from "./normalizeNonBreakingSpace";
 import { LiveEditorPostMessageEvents } from "./types/postMessage.types";
 
 /**
@@ -130,16 +129,11 @@ export async function handleIndividualFields(
             let actualEditableField = editableElement as HTMLElement;
 
             const textContent =
-                editableElement.innerHTML || editableElement.textContent || "";
+                (editableElement as HTMLElement).innerText || editableElement.textContent || "";
 
-            // ensure non-breaking space (nbsp) is replaced with space and
-            // all whitespace chars are standardized
-            const fieldData = normalizeNonBreakingSpace(textContent);
-            const expectedData = normalizeNonBreakingSpace(
-                config.expectedFieldData
-            );
+            const expectedTextContent = config.expectedFieldData;
             if (
-                fieldData !== expectedData ||
+                textContent !== expectedTextContent ||
                 isEllipsisActive(editableElement as HTMLElement)
             ) {
                 // TODO: Testing will be don in the E2E.
