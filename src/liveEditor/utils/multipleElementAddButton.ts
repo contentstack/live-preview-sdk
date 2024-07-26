@@ -87,13 +87,23 @@ export function handleAddButtonsForMultiple(
         ? expectedFieldData.length
         : eventDetails.fieldMetadata.multipleFieldMetadata.index + 1;
 
+    const parentCslp = isField ? eventDetails.cslpData : parentCslpValue;
+
+    const onMessageSent = (index: number) => {
+        hideOverlayAndHoverOutline();
+        observeParentAndFocusNewInstance({
+            parentCslp,
+            index,
+        });
+    };
+
     const previousButton = generateAddInstanceButton(() => {
         liveEditorPostMessage
             ?.send(LiveEditorPostMessageEvents.ADD_INSTANCE, {
                 fieldMetadata: eventDetails.fieldMetadata,
                 index: prevIndex,
             })
-            .then(hideOverlayAndHoverOutline);
+            .then(onMessageSent.bind(null, prevIndex));
     });
 
     const nextButton = generateAddInstanceButton(() => {
@@ -102,7 +112,7 @@ export function handleAddButtonsForMultiple(
                 fieldMetadata: eventDetails.fieldMetadata,
                 index: nextIndex,
             })
-            .then(hideOverlayAndHoverOutline);
+            .then(onMessageSent.bind(null, nextIndex));
     });
 
     if (!visualEditorContainer.contains(previousButton)) {
@@ -184,4 +194,56 @@ export function removeAddInstanceButtons(
 
     nextButton.remove();
     previousButton.remove();
+}
+
+/**
+ * This function that observes the parent element and focuses the newly added instance.
+ *
+ * @param parentCslp The parent cslp value.
+ * @param index The index of the new instance.
+ * @returns void
+ *
+ * The logic is very simple for now. We can evolve this, as different use cases arise.
+ * Right now, the focus attempt only happens once, and the observer disconnects itself.
+ * So, if the instance element is added on second mutation, it will not be focused.
+ */
+function observeParentAndFocusNewInstance({
+    parentCslp,
+    index,
+}: {
+    parentCslp: string;
+    index: number;
+}) {
+    const parent = document.querySelector(
+        `[data-cslp='${parentCslp}']`
+    ) as HTMLElement;
+
+    if (parent) {
+        const expectedCslp = [parentCslp, index].join(".");
+        const mutationObserver = new MutationObserver(
+            (_mutations, observer) => {
+                const newInstance = parent.querySelector(
+                    `[data-cslp='${expectedCslp}']`
+                ) as HTMLElement | null;
+                if (newInstance) {
+                    // this is how we also navigate to parent elements, but parent elements
+                    // are never primitive fields, the instances can be and this steals
+                    // focus from the form and puts it on the canvas.
+                    // So currently for a singleline multiple field, the form opens but we
+                    // come back to the canvas.
+                    // TODO - maybe we should not focus the content-editable
+                    newInstance.click();
+                }
+                // disconnect the observer whether we found the new instance or not
+                observer.disconnect();
+            }
+        );
+        mutationObserver.observe(parent, {
+            childList: true,
+            // watch subtrees as there may be wrapper elements
+            subtree: true,
+            // we don't need to watch for attribute changes
+            attributes: false,
+        });
+    }
 }
