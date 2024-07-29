@@ -9,6 +9,8 @@ import getChildrenDirection from "./getChildrenDirection";
 import { hideOverlay } from "../generators/generateOverlay";
 import { hideHoverOutline } from "../listeners/mouseHover";
 
+const WAIT_FOR_NEW_INSTANCE_TIMEOUT = 4000;
+
 /**
  * The function that handles the add instance buttons for multiple fields.
  * @param eventDetails The details containing the field metadata and cslp value.
@@ -203,9 +205,11 @@ export function removeAddInstanceButtons(
  * @param index The index of the new instance.
  * @returns void
  *
- * The logic is very simple for now. We can evolve this, as different use cases arise.
- * Right now, the focus attempt only happens once, and the observer disconnects itself.
- * So, if the instance element is added on second mutation, it will not be focused.
+ * We can evolve the retry logic, as different use cases arise.
+ * Currently, if the new element is not found after the first mutation, we until
+ * WAIT_FOR_NEW_INSTANCE_TIMEOUT, expecting that the new instance/block will be
+ * found in later mutations and we can focus + disconnect then.
+ * We also ensure there is only one setTimeout scheduled.
  */
 function observeParentAndFocusNewInstance({
     parentCslp,
@@ -220,6 +224,10 @@ function observeParentAndFocusNewInstance({
 
     if (parent) {
         const expectedCslp = [parentCslp, index].join(".");
+
+        let hasObserverDisconnected = false;
+        let timeoutId: ReturnType<typeof setTimeout> | null = null;
+
         const mutationObserver = new MutationObserver(
             (_mutations, observer) => {
                 const newInstance = parent.querySelector(
@@ -233,9 +241,18 @@ function observeParentAndFocusNewInstance({
                     // come back to the canvas.
                     // TODO - maybe we should not focus the content-editable
                     newInstance.click();
+                    observer.disconnect();
+                    hasObserverDisconnected = true;
+                    return;
                 }
-                // disconnect the observer whether we found the new instance or not
-                observer.disconnect();
+                if (!hasObserverDisconnected && !timeoutId) {
+                    // disconnect the observer whether we found the new instance or not
+                    // after timeout
+                    timeoutId = setTimeout(() => {
+                        observer.disconnect();
+                        hasObserverDisconnected = false;
+                    }, WAIT_FOR_NEW_INSTANCE_TIMEOUT);
+                }
             }
         );
         mutationObserver.observe(parent, {
