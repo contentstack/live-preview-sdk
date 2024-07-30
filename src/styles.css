@@ -121,6 +121,7 @@ div.multiple div.cslp-tooltip-child:hover:before {
 .visual-editor__overlay--outline {
     position: absolute;
     outline: 4px solid #715cdd;
+    outline-offset: 2px;
     transition: var(--outline-transition);
 }
 .visual-editor__overlay__wrapper.visible {
@@ -463,6 +464,7 @@ div.multiple div.cslp-tooltip-child:hover:before {
 .visual-editor__hover-outline {
     position: absolute;
     outline: 2px dashed #6c5ce7;
+    outline-offset: 2px;
     transition: var(--outline-transition);
 }
 
@@ -483,5 +485,6 @@ div.multiple div.cslp-tooltip-child:hover:before {
 }
 
 [data-cslp] [contenteditable] {
-    padding: 0 5px 0 5px;
+    border: none;
+    outline: none;
 }
