@@ -481,7 +481,3 @@ div.multiple div.cslp-tooltip-child:hover:before {
 .visual-editor__default-cursor--disabled {
     cursor: none;
 }
-
-[data-cslp] [contenteditable] {
-    padding: 0 5px 0 5px;
-}
