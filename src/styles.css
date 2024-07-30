@@ -308,6 +308,18 @@ div.multiple div.cslp-tooltip-child:hover:before {
     color: #6c5ce7;
 }
 
+.visual-editor__button--edit svg{
+    height: 16px;
+    width: 16px;
+}
+.visual-editor__button--edit svg path{
+    fill: #475161;
+}
+.visual-editor__field-icon svg {
+    height: 16px;
+    width: 16px;
+    margin-right: 5px;
+}
 .visual-editor__focused-toolbar__field-label-wrapper__caret {
     transform: rotate(0);
     transition: transform 0.2s ease-in-out;
@@ -338,6 +350,7 @@ div.multiple div.cslp-tooltip-child:hover:before {
 .visual-editor__focused-toolbar__field-label-wrapper__current-field
     .visual-editor__focused-toolbar__text {
     padding-right: 3px;
+    height: 16px;
 }
 
 .visual-editor__focused-toolbar__multiple-field-toolbar {

@@ -9,6 +9,7 @@ import { isFieldDisabled } from "../utils/isFieldDisabled";
 import liveEditorPostMessage from "../utils/liveEditorPostMessage";
 import { CaretIcon, InfoIcon } from "./icons";
 import { LoadingIcon } from "./icons/loading";
+import { getFieldIcon } from "../generators/generateCustomCursor";
 
 async function getFieldDisplayNames(fieldMetadata: CslpData[]) {
     const result = await liveEditorPostMessage?.send<{ [k: string]: string }>(
@@ -31,6 +32,7 @@ function FieldLabelWrapperComponent(
     const [currentField, setCurrentField] = useState({
         text: "",
         icon: <CaretIcon />,
+        prefixIcon: null,
         disabled: false,
     });
     const [displayNames, setDisplayNames] = useState<Record<string, string>>(
@@ -82,6 +84,7 @@ function FieldLabelWrapperComponent(
                 ) : (
                     <></>
                 ),
+                prefixIcon: getFieldIcon(fieldSchema),
                 disabled: fieldDisabled,
             });
 
@@ -123,6 +126,9 @@ function FieldLabelWrapperComponent(
                 className="visual-editor__focused-toolbar__field-label-wrapper__current-field visual-editor__button visual-editor__button--primary"
                 disabled={areDisplayNamesLoading}
             >
+                {
+                    currentField.prefixIcon ? <div className="visual-editor__field-icon" dangerouslySetInnerHTML={{__html: currentField.prefixIcon }}/> : null
+                }
                 {currentField.text ? (
                     <div className="visual-editor__focused-toolbar__text">
                         {currentField.text}
