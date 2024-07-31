@@ -60,6 +60,14 @@ export class VisualEditor {
         });
     }
 
+    private resizeEventHandler = () => {
+        const previousSelectedEditableDOM =
+            VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM;
+        if (previousSelectedEditableDOM) {
+            this.handlePositionChange(previousSelectedEditableDOM as HTMLElement);
+        }
+    };
+
     private resizeObserver = new ResizeObserver(([entry]) => {
         const previousSelectedEditableDOM =
             VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM;
@@ -170,13 +178,7 @@ export class VisualEditor {
     constructor() {
         // Handles changes in element positions due to sidebar toggling or window resizing,
         // triggering a redraw of the visual editor
-        window.addEventListener("resize", () => {
-            const previousSelectedEditableDOM =
-                VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM;
-            if (previousSelectedEditableDOM) {
-                this.handlePositionChange(previousSelectedEditableDOM as HTMLElement);
-            }
-        });
+        window.addEventListener("resize", this.resizeEventHandler);
 
         initUI({
             resizeObserver: this.resizeObserver,
@@ -259,6 +261,7 @@ export class VisualEditor {
 
     // TODO: write test cases
     destroy = (): void => {
+        window.removeEventListener("resize", this.resizeEventHandler);
         removeEventListeners({
             overlayWrapper: this.overlayWrapper,
             visualEditorContainer: this.visualEditorContainer,
