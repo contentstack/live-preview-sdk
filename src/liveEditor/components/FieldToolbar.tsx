@@ -91,7 +91,7 @@ function FieldToolbarComponent(
     const editButton = Icon ? (
         <button
             data-testid="visual-editor__focused-toolbar__multiple-field-toolbar__edit-button"
-            className="visual-editor__button visual-editor__button--secondary"
+            className="visual-editor__button visual-editor__button--secondary visual-editor__button--edit"
             onClick={(e: React.MouseEvent) => {
                 // TODO the listener for field path is attached to the common parent requiring
                 // propagation to be stopped, should ideally only attach onClick to fieldpath dropdown
