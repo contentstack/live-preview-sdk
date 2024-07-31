@@ -44,19 +44,25 @@ export class VisualEditor {
     private visualEditorContainer: HTMLDivElement | null = null;
     private focusedToolbar: HTMLDivElement | null = null;
 
-    static VisualEditorGlobalState: Signal<VisualEditorGlobalStateImpl> =
-        signal({
-            previousSelectedEditableDOM: null,
-            previousHoveredTargetDOM: null,
-            previousEmptyBlockParents: [],
-        });
+    static VisualEditorGlobalState: Signal<VisualEditorGlobalStateImpl> = signal({
+        previousSelectedEditableDOM: null,
+        previousHoveredTargetDOM: null,
+        previousEmptyBlockParents: [],
+    });
 
-    // TODO handle the position changes of elements
-    // this currently does not work when only the position changes
+    private handlePositionChange(editableElement: HTMLElement) {
+        updateFocussedState({
+            editableElement,
+            visualEditorContainer: this.visualEditorContainer,
+            overlayWrapper: this.overlayWrapper,
+            focusedToolbar: this.focusedToolbar,
+            resizeObserver: this.resizeObserver,
+        });
+    }
+
     private resizeObserver = new ResizeObserver(([entry]) => {
         const previousSelectedEditableDOM =
-            VisualEditor.VisualEditorGlobalState.value
-                .previousSelectedEditableDOM;
+            VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM;
 
         if (!this.overlayWrapper || !previousSelectedEditableDOM) {
             return;
@@ -66,15 +72,13 @@ export class VisualEditor {
         // target and the target is also not psuedo-editable then return
         if (
             !entry.target.isSameNode(previousSelectedEditableDOM) &&
-            !entry.target.classList.contains(
-                "visual-editor__pseudo-editable-element"
-            )
+            !entry.target.classList.contains("visual-editor__pseudo-editable-element")
         ) {
             return;
         }
 
         const isPsuedoEditableElement = entry.target.classList.contains(
-            "visual-editor__pseudo-editable-element"
+            "visual-editor__pseudo-editable-element",
         );
 
         // the "actual" editable element when the current target is psuedo-editable
@@ -96,13 +100,7 @@ export class VisualEditor {
             // TODO check if we can now resize the actual editable element
             // when psuedo editable element is resized, avoid infinite loops
         } else if (editableElement) {
-            updateFocussedState({
-                editableElement,
-                visualEditorContainer: this.visualEditorContainer,
-                overlayWrapper: this.overlayWrapper,
-                focusedToolbar: this.focusedToolbar,
-                resizeObserver: this.resizeObserver,
-            });
+            this.handlePositionChange(editableElement);
         }
 
         // update the overlay if field is disabled
@@ -117,7 +115,7 @@ export class VisualEditor {
 
         FieldSchemaMap.getFieldSchema(
             fieldMetadata.content_type_uid,
-            fieldMetadata.fieldPath
+            fieldMetadata.fieldPath,
         ).then((fieldSchema) => {
             if (!fieldSchema) {
                 return;
@@ -131,7 +129,7 @@ export class VisualEditor {
                 addFocusOverlay(
                     editableElement,
                     this.overlayWrapper as HTMLDivElement,
-                    isDisabled
+                    isDisabled,
                 );
             }
         });
@@ -141,22 +139,18 @@ export class VisualEditor {
         debounce(
             async () => {
                 const emptyBlockParents = Array.from(
-                    document.querySelectorAll(
-                        ".visual-editor__empty-block-parent"
-                    )
+                    document.querySelectorAll(".visual-editor__empty-block-parent"),
                 );
 
-                const previousEmptyBlockParents = VisualEditor
-                    .VisualEditorGlobalState.value
-                    .previousEmptyBlockParents as Element[];
+                const previousEmptyBlockParents = VisualEditor.VisualEditorGlobalState
+                    .value.previousEmptyBlockParents as Element[];
 
                 if (!isEqual(emptyBlockParents, previousEmptyBlockParents)) {
-                    const noMoreEmptyBlockParent =
-                        previousEmptyBlockParents.filter(
-                            (x) => !emptyBlockParents.includes(x)
-                        );
+                    const noMoreEmptyBlockParent = previousEmptyBlockParents.filter(
+                        (x) => !emptyBlockParents.includes(x),
+                    );
                     const newEmptyBlockParent = emptyBlockParents.filter(
-                        (x) => !previousEmptyBlockParents.includes(x)
+                        (x) => !previousEmptyBlockParents.includes(x),
                     );
 
                     removeEmptyBlocks(noMoreEmptyBlockParent);
@@ -169,24 +163,34 @@ export class VisualEditor {
                 }
             },
             100,
-            { trailing: true }
-        )
+            { trailing: true },
+        ),
     );
 
     constructor() {
+        // Handles changes in element positions due to sidebar toggling or window resizing,
+        // triggering a redraw of the visual editor
+        window.addEventListener("resize", () => {
+            const previousSelectedEditableDOM =
+                VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM;
+            if (previousSelectedEditableDOM) {
+                this.handlePositionChange(previousSelectedEditableDOM as HTMLElement);
+            }
+        });
+
         initUI({
             resizeObserver: this.resizeObserver,
         });
 
         this.visualEditorContainer = document.querySelector(
-            ".visual-editor__container"
+            ".visual-editor__container",
         );
         this.overlayWrapper = document.querySelector(
-            ".visual-editor__overlay__wrapper"
+            ".visual-editor__overlay__wrapper",
         );
         this.customCursor = document.querySelector(".visual-editor__cursor");
         this.focusedToolbar = document.querySelector(
-            ".visual-editor__focused-toolbar"
+            ".visual-editor__focused-toolbar",
         );
 
         const config = Config.get();
@@ -199,14 +203,12 @@ export class VisualEditor {
                 isSSR: config.ssr,
             })
             .then((data) => {
-                const {
-                    windowType = ILivePreviewWindowType.EDITOR,
-                    stackDetails,
-                } = data;
+                const { windowType = ILivePreviewWindowType.EDITOR, stackDetails } =
+                    data;
                 Config.set("windowType", windowType);
                 Config.set(
                     "stackDetails.masterLocale",
-                    stackDetails?.masterLocale || "en-us"
+                    stackDetails?.masterLocale || "en-us",
                 );
 
                 addEventListeners({
@@ -234,7 +236,7 @@ export class VisualEditor {
 
                 liveEditorPostMessage?.on(
                     LiveEditorPostMessageEvents.GET_ALL_ENTRIES_IN_CURRENT_PAGE,
-                    getEntryIdentifiersInCurrentPage
+                    getEntryIdentifiersInCurrentPage,
                 );
 
                 useHideFocusOverlayPostMessageEvent({
@@ -261,8 +263,7 @@ export class VisualEditor {
             overlayWrapper: this.overlayWrapper,
             visualEditorContainer: this.visualEditorContainer,
             previousSelectedEditableDOM:
-                VisualEditor.VisualEditorGlobalState.value
-                    .previousSelectedEditableDOM,
+                VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM,
             focusedToolbar: this.focusedToolbar,
             resizeObserver: this.resizeObserver,
             customCursor: this.customCursor,
