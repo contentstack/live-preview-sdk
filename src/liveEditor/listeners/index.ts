@@ -18,18 +18,23 @@ type RemoveEventListenersParams = Omit<
 >;
 
 export function addEventListeners(params: AddEventListenersParams): void {
-    window.addEventListener("click", (event) => {
-        handleEditorInteraction({
-            event: event,
-            overlayWrapper: params.overlayWrapper,
-            visualEditorContainer: params.visualEditorContainer,
-            previousSelectedEditableDOM:
-                VisualEditor.VisualEditorGlobalState.value
-                    .previousSelectedEditableDOM,
-            focusedToolbar: params.focusedToolbar,
-            resizeObserver: params.resizeObserver,
-        });
-    });
+    // capture any click event during the capture phase
+    window.addEventListener(
+        "click",
+        (event) => {
+            handleEditorInteraction({
+                event: event,
+                overlayWrapper: params.overlayWrapper,
+                visualEditorContainer: params.visualEditorContainer,
+                previousSelectedEditableDOM:
+                    VisualEditor.VisualEditorGlobalState.value
+                        .previousSelectedEditableDOM,
+                focusedToolbar: params.focusedToolbar,
+                resizeObserver: params.resizeObserver,
+            });
+        },
+        { capture: true }
+    );
 
     window.addEventListener("mousemove", (event) => {
         handleMouseHover({
