@@ -1,3 +1,4 @@
+import { throttle } from "lodash-es";
 import { VisualEditor } from "..";
 import {
     generatePseudoEditableElement,
@@ -19,6 +20,7 @@ import {
     removeAddInstanceButtons,
 } from "./multipleElementAddButton";
 import { LiveEditorPostMessageEvents } from "./types/postMessage.types";
+import { updateFocussedState } from "./updateFocussedState";
 
 /**
  * It handles all the fields based on their data type and its "multiple" property.
@@ -127,6 +129,8 @@ export async function handleIndividualFields(
         // * title, single single_line, single multi_line, single number
         if (ALLOWED_INLINE_EDITABLE_FIELD.includes(fieldType)) {
             let actualEditableField = editableElement as HTMLElement;
+            const elementComputedDisplay =
+                window.getComputedStyle(actualEditableField).display;
 
             const textContent =
                 (editableElement as HTMLElement).innerText || editableElement.textContent || "";
@@ -155,6 +159,27 @@ export async function handleIndividualFields(
 
                 // we will unobserve this in hideOverlay
                 elements.resizeObserver.observe(pseudoEditableField);
+            } else if (elementComputedDisplay === "inline") {
+                // if the editable field is inline
+                const onInlineElementInput = throttle(() => {
+                    const overlayWrapper = visualEditorContainer.querySelector(
+                        ".visual-editor__overlay__wrapper"
+                    ) as HTMLDivElement;
+                    const focusedToolbar = visualEditorContainer.querySelector(
+                        ".visual-editor__focused-toolbar"
+                    ) as HTMLDivElement;
+                    updateFocussedState({
+                        editableElement: actualEditableField,
+                        visualEditorContainer,
+                        overlayWrapper,
+                        resizeObserver,
+                        focusedToolbar,
+                    });
+                }, 200);
+                actualEditableField.addEventListener(
+                    "input",
+                    onInlineElementInput
+                );
             }
 
             actualEditableField.setAttribute("contenteditable", "true");

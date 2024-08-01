@@ -58,7 +58,14 @@ export function addFocusedToolbar(params: AddFocusedToolbarParams): void {
 async function handleEditorInteraction(
     params: HandleEditorInteractionParams
 ): Promise<void> {
-    params.event.preventDefault();
+    const eventTarget = params.event.target as HTMLElement | null;
+    const isAnchorElement = eventTarget instanceof HTMLAnchorElement;
+    const elementHasCslp = eventTarget && eventTarget.hasAttribute("data-cslp");
+
+    // prevent default behavior for anchor elements and elements with cslp attribute
+    if (isAnchorElement || elementHasCslp) {
+        params.event.preventDefault();
+    }
 
     const eventDetails = getCsDataOfElement(params.event);
     if (
@@ -166,7 +173,7 @@ async function handleEditorInteraction(
     await handleIndividualFields(eventDetails, {
         visualEditorContainer: params.visualEditorContainer,
         resizeObserver: params.resizeObserver,
-        lastEditedField: previousSelectedElement
+        lastEditedField: previousSelectedElement,
     });
 }
 

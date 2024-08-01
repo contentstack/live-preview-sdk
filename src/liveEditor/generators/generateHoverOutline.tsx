@@ -1,13 +1,3 @@
-import { throttle } from "lodash-es";
-
-// To account for animation(transition) delay
-const makeHoverOutlineClickable = 
-  throttle((hoverOutline: HTMLElement, cslpValue: string) => {
-      hoverOutline.setAttribute('data-cslp', cslpValue);
-      hoverOutline.classList.remove('visual-editor__hover-outline--unclickable');
-    }, 200, { trailing: true, leading: false }
-  );
-
 /**
  * Adds a hover outline to the target element.
  * @param targetElement - The element to add the hover outline to.
@@ -26,18 +16,6 @@ export function addHoverOutline(
 
   if (hoverOutline) {
     hoverOutline.classList.remove("visual-editor__hover-outline--hidden");
-
-    if(isAnchorElement){
-      const cslpValue = targetElement.getAttribute('data-cslp') || '';
-      makeHoverOutlineClickable(hoverOutline, cslpValue);
-    }
-    else if(!targetElement.isSameNode(hoverOutline)) {
-      makeHoverOutlineClickable.cancel();
-      hoverOutline.removeAttribute('data-cslp');
-      if(!hoverOutline.classList.contains('visual-editor__hover-outline--unclickable')){
-        hoverOutline.classList.add('visual-editor__hover-outline--unclickable');
-      }
-    }
 
     if (disabled) {
       hoverOutline.classList.add("visual-editor__hover-outline--disabled");
