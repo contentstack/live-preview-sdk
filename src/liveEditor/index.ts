@@ -31,6 +31,7 @@ import { extractDetailsFromCslp } from "../cslp";
 import { FieldSchemaMap } from "./utils/fieldSchemaMap";
 import { isFieldDisabled } from "./utils/isFieldDisabled";
 import { updateFocussedState } from "./utils/updateFocussedState";
+import { useDraftFieldsPostMessageEvent } from "./eventManager/useDraftFieldsPostMessageEvent";
 
 interface VisualEditorGlobalStateImpl {
     previousSelectedEditableDOM: HTMLElement | Element | null;
@@ -251,6 +252,8 @@ export class VisualEditor {
                 // These events are used to sync the data when we made some changes in the entry without invoking live preview module.
                 useHistoryPostMessageEvent();
                 useOnEntryUpdatePostMessageEvent();
+                useDraftFieldsPostMessageEvent();
+                
             })
             .catch(() => {
                 if (!inIframe()) {

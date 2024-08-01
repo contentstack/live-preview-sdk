@@ -494,3 +494,6 @@ div.multiple div.cslp-tooltip-child:hover:before {
 .visual-editor__default-cursor--disabled {
     cursor: none;
 }
+.visual-editor__draft-field{
+    outline: 2px dashed var(--Brand-Colors-Brand-Orange, #EB5646);
+}
