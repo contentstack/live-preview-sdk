@@ -2,6 +2,8 @@ import { VisualEditorCslpEventDetails } from "../types/liveEditor.types";
 import {
     DATA_CSLP_ATTR_SELECTOR,
     LIVE_PREVIEW_OUTLINE_WIDTH_IN_PX,
+    TOOLBAR_EDGE_BUFFER,
+    TOP_EDGE_BUFFER,
 } from "../utils/constants";
 import { FieldSchemaMap } from "../utils/fieldSchemaMap";
 import { isFieldDisabled } from "../utils/isFieldDisabled";
@@ -54,16 +56,17 @@ export function appendFieldPathDropdown(
     const { editableElement: targetElement, fieldMetadata } = eventDetails;
     const targetElementDimension = targetElement.getBoundingClientRect();
 
-    const distanceFromTop =
-        targetElementDimension.top +
-        window.scrollY -
-        LIVE_PREVIEW_OUTLINE_WIDTH_IN_PX -
-        5;
+    const distanceFromTop = targetElementDimension.top + window.scrollY - TOOLBAR_EDGE_BUFFER;
+    const adjustedDistanceFromTop = targetElementDimension.top < TOP_EDGE_BUFFER
+        ? distanceFromTop + targetElementDimension.height + TOP_EDGE_BUFFER
+        : distanceFromTop;
+
     const distanceFromLeft =
         targetElementDimension.left - LIVE_PREVIEW_OUTLINE_WIDTH_IN_PX;
+    const adjustedDistanceFromLeft = Math.max(distanceFromLeft, TOOLBAR_EDGE_BUFFER);
 
-    focusedToolbarElement.style.top = `${distanceFromTop}px`;
-    focusedToolbarElement.style.left = `${distanceFromLeft}px`;
+    focusedToolbarElement.style.top = `${adjustedDistanceFromTop}px`;
+    focusedToolbarElement.style.left = `${adjustedDistanceFromLeft}px`;
 
     const parentPaths = collectParentCSLPPaths(targetElement, 2);
 
