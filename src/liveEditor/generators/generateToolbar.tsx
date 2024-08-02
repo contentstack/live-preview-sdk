@@ -1,6 +1,7 @@
 import { VisualEditorCslpEventDetails } from "../types/liveEditor.types";
 import {
     DATA_CSLP_ATTR_SELECTOR,
+    LEFT_EDGE_BUFFER,
     LIVE_PREVIEW_OUTLINE_WIDTH_IN_PX,
 } from "../utils/constants";
 import { FieldSchemaMap } from "../utils/fieldSchemaMap";
@@ -61,9 +62,10 @@ export function appendFieldPathDropdown(
         5;
     const distanceFromLeft =
         targetElementDimension.left - LIVE_PREVIEW_OUTLINE_WIDTH_IN_PX;
+    const adjustedDistanceFromLeft = Math.max(distanceFromLeft, LEFT_EDGE_BUFFER);
 
     focusedToolbarElement.style.top = `${distanceFromTop}px`;
-    focusedToolbarElement.style.left = `${distanceFromLeft}px`;
+    focusedToolbarElement.style.left = `${adjustedDistanceFromLeft}px`;
 
     const parentPaths = collectParentCSLPPaths(targetElement, 2);
 

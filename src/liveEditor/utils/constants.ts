@@ -8,6 +8,9 @@ export const LIVE_EDITOR_CHANNEL_ID = "live-editor";
 
 export const LIVE_PREVIEW_OUTLINE_WIDTH_IN_PX = 2;
 
+// Minimum distance from left edge to prevent text from being cut off
+export const LEFT_EDGE_BUFFER = 8;
+
 export const DATA_CSLP_ATTR_SELECTOR = "data-cslp";
 
 /**
