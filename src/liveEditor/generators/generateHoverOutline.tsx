@@ -6,7 +6,6 @@
  */
 export function addHoverOutline(
   targetElement: Element,
-  isAnchorElement: boolean,
   disabled?: boolean,
 ): void {
 

@@ -41,15 +41,13 @@ function handleCursorPosition(
 }
 
 function addOutline(
-    params: HandleMouseHoverParams,
+    editableElement: Element,
     isFieldDisabled?: boolean
 ): void {
-    if (!params.event || !params.event.target) return;
+    if (!editableElement) return;
 
-    const hoveredElement = params.event.target as HTMLElement;
-    const isValidAnchorElement =
-        hoveredElement.tagName === "A" &&
-        hoveredElement.hasAttribute("data-cslp");
+    const hoveredElement = editableElement as HTMLElement;
+    const isValidAnchorElement = hoveredElement.tagName === "A";
     addHoverOutline(hoveredElement, isValidAnchorElement, isFieldDisabled);
 }
 
@@ -110,7 +108,7 @@ function isContentEditable(target: HTMLElement): boolean {
     return false;
 }
 
-async function handleMouseHover(params: HandleMouseHoverParams): Promise<void> {
+async function handleMouseHover(params: HandleMouseHoverParams): Promise<void> { 
     throttle(async (params: HandleMouseHoverParams) => {
         const eventDetails = getCsDataOfElement(params.event);
         const eventTarget = params.event.target as HTMLElement | null;
@@ -198,12 +196,12 @@ async function handleMouseHover(params: HandleMouseHoverParams): Promise<void> {
             ) &&
             !editableElement.classList.contains("visual-editor__empty-block")
         ) {
-            addOutline(params);
+            addOutline(editableElement);
             FieldSchemaMap.getFieldSchema(content_type_uid, fieldPath).then(
                 (fieldSchema) => {
                     const { isDisabled: fieldDisabled, reason } =
                         isFieldDisabled(fieldSchema, eventDetails);
-                    addOutline(params, fieldDisabled);
+                    addOutline(editableElement, fieldDisabled);
                 }
             );
         }
