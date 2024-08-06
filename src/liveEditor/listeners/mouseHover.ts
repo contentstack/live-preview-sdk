@@ -46,9 +46,7 @@ function addOutline(
 ): void {
     if (!editableElement) return;
 
-    const hoveredElement = editableElement as HTMLElement;
-    const isValidAnchorElement = hoveredElement.tagName === "A";
-    addHoverOutline(hoveredElement, isValidAnchorElement, isFieldDisabled);
+    addHoverOutline(editableElement as HTMLElement, isFieldDisabled);
 }
 
 function hideDefaultCursor(): void {
