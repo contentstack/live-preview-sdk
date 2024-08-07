@@ -57,7 +57,8 @@ export function appendFieldPathDropdown(
     const targetElementDimension = targetElement.getBoundingClientRect();
 
     const distanceFromTop = targetElementDimension.top + window.scrollY - TOOLBAR_EDGE_BUFFER;
-    const adjustedDistanceFromTop = targetElementDimension.top < TOP_EDGE_BUFFER
+    // Position the toolbar at the top unless there's insufficient space or scrolling up is not possible (topmost element targetted).
+    const adjustedDistanceFromTop = targetElementDimension.top + window.scrollY < TOP_EDGE_BUFFER
         ? distanceFromTop + targetElementDimension.height + TOP_EDGE_BUFFER
         : distanceFromTop;
 
