@@ -160,11 +160,7 @@ function FieldToolbarComponent(
                     <>
                         <button
                             data-testid="visual-editor__focused-toolbar__multiple-field-toolbar__move-left-button"
-                            className={`visual-editor__button visual-editor__button--secondary ${
-                                direction.value === "vertical"
-                                    ? "visual-editor__rotate--90"
-                                    : ""
-                            }`}
+                            className={`visual-editor__button visual-editor__button--secondary`}
                             onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
@@ -175,16 +171,19 @@ function FieldToolbarComponent(
                             }}
                             disabled={disableMoveLeft}
                         >
-                            <MoveLeftIcon disabled={disableMoveLeft} />
+                            <MoveLeftIcon
+                                className={
+                                    direction.value === "vertical"
+                                        ? "visual-editor__rotate--90"
+                                        : ""
+                                }
+                                disabled={disableMoveLeft}
+                            />
                         </button>
 
                         <button
                             data-testid="visual-editor__focused-toolbar__multiple-field-toolbar__move-right-button"
-                            className={`visual-editor__button visual-editor__button--secondary ${
-                                direction.value === "vertical"
-                                    ? "visual-editor__rotate--90"
-                                    : ""
-                            }`}
+                            className={`visual-editor__button visual-editor__button--secondary`}
                             onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
@@ -192,7 +191,14 @@ function FieldToolbarComponent(
                             }}
                             disabled={disableMoveRight}
                         >
-                            <MoveRightIcon disabled={disableMoveRight} />
+                            <MoveRightIcon
+                                className={
+                                    direction.value === "vertical"
+                                        ? "visual-editor__rotate--90"
+                                        : ""
+                                }
+                                disabled={disableMoveRight}
+                            />
                         </button>
 
                         {isModalEditable ? editButton : null}
