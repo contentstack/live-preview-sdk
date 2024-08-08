@@ -1,4 +1,7 @@
-type IconProps = { disabled?: boolean };
+type IconProps = {
+    disabled?: boolean;
+    className?: string;
+};
 
 const generateIconStyles = ({ disabled = false }: IconProps) => ({
     opacity: disabled ? 0.5 : 1,
@@ -57,6 +60,7 @@ export function MoveLeftIcon(props: IconProps): JSX.Element {
     return (
         <svg
             data-testid="visual-editor__move-left-icon"
+            className={props.className}
             width="16"
             height="16"
             viewBox="0 0 16 16"
@@ -83,6 +87,7 @@ export function MoveLeftIcon(props: IconProps): JSX.Element {
 export function MoveRightIcon(props: IconProps): JSX.Element {
     return (
         <svg
+            className={props.className}
             data-testid="visual-editor__move-right-icon"
             width="16"
             height="16"
