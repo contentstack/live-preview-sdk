@@ -28,10 +28,11 @@ export function handleAddButtonsForMultiple(
     config: {
         expectedFieldData: any;
         disabled: boolean;
+        label: string | undefined;
     }
 ): void {
     const { editableElement, visualEditorContainer, resizeObserver } = elements;
-    const { expectedFieldData, disabled } = config;
+    const { expectedFieldData, disabled, label } = config;
 
     const parentCslpValue =
         eventDetails.fieldMetadata.multipleFieldMetadata?.parentDetails
@@ -106,7 +107,7 @@ export function handleAddButtonsForMultiple(
                 index: prevIndex,
             })
             .then(onMessageSent.bind(null, prevIndex));
-    });
+    }, label);
 
     const nextButton = generateAddInstanceButton(() => {
         liveEditorPostMessage
@@ -115,7 +116,7 @@ export function handleAddButtonsForMultiple(
                 index: nextIndex,
             })
             .then(onMessageSent.bind(null, nextIndex));
-    });
+    }, label);
 
     if (!visualEditorContainer.contains(previousButton)) {
         visualEditorContainer.appendChild(previousButton);

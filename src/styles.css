@@ -147,17 +147,39 @@ div.multiple div.cslp-tooltip-child:hover:before {
     border: 1px solid #6c5ce7;
 
     height: 32px;
-    width: 32px;
+    min-width: 32px;
+    max-width: 120px;
     transform: translate(-50%, -50%);
 
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    font-weight: 600;
+    color: #6c5ce7;
+    overflow: hidden;
 
     z-index: 200;
 
-    transition: var(--outline-transition);
+    display: grid;
+    grid-template-columns: min-content 0fr;
+    align-items: center;
+
+    transition: grid-template-columns 0.35s, left 0.15s ease-in,
+        top 0.15s ease-in;
 }
+
+.visual-editor__add-button:hover {
+    grid-template-columns: min-content 1fr;
+}
+
+.visual-editor__add-button svg {
+    fill: #6c5ce7;
+}
+
+.visual-editor__add-button-label {
+    width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 .visual-editor__start-editing-btn {
     text-decoration: none;
     position: fixed;
