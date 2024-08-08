@@ -73,6 +73,11 @@ export async function handleIndividualFields(
             fieldSchema.field_metadata.ref_multiple)
     ) {
         if (lastEditedField !== editableElement) {
+            const addButtonLabel =
+                fieldSchema.data_type === "blocks"
+                    ? `Add ${fieldSchema.display_name ?? "Modular Block"}`
+                    : undefined;
+
             handleAddButtonsForMultiple(
                 eventDetails,
                 {
@@ -83,6 +88,7 @@ export async function handleIndividualFields(
                 {
                     expectedFieldData,
                     disabled,
+                    label: addButtonLabel,
                 }
             );
         }
