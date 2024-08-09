@@ -68,7 +68,7 @@ export function appendFieldPathDropdown(
     const adjustedDistanceFromLeft = Math.max(distanceFromLeft, TOOLBAR_EDGE_BUFFER);
 
     const targetElementRightEdgeOffset =
-        window.innerWidth - targetElementDimension.left;
+        window.scrollX + window.innerWidth - targetElementDimension.left;
 
     if (targetElementRightEdgeOffset < RIGHT_EDGE_BUFFER) {
         // Overflow / Cutoff on right edge
