@@ -165,7 +165,7 @@ div.multiple div.cslp-tooltip-child:hover:before {
     transition: grid-template-columns 0.25s, left 0.15s ease-in,
         top 0.15s ease-in, gap 0.15s ease-in;
 
-    &:hover {
+    &:has(.visual-editor__add-button-label):hover {
         grid-template-columns: min-content 1fr;
         gap: 8px;
     }
