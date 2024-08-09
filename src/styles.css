@@ -1,3 +1,7 @@
+body {
+    overflow-x: hidden;
+}
+
 .visual-editor__container {
     --outline-transition: all 0.15s ease-in;
 }
