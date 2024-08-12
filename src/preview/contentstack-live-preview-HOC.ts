@@ -40,14 +40,15 @@ class ContentstackLivePreview {
     static init(
         userConfig: Partial<IInitData> = getUserInitData()
     ): Promise<typeof ContentstackLivePreview.previewConstructors> {
-        // handle user config
-        Config.replace(userConfig);
-        updateConfigFromUrl();
 
         if (typeof window === "undefined") {
             PublicLogger.warn("The SDK is not initialized in the browser.");
             return Promise.resolve(ContentstackLivePreview.previewConstructors);
         }
+
+        // handle user config
+        Config.replace(userConfig);
+        updateConfigFromUrl();
 
         if (ContentstackLivePreview.isInitialized()) {
             PublicLogger.warn(
