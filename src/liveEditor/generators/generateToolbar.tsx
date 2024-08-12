@@ -2,6 +2,7 @@ import { VisualEditorCslpEventDetails } from "../types/liveEditor.types";
 import {
     DATA_CSLP_ATTR_SELECTOR,
     LIVE_PREVIEW_OUTLINE_WIDTH_IN_PX,
+    RIGHT_EDGE_BUFFER,
     TOOLBAR_EDGE_BUFFER,
     TOP_EDGE_BUFFER,
 } from "../utils/constants";
@@ -66,8 +67,21 @@ export function appendFieldPathDropdown(
         targetElementDimension.left - LIVE_PREVIEW_OUTLINE_WIDTH_IN_PX;
     const adjustedDistanceFromLeft = Math.max(distanceFromLeft, TOOLBAR_EDGE_BUFFER);
 
+    const targetElementRightEdgeOffset =
+        window.scrollX + window.innerWidth - targetElementDimension.left;
+
+    if (targetElementRightEdgeOffset < RIGHT_EDGE_BUFFER) {
+        // Overflow / Cutoff on right edge
+        focusedToolbarElement.style.justifyContent = "flex-end";
+        focusedToolbarElement.style.left = `${
+            targetElementDimension.right + LIVE_PREVIEW_OUTLINE_WIDTH_IN_PX
+        }px`;
+    } else {
+        focusedToolbarElement.style.justifyContent = "flex-start"; // default
+        focusedToolbarElement.style.left = `${adjustedDistanceFromLeft}px`;
+    }
+
     focusedToolbarElement.style.top = `${adjustedDistanceFromTop}px`;
-    focusedToolbarElement.style.left = `${adjustedDistanceFromLeft}px`;
 
     const parentPaths = collectParentCSLPPaths(targetElement, 2);
 
