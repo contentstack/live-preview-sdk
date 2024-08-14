@@ -10,6 +10,7 @@ import liveEditorPostMessage from "../utils/liveEditorPostMessage";
 import { CaretIcon, InfoIcon } from "./icons";
 import { LoadingIcon } from "./icons/loading";
 import { getFieldIcon } from "../generators/generateCustomCursor";
+import { uniqBy } from "lodash-es";
 
 async function getFieldDisplayNames(fieldMetadata: CslpData[]) {
     const result = await liveEditorPostMessage?.send<{ [k: string]: string }>(
@@ -38,6 +39,7 @@ function FieldLabelWrapperComponent(
     const [displayNames, setDisplayNames] = useState<Record<string, string>>(
         {}
     );
+    const [displayNamesLoading, setDisplayNamesLoading] = useState(true);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
     function calculateTopOffset(index: number) {
@@ -48,12 +50,14 @@ function FieldLabelWrapperComponent(
 
     useEffect(() => {
         const fetchData = async () => {
-            const displayNames = await getFieldDisplayNames([
+            setDisplayNamesLoading(true);
+            const allPaths = uniqBy([
                 props.fieldMetadata,
                 ...props.parentPaths.map((path) => {
                     return extractDetailsFromCslp(path);
                 }),
-            ]);
+            ], 'cslpValue');
+            const displayNames = await getFieldDisplayNames(allPaths);
 
             const fieldSchema = await FieldSchemaMap.getFieldSchema(
                 props.fieldMetadata.content_type_uid,
@@ -91,14 +95,13 @@ function FieldLabelWrapperComponent(
             if (displayNames) {
                 setDisplayNames(displayNames);
             }
+            if (Object.keys(displayNames || {})?.length === allPaths.length) {
+                setDisplayNamesLoading(false);
+            }
         };
 
         fetchData();
     }, [props]);
-
-    const areDisplayNamesLoading = Boolean(
-        Object.values(displayNames).length < props.parentPaths.length + 1
-    );
 
     const onParentPathClick = (cslp: string) => {
         const parentElement = props.getParentEditableElement(cslp);
@@ -124,7 +127,7 @@ function FieldLabelWrapperComponent(
         >
             <button
                 className="visual-editor__focused-toolbar__field-label-wrapper__current-field visual-editor__button visual-editor__button--primary"
-                disabled={areDisplayNamesLoading}
+                disabled={displayNamesLoading}
             >
                 {
                     currentField.prefixIcon ? <div className="visual-editor__field-icon" dangerouslySetInnerHTML={{__html: currentField.prefixIcon }}/> : null
@@ -134,7 +137,7 @@ function FieldLabelWrapperComponent(
                         {currentField.text}
                     </div>
                 ) : null}
-                {areDisplayNamesLoading ? <LoadingIcon /> : currentField.icon}
+                {displayNamesLoading ? <LoadingIcon /> : currentField.icon}
             </button>
             {props.parentPaths.map((path, index) => (
                 <button

@@ -147,17 +147,40 @@ div.multiple div.cslp-tooltip-child:hover:before {
     border: 1px solid #6c5ce7;
 
     height: 32px;
-    width: 32px;
+    min-width: 32px;
+    max-width: 120px;
     transform: translate(-50%, -50%);
 
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    font-weight: 600;
+    color: #6c5ce7;
+    overflow: hidden;
 
     z-index: 200;
 
-    transition: var(--outline-transition);
+    display: grid;
+    grid-template-columns: min-content 0fr;
+    align-items: center;
+    gap: 0;
+
+    transition: grid-template-columns 0.25s, left 0.15s ease-in,
+        top 0.15s ease-in, gap 0.15s ease-in;
+
+    &:has(.visual-editor__add-button-label):hover {
+        grid-template-columns: min-content 1fr;
+        gap: 8px;
+    }
 }
+
+.visual-editor__add-button svg {
+    fill: #6c5ce7;
+}
+
+.visual-editor__add-button-label {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 .visual-editor__start-editing-btn {
     text-decoration: none;
     position: fixed;
@@ -301,7 +324,12 @@ div.multiple div.cslp-tooltip-child:hover:before {
 .visual-editor__button--primary {
     background-color: #6c5ce7;
     color: #fff;
+
+    &:hover {
+        background-color: #5d50be;
+    }
 }
+
 .visual-editor__button--secondary {
     background-color: #f9f8ff;
     border: 1px solid #6c5ce7;
@@ -325,6 +353,11 @@ div.multiple div.cslp-tooltip-child:hover:before {
     width: 16px;
     margin-right: 5px;
 }
+
+.visual-editor__focused-toolbar__button-group .visual-editor__button:hover {
+    background-color: #f5f5f5;
+}
+
 .visual-editor__focused-toolbar__field-label-wrapper__caret {
     transform: rotate(0);
     transition: transform 0.2s ease-in-out;
@@ -362,18 +395,28 @@ div.multiple div.cslp-tooltip-child:hover:before {
     z-index: 200;
 }
 
+.visual-editor__focused-toolbar__multiple-field-toolbar svg {
+    height: 15px;
+    width: 15px;
+}
+
 .visual-editor__focused-toolbar__button-group {
     display: flex;
     margin-left: 4px;
     background: #fff;
     border-radius: 4px;
+
+    &:has(.visual-editor__button) {
+        padding: 2px;
+        gap: 1px;
+    }
 }
 
 .visual-editor__focused-toolbar__button-group .visual-editor__button {
     background-color: #fff;
     border-color: transparent;
     color: #475161;
-    padding: 4px;
+    padding: 1px;
     min-width: 16px;
     min-height: 16px;
 }

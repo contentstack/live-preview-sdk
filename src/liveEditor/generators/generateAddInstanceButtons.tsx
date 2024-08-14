@@ -7,12 +7,16 @@ import AddInstanceButtonComponent from "../components/addInstanceButton";
  * @returns The generated button element.
  */
 export function generateAddInstanceButton(
-    onClickCallback: (event: MouseEvent) => void
+    onClickCallback: (event: MouseEvent) => void,
+    label?: string
 ): HTMLButtonElement {
     const wrapper = document.createDocumentFragment();
 
     render(
-        <AddInstanceButtonComponent onClickCallback={onClickCallback} />,
+        <AddInstanceButtonComponent
+            label={label}
+            onClickCallback={onClickCallback}
+        />,
         wrapper
     );
 

@@ -10,6 +10,7 @@ export const LIVE_PREVIEW_OUTLINE_WIDTH_IN_PX = 2;
 
 // Minimum distance from top edge to prevent toolbar from being hidden
 export const TOP_EDGE_BUFFER = 42;
+export const RIGHT_EDGE_BUFFER = 180;
 
 export const TOOLBAR_EDGE_BUFFER = 8;
 
