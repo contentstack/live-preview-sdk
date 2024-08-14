@@ -308,6 +308,11 @@ div.multiple div.cslp-tooltip-child:hover:before {
     color: #6c5ce7;
 }
 
+.field-label-dropdown-open .visual-editor__button--secondary:hover {
+    background-color: #6c5ce7;
+    color: #f9f8ff;
+}
+
 .visual-editor__button--edit svg{
     height: 16px;
     width: 16px;
@@ -496,4 +501,8 @@ div.multiple div.cslp-tooltip-child:hover:before {
 }
 .visual-editor__draft-field{
     outline: 2px dashed var(--Brand-Colors-Brand-Orange, #EB5646);
+}
+
+[data-cslp] [contenteditable="true"] {
+    outline: none;
 }
