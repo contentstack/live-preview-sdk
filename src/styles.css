@@ -148,7 +148,8 @@ div.multiple div.cslp-tooltip-child:hover:before {
 
     height: 32px;
     min-width: 32px;
-    max-width: 120px;
+    max-width: 180px;
+    padding: 8px 6px;
     transform: translate(-50%, -50%);
 
     font-weight: 600;
@@ -159,7 +160,7 @@ div.multiple div.cslp-tooltip-child:hover:before {
 
     display: grid;
     grid-template-columns: min-content 0fr;
-    align-items: center;
+    align-content: center;
     gap: 0;
 
     transition: grid-template-columns 0.25s, left 0.15s ease-in,
@@ -168,6 +169,7 @@ div.multiple div.cslp-tooltip-child:hover:before {
     &:has(.visual-editor__add-button-label):hover {
         grid-template-columns: min-content 1fr;
         gap: 8px;
+        padding: 8px 16px;
     }
 }
 
@@ -341,11 +343,11 @@ div.multiple div.cslp-tooltip-child:hover:before {
     color: #f9f8ff;
 }
 
-.visual-editor__button--edit svg{
+.visual-editor__button--edit svg {
     height: 16px;
     width: 16px;
 }
-.visual-editor__button--edit svg path{
+.visual-editor__button--edit svg path {
     fill: #475161;
 }
 .visual-editor__field-icon svg {
@@ -542,8 +544,8 @@ div.multiple div.cslp-tooltip-child:hover:before {
 .visual-editor__default-cursor--disabled {
     cursor: none;
 }
-.visual-editor__draft-field{
-    outline: 2px dashed var(--Brand-Colors-Brand-Orange, #EB5646);
+.visual-editor__draft-field {
+    outline: 2px dashed var(--Brand-Colors-Brand-Orange, #eb5646);
 }
 
 [data-cslp] [contenteditable="true"] {

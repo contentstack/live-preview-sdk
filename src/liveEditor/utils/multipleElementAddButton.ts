@@ -212,13 +212,13 @@ export function removeAddInstanceButtons(
  * found in later mutations and we can focus + disconnect then.
  * We also ensure there is only one setTimeout scheduled.
  */
-function observeParentAndFocusNewInstance({
+export function observeParentAndFocusNewInstance({
     parentCslp,
     index,
 }: {
     parentCslp: string;
     index: number;
-}) {
+}): void {
     const parent = document.querySelector(
         `[data-cslp='${parentCslp}']`
     ) as HTMLElement;
@@ -241,7 +241,10 @@ function observeParentAndFocusNewInstance({
                     // So currently for a singleline multiple field, the form opens but we
                     // come back to the canvas.
                     // TODO - maybe we should not focus the content-editable
-                    newInstance.click();
+                    // TODO - temp fix. We remove our empty block div once the new block arrives
+                    // but we focus the element before that and then the block shifts.
+                    // For some reason, the window resize event also does not trigger
+                    setTimeout(() => newInstance.click(), 150);
                     observer.disconnect();
                     hasObserverDisconnected = true;
                     return;
