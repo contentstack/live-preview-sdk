@@ -91,6 +91,16 @@ async function handleEditorInteraction(
         });
     }
 
+    // if the selected element is our empty block element, return
+    if (
+        editableElement.classList.contains(
+            "visual-editor__empty-block-parent"
+        ) ||
+        editableElement.classList.contains("visual-editor__empty-block")
+    ) {
+        return;
+    }
+
     // when previous and current selected element is same, return.
     // this also avoids inserting psuedo-editable field (field data is
     // not equal to text content in DOM) when performing mouse
@@ -107,65 +117,57 @@ async function handleEditorInteraction(
     VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM =
         editableElement;
 
-    if (
-        !editableElement.classList.contains(
-            "visual-editor__empty-block-parent"
-        ) &&
-        !editableElement.classList.contains("visual-editor__empty-block")
-    ) {
+    addOverlay({
+        overlayWrapper: params.overlayWrapper,
+        resizeObserver: params.resizeObserver,
+        editableElement: editableElement,
+    });
+
+    addFocusedToolbar({
+        eventDetails: eventDetails,
+        focusedToolbar: params.focusedToolbar,
+    });
+
+    const { content_type_uid, fieldPath } = eventDetails.fieldMetadata;
+
+    const fieldSchema = await FieldSchemaMap.getFieldSchema(
+        content_type_uid,
+        fieldPath
+    );
+
+    // after field schema is available re-add disabled overlay
+    const { isDisabled } = isFieldDisabled(fieldSchema, eventDetails);
+    if (isDisabled) {
         addOverlay({
             overlayWrapper: params.overlayWrapper,
             resizeObserver: params.resizeObserver,
             editableElement: editableElement,
+            isFieldDisabled: true,
         });
-
-        addFocusedToolbar({
-            eventDetails: eventDetails,
-            focusedToolbar: params.focusedToolbar,
-        });
-
-        const { content_type_uid, fieldPath } = eventDetails.fieldMetadata;
-
-        const fieldSchema = await FieldSchemaMap.getFieldSchema(
-            content_type_uid,
-            fieldPath
-        );
-
-        // after field schema is available re-add disabled overlay
-        const { isDisabled } = isFieldDisabled(fieldSchema, eventDetails);
-        if (isDisabled) {
-            addOverlay({
-                overlayWrapper: params.overlayWrapper,
-                resizeObserver: params.resizeObserver,
-                editableElement: editableElement,
-                isFieldDisabled: true,
-            });
-        }
-
-        // This is most probably redundant code, as the handleIndividualFields function
-        // takes care of this
-        // TODO: Remove this
-        // if (
-        //     fieldSchema.data_type === "block" ||
-        //     fieldSchema.multiple ||
-        //     (fieldSchema.data_type === "reference" &&
-        //         // @ts-ignore
-        //         fieldSchema.field_metadata.ref_multiple)
-        // ) {
-        //     handleAddButtonsForMultiple(eventDetails, {
-        //         editableElement: editableElement,
-        //         visualEditorContainer: params.visualEditorContainer,
-        //         resizeObserver: params.resizeObserver,
-        //     });
-        // } else {
-        //     removeAddInstanceButtons({
-        //         eventTarget: params.event.target,
-        //         visualEditorContainer: params.visualEditorContainer,
-        //         overlayWrapper: params.overlayWrapper,
-        //     });
-        // }
     }
 
+    // This is most probably redundant code, as the handleIndividualFields function
+    // takes care of this
+    // TODO: Remove this
+    // if (
+    //     fieldSchema.data_type === "block" ||
+    //     fieldSchema.multiple ||
+    //     (fieldSchema.data_type === "reference" &&
+    //         // @ts-ignore
+    //         fieldSchema.field_metadata.ref_multiple)
+    // ) {
+    //     handleAddButtonsForMultiple(eventDetails, {
+    //         editableElement: editableElement,
+    //         visualEditorContainer: params.visualEditorContainer,
+    //         resizeObserver: params.resizeObserver,
+    //     });
+    // } else {
+    //     removeAddInstanceButtons({
+    //         eventTarget: params.event.target,
+    //         visualEditorContainer: params.visualEditorContainer,
+    //         overlayWrapper: params.overlayWrapper,
+    //     });
+    // }
     liveEditorPostMessage?.send(LiveEditorPostMessageEvents.FOCUS_FIELD, {
         DOMEditStack: getDOMEditStack(editableElement),
     });

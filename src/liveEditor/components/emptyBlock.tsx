@@ -1,7 +1,9 @@
+import React from "react";
 import { CslpData } from "../../cslp/types/cslp.types";
 import liveEditorPostMessage from "../utils/liveEditorPostMessage";
 import { ISchemaFieldMap } from "../utils/types/index.types";
 import { LiveEditorPostMessageEvents } from "../utils/types/postMessage.types";
+import { observeParentAndFocusNewInstance } from "../utils/multipleElementAddButton";
 
 interface EmptyBlockProps {
   details: {
@@ -10,20 +12,24 @@ interface EmptyBlockProps {
   }
 }
 
-export function EmptyBlock(props: EmptyBlockProps) {
+export function EmptyBlock(props: EmptyBlockProps): JSX.Element {
   
   const { details } = props
   
   const blockParentName = details.fieldSchema.display_name;
 
-  function sendAddInstanceEvent() {
-    liveEditorPostMessage?.send(
+  async function sendAddInstanceEvent() {
+    await liveEditorPostMessage?.send(
       LiveEditorPostMessageEvents.ADD_INSTANCE,
       {
           fieldMetadata: details.fieldMetadata,
           index: 0,
       }
     );
+    observeParentAndFocusNewInstance({
+      parentCslp: details.fieldMetadata.cslpValue,
+      index: 0,
+    })
   }
 
   return (
