@@ -312,6 +312,7 @@ export default class LivePreview {
                 variant,
                 fieldPath: field,
             } = extractDetailsFromCslp(cslpTag);
+            console.log("🚀 ~ LivePreview ~ scrollHandler ~ variant:", variant);
             // check if opened inside an iframe
             if (window.location !== window.parent.location) {
                 window.parent.postMessage(
@@ -336,6 +337,11 @@ export default class LivePreview {
                         entry_uid,
                         variant,
                         field
+                    );
+                    console.log(
+                        "🚀 ~ LivePreview ~ scrollHandler ~ redirectUrl:",
+                        redirectUrl,
+                        variant
                     );
 
                     window.open(redirectUrl, "_blank");

@@ -10,7 +10,7 @@ import {
 
 const TITLE_CSLP_TAG = "content-type-1.entry-uid-1.en-us.field-title";
 const VARIANT_TITLE_CSLP_TAG =
-    "content-type-1.entry-uid-1_variant-uid-1.en-us.field-title";
+    "v2:content-type-1.entry-uid-1_variant-uid-1.en-us.field-title";
 const DESC_CSLP_TAG = "content-type-2.entry-uid-2.en-us.field-description";
 const LINK_CSLP_TAG = "content-type-3.entry-uid-3.en-us.field-link";
 
@@ -535,7 +535,7 @@ describe("cslp tooltip", () => {
                     content_type_uid: "content-type-1",
                     entry_uid: "entry-uid-1",
                     locale: "en-us",
-                    variant: null,
+                    variant: undefined,
                 },
             },
             "*"
