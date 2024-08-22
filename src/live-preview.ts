@@ -16,6 +16,7 @@ import {
 import { handleInitData } from "./utils/handleUserConfig";
 import { userInitData } from "./utils/defaults";
 import packageJson from "../package.json";
+import { extractDetailsFromCslp } from "./utils/cslpdata";
 
 export default class LivePreview {
     /**
@@ -240,7 +241,7 @@ export default class LivePreview {
         content_type_uid: string,
         locale = "en-us",
         entry_uid: string,
-        variant: string | null,
+        variant: string | undefined,
         preview_field: string
     ): string {
         if (!this.config.stackDetails.apiKey) {
@@ -304,14 +305,13 @@ export default class LivePreview {
         const cslpTag = this.tooltip.getAttribute("current-data-cslp");
 
         if (cslpTag) {
-            let [content_type_uid, entry_uid, locale, ...field] =
-                cslpTag.split(".");
-            const variant = entry_uid.includes("_")
-                ? entry_uid.split("_")[1]
-                : null;
-            if (variant) {
-                entry_uid = entry_uid.split("_")[0];
-            }
+            const {
+                content_type_uid,
+                entry_uid,
+                locale,
+                variant,
+                fieldPath: field,
+            } = extractDetailsFromCslp(cslpTag);
             // check if opened inside an iframe
             if (window.location !== window.parent.location) {
                 window.parent.postMessage(
@@ -319,7 +319,7 @@ export default class LivePreview {
                         from: "live-preview",
                         type: "scroll",
                         data: {
-                            field: field.join("."),
+                            field,
                             content_type_uid,
                             entry_uid,
                             variant,
@@ -335,7 +335,7 @@ export default class LivePreview {
                         locale,
                         entry_uid,
                         variant,
-                        field.join(".")
+                        field
                     );
 
                     window.open(redirectUrl, "_blank");
