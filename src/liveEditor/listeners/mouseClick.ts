@@ -63,7 +63,7 @@ async function handleEditorInteraction(
     const elementHasCslp = eventTarget && (eventTarget.hasAttribute("data-cslp") || eventTarget.closest("[data-cslp]"));
 
     // prevent default behavior for anchor elements and elements with cslp attribute
-    if (isAnchorElement || elementHasCslp) {
+    if (isAnchorElement || elementHasCslp && !eventTarget.closest(".visual-editor__empty-block")) {
         params.event.preventDefault();
         params.event.stopPropagation();
     }
