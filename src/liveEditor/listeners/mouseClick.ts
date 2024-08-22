@@ -60,11 +60,12 @@ async function handleEditorInteraction(
 ): Promise<void> {
     const eventTarget = params.event.target as HTMLElement | null;
     const isAnchorElement = eventTarget instanceof HTMLAnchorElement;
-    const elementHasCslp = eventTarget && eventTarget.hasAttribute("data-cslp");
+    const elementHasCslp = eventTarget && (eventTarget.hasAttribute("data-cslp") || eventTarget.closest("[data-cslp]"));
 
     // prevent default behavior for anchor elements and elements with cslp attribute
     if (isAnchorElement || elementHasCslp) {
         params.event.preventDefault();
+        params.event.stopPropagation();
     }
 
     const eventDetails = getCsDataOfElement(params.event);

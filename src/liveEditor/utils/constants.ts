@@ -33,6 +33,7 @@ export const ALLOWED_MODAL_EDITABLE_FIELD: FieldDataType[] = [
     FieldDataType.CUSTOM_FIELD,
     FieldDataType.LINK,
     FieldDataType.ISODATE,
+    FieldDataType.URL,
 ];
 
 export const ALLOWED_REPLACE_FIELDS: FieldDataType[] = [
