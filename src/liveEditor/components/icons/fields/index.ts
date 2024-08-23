@@ -9,4 +9,5 @@ export const fieldIcons: Partial<Record<FieldDataType, React.FC>> = {
     markdown_rte: EditIcon,
     custom_field: EditIcon,
     isodate: EditIcon,
+    url: EditIcon,
 };
