@@ -169,6 +169,9 @@ export async function handleIndividualFields(
                 visualEditorContainer.appendChild(pseudoEditableField);
                 actualEditableField = pseudoEditableField;
 
+                if(fieldType === FieldDataType.MULTILINE) 
+                    actualEditableField.addEventListener('paste', pasteAsPlainText);
+
                 // we will unobserve this in hideOverlay
                 elements.resizeObserver.observe(pseudoEditableField);
             } else if (elementComputedDisplay === "inline") {
@@ -257,6 +260,10 @@ export function cleanIndividualFieldResidual(elements: {
     );
     if (pseudoEditableElement) {
         elements.resizeObserver.unobserve(pseudoEditableElement);
+        pseudoEditableElement.removeEventListener(
+            "paste",
+            pasteAsPlainText
+        );
         pseudoEditableElement.remove();
         if (previousSelectedEditableDOM) {
             (previousSelectedEditableDOM as HTMLElement).style.removeProperty(
