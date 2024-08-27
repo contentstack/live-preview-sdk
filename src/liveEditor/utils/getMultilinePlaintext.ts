@@ -6,7 +6,6 @@ export function getMultilinePlaintext(editableElement: Element): string {
   // Recursive function to navigate childNodes and build linebreaks with text
   function parseChildNodesForValueAndLines(childNodes: NodeListOf<ChildNode>) {
       for (let i = 0; i < childNodes.length; i++) {
-          console.log(newValue);
           const childNode = childNodes[i];
 
           if (childNode.nodeName === 'BR') {
