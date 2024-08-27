@@ -5,6 +5,11 @@ import { LiveEditorPostMessageEvents } from "../utils/types/postMessage.types";
 
 import { VisualEditor } from "..";
 import EventListenerHandlerParams from "../listeners/types";
+import { FieldSchemaMap } from "../utils/fieldSchemaMap";
+import { FieldDataType } from "../utils/types/index.types";
+import { getFieldType } from "../utils/getFieldType";
+import { CslpData } from "../../cslp/types/cslp.types";
+import { getMultilinePlaintext } from "../utils/getMultilinePlaintext";
 
 /**
  * Adds a focus overlay to the target element.
@@ -120,20 +125,31 @@ export function hideFocusOverlay(elements: HideOverlayParams): void {
                     (VisualEditor.VisualEditorGlobalState.value
                         .previousSelectedEditableDOM as HTMLElement);
 
-                liveEditorPostMessage?.send(
-                    LiveEditorPostMessageEvents.UPDATE_FIELD,
-                    {
-                        data:
-                            "innerText" in actualEditedElement
+                let data = "innerText" in actualEditedElement
                                 ? actualEditedElement.innerText
-                                : actualEditedElement.textContent,
-                        fieldMetadata: extractDetailsFromCslp(
-                            VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM.getAttribute(
-                                "data-cslp"
-                            ) as string
-                        ),
+                                : actualEditedElement.textContent;
+
+                const fieldMetadata = extractDetailsFromCslp(VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM.getAttribute(
+                    "data-cslp"
+                ) as string);
+
+                FieldSchemaMap.getFieldSchema(fieldMetadata.content_type_uid, fieldMetadata.fieldPath).then((fieldSchema) => {
+                    if(fieldSchema) {
+                        const fieldType = getFieldType(fieldSchema);
+                        if (fieldType && fieldType === FieldDataType.MULTILINE) {
+                            data =  getMultilinePlaintext(actualEditedElement);
+                            (actualEditedElement as HTMLElement).innerText = data as string;
+                        }
                     }
-                );
+                }).finally(() => {
+                    liveEditorPostMessage?.send(
+                        LiveEditorPostMessageEvents.UPDATE_FIELD,
+                        {
+                            data,
+                            fieldMetadata
+                        }
+                    );
+                })
             }
 
             cleanIndividualFieldResidual({
