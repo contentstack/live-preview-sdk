@@ -1,7 +1,11 @@
-const path = require("path");
-const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+import path from 'path';
+import MiniCssExtractPlugin from "mini-css-extract-plugin";
+import { dirname } from 'path';
+import { fileURLToPath } from 'url';
+    
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
-module.exports = {
+export default {
     entry: path.resolve(__dirname, "src", "index.ts"),
     output: {
         globalObject: "this",
@@ -11,14 +15,18 @@ module.exports = {
         filename: "index.js",
         chunkFilename: "[name].js",
     },
-    plugins: [new MiniCssExtractPlugin()],
+    optimization: {
+        sideEffects: true,
+        usedExports: false,
+    },
+    plugins: [],
     module: {
         rules: [
             {
                 test: /\.tsx$/,
                 exclude: /node_modules/,
                 include: [path.resolve(__dirname, "src")],
-                use: "babel-loader"
+                use: "babel-loader",
             },
             {
                 test: /\.ts$/,
@@ -30,16 +38,15 @@ module.exports = {
                 use: [MiniCssExtractPlugin.loader, "css-loader"],
                 include: [path.resolve(__dirname, "src")],
             },
-
         ],
     },
     resolve: {
         extensions: [".json", ".js", ".ts", ".css", ".jsx", ".tsx"],
         alias: {
-            "react": "preact/compat",
+            react: "preact/compat",
             "react-dom/test-utils": "preact/test-utils",
-            "react-dom": "preact/compat",     // Must be below test-utils
-            "react/jsx-runtime": "preact/jsx-runtime"
+            "react-dom": "preact/compat", // Must be below test-utils
+            "react/jsx-runtime": "preact/jsx-runtime",
         },
     },
     devtool: "source-map",
