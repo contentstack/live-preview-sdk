@@ -22,7 +22,7 @@ describe("IconComponents", () => {
             expect(svgElement).toHaveAttribute("fill", "none");
             expect(svgElement).toHaveAttribute(
                 "data-testid",
-                "visual-editor__caret-icon"
+                "visual-builder__caret-icon"
             );
             expect(strokeAttribute).toBeNull();
         });
@@ -39,7 +39,7 @@ describe("IconComponents", () => {
             expect(svgElement).toHaveAttribute("fill", "none");
             expect(svgElement).toHaveAttribute(
                 "data-testid",
-                "visual-editor__delete-icon"
+                "visual-builder__delete-icon"
             );
             expect(strokeAttribute).toBeNull();
         });
@@ -56,7 +56,7 @@ describe("IconComponents", () => {
             expect(svgElement).toHaveAttribute("fill", "none");
             expect(svgElement).toHaveAttribute(
                 "data-testid",
-                "visual-editor__move-left-icon"
+                "visual-builder__move-left-icon"
             );
             expect(strokeAttribute).toBeNull();
         });
@@ -73,7 +73,7 @@ describe("IconComponents", () => {
             expect(svgElement).toHaveAttribute("fill", "none");
             expect(svgElement).toHaveAttribute(
                 "data-testid",
-                "visual-editor__move-right-icon"
+                "visual-builder__move-right-icon"
             );
             expect(strokeAttribute).toBeNull();
         });
@@ -90,7 +90,7 @@ describe("IconComponents", () => {
             expect(svgElement).toHaveAttribute("fill", "none");
             expect(svgElement).toHaveAttribute(
                 "data-testid",
-                "visual-editor__info-icon"
+                "visual-builder__info-icon"
             );
             expect(strokeAttribute).toBeNull();
         });
@@ -107,7 +107,7 @@ describe("IconComponents", () => {
             expect(svgElement).toHaveAttribute("fill", "none");
             expect(svgElement).toHaveAttribute(
                 "data-testid",
-                "visual-editor__edit-icon"
+                "visual-builder__edit-icon"
             );
             expect(strokeAttribute).toBeNull();
         });
@@ -124,7 +124,7 @@ describe("IconComponents", () => {
             expect(svgElement).toHaveAttribute("fill", "none");
             expect(svgElement).toHaveAttribute(
                 "data-testid",
-                "visual-editor__plus-icon"
+                "visual-builder__plus-icon"
             );
             expect(strokeAttribute).toBeNull();
         });

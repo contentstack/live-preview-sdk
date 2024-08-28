@@ -2,15 +2,15 @@
 
 exports[`When an element is hovered in visual editor mode HTML RTE field (multiple) should have custom cursor 1`] = `
 <div
-  class="visual-editor__cursor visible"
+  class="visual-builder__cursor visible"
   data-icon="html_rte"
-  data-testid="visual-editor__cursor"
+  data-testid="visual-builder__cursor"
 >
   <div
-    class="visual-editor__cursor-wrapper"
+    class="visual-builder__cursor-wrapper"
   >
     <div
-      class="visual-editor__cursor-pointer"
+      class="visual-builder__cursor-pointer"
     >
       <svg
         fill="none"
@@ -26,7 +26,7 @@ exports[`When an element is hovered in visual editor mode HTML RTE field (multip
       </svg>
     </div>
     <div
-      class="visual-editor__cursor-icon"
+      class="visual-builder__cursor-icon"
     >
       <svg
         fill="none"
@@ -77,15 +77,15 @@ exports[`When an element is hovered in visual editor mode HTML RTE field (multip
 
 exports[`When an element is hovered in visual editor mode HTML RTE field (multiple) should have custom cursor on individual instances 1`] = `
 <div
-  class="visual-editor__cursor visible"
+  class="visual-builder__cursor visible"
   data-icon="html_rte"
-  data-testid="visual-editor__cursor"
+  data-testid="visual-builder__cursor"
 >
   <div
-    class="visual-editor__cursor-wrapper"
+    class="visual-builder__cursor-wrapper"
   >
     <div
-      class="visual-editor__cursor-pointer"
+      class="visual-builder__cursor-pointer"
     >
       <svg
         fill="none"
@@ -101,7 +101,7 @@ exports[`When an element is hovered in visual editor mode HTML RTE field (multip
       </svg>
     </div>
     <div
-      class="visual-editor__cursor-icon"
+      class="visual-builder__cursor-icon"
     >
       <svg
         fill="none"
@@ -153,12 +153,12 @@ exports[`When an element is hovered in visual editor mode HTML RTE field (multip
 exports[`When an element is hovered in visual editor mode HTML RTE field (multiple) should have instance button on individual instances 1`] = `
 NodeList [
   <button
-    class="visual-editor__add-button"
+    class="visual-builder__add-button"
     data-testid="visual-editor-add-instance-button"
     style="left: 51px; top: 61.19921875px;"
   >
     <svg
-      data-testid="visual-editor__plus-icon"
+      data-testid="visual-builder__plus-icon"
       fill="none"
       height="20"
       viewBox="0 0 20 20"
@@ -174,12 +174,12 @@ NodeList [
     </svg>
   </button>,
   <button
-    class="visual-editor__add-button"
+    class="visual-builder__add-button"
     data-testid="visual-editor-add-instance-button"
     style="left: 78.7734375px; top: 61.19921875px;"
   >
     <svg
-      data-testid="visual-editor__plus-icon"
+      data-testid="visual-builder__plus-icon"
       fill="none"
       height="20"
       viewBox="0 0 20 20"
@@ -218,15 +218,15 @@ exports[`When an element is hovered in visual editor mode HTML RTE field (multip
 
 exports[`When an element is hovered in visual editor mode HTML RTE field should have custom cursor 1`] = `
 <div
-  class="visual-editor__cursor visible"
+  class="visual-builder__cursor visible"
   data-icon="html_rte"
-  data-testid="visual-editor__cursor"
+  data-testid="visual-builder__cursor"
 >
   <div
-    class="visual-editor__cursor-wrapper"
+    class="visual-builder__cursor-wrapper"
   >
     <div
-      class="visual-editor__cursor-pointer"
+      class="visual-builder__cursor-pointer"
     >
       <svg
         fill="none"
@@ -242,7 +242,7 @@ exports[`When an element is hovered in visual editor mode HTML RTE field should 
       </svg>
     </div>
     <div
-      class="visual-editor__cursor-icon"
+      class="visual-builder__cursor-icon"
     >
       <svg
         fill="none"
@@ -299,15 +299,15 @@ exports[`When an element is hovered in visual editor mode HTML RTE field should 
 
 exports[`When an element is hovered in visual editor mode JSON RTE field (multiple) should have custom cursor 1`] = `
 <div
-  class="visual-editor__cursor visible"
+  class="visual-builder__cursor visible"
   data-icon="json_rte"
-  data-testid="visual-editor__cursor"
+  data-testid="visual-builder__cursor"
 >
   <div
-    class="visual-editor__cursor-wrapper"
+    class="visual-builder__cursor-wrapper"
   >
     <div
-      class="visual-editor__cursor-pointer"
+      class="visual-builder__cursor-pointer"
     >
       <svg
         fill="none"
@@ -323,7 +323,7 @@ exports[`When an element is hovered in visual editor mode JSON RTE field (multip
       </svg>
     </div>
     <div
-      class="visual-editor__cursor-icon"
+      class="visual-builder__cursor-icon"
     >
       <svg
         fill="none"
@@ -358,15 +358,15 @@ exports[`When an element is hovered in visual editor mode JSON RTE field (multip
 
 exports[`When an element is hovered in visual editor mode JSON RTE field (multiple) should have custom cursor on individual instances 1`] = `
 <div
-  class="visual-editor__cursor visible"
+  class="visual-builder__cursor visible"
   data-icon="json_rte"
-  data-testid="visual-editor__cursor"
+  data-testid="visual-builder__cursor"
 >
   <div
-    class="visual-editor__cursor-wrapper"
+    class="visual-builder__cursor-wrapper"
   >
     <div
-      class="visual-editor__cursor-pointer"
+      class="visual-builder__cursor-pointer"
     >
       <svg
         fill="none"
@@ -382,7 +382,7 @@ exports[`When an element is hovered in visual editor mode JSON RTE field (multip
       </svg>
     </div>
     <div
-      class="visual-editor__cursor-icon"
+      class="visual-builder__cursor-icon"
     >
       <svg
         fill="none"
@@ -418,12 +418,12 @@ exports[`When an element is hovered in visual editor mode JSON RTE field (multip
 exports[`When an element is hovered in visual editor mode JSON RTE field (multiple) should have instance button on individual instances 1`] = `
 NodeList [
   <button
-    class="visual-editor__add-button"
+    class="visual-builder__add-button"
     data-testid="visual-editor-add-instance-button"
     style="left: 51px; top: 61.19921875px;"
   >
     <svg
-      data-testid="visual-editor__plus-icon"
+      data-testid="visual-builder__plus-icon"
       fill="none"
       height="20"
       viewBox="0 0 20 20"
@@ -439,12 +439,12 @@ NodeList [
     </svg>
   </button>,
   <button
-    class="visual-editor__add-button"
+    class="visual-builder__add-button"
     data-testid="visual-editor-add-instance-button"
     style="left: 78.7734375px; top: 61.19921875px;"
   >
     <svg
-      data-testid="visual-editor__plus-icon"
+      data-testid="visual-builder__plus-icon"
       fill="none"
       height="20"
       viewBox="0 0 20 20"
@@ -483,15 +483,15 @@ exports[`When an element is hovered in visual editor mode JSON RTE field (multip
 
 exports[`When an element is hovered in visual editor mode JSON RTE field should have custom cursor 1`] = `
 <div
-  class="visual-editor__cursor visible"
+  class="visual-builder__cursor visible"
   data-icon="json_rte"
-  data-testid="visual-editor__cursor"
+  data-testid="visual-builder__cursor"
 >
   <div
-    class="visual-editor__cursor-wrapper"
+    class="visual-builder__cursor-wrapper"
   >
     <div
-      class="visual-editor__cursor-pointer"
+      class="visual-builder__cursor-pointer"
     >
       <svg
         fill="none"
@@ -507,7 +507,7 @@ exports[`When an element is hovered in visual editor mode JSON RTE field should 
       </svg>
     </div>
     <div
-      class="visual-editor__cursor-icon"
+      class="visual-builder__cursor-icon"
     >
       <svg
         fill="none"
@@ -548,15 +548,15 @@ exports[`When an element is hovered in visual editor mode JSON RTE field should 
 
 exports[`When an element is hovered in visual editor mode boolean field should have custom cursor 1`] = `
 <div
-  class="visual-editor__cursor visible"
+  class="visual-builder__cursor visible"
   data-icon="boolean"
-  data-testid="visual-editor__cursor"
+  data-testid="visual-builder__cursor"
 >
   <div
-    class="visual-editor__cursor-wrapper"
+    class="visual-builder__cursor-wrapper"
   >
     <div
-      class="visual-editor__cursor-pointer"
+      class="visual-builder__cursor-pointer"
     >
       <svg
         fill="none"
@@ -572,7 +572,7 @@ exports[`When an element is hovered in visual editor mode boolean field should h
       </svg>
     </div>
     <div
-      class="visual-editor__cursor-icon"
+      class="visual-builder__cursor-icon"
     >
       <svg
         fill="none"
@@ -605,15 +605,15 @@ exports[`When an element is hovered in visual editor mode boolean field should h
 
 exports[`When an element is hovered in visual editor mode date field should have custom cursor 1`] = `
 <div
-  class="visual-editor__cursor visible"
+  class="visual-builder__cursor visible"
   data-icon="isodate"
-  data-testid="visual-editor__cursor"
+  data-testid="visual-builder__cursor"
 >
   <div
-    class="visual-editor__cursor-wrapper"
+    class="visual-builder__cursor-wrapper"
   >
     <div
-      class="visual-editor__cursor-pointer"
+      class="visual-builder__cursor-pointer"
     >
       <svg
         fill="none"
@@ -629,7 +629,7 @@ exports[`When an element is hovered in visual editor mode date field should have
       </svg>
     </div>
     <div
-      class="visual-editor__cursor-icon"
+      class="visual-builder__cursor-icon"
     >
       <svg
         fill="none"
@@ -682,15 +682,15 @@ exports[`When an element is hovered in visual editor mode date field should have
 
 exports[`When an element is hovered in visual editor mode file field (multiple) should have custom cursor 1`] = `
 <div
-  class="visual-editor__cursor visible"
+  class="visual-builder__cursor visible"
   data-icon="file"
-  data-testid="visual-editor__cursor"
+  data-testid="visual-builder__cursor"
 >
   <div
-    class="visual-editor__cursor-wrapper"
+    class="visual-builder__cursor-wrapper"
   >
     <div
-      class="visual-editor__cursor-pointer"
+      class="visual-builder__cursor-pointer"
     >
       <svg
         fill="none"
@@ -706,7 +706,7 @@ exports[`When an element is hovered in visual editor mode file field (multiple) 
       </svg>
     </div>
     <div
-      class="visual-editor__cursor-icon"
+      class="visual-builder__cursor-icon"
     >
       <svg
         fill="none"
@@ -735,15 +735,15 @@ exports[`When an element is hovered in visual editor mode file field (multiple) 
 
 exports[`When an element is hovered in visual editor mode file field (multiple) should have custom cursor on individual instances 1`] = `
 <div
-  class="visual-editor__cursor visible"
+  class="visual-builder__cursor visible"
   data-icon="file"
-  data-testid="visual-editor__cursor"
+  data-testid="visual-builder__cursor"
 >
   <div
-    class="visual-editor__cursor-wrapper"
+    class="visual-builder__cursor-wrapper"
   >
     <div
-      class="visual-editor__cursor-pointer"
+      class="visual-builder__cursor-pointer"
     >
       <svg
         fill="none"
@@ -759,7 +759,7 @@ exports[`When an element is hovered in visual editor mode file field (multiple) 
       </svg>
     </div>
     <div
-      class="visual-editor__cursor-icon"
+      class="visual-builder__cursor-icon"
     >
       <svg
         fill="none"
@@ -788,15 +788,15 @@ exports[`When an element is hovered in visual editor mode file field (multiple) 
 
 exports[`When an element is hovered in visual editor mode file field (multiple) should have custom cursor on the url 1`] = `
 <div
-  class="visual-editor__cursor visible"
+  class="visual-builder__cursor visible"
   data-icon="empty"
-  data-testid="visual-editor__cursor"
+  data-testid="visual-builder__cursor"
 >
   <div
-    class="visual-editor__cursor-wrapper"
+    class="visual-builder__cursor-wrapper"
   >
     <div
-      class="visual-editor__cursor-pointer"
+      class="visual-builder__cursor-pointer"
     >
       <svg
         fill="none"
@@ -812,7 +812,7 @@ exports[`When an element is hovered in visual editor mode file field (multiple) 
       </svg>
     </div>
     <div
-      class="visual-editor__cursor-icon"
+      class="visual-builder__cursor-icon"
     />
   </div>
 </div>
@@ -821,12 +821,12 @@ exports[`When an element is hovered in visual editor mode file field (multiple) 
 exports[`When an element is hovered in visual editor mode file field (multiple) should have instance button on individual instances 1`] = `
 NodeList [
   <button
-    class="visual-editor__add-button"
+    class="visual-builder__add-button"
     data-testid="visual-editor-add-instance-button"
     style="left: 51px; top: 61.19921875px;"
   >
     <svg
-      data-testid="visual-editor__plus-icon"
+      data-testid="visual-builder__plus-icon"
       fill="none"
       height="20"
       viewBox="0 0 20 20"
@@ -842,12 +842,12 @@ NodeList [
     </svg>
   </button>,
   <button
-    class="visual-editor__add-button"
+    class="visual-builder__add-button"
     data-testid="visual-editor-add-instance-button"
     style="left: 78.7734375px; top: 61.19921875px;"
   >
     <svg
-      data-testid="visual-editor__plus-icon"
+      data-testid="visual-builder__plus-icon"
       fill="none"
       height="20"
       viewBox="0 0 20 20"
@@ -868,12 +868,12 @@ NodeList [
 exports[`When an element is hovered in visual editor mode file field (multiple) should have instance button on individual instances on the url 1`] = `
 NodeList [
   <button
-    class="visual-editor__add-button"
+    class="visual-builder__add-button"
     data-testid="visual-editor-add-instance-button"
     style="left: 51px; top: 61.19921875px;"
   >
     <svg
-      data-testid="visual-editor__plus-icon"
+      data-testid="visual-builder__plus-icon"
       fill="none"
       height="20"
       viewBox="0 0 20 20"
@@ -889,12 +889,12 @@ NodeList [
     </svg>
   </button>,
   <button
-    class="visual-editor__add-button"
+    class="visual-builder__add-button"
     data-testid="visual-editor-add-instance-button"
     style="left: 78.7734375px; top: 61.19921875px;"
   >
     <svg
-      data-testid="visual-editor__plus-icon"
+      data-testid="visual-builder__plus-icon"
       fill="none"
       height="20"
       viewBox="0 0 20 20"
@@ -951,15 +951,15 @@ exports[`When an element is hovered in visual editor mode file field should have
 
 exports[`When an element is hovered in visual editor mode file field should have custom cursor 1`] = `
 <div
-  class="visual-editor__cursor visible"
+  class="visual-builder__cursor visible"
   data-icon="empty"
-  data-testid="visual-editor__cursor"
+  data-testid="visual-builder__cursor"
 >
   <div
-    class="visual-editor__cursor-wrapper"
+    class="visual-builder__cursor-wrapper"
   >
     <div
-      class="visual-editor__cursor-pointer"
+      class="visual-builder__cursor-pointer"
     >
       <svg
         fill="none"
@@ -975,7 +975,7 @@ exports[`When an element is hovered in visual editor mode file field should have
       </svg>
     </div>
     <div
-      class="visual-editor__cursor-icon"
+      class="visual-builder__cursor-icon"
     />
   </div>
 </div>
@@ -983,15 +983,15 @@ exports[`When an element is hovered in visual editor mode file field should have
 
 exports[`When an element is hovered in visual editor mode file field should have custom cursor on the url as well 1`] = `
 <div
-  class="visual-editor__cursor visible"
+  class="visual-builder__cursor visible"
   data-icon="file"
-  data-testid="visual-editor__cursor"
+  data-testid="visual-builder__cursor"
 >
   <div
-    class="visual-editor__cursor-wrapper"
+    class="visual-builder__cursor-wrapper"
   >
     <div
-      class="visual-editor__cursor-pointer"
+      class="visual-builder__cursor-pointer"
     >
       <svg
         fill="none"
@@ -1007,7 +1007,7 @@ exports[`When an element is hovered in visual editor mode file field should have
       </svg>
     </div>
     <div
-      class="visual-editor__cursor-icon"
+      class="visual-builder__cursor-icon"
     >
       <svg
         fill="none"
@@ -1042,15 +1042,15 @@ exports[`When an element is hovered in visual editor mode file field should have
 
 exports[`When an element is hovered in visual editor mode group field (multiple) should have custom cursor 1`] = `
 <div
-  class="visual-editor__cursor visible"
+  class="visual-builder__cursor visible"
   data-icon="empty"
-  data-testid="visual-editor__cursor"
+  data-testid="visual-builder__cursor"
 >
   <div
-    class="visual-editor__cursor-wrapper"
+    class="visual-builder__cursor-wrapper"
   >
     <div
-      class="visual-editor__cursor-pointer"
+      class="visual-builder__cursor-pointer"
     >
       <svg
         fill="none"
@@ -1066,7 +1066,7 @@ exports[`When an element is hovered in visual editor mode group field (multiple)
       </svg>
     </div>
     <div
-      class="visual-editor__cursor-icon"
+      class="visual-builder__cursor-icon"
     />
   </div>
 </div>
@@ -1074,15 +1074,15 @@ exports[`When an element is hovered in visual editor mode group field (multiple)
 
 exports[`When an element is hovered in visual editor mode group field (multiple) should have custom cursor on the nested single line 1`] = `
 <div
-  class="visual-editor__cursor visible"
+  class="visual-builder__cursor visible"
   data-icon="multiline"
-  data-testid="visual-editor__cursor"
+  data-testid="visual-builder__cursor"
 >
   <div
-    class="visual-editor__cursor-wrapper"
+    class="visual-builder__cursor-wrapper"
   >
     <div
-      class="visual-editor__cursor-pointer"
+      class="visual-builder__cursor-pointer"
     >
       <svg
         fill="none"
@@ -1098,7 +1098,7 @@ exports[`When an element is hovered in visual editor mode group field (multiple)
       </svg>
     </div>
     <div
-      class="visual-editor__cursor-icon"
+      class="visual-builder__cursor-icon"
     >
       <svg
         fill="none"
@@ -1146,12 +1146,12 @@ exports[`When an element is hovered in visual editor mode group field (multiple)
 exports[`When an element is hovered in visual editor mode group field (multiple) should have instance button on individual instances 1`] = `
 NodeList [
   <button
-    class="visual-editor__add-button"
+    class="visual-builder__add-button"
     data-testid="visual-editor-add-instance-button"
     style="left: 51px; top: 61.19921875px;"
   >
     <svg
-      data-testid="visual-editor__plus-icon"
+      data-testid="visual-builder__plus-icon"
       fill="none"
       height="20"
       viewBox="0 0 20 20"
@@ -1167,12 +1167,12 @@ NodeList [
     </svg>
   </button>,
   <button
-    class="visual-editor__add-button"
+    class="visual-builder__add-button"
     data-testid="visual-editor-add-instance-button"
     style="left: 78.7734375px; top: 61.19921875px;"
   >
     <svg
-      data-testid="visual-editor__plus-icon"
+      data-testid="visual-builder__plus-icon"
       fill="none"
       height="20"
       viewBox="0 0 20 20"
@@ -1221,15 +1221,15 @@ exports[`When an element is hovered in visual editor mode group field should hav
 
 exports[`When an element is hovered in visual editor mode group field should have custom cursor 1`] = `
 <div
-  class="visual-editor__cursor visible"
+  class="visual-builder__cursor visible"
   data-icon="group"
-  data-testid="visual-editor__cursor"
+  data-testid="visual-builder__cursor"
 >
   <div
-    class="visual-editor__cursor-wrapper"
+    class="visual-builder__cursor-wrapper"
   >
     <div
-      class="visual-editor__cursor-pointer"
+      class="visual-builder__cursor-pointer"
     >
       <svg
         fill="none"
@@ -1245,7 +1245,7 @@ exports[`When an element is hovered in visual editor mode group field should hav
       </svg>
     </div>
     <div
-      class="visual-editor__cursor-icon"
+      class="visual-builder__cursor-icon"
     >
       <svg
         fill="none"
@@ -1268,15 +1268,15 @@ exports[`When an element is hovered in visual editor mode group field should hav
 
 exports[`When an element is hovered in visual editor mode group field should have custom cursor on the nested single line 1`] = `
 <div
-  class="visual-editor__cursor visible"
+  class="visual-builder__cursor visible"
   data-icon="singleline"
-  data-testid="visual-editor__cursor"
+  data-testid="visual-builder__cursor"
 >
   <div
-    class="visual-editor__cursor-wrapper"
+    class="visual-builder__cursor-wrapper"
   >
     <div
-      class="visual-editor__cursor-pointer"
+      class="visual-builder__cursor-pointer"
     >
       <svg
         fill="none"
@@ -1292,7 +1292,7 @@ exports[`When an element is hovered in visual editor mode group field should hav
       </svg>
     </div>
     <div
-      class="visual-editor__cursor-icon"
+      class="visual-builder__cursor-icon"
     >
       <svg
         fill="none"
@@ -1337,15 +1337,15 @@ exports[`When an element is hovered in visual editor mode group field should hav
 
 exports[`When an element is hovered in visual editor mode link field (multiple) should have custom cursor 1`] = `
 <div
-  class="visual-editor__cursor visible"
+  class="visual-builder__cursor visible"
   data-icon="link"
-  data-testid="visual-editor__cursor"
+  data-testid="visual-builder__cursor"
 >
   <div
-    class="visual-editor__cursor-wrapper"
+    class="visual-builder__cursor-wrapper"
   >
     <div
-      class="visual-editor__cursor-pointer"
+      class="visual-builder__cursor-pointer"
     >
       <svg
         fill="none"
@@ -1361,7 +1361,7 @@ exports[`When an element is hovered in visual editor mode link field (multiple) 
       </svg>
     </div>
     <div
-      class="visual-editor__cursor-icon"
+      class="visual-builder__cursor-icon"
     >
       <svg
         fill="none"
@@ -1396,15 +1396,15 @@ exports[`When an element is hovered in visual editor mode link field (multiple) 
 
 exports[`When an element is hovered in visual editor mode link field (multiple) should have custom cursor on individual instances 1`] = `
 <div
-  class="visual-editor__cursor visible"
+  class="visual-builder__cursor visible"
   data-icon="link"
-  data-testid="visual-editor__cursor"
+  data-testid="visual-builder__cursor"
 >
   <div
-    class="visual-editor__cursor-wrapper"
+    class="visual-builder__cursor-wrapper"
   >
     <div
-      class="visual-editor__cursor-pointer"
+      class="visual-builder__cursor-pointer"
     >
       <svg
         fill="none"
@@ -1420,7 +1420,7 @@ exports[`When an element is hovered in visual editor mode link field (multiple) 
       </svg>
     </div>
     <div
-      class="visual-editor__cursor-icon"
+      class="visual-builder__cursor-icon"
     >
       <svg
         fill="none"
@@ -1476,15 +1476,15 @@ exports[`When an element is hovered in visual editor mode link field (multiple) 
 
 exports[`When an element is hovered in visual editor mode link field should have custom cursor 1`] = `
 <div
-  class="visual-editor__cursor visible"
+  class="visual-builder__cursor visible"
   data-icon="link"
-  data-testid="visual-editor__cursor"
+  data-testid="visual-builder__cursor"
 >
   <div
-    class="visual-editor__cursor-wrapper"
+    class="visual-builder__cursor-wrapper"
   >
     <div
-      class="visual-editor__cursor-pointer"
+      class="visual-builder__cursor-pointer"
     >
       <svg
         fill="none"
@@ -1500,7 +1500,7 @@ exports[`When an element is hovered in visual editor mode link field should have
       </svg>
     </div>
     <div
-      class="visual-editor__cursor-icon"
+      class="visual-builder__cursor-icon"
     >
       <svg
         fill="none"
@@ -1541,15 +1541,15 @@ exports[`When an element is hovered in visual editor mode link field should have
 
 exports[`When an element is hovered in visual editor mode markdown field (multiple) should have custom cursor 1`] = `
 <div
-  class="visual-editor__cursor visible"
+  class="visual-builder__cursor visible"
   data-icon="markdown_rte"
-  data-testid="visual-editor__cursor"
+  data-testid="visual-builder__cursor"
 >
   <div
-    class="visual-editor__cursor-wrapper"
+    class="visual-builder__cursor-wrapper"
   >
     <div
-      class="visual-editor__cursor-pointer"
+      class="visual-builder__cursor-pointer"
     >
       <svg
         fill="none"
@@ -1565,7 +1565,7 @@ exports[`When an element is hovered in visual editor mode markdown field (multip
       </svg>
     </div>
     <div
-      class="visual-editor__cursor-icon"
+      class="visual-builder__cursor-icon"
     >
       <svg
         fill="none"
@@ -1598,15 +1598,15 @@ exports[`When an element is hovered in visual editor mode markdown field (multip
 
 exports[`When an element is hovered in visual editor mode markdown field (multiple) should have custom cursor on individual instances 1`] = `
 <div
-  class="visual-editor__cursor visible"
+  class="visual-builder__cursor visible"
   data-icon="markdown_rte"
-  data-testid="visual-editor__cursor"
+  data-testid="visual-builder__cursor"
 >
   <div
-    class="visual-editor__cursor-wrapper"
+    class="visual-builder__cursor-wrapper"
   >
     <div
-      class="visual-editor__cursor-pointer"
+      class="visual-builder__cursor-pointer"
     >
       <svg
         fill="none"
@@ -1622,7 +1622,7 @@ exports[`When an element is hovered in visual editor mode markdown field (multip
       </svg>
     </div>
     <div
-      class="visual-editor__cursor-icon"
+      class="visual-builder__cursor-icon"
     >
       <svg
         fill="none"
@@ -1656,12 +1656,12 @@ exports[`When an element is hovered in visual editor mode markdown field (multip
 exports[`When an element is hovered in visual editor mode markdown field (multiple) should have instance button on individual instances 1`] = `
 NodeList [
   <button
-    class="visual-editor__add-button"
+    class="visual-builder__add-button"
     data-testid="visual-editor-add-instance-button"
     style="left: 51px; top: 61.19921875px;"
   >
     <svg
-      data-testid="visual-editor__plus-icon"
+      data-testid="visual-builder__plus-icon"
       fill="none"
       height="20"
       viewBox="0 0 20 20"
@@ -1677,12 +1677,12 @@ NodeList [
     </svg>
   </button>,
   <button
-    class="visual-editor__add-button"
+    class="visual-builder__add-button"
     data-testid="visual-editor-add-instance-button"
     style="left: 78.7734375px; top: 61.19921875px;"
   >
     <svg
-      data-testid="visual-editor__plus-icon"
+      data-testid="visual-builder__plus-icon"
       fill="none"
       height="20"
       viewBox="0 0 20 20"
@@ -1721,15 +1721,15 @@ exports[`When an element is hovered in visual editor mode markdown field (multip
 
 exports[`When an element is hovered in visual editor mode markdown field should have custom cursor 1`] = `
 <div
-  class="visual-editor__cursor visible"
+  class="visual-builder__cursor visible"
   data-icon="markdown_rte"
-  data-testid="visual-editor__cursor"
+  data-testid="visual-builder__cursor"
 >
   <div
-    class="visual-editor__cursor-wrapper"
+    class="visual-builder__cursor-wrapper"
   >
     <div
-      class="visual-editor__cursor-pointer"
+      class="visual-builder__cursor-pointer"
     >
       <svg
         fill="none"
@@ -1745,7 +1745,7 @@ exports[`When an element is hovered in visual editor mode markdown field should 
       </svg>
     </div>
     <div
-      class="visual-editor__cursor-icon"
+      class="visual-builder__cursor-icon"
     >
       <svg
         fill="none"
@@ -1784,15 +1784,15 @@ exports[`When an element is hovered in visual editor mode markdown field should 
 
 exports[`When an element is hovered in visual editor mode multi line field (multiple) should have custom cursor 1`] = `
 <div
-  class="visual-editor__cursor visible"
+  class="visual-builder__cursor visible"
   data-icon="empty"
-  data-testid="visual-editor__cursor"
+  data-testid="visual-builder__cursor"
 >
   <div
-    class="visual-editor__cursor-wrapper"
+    class="visual-builder__cursor-wrapper"
   >
     <div
-      class="visual-editor__cursor-pointer"
+      class="visual-builder__cursor-pointer"
     >
       <svg
         fill="none"
@@ -1808,7 +1808,7 @@ exports[`When an element is hovered in visual editor mode multi line field (mult
       </svg>
     </div>
     <div
-      class="visual-editor__cursor-icon"
+      class="visual-builder__cursor-icon"
     />
   </div>
 </div>
@@ -1816,15 +1816,15 @@ exports[`When an element is hovered in visual editor mode multi line field (mult
 
 exports[`When an element is hovered in visual editor mode multi line field (multiple) should have custom cursor on individual instances 1`] = `
 <div
-  class="visual-editor__cursor visible"
+  class="visual-builder__cursor visible"
   data-icon="multiline"
-  data-testid="visual-editor__cursor"
+  data-testid="visual-builder__cursor"
 >
   <div
-    class="visual-editor__cursor-wrapper"
+    class="visual-builder__cursor-wrapper"
   >
     <div
-      class="visual-editor__cursor-pointer"
+      class="visual-builder__cursor-pointer"
     >
       <svg
         fill="none"
@@ -1840,7 +1840,7 @@ exports[`When an element is hovered in visual editor mode multi line field (mult
       </svg>
     </div>
     <div
-      class="visual-editor__cursor-icon"
+      class="visual-builder__cursor-icon"
     >
       <svg
         fill="none"
@@ -1888,12 +1888,12 @@ exports[`When an element is hovered in visual editor mode multi line field (mult
 exports[`When an element is hovered in visual editor mode multi line field (multiple) should have instance button on individual instances 1`] = `
 NodeList [
   <button
-    class="visual-editor__add-button"
+    class="visual-builder__add-button"
     data-testid="visual-editor-add-instance-button"
     style="left: 51px; top: 61.19921875px;"
   >
     <svg
-      data-testid="visual-editor__plus-icon"
+      data-testid="visual-builder__plus-icon"
       fill="none"
       height="20"
       viewBox="0 0 20 20"
@@ -1909,12 +1909,12 @@ NodeList [
     </svg>
   </button>,
   <button
-    class="visual-editor__add-button"
+    class="visual-builder__add-button"
     data-testid="visual-editor-add-instance-button"
     style="left: 78.7734375px; top: 61.19921875px;"
   >
     <svg
-      data-testid="visual-editor__plus-icon"
+      data-testid="visual-builder__plus-icon"
       fill="none"
       height="20"
       viewBox="0 0 20 20"
@@ -1953,15 +1953,15 @@ exports[`When an element is hovered in visual editor mode multi line field (mult
 
 exports[`When an element is hovered in visual editor mode multi line field should have custom cursor 1`] = `
 <div
-  class="visual-editor__cursor visible"
+  class="visual-builder__cursor visible"
   data-icon="multiline"
-  data-testid="visual-editor__cursor"
+  data-testid="visual-builder__cursor"
 >
   <div
-    class="visual-editor__cursor-wrapper"
+    class="visual-builder__cursor-wrapper"
   >
     <div
-      class="visual-editor__cursor-pointer"
+      class="visual-builder__cursor-pointer"
     >
       <svg
         fill="none"
@@ -1977,7 +1977,7 @@ exports[`When an element is hovered in visual editor mode multi line field shoul
       </svg>
     </div>
     <div
-      class="visual-editor__cursor-icon"
+      class="visual-builder__cursor-icon"
     >
       <svg
         fill="none"
@@ -2030,15 +2030,15 @@ exports[`When an element is hovered in visual editor mode multi line field shoul
 
 exports[`When an element is hovered in visual editor mode number field (multiple) should have custom cursor 1`] = `
 <div
-  class="visual-editor__cursor visible"
+  class="visual-builder__cursor visible"
   data-icon="number"
-  data-testid="visual-editor__cursor"
+  data-testid="visual-builder__cursor"
 >
   <div
-    class="visual-editor__cursor-wrapper"
+    class="visual-builder__cursor-wrapper"
   >
     <div
-      class="visual-editor__cursor-pointer"
+      class="visual-builder__cursor-pointer"
     >
       <svg
         fill="none"
@@ -2054,7 +2054,7 @@ exports[`When an element is hovered in visual editor mode number field (multiple
       </svg>
     </div>
     <div
-      class="visual-editor__cursor-icon"
+      class="visual-builder__cursor-icon"
     >
       <svg
         fill="none"
@@ -2089,15 +2089,15 @@ exports[`When an element is hovered in visual editor mode number field (multiple
 
 exports[`When an element is hovered in visual editor mode number field (multiple) should have custom cursor on individual instances 1`] = `
 <div
-  class="visual-editor__cursor visible"
+  class="visual-builder__cursor visible"
   data-icon="number"
-  data-testid="visual-editor__cursor"
+  data-testid="visual-builder__cursor"
 >
   <div
-    class="visual-editor__cursor-wrapper"
+    class="visual-builder__cursor-wrapper"
   >
     <div
-      class="visual-editor__cursor-pointer"
+      class="visual-builder__cursor-pointer"
     >
       <svg
         fill="none"
@@ -2113,7 +2113,7 @@ exports[`When an element is hovered in visual editor mode number field (multiple
       </svg>
     </div>
     <div
-      class="visual-editor__cursor-icon"
+      class="visual-builder__cursor-icon"
     >
       <svg
         fill="none"
@@ -2149,12 +2149,12 @@ exports[`When an element is hovered in visual editor mode number field (multiple
 exports[`When an element is hovered in visual editor mode number field (multiple) should have instance button on individual instances 1`] = `
 NodeList [
   <button
-    class="visual-editor__add-button"
+    class="visual-builder__add-button"
     data-testid="visual-editor-add-instance-button"
     style="left: 51px; top: 61.19921875px;"
   >
     <svg
-      data-testid="visual-editor__plus-icon"
+      data-testid="visual-builder__plus-icon"
       fill="none"
       height="20"
       viewBox="0 0 20 20"
@@ -2170,12 +2170,12 @@ NodeList [
     </svg>
   </button>,
   <button
-    class="visual-editor__add-button"
+    class="visual-builder__add-button"
     data-testid="visual-editor-add-instance-button"
     style="left: 78.7734375px; top: 61.19921875px;"
   >
     <svg
-      data-testid="visual-editor__plus-icon"
+      data-testid="visual-builder__plus-icon"
       fill="none"
       height="20"
       viewBox="0 0 20 20"
@@ -2214,15 +2214,15 @@ exports[`When an element is hovered in visual editor mode number field (multiple
 
 exports[`When an element is hovered in visual editor mode number field should have custom cursor 1`] = `
 <div
-  class="visual-editor__cursor visible"
+  class="visual-builder__cursor visible"
   data-icon="number"
-  data-testid="visual-editor__cursor"
+  data-testid="visual-builder__cursor"
 >
   <div
-    class="visual-editor__cursor-wrapper"
+    class="visual-builder__cursor-wrapper"
   >
     <div
-      class="visual-editor__cursor-pointer"
+      class="visual-builder__cursor-pointer"
     >
       <svg
         fill="none"
@@ -2238,7 +2238,7 @@ exports[`When an element is hovered in visual editor mode number field should ha
       </svg>
     </div>
     <div
-      class="visual-editor__cursor-icon"
+      class="visual-builder__cursor-icon"
     >
       <svg
         fill="none"
@@ -2279,15 +2279,15 @@ exports[`When an element is hovered in visual editor mode number field should ha
 
 exports[`When an element is hovered in visual editor mode reference field (multiple) should have custom cursor 1`] = `
 <div
-  class="visual-editor__cursor visible"
+  class="visual-builder__cursor visible"
   data-icon="reference"
-  data-testid="visual-editor__cursor"
+  data-testid="visual-builder__cursor"
 >
   <div
-    class="visual-editor__cursor-wrapper"
+    class="visual-builder__cursor-wrapper"
   >
     <div
-      class="visual-editor__cursor-pointer"
+      class="visual-builder__cursor-pointer"
     >
       <svg
         fill="none"
@@ -2303,7 +2303,7 @@ exports[`When an element is hovered in visual editor mode reference field (multi
       </svg>
     </div>
     <div
-      class="visual-editor__cursor-icon"
+      class="visual-builder__cursor-icon"
     >
       <svg
         fill="none"
@@ -2332,15 +2332,15 @@ exports[`When an element is hovered in visual editor mode reference field (multi
 
 exports[`When an element is hovered in visual editor mode reference field (multiple) should have custom cursor on individual instances 1`] = `
 <div
-  class="visual-editor__cursor visible"
+  class="visual-builder__cursor visible"
   data-icon="empty"
-  data-testid="visual-editor__cursor"
+  data-testid="visual-builder__cursor"
 >
   <div
-    class="visual-editor__cursor-wrapper"
+    class="visual-builder__cursor-wrapper"
   >
     <div
-      class="visual-editor__cursor-pointer"
+      class="visual-builder__cursor-pointer"
     >
       <svg
         fill="none"
@@ -2356,7 +2356,7 @@ exports[`When an element is hovered in visual editor mode reference field (multi
       </svg>
     </div>
     <div
-      class="visual-editor__cursor-icon"
+      class="visual-builder__cursor-icon"
     />
   </div>
 </div>
@@ -2365,12 +2365,12 @@ exports[`When an element is hovered in visual editor mode reference field (multi
 exports[`When an element is hovered in visual editor mode reference field (multiple) should have instance button on individual instances 1`] = `
 NodeList [
   <button
-    class="visual-editor__add-button"
+    class="visual-builder__add-button"
     data-testid="visual-editor-add-instance-button"
     style="left: 51px; top: 61.19921875px;"
   >
     <svg
-      data-testid="visual-editor__plus-icon"
+      data-testid="visual-builder__plus-icon"
       fill="none"
       height="20"
       viewBox="0 0 20 20"
@@ -2386,12 +2386,12 @@ NodeList [
     </svg>
   </button>,
   <button
-    class="visual-editor__add-button"
+    class="visual-builder__add-button"
     data-testid="visual-editor-add-instance-button"
     style="left: 78.7734375px; top: 61.19921875px;"
   >
     <svg
-      data-testid="visual-editor__plus-icon"
+      data-testid="visual-builder__plus-icon"
       fill="none"
       height="20"
       viewBox="0 0 20 20"
@@ -2430,15 +2430,15 @@ exports[`When an element is hovered in visual editor mode reference field (multi
 
 exports[`When an element is hovered in visual editor mode reference field should have custom cursor 1`] = `
 <div
-  class="visual-editor__cursor visible"
+  class="visual-builder__cursor visible"
   data-icon="reference"
-  data-testid="visual-editor__cursor"
+  data-testid="visual-builder__cursor"
 >
   <div
-    class="visual-editor__cursor-wrapper"
+    class="visual-builder__cursor-wrapper"
   >
     <div
-      class="visual-editor__cursor-pointer"
+      class="visual-builder__cursor-pointer"
     >
       <svg
         fill="none"
@@ -2454,7 +2454,7 @@ exports[`When an element is hovered in visual editor mode reference field should
       </svg>
     </div>
     <div
-      class="visual-editor__cursor-icon"
+      class="visual-builder__cursor-icon"
     >
       <svg
         fill="none"
@@ -2489,15 +2489,15 @@ exports[`When an element is hovered in visual editor mode reference field should
 
 exports[`When an element is hovered in visual editor mode select field (multiple) should have custom cursor 1`] = `
 <div
-  class="visual-editor__cursor visible"
+  class="visual-builder__cursor visible"
   data-icon="select"
-  data-testid="visual-editor__cursor"
+  data-testid="visual-builder__cursor"
 >
   <div
-    class="visual-editor__cursor-wrapper"
+    class="visual-builder__cursor-wrapper"
   >
     <div
-      class="visual-editor__cursor-pointer"
+      class="visual-builder__cursor-pointer"
     >
       <svg
         fill="none"
@@ -2513,7 +2513,7 @@ exports[`When an element is hovered in visual editor mode select field (multiple
       </svg>
     </div>
     <div
-      class="visual-editor__cursor-icon"
+      class="visual-builder__cursor-icon"
     >
       <svg
         fill="none"
@@ -2542,15 +2542,15 @@ exports[`When an element is hovered in visual editor mode select field (multiple
 
 exports[`When an element is hovered in visual editor mode select field (multiple) should have custom cursor on individual instances 1`] = `
 <div
-  class="visual-editor__cursor visible"
+  class="visual-builder__cursor visible"
   data-icon="select"
-  data-testid="visual-editor__cursor"
+  data-testid="visual-builder__cursor"
 >
   <div
-    class="visual-editor__cursor-wrapper"
+    class="visual-builder__cursor-wrapper"
   >
     <div
-      class="visual-editor__cursor-pointer"
+      class="visual-builder__cursor-pointer"
     >
       <svg
         fill="none"
@@ -2566,7 +2566,7 @@ exports[`When an element is hovered in visual editor mode select field (multiple
       </svg>
     </div>
     <div
-      class="visual-editor__cursor-icon"
+      class="visual-builder__cursor-icon"
     >
       <svg
         fill="none"
@@ -2596,12 +2596,12 @@ exports[`When an element is hovered in visual editor mode select field (multiple
 exports[`When an element is hovered in visual editor mode select field (multiple) should have instance button on individual instances 1`] = `
 NodeList [
   <button
-    class="visual-editor__add-button"
+    class="visual-builder__add-button"
     data-testid="visual-editor-add-instance-button"
     style="left: 64.88671875px; top: 51px;"
   >
     <svg
-      data-testid="visual-editor__plus-icon"
+      data-testid="visual-builder__plus-icon"
       fill="none"
       height="20"
       viewBox="0 0 20 20"
@@ -2617,12 +2617,12 @@ NodeList [
     </svg>
   </button>,
   <button
-    class="visual-editor__add-button"
+    class="visual-builder__add-button"
     data-testid="visual-editor-add-instance-button"
     style="left: 64.88671875px; top: 71.3984375px;"
   >
     <svg
-      data-testid="visual-editor__plus-icon"
+      data-testid="visual-builder__plus-icon"
       fill="none"
       height="20"
       viewBox="0 0 20 20"
@@ -2661,15 +2661,15 @@ exports[`When an element is hovered in visual editor mode select field (multiple
 
 exports[`When an element is hovered in visual editor mode select field should have custom cursor 1`] = `
 <div
-  class="visual-editor__cursor visible"
+  class="visual-builder__cursor visible"
   data-icon="select"
-  data-testid="visual-editor__cursor"
+  data-testid="visual-builder__cursor"
 >
   <div
-    class="visual-editor__cursor-wrapper"
+    class="visual-builder__cursor-wrapper"
   >
     <div
-      class="visual-editor__cursor-pointer"
+      class="visual-builder__cursor-pointer"
     >
       <svg
         fill="none"
@@ -2685,7 +2685,7 @@ exports[`When an element is hovered in visual editor mode select field should ha
       </svg>
     </div>
     <div
-      class="visual-editor__cursor-icon"
+      class="visual-builder__cursor-icon"
     >
       <svg
         fill="none"
@@ -2720,15 +2720,15 @@ exports[`When an element is hovered in visual editor mode select field should ha
 
 exports[`When an element is hovered in visual editor mode single line field (multiple) should have custom cursor 1`] = `
 <div
-  class="visual-editor__cursor visible"
+  class="visual-builder__cursor visible"
   data-icon="empty"
-  data-testid="visual-editor__cursor"
+  data-testid="visual-builder__cursor"
 >
   <div
-    class="visual-editor__cursor-wrapper"
+    class="visual-builder__cursor-wrapper"
   >
     <div
-      class="visual-editor__cursor-pointer"
+      class="visual-builder__cursor-pointer"
     >
       <svg
         fill="none"
@@ -2744,7 +2744,7 @@ exports[`When an element is hovered in visual editor mode single line field (mul
       </svg>
     </div>
     <div
-      class="visual-editor__cursor-icon"
+      class="visual-builder__cursor-icon"
     />
   </div>
 </div>
@@ -2752,15 +2752,15 @@ exports[`When an element is hovered in visual editor mode single line field (mul
 
 exports[`When an element is hovered in visual editor mode single line field (multiple) should have custom cursor on individual instances 1`] = `
 <div
-  class="visual-editor__cursor visible"
+  class="visual-builder__cursor visible"
   data-icon="empty"
-  data-testid="visual-editor__cursor"
+  data-testid="visual-builder__cursor"
 >
   <div
-    class="visual-editor__cursor-wrapper"
+    class="visual-builder__cursor-wrapper"
   >
     <div
-      class="visual-editor__cursor-pointer"
+      class="visual-builder__cursor-pointer"
     >
       <svg
         fill="none"
@@ -2776,7 +2776,7 @@ exports[`When an element is hovered in visual editor mode single line field (mul
       </svg>
     </div>
     <div
-      class="visual-editor__cursor-icon"
+      class="visual-builder__cursor-icon"
     />
   </div>
 </div>
@@ -2785,12 +2785,12 @@ exports[`When an element is hovered in visual editor mode single line field (mul
 exports[`When an element is hovered in visual editor mode single line field (multiple) should have instance button on individual instances 1`] = `
 NodeList [
   <button
-    class="visual-editor__add-button"
+    class="visual-builder__add-button"
     data-testid="visual-editor-add-instance-button"
     style="left: 51px; top: 61.19921875px;"
   >
     <svg
-      data-testid="visual-editor__plus-icon"
+      data-testid="visual-builder__plus-icon"
       fill="none"
       height="20"
       viewBox="0 0 20 20"
@@ -2806,12 +2806,12 @@ NodeList [
     </svg>
   </button>,
   <button
-    class="visual-editor__add-button"
+    class="visual-builder__add-button"
     data-testid="visual-editor-add-instance-button"
     style="left: 78.7734375px; top: 61.19921875px;"
   >
     <svg
-      data-testid="visual-editor__plus-icon"
+      data-testid="visual-builder__plus-icon"
       fill="none"
       height="20"
       viewBox="0 0 20 20"
@@ -2850,15 +2850,15 @@ exports[`When an element is hovered in visual editor mode single line field (mul
 
 exports[`When an element is hovered in visual editor mode single line field should have custom cursor 1`] = `
 <div
-  class="visual-editor__cursor visible"
+  class="visual-builder__cursor visible"
   data-icon="empty"
-  data-testid="visual-editor__cursor"
+  data-testid="visual-builder__cursor"
 >
   <div
-    class="visual-editor__cursor-wrapper"
+    class="visual-builder__cursor-wrapper"
   >
     <div
-      class="visual-editor__cursor-pointer"
+      class="visual-builder__cursor-pointer"
     >
       <svg
         fill="none"
@@ -2874,7 +2874,7 @@ exports[`When an element is hovered in visual editor mode single line field shou
       </svg>
     </div>
     <div
-      class="visual-editor__cursor-icon"
+      class="visual-builder__cursor-icon"
     />
   </div>
 </div>
@@ -2888,15 +2888,15 @@ exports[`When an element is hovered in visual editor mode single line field shou
 
 exports[`When an element is hovered in visual editor mode title field should have custom cursor 1`] = `
 <div
-  class="visual-editor__cursor visible"
+  class="visual-builder__cursor visible"
   data-icon="empty"
-  data-testid="visual-editor__cursor"
+  data-testid="visual-builder__cursor"
 >
   <div
-    class="visual-editor__cursor-wrapper"
+    class="visual-builder__cursor-wrapper"
   >
     <div
-      class="visual-editor__cursor-pointer"
+      class="visual-builder__cursor-pointer"
     >
       <svg
         fill="none"
@@ -2912,7 +2912,7 @@ exports[`When an element is hovered in visual editor mode title field should hav
       </svg>
     </div>
     <div
-      class="visual-editor__cursor-icon"
+      class="visual-builder__cursor-icon"
     />
   </div>
 </div>

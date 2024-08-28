@@ -25,8 +25,8 @@ function PseudoEditableFieldComponent(
 
     return (
         <div
-            className="visual-editor__pseudo-editable-element"
-            data-testid="visual-editor__pseudo-editable-element"
+            className="visual-builder__pseudo-editable-element"
+            data-testid="visual-builder__pseudo-editable-element"
             style={styles}
         >
             {props.config.textContent}

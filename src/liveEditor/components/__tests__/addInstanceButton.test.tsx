@@ -20,7 +20,7 @@ describe("AddInstanceButtonComponent", () => {
             "visual-editor-add-instance-button"
         );
         expect(buttonElement).toBeInTheDocument();
-        expect(buttonElement).toHaveClass("visual-editor__add-button");
+        expect(buttonElement).toHaveClass("visual-builder__add-button");
 
         expect(buttonElement.querySelector("svg")).toBeTruthy();
         expect(buttonElement.querySelector("path")).toBeTruthy();

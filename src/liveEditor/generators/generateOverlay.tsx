@@ -23,7 +23,7 @@ export function addFocusOverlay(
 
     const distanceFromTop = targetElementDimension.top + window.scrollY;
     const topOverlayDOM = focusOverlayWrapper.querySelector<HTMLDivElement>(
-        ".visual-editor__overlay--top"
+        ".visual-builder__overlay--top"
     );
 
     if (topOverlayDOM) {
@@ -34,7 +34,7 @@ export function addFocusOverlay(
     }
 
     const bottomOverlayDOM = focusOverlayWrapper.querySelector<HTMLDivElement>(
-        ".visual-editor__overlay--bottom"
+        ".visual-builder__overlay--bottom"
     );
     if (bottomOverlayDOM) {
         bottomOverlayDOM.style.top = `${
@@ -50,7 +50,7 @@ export function addFocusOverlay(
     }
 
     const leftOverlayDOM = focusOverlayWrapper.querySelector<HTMLDivElement>(
-        ".visual-editor__overlay--left"
+        ".visual-builder__overlay--left"
     );
     if (leftOverlayDOM) {
         leftOverlayDOM.style.left = "0";
@@ -60,7 +60,7 @@ export function addFocusOverlay(
     }
 
     const rightOverlayDOM = focusOverlayWrapper.querySelector<HTMLDivElement>(
-        ".visual-editor__overlay--right"
+        ".visual-builder__overlay--right"
     );
     if (rightOverlayDOM) {
         rightOverlayDOM.style.left = `${targetElementDimension.right}px`;
@@ -72,7 +72,7 @@ export function addFocusOverlay(
     }
 
     const outlineDOM = focusOverlayWrapper.querySelector<HTMLDivElement>(
-        ".visual-editor__overlay--outline"
+        ".visual-builder__overlay--outline"
     );
     if (outlineDOM) {
         outlineDOM.style.top = `${
@@ -106,7 +106,7 @@ export function hideFocusOverlay(elements: HideOverlayParams): void {
                 .previousSelectedEditableDOM
         ) {
             const pseudoEditableElement = visualEditorContainer?.querySelector(
-                "div.visual-editor__pseudo-editable-element"
+                "div.visual-builder__pseudo-editable-element"
             );
 
             if (

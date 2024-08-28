@@ -2,17 +2,11 @@ import { effect } from "@preact/signals";
 import { inIframe } from "../../common/inIframe";
 import Config from "../../configManager/configManager";
 import { addCslpOutline, extractDetailsFromCslp } from "../../cslp";
+import { cslpTagStyles } from "./editButton.style";
 import { PublicLogger } from "../../logger/logger";
-import {
-    IClientUrlParams,
-    IConfigEditButton,
-    IEditButtonPosition,
-    ILivePreviewMode,
-    ILivePreviewModeConfig,
-    ILivePreviewWindowType,
-    IStackDetails,
-} from "../../types/types";
+import { IEditButtonPosition, ILivePreviewWindowType } from "../../types/types";
 import livePreviewPostMessage from "../eventManager/livePreviewEventManager";
+import { EDIT_BUTTON_TOOLTIP_ID } from "./editButton.constant";
 
 effect(function handleWindowTypeChange() {
     // we need to specify when to run this effect.
@@ -177,7 +171,7 @@ export const createMultipleEditButton = (
 
     const multipleDiv = document.createElement("div");
     multipleDiv.appendChild(multipleEditFragment);
-    multipleDiv.classList.add("multiple");
+    multipleDiv.classList.add(cslpTagStyles()["multiple"]);
 
     return multipleDiv;
 };
@@ -278,7 +272,7 @@ export function toggleEditButtonElement() {
 }
 
 export function doesEditButtonExist() {
-    return document.getElementById("cslp-tooltip") !== null;
+    return document.getElementById(EDIT_BUTTON_TOOLTIP_ID) !== null;
 }
 
 export class LivePreviewEditButton {
@@ -314,16 +308,16 @@ export class LivePreviewEditButton {
         const editButton = Config.get().editButton;
 
         if (
-            !document.getElementById("cslp-tooltip") &&
+            !document.getElementById(EDIT_BUTTON_TOOLTIP_ID) &&
             editButton.enable &&
             shouldRenderEditButton()
         ) {
             const tooltip = document.createElement("button");
             this.tooltip = tooltip;
 
-            this.tooltip.classList.add("cslp-tooltip");
+            this.tooltip.classList.add(cslpTagStyles()["cslp-tooltip"]);
             this.tooltip.setAttribute("data-test-id", "cs-cslp-tooltip");
-            this.tooltip.id = "cslp-tooltip";
+            this.tooltip.id = EDIT_BUTTON_TOOLTIP_ID;
 
             window.document.body.insertAdjacentElement(
                 "beforeend",

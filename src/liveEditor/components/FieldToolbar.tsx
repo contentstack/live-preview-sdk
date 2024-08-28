@@ -21,6 +21,8 @@ import {
     ReplaceAssetIcon,
 } from "./icons";
 import { fieldIcons } from "./icons/fields";
+import classNames from "classnames";
+import { liveEditorStyles } from "../liveEditor.style";
 
 interface MultipleFieldToolbarProps {
     fieldMetadata: CslpData;
@@ -90,8 +92,13 @@ function FieldToolbarComponent(
 
     const editButton = Icon ? (
         <button
-            data-testid="visual-editor__focused-toolbar__multiple-field-toolbar__edit-button"
-            className="visual-editor__button visual-editor__button--secondary visual-editor__button--edit"
+            data-testid="visual-builder__focused-toolbar__multiple-field-toolbar__edit-button"
+            className={classNames(
+                "visual-builder__button visual-builder__button--secondary visual-builder__button--edit",
+                liveEditorStyles()["visual-builder__button"],
+                liveEditorStyles()["visual-builder__button--secondary"],
+                liveEditorStyles()["visual-builder__button--edit"]
+            )}
             onClick={(e: React.MouseEvent) => {
                 // TODO the listener for field path is attached to the common parent requiring
                 // propagation to be stopped, should ideally only attach onClick to fieldpath dropdown
@@ -106,7 +113,11 @@ function FieldToolbarComponent(
 
     const replaceButton = (
         <button
-            className="visual-editor__replace-button visual-editor__button visual-editor__button--secondary"
+            className={classNames(
+                "visual-builder__replace-button visual-builder__button visual-builder__button--secondary",
+                liveEditorStyles()["visual-builder__button"],
+                liveEditorStyles()["visual-builder__button--secondary"]
+            )}
             data-testid={`visual-editor-replace-${fieldType}`}
             onClick={(e: React.MouseEvent) => {
                 e.stopPropagation();
@@ -152,15 +163,33 @@ function FieldToolbarComponent(
 
     return (
         <div
-            className="visual-editor__focused-toolbar__multiple-field-toolbar"
-            data-testid="visual-editor__focused-toolbar__multiple-field-toolbar"
+            className={classNames(
+                "visual-builder__focused-toolbar__multiple-field-toolbar",
+                liveEditorStyles()[
+                    "visual-builder__focused-toolbar__multiple-field-toolbar"
+                ]
+            )}
+            data-testid="visual-builder__focused-toolbar__multiple-field-toolbar"
         >
-            <div className="visual-editor__focused-toolbar__button-group">
+            <div
+                className={classNames(
+                    "visual-builder__focused-toolbar__button-group",
+                    liveEditorStyles()[
+                        "visual-builder__focused-toolbar__button-group"
+                    ]
+                )}
+            >
                 {isMultiple ? (
                     <>
                         <button
-                            data-testid="visual-editor__focused-toolbar__multiple-field-toolbar__move-left-button"
-                            className={`visual-editor__button visual-editor__button--secondary`}
+                            data-testid="visual-builder__focused-toolbar__multiple-field-toolbar__move-left-button"
+                            className={classNames(
+                                `visual-builder__button visual-builder__button--secondary`,
+                                liveEditorStyles()["visual-builder__button"],
+                                liveEditorStyles()[
+                                    "visual-builder__button--secondary"
+                                ]
+                            )}
                             onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
@@ -172,18 +201,26 @@ function FieldToolbarComponent(
                             disabled={disableMoveLeft}
                         >
                             <MoveLeftIcon
-                                className={
-                                    direction.value === "vertical"
-                                        ? "visual-editor__rotate--90"
-                                        : ""
-                                }
+                                className={classNames({
+                                    "visual-builder__rotate--90":
+                                        direction.value === "vertical",
+                                    [liveEditorStyles()[
+                                        "visual-builder__rotate--90"
+                                    ]]: direction.value === "vertical",
+                                })}
                                 disabled={disableMoveLeft}
                             />
                         </button>
 
                         <button
-                            data-testid="visual-editor__focused-toolbar__multiple-field-toolbar__move-right-button"
-                            className={`visual-editor__button visual-editor__button--secondary`}
+                            data-testid="visual-builder__focused-toolbar__multiple-field-toolbar__move-right-button"
+                            className={classNames(
+                                `visual-builder__button visual-builder__button--secondary`,
+                                liveEditorStyles()["visual-builder__button"],
+                                liveEditorStyles()[
+                                    "visual-builder__button--secondary"
+                                ]
+                            )}
                             onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
@@ -192,11 +229,13 @@ function FieldToolbarComponent(
                             disabled={disableMoveRight}
                         >
                             <MoveRightIcon
-                                className={
-                                    direction.value === "vertical"
-                                        ? "visual-editor__rotate--90"
-                                        : ""
-                                }
+                                className={classNames({
+                                    "visual-builder__rotate--90":
+                                        direction.value === "vertical",
+                                    [liveEditorStyles()[
+                                        "visual-builder__rotate--90"
+                                    ]]: direction.value === "vertical",
+                                })}
                                 disabled={disableMoveRight}
                             />
                         </button>
@@ -205,8 +244,14 @@ function FieldToolbarComponent(
                         {isReplaceAllowed ? replaceButton : null}
 
                         <button
-                            data-testid="visual-editor__focused-toolbar__multiple-field-toolbar__delete-button"
-                            className="visual-editor__button visual-editor__button--secondary"
+                            data-testid="visual-builder__focused-toolbar__multiple-field-toolbar__delete-button"
+                            className={classNames(
+                                "visual-builder__button visual-builder__button--secondary",
+                                liveEditorStyles()["visual-builder__button"],
+                                liveEditorStyles()[
+                                    "visual-builder__button--secondary"
+                                ]
+                            )}
                             onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();

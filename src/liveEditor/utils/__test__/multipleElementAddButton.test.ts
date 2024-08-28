@@ -64,7 +64,7 @@ describe("getChildrenDirection", () => {
 
     beforeEach(() => {
         visualEditorContainer = document.createElement("div");
-        visualEditorContainer.classList.add("visual-editor__container");
+        visualEditorContainer.classList.add("visual-builder__container");
         document.body.appendChild(visualEditorContainer);
 
         firstChild = document.createElement("div");
@@ -177,7 +177,7 @@ describe("handleAddButtonsForMultiple", () => {
 
         beforeEach(() => {
             visualEditorContainer = document.createElement("div");
-            visualEditorContainer.classList.add("visual-editor__container");
+            visualEditorContainer.classList.add("visual-builder__container");
             document.body.appendChild(visualEditorContainer);
 
             firstChild = document.createElement("div");
@@ -351,7 +351,7 @@ describe("handleAddButtonsForMultiple", () => {
 
         beforeEach(() => {
             visualEditorContainer = document.createElement("div");
-            visualEditorContainer.classList.add("visual-editor__container");
+            visualEditorContainer.classList.add("visual-builder__container");
             document.body.appendChild(visualEditorContainer);
 
             firstChild = document.createElement("div");
@@ -488,7 +488,7 @@ describe("removeAddInstanceButtons", () => {
 
     beforeEach(() => {
         visualEditorContainer = document.createElement("div");
-        visualEditorContainer.classList.add("visual-editor__container");
+        visualEditorContainer.classList.add("visual-builder__container");
         document.body.appendChild(visualEditorContainer);
 
         previousButton = generateAddInstanceButton(() => {});

@@ -26,7 +26,7 @@ describe("PseudoEditableFieldComponent", () => {
         );
 
         const pseudoEditableElement = getByTestId(
-            "visual-editor__pseudo-editable-element"
+            "visual-builder__pseudo-editable-element"
         );
         expect(pseudoEditableElement).toBeInTheDocument();
         expect(pseudoEditableElement).toHaveStyle("font-size: 16px");

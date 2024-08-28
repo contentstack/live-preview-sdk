@@ -1,3 +1,5 @@
+import { liveEditorStyles } from "../liveEditor.style";
+
 /**
  * Adds a hover outline to the target element.
  * @param targetElement - The element to add the hover outline to.
@@ -5,27 +7,35 @@
  * @returns void
  */
 export function addHoverOutline(
-  targetElement: Element,
-  disabled?: boolean,
+    targetElement: Element,
+    disabled?: boolean
 ): void {
+    const targetElementDimension = targetElement.getBoundingClientRect();
 
-  const targetElementDimension = targetElement.getBoundingClientRect();
+    const hoverOutline = document.querySelector<HTMLDivElement>(
+        ".visual-builder__hover-outline"
+    );
 
-  const hoverOutline = document.querySelector<HTMLDivElement>(".visual-editor__hover-outline");
+    if (hoverOutline) {
+        hoverOutline.classList.remove(
+            liveEditorStyles()["visual-builder__hover-outline--hidden"]
+        );
 
-  if (hoverOutline) {
-    hoverOutline.classList.remove("visual-editor__hover-outline--hidden");
+        if (disabled) {
+            hoverOutline.classList.add(
+                liveEditorStyles()["visual-builder__hover-outline--disabled"]
+            );
+        } else {
+            hoverOutline.classList.remove(
+                liveEditorStyles()["visual-builder__hover-outline--disabled"]
+            );
+        }
 
-    if (disabled) {
-      hoverOutline.classList.add("visual-editor__hover-outline--disabled");
+        hoverOutline.style.top = `${
+            targetElementDimension.top + window.scrollY
+        }px`;
+        hoverOutline.style.left = `${targetElementDimension.left}px`;
+        hoverOutline.style.width = `${targetElementDimension.width}px`;
+        hoverOutline.style.height = `${targetElementDimension.height}px`;
     }
-    else {
-      hoverOutline.classList.remove("visual-editor__hover-outline--disabled");
-    }
-
-    hoverOutline.style.top = `${targetElementDimension.top + window.scrollY}px`;
-    hoverOutline.style.left = `${targetElementDimension.left}px`;
-    hoverOutline.style.width = `${targetElementDimension.width}px`;
-    hoverOutline.style.height = `${targetElementDimension.height}px`;
-  }
 }

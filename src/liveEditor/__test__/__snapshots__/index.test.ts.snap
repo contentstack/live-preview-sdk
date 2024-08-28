@@ -8,61 +8,61 @@ exports[`Visual editor inline editing should add overlay to DOM when clicked 1`]
     data-cslp-field-type="singleline"
   />
   <div
-    class="visual-editor__container"
-    data-testid="visual-editor__container"
+    class="visual-builder__container"
+    data-testid="visual-builder__container"
   >
     <div
-      class="visual-editor__cursor"
-      data-testid="visual-editor__cursor"
+      class="visual-builder__cursor"
+      data-testid="visual-builder__cursor"
     />
     <div
-      class="visual-editor__overlay__wrapper visible"
-      data-testid="visual-editor__overlay__wrapper"
+      class="visual-builder__overlay__wrapper visible"
+      data-testid="visual-builder__overlay__wrapper"
     >
       <div
-        class="visual-editor__overlay visual-editor__overlay--top"
-        data-testid="visual-editor__overlay--top"
+        class="visual-builder__overlay visual-builder__overlay--top"
+        data-testid="visual-builder__overlay--top"
         style="top: 0px; left: 0px; width: 100%; height: calc(0px - 2px);"
       />
       <div
-        class="visual-editor__overlay visual-editor__overlay--left"
-        data-testid="visual-editor__overlay--left"
+        class="visual-builder__overlay visual-builder__overlay--left"
+        data-testid="visual-builder__overlay--left"
         style="left: 0px; top: calc(0px - 2px); height: calc(0px + 4px); width: calc(0px - 2px);"
       />
       <div
-        class="visual-editor__overlay visual-editor__overlay--right"
-        data-testid="visual-editor__overlay--right"
+        class="visual-builder__overlay visual-builder__overlay--right"
+        data-testid="visual-builder__overlay--right"
         style="left: calc(0px + 2px); top: calc(0px - 2px); height: calc(0px + 4px); width: calc(1024px - 2px);"
       />
       <div
-        class="visual-editor__overlay visual-editor__overlay--bottom"
-        data-testid="visual-editor__overlay--bottom"
+        class="visual-builder__overlay visual-builder__overlay--bottom"
+        data-testid="visual-builder__overlay--bottom"
         style="top: calc(0px + 2px); height: calc(0px - 2px); left: 0px; width: 100%;"
       />
       <div
-        class="visual-editor__overlay--outline"
-        data-testid="visual-editor__overlay--outline"
+        class="visual-builder__overlay--outline"
+        data-testid="visual-builder__overlay--outline"
         style="top: 0px; height: 0px; width: 0px; left: 0px; outline-color: rgb(113, 92, 221);"
       />
     </div>
     <div
-      class="visual-editor__focused-toolbar"
-      data-testid="visual-editor__focused-toolbar"
+      class="visual-builder__focused-toolbar"
+      data-testid="visual-builder__focused-toolbar"
       style="top: -7px; left: -2px;"
     >
       <div
-        class="visual-editor__focused-toolbar__field-label-wrapper"
+        class="visual-builder__focused-toolbar__field-label-wrapper"
       >
         <div
-          class="visual-editor__focused-toolbar__field-label-wrapper__current-field visual-editor__button visual-editor__button--primary"
+          class="visual-builder__focused-toolbar__field-label-wrapper__current-field visual-builder__button visual-builder__button--primary"
         >
           <div
-            class="visual-editor__focused-toolbar__text"
+            class="visual-builder__focused-toolbar__text"
           >
-            
+
           </div>
           <svg
-            data-testid="visual-editor__caret-icon"
+            data-testid="visual-builder__caret-icon"
             fill="none"
             height="16"
             viewBox="0 0 16 16"
@@ -92,7 +92,7 @@ exports[`Visual editor on click, the sdk inline elements must be contenteditable
 
 exports[`Visual editor on click, the sdk inline elements must be contenteditable file should render a replacer and remove when it is not 2`] = `
 <button
-  class="visual-editor__replace-button"
+  class="visual-builder__replace-button"
   data-testid="visual-editor-replace-asset"
   style="top: -30px; right: 1024px;"
 >
@@ -120,41 +120,41 @@ exports[`Visual editor on click, the sdk should do nothing if data-cslp not avai
 <body>
   <h1 />
   <div
-    class="visual-editor__container"
-    data-testid="visual-editor__container"
+    class="visual-builder__container"
+    data-testid="visual-builder__container"
   >
     <div
-      class="visual-editor__cursor"
-      data-testid="visual-editor__cursor"
+      class="visual-builder__cursor"
+      data-testid="visual-builder__cursor"
     />
     <div
-      class="visual-editor__overlay__wrapper"
-      data-testid="visual-editor__overlay__wrapper"
+      class="visual-builder__overlay__wrapper"
+      data-testid="visual-builder__overlay__wrapper"
     >
       <div
-        class="visual-editor__overlay visual-editor__overlay--top"
-        data-testid="visual-editor__overlay--top"
+        class="visual-builder__overlay visual-builder__overlay--top"
+        data-testid="visual-builder__overlay--top"
       />
       <div
-        class="visual-editor__overlay visual-editor__overlay--left"
-        data-testid="visual-editor__overlay--left"
+        class="visual-builder__overlay visual-builder__overlay--left"
+        data-testid="visual-builder__overlay--left"
       />
       <div
-        class="visual-editor__overlay visual-editor__overlay--right"
-        data-testid="visual-editor__overlay--right"
+        class="visual-builder__overlay visual-builder__overlay--right"
+        data-testid="visual-builder__overlay--right"
       />
       <div
-        class="visual-editor__overlay visual-editor__overlay--bottom"
-        data-testid="visual-editor__overlay--bottom"
+        class="visual-builder__overlay visual-builder__overlay--bottom"
+        data-testid="visual-builder__overlay--bottom"
       />
       <div
-        class="visual-editor__overlay--outline"
-        data-testid="visual-editor__overlay--outline"
+        class="visual-builder__overlay--outline"
+        data-testid="visual-builder__overlay--outline"
       />
     </div>
     <div
-      class="visual-editor__focused-toolbar"
-      data-testid="visual-editor__focused-toolbar"
+      class="visual-builder__focused-toolbar"
+      data-testid="visual-builder__focused-toolbar"
     />
   </div>
 </body>
@@ -162,101 +162,101 @@ exports[`Visual editor on click, the sdk should do nothing if data-cslp not avai
 
 exports[`Visual editor should append a visual editor container to the DOM 1`] = `
 <div
-  class="visual-editor__container"
-  data-testid="visual-editor__container"
+  class="visual-builder__container"
+  data-testid="visual-builder__container"
 >
   <div
-    class="visual-editor__cursor"
-    data-testid="visual-editor__cursor"
+    class="visual-builder__cursor"
+    data-testid="visual-builder__cursor"
   />
   <div
-    class="visual-editor__overlay__wrapper"
-    data-testid="visual-editor__overlay__wrapper"
+    class="visual-builder__overlay__wrapper"
+    data-testid="visual-builder__overlay__wrapper"
   >
     <div
-      class="visual-editor__overlay visual-editor__overlay--top"
-      data-testid="visual-editor__overlay--top"
+      class="visual-builder__overlay visual-builder__overlay--top"
+      data-testid="visual-builder__overlay--top"
     />
     <div
-      class="visual-editor__overlay visual-editor__overlay--left"
-      data-testid="visual-editor__overlay--left"
+      class="visual-builder__overlay visual-builder__overlay--left"
+      data-testid="visual-builder__overlay--left"
     />
     <div
-      class="visual-editor__overlay visual-editor__overlay--right"
-      data-testid="visual-editor__overlay--right"
+      class="visual-builder__overlay visual-builder__overlay--right"
+      data-testid="visual-builder__overlay--right"
     />
     <div
-      class="visual-editor__overlay visual-editor__overlay--bottom"
-      data-testid="visual-editor__overlay--bottom"
+      class="visual-builder__overlay visual-builder__overlay--bottom"
+      data-testid="visual-builder__overlay--bottom"
     />
     <div
-      class="visual-editor__overlay--outline"
-      data-testid="visual-editor__overlay--outline"
+      class="visual-builder__overlay--outline"
+      data-testid="visual-builder__overlay--outline"
     />
   </div>
   <div
-    class="visual-editor__focused-toolbar"
-    data-testid="visual-editor__focused-toolbar"
+    class="visual-builder__focused-toolbar"
+    data-testid="visual-builder__focused-toolbar"
   />
 </div>
 `;
 
 exports[`visual editor DOM should have an overlay over the element 1`] = `
 <div
-  class="visual-editor__overlay__wrapper"
-  data-testid="visual-editor__overlay__wrapper"
+  class="visual-builder__overlay__wrapper"
+  data-testid="visual-builder__overlay__wrapper"
 >
   <div
-    class="visual-editor__overlay visual-editor__overlay--top"
-    data-testid="visual-editor__overlay--top"
+    class="visual-builder__overlay visual-builder__overlay--top"
+    data-testid="visual-builder__overlay--top"
   />
   <div
-    class="visual-editor__overlay visual-editor__overlay--left"
-    data-testid="visual-editor__overlay--left"
+    class="visual-builder__overlay visual-builder__overlay--left"
+    data-testid="visual-builder__overlay--left"
   />
   <div
-    class="visual-editor__overlay visual-editor__overlay--right"
-    data-testid="visual-editor__overlay--right"
+    class="visual-builder__overlay visual-builder__overlay--right"
+    data-testid="visual-builder__overlay--right"
   />
   <div
-    class="visual-editor__overlay visual-editor__overlay--bottom"
-    data-testid="visual-editor__overlay--bottom"
+    class="visual-builder__overlay visual-builder__overlay--bottom"
+    data-testid="visual-builder__overlay--bottom"
   />
   <div
-    class="visual-editor__overlay--outline"
-    data-testid="visual-editor__overlay--outline"
+    class="visual-builder__overlay--outline"
+    data-testid="visual-builder__overlay--outline"
   />
 </div>
 `;
 
 exports[`visual editor DOM should have an overlay over the element 2`] = `
 <div
-  class="visual-editor__overlay__wrapper visible"
-  data-testid="visual-editor__overlay__wrapper"
+  class="visual-builder__overlay__wrapper visible"
+  data-testid="visual-builder__overlay__wrapper"
 >
   <div
-    class="visual-editor__overlay visual-editor__overlay--top"
-    data-testid="visual-editor__overlay--top"
+    class="visual-builder__overlay visual-builder__overlay--top"
+    data-testid="visual-builder__overlay--top"
     style="top: 0px; left: 0px; width: 100%; height: calc(10px - 2px);"
   />
   <div
-    class="visual-editor__overlay visual-editor__overlay--left"
-    data-testid="visual-editor__overlay--left"
+    class="visual-builder__overlay visual-builder__overlay--left"
+    data-testid="visual-builder__overlay--left"
     style="left: 0px; top: calc(10px - 2px); height: calc(undefinedpx + 4px); width: calc(10px - 2px);"
   />
   <div
-    class="visual-editor__overlay visual-editor__overlay--right"
-    data-testid="visual-editor__overlay--right"
+    class="visual-builder__overlay visual-builder__overlay--right"
+    data-testid="visual-builder__overlay--right"
     style="left: calc(20px + 2px); top: calc(10px - 2px); height: calc(undefinedpx + 4px); width: calc(1004px - 2px);"
   />
   <div
-    class="visual-editor__overlay visual-editor__overlay--bottom"
-    data-testid="visual-editor__overlay--bottom"
+    class="visual-builder__overlay visual-builder__overlay--bottom"
+    data-testid="visual-builder__overlay--bottom"
     style="top: calc(20px + 2px); height: calc(-20px - 2px); left: 0px; width: 100%;"
   />
   <div
-    class="visual-editor__overlay--outline"
-    data-testid="visual-editor__overlay--outline"
+    class="visual-builder__overlay--outline"
+    data-testid="visual-builder__overlay--outline"
     style="top: 10px; left: 10px; outline-color: rgb(113, 92, 221);"
   />
 </div>

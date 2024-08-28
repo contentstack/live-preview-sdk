@@ -77,7 +77,7 @@ describe("When an inline element is edited in visual editor mode", () => {
 
             visualEditor = new VisualEditor();
             overlayWrapper = document.querySelector(
-                ".visual-editor__overlay__wrapper"
+                ".visual-builder__overlay__wrapper"
             ) as HTMLDivElement;
         });
 
@@ -92,7 +92,7 @@ describe("When an inline element is edited in visual editor mode", () => {
 
         test("should have an overlay", () => {
             singleLineField.dispatchEvent(mouseClickEvent);
-            const overlay = document.querySelector(".visual-editor__overlay");
+            const overlay = document.querySelector(".visual-builder__overlay");
             expect(overlay!.classList.contains("visible"));
         });
 
@@ -151,7 +151,7 @@ describe("When an inline element is edited in visual editor mode", () => {
                         },
                         instance: {
                             fieldPathWithIndex: "single_line",
-                        }
+                        },
                     },
                 }
             );
@@ -190,7 +190,7 @@ describe("When an inline element is edited in visual editor mode", () => {
 
             visualEditor = new VisualEditor();
             overlayWrapper = document.querySelector(
-                ".visual-editor__overlay__wrapper"
+                ".visual-builder__overlay__wrapper"
             ) as HTMLDivElement;
         });
 
@@ -205,7 +205,7 @@ describe("When an inline element is edited in visual editor mode", () => {
 
         test("should have an overlay", () => {
             container.dispatchEvent(mouseClickEvent);
-            const overlay = document.querySelector(".visual-editor__overlay");
+            const overlay = document.querySelector(".visual-builder__overlay");
             expect(overlay!.classList.contains("visible"));
         });
 
@@ -284,8 +284,9 @@ describe("When an inline element is edited in visual editor mode", () => {
                             index: 0,
                         },
                         instance: {
-                            fieldPathWithIndex: "single_line_textbox_multiple_.0",
-                        }
+                            fieldPathWithIndex:
+                                "single_line_textbox_multiple_.0",
+                        },
                     },
                 }
             );
@@ -335,8 +336,9 @@ describe("When an inline element is edited in visual editor mode", () => {
                             index: 1,
                         },
                         instance: {
-                            fieldPathWithIndex: "single_line_textbox_multiple_.1",
-                        }
+                            fieldPathWithIndex:
+                                "single_line_textbox_multiple_.1",
+                        },
                     },
                 }
             );
@@ -357,7 +359,7 @@ describe("When an inline element is edited in visual editor mode", () => {
             document.body.appendChild(multiLineField);
             visualEditor = new VisualEditor();
             overlayWrapper = document.querySelector(
-                ".visual-editor__overlay__wrapper"
+                ".visual-builder__overlay__wrapper"
             ) as HTMLDivElement;
         });
 
@@ -372,7 +374,7 @@ describe("When an inline element is edited in visual editor mode", () => {
 
         test("should have an overlay", () => {
             multiLineField.dispatchEvent(mouseClickEvent);
-            const overlay = document.querySelector(".visual-editor__overlay");
+            const overlay = document.querySelector(".visual-builder__overlay");
             expect(overlay!.classList.contains("visible"));
         });
 
@@ -431,7 +433,7 @@ describe("When an inline element is edited in visual editor mode", () => {
                         },
                         instance: {
                             fieldPathWithIndex: "multi_line",
-                        }
+                        },
                     },
                 }
             );
@@ -470,7 +472,7 @@ describe("When an inline element is edited in visual editor mode", () => {
 
             visualEditor = new VisualEditor();
             overlayWrapper = document.querySelector(
-                ".visual-editor__overlay__wrapper"
+                ".visual-builder__overlay__wrapper"
             ) as HTMLDivElement;
         });
 
@@ -485,7 +487,7 @@ describe("When an inline element is edited in visual editor mode", () => {
 
         test("should have an overlay", () => {
             container.dispatchEvent(mouseClickEvent);
-            const overlay = document.querySelector(".visual-editor__overlay");
+            const overlay = document.querySelector(".visual-builder__overlay");
             expect(overlay!.classList.contains("visible"));
         });
 
@@ -565,8 +567,9 @@ describe("When an inline element is edited in visual editor mode", () => {
                             index: 0,
                         },
                         instance: {
-                            fieldPathWithIndex: "single_line_textbox_multiple_.0",
-                        }
+                            fieldPathWithIndex:
+                                "single_line_textbox_multiple_.0",
+                        },
                     },
                 }
             );
@@ -616,8 +619,9 @@ describe("When an inline element is edited in visual editor mode", () => {
                             index: 1,
                         },
                         instance: {
-                            fieldPathWithIndex: "single_line_textbox_multiple_.1",
-                        }
+                            fieldPathWithIndex:
+                                "single_line_textbox_multiple_.1",
+                        },
                     },
                 }
             );

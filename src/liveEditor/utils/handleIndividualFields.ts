@@ -140,7 +140,9 @@ export async function handleIndividualFields(
                 window.getComputedStyle(actualEditableField).display;
 
             const textContent =
-                (editableElement as HTMLElement).innerText || editableElement.textContent || "";
+                (editableElement as HTMLElement).innerText ||
+                editableElement.textContent ||
+                "";
 
             const expectedTextContent = config.expectedFieldData;
             if (
@@ -170,10 +172,10 @@ export async function handleIndividualFields(
                 // if the editable field is inline
                 const onInlineElementInput = throttle(() => {
                     const overlayWrapper = visualEditorContainer.querySelector(
-                        ".visual-editor__overlay__wrapper"
+                        ".visual-builder__overlay__wrapper"
                     ) as HTMLDivElement;
                     const focusedToolbar = visualEditorContainer.querySelector(
-                        ".visual-editor__focused-toolbar"
+                        ".visual-builder__focused-toolbar"
                     ) as HTMLDivElement;
                     updateFocussedState({
                         editableElement: actualEditableField,
@@ -244,7 +246,7 @@ export function cleanIndividualFieldResidual(elements: {
     }
 
     const pseudoEditableElement = visualEditorContainer?.querySelector(
-        ".visual-editor__pseudo-editable-element"
+        ".visual-builder__pseudo-editable-element"
     );
     if (pseudoEditableElement) {
         elements.resizeObserver.unobserve(pseudoEditableElement);

@@ -13,13 +13,13 @@ describe("VisualEditorComponent", () => {
             resizeObserver: mockResizeObserver,
         });
 
-        const container = document.querySelector(".visual-editor__container");
-        const cursor = document.querySelector(".visual-editor__cursor");
+        const container = document.querySelector(".visual-builder__container");
+        const cursor = document.querySelector(".visual-builder__cursor");
         const overlay = document.querySelector(
-            ".visual-editor__overlay__wrapper"
+            ".visual-builder__overlay__wrapper"
         );
         const toolbar = document.querySelector(
-            ".visual-editor__focused-toolbar"
+            ".visual-builder__focused-toolbar"
         );
 
         // Check if all expected elements are rendered

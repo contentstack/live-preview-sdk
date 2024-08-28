@@ -23,12 +23,12 @@ describe("VisualEditorComponent", () => {
             />
         );
 
-        expect(getByTestId("visual-editor__cursor")).toBeInTheDocument();
+        expect(getByTestId("visual-builder__cursor")).toBeInTheDocument();
         expect(
-            getByTestId("visual-editor__overlay__wrapper")
+            getByTestId("visual-builder__overlay__wrapper")
         ).toBeInTheDocument();
         expect(
-            getByTestId("visual-editor__focused-toolbar")
+            getByTestId("visual-builder__focused-toolbar")
         ).toBeInTheDocument();
     });
 
@@ -41,7 +41,7 @@ describe("VisualEditorComponent", () => {
             />
         );
 
-        const overlayWrapper = getByTestId("visual-editor__overlay__wrapper");
+        const overlayWrapper = getByTestId("visual-builder__overlay__wrapper");
         fireEvent.click(overlayWrapper);
 
         expect(hideOverlay).toHaveBeenCalledWith({
@@ -66,7 +66,7 @@ describe("VisualEditorComponent", () => {
             />
         );
 
-        const overlayWrapper = getByTestId("visual-editor__overlay__wrapper");
+        const overlayWrapper = getByTestId("visual-builder__overlay__wrapper");
         fireEvent.click(overlayWrapper);
 
         expect(() => {}).not.toThrow();
@@ -85,7 +85,7 @@ describe("VisualEditorComponent", () => {
             />
         );
 
-        const overlayWrapper = getByTestId("visual-editor__overlay__wrapper");
+        const overlayWrapper = getByTestId("visual-builder__overlay__wrapper");
         fireEvent.click(overlayWrapper);
     });
 });

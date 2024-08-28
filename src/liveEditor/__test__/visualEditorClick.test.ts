@@ -98,14 +98,14 @@ describe("When an element is clicked in visual editor mode", () => {
 
         test("should have an overlay", () => {
             singleLineField.dispatchEvent(mouseClickEvent);
-            const overlay = document.querySelector(".visual-editor__overlay");
+            const overlay = document.querySelector(".visual-builder__overlay");
             expect(overlay!.classList.contains("visible"));
         });
 
         test("should have a field path dropdown", () => {
             singleLineField.dispatchEvent(mouseClickEvent);
             const toolbar = document.querySelector(
-                ".visual-editor__focused-toolbar__field-label-wrapper__current-field"
+                ".visual-builder__focused-toolbar__field-label-wrapper__current-field"
             );
             expect(toolbar).toBeInTheDocument();
         });
@@ -194,14 +194,14 @@ describe("When an element is clicked in visual editor mode", () => {
 
         test("should have an overlay", () => {
             container.dispatchEvent(mouseClickEvent);
-            const overlay = document.querySelector(".visual-editor__overlay");
+            const overlay = document.querySelector(".visual-builder__overlay");
             expect(overlay!.classList.contains("visible"));
         });
 
         test("should have a field path dropdown", () => {
             container.dispatchEvent(mouseClickEvent);
             const toolbar = document.querySelector(
-                ".visual-editor__focused-toolbar__field-label-wrapper__current-field"
+                ".visual-builder__focused-toolbar__field-label-wrapper__current-field"
             );
             expect(toolbar).toBeInTheDocument();
         });
@@ -212,11 +212,11 @@ describe("When an element is clicked in visual editor mode", () => {
             });
 
             const multiFieldToolbar = document.querySelector(
-                ".visual-editor__focused-toolbar__multiple-field-toolbar"
+                ".visual-builder__focused-toolbar__multiple-field-toolbar"
             );
 
             const buttonGroup = document.querySelector(
-                ".visual-editor__focused-toolbar__button-group"
+                ".visual-builder__focused-toolbar__button-group"
             );
 
             expect(multiFieldToolbar).toBeInTheDocument();
@@ -265,11 +265,11 @@ describe("When an element is clicked in visual editor mode", () => {
             });
 
             const multiFieldToolbar = document.querySelector(
-                ".visual-editor__focused-toolbar__multiple-field-toolbar"
+                ".visual-builder__focused-toolbar__multiple-field-toolbar"
             );
 
             const buttonGroup = document.querySelector(
-                ".visual-editor__focused-toolbar__button-group"
+                ".visual-builder__focused-toolbar__button-group"
             );
 
             expect(multiFieldToolbar).toBeInTheDocument();
@@ -282,7 +282,7 @@ describe("When an element is clicked in visual editor mode", () => {
             // need to poll and check since the DOM updates are async
             const checkCondition = async () => {
                 const addInstanceButtons = document.querySelectorAll(
-                    ".visual-editor__add-button"
+                    ".visual-builder__add-button"
                 );
                 return addInstanceButtons.length === 2;
             };
@@ -308,7 +308,7 @@ describe("When an element is clicked in visual editor mode", () => {
             }
 
             const addInstanceButtons = document.querySelectorAll(
-                ".visual-editor__add-button"
+                ".visual-builder__add-button"
             );
 
             expect(addInstanceButtons.length).toBe(2);
@@ -356,14 +356,14 @@ describe("When an element is clicked in visual editor mode", () => {
 
         test("should have an overlay", () => {
             multiLineField.dispatchEvent(mouseClickEvent);
-            const overlay = document.querySelector(".visual-editor__overlay");
+            const overlay = document.querySelector(".visual-builder__overlay");
             expect(overlay!.classList.contains("visible"));
         });
 
         test("should have a field path dropdown", () => {
             multiLineField.dispatchEvent(mouseClickEvent);
             const toolbar = document.querySelector(
-                ".visual-editor__focused-toolbar__field-label-wrapper__current-field"
+                ".visual-builder__focused-toolbar__field-label-wrapper__current-field"
             );
             expect(toolbar).toBeInTheDocument();
         });
@@ -452,14 +452,14 @@ describe("When an element is clicked in visual editor mode", () => {
 
         test("should have an overlay", () => {
             container.dispatchEvent(mouseClickEvent);
-            const overlay = document.querySelector(".visual-editor__overlay");
+            const overlay = document.querySelector(".visual-builder__overlay");
             expect(overlay!.classList.contains("visible"));
         });
 
         test("should have a field path dropdown", () => {
             container.dispatchEvent(mouseClickEvent);
             const toolbar = document.querySelector(
-                ".visual-editor__focused-toolbar__field-label-wrapper__current-field"
+                ".visual-builder__focused-toolbar__field-label-wrapper__current-field"
             );
             expect(toolbar).toBeInTheDocument();
         });
@@ -470,11 +470,11 @@ describe("When an element is clicked in visual editor mode", () => {
             });
 
             const multiFieldToolbar = document.querySelector(
-                ".visual-editor__focused-toolbar__multiple-field-toolbar"
+                ".visual-builder__focused-toolbar__multiple-field-toolbar"
             );
 
             const buttonGroup = document.querySelector(
-                ".visual-editor__focused-toolbar__button-group"
+                ".visual-builder__focused-toolbar__button-group"
             );
 
             expect(multiFieldToolbar).toBeInTheDocument();
@@ -487,7 +487,7 @@ describe("When an element is clicked in visual editor mode", () => {
             // need to poll and check since the DOM updates are async
             const checkCondition = async () => {
                 const addInstanceButtons = document.querySelectorAll(
-                    ".visual-editor__add-button"
+                    ".visual-builder__add-button"
                 );
                 return addInstanceButtons.length === 2;
             };
@@ -513,7 +513,7 @@ describe("When an element is clicked in visual editor mode", () => {
             }
 
             const addInstanceButtons = document.querySelectorAll(
-                ".visual-editor__add-button"
+                ".visual-builder__add-button"
             );
 
             expect(addInstanceButtons.length).toBe(2);
@@ -597,14 +597,14 @@ describe("When an element is clicked in visual editor mode", () => {
 
         test("should have an overlay", () => {
             htmlRteField.dispatchEvent(mouseClickEvent);
-            const overlay = document.querySelector(".visual-editor__overlay");
+            const overlay = document.querySelector(".visual-builder__overlay");
             expect(overlay!.classList.contains("visible"));
         });
 
         test("should have a field path dropdown", () => {
             htmlRteField.dispatchEvent(mouseClickEvent);
             const toolbar = document.querySelector(
-                ".visual-editor__focused-toolbar__field-label-wrapper__current-field"
+                ".visual-builder__focused-toolbar__field-label-wrapper__current-field"
             );
             expect(toolbar).toBeInTheDocument();
         });
@@ -724,14 +724,14 @@ describe("When an element is clicked in visual editor mode", () => {
 
         test("should have an overlay", () => {
             container.dispatchEvent(mouseClickEvent);
-            const overlay = document.querySelector(".visual-editor__overlay");
+            const overlay = document.querySelector(".visual-builder__overlay");
             expect(overlay!.classList.contains("visible"));
         });
 
         test("should have a field path dropdown", () => {
             container.dispatchEvent(mouseClickEvent);
             const toolbar = document.querySelector(
-                ".visual-editor__focused-toolbar__field-label-wrapper__current-field"
+                ".visual-builder__focused-toolbar__field-label-wrapper__current-field"
             );
             expect(toolbar).toBeInTheDocument();
         });
@@ -742,11 +742,11 @@ describe("When an element is clicked in visual editor mode", () => {
             });
 
             const multiFieldToolbar = document.querySelector(
-                ".visual-editor__focused-toolbar__multiple-field-toolbar"
+                ".visual-builder__focused-toolbar__multiple-field-toolbar"
             );
 
             const buttonGroup = document.querySelector(
-                ".visual-editor__focused-toolbar__button-group"
+                ".visual-builder__focused-toolbar__button-group"
             );
 
             expect(multiFieldToolbar).toBeInTheDocument();
@@ -759,7 +759,7 @@ describe("When an element is clicked in visual editor mode", () => {
             // need to poll and check since the DOM updates are async
             const checkCondition = async () => {
                 const addInstanceButtons = document.querySelectorAll(
-                    ".visual-editor__add-button"
+                    ".visual-builder__add-button"
                 );
                 return addInstanceButtons.length === 2;
             };
@@ -785,7 +785,7 @@ describe("When an element is clicked in visual editor mode", () => {
             }
 
             const addInstanceButtons = document.querySelectorAll(
-                ".visual-editor__add-button"
+                ".visual-builder__add-button"
             );
 
             expect(addInstanceButtons.length).toBe(2);
@@ -873,14 +873,14 @@ describe("When an element is clicked in visual editor mode", () => {
 
         test("should have an overlay", () => {
             jsonRteField.dispatchEvent(mouseClickEvent);
-            const overlay = document.querySelector(".visual-editor__overlay");
+            const overlay = document.querySelector(".visual-builder__overlay");
             expect(overlay!.classList.contains("visible"));
         });
 
         test("should have a field path dropdown", () => {
             jsonRteField.dispatchEvent(mouseClickEvent);
             const toolbar = document.querySelector(
-                ".visual-editor__focused-toolbar__field-label-wrapper__current-field"
+                ".visual-builder__focused-toolbar__field-label-wrapper__current-field"
             );
             expect(toolbar).toBeInTheDocument();
         });
@@ -969,14 +969,14 @@ describe("When an element is clicked in visual editor mode", () => {
 
         test("should have an overlay", () => {
             container.dispatchEvent(mouseClickEvent);
-            const overlay = document.querySelector(".visual-editor__overlay");
+            const overlay = document.querySelector(".visual-builder__overlay");
             expect(overlay!.classList.contains("visible"));
         });
 
         test("should have a field path dropdown", () => {
             container.dispatchEvent(mouseClickEvent);
             const toolbar = document.querySelector(
-                ".visual-editor__focused-toolbar__field-label-wrapper__current-field"
+                ".visual-builder__focused-toolbar__field-label-wrapper__current-field"
             );
             expect(toolbar).toBeInTheDocument();
         });
@@ -987,11 +987,11 @@ describe("When an element is clicked in visual editor mode", () => {
             });
 
             const multiFieldToolbar = document.querySelector(
-                ".visual-editor__focused-toolbar__multiple-field-toolbar"
+                ".visual-builder__focused-toolbar__multiple-field-toolbar"
             );
 
             const buttonGroup = document.querySelector(
-                ".visual-editor__focused-toolbar__button-group"
+                ".visual-builder__focused-toolbar__button-group"
             );
 
             expect(multiFieldToolbar).toBeInTheDocument();
@@ -1004,7 +1004,7 @@ describe("When an element is clicked in visual editor mode", () => {
             // need to poll and check since the DOM updates are async
             const checkCondition = async () => {
                 const addInstanceButtons = document.querySelectorAll(
-                    ".visual-editor__add-button"
+                    ".visual-builder__add-button"
                 );
                 return addInstanceButtons.length === 2;
             };
@@ -1030,7 +1030,7 @@ describe("When an element is clicked in visual editor mode", () => {
             }
 
             const addInstanceButtons = document.querySelectorAll(
-                ".visual-editor__add-button"
+                ".visual-builder__add-button"
             );
 
             expect(addInstanceButtons.length).toBe(2);
@@ -1120,14 +1120,14 @@ describe("When an element is clicked in visual editor mode", () => {
 
         test("should have an overlay", () => {
             markdownField.dispatchEvent(mouseClickEvent);
-            const overlay = document.querySelector(".visual-editor__overlay");
+            const overlay = document.querySelector(".visual-builder__overlay");
             expect(overlay!.classList.contains("visible"));
         });
 
         test("should have a field path dropdown", () => {
             markdownField.dispatchEvent(mouseClickEvent);
             const toolbar = document.querySelector(
-                ".visual-editor__focused-toolbar__field-label-wrapper__current-field"
+                ".visual-builder__focused-toolbar__field-label-wrapper__current-field"
             );
             expect(toolbar).toBeInTheDocument();
         });
@@ -1247,14 +1247,14 @@ describe("When an element is clicked in visual editor mode", () => {
 
         test("should have an overlay", () => {
             container.dispatchEvent(mouseClickEvent);
-            const overlay = document.querySelector(".visual-editor__overlay");
+            const overlay = document.querySelector(".visual-builder__overlay");
             expect(overlay!.classList.contains("visible"));
         });
 
         test("should have a field path dropdown", () => {
             container.dispatchEvent(mouseClickEvent);
             const toolbar = document.querySelector(
-                ".visual-editor__focused-toolbar__field-label-wrapper__current-field"
+                ".visual-builder__focused-toolbar__field-label-wrapper__current-field"
             );
             expect(toolbar).toBeInTheDocument();
         });
@@ -1265,11 +1265,11 @@ describe("When an element is clicked in visual editor mode", () => {
             });
 
             const multiFieldToolbar = document.querySelector(
-                ".visual-editor__focused-toolbar__multiple-field-toolbar"
+                ".visual-builder__focused-toolbar__multiple-field-toolbar"
             );
 
             const buttonGroup = document.querySelector(
-                ".visual-editor__focused-toolbar__button-group"
+                ".visual-builder__focused-toolbar__button-group"
             );
 
             expect(multiFieldToolbar).toBeInTheDocument();
@@ -1282,7 +1282,7 @@ describe("When an element is clicked in visual editor mode", () => {
             // need to poll and check since the DOM updates are async
             const checkCondition = async () => {
                 const addInstanceButtons = document.querySelectorAll(
-                    ".visual-editor__add-button"
+                    ".visual-builder__add-button"
                 );
                 return addInstanceButtons.length === 2;
             };
@@ -1308,7 +1308,7 @@ describe("When an element is clicked in visual editor mode", () => {
             }
 
             const addInstanceButtons = document.querySelectorAll(
-                ".visual-editor__add-button"
+                ".visual-builder__add-button"
             );
 
             expect(addInstanceButtons.length).toBe(2);
@@ -1397,14 +1397,14 @@ describe("When an element is clicked in visual editor mode", () => {
 
         test("should have an overlay", () => {
             selectField.dispatchEvent(mouseClickEvent);
-            const overlay = document.querySelector(".visual-editor__overlay");
+            const overlay = document.querySelector(".visual-builder__overlay");
             expect(overlay!.classList.contains("visible"));
         });
 
         test("should have a field path dropdown", () => {
             selectField.dispatchEvent(mouseClickEvent);
             const toolbar = document.querySelector(
-                ".visual-editor__focused-toolbar__field-label-wrapper__current-field"
+                ".visual-builder__focused-toolbar__field-label-wrapper__current-field"
             );
             expect(toolbar).toBeInTheDocument();
         });
@@ -1493,14 +1493,14 @@ describe("When an element is clicked in visual editor mode", () => {
 
         test("should have an overlay", () => {
             container.dispatchEvent(mouseClickEvent);
-            const overlay = document.querySelector(".visual-editor__overlay");
+            const overlay = document.querySelector(".visual-builder__overlay");
             expect(overlay!.classList.contains("visible"));
         });
 
         test("should have a field path dropdown", () => {
             container.dispatchEvent(mouseClickEvent);
             const toolbar = document.querySelector(
-                ".visual-editor__focused-toolbar__field-label-wrapper__current-field"
+                ".visual-builder__focused-toolbar__field-label-wrapper__current-field"
             );
             expect(toolbar).toBeInTheDocument();
         });
@@ -1511,11 +1511,11 @@ describe("When an element is clicked in visual editor mode", () => {
             });
 
             const multiFieldToolbar = document.querySelector(
-                ".visual-editor__focused-toolbar__multiple-field-toolbar"
+                ".visual-builder__focused-toolbar__multiple-field-toolbar"
             );
 
             const buttonGroup = document.querySelector(
-                ".visual-editor__focused-toolbar__button-group"
+                ".visual-builder__focused-toolbar__button-group"
             );
 
             expect(multiFieldToolbar).toBeInTheDocument();
@@ -1528,7 +1528,7 @@ describe("When an element is clicked in visual editor mode", () => {
             // need to poll and check since the DOM updates are async
             const checkCondition = async () => {
                 const addInstanceButtons = document.querySelectorAll(
-                    ".visual-editor__add-button"
+                    ".visual-builder__add-button"
                 );
                 return addInstanceButtons.length === 2;
             };
@@ -1554,7 +1554,7 @@ describe("When an element is clicked in visual editor mode", () => {
             }
 
             const addInstanceButtons = document.querySelectorAll(
-                ".visual-editor__add-button"
+                ".visual-builder__add-button"
             );
 
             expect(addInstanceButtons.length).toBe(2);
@@ -1644,14 +1644,14 @@ describe("When an element is clicked in visual editor mode", () => {
 
         test("should have an overlay", () => {
             numberField.dispatchEvent(mouseClickEvent);
-            const overlay = document.querySelector(".visual-editor__overlay");
+            const overlay = document.querySelector(".visual-builder__overlay");
             expect(overlay!.classList.contains("visible"));
         });
 
         test("should have a field path dropdown", () => {
             numberField.dispatchEvent(mouseClickEvent);
             const toolbar = document.querySelector(
-                ".visual-editor__focused-toolbar__field-label-wrapper__current-field"
+                ".visual-builder__focused-toolbar__field-label-wrapper__current-field"
             );
             expect(toolbar).toBeInTheDocument();
         });
@@ -1729,14 +1729,14 @@ describe("When an element is clicked in visual editor mode", () => {
 
         test("should have an overlay", () => {
             container.dispatchEvent(mouseClickEvent);
-            const overlay = document.querySelector(".visual-editor__overlay");
+            const overlay = document.querySelector(".visual-builder__overlay");
             expect(overlay!.classList.contains("visible"));
         });
 
         test("should have a field path dropdown", () => {
             container.dispatchEvent(mouseClickEvent);
             const toolbar = document.querySelector(
-                ".visual-editor__focused-toolbar__field-label-wrapper__current-field"
+                ".visual-builder__focused-toolbar__field-label-wrapper__current-field"
             );
             expect(toolbar).toBeInTheDocument();
         });
@@ -1747,11 +1747,11 @@ describe("When an element is clicked in visual editor mode", () => {
             });
 
             const multiFieldToolbar = document.querySelector(
-                ".visual-editor__focused-toolbar__multiple-field-toolbar"
+                ".visual-builder__focused-toolbar__multiple-field-toolbar"
             );
 
             const buttonGroup = document.querySelector(
-                ".visual-editor__focused-toolbar__button-group"
+                ".visual-builder__focused-toolbar__button-group"
             );
 
             expect(multiFieldToolbar).toBeInTheDocument();
@@ -1764,7 +1764,7 @@ describe("When an element is clicked in visual editor mode", () => {
             // need to poll and check since the DOM updates are async
             const checkCondition = async () => {
                 const addInstanceButtons = document.querySelectorAll(
-                    ".visual-editor__add-button"
+                    ".visual-builder__add-button"
                 );
                 return addInstanceButtons.length === 2;
             };
@@ -1790,7 +1790,7 @@ describe("When an element is clicked in visual editor mode", () => {
             }
 
             const addInstanceButtons = document.querySelectorAll(
-                ".visual-editor__add-button"
+                ".visual-builder__add-button"
             );
 
             expect(addInstanceButtons.length).toBe(2);
@@ -1875,14 +1875,14 @@ describe("When an element is clicked in visual editor mode", () => {
 
         test("should have an overlay", () => {
             booleanField.dispatchEvent(mouseClickEvent);
-            const overlay = document.querySelector(".visual-editor__overlay");
+            const overlay = document.querySelector(".visual-builder__overlay");
             expect(overlay!.classList.contains("visible"));
         });
 
         test("should have a field path dropdown", () => {
             booleanField.dispatchEvent(mouseClickEvent);
             const toolbar = document.querySelector(
-                ".visual-editor__focused-toolbar__field-label-wrapper__current-field"
+                ".visual-builder__focused-toolbar__field-label-wrapper__current-field"
             );
             expect(toolbar).toBeInTheDocument();
         });
@@ -1962,14 +1962,14 @@ describe("When an element is clicked in visual editor mode", () => {
 
         test("should have an overlay", () => {
             fileField.dispatchEvent(mouseClickEvent);
-            const overlay = document.querySelector(".visual-editor__overlay");
+            const overlay = document.querySelector(".visual-builder__overlay");
             expect(overlay!.classList.contains("visible"));
         });
 
         test("should have a field path dropdown", () => {
             fileField.dispatchEvent(mouseClickEvent);
             const toolbar = document.querySelector(
-                ".visual-editor__focused-toolbar__field-label-wrapper__current-field"
+                ".visual-builder__focused-toolbar__field-label-wrapper__current-field"
             );
             expect(toolbar).toBeInTheDocument();
         });
@@ -1980,11 +1980,11 @@ describe("When an element is clicked in visual editor mode", () => {
             });
 
             const multiFieldToolbar = document.querySelector(
-                ".visual-editor__focused-toolbar__multiple-field-toolbar"
+                ".visual-builder__focused-toolbar__multiple-field-toolbar"
             );
 
             const buttonGroup = document.querySelector(
-                ".visual-editor__focused-toolbar__button-group"
+                ".visual-builder__focused-toolbar__button-group"
             );
 
             expect(multiFieldToolbar).not.toBeInTheDocument();
@@ -1994,7 +1994,7 @@ describe("When an element is clicked in visual editor mode", () => {
         test("should have a field path dropdown", () => {
             fileField.dispatchEvent(mouseClickEvent);
             const toolbar = document.querySelector(
-                ".visual-editor__focused-toolbar__field-label-wrapper__current-field"
+                ".visual-builder__focused-toolbar__field-label-wrapper__current-field"
             );
             expect(toolbar).toBeInTheDocument();
         });
@@ -2004,7 +2004,7 @@ describe("When an element is clicked in visual editor mode", () => {
                 fileField.dispatchEvent(mouseClickEvent);
             });
             const replaceButton = document.querySelector(
-                ".visual-editor__replace-button"
+                ".visual-builder__replace-button"
             );
 
             expect(replaceButton).toBeInTheDocument();
@@ -2110,14 +2110,14 @@ describe("When an element is clicked in visual editor mode", () => {
 
         test("should have an overlay", () => {
             container.dispatchEvent(mouseClickEvent);
-            const overlay = document.querySelector(".visual-editor__overlay");
+            const overlay = document.querySelector(".visual-builder__overlay");
             expect(overlay!.classList.contains("visible"));
         });
 
         test("should have a field path dropdown", () => {
             container.dispatchEvent(mouseClickEvent);
             const toolbar = document.querySelector(
-                ".visual-editor__focused-toolbar__field-label-wrapper__current-field"
+                ".visual-builder__focused-toolbar__field-label-wrapper__current-field"
             );
             expect(toolbar).toBeInTheDocument();
         });
@@ -2135,7 +2135,7 @@ describe("When an element is clicked in visual editor mode", () => {
             });
 
             let replaceButton = document.querySelector(
-                ".visual-editor__replace-button"
+                ".visual-builder__replace-button"
             );
 
             expect(replaceButton).toBeInTheDocument();
@@ -2145,7 +2145,7 @@ describe("When an element is clicked in visual editor mode", () => {
             });
 
             replaceButton = document.querySelector(
-                ".visual-editor__replace-button"
+                ".visual-builder__replace-button"
             );
 
             expect(replaceButton).toBeInTheDocument();
@@ -2157,11 +2157,11 @@ describe("When an element is clicked in visual editor mode", () => {
             });
 
             const multiFieldToolbar = document.querySelector(
-                ".visual-editor__focused-toolbar__multiple-field-toolbar"
+                ".visual-builder__focused-toolbar__multiple-field-toolbar"
             );
 
             const buttonGroup = document.querySelector(
-                ".visual-editor__focused-toolbar__button-group"
+                ".visual-builder__focused-toolbar__button-group"
             );
 
             expect(multiFieldToolbar).toBeInTheDocument();
@@ -2174,7 +2174,7 @@ describe("When an element is clicked in visual editor mode", () => {
             // need to poll and check since the DOM updates are async
             const checkCondition = async () => {
                 const addInstanceButtons = document.querySelectorAll(
-                    ".visual-editor__add-button"
+                    ".visual-builder__add-button"
                 );
                 return addInstanceButtons.length === 2;
             };
@@ -2200,7 +2200,7 @@ describe("When an element is clicked in visual editor mode", () => {
             }
 
             const addInstanceButtons = document.querySelectorAll(
-                ".visual-editor__add-button"
+                ".visual-builder__add-button"
             );
 
             expect(addInstanceButtons.length).toBe(2);
@@ -2289,14 +2289,14 @@ describe("When an element is clicked in visual editor mode", () => {
 
         test("should have an overlay", () => {
             dateField.dispatchEvent(mouseClickEvent);
-            const overlay = document.querySelector(".visual-editor__overlay");
+            const overlay = document.querySelector(".visual-builder__overlay");
             expect(overlay!.classList.contains("visible"));
         });
 
         test("should have a field path dropdown", () => {
             dateField.dispatchEvent(mouseClickEvent);
             const toolbar = document.querySelector(
-                ".visual-editor__focused-toolbar__field-label-wrapper__current-field"
+                ".visual-builder__focused-toolbar__field-label-wrapper__current-field"
             );
             expect(toolbar).toBeInTheDocument();
         });
@@ -2368,14 +2368,14 @@ describe("When an element is clicked in visual editor mode", () => {
 
         test("should have an overlay", () => {
             linkField.dispatchEvent(mouseClickEvent);
-            const overlay = document.querySelector(".visual-editor__overlay");
+            const overlay = document.querySelector(".visual-builder__overlay");
             expect(overlay!.classList.contains("visible"));
         });
 
         test("should have a field path dropdown", () => {
             linkField.dispatchEvent(mouseClickEvent);
             const toolbar = document.querySelector(
-                ".visual-editor__focused-toolbar__field-label-wrapper__current-field"
+                ".visual-builder__focused-toolbar__field-label-wrapper__current-field"
             );
             expect(toolbar).toBeInTheDocument();
         });
@@ -2386,11 +2386,11 @@ describe("When an element is clicked in visual editor mode", () => {
             });
 
             const multiFieldToolbar = document.querySelector(
-                ".visual-editor__focused-toolbar__multiple-field-toolbar"
+                ".visual-builder__focused-toolbar__multiple-field-toolbar"
             );
 
             const buttonGroup = document.querySelector(
-                ".visual-editor__focused-toolbar__button-group"
+                ".visual-builder__focused-toolbar__button-group"
             );
 
             expect(multiFieldToolbar).not.toBeInTheDocument();
@@ -2400,7 +2400,7 @@ describe("When an element is clicked in visual editor mode", () => {
         test("should have a field path dropdown", () => {
             linkField.dispatchEvent(mouseClickEvent);
             const toolbar = document.querySelector(
-                ".visual-editor__focused-toolbar__field-label-wrapper__current-field"
+                ".visual-builder__focused-toolbar__field-label-wrapper__current-field"
             );
             expect(toolbar).toBeInTheDocument();
         });
@@ -2469,7 +2469,7 @@ describe("When an element is clicked in visual editor mode", () => {
                         },
                         instance: {
                             fieldPathWithIndex: "link.href",
-                        }
+                        },
                     },
                     cslpData: "all_fields.bltapikey.en-us.link.href",
                 }
@@ -2521,14 +2521,14 @@ describe("When an element is clicked in visual editor mode", () => {
 
         test("should have an overlay", () => {
             container.dispatchEvent(mouseClickEvent);
-            const overlay = document.querySelector(".visual-editor__overlay");
+            const overlay = document.querySelector(".visual-builder__overlay");
             expect(overlay!.classList.contains("visible"));
         });
 
         test("should have a field path dropdown", () => {
             container.dispatchEvent(mouseClickEvent);
             const toolbar = document.querySelector(
-                ".visual-editor__focused-toolbar__field-label-wrapper__current-field"
+                ".visual-builder__focused-toolbar__field-label-wrapper__current-field"
             );
             expect(toolbar).toBeInTheDocument();
         });
@@ -2539,11 +2539,11 @@ describe("When an element is clicked in visual editor mode", () => {
             });
 
             const multiFieldToolbar = document.querySelector(
-                ".visual-editor__focused-toolbar__multiple-field-toolbar"
+                ".visual-builder__focused-toolbar__multiple-field-toolbar"
             );
 
             const buttonGroup = document.querySelector(
-                ".visual-editor__focused-toolbar__button-group"
+                ".visual-builder__focused-toolbar__button-group"
             );
 
             expect(multiFieldToolbar).toBeInTheDocument();
@@ -2556,7 +2556,7 @@ describe("When an element is clicked in visual editor mode", () => {
             // need to poll and check since the DOM updates are async
             const checkCondition = async () => {
                 const addInstanceButtons = document.querySelectorAll(
-                    ".visual-editor__add-button"
+                    ".visual-builder__add-button"
                 );
                 return addInstanceButtons.length === 2;
             };
@@ -2582,7 +2582,7 @@ describe("When an element is clicked in visual editor mode", () => {
             }
 
             const addInstanceButtons = document.querySelectorAll(
-                ".visual-editor__add-button"
+                ".visual-builder__add-button"
             );
 
             expect(addInstanceButtons.length).toBe(2);
@@ -2671,14 +2671,14 @@ describe("When an element is clicked in visual editor mode", () => {
 
         test("should have an overlay", () => {
             referenceField.dispatchEvent(mouseClickEvent);
-            const overlay = document.querySelector(".visual-editor__overlay");
+            const overlay = document.querySelector(".visual-builder__overlay");
             expect(overlay!.classList.contains("visible"));
         });
 
         test("should have a field path dropdown", () => {
             referenceField.dispatchEvent(mouseClickEvent);
             const toolbar = document.querySelector(
-                ".visual-editor__focused-toolbar__field-label-wrapper__current-field"
+                ".visual-builder__focused-toolbar__field-label-wrapper__current-field"
             );
             expect(toolbar).toBeInTheDocument();
         });
@@ -2768,14 +2768,14 @@ describe("When an element is clicked in visual editor mode", () => {
 
         test("should have an overlay", () => {
             container.dispatchEvent(mouseClickEvent);
-            const overlay = document.querySelector(".visual-editor__overlay");
+            const overlay = document.querySelector(".visual-builder__overlay");
             expect(overlay!.classList.contains("visible"));
         });
 
         test("should have a field path dropdown", () => {
             container.dispatchEvent(mouseClickEvent);
             const toolbar = document.querySelector(
-                ".visual-editor__focused-toolbar__field-label-wrapper__current-field"
+                ".visual-builder__focused-toolbar__field-label-wrapper__current-field"
             );
             expect(toolbar).toBeInTheDocument();
         });
@@ -2786,11 +2786,11 @@ describe("When an element is clicked in visual editor mode", () => {
             });
 
             const multiFieldToolbar = document.querySelector(
-                ".visual-editor__focused-toolbar__multiple-field-toolbar"
+                ".visual-builder__focused-toolbar__multiple-field-toolbar"
             );
 
             const buttonGroup = document.querySelector(
-                ".visual-editor__focused-toolbar__button-group"
+                ".visual-builder__focused-toolbar__button-group"
             );
 
             expect(multiFieldToolbar).toBeInTheDocument();
@@ -2803,7 +2803,7 @@ describe("When an element is clicked in visual editor mode", () => {
             // need to poll and check since the DOM updates are async
             const checkCondition = async () => {
                 const addInstanceButtons = document.querySelectorAll(
-                    ".visual-editor__add-button"
+                    ".visual-builder__add-button"
                 );
                 return addInstanceButtons.length === 2;
             };
@@ -2829,7 +2829,7 @@ describe("When an element is clicked in visual editor mode", () => {
             }
 
             const addInstanceButtons = document.querySelectorAll(
-                ".visual-editor__add-button"
+                ".visual-builder__add-button"
             );
 
             expect(addInstanceButtons.length).toBe(2);
@@ -2920,14 +2920,14 @@ describe("When an element is clicked in visual editor mode", () => {
 
         test("should have an overlay", () => {
             groupField.dispatchEvent(mouseClickEvent);
-            const overlay = document.querySelector(".visual-editor__overlay");
+            const overlay = document.querySelector(".visual-builder__overlay");
             expect(overlay!.classList.contains("visible"));
         });
 
         test("should have a field path dropdown", () => {
             groupField.dispatchEvent(mouseClickEvent);
             const toolbar = document.querySelector(
-                ".visual-editor__focused-toolbar__field-label-wrapper__current-field"
+                ".visual-builder__focused-toolbar__field-label-wrapper__current-field"
             );
             expect(toolbar).toBeInTheDocument();
         });
@@ -3001,7 +3001,7 @@ describe("When an element is clicked in visual editor mode", () => {
                         },
                         instance: {
                             fieldPathWithIndex: "group_multiple_.0",
-                        }
+                        },
                     },
                     cslpData: "all_fields.bltapikey.en-us.group_multiple_.0",
                 }
@@ -3062,14 +3062,14 @@ describe("When an element is clicked in visual editor mode", () => {
 
         test("should have an overlay", () => {
             container.dispatchEvent(mouseClickEvent);
-            const overlay = document.querySelector(".visual-editor__overlay");
+            const overlay = document.querySelector(".visual-builder__overlay");
             expect(overlay!.classList.contains("visible"));
         });
 
         test("should have a field path dropdown", () => {
             container.dispatchEvent(mouseClickEvent);
             const toolbar = document.querySelector(
-                ".visual-editor__focused-toolbar__field-label-wrapper__current-field"
+                ".visual-builder__focused-toolbar__field-label-wrapper__current-field"
             );
             expect(toolbar).toBeInTheDocument();
         });
@@ -3080,11 +3080,11 @@ describe("When an element is clicked in visual editor mode", () => {
             });
 
             const multiFieldToolbar = document.querySelector(
-                ".visual-editor__focused-toolbar__multiple-field-toolbar"
+                ".visual-builder__focused-toolbar__multiple-field-toolbar"
             );
 
             const buttonGroup = document.querySelector(
-                ".visual-editor__focused-toolbar__button-group"
+                ".visual-builder__focused-toolbar__button-group"
             );
 
             expect(multiFieldToolbar).toBeInTheDocument();
@@ -3097,7 +3097,7 @@ describe("When an element is clicked in visual editor mode", () => {
             // need to poll and check since the DOM updates are async
             const checkCondition = async () => {
                 const addInstanceButtons = document.querySelectorAll(
-                    ".visual-editor__add-button"
+                    ".visual-builder__add-button"
                 );
                 return addInstanceButtons.length === 2;
             };
@@ -3123,7 +3123,7 @@ describe("When an element is clicked in visual editor mode", () => {
             }
 
             const addInstanceButtons = document.querySelectorAll(
-                ".visual-editor__add-button"
+                ".visual-builder__add-button"
             );
 
             expect(addInstanceButtons.length).toBe(2);
