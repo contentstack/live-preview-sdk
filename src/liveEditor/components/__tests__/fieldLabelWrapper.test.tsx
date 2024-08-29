@@ -43,6 +43,7 @@ describe("FieldLabelWrapperComponent", () => {
         content_type_uid: "mockContentTypeUid",
         cslpValue: "",
         locale: "",
+        variant: undefined,
         fieldPath: "mockFieldPath",
         fieldPathWithIndex: "",
         multipleFieldMetadata: {
