@@ -18,6 +18,7 @@ export function getUserInitData(): IInitData {
         stackDetails: {
             apiKey: "",
             environment: "",
+            branch: "",
         },
 
         clientUrlParams: {
@@ -27,10 +28,6 @@ export function getUserInitData(): IInitData {
         },
         stackSdk: {
             live_preview: {},
-            headers: {
-                api_key: "",
-                branch: "main",
-            },
             environment: "",
         },
         runScriptsOnUpdate: false,
