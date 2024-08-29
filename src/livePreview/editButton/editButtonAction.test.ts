@@ -204,6 +204,45 @@ describe("cslp tooltip", () => {
         descPara?.dispatchEvent(hoverEvent);
     });
 
+    test("should redirect to page when edit tag button is clicked with added branch", () => {
+        new LivePreview({
+            enable: true,
+            stackDetails: {
+                apiKey: "sample-api-key",
+                environment: "sample-environment",
+                branch: "dev",
+            },
+        });
+
+        const singularEditButton = document.querySelector(
+            "[data-test-id='cslp-singular-edit-button']"
+        ) as HTMLDivElement;
+
+        const titlePara = document.querySelector("[data-test-id='title-para']");
+        const descPara = document.querySelector("[data-test-id='desc-para']");
+
+        jest.spyOn(window, "open").mockImplementation(
+            (url?: string | URL, target?: string, features?: string) => {
+                return {} as Window;
+            }
+        );
+
+        const hoverEvent = new CustomEvent("mouseover", {
+            bubbles: true,
+        });
+
+        titlePara?.dispatchEvent(hoverEvent);
+
+        singularEditButton?.click();
+
+        const expectedRedirectUrl =
+            "https://app.contentstack.com/#!/stack/sample-api-key/content-type/content-type-1/en-us/entry/entry-uid-1/edit?branch=dev&preview-field=field-title&preview-locale=en-us&preview-environment=sample-environment";
+
+        expect(window.open).toHaveBeenCalledWith(expectedRedirectUrl, "_blank");
+
+        descPara?.dispatchEvent(hoverEvent);
+    });
+
     test("should throw error when edit tag is used without apiKey", () => {
         new LivePreviewEditButton();
 
@@ -498,5 +537,43 @@ describe("cslp tooltip", () => {
         expect(tooltip?.getAttribute("current-data-cslp")).toBe(undefined);
 
         locationSpy.mockRestore();
+    });
+
+    test("should re-render the edit button tooltip if not already available even when edit button is enabled", async () => {
+        new LivePreview({
+            enable: true,
+            editButton: {
+                enable: true,
+            },
+        });
+
+        let tooltip = document.querySelector(
+            "[data-test-id='cs-cslp-tooltip']"
+        );
+        const tooltipParent = tooltip?.parentNode;
+        // deleting the tooltip
+        tooltipParent?.removeChild(tooltip as Node);
+
+        expect(
+            document.querySelector("[data-test-id='cs-cslp-tooltip']")
+        ).toBeNull();
+
+        const titlePara = document.querySelector("[data-test-id='title-para']");
+        const descPara = document.querySelector("[data-test-id='desc-para']");
+
+        const hoverEvent = new CustomEvent("mouseover", {
+            bubbles: true,
+        });
+
+        titlePara?.dispatchEvent(hoverEvent);
+
+        tooltip = document.querySelector("[data-test-id='cs-cslp-tooltip']");
+        expect(tooltip).toBeDefined();
+
+        expect(tooltip?.getAttribute("current-data-cslp")).toBe(TITLE_CSLP_TAG);
+
+        descPara?.dispatchEvent(hoverEvent);
+
+        expect(tooltip?.getAttribute("current-data-cslp")).toBe(DESC_CSLP_TAG);
     });
 });

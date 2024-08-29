@@ -32,12 +32,7 @@ export default {
                 test: /\.ts$/,
                 use: "ts-loader",
                 include: [path.resolve(__dirname, "src")],
-            },
-            {
-                test: /\.css$/,
-                use: [MiniCssExtractPlugin.loader, "css-loader"],
-                include: [path.resolve(__dirname, "src")],
-            },
+            }
         ],
     },
     resolve: {
