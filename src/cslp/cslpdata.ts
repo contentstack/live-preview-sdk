@@ -21,7 +21,7 @@ export function extractDetailsFromCslp(cslpValue: string): CslpData {
     }
 
     const [content_type_uid, entryInfo, locale, ...fieldPath] =
-        cslpValue.split(".");
+        cslpData.split(".");
 
     let entry_uid: string;
     let variant;

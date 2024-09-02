@@ -32,6 +32,7 @@ import { FieldSchemaMap } from "./utils/fieldSchemaMap";
 import { isFieldDisabled } from "./utils/isFieldDisabled";
 import { updateFocussedState } from "./utils/updateFocussedState";
 import { useDraftFieldsPostMessageEvent } from "./eventManager/useDraftFieldsPostMessageEvent";
+import { useVariantFieldsPostMessageEvent } from "./eventManager/useVariantsPostMessageEvent";
 
 interface VisualEditorGlobalStateImpl {
     previousSelectedEditableDOM: HTMLElement | Element | null;
@@ -253,7 +254,7 @@ export class VisualEditor {
                 useHistoryPostMessageEvent();
                 useOnEntryUpdatePostMessageEvent();
                 useDraftFieldsPostMessageEvent();
-                
+                useVariantFieldsPostMessageEvent();
             })
             .catch(() => {
                 if (!inIframe()) {

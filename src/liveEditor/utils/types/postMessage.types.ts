@@ -17,4 +17,6 @@ export enum LiveEditorPostMessageEvents {
     HIDE_FOCUS_OVERLAY = "hide-focus-overlay",
     SHOW_DRAFT_FIELDS = "show-draft-fields",
     REMOVE_DRAFT_FIELDS = "remove-draft-fields",
+    SHOW_VARIANT_FIELDS = "show-variant-fields",
+    REMOVE_VARIANT_FIELDS = "remove-variant-fields",
 }

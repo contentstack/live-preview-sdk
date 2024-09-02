@@ -11,6 +11,7 @@ import { CaretIcon, InfoIcon } from "./icons";
 import { LoadingIcon } from "./icons/loading";
 import { getFieldIcon } from "../generators/generateCustomCursor";
 import { uniqBy } from "lodash-es";
+import { VariantIcon } from "./icons/variant";
 
 async function getFieldDisplayNames(fieldMetadata: CslpData[]) {
     const result = await liveEditorPostMessage?.send<{ [k: string]: string }>(
@@ -35,6 +36,7 @@ function FieldLabelWrapperComponent(
         icon: <CaretIcon />,
         prefixIcon: null,
         disabled: false,
+        isVariant: false,
     });
     const [displayNames, setDisplayNames] = useState<Record<string, string>>(
         {}
@@ -51,12 +53,16 @@ function FieldLabelWrapperComponent(
     useEffect(() => {
         const fetchData = async () => {
             setDisplayNamesLoading(true);
-            const allPaths = uniqBy([
-                props.fieldMetadata,
-                ...props.parentPaths.map((path) => {
-                    return extractDetailsFromCslp(path);
-                }),
-            ], 'cslpValue');
+            const allPaths = uniqBy(
+                [
+                    props.fieldMetadata,
+                    ...props.parentPaths.map((path) => {
+                        return extractDetailsFromCslp(path);
+                    }),
+                ],
+                "cslpValue"
+            );
+
             const displayNames = await getFieldDisplayNames(allPaths);
 
             const fieldSchema = await FieldSchemaMap.getFieldSchema(
@@ -73,6 +79,7 @@ function FieldLabelWrapperComponent(
                 fieldSchema.display_name;
 
             const hasParentPaths = !!props?.parentPaths?.length;
+            const isVariant = props.fieldMetadata.variant ? true : false;
 
             setCurrentField({
                 text: currentFieldDisplayName,
@@ -90,6 +97,7 @@ function FieldLabelWrapperComponent(
                 ),
                 prefixIcon: getFieldIcon(fieldSchema),
                 disabled: fieldDisabled,
+                isVariant: isVariant,
             });
 
             if (displayNames) {
@@ -129,15 +137,25 @@ function FieldLabelWrapperComponent(
                 className="visual-editor__focused-toolbar__field-label-wrapper__current-field visual-editor__button visual-editor__button--primary"
                 disabled={displayNamesLoading}
             >
-                {
-                    currentField.prefixIcon ? <div className="visual-editor__field-icon" dangerouslySetInnerHTML={{__html: currentField.prefixIcon }}/> : null
-                }
+                {currentField.prefixIcon ? (
+                    <div
+                        className="visual-editor__field-icon"
+                        dangerouslySetInnerHTML={{
+                            __html: currentField.prefixIcon,
+                        }}
+                    />
+                ) : null}
                 {currentField.text ? (
                     <div className="visual-editor__focused-toolbar__text">
                         {currentField.text}
                     </div>
                 ) : null}
                 {displayNamesLoading ? <LoadingIcon /> : currentField.icon}
+                {currentField.isVariant ? (
+                    <div className="visual-editor__field-icon">
+                        <VariantIcon />
+                    </div>
+                ) : null}
             </button>
             {props.parentPaths.map((path, index) => (
                 <button

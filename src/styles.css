@@ -547,6 +547,9 @@ div.multiple div.cslp-tooltip-child:hover:before {
 .visual-editor__draft-field {
     outline: 2px dashed var(--Brand-Colors-Brand-Orange, #eb5646);
 }
+.visual-editor__variant-field {
+    outline: 2px solid var(--Brand-Colors-Brand-Orange, #eb5646);
+}
 
 [data-cslp] [contenteditable="true"] {
     outline: none;
