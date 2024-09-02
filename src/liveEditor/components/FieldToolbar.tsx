@@ -21,6 +21,7 @@ import {
     ReplaceAssetIcon,
 } from "./icons";
 import { fieldIcons } from "./icons/fields";
+import CommentIcon from "./CommentIcon";
 
 interface MultipleFieldToolbarProps {
     fieldMetadata: CslpData;
@@ -66,6 +67,7 @@ function handleEdit(fieldMetadata: CslpData) {
     );
 }
 
+
 function FieldToolbarComponent(
     props: MultipleFieldToolbarProps
 ): JSX.Element | null {
@@ -86,6 +88,7 @@ function FieldToolbarComponent(
     const fieldType = getFieldType(fieldSchema);
     const isModalEditable = ALLOWED_MODAL_EDITABLE_FIELD.includes(fieldType);
     const isReplaceAllowed = ALLOWED_REPLACE_FIELDS.includes(fieldType);
+
     const Icon = fieldIcons[fieldType];
 
     const editButton = Icon ? (
@@ -220,6 +223,8 @@ function FieldToolbarComponent(
                     <>
                         {isModalEditable ? editButton : null}
                         {isReplaceAllowed ? replaceButton : null}
+                        <CommentIcon fieldMetadata={fieldMetadata} fieldSchema={fieldSchema}/>
+                        
                     </>
                 )}
             </div>

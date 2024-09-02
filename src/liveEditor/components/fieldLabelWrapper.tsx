@@ -126,7 +126,7 @@ function FieldLabelWrapperComponent(
             onClick={() => setIsDropdownOpen((prev) => !prev)}
         >
             <button
-                className="visual-editor__focused-toolbar__field-label-wrapper__current-field visual-editor__button visual-editor__button--primary"
+                className="visual-editor__focused-toolbar__field-label-wrapper__current-field visual-editor__button visual-editor__button--primary visual-editor__button-loader"
                 disabled={displayNamesLoading}
             >
                 {

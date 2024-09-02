@@ -10,6 +10,8 @@ export enum LiveEditorPostMessageEvents {
     GET_FIELD_PATH_WITH_UID = "get-field-path-with-uid",
     FOCUS_FIELD = "focus-field",
     OPEN_FIELD_EDIT_MODAL = "open-field-edit-modal",
+    GET_DISCUSSION_ID = "get-discussion-id-for-comment-model",
+    OPEN_FIELD_COMMENT_MODAL  = "open-field-comment-modal",
     DELETE_INSTANCE = "delete-instance",
     MOVE_INSTANCE = "move-instance",
     // FROM visual editor
@@ -17,4 +19,5 @@ export enum LiveEditorPostMessageEvents {
     HIDE_FOCUS_OVERLAY = "hide-focus-overlay",
     SHOW_DRAFT_FIELDS = "show-draft-fields",
     REMOVE_DRAFT_FIELDS = "remove-draft-fields",
+    RECEIVE_DISCUSSION_ID = "receive-discussion-id-for-comment-model",
 }

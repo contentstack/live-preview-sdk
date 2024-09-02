@@ -350,6 +350,21 @@ div.multiple div.cslp-tooltip-child:hover:before {
 .visual-editor__button--edit svg path {
     fill: #475161;
 }
+.visual-editor__button-loader svg {
+    height: 16px;
+    width: 16px;
+}
+.visual-editor__button-loader svg path {
+    fill: #ffffff;
+}
+.visual-editor__button--comment-loader svg {
+    height: 20px;
+    width: 20px;
+}
+.visual-editor__button--comment-loader svg path {
+    fill: #475161;
+}
+
 .visual-editor__field-icon svg {
     height: 16px;
     width: 16px;
