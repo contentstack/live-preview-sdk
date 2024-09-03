@@ -23,6 +23,7 @@ import {
 import { fieldIcons } from "./icons/fields";
 import classNames from "classnames";
 import { liveEditorStyles } from "../liveEditor.style";
+import CommentIcon from "./CommentIcon";
 
 interface MultipleFieldToolbarProps {
     fieldMetadata: CslpData;
@@ -265,6 +266,8 @@ function FieldToolbarComponent(
                     <>
                         {isModalEditable ? editButton : null}
                         {isReplaceAllowed ? replaceButton : null}
+                        <CommentIcon fieldMetadata={fieldMetadata} fieldSchema={fieldSchema}/>
+                        
                     </>
                 )}
             </div>

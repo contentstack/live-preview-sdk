@@ -12,9 +12,12 @@ export enum LiveEditorPostMessageEvents {
     OPEN_FIELD_EDIT_MODAL = "open-field-edit-modal",
     DELETE_INSTANCE = "delete-instance",
     MOVE_INSTANCE = "move-instance",
+    GET_DISCUSSION_ID = "get-discussion-id-for-comment-model",
+    OPEN_FIELD_COMMENT_MODAL  = "open-field-comment-modal",
     // FROM visual editor
     GET_ALL_ENTRIES_IN_CURRENT_PAGE = "get-entries-in-current-page",
     HIDE_FOCUS_OVERLAY = "hide-focus-overlay",
     SHOW_DRAFT_FIELDS = "show-draft-fields",
     REMOVE_DRAFT_FIELDS = "remove-draft-fields",
+    RECEIVE_DISCUSSION_ID = "receive-discussion-id-for-comment-model",
 }
