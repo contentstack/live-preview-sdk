@@ -1,4 +1,4 @@
-import { throttle } from "lodash-es";
+import { debounce, throttle } from "lodash-es";
 import { VisualEditor } from "..";
 import {
     generatePseudoEditableElement,
@@ -21,6 +21,8 @@ import {
 } from "./multipleElementAddButton";
 import { LiveEditorPostMessageEvents } from "./types/postMessage.types";
 import { updateFocussedState } from "./updateFocussedState";
+import { FieldDataType } from "./types/index.types";
+import { getMultilinePlaintext } from "./getMultilinePlaintext";
 
 /**
  * It handles all the fields based on their data type and its "multiple" property.
@@ -139,11 +141,13 @@ export async function handleIndividualFields(
             const elementComputedDisplay =
                 window.getComputedStyle(actualEditableField).display;
 
-            const textContent =
-                (editableElement as HTMLElement).innerText ||
-                editableElement.textContent ||
-                "";
+            let textContent =
+                (editableElement as HTMLElement).innerText || editableElement.textContent || "";
 
+            if(fieldType === FieldDataType.MULTILINE) {
+                textContent = getMultilinePlaintext(actualEditableField);
+                actualEditableField.addEventListener('paste', pasteAsPlainText);
+            }
             const expectedTextContent = config.expectedFieldData;
             if (
                 textContent !== expectedTextContent ||
@@ -165,6 +169,9 @@ export async function handleIndividualFields(
                 );
                 visualEditorContainer.appendChild(pseudoEditableField);
                 actualEditableField = pseudoEditableField;
+
+                if(fieldType === FieldDataType.MULTILINE) 
+                    actualEditableField.addEventListener('paste', pasteAsPlainText);
 
                 // we will unobserve this in hideOverlay
                 elements.resizeObserver.observe(pseudoEditableField);
@@ -240,6 +247,10 @@ export function cleanIndividualFieldResidual(elements: {
             handleFieldKeyDown
         );
 
+        previousSelectedEditableDOM.removeEventListener(
+            "paste",
+            pasteAsPlainText
+        );
         // Note - this happens in two places, 1. hideOverlay and 2. here
         // TODO maybe see all usages of both functions and try to do it in one place
         elements.resizeObserver.unobserve(previousSelectedEditableDOM);
@@ -250,6 +261,10 @@ export function cleanIndividualFieldResidual(elements: {
     );
     if (pseudoEditableElement) {
         elements.resizeObserver.unobserve(pseudoEditableElement);
+        pseudoEditableElement.removeEventListener(
+            "paste",
+            pasteAsPlainText
+        );
         pseudoEditableElement.remove();
         if (previousSelectedEditableDOM) {
             (previousSelectedEditableDOM as HTMLElement).style.removeProperty(
@@ -262,3 +277,9 @@ export function cleanIndividualFieldResidual(elements: {
         focusedToolbar.innerHTML = "";
     }
 }
+
+const pasteAsPlainText = debounce((e: Event) => {
+    e.preventDefault();
+    const clipboardData = (e as ClipboardEvent).clipboardData;
+    document.execCommand('inserttext', false, clipboardData?.getData('text/plain'));
+  }, 100, { leading: true });

@@ -52,4 +52,5 @@ export enum FieldDataType {
     EXPERIENCE_CONTAINER = "experience_container",
     FILE = "file",
     GLOBAL_FIELD = "global_field",
+    TAXONOMY = "taxonomy",
 }

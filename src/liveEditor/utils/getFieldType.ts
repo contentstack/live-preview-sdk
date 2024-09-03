@@ -44,6 +44,7 @@ export function getFieldType(fieldSchema: ISchemaFieldMap): FieldDataType {
         case "group":
         case "experience_container":
         case "file":
+        case "taxonomy":
         case "global_field": {
             return FieldDataType[fieldSchema.data_type.toUpperCase()];
         }

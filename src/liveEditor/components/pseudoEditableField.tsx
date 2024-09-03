@@ -22,6 +22,7 @@ function PseudoEditableFieldComponent(
     // setting height to auto so that the element can grow based on the content
     // and the resize observer can detect the change in height
     styles.height = "auto";
+    styles.whiteSpace = "pre-line"
 
     return (
         <div
