@@ -29,7 +29,7 @@ describe("StartEditingButtonComponent", () => {
             <StartEditingButtonComponent />
         );
 
-        const editIcon = getByTestId("visual-editor__edit-icon");
+        const editIcon = getByTestId("visual-builder__edit-icon");
         const startEditingText = getByText("Start Editing");
 
         expect(editIcon).toBeInTheDocument();

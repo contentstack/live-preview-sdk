@@ -5,7 +5,7 @@ describe("generatePseudoEditableElement", () => {
 
     beforeEach(() => {
         visualEditorContainer = document.createElement("div");
-        visualEditorContainer.classList.add("visual-editor__container");
+        visualEditorContainer.classList.add("visual-builder__container");
         document.body.appendChild(visualEditorContainer);
     });
 

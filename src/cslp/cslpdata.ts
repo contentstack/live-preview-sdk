@@ -6,6 +6,7 @@ import {
 } from "./types/cslp.types";
 import Config from "../configManager/configManager";
 import { DeepSignal } from "deepsignal";
+import { cslpTagStyles } from "../livePreview/editButton/editButton.style";
 
 /**
  * Extracts details from a CSLP value string.
@@ -135,6 +136,7 @@ function getMultipleFieldMetadata(
     };
 }
 
+//TODO: move this to editbutton
 /**
  * Adds an outline to the clicked element and triggers a callback function.
  * @param e - The MouseEvent object representing the click event.
@@ -161,8 +163,10 @@ export function addCslpOutline(
 
         if (trigger && cslpTag) {
             if (elements.highlightedElement)
-                elements.highlightedElement.classList.remove("cslp-edit-mode");
-            element.classList.add("cslp-edit-mode");
+                elements.highlightedElement.classList.remove(
+                    cslpTagStyles()["cslp-edit-mode"]
+                );
+            element.classList.add(cslpTagStyles()["cslp-edit-mode"]);
 
             const updatedElements = elements;
             updatedElements.highlightedElement =
@@ -176,7 +180,7 @@ export function addCslpOutline(
 
             trigger = false;
         } else if (!trigger) {
-            element.classList.remove("cslp-edit-mode");
+            element.classList.remove(cslpTagStyles()["cslp-edit-mode"]);
         }
     }
 }

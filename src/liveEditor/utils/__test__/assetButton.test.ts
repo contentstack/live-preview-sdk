@@ -10,7 +10,7 @@ describe("generateReplaceAssetButton", () => {
 
     beforeEach(() => {
         visualEditorContainer = document.createElement("div");
-        visualEditorContainer.classList.add("visual-editor__container");
+        visualEditorContainer.classList.add("visual-builder__container");
         document.body.appendChild(visualEditorContainer);
 
         targetElement = document.createElement("img");
@@ -47,7 +47,7 @@ describe("generateReplaceAssetButton", () => {
 
         expect(replaceButton.tagName).toBe("BUTTON");
         expect(
-            replaceButton.classList.contains("visual-editor__replace-button")
+            replaceButton.classList.contains("visual-builder__replace-button")
         ).toBe(true);
         expect(replaceButton.textContent).toBe("Replace Asset");
     });
@@ -80,7 +80,7 @@ describe("removeReplaceAssetButton", () => {
     test("should remove all existing replace asset buttons from the provided visual editor wrapper element", () => {
         visualEditorContainer = document.createElement("div");
         visualEditorContainer = document.createElement("div");
-        visualEditorContainer.classList.add("visual-editor__container");
+        visualEditorContainer.classList.add("visual-builder__container");
         document.body.appendChild(visualEditorContainer);
 
         generateReplaceAssetButton(visualEditorContainer, jest.fn());

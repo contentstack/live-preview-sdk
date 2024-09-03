@@ -60,10 +60,16 @@ async function handleEditorInteraction(
 ): Promise<void> {
     const eventTarget = params.event.target as HTMLElement | null;
     const isAnchorElement = eventTarget instanceof HTMLAnchorElement;
-    const elementHasCslp = eventTarget && (eventTarget.hasAttribute("data-cslp") || eventTarget.closest("[data-cslp]"));
+    const elementHasCslp =
+        eventTarget &&
+        (eventTarget.hasAttribute("data-cslp") ||
+            eventTarget.closest("[data-cslp]"));
 
     // prevent default behavior for anchor elements and elements with cslp attribute
-    if (isAnchorElement || elementHasCslp && !eventTarget.closest(".visual-editor__empty-block")) {
+    if (
+        isAnchorElement ||
+        (elementHasCslp && !eventTarget.closest(".visual-builder__empty-block"))
+    ) {
         params.event.preventDefault();
         params.event.stopPropagation();
     }
@@ -95,9 +101,9 @@ async function handleEditorInteraction(
     // if the selected element is our empty block element, return
     if (
         editableElement.classList.contains(
-            "visual-editor__empty-block-parent"
+            "visual-builder__empty-block-parent"
         ) ||
-        editableElement.classList.contains("visual-editor__empty-block")
+        editableElement.classList.contains("visual-builder__empty-block")
     ) {
         return;
     }

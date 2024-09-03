@@ -35,7 +35,7 @@ export function getAddInstanceButtons(
     getAllButtons = false
 ): HTMLButtonElement[] | [HTMLButtonElement, HTMLButtonElement] | null {
     const buttons = visualEditorContainer.getElementsByClassName(
-        "visual-editor__add-button"
+        "visual-builder__add-button"
     );
 
     if (getAllButtons) {

@@ -1,4 +1,7 @@
+import classNames from "classnames";
 import { hideOverlay } from "../generators/generateOverlay";
+import { liveEditorStyles } from "../liveEditor.style";
+import { glob } from "goober";
 
 interface VisualEditorProps {
     visualEditorContainer: HTMLDivElement | null;
@@ -9,17 +12,23 @@ function VisualEditorComponent(props: VisualEditorProps): JSX.Element {
     return (
         <>
             <div
-                className="visual-editor__cursor"
-                data-testid="visual-editor__cursor"
+                className={classNames(
+                    liveEditorStyles()["visual-builder__cursor"],
+                    "live-editor__cursor"
+                )}
+                data-testid="visual-builder__cursor"
             ></div>
             <div
-                className="visual-editor__overlay__wrapper"
-                data-testid="visual-editor__overlay__wrapper"
+                className={classNames(
+                    liveEditorStyles()["visual-builder__overlay__wrapper"],
+                    "visual-builder__overlay__wrapper"
+                )}
+                data-testid="visual-builder__overlay__wrapper"
                 onClick={(event) => {
                     const targetElement = event.currentTarget as HTMLDivElement;
 
                     const focusedToolbar = document.querySelector(
-                        ".visual-editor__focused-toolbar"
+                        ".visual-builder__focused-toolbar"
                     ) as HTMLDivElement;
 
                     hideOverlay({
@@ -31,34 +40,58 @@ function VisualEditorComponent(props: VisualEditorProps): JSX.Element {
                 }}
             >
                 <div
-                    className="visual-editor__overlay visual-editor__overlay--top"
-                    data-testid="visual-editor__overlay--top"
+                    className={classNames(
+                        "visual-builder__overlay visual-builder__overlay--top",
+                        liveEditorStyles()["visual-builder__overlay"]
+                    )}
+                    data-testid="visual-builder__overlay--top"
                 ></div>
                 <div
-                    data-testid="visual-editor__overlay--left"
-                    className="visual-editor__overlay visual-editor__overlay--left"
+                    data-testid="visual-builder__overlay--left"
+                    className={classNames(
+                        "visual-builder__overlay visual-builder__overlay--left",
+                        liveEditorStyles()["visual-builder__overlay"]
+                    )}
                 ></div>
                 <div
-                    data-testid="visual-editor__overlay--right"
-                    className="visual-editor__overlay visual-editor__overlay--right"
+                    data-testid="visual-builder__overlay--right"
+                    className={classNames(
+                        "visual-builder__overlay visual-builder__overlay--right",
+                        liveEditorStyles()["visual-builder__overlay"]
+                    )}
                 ></div>
                 <div
-                    data-testid="visual-editor__overlay--bottom"
-                    className="visual-editor__overlay visual-editor__overlay--bottom"
+                    data-testid="visual-builder__overlay--bottom"
+                    className={classNames(
+                        "visual-builder__overlay visual-builder__overlay--bottom",
+                        liveEditorStyles()["visual-builder__overlay"]
+                    )}
                 ></div>
                 <div
-                    data-testid="visual-editor__overlay--outline"
-                    className="visual-editor__overlay--outline"
+                    data-testid="visual-builder__overlay--outline"
+                    className={classNames(
+                        "visual-builder__overlay--outline",
+                        liveEditorStyles()["visual-builder__overlay--outline"]
+                    )}
                 ></div>
             </div>
-            
+
             <div
-                className="visual-editor__hover-outline visual-editor__hover-outline--unclickable"
-                data-testid="visual-editor__hover-outline">
-            </div>
+                className={classNames(
+                    "visual-builder__hover-outline visual-builder__hover-outline--unclickable",
+                    liveEditorStyles()["visual-builder__hover-outline"],
+                    liveEditorStyles()[
+                        "visual-builder__hover-outline--unclickable"
+                    ]
+                )}
+                data-testid="visual-builder__hover-outline"
+            ></div>
             <div
-                className="visual-editor__focused-toolbar"
-                data-testid="visual-editor__focused-toolbar"
+                className={classNames(
+                    "visual-builder__focused-toolbar",
+                    liveEditorStyles()["visual-builder__focused-toolbar"]
+                )}
+                data-testid="visual-builder__focused-toolbar"
             ></div>
         </>
     );

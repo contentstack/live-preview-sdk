@@ -23,8 +23,8 @@ describe("getAddInstanceButtons", () => {
     beforeEach(() => {
         wrapper = document.createElement("div");
         wrapper.innerHTML = `
-            <button class="visual-editor__add-button"></button>
-            <button class="visual-editor__add-button"></button>
+            <button class="visual-builder__add-button"></button>
+            <button class="visual-builder__add-button"></button>
         `;
 
         document.body.appendChild(wrapper);
@@ -36,7 +36,7 @@ describe("getAddInstanceButtons", () => {
 
     test("should return null if there are less than 2 buttons and we didn't ask for every buttons", () => {
         wrapper.innerHTML = `
-            <button class="visual-editor__add-button"></button>
+            <button class="visual-builder__add-button"></button>
         `;
         const result = getAddInstanceButtons(wrapper);
         expect(result).toBeNull();
@@ -51,10 +51,10 @@ describe("getAddInstanceButtons", () => {
 
     test("should return all buttons if getAllButtons is true", () => {
         wrapper.innerHTML = `
-      <button class="visual-editor__add-button"></button>
-      <button class="visual-editor__add-button"></button>
-      <button class="visual-editor__add-button"></button>
-      <button class="visual-editor__add-button"></button>
+      <button class="visual-builder__add-button"></button>
+      <button class="visual-builder__add-button"></button>
+      <button class="visual-builder__add-button"></button>
+      <button class="visual-builder__add-button"></button>
     `;
         const result = getAddInstanceButtons(wrapper, true);
         expect(result).toHaveLength(4);

@@ -11,6 +11,7 @@ import { CaretIcon, InfoIcon } from "./icons";
 import { LoadingIcon } from "./icons/loading";
 import { getFieldIcon } from "../generators/generateCustomCursor";
 import { uniqBy } from "lodash-es";
+import { liveEditorStyles } from "../liveEditor.style";
 import { VariantIcon } from "./icons/variant";
 
 async function getFieldDisplayNames(fieldMetadata: CslpData[]) {
@@ -62,7 +63,6 @@ function FieldLabelWrapperComponent(
                 ],
                 "cslpValue"
             );
-
             const displayNames = await getFieldDisplayNames(allPaths);
 
             const fieldSchema = await FieldSchemaMap.getFieldSchema(
@@ -85,7 +85,7 @@ function FieldLabelWrapperComponent(
                 text: currentFieldDisplayName,
                 icon: fieldDisabled ? (
                     <div
-                        className="visual-editor__tooltip"
+                        className="visual-builder__tooltip"
                         data-tooltip={reason}
                     >
                         <InfoIcon />
@@ -122,31 +122,58 @@ function FieldLabelWrapperComponent(
     return (
         <div
             className={classNames(
-                "visual-editor__focused-toolbar__field-label-wrapper",
+                "visual-builder__focused-toolbar__field-label-wrapper",
+                liveEditorStyles()[
+                    "visual-builder__focused-toolbar__field-label-wrapper"
+                ],
                 {
-                    "visual-editor__focused-toolbar--field-disabled":
+                    "visual-builder__focused-toolbar--field-disabled":
                         currentField.disabled,
                 },
                 {
+                    [liveEditorStyles()[
+                        "visual-builder__focused-toolbar--field-disabled"
+                    ]]: currentField.disabled,
+                },
+                {
                     "field-label-dropdown-open": isDropdownOpen,
+                    [liveEditorStyles()["field-label-dropdown-open"]]:
+                        isDropdownOpen,
                 }
             )}
             onClick={() => setIsDropdownOpen((prev) => !prev)}
         >
             <button
-                className="visual-editor__focused-toolbar__field-label-wrapper__current-field visual-editor__button visual-editor__button--primary"
+                className={classNames(
+                    "visual-builder__focused-toolbar__field-label-wrapper__current-field visual-builder__button visual-builder__button--primary",
+                    liveEditorStyles()[
+                        "visual-builder__focused-toolbar__field-label-wrapper__current-field"
+                    ],
+                    liveEditorStyles()["visual-builder__button"],
+                    liveEditorStyles()["visual-builder__button--primary"]
+                )}
                 disabled={displayNamesLoading}
             >
                 {currentField.prefixIcon ? (
                     <div
-                        className="visual-editor__field-icon"
+                        className={classNames(
+                            "visual-builder__field-icon",
+                            liveEditorStyles()["visual-builder__field-icon"]
+                        )}
                         dangerouslySetInnerHTML={{
                             __html: currentField.prefixIcon,
                         }}
                     />
                 ) : null}
                 {currentField.text ? (
-                    <div className="visual-editor__focused-toolbar__text">
+                    <div
+                        className={classNames(
+                            "visual-builder__focused-toolbar__text",
+                            liveEditorStyles()[
+                                "visual-builder__focused-toolbar__text"
+                            ]
+                        )}
+                    >
                         {currentField.text}
                     </div>
                 ) : null}
@@ -160,7 +187,17 @@ function FieldLabelWrapperComponent(
             {props.parentPaths.map((path, index) => (
                 <button
                     key={path}
-                    className="visual-editor__focused-toolbar__field-label-wrapper__parent-field visual-editor__button visual-editor__button--secondary visual-editor__focused-toolbar__text"
+                    className={classNames(
+                        "visual-builder__focused-toolbar__field-label-wrapper__parent-field visual-builder__button visual-builder__button--secondary visual-builder__focused-toolbar__text",
+                        liveEditorStyles()[
+                            "visual-builder__focused-toolbar__field-label-wrapper__parent-field"
+                        ],
+                        liveEditorStyles()["visual-builder__button"],
+                        liveEditorStyles()["visual-builder__button--secondary"],
+                        liveEditorStyles()[
+                            "visual-builder__focused-toolbar__text"
+                        ]
+                    )}
                     data-target-cslp={path}
                     style={{ top: calculateTopOffset(index) }}
                     onClick={() => onParentPathClick(path)}

@@ -11,7 +11,7 @@ const generateIconStyles = ({ disabled = false }: IconProps) => ({
 export function CaretIcon(): JSX.Element {
     return (
         <svg
-            data-testid="visual-editor__caret-icon"
+            data-testid="visual-builder__caret-icon"
             width="16"
             height="16"
             viewBox="0 0 16 16"
@@ -31,7 +31,7 @@ export function CaretIcon(): JSX.Element {
 export function DeleteIcon(): JSX.Element {
     return (
         <svg
-            data-testid="visual-editor__delete-icon"
+            data-testid="visual-builder__delete-icon"
             width="16"
             height="16"
             viewBox="0 0 16 16"
@@ -59,7 +59,7 @@ export function DeleteIcon(): JSX.Element {
 export function MoveLeftIcon(props: IconProps): JSX.Element {
     return (
         <svg
-            data-testid="visual-editor__move-left-icon"
+            data-testid="visual-builder__move-left-icon"
             className={props.className}
             width="16"
             height="16"
@@ -88,7 +88,7 @@ export function MoveRightIcon(props: IconProps): JSX.Element {
     return (
         <svg
             className={props.className}
-            data-testid="visual-editor__move-right-icon"
+            data-testid="visual-builder__move-right-icon"
             width="16"
             height="16"
             viewBox="0 0 16 16"
@@ -115,7 +115,7 @@ export function MoveRightIcon(props: IconProps): JSX.Element {
 export function InfoIcon(): JSX.Element {
     return (
         <svg
-            data-testid="visual-editor__info-icon"
+            data-testid="visual-builder__info-icon"
             width="16"
             height="16"
             viewBox="0 0 16 16"
@@ -143,7 +143,7 @@ export function InfoIcon(): JSX.Element {
 export function EditIcon(): JSX.Element {
     return (
         <svg
-            data-testid="visual-editor__edit-icon"
+            data-testid="visual-builder__edit-icon"
             width="24"
             height="24"
             viewBox="0 0 24 24"
@@ -166,7 +166,7 @@ export function EditIcon(): JSX.Element {
 export function PlusIcon(): JSX.Element {
     return (
         <svg
-            data-testid="visual-editor__plus-icon"
+            data-testid="visual-builder__plus-icon"
             xmlns="http://www.w3.org/2000/svg"
             width="20"
             height="20"
@@ -180,7 +180,7 @@ export function PlusIcon(): JSX.Element {
 export function ReplaceAssetIcon(): JSX.Element {
     return (
         <svg
-            data-testid="visual-editor__replace-asset-icon"
+            data-testid="visual-builder__replace-asset-icon"
             width="16"
             height="16"
             viewBox="0 0 16 16"

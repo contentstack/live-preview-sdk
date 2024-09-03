@@ -22,7 +22,7 @@ export function generateStartEditingButton(
     visualEditorContainer?.appendChild(wrapper);
 
     const startEditingButton = document.querySelector(
-        ".visual-editor__start-editing-btn"
+        ".visual-builder__start-editing-btn"
     ) as HTMLAnchorElement;
 
     return startEditingButton;

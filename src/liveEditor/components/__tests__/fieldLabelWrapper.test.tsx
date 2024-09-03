@@ -96,7 +96,7 @@ describe("FieldLabelWrapperComponent", () => {
             />
         );
 
-        expect(getByTestId("visual-editor__caret-icon")).toBeInTheDocument();
+        expect(getByTestId("visual-builder__caret-icon")).toBeInTheDocument();
     });
 
     test("renders with correct class when field is disabled", async () => {
@@ -110,7 +110,7 @@ describe("FieldLabelWrapperComponent", () => {
         );
         await waitFor(() => {
             expect(container.firstChild).toHaveClass(
-                "visual-editor__focused-toolbar--field-disabled"
+                "visual-builder__focused-toolbar--field-disabled"
             );
         });
     });

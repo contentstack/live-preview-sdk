@@ -32,6 +32,9 @@ import { FieldSchemaMap } from "./utils/fieldSchemaMap";
 import { isFieldDisabled } from "./utils/isFieldDisabled";
 import { updateFocussedState } from "./utils/updateFocussedState";
 import { useDraftFieldsPostMessageEvent } from "./eventManager/useDraftFieldsPostMessageEvent";
+import { h } from "preact";
+import { setup } from "goober";
+import { globalLiveEditorStyles } from "./liveEditor.style";
 import { useVariantFieldsPostMessageEvent } from "./eventManager/useVariantsPostMessageEvent";
 
 interface VisualEditorGlobalStateImpl {
@@ -67,15 +70,19 @@ export class VisualEditor {
 
     private resizeEventHandler = () => {
         const previousSelectedEditableDOM =
-            VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM;
+            VisualEditor.VisualEditorGlobalState.value
+                .previousSelectedEditableDOM;
         if (previousSelectedEditableDOM) {
-            this.handlePositionChange(previousSelectedEditableDOM as HTMLElement);
+            this.handlePositionChange(
+                previousSelectedEditableDOM as HTMLElement
+            );
         }
     };
 
     private resizeObserver = new ResizeObserver(([entry]) => {
         const previousSelectedEditableDOM =
-            VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM;
+            VisualEditor.VisualEditorGlobalState.value
+                .previousSelectedEditableDOM;
 
         if (!this.overlayWrapper || !previousSelectedEditableDOM) {
             return;
@@ -85,13 +92,15 @@ export class VisualEditor {
         // target and the target is also not psuedo-editable then return
         if (
             !entry.target.isSameNode(previousSelectedEditableDOM) &&
-            !entry.target.classList.contains("visual-editor__pseudo-editable-element")
+            !entry.target.classList.contains(
+                "visual-builder__pseudo-editable-element"
+            )
         ) {
             return;
         }
 
         const isPsuedoEditableElement = entry.target.classList.contains(
-            "visual-editor__pseudo-editable-element",
+            "visual-builder__pseudo-editable-element"
         );
 
         // the "actual" editable element when the current target is psuedo-editable
@@ -128,7 +137,7 @@ export class VisualEditor {
 
         FieldSchemaMap.getFieldSchema(
             fieldMetadata.content_type_uid,
-            fieldMetadata.fieldPath,
+            fieldMetadata.fieldPath
         ).then((fieldSchema) => {
             if (!fieldSchema) {
                 return;
@@ -142,7 +151,7 @@ export class VisualEditor {
                 addFocusOverlay(
                     editableElement,
                     this.overlayWrapper as HTMLDivElement,
-                    isDisabled,
+                    isDisabled
                 );
             }
         });
@@ -152,18 +161,22 @@ export class VisualEditor {
         debounce(
             async () => {
                 const emptyBlockParents = Array.from(
-                    document.querySelectorAll(".visual-editor__empty-block-parent"),
+                    document.querySelectorAll(
+                        ".visual-builder__empty-block-parent"
+                    )
                 );
 
-                const previousEmptyBlockParents = VisualEditor.VisualEditorGlobalState
-                    .value.previousEmptyBlockParents as Element[];
+                const previousEmptyBlockParents = VisualEditor
+                    .VisualEditorGlobalState.value
+                    .previousEmptyBlockParents as Element[];
 
                 if (!isEqual(emptyBlockParents, previousEmptyBlockParents)) {
-                    const noMoreEmptyBlockParent = previousEmptyBlockParents.filter(
-                        (x) => !emptyBlockParents.includes(x),
+                    const noMoreEmptyBlockParent =
+                        previousEmptyBlockParents.filter(
+                            (x) => !emptyBlockParents.includes(x)
                         );
                     const newEmptyBlockParent = emptyBlockParents.filter(
-                        (x) => !previousEmptyBlockParents.includes(x),
+                        (x) => !previousEmptyBlockParents.includes(x)
                     );
 
                     removeEmptyBlocks(noMoreEmptyBlockParent);
@@ -176,8 +189,8 @@ export class VisualEditor {
                 }
             },
             100,
-            { trailing: true },
-        ),
+            { trailing: true }
+        )
     );
 
     constructor() {
@@ -189,15 +202,19 @@ export class VisualEditor {
             resizeObserver: this.resizeObserver,
         });
 
+        // Initializing goober for css-in-js
+        setup(h);
+        globalLiveEditorStyles();
+
         this.visualEditorContainer = document.querySelector(
-            ".visual-editor__container",
+            ".visual-builder__container"
         );
         this.overlayWrapper = document.querySelector(
-            ".visual-editor__overlay__wrapper",
+            ".visual-builder__overlay__wrapper"
         );
-        this.customCursor = document.querySelector(".visual-editor__cursor");
+        this.customCursor = document.querySelector(".visual-builder__cursor");
         this.focusedToolbar = document.querySelector(
-            ".visual-editor__focused-toolbar",
+            ".visual-builder__focused-toolbar"
         );
 
         const config = Config.get();
@@ -210,12 +227,14 @@ export class VisualEditor {
                 isSSR: config.ssr,
             })
             .then((data) => {
-                const { windowType = ILivePreviewWindowType.EDITOR, stackDetails } =
-                    data;
+                const {
+                    windowType = ILivePreviewWindowType.EDITOR,
+                    stackDetails,
+                } = data;
                 Config.set("windowType", windowType);
                 Config.set(
                     "stackDetails.masterLocale",
-                    stackDetails?.masterLocale || "en-us",
+                    stackDetails?.masterLocale || "en-us"
                 );
 
                 addEventListeners({
@@ -243,7 +262,7 @@ export class VisualEditor {
 
                 liveEditorPostMessage?.on(
                     LiveEditorPostMessageEvents.GET_ALL_ENTRIES_IN_CURRENT_PAGE,
-                    getEntryIdentifiersInCurrentPage,
+                    getEntryIdentifiersInCurrentPage
                 );
 
                 useHideFocusOverlayPostMessageEvent({
@@ -273,7 +292,8 @@ export class VisualEditor {
             overlayWrapper: this.overlayWrapper,
             visualEditorContainer: this.visualEditorContainer,
             previousSelectedEditableDOM:
-                VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM,
+                VisualEditor.VisualEditorGlobalState.value
+                    .previousSelectedEditableDOM,
             focusedToolbar: this.focusedToolbar,
             resizeObserver: this.resizeObserver,
             customCursor: this.customCursor,

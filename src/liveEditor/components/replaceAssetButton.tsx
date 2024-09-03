@@ -1,4 +1,6 @@
+import classNames from "classnames";
 import { ReplaceAssetIcon } from "./icons";
+import { liveEditorStyles } from "../liveEditor.style";
 
 interface ReplaceAssetButtonProp {
     targetElement: Element;
@@ -10,7 +12,11 @@ function ReplaceAssetButtonComponent(
 ): JSX.Element {
     return (
         <button
-            className="visual-editor__replace-button visual-editor__button visual-editor__button--secondary"
+            className={classNames(
+                "visual-builder__replace-button visual-builder__button visual-builder__button--secondary",
+                liveEditorStyles()["visual-builder__button"],
+                liveEditorStyles()["visual-builder__button--secondary"]
+            )}
             data-testid="visual-editor-replace-asset"
             onClick={props.onClickCallback}
         >

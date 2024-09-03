@@ -150,9 +150,7 @@ function handleStackDetails(
 
     Config.set(
         "stackDetails.apiKey",
-        initData.stackDetails?.apiKey ??
-            stackSdk.headers?.api_key ??
-            config.stackDetails.apiKey
+        initData.stackDetails?.apiKey ?? config.stackDetails.apiKey
     );
 
     Config.set(

@@ -58,10 +58,10 @@ export function handleAddButtonsForMultiple(
     );
 
     const overlayWrapper = visualEditorContainer.querySelector(
-        ".visual-editor__overlay__wrapper"
+        ".visual-builder__overlay__wrapper"
     );
     const focusedToolbar = visualEditorContainer.querySelector(
-        ".visual-editor__focused-toolbar"
+        ".visual-builder__focused-toolbar"
     );
 
     const hideOverlayAndHoverOutline = () => {

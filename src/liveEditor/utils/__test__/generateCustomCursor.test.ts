@@ -20,13 +20,13 @@ describe("generateCustomCursor", () => {
             customCursor: cursorContainer,
         });
         expect(cursorContainer.innerHTML).toContain(
-            "visual-editor__cursor-wrapper"
+            "visual-builder__cursor-wrapper"
         );
         expect(cursorContainer.innerHTML).toContain(
-            "visual-editor__cursor-pointer"
+            "visual-builder__cursor-pointer"
         );
         expect(cursorContainer.innerHTML).toContain(
-            "visual-editor__cursor-icon"
+            "visual-builder__cursor-icon"
         );
     });
 
@@ -36,10 +36,10 @@ describe("generateCustomCursor", () => {
             customCursor: cursorContainer,
         });
         expect(cursorContainer.innerHTML).toContain(
-            "visual-editor__cursor-wrapper"
+            "visual-builder__cursor-wrapper"
         );
         expect(cursorContainer.innerHTML).toContain(
-            "visual-editor__cursor-icon"
+            "visual-builder__cursor-icon"
         );
         expect(cursorContainer.getAttribute("data-icon")).toBe("loading");
     });

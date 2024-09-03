@@ -13,7 +13,7 @@ export function removeReplaceAssetButton(
     }
 
     const existingReplaceButtons = visualEditorContainer.getElementsByClassName(
-        "visual-editor__replace-button"
+        "visual-builder__replace-button"
     );
 
     for (const existingReplaceButton of Array.from(existingReplaceButtons)) {
@@ -32,14 +32,14 @@ export function generateReplaceAssetButton(
     onClickCallback: (event: any) => void
 ): HTMLButtonElement {
     const isReplaceButtonAlreadyPresent = document.querySelector(
-        ".visual-editor__replace-button"
+        ".visual-builder__replace-button"
     ) as HTMLButtonElement;
     if (isReplaceButtonAlreadyPresent) {
         return isReplaceButtonAlreadyPresent;
     }
 
     const visualEditorContainer = document.querySelector(
-        ".visual-editor__focused-toolbar__button-group"
+        ".visual-builder__focused-toolbar__button-group"
     );
     const wrapper = document.createDocumentFragment();
     render(
@@ -49,18 +49,21 @@ export function generateReplaceAssetButton(
         />,
         wrapper
     );
-    
+
     if (visualEditorContainer) {
         const childrenCount = visualEditorContainer.children.length;
         if (childrenCount === 3) {
-            visualEditorContainer.insertBefore(wrapper, visualEditorContainer.children[2]);
+            visualEditorContainer.insertBefore(
+                wrapper,
+                visualEditorContainer.children[2]
+            );
         } else {
             visualEditorContainer.appendChild(wrapper);
         }
     }
 
     const replaceButton = document.querySelector(
-        ".visual-editor__replace-button"
+        ".visual-builder__replace-button"
     ) as HTMLButtonElement;
 
     return replaceButton;

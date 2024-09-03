@@ -80,13 +80,13 @@ describe("MultipleFieldToolbarComponent", () => {
         );
 
         const moveLeftButton = getByTestId(
-            "visual-editor__focused-toolbar__multiple-field-toolbar__move-left-button"
+            "visual-builder__focused-toolbar__multiple-field-toolbar__move-left-button"
         );
         const moveRightButton = getByTestId(
-            "visual-editor__focused-toolbar__multiple-field-toolbar__move-right-button"
+            "visual-builder__focused-toolbar__multiple-field-toolbar__move-right-button"
         );
         const deleteButton = getByTestId(
-            "visual-editor__focused-toolbar__multiple-field-toolbar__delete-button"
+            "visual-builder__focused-toolbar__multiple-field-toolbar__delete-button"
         );
 
         expect(moveLeftButton).toBeInTheDocument();
@@ -106,7 +106,7 @@ describe("MultipleFieldToolbarComponent", () => {
         );
 
         const moveLeftButton = getByTestId(
-            "visual-editor__focused-toolbar__multiple-field-toolbar__move-left-button"
+            "visual-builder__focused-toolbar__multiple-field-toolbar__move-left-button"
         );
         expect(moveLeftButton).toBeInTheDocument();
 
@@ -131,7 +131,7 @@ describe("MultipleFieldToolbarComponent", () => {
         );
 
         const moveRightButton = getByTestId(
-            "visual-editor__focused-toolbar__multiple-field-toolbar__move-right-button"
+            "visual-builder__focused-toolbar__multiple-field-toolbar__move-right-button"
         );
         expect(moveRightButton).toBeInTheDocument();
 
@@ -156,7 +156,7 @@ describe("MultipleFieldToolbarComponent", () => {
         );
 
         const deleteButton = getByTestId(
-            "visual-editor__focused-toolbar__multiple-field-toolbar__delete-button"
+            "visual-builder__focused-toolbar__multiple-field-toolbar__delete-button"
         );
         expect(deleteButton).toBeInTheDocument();
 

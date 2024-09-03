@@ -53,11 +53,11 @@ describe("addFocusOverlay", () => {
             resizeObserver: mockResizeObserver,
         });
         visualEditorContainer = document.querySelector(
-            ".visual-editor__container"
+            ".visual-builder__container"
         ) as HTMLDivElement;
 
         focusOverlayWrapper = document.querySelector(
-            ".visual-editor__overlay__wrapper"
+            ".visual-builder__overlay__wrapper"
         ) as HTMLDivElement;
 
         // Create a target element and focus overlay wrapper for each test
@@ -93,23 +93,23 @@ describe("addFocusOverlay", () => {
         addFocusOverlay(targetElement, focusOverlayWrapper);
 
         focusOverlayWrapper = document.querySelector(
-            ".visual-editor__overlay__wrapper"
+            ".visual-builder__overlay__wrapper"
         ) as HTMLDivElement;
 
         expect(focusOverlayWrapper).toMatchSnapshot();
         expect(focusOverlayWrapper?.classList.contains("visible")).toBe(true);
 
         const visualEditorWrapperTopOverlay = document.querySelector(
-            `[data-testid="visual-editor__overlay--top"]`
+            `[data-testid="visual-builder__overlay--top"]`
         ) as HTMLDivElement;
         const visualEditorWrapperLeftOverlay = document.querySelector(
-            `[data-testid="visual-editor__overlay--left"]`
+            `[data-testid="visual-builder__overlay--left"]`
         ) as HTMLDivElement;
         const visualEditorWrapperRightOverlay = document.querySelector(
-            `[data-testid="visual-editor__overlay--right"]`
+            `[data-testid="visual-builder__overlay--right"]`
         ) as HTMLDivElement;
         const visualEditorWrapperBottomOverlay = document.querySelector(
-            `[data-testid="visual-editor__overlay--bottom"]`
+            `[data-testid="visual-builder__overlay--bottom"]`
         ) as HTMLDivElement;
 
         expect(visualEditorWrapperTopOverlay.style.top).toBe("0px");
@@ -159,11 +159,11 @@ describe("hideFocusOverlay", () => {
             resizeObserver: mockResizeObserver,
         });
         visualEditorContainer = document.querySelector(
-            ".visual-editor__container"
+            ".visual-builder__container"
         ) as HTMLDivElement;
 
         focusOverlayWrapper = document.querySelector(
-            ".visual-editor__overlay__wrapper"
+            ".visual-builder__overlay__wrapper"
         ) as HTMLDivElement;
 
         editedElement = document.createElement("p");
@@ -182,7 +182,7 @@ describe("hideFocusOverlay", () => {
         document.body.appendChild(editedElement);
 
         singleFocusOverlay = focusOverlayWrapper.querySelector(
-            `[data-testid="visual-editor__overlay--top"]`
+            `[data-testid="visual-builder__overlay--top"]`
         ) as HTMLDivElement;
 
         addFocusOverlay(editedElement, focusOverlayWrapper);
