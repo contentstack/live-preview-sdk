@@ -35,7 +35,7 @@ export function generatePseudoEditableElement(
     const { editableElement } = elements;
 
     const visualEditorContainer = document.querySelector(
-        ".visual-editor__container"
+        ".visual-builder__container"
     );
     const wrapper = document.createDocumentFragment();
     render(
@@ -49,7 +49,7 @@ export function generatePseudoEditableElement(
     visualEditorContainer?.appendChild(wrapper);
 
     const pseudoEditableElement = document.querySelector(
-        ".visual-editor__pseudo-editable-element"
+        ".visual-builder__pseudo-editable-element"
     ) as HTMLDivElement;
 
     // TODO: set up a observer for UI shift.

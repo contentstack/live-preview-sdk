@@ -22,8 +22,10 @@ module.exports = {
         "@typescript-eslint/no-this-alias": 0,
         "@typescript-eslint/ban-ts-comment": 0,
         "prefer-rest-params": 0,
-        // warn for unused vars but not for unused funciton params prefixed with _
-        "@typescript-eslint/no-unused-vars": ["warn", { argsIgnorePattern: "^_" }],
+        "@typescript-eslint/no-unused-vars": [
+            "warn",
+            { argsIgnorePattern: "^_" },
+        ],
         "@typescript-eslint/no-empty-function": 0,
     },
 };

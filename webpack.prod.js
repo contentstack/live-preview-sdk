@@ -1,6 +1,12 @@
-const { merge } = require("webpack-merge");
-const common = require("./webpack.common.js");
+import { merge } from "webpack-merge";
+import common from "./webpack.common.js";
+import * as webpack from "webpack";
 
-module.exports = merge(common, {
+export default merge(common, {
     mode: "production",
+    plugins: [
+        new webpack.default.DefinePlugin({
+            "process.env.PURGE_PREVIEW_SDK": true,
+        }),
+    ],
 });

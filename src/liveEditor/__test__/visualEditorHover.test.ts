@@ -213,7 +213,7 @@ describe("When an element is hovered in visual editor mode", () => {
         test("should have custom cursor", () => {
             titleField.dispatchEvent(mousemoveEvent);
             const customCursor = document.querySelector(
-                `[data-testid="visual-editor__cursor"]`
+                `[data-testid="visual-builder__cursor"]`
             );
 
             expect(customCursor).toMatchSnapshot();
@@ -251,7 +251,7 @@ describe("When an element is hovered in visual editor mode", () => {
         test("should have custom cursor", () => {
             singleLineField.dispatchEvent(mousemoveEvent);
             const customCursor = document.querySelector(
-                `[data-testid="visual-editor__cursor"]`
+                `[data-testid="visual-builder__cursor"]`
             );
 
             expect(customCursor).toMatchSnapshot();
@@ -314,7 +314,7 @@ describe("When an element is hovered in visual editor mode", () => {
         test("should have custom cursor", () => {
             container.dispatchEvent(mousemoveEvent);
             const customCursor = document.querySelector(
-                `[data-testid="visual-editor__cursor"]`
+                `[data-testid="visual-builder__cursor"]`
             );
 
             expect(customCursor).toMatchSnapshot();
@@ -330,7 +330,7 @@ describe("When an element is hovered in visual editor mode", () => {
         test("should have custom cursor on individual instances", () => {
             firstSingleLineField.dispatchEvent(mousemoveEvent);
             const customCursor = document.querySelector(
-                `[data-testid="visual-editor__cursor"]`
+                `[data-testid="visual-builder__cursor"]`
             );
 
             expect(customCursor).toMatchSnapshot();
@@ -460,7 +460,7 @@ describe("When an element is hovered in visual editor mode", () => {
             multiLineField.dispatchEvent(mousemoveEvent);
             await sleep(0);
             const customCursor = document.querySelector(
-                `[data-testid="visual-editor__cursor"]`
+                `[data-testid="visual-builder__cursor"]`
             );
 
             expect(customCursor).toMatchSnapshot();
@@ -526,7 +526,7 @@ describe("When an element is hovered in visual editor mode", () => {
             await sleep(0);
             container.dispatchEvent(mousemoveEvent);
             const customCursor = document.querySelector(
-                `[data-testid="visual-editor__cursor"]`
+                `[data-testid="visual-builder__cursor"]`
             );
 
             expect(customCursor).toMatchSnapshot();
@@ -544,7 +544,7 @@ describe("When an element is hovered in visual editor mode", () => {
             firstMultiLineField.dispatchEvent(mousemoveEvent);
             await sleep(0);
             const customCursor = document.querySelector(
-                `[data-testid="visual-editor__cursor"]`
+                `[data-testid="visual-builder__cursor"]`
             );
 
             expect(customCursor).toMatchSnapshot();
@@ -671,7 +671,7 @@ describe("When an element is hovered in visual editor mode", () => {
             htmlRteField.dispatchEvent(mousemoveEvent);
             await sleep(0);
             const customCursor = document.querySelector(
-                `[data-testid="visual-editor__cursor"]`
+                `[data-testid="visual-builder__cursor"]`
             );
 
             expect(customCursor).toMatchSnapshot();
@@ -738,7 +738,7 @@ describe("When an element is hovered in visual editor mode", () => {
             container.dispatchEvent(mousemoveEvent);
             await sleep(0);
             const customCursor = document.querySelector(
-                `[data-testid="visual-editor__cursor"]`
+                `[data-testid="visual-builder__cursor"]`
             );
 
             expect(customCursor).toMatchSnapshot();
@@ -756,7 +756,7 @@ describe("When an element is hovered in visual editor mode", () => {
             firstHtmlRteField.dispatchEvent(mousemoveEvent);
             await sleep(0);
             const customCursor = document.querySelector(
-                `[data-testid="visual-editor__cursor"]`
+                `[data-testid="visual-builder__cursor"]`
             );
 
             expect(customCursor).toMatchSnapshot();
@@ -883,7 +883,7 @@ describe("When an element is hovered in visual editor mode", () => {
             jsonRteField.dispatchEvent(mousemoveEvent);
             await sleep(0);
             const customCursor = document.querySelector(
-                `[data-testid="visual-editor__cursor"]`
+                `[data-testid="visual-builder__cursor"]`
             );
 
             expect(customCursor).toMatchSnapshot();
@@ -950,7 +950,7 @@ describe("When an element is hovered in visual editor mode", () => {
             container.dispatchEvent(mousemoveEvent);
             await sleep(0);
             const customCursor = document.querySelector(
-                `[data-testid="visual-editor__cursor"]`
+                `[data-testid="visual-builder__cursor"]`
             );
 
             expect(customCursor).toMatchSnapshot();
@@ -968,7 +968,7 @@ describe("When an element is hovered in visual editor mode", () => {
             firstJsonRteField.dispatchEvent(mousemoveEvent);
             await sleep(0);
             const customCursor = document.querySelector(
-                `[data-testid="visual-editor__cursor"]`
+                `[data-testid="visual-builder__cursor"]`
             );
 
             expect(customCursor).toMatchSnapshot();
@@ -1095,7 +1095,7 @@ describe("When an element is hovered in visual editor mode", () => {
             markdownField.dispatchEvent(mousemoveEvent);
             await sleep(0);
             const customCursor = document.querySelector(
-                `[data-testid="visual-editor__cursor"]`
+                `[data-testid="visual-builder__cursor"]`
             );
 
             expect(customCursor).toMatchSnapshot();
@@ -1162,7 +1162,7 @@ describe("When an element is hovered in visual editor mode", () => {
             container.dispatchEvent(mousemoveEvent);
             await sleep(0);
             const customCursor = document.querySelector(
-                `[data-testid="visual-editor__cursor"]`
+                `[data-testid="visual-builder__cursor"]`
             );
 
             expect(customCursor).toMatchSnapshot();
@@ -1180,7 +1180,7 @@ describe("When an element is hovered in visual editor mode", () => {
             firstMarkdownField.dispatchEvent(mousemoveEvent);
             await sleep(0);
             const customCursor = document.querySelector(
-                `[data-testid="visual-editor__cursor"]`
+                `[data-testid="visual-builder__cursor"]`
             );
 
             expect(customCursor).toMatchSnapshot();
@@ -1307,7 +1307,7 @@ describe("When an element is hovered in visual editor mode", () => {
             selectField.dispatchEvent(mousemoveEvent);
             await sleep(0);
             const customCursor = document.querySelector(
-                `[data-testid="visual-editor__cursor"]`
+                `[data-testid="visual-builder__cursor"]`
             );
 
             expect(customCursor).toMatchSnapshot();
@@ -1373,7 +1373,7 @@ describe("When an element is hovered in visual editor mode", () => {
             container.dispatchEvent(mousemoveEvent);
             await sleep(0);
             const customCursor = document.querySelector(
-                `[data-testid="visual-editor__cursor"]`
+                `[data-testid="visual-builder__cursor"]`
             );
 
             expect(customCursor).toMatchSnapshot();
@@ -1391,7 +1391,7 @@ describe("When an element is hovered in visual editor mode", () => {
             firstSelectField.dispatchEvent(mousemoveEvent);
             await sleep(0);
             const customCursor = document.querySelector(
-                `[data-testid="visual-editor__cursor"]`
+                `[data-testid="visual-builder__cursor"]`
             );
 
             expect(customCursor).toMatchSnapshot();
@@ -1518,7 +1518,7 @@ describe("When an element is hovered in visual editor mode", () => {
             numberField.dispatchEvent(mousemoveEvent);
             await sleep(0);
             const customCursor = document.querySelector(
-                `[data-testid="visual-editor__cursor"]`
+                `[data-testid="visual-builder__cursor"]`
             );
 
             expect(customCursor).toMatchSnapshot();
@@ -1582,7 +1582,7 @@ describe("When an element is hovered in visual editor mode", () => {
             container.dispatchEvent(mousemoveEvent);
             await sleep(0);
             const customCursor = document.querySelector(
-                `[data-testid="visual-editor__cursor"]`
+                `[data-testid="visual-builder__cursor"]`
             );
 
             expect(customCursor).toMatchSnapshot();
@@ -1600,7 +1600,7 @@ describe("When an element is hovered in visual editor mode", () => {
             firstNumberField.dispatchEvent(mousemoveEvent);
             await sleep(0);
             const customCursor = document.querySelector(
-                `[data-testid="visual-editor__cursor"]`
+                `[data-testid="visual-builder__cursor"]`
             );
 
             expect(customCursor).toMatchSnapshot();
@@ -1727,7 +1727,7 @@ describe("When an element is hovered in visual editor mode", () => {
             booleanField.dispatchEvent(mousemoveEvent);
             await sleep(0);
             const customCursor = document.querySelector(
-                `[data-testid="visual-editor__cursor"]`
+                `[data-testid="visual-builder__cursor"]`
             );
 
             expect(customCursor).toMatchSnapshot();
@@ -1777,7 +1777,7 @@ describe("When an element is hovered in visual editor mode", () => {
         test("should have custom cursor", async () => {
             fileField.dispatchEvent(mousemoveEvent);
             const customCursor = document.querySelector(
-                `[data-testid="visual-editor__cursor"]`
+                `[data-testid="visual-builder__cursor"]`
             );
 
             expect(customCursor).toMatchSnapshot();
@@ -1795,7 +1795,7 @@ describe("When an element is hovered in visual editor mode", () => {
             imageField.dispatchEvent(mousemoveEvent);
             await sleep(0);
             const customCursor = document.querySelector(
-                `[data-testid="visual-editor__cursor"]`
+                `[data-testid="visual-builder__cursor"]`
             );
 
             expect(customCursor).toMatchSnapshot();
@@ -1884,7 +1884,7 @@ describe("When an element is hovered in visual editor mode", () => {
             container.dispatchEvent(mousemoveEvent);
 
             const customCursor = document.querySelector(
-                `[data-testid="visual-editor__cursor"]`
+                `[data-testid="visual-builder__cursor"]`
             );
 
             await sleep(0);
@@ -1903,7 +1903,7 @@ describe("When an element is hovered in visual editor mode", () => {
             firstFileField.dispatchEvent(mousemoveEvent);
             await sleep(0);
             const customCursor = document.querySelector(
-                `[data-testid="visual-editor__cursor"]`
+                `[data-testid="visual-builder__cursor"]`
             );
 
             expect(customCursor).toMatchSnapshot();
@@ -2004,7 +2004,7 @@ describe("When an element is hovered in visual editor mode", () => {
         test("should have custom cursor on the url", async () => {
             firstImageField.dispatchEvent(mousemoveEvent);
             const customCursor = document.querySelector(
-                `[data-testid="visual-editor__cursor"]`
+                `[data-testid="visual-builder__cursor"]`
             );
 
             expect(customCursor).toMatchSnapshot();
@@ -2065,7 +2065,7 @@ describe("When an element is hovered in visual editor mode", () => {
             dataField.dispatchEvent(mousemoveEvent);
             await sleep(0);
             const customCursor = document.querySelector(
-                `[data-testid="visual-editor__cursor"]`
+                `[data-testid="visual-builder__cursor"]`
             );
 
             expect(customCursor).toMatchSnapshot();
@@ -2107,7 +2107,7 @@ describe("When an element is hovered in visual editor mode", () => {
             linkField.dispatchEvent(mousemoveEvent);
             await sleep(0);
             const customCursor = document.querySelector(
-                `[data-testid="visual-editor__cursor"]`
+                `[data-testid="visual-builder__cursor"]`
             );
 
             expect(customCursor).toMatchSnapshot();
@@ -2171,7 +2171,7 @@ describe("When an element is hovered in visual editor mode", () => {
             container.dispatchEvent(mousemoveEvent);
             await sleep(0);
             const customCursor = document.querySelector(
-                `[data-testid="visual-editor__cursor"]`
+                `[data-testid="visual-builder__cursor"]`
             );
 
             expect(customCursor).toMatchSnapshot();
@@ -2190,7 +2190,7 @@ describe("When an element is hovered in visual editor mode", () => {
             firstLinkField.dispatchEvent(mousemoveEvent);
             await sleep(0);
             const customCursor = document.querySelector(
-                `[data-testid="visual-editor__cursor"]`
+                `[data-testid="visual-builder__cursor"]`
             );
 
             expect(customCursor).toMatchSnapshot();
@@ -2205,7 +2205,7 @@ describe("When an element is hovered in visual editor mode", () => {
             );
 
             const customCursor = document.querySelector(
-                `[data-testid="visual-editor__cursor"]`
+                `[data-testid="visual-builder__cursor"]`
             );
             expect(customCursor?.classList.contains("visible")).toBeTruthy();
 
@@ -2321,7 +2321,7 @@ describe("When an element is hovered in visual editor mode", () => {
             referenceField.dispatchEvent(mousemoveEvent);
             await sleep(0);
             const customCursor = document.querySelector(
-                `[data-testid="visual-editor__cursor"]`
+                `[data-testid="visual-builder__cursor"]`
             );
 
             expect(customCursor).toMatchSnapshot();
@@ -2387,7 +2387,7 @@ describe("When an element is hovered in visual editor mode", () => {
             container.dispatchEvent(mousemoveEvent);
             await sleep(0);
             const customCursor = document.querySelector(
-                `[data-testid="visual-editor__cursor"]`
+                `[data-testid="visual-builder__cursor"]`
             );
 
             expect(customCursor).toMatchSnapshot();
@@ -2404,7 +2404,7 @@ describe("When an element is hovered in visual editor mode", () => {
         test("should have custom cursor on individual instances", async () => {
             firstReferenceField.dispatchEvent(mousemoveEvent);
             const customCursor = document.querySelector(
-                `[data-testid="visual-editor__cursor"]`
+                `[data-testid="visual-builder__cursor"]`
             );
 
             expect(customCursor).toMatchSnapshot();
@@ -2543,7 +2543,7 @@ describe("When an element is hovered in visual editor mode", () => {
             groupField.dispatchEvent(mousemoveEvent);
             await sleep(0);
             const customCursor = document.querySelector(
-                `[data-testid="visual-editor__cursor"]`
+                `[data-testid="visual-builder__cursor"]`
             );
 
             expect(customCursor).toMatchSnapshot();
@@ -2585,7 +2585,7 @@ describe("When an element is hovered in visual editor mode", () => {
             singleLine.dispatchEvent(mousemoveEvent);
             await sleep(0);
             const customCursor = document.querySelector(
-                `[data-testid="visual-editor__cursor"]`
+                `[data-testid="visual-builder__cursor"]`
             );
 
             expect(customCursor).toMatchSnapshot();
@@ -2664,7 +2664,7 @@ describe("When an element is hovered in visual editor mode", () => {
         test("should have custom cursor", async () => {
             container.dispatchEvent(mousemoveEvent);
             const customCursor = document.querySelector(
-                `[data-testid="visual-editor__cursor"]`
+                `[data-testid="visual-builder__cursor"]`
             );
 
             expect(customCursor).toMatchSnapshot();
@@ -2767,7 +2767,7 @@ describe("When an element is hovered in visual editor mode", () => {
             firstNestedMultiLine.dispatchEvent(mousemoveEvent);
             await sleep(0);
             const customCursor = document.querySelector(
-                `[data-testid="visual-editor__cursor"]`
+                `[data-testid="visual-builder__cursor"]`
             );
 
             expect(customCursor).toMatchSnapshot();

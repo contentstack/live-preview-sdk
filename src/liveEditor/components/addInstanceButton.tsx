@@ -1,3 +1,5 @@
+import classNames from "classnames";
+import { liveEditorStyles } from "../liveEditor.style";
 import { PlusIcon } from "./icons";
 
 interface AddInstanceButtonProps {
@@ -10,9 +12,13 @@ function AddInstanceButtonComponent(
 ): JSX.Element {
     return (
         <button
-            className={`visual-editor__add-button${
-                props.label ? " visual-editor__add-button--with-label" : ""
-            }`}
+            className={classNames(
+                "visual-builder__add-button",
+                liveEditorStyles()["visual-builder__add-button"],
+                {
+                    "visual-builder__add-button--with-label": props.label,
+                }
+            )}
             data-testid="visual-editor-add-instance-button"
             onClick={(e) => {
                 const event = e as unknown as MouseEvent;
@@ -23,7 +29,10 @@ function AddInstanceButtonComponent(
             {props.label ? (
                 <span
                     title={props.label}
-                    className="visual-editor__add-button-label"
+                    className={classNames(
+                        "visual-builder__add-button-label",
+                        liveEditorStyles()["visual-builder__add-button-label"]
+                    )}
                 >
                     {props.label}
                 </span>

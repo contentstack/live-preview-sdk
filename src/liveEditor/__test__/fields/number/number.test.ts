@@ -107,7 +107,9 @@ describe("number field", () => {
             fireEvent.mouseMove(numberField);
         });
 
-        const hoverOutline = screen.getByTestId("visual-editor__hover-outline");
+        const hoverOutline = screen.getByTestId(
+            "visual-builder__hover-outline"
+        );
         expect(hoverOutline).toBeInTheDocument();
         expect(hoverOutline.style.top).toEqual("100px");
         expect(hoverOutline.style.left).toEqual("100px");
@@ -119,13 +121,13 @@ describe("number field", () => {
         await act(() => {
             fireEvent.click(numberField);
         });
-        const topOverlay = screen.getByTestId("visual-editor__overlay--top");
+        const topOverlay = screen.getByTestId("visual-builder__overlay--top");
         const bottomOverlay = screen.getByTestId(
-            "visual-editor__overlay--bottom"
+            "visual-builder__overlay--bottom"
         );
-        const leftOverlay = screen.getByTestId("visual-editor__overlay--left");
+        const leftOverlay = screen.getByTestId("visual-builder__overlay--left");
         const rightOverlay = screen.getByTestId(
-            "visual-editor__overlay--right"
+            "visual-builder__overlay--right"
         );
 
         const overlays = [topOverlay, bottomOverlay, leftOverlay, rightOverlay];
@@ -137,13 +139,13 @@ describe("number field", () => {
     test("should have a field path dropdown", async () => {
         await userEvent.click(numberField);
         const focussedToolbar = screen.getByTestId(
-            "visual-editor__focused-toolbar"
+            "visual-builder__focused-toolbar"
         );
         expect(focussedToolbar).toBeVisible();
 
         // expect field display_name as dropdown label
         const fieldLabel = focussedToolbar.querySelector(
-            ".visual-editor__focused-toolbar__text"
+            ".visual-builder__focused-toolbar__text"
         );
         expect(fieldLabel).toHaveTextContent("Number");
     });

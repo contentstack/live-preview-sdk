@@ -58,7 +58,7 @@ describe("Visual editor", () => {
 
     test("should append a visual editor container to the DOM", () => {
         let visualEditorDOM = document.querySelector(
-            ".visual-editor__container"
+            ".visual-builder__container"
         );
 
         expect(visualEditorDOM).toBeNull();
@@ -66,7 +66,7 @@ describe("Visual editor", () => {
         new VisualEditor();
 
         visualEditorDOM = document.querySelector(
-            `[data-testid="visual-editor__container"]`
+            `[data-testid="visual-builder__container"]`
         );
 
         expect(visualEditorDOM).toMatchSnapshot();
@@ -165,7 +165,7 @@ describe("Visual editor", () => {
                 await sleep(0);
 
                 let replaceBtn = document.getElementsByClassName(
-                    "visual-editor__replace-button"
+                    "visual-builder__replace-button"
                 )[0];
 
                 expect(h1).toMatchSnapshot();
@@ -182,7 +182,7 @@ describe("Visual editor", () => {
                 await sleep(0);
 
                 replaceBtn = document.getElementsByClassName(
-                    "visual-editor__replace-button"
+                    "visual-builder__replace-button"
                 )[0];
 
                 expect(replaceBtn).toBeUndefined();
@@ -231,7 +231,7 @@ describe("visual editor DOM", () => {
         new VisualEditor();
 
         let visualEditorOverlayWrapper = document.querySelector(
-            `[data-testid="visual-editor__overlay__wrapper"]`
+            `[data-testid="visual-builder__overlay__wrapper"]`
         );
 
         expect(visualEditorOverlayWrapper).toMatchSnapshot();
@@ -241,7 +241,7 @@ describe("visual editor DOM", () => {
         await sleep(0);
 
         visualEditorOverlayWrapper = document.querySelector(
-            `[data-testid="visual-editor__overlay__wrapper"]`
+            `[data-testid="visual-builder__overlay__wrapper"]`
         );
 
         expect(visualEditorOverlayWrapper).toMatchSnapshot();
@@ -250,16 +250,16 @@ describe("visual editor DOM", () => {
         );
 
         const visualEditorWrapperTopOverlay = document.querySelector(
-            `[data-testid="visual-editor__overlay--top"]`
+            `[data-testid="visual-builder__overlay--top"]`
         ) as HTMLDivElement;
         const visualEditorWrapperLeftOverlay = document.querySelector(
-            `[data-testid="visual-editor__overlay--left"]`
+            `[data-testid="visual-builder__overlay--left"]`
         ) as HTMLDivElement;
         const visualEditorWrapperRightOverlay = document.querySelector(
-            `[data-testid="visual-editor__overlay--right"]`
+            `[data-testid="visual-builder__overlay--right"]`
         ) as HTMLDivElement;
         const visualEditorWrapperBottomOverlay = document.querySelector(
-            `[data-testid="visual-editor__overlay--bottom"]`
+            `[data-testid="visual-builder__overlay--bottom"]`
         ) as HTMLDivElement;
 
         expect(visualEditorWrapperTopOverlay.style.top).toBe("0px");
@@ -307,7 +307,7 @@ describe("visual editor DOM", () => {
         await sleep(0);
 
         let visualEditorContainer = document.querySelector(
-            `[data-testid="visual-editor__container"]`
+            `[data-testid="visual-builder__container"]`
         );
 
         expect(visualEditorContainer).toBeDefined();
@@ -315,7 +315,7 @@ describe("visual editor DOM", () => {
         visualEditor.destroy();
 
         visualEditorContainer = document.querySelector(
-            `[data-testid="visual-editor__container"]`
+            `[data-testid="visual-builder__container"]`
         );
 
         expect(visualEditorContainer).toBeNull();
@@ -331,7 +331,7 @@ describe("visual editor DOM", () => {
         await sleep(0);
 
         let visualEditorOverlayWrapper = document.querySelector(
-            `[data-testid="visual-editor__overlay__wrapper"]`
+            `[data-testid="visual-builder__overlay__wrapper"]`
         );
         expect(visualEditorOverlayWrapper?.classList.contains("visible")).toBe(
             true
@@ -339,12 +339,12 @@ describe("visual editor DOM", () => {
         expect(h1.getAttribute("contenteditable")).toBe("true");
 
         const visualEditorOverlayTop = document.querySelector(`
-        [data-testid="visual-editor__overlay--top"]`) as HTMLDivElement;
+        [data-testid="visual-builder__overlay--top"]`) as HTMLDivElement;
 
         visualEditorOverlayTop?.click();
 
         visualEditorOverlayWrapper = document.querySelector(
-            `[data-testid="visual-editor__overlay__wrapper"]`
+            `[data-testid="visual-builder__overlay__wrapper"]`
         );
         expect(visualEditorOverlayWrapper?.classList.contains("visible")).toBe(
             false

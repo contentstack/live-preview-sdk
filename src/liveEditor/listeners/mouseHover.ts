@@ -9,6 +9,7 @@ import { getFieldType } from "../utils/getFieldType";
 import EventListenerHandlerParams from "./types";
 import { VisualEditor } from "..";
 import { addHoverOutline } from "../generators/generateHoverOutline";
+import { liveEditorStyles } from "../liveEditor.style";
 
 export interface HandleMouseHoverParams
     extends Pick<
@@ -40,10 +41,7 @@ function handleCursorPosition(
     }
 }
 
-function addOutline(
-    editableElement: Element,
-    isFieldDisabled?: boolean
-): void {
+function addOutline(editableElement: Element, isFieldDisabled?: boolean): void {
     if (!editableElement) return;
 
     addHoverOutline(editableElement as HTMLElement, isFieldDisabled);
@@ -53,21 +51,23 @@ function hideDefaultCursor(): void {
     if (
         document?.body &&
         !document.body.classList.contains(
-            "visual-editor__default-cursor--disabled"
+            liveEditorStyles()["visual-builder__default-cursor--disabled"]
         )
     )
-        document.body.classList.add("visual-editor__default-cursor--disabled");
+        document.body.classList.add(
+            liveEditorStyles()["visual-builder__default-cursor--disabled"]
+        );
 }
 
 function showDefaultCursor(): void {
     if (
         document?.body &&
         document.body.classList.contains(
-            "visual-editor__default-cursor--disabled"
+            liveEditorStyles()["visual-builder__default-cursor--disabled"]
         )
     )
         document.body.classList.remove(
-            "visual-editor__default-cursor--disabled"
+            liveEditorStyles()["visual-builder__default-cursor--disabled"]
         );
 }
 
@@ -78,12 +78,14 @@ export function hideHoverOutline(
         return;
     }
     const hoverOutline = visualEditorContainer.querySelector(
-        ".visual-editor__hover-outline"
+        ".visual-builder__hover-outline"
     );
     if (!hoverOutline) {
         return;
     }
-    hoverOutline.classList.add("visual-editor__hover-outline--hidden");
+    hoverOutline.classList.add(
+        liveEditorStyles()["visual-builder__hover-outline--hidden"]
+    );
 }
 
 export function hideCustomCursor(customCursor: HTMLDivElement | null): void {
@@ -97,7 +99,7 @@ export function showCustomCursor(customCursor: HTMLDivElement | null): void {
 }
 
 function isOverlay(target: HTMLElement): boolean {
-    return target.classList.contains("visual-editor__overlay");
+    return target.classList.contains("visual-builder__overlay");
 }
 
 function isContentEditable(target: HTMLElement): boolean {
@@ -106,7 +108,7 @@ function isContentEditable(target: HTMLElement): boolean {
     return false;
 }
 
-async function handleMouseHover(params: HandleMouseHoverParams): Promise<void> { 
+async function handleMouseHover(params: HandleMouseHoverParams): Promise<void> {
     throttle(async (params: HandleMouseHoverParams) => {
         const eventDetails = getCsDataOfElement(params.event);
         const eventTarget = params.event.target as HTMLElement | null;
@@ -190,9 +192,9 @@ async function handleMouseHover(params: HandleMouseHoverParams): Promise<void> {
 
         if (
             !editableElement.classList.contains(
-                "visual-editor__empty-block-parent"
+                "visual-builder__empty-block-parent"
             ) &&
-            !editableElement.classList.contains("visual-editor__empty-block")
+            !editableElement.classList.contains("visual-builder__empty-block")
         ) {
             addOutline(editableElement);
             FieldSchemaMap.getFieldSchema(content_type_uid, fieldPath).then(

@@ -33,6 +33,6 @@ export function handleMoveInstance(
 
 function closeOverlay(): void {
     document
-        .querySelector<HTMLDivElement>(".visual-editor__overlay--top")
+        .querySelector<HTMLDivElement>(".visual-builder__overlay--top")
         ?.click();
 }

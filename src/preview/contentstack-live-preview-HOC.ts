@@ -16,6 +16,8 @@ import {
 } from "../livePreview/types/onEntryChangeCallback.type";
 import { PublicLogger } from "../logger/logger";
 import { IInitData } from "../types/types";
+import { handlePageTraversal } from "../livePreview/onPageTraversal";
+import { handleWebCompare } from "../timeline/compare/compare";
 
 class ContentstackLivePreview {
     private static previewConstructors:
@@ -40,7 +42,6 @@ class ContentstackLivePreview {
     static init(
         userConfig: Partial<IInitData> = getUserInitData()
     ): Promise<typeof ContentstackLivePreview.previewConstructors> {
-
         if (typeof window === "undefined") {
             PublicLogger.warn("The SDK is not initialized in the browser.");
             return Promise.resolve(ContentstackLivePreview.previewConstructors);
@@ -91,6 +92,9 @@ class ContentstackLivePreview {
         );
 
         ContentstackLivePreview.onEntryChangeCallbacks = {};
+
+        handlePageTraversal();
+        handleWebCompare();
 
         return Promise.resolve(ContentstackLivePreview.previewConstructors);
     }
@@ -224,5 +228,3 @@ class ContentstackLivePreview {
 }
 
 export default ContentstackLivePreview;
-
-module.exports = ContentstackLivePreview;

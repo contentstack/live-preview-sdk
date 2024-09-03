@@ -32,10 +32,10 @@ describe("appendFieldPathDropdown", () => {
         document.body.appendChild(singleLineField);
 
         focusedToolbar = document.createElement("div");
-        focusedToolbar.classList.add("visual-editor__focused-toolbar");
+        focusedToolbar.classList.add("visual-builder__focused-toolbar");
         focusedToolbar.setAttribute(
             "data-testid",
-            "visual-editor__focused-toolbar"
+            "visual-builder__focused-toolbar"
         );
 
         mockFieldMetadata = {
@@ -54,7 +54,7 @@ describe("appendFieldPathDropdown", () => {
             },
             instance: {
                 fieldPathWithIndex: "",
-            }
+            },
         };
 
         mockEventDetails = {
@@ -65,23 +65,23 @@ describe("appendFieldPathDropdown", () => {
     });
 
     test("should not do anything if tooltip is already present", () => {
-        focusedToolbar.classList.add("visual-editor__tooltip");
+        focusedToolbar.classList.add("visual-builder__tooltip");
 
         appendFieldPathDropdown(mockEventDetails, focusedToolbar);
 
         const fieldLabelWrapper = focusedToolbar.querySelector(
-            ".visual-editor__focused-toolbar__field-label-wrapper"
+            ".visual-builder__focused-toolbar__field-label-wrapper"
         );
         fireEvent.click(focusedToolbar);
 
         expect(fieldLabelWrapper?.classList.toString()).toBe(
-            "visual-editor__focused-toolbar__field-label-wrapper"
+            "visual-builder__focused-toolbar__field-label-wrapper"
         );
     });
 
     test("should click the closest parent if focused toolbar is a parent field", () => {
         focusedToolbar.classList.add(
-            "visual-editor__focused-toolbar__field-label-wrapper__parent-field"
+            "visual-builder__focused-toolbar__field-label-wrapper__parent-field"
         );
         focusedToolbar.setAttribute("data-target-cslp", "test-cslp");
 
@@ -101,13 +101,13 @@ describe("appendFieldPathDropdown", () => {
         appendFieldPathDropdown(mockEventDetails, focusedToolbar);
 
         const fieldLabelWrapper = focusedToolbar.querySelector(
-            ".visual-editor__focused-toolbar__field-label-wrapper"
+            ".visual-builder__focused-toolbar__field-label-wrapper"
         );
 
         fireEvent.click(focusedToolbar);
 
         expect(fieldLabelWrapper?.classList.toString()).toBe(
-            "visual-editor__focused-toolbar__field-label-wrapper"
+            "visual-builder__focused-toolbar__field-label-wrapper"
         );
 
         expect(mockOnClick).toBeCalled();
@@ -117,7 +117,7 @@ describe("appendFieldPathDropdown", () => {
         appendFieldPathDropdown(mockEventDetails, focusedToolbar);
 
         const fieldLabelWrapper = focusedToolbar.querySelector(
-            ".visual-editor__focused-toolbar__field-label-wrapper"
+            ".visual-builder__focused-toolbar__field-label-wrapper"
         );
 
         fieldLabelWrapper?.classList.add("field-label-dropdown-open");
@@ -125,7 +125,7 @@ describe("appendFieldPathDropdown", () => {
         fireEvent.click(focusedToolbar);
 
         expect(fieldLabelWrapper?.classList.toString()).toBe(
-            "visual-editor__focused-toolbar__field-label-wrapper"
+            "visual-builder__focused-toolbar__field-label-wrapper"
         );
     });
 
@@ -133,17 +133,17 @@ describe("appendFieldPathDropdown", () => {
         appendFieldPathDropdown(mockEventDetails, focusedToolbar);
 
         const fieldLabelWrapper = focusedToolbar.querySelector(
-            ".visual-editor__focused-toolbar__field-label-wrapper"
+            ".visual-builder__focused-toolbar__field-label-wrapper"
         );
 
         expect(fieldLabelWrapper?.classList.toString()).toBe(
-            "visual-editor__focused-toolbar__field-label-wrapper"
+            "visual-builder__focused-toolbar__field-label-wrapper"
         );
 
         fireEvent.click(focusedToolbar);
 
         expect(fieldLabelWrapper?.classList.toString()).toBe(
-            "visual-editor__focused-toolbar__field-label-wrapper field-label-dropdown-open"
+            "visual-builder__focused-toolbar__field-label-wrapper field-label-dropdown-open"
         );
     });
 });

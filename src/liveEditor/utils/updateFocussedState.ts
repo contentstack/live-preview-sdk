@@ -42,7 +42,7 @@ export function updateFocussedState({
 
     // update psuedo editable element if present
     const psuedoEditableElement = visualEditorContainer.querySelector(
-        ".visual-editor__pseudo-editable-element"
+        ".visual-builder__pseudo-editable-element"
     ) as HTMLElement;
     if (psuedoEditableElement) {
         const styles = getStyleOfAnElement(editableElement);

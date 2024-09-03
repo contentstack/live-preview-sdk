@@ -1,18 +1,24 @@
 import { render } from "preact";
 import VisualEditorComponent from "./visualEditor";
+import { liveEditorStyles } from "../liveEditor.style";
 
 interface InitUIParams {
     resizeObserver: ResizeObserver;
 }
 
 function initUI(props: InitUIParams): void {
-    const visualEditorDOM = document.querySelector(".visual-editor__container");
+    const visualEditorDOM = document.querySelector(
+        `.visual-builder__container`
+    );
     if (!visualEditorDOM) {
         const visualEditorContainer = document.createElement("div");
-        visualEditorContainer.classList.add("visual-editor__container");
+        visualEditorContainer.classList.add(
+            liveEditorStyles()["visual-builder__container"],
+            "visual-builder__container"
+        );
         visualEditorContainer.setAttribute(
             "data-testid",
-            "visual-editor__container"
+            "visual-builder__container"
         );
 
         document.body.appendChild(visualEditorContainer);

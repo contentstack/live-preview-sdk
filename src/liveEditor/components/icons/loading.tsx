@@ -1,4 +1,6 @@
+import classNames from "classnames";
 import { SVGProps } from "react";
+import { liveEditorStyles } from "../../liveEditor.style";
 
 export function LoadingIcon(props: SVGProps<SVGSVGElement>): JSX.Element {
     return (
@@ -8,7 +10,10 @@ export function LoadingIcon(props: SVGProps<SVGSVGElement>): JSX.Element {
             viewBox="0 0 20 20"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
-            className="visual-editor__cursor-icon--loader"
+            className={classNames(
+                "visual-builder__cursor-icon--loader",
+                liveEditorStyles()["visual-builder__cursor-icon--loader"]
+            )}
             {...props}
         >
             <path
