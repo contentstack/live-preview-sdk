@@ -102,6 +102,12 @@ async function handleEditorInteraction(
         return;
     }
 
+    if (
+        VisualEditor.VisualEditorGlobalState.value.audienceMode &&
+        !editableElement.classList.contains("visual-editor__variant-field")
+    ) {
+        return;
+    }
     // when previous and current selected element is same, return.
     // this also avoids inserting psuedo-editable field (field data is
     // not equal to text content in DOM) when performing mouse

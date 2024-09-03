@@ -38,6 +38,7 @@ interface VisualEditorGlobalStateImpl {
     previousSelectedEditableDOM: HTMLElement | Element | null;
     previousHoveredTargetDOM: Element | null;
     previousEmptyBlockParents: Element[] | [];
+    audienceMode: boolean;
 }
 
 export class VisualEditor {
@@ -46,11 +47,13 @@ export class VisualEditor {
     private visualEditorContainer: HTMLDivElement | null = null;
     private focusedToolbar: HTMLDivElement | null = null;
 
-    static VisualEditorGlobalState: Signal<VisualEditorGlobalStateImpl> = signal({
-        previousSelectedEditableDOM: null,
-        previousHoveredTargetDOM: null,
-        previousEmptyBlockParents: [],
-    });
+    static VisualEditorGlobalState: Signal<VisualEditorGlobalStateImpl> =
+        signal({
+            previousSelectedEditableDOM: null,
+            previousHoveredTargetDOM: null,
+            previousEmptyBlockParents: [],
+            audienceMode: false,
+        });
 
     private handlePositionChange(editableElement: HTMLElement) {
         updateFocussedState({
@@ -158,7 +161,7 @@ export class VisualEditor {
                 if (!isEqual(emptyBlockParents, previousEmptyBlockParents)) {
                     const noMoreEmptyBlockParent = previousEmptyBlockParents.filter(
                         (x) => !emptyBlockParents.includes(x),
-                    );
+                        );
                     const newEmptyBlockParent = emptyBlockParents.filter(
                         (x) => !previousEmptyBlockParents.includes(x),
                     );

@@ -19,4 +19,5 @@ export enum LiveEditorPostMessageEvents {
     REMOVE_DRAFT_FIELDS = "remove-draft-fields",
     SHOW_VARIANT_FIELDS = "show-variant-fields",
     REMOVE_VARIANT_FIELDS = "remove-variant-fields",
+    SET_AUDIENCE_MODE = "set-audience-mode",
 }

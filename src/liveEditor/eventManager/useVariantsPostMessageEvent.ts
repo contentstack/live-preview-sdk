@@ -1,3 +1,4 @@
+import { VisualEditor } from "..";
 import liveEditorPostMessage from "../utils/liveEditorPostMessage";
 import { LiveEditorPostMessageEvents } from "../utils/types/postMessage.types";
 
@@ -6,6 +7,12 @@ interface VariantFieldsEvent {
         variant_data: {
             variant: string;
         };
+    };
+}
+
+interface AudienceEvent {
+    data: {
+        audienceMode: boolean;
     };
 }
 
@@ -28,7 +35,17 @@ function removeVariantFieldClass(): void {
     });
 }
 
+function setAudienceMode(mode: boolean): void {
+    VisualEditor.VisualEditorGlobalState.value.audienceMode = mode;
+}
+
 export function useVariantFieldsPostMessageEvent(): void {
+    liveEditorPostMessage?.on(
+        LiveEditorPostMessageEvents.SET_AUDIENCE_MODE,
+        (event: AudienceEvent) => {
+            setAudienceMode(event.data.audienceMode);
+        }
+    );
     liveEditorPostMessage?.on(
         LiveEditorPostMessageEvents.SHOW_VARIANT_FIELDS,
         (event: VariantFieldsEvent) => {
