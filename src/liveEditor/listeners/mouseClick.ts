@@ -20,6 +20,7 @@ import EventListenerHandlerParams from "./types";
 import { VisualEditor } from "..";
 import { FieldSchemaMap } from "../utils/fieldSchemaMap";
 import { isFieldDisabled } from "../utils/isFieldDisabled";
+import { liveEditorStyles } from "../liveEditor.style";
 
 type HandleEditorInteractionParams = Omit<
     EventListenerHandlerParams,
@@ -108,6 +109,14 @@ async function handleEditorInteraction(
         return;
     }
 
+    if (
+        VisualEditor.VisualEditorGlobalState.value.audienceMode &&
+        !editableElement.classList.contains(
+            liveEditorStyles()["visual-builder__variant-field"]
+        )
+    ) {
+        return;
+    }
     // when previous and current selected element is same, return.
     // this also avoids inserting psuedo-editable field (field data is
     // not equal to text content in DOM) when performing mouse

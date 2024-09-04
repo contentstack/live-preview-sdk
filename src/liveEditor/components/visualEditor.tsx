@@ -14,7 +14,7 @@ function VisualEditorComponent(props: VisualEditorProps): JSX.Element {
             <div
                 className={classNames(
                     liveEditorStyles()["visual-builder__cursor"],
-                    "live-editor__cursor"
+                    "visual-builder__cursor"
                 )}
                 data-testid="visual-builder__cursor"
             ></div>
