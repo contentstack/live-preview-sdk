@@ -1,4 +1,5 @@
 import { VisualEditor } from "..";
+import { liveEditorStyles } from "../liveEditor.style";
 import liveEditorPostMessage from "../utils/liveEditorPostMessage";
 import { LiveEditorPostMessageEvents } from "../utils/types/postMessage.types";
 
@@ -21,17 +22,21 @@ function addVariantFieldClass(variant_uid: string): void {
     elements.forEach((element) => {
         const dataCslp = element.getAttribute("data-cslp");
         if (dataCslp && new RegExp(variant_uid).test(dataCslp)) {
-            element.classList.add("visual-editor__variant-field");
+            element.classList.add(
+                liveEditorStyles()["visual-builder__variant-field"]
+            );
         }
     });
 }
 
 function removeVariantFieldClass(): void {
     const variantFieldElements = document.querySelectorAll(
-        ".visual-editor__variant-field"
+        `.${liveEditorStyles()["visual-builder__variant-field"]}`
     );
     variantFieldElements.forEach((element) => {
-        element.classList.remove("visual-editor__variant-field");
+        element.classList.remove(
+            liveEditorStyles()["visual-builder__variant-field"]
+        );
     });
 }
 

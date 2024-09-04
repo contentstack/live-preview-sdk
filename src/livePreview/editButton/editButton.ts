@@ -4,7 +4,10 @@ import Config from "../../configManager/configManager";
 import { addCslpOutline, extractDetailsFromCslp } from "../../cslp";
 import { cslpTagStyles } from "./editButton.style";
 import { PublicLogger } from "../../logger/logger";
-import { IEditButtonPosition, ILivePreviewWindowType } from "../../types/types";
+import {
+    type IEditButtonPosition,
+    ILivePreviewWindowType,
+} from "../../types/types";
 import livePreviewPostMessage from "../eventManager/livePreviewEventManager";
 import { EDIT_BUTTON_TOOLTIP_ID } from "./editButton.constant";
 

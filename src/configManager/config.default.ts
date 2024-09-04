@@ -1,4 +1,8 @@
-import { IConfig, IInitData, ILivePreviewWindowType } from "../types/types";
+import {
+    ILivePreviewWindowType,
+    type IConfig,
+    type IInitData,
+} from "../types/types";
 
 export function getUserInitData(): IInitData {
     return {

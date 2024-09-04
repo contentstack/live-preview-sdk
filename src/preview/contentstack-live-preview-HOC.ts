@@ -1,7 +1,6 @@
 import { v4 as uuidv4 } from "uuid";
 
 import { isEmpty } from "lodash-es";
-import packageJson from "../../package.json";
 import { getUserInitData } from "../configManager/config.default";
 import Config, { updateConfigFromUrl } from "../configManager/configManager";
 import { VisualEditor } from "../liveEditor";
@@ -15,7 +14,7 @@ import {
     OnEntryChangeUnsubscribeParameters,
 } from "../livePreview/types/onEntryChangeCallback.type";
 import { PublicLogger } from "../logger/logger";
-import { IInitData } from "../types/types";
+import type { IInitData } from "../types/types";
 import { handlePageTraversal } from "../livePreview/onPageTraversal";
 import { handleWebCompare } from "../timeline/compare/compare";
 
@@ -223,7 +222,7 @@ class ContentstackLivePreview {
      * @returns The version of the SDK as a string.
      */
     static getSdkVersion(): string {
-        return packageJson.version;
+        return process.env.PACKAGE_VERSION!;
     }
 }
 

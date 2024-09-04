@@ -1,33 +1,30 @@
 import ContentstackLivePreviewHOC from "./preview/contentstack-live-preview-HOC";
-import packageJson from "../package.json";
 
 class LightLivePreviewHoC implements ContentstackLivePreviewHOC {
-    init() {}
+    static init() {}
 
     get hash() {
         return "";
     }
 
-    onEntryChange(callback: (...args: any[]) => void) {
+    static onEntryChange(callback: (...args: any[]) => void) {
         return callback();
     }
 
-    onLiveEdit() {
+    static onLiveEdit() {
         // intentionally empty
     }
 
-    unsubscribeOnEntryChange() {
+    static unsubscribeOnEntryChange() {
         // intentionally empty
     }
 
     static getSdkVersion(): string {
-        return packageJson.version;
+        return process.env.PACKAGE_VERSION!;
     }
 }
 
-export const ContentstackLivePreview: ContentstackLivePreviewHOC =
-    process.env.PURGE_PREVIEW_SDK || process.env.REACT_APP_PURGE_PREVIEW_SDK
-        ? LightLivePreviewHoC
-        : ContentstackLivePreviewHOC;
+// export const ContentstackLivePreview: ContentstackLivePreviewHOC =
+//     ContentstackLivePreviewHOC;
 
-export default ContentstackLivePreview;
+export default ContentstackLivePreviewHOC;

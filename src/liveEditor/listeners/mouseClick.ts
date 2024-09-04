@@ -20,6 +20,7 @@ import EventListenerHandlerParams from "./types";
 import { VisualEditor } from "..";
 import { FieldSchemaMap } from "../utils/fieldSchemaMap";
 import { isFieldDisabled } from "../utils/isFieldDisabled";
+import { liveEditorStyles } from "../liveEditor.style";
 
 type HandleEditorInteractionParams = Omit<
     EventListenerHandlerParams,
@@ -110,7 +111,9 @@ async function handleEditorInteraction(
 
     if (
         VisualEditor.VisualEditorGlobalState.value.audienceMode &&
-        !editableElement.classList.contains("visual-editor__variant-field")
+        !editableElement.classList.contains(
+            liveEditorStyles()["visual-builder__variant-field"]
+        )
     ) {
         return;
     }

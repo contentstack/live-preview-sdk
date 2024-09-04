@@ -179,7 +179,12 @@ function FieldLabelWrapperComponent(
                 ) : null}
                 {displayNamesLoading ? <LoadingIcon /> : currentField.icon}
                 {currentField.isVariant ? (
-                    <div className="visual-editor__field-icon">
+                    <div
+                        className={classNames(
+                            "visual-builder__field-icon",
+                            liveEditorStyles()["visual-builder__field-icon"]
+                        )}
+                    >
                         <VariantIcon />
                     </div>
                 ) : null}

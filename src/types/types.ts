@@ -52,12 +52,12 @@ export declare type ILivePreviewMode = "editor" | "preview";
 
 //? We kept it as number so that we could disable only the unrequired features,
 //? since the "Editor" mode will contain all the features of the "Preview" mode.
-export declare const enum ILivePreviewModeConfig {
+export enum ILivePreviewModeConfig {
     PREVIEW = 1,
     EDITOR = 2,
 }
 
-export declare const enum ILivePreviewWindowType {
+export enum ILivePreviewWindowType {
     PREVIEW = "preview",
     EDITOR = "editor",
     INDEPENDENT = "independent",
