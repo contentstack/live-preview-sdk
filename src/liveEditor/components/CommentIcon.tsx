@@ -67,7 +67,7 @@ const CommentIcon: React.FC<CommentIconProps> = ({
         };
 
         const recieveDiscussionIDEvent = liveEditorPostMessage?.on(
-            LiveEditorPostMessageEvents.RECEIVE_DISCUSSION_ID,
+            LiveEditorPostMessageEvents.UPDATE_DISCUSSION_ID,
             handleReceiveDiscussionId
         );
 

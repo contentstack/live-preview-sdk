@@ -22,6 +22,7 @@ const mockFieldMetadata: CslpData = {
     content_type_uid: "",
     cslpValue: "",
     locale: "",
+    variant: undefined,
     fieldPath: "",
     fieldPathWithIndex: "",
     multipleFieldMetadata: {

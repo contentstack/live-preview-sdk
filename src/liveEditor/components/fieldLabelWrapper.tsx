@@ -12,6 +12,7 @@ import { LoadingIcon } from "./icons/loading";
 import { getFieldIcon } from "../generators/generateCustomCursor";
 import { uniqBy } from "lodash-es";
 import { liveEditorStyles } from "../liveEditor.style";
+import { VariantIcon } from "./icons/variant";
 
 async function getFieldDisplayNames(fieldMetadata: CslpData[]) {
     const result = await liveEditorPostMessage?.send<{ [k: string]: string }>(
@@ -36,6 +37,7 @@ function FieldLabelWrapperComponent(
         icon: <CaretIcon />,
         prefixIcon: null,
         disabled: false,
+        isVariant: false,
     });
     const [displayNames, setDisplayNames] = useState<Record<string, string>>(
         {}
@@ -77,6 +79,7 @@ function FieldLabelWrapperComponent(
                 fieldSchema.display_name;
 
             const hasParentPaths = !!props?.parentPaths?.length;
+            const isVariant = props.fieldMetadata.variant ? true : false;
 
             setCurrentField({
                 text: currentFieldDisplayName,
@@ -94,6 +97,7 @@ function FieldLabelWrapperComponent(
                 ),
                 prefixIcon: getFieldIcon(fieldSchema),
                 disabled: fieldDisabled,
+                isVariant: isVariant,
             });
 
             if (displayNames) {
@@ -175,6 +179,16 @@ function FieldLabelWrapperComponent(
                     </div>
                 ) : null}
                 {displayNamesLoading ? <LoadingIcon /> : currentField.icon}
+                {currentField.isVariant ? (
+                    <div
+                        className={classNames(
+                            "visual-builder__field-icon",
+                            liveEditorStyles()["visual-builder__field-icon"]
+                        )}
+                    >
+                        <VariantIcon />
+                    </div>
+                ) : null}
             </button>
             {props.parentPaths.map((path, index) => (
                 <button

@@ -35,11 +35,13 @@ import { useDraftFieldsPostMessageEvent } from "./eventManager/useDraftFieldsPos
 import { h } from "preact";
 import { setup } from "goober";
 import { globalLiveEditorStyles } from "./liveEditor.style";
+import { useVariantFieldsPostMessageEvent } from "./eventManager/useVariantsPostMessageEvent";
 
 interface VisualEditorGlobalStateImpl {
     previousSelectedEditableDOM: HTMLElement | Element | null;
     previousHoveredTargetDOM: Element | null;
     previousEmptyBlockParents: Element[] | [];
+    audienceMode: boolean;
 }
 
 export class VisualEditor {
@@ -53,6 +55,7 @@ export class VisualEditor {
             previousSelectedEditableDOM: null,
             previousHoveredTargetDOM: null,
             previousEmptyBlockParents: [],
+            audienceMode: false,
         });
 
     private handlePositionChange(editableElement: HTMLElement) {
@@ -273,6 +276,7 @@ export class VisualEditor {
                 useHistoryPostMessageEvent();
                 useOnEntryUpdatePostMessageEvent();
                 useDraftFieldsPostMessageEvent();
+                useVariantFieldsPostMessageEvent();
             })
             .catch(() => {
                 if (!inIframe()) {

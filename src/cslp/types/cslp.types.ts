@@ -3,6 +3,7 @@ export interface CslpData {
     content_type_uid: string;
     cslpValue: string;
     locale: string;
+    variant: string | undefined;
     /**
      * This path excludes the indexes in the Group or Modular blocks.
      * This path could be used to traverse in the content type schema.

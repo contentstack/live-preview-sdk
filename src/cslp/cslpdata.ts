@@ -14,8 +14,31 @@ import { cslpTagStyles } from "../livePreview/editButton/editButton.style";
  * @returns An object containing the extracted details.
  */
 export function extractDetailsFromCslp(cslpValue: string): CslpData {
-    const [content_type_uid, entry_uid, locale, ...fieldPath] =
-        cslpValue.split(".");
+    let [cslpVersion, cslpData] = cslpValue.split(":");
+    // If the cslpVersion is greater than 2 letter which means it is v1 version of cslp data
+    if (cslpVersion.length > 2) {
+        cslpData = cslpVersion;
+        cslpVersion = "v1";
+    }
+
+    const [content_type_uid, entryInfo, locale, ...fieldPath] =
+        cslpData.split(".");
+
+    let entry_uid: string;
+    let variant;
+
+    switch (cslpVersion) {
+        case "v2": {
+            const [uid, variant_uid] = entryInfo.split("_");
+            entry_uid = uid;
+            variant = variant_uid;
+            break;
+        }
+        default: {
+            entry_uid = entryInfo;
+            break;
+        }
+    }
     const instancePathWithInstance = fieldPath.join(".");
     const calculatedPath = fieldPath.filter((path) => {
         const isEmpty = isNil(path);
@@ -43,6 +66,7 @@ export function extractDetailsFromCslp(cslpValue: string): CslpData {
     return {
         entry_uid,
         content_type_uid,
+        variant,
         locale,
         cslpValue: cslpValue,
         fieldPath: calculatedPath.join("."),

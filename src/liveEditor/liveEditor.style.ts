@@ -131,6 +131,16 @@ export function liveEditorStyles() {
                 outline: none;
                 box-shadow: 0 0 0 2px #ada4f4;
             }
+            & > span {
+                color: #fff;
+                /* Body/P1 Bold */
+                font-size: 1rem;
+                font-family: Inter;
+                font-weight: 600;
+                line-height: 150%;
+                letter-spacing: 0.01rem;
+                text-transform: capitalize;
+            }
 
             & > svg {
                 color: #fff;
@@ -456,6 +466,9 @@ export function liveEditorStyles() {
         `,
         "visual-builder__draft-field": css`
             outline: 2px dashed var(--Brand-Colors-Brand-Orange, #eb5646);
+        `,
+        "visual-builder__variant-field": css`
+            outline: 2px solid var(--Brand-Colors-Brand-Orange, #eb5646);
         `,
     };
 }

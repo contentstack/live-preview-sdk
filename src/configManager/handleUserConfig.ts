@@ -1,8 +1,8 @@
 import {
-    IClientUrlParams,
-    IInitData,
+    type IClientUrlParams,
+    type IInitData,
     ILivePreviewModeConfig,
-    IStackSdk,
+    type IStackSdk,
 } from "../types/types";
 import Config from "./configManager";
 

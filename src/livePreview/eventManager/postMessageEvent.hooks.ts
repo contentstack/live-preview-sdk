@@ -1,4 +1,3 @@
-import packageJson from "../../../package.json";
 import Config, { setConfigFromParams } from "../../configManager/configManager";
 import { ILivePreviewWindowType } from "../../types/types";
 import livePreviewPostMessage from "./livePreviewEventManager";
@@ -65,7 +64,7 @@ export function sendInitializeLivePreviewPostMessageEvent(): void {
                 config: {
                     shouldReload: Config.get().ssr,
                     href: window.location.href,
-                    sdkVersion: packageJson.version,
+                    sdkVersion: process.env.PACKAGE_VERSION,
                 },
             }
         )

@@ -1,6 +1,6 @@
 import {
     ILivePreviewWindowType,
-    IVisualEditorInitEvent,
+    type IVisualEditorInitEvent,
 } from "../../types/types";
 import { LivePreviewInitEventResponse } from "../eventManager/types/livePreviewPostMessageEvent.type";
 
