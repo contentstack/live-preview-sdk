@@ -19,8 +19,10 @@ export enum LiveEditorPostMessageEvents {
     HIDE_FOCUS_OVERLAY = "hide-focus-overlay",
     SHOW_DRAFT_FIELDS = "show-draft-fields",
     REMOVE_DRAFT_FIELDS = "remove-draft-fields",
-    UPDATE_DISCUSSION_ID = "update-discussion-id-for-focus-field",
     SHOW_VARIANT_FIELDS = "show-variant-fields",
     REMOVE_VARIANT_FIELDS = "remove-variant-fields",
     SET_AUDIENCE_MODE = "set-audience-mode",
+    UPDATE_DISCUSSION_ID = "update-discussion-id-for-focus-field",
+    SCROLL_TO_FIELD = "scroll-to-view-field-by-cslp-value",
+
 }
