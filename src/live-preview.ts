@@ -17,6 +17,7 @@ import { handleInitData } from "./utils/handleUserConfig";
 import { userInitData } from "./utils/defaults";
 import packageJson from "../package.json";
 import { extractDetailsFromCslp } from "./utils/cslpdata";
+import { livePreviewStyles } from "./styles/live_preview";
 
 export default class LivePreview {
     /**
@@ -171,14 +172,14 @@ export default class LivePreview {
                 }
                 if (this.currentElementBesideTooltip) {
                     this.currentElementBesideTooltip.classList.remove(
-                        "cslp-edit-mode"
+                        livePreviewStyles()["cslp-edit-mode"]
                     );
                     this.currentElementBesideTooltip.removeEventListener(
                         "mouseleave",
                         this.removeEditButtonStyle
                     );
                 }
-                element.classList.add("cslp-edit-mode");
+                element.classList.add(livePreviewStyles()["cslp-edit-mode"]);
                 this.currentElementBesideTooltip = element;
                 this.currentElementBesideTooltip.addEventListener(
                     "mouseleave",
@@ -195,7 +196,7 @@ export default class LivePreview {
 
                 trigger = false;
             } else if (!trigger) {
-                element.classList.remove("cslp-edit-mode");
+                element.classList.remove(livePreviewStyles()["cslp-edit-mode"]);
             }
         }
     }
@@ -216,7 +217,7 @@ export default class LivePreview {
                 this.hideInterval = setInterval(this.hideTooltip, 500);
                 trigger = false;
             } else if (!trigger) {
-                element.classList.remove("cslp-edit-mode");
+                element.classList.remove(livePreviewStyles()["cslp-edit-mode"]);
             }
         }
     }
@@ -228,7 +229,9 @@ export default class LivePreview {
             this.isHoveringOnTooltip
         )
             return false;
-        this.currentElementBesideTooltip.classList.remove("cslp-edit-mode");
+        this.currentElementBesideTooltip.classList.remove(
+            livePreviewStyles()["cslp-edit-mode"]
+        );
         this.currentElementBesideTooltip.removeEventListener(
             "mouseleave",
             this.removeEditButtonStyle
@@ -465,9 +468,11 @@ export default class LivePreview {
         ) {
             const tooltip = document.createElement("button");
             const tooltipInnerContainer = document.createElement("div");
-            tooltipInnerContainer.classList.add("cslp-tooltip-inner-container");
-            tooltip.classList.add("cslp-tooltip");
-            tooltip.classList.add("cslp-tooltip");
+            tooltipInnerContainer.classList.add(
+                livePreviewStyles()["cslp-tooltip-inner-container"]
+            );
+            tooltip.classList.add(livePreviewStyles()["cslp-tooltip"]);
+            tooltip.classList.add(livePreviewStyles()["cslp-tooltip"]);
             tooltip.setAttribute("data-test-id", "cs-cslp-tooltip");
             tooltip.id = "cslp-tooltip";
             tooltipInnerContainer.id = "cslp-tooltip-inner-container";
@@ -512,7 +517,7 @@ export default class LivePreview {
                     config: {
                         shouldReload: this.config.ssr,
                         href: window.location.href,
-                        sdkVersion: packageJson.version,
+                        sdkVersion: process.env.PACKAGE_VERSION,
                     },
                 },
             },
@@ -571,7 +576,11 @@ export default class LivePreview {
                     if (this.tooltipCurrentChild !== "multiple") {
                         const tooltipInnerContainer =
                             this.tooltip.querySelector(
-                                "div.cslp-tooltip-inner-container"
+                                `div.${
+                                    livePreviewStyles()[
+                                        "cslp-tooltip-inner-container"
+                                    ]
+                                }`
                             );
                         if (tooltipInnerContainer) {
                             tooltipInnerContainer.innerHTML = "";
@@ -583,7 +592,9 @@ export default class LivePreview {
                     }
                 } else if (this.tooltipCurrentChild !== "singular") {
                     const tooltipInnerContainer = this.tooltip.querySelector(
-                        "div.cslp-tooltip-inner-container"
+                        `div.${
+                            livePreviewStyles()["cslp-tooltip-inner-container"]
+                        }`
                     );
                     if (tooltipInnerContainer) {
                         tooltipInnerContainer.innerHTML = "";
