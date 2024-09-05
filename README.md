@@ -16,7 +16,7 @@ Alternatively, if you want to include the package directly in your website HTML 
 
 ```html
 <script type='module'>
-     import ContentstackLivePreview from 'https://esm.sh/@contentstack/live-preview-utils@2.0.3';
+     import ContentstackLivePreview from 'https://esm.sh/@contentstack/live-preview-utils@2.0.4';
 
      ContentstackLivePreview.init({
         stackDetails: {
