@@ -24,6 +24,7 @@ function modernConfig(opts) {
     sourcemap: true,
     clean: true,
     esbuildPlugins: [esbuildPluginFilePathExtensions({ esmExtension: 'js' })],
+    external: ['react', 'react-dom'],
   }
 }
 
@@ -40,5 +41,6 @@ function legacyConfig(opts) {
     sourcemap: true,
     clean: true,
     esbuildPlugins: [esbuildPluginFilePathExtensions({ esmExtension: 'js' })],
+    external: ['react', 'react-dom'],
   }
 }
