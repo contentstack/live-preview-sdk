@@ -20,11 +20,9 @@ const handleScrollToField = (event: IScrollToFieldEvent) => {
     }
 };
 
-const useScrollToField = () => {
+export const useScrollToField = () => {
     liveEditorPostMessage?.on(
         LiveEditorPostMessageEvents.SCROLL_TO_FIELD,
         handleScrollToField
     );
 };
-
-export default useScrollToField;

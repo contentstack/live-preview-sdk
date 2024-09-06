@@ -36,7 +36,7 @@ import { h } from "preact";
 import { setup } from "goober";
 import { globalLiveEditorStyles } from "./liveEditor.style";
 import { useVariantFieldsPostMessageEvent } from "./eventManager/useVariantsPostMessageEvent";
-import useScrollToField from "./eventManager/useScrollToField";
+import { useScrollToField } from "./eventManager/useScrollToField";
 
 interface VisualEditorGlobalStateImpl {
     previousSelectedEditableDOM: HTMLElement | Element | null;
