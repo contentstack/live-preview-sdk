@@ -276,6 +276,26 @@ export function liveEditorStyles() {
                 }
             }
         `,
+        "visual-editor__button-loader": css`
+            svg.loader {
+                height: 16px;
+                width: 16px;
+
+                path {
+                    fill: #ffffff;
+                }
+            }
+        `,
+        "visual-editor__button--comment-loader": css`
+            svg.loader {
+                height: 20px;
+                width: 20px;
+
+                path {
+                    fill: #475161;
+                }
+            }
+        `,
         "visual-builder__field-icon": css`
             svg {
                 height: 16px;
