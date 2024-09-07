@@ -35,7 +35,7 @@ export default function getLiveEditorRedirectionUrl(): URL {
     }
 
     const completeURL = new URL(
-        `/#!/stack/${apiKey}/visual-editor?${searchParams.toString()}`,
+        `/#!/stack/${apiKey}/visual-builder?${searchParams.toString()}`,
         appUrl
     );
     return completeURL;
