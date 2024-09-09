@@ -38,7 +38,7 @@ const CommentIcon: React.FC<CommentIconProps> = ({
                 setIsLoading(true);
                 const discussionUID = await getDiscussionIdByFieldMetaData({
                     fieldMetadata,
-                    fieldUID: fieldSchema.uid,
+                    fieldSchema
                 });
                 setDiscussionUID(discussionUID ?? "new");
             } catch (error) {

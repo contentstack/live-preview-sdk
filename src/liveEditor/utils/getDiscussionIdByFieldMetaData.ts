@@ -1,11 +1,12 @@
 import { CslpData } from "../../cslp/types/cslp.types";
 import liveEditorPostMessage from "./liveEditorPostMessage";
+import { ISchemaFieldMap } from "./types/index.types";
 import { LiveEditorPostMessageEvents } from "./types/postMessage.types";
 
 // Define an interface for the argument structure
 interface GetDiscussionIdParams {
     fieldMetadata: CslpData;
-    fieldUID: string;
+    fieldSchema: ISchemaFieldMap ;
 }
 
 /**
@@ -17,13 +18,13 @@ interface GetDiscussionIdParams {
 export async function getDiscussionIdByFieldMetaData(
     params: GetDiscussionIdParams
 ): Promise<string> {
-    const { fieldMetadata, fieldUID } = params;
+    const { fieldMetadata, fieldSchema } = params;
 
     // Send a message to get the discussion ID
     const discussionUID =
         (await liveEditorPostMessage?.send<string>(
             LiveEditorPostMessageEvents.GET_DISCUSSION_ID,
-            { fieldMetadata, fieldUID }
+            { fieldMetadata, fieldSchema }
         )) ?? "new";
 
     return discussionUID;
