@@ -6,7 +6,7 @@ import { LiveEditorPostMessageEvents } from "./types/postMessage.types";
 // Define an interface for the argument structure
 interface GetDiscussionIdParams {
     fieldMetadata: CslpData;
-    fieldSchema: ISchemaFieldMap ;
+    fieldSchema: ISchemaFieldMap;
 }
 
 /**
