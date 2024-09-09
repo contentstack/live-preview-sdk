@@ -17,6 +17,10 @@ function modernConfig(opts) {
     define: {
       'process.env.PACKAGE_VERSION': `"${packageJson.version}"`,
     },
+    esbuildOptions(options) {
+      options.jsxImportSource = 'preact';
+      options.jsx = 'automatic'
+    },      
     format: ['cjs', 'esm'],
     target: ['chrome91', 'firefox90', 'edge91', 'safari15', 'ios15', 'opera77'],
     outDir: 'dist/modern',
@@ -24,7 +28,6 @@ function modernConfig(opts) {
     sourcemap: true,
     clean: true,
     esbuildPlugins: [esbuildPluginFilePathExtensions({ esmExtension: 'js' })],
-    external: ['react', 'react-dom'],
     alias: {
       react: 'preact/compat',
       'react-dom/test-utils': 'preact/test-utils',
@@ -47,12 +50,15 @@ function legacyConfig(opts) {
     sourcemap: true,
     clean: true,
     esbuildPlugins: [esbuildPluginFilePathExtensions({ esmExtension: 'js' })],
-    external: ['react', 'react-dom'],
     alias: {
       react: 'preact/compat',
       'react-dom/test-utils': 'preact/test-utils',
       'react-dom': 'preact/compat',
       'react/jsx-runtime': 'preact/jsx-runtime',
+    },
+    esbuildOptions(options) {
+      options.jsxImportSource = 'preact';
+      options.jsx = 'automatic'
     },
   }
 }
