@@ -145,13 +145,13 @@ function FieldLabelWrapperComponent(
         >
             <button
                 className={classNames(
-                    "visual-builder__focused-toolbar__field-label-wrapper__current-field visual-builder__button visual-builder__button--primary visual-editor__button-loader",
+                    "visual-builder__focused-toolbar__field-label-wrapper__current-field visual-builder__button visual-builder__button--primary visual-builder__button-loader",
                     liveEditorStyles()[
                         "visual-builder__focused-toolbar__field-label-wrapper__current-field"
                     ],
                     liveEditorStyles()["visual-builder__button"],
                     liveEditorStyles()["visual-builder__button--primary"],
-                    liveEditorStyles()["visual-editor__button-loader"]
+                    liveEditorStyles()["visual-builder__button-loader"]
                 )}
                 disabled={displayNamesLoading}
             >

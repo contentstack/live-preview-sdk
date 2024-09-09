@@ -6,6 +6,8 @@ import { AddCommentIcon, ReadCommentIcon } from "./icons";
 import { getDiscussionIdByFieldMetaData } from "../utils/getDiscussionIdByFieldMetaData";
 import { ISchemaFieldMap } from "../utils/types/index.types";
 import { LoadingIcon } from "./icons/loading";
+import classNames from "classnames";
+import { liveEditorStyles } from "../liveEditor.style";
 
 interface CommentIconProps {
     fieldMetadata: CslpData;
@@ -93,8 +95,14 @@ const CommentIcon: React.FC<CommentIconProps> = ({
     if (isLoading) {
         return (
             <button
-                data-testid="visual-editor__focused-toolbar__multiple-field-toolbar__comment-button-loading"
-                className="visual-editor__button visual-editor__button--secondary visual-editor__button--comment-loader"
+                data-testid="visual-builder__focused-toolbar__multiple-field-toolbar__comment-button-loading"
+                className={classNames(
+                   "visual-builder__button visual-builder__button--secondary visual-builder__button--comment-loader",
+                    liveEditorStyles()["visual-builder__button"],
+                    liveEditorStyles()["visual-builder__button--secondary"],
+                    liveEditorStyles()["visual-builder__button--comment-loader"]
+                )}
+
             >
                 <LoadingIcon />
             </button>
@@ -103,8 +111,12 @@ const CommentIcon: React.FC<CommentIconProps> = ({
 
     return (
         <button
-            data-testid="visual-editor__focused-toolbar__multiple-field-toolbar__comment-button"
-            className="visual-editor__button visual-editor__button--secondary"
+            data-testid="visual-builder__focused-toolbar__multiple-field-toolbar__comment-button"
+            className={classNames(
+                "visual-builder__button visual-builder__button--secondary",
+                 liveEditorStyles()["visual-builder__button"],
+                 liveEditorStyles()["visual-builder__button--secondary"],
+             )}
             onClick={(e: React.MouseEvent) => {
                 e.preventDefault();
                 e.stopPropagation();
