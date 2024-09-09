@@ -276,7 +276,7 @@ export function liveEditorStyles() {
                 }
             }
         `,
-        "visual-editor__button-loader": css`
+        "visual-builder__button-loader": css`
             svg.loader {
                 height: 16px;
                 width: 16px;
@@ -286,10 +286,10 @@ export function liveEditorStyles() {
                 }
             }
         `,
-        "visual-editor__button--comment-loader": css`
+        "visual-builder__button--comment-loader": css`
             svg.loader {
-                height: 20px;
-                width: 20px;
+                height: 16px;
+                width: 16px;
 
                 path {
                     fill: #475161;
