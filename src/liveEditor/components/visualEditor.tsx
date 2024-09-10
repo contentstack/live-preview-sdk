@@ -1,7 +1,9 @@
 import classNames from "classnames";
 import { hideOverlay } from "../generators/generateOverlay";
-import { liveEditorStyles } from "../liveEditor.style";
-import { glob } from "goober";
+import {
+    liveEditorStyles,
+    VisualBuilderGlobalStyles,
+} from "../liveEditor.style";
 
 interface VisualEditorProps {
     visualEditorContainer: HTMLDivElement | null;
@@ -11,6 +13,13 @@ interface VisualEditorProps {
 function VisualEditorComponent(props: VisualEditorProps): JSX.Element {
     return (
         <>
+            {/* For some reason, goober's glob and createGlobalStyle were not working in this case. */}
+            {/* glob also does not work when called in liveEditor's constructor */}
+            <style
+                dangerouslySetInnerHTML={{
+                    __html: VisualBuilderGlobalStyles,
+                }}
+            />
             <div
                 className={classNames(
                     liveEditorStyles()["visual-builder__cursor"],

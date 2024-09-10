@@ -1,4 +1,4 @@
-import { css, glob } from "goober";
+import { css } from "goober";
 
 export function liveEditorStyles() {
     return {
@@ -28,7 +28,7 @@ export function liveEditorStyles() {
                 pointer-events: none !important;
                 position: fixed !important;
                 cursor: none;
-                z-index: 1000;
+                z-index: 9999;
             }
         `,
         "visual-builder__overlay__wrapper": css`
@@ -473,11 +473,9 @@ export function liveEditorStyles() {
     };
 }
 
-export function globalLiveEditorStyles() {
-    return glob`
+export const VisualBuilderGlobalStyles = `
        [data-cslp] [contenteditable="true"] {
             outline: none;
         }
 
-    `;
-}
+`;

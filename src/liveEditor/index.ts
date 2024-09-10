@@ -1,6 +1,5 @@
 import { Signal, signal } from "@preact/signals";
 
-import { generateStartEditingButton } from "./generators/generateStartEditingButton";
 import { inIframe } from "../common/inIframe";
 import Config from "../configManager/configManager";
 import {
@@ -12,31 +11,31 @@ import {
     ILivePreviewWindowType,
     IVisualEditorInitEvent,
 } from "../types/types";
+import { generateStartEditingButton } from "./generators/generateStartEditingButton";
 
 import { addFocusOverlay } from "./generators/generateOverlay";
 import { getEntryIdentifiersInCurrentPage } from "./utils/getEntryIdentifiersInCurrentPage";
 import liveEditorPostMessage from "./utils/liveEditorPostMessage";
 import { LiveEditorPostMessageEvents } from "./utils/types/postMessage.types";
 
+import { setup } from "goober";
+import { debounce, isEqual } from "lodash-es";
+import { h } from "preact";
+import { extractDetailsFromCslp } from "../cslp";
 import initUI from "./components";
-import { addEventListeners, removeEventListeners } from "./listeners";
+import { useDraftFieldsPostMessageEvent } from "./eventManager/useDraftFieldsPostMessageEvent";
+import { useHideFocusOverlayPostMessageEvent } from "./eventManager/useHideFocusOverlayPostMessageEvent";
+import { useScrollToField } from "./eventManager/useScrollToField";
+import { useVariantFieldsPostMessageEvent } from "./eventManager/useVariantsPostMessageEvent";
 import {
     generateEmptyBlocks,
     removeEmptyBlocks,
 } from "./generators/generateEmptyBlock";
-import { debounce, isEqual } from "lodash-es";
+import { addEventListeners, removeEventListeners } from "./listeners";
 import { addKeyboardShortcuts } from "./listeners/keyboardShortcuts";
-import { useHideFocusOverlayPostMessageEvent } from "./eventManager/useHideFocusOverlayPostMessageEvent";
-import { extractDetailsFromCslp } from "../cslp";
 import { FieldSchemaMap } from "./utils/fieldSchemaMap";
 import { isFieldDisabled } from "./utils/isFieldDisabled";
 import { updateFocussedState } from "./utils/updateFocussedState";
-import { useDraftFieldsPostMessageEvent } from "./eventManager/useDraftFieldsPostMessageEvent";
-import { h } from "preact";
-import { setup } from "goober";
-import { globalLiveEditorStyles } from "./liveEditor.style";
-import { useVariantFieldsPostMessageEvent } from "./eventManager/useVariantsPostMessageEvent";
-import { useScrollToField } from "./eventManager/useScrollToField";
 
 interface VisualEditorGlobalStateImpl {
     previousSelectedEditableDOM: HTMLElement | Element | null;
@@ -205,7 +204,6 @@ export class VisualEditor {
 
         // Initializing goober for css-in-js
         setup(h);
-        globalLiveEditorStyles();
 
         this.visualEditorContainer = document.querySelector(
             ".visual-builder__container"
@@ -255,7 +253,7 @@ export class VisualEditor {
                     focusedToolbar: this.focusedToolbar,
                     resizeObserver: this.resizeObserver,
                 });
-                useScrollToField()
+                useScrollToField();
 
                 this.mutationObserver.observe(document.body, {
                     childList: true,
