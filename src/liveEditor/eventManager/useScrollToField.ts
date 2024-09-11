@@ -8,9 +8,8 @@ export interface IScrollToFieldEventData {
         content_type_uid: string;
         entry_uid: string;
         locale: string;
-        cslpValue: string;
+        path: string;
       };
-      absolutePath: string;
 }
 
 export interface IScrollToFieldEvent {
@@ -18,12 +17,23 @@ export interface IScrollToFieldEvent {
 }
 
 const handleScrollToField = (event: IScrollToFieldEvent) => {
-    const { cslpData } = event.data;
-    const element = document.querySelector(`[data-cslp="${cslpData.cslpValue}"]`);
+    const { 
+      content_type_uid, 
+      entry_uid, 
+      locale, 
+      path 
+    } = event.data.cslpData;
+  
+    const cslpValue = `${content_type_uid}.${entry_uid}.${locale}.${path}`;
+  
+    // Query the element using the generated cslpValue
+    const element = document.querySelector(`[data-cslp="${cslpValue}"]`);
+    
     if (element) {
-        element.scrollIntoView({ behavior: "smooth", block: "center" });
+      element.scrollIntoView({ behavior: "smooth", block: "center" });
     }
-};
+  };
+  
 
 export const useScrollToField = () => {
     liveEditorPostMessage?.on(
