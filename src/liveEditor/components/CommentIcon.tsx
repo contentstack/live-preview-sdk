@@ -86,8 +86,7 @@ const CommentIcon: React.FC<CommentIconProps> = ({
             {
                 fieldMetadata,
                 discussionUID,
-                fieldUID: fieldSchema.uid,
-                displayName: fieldSchema.display_name,
+                fieldSchema,
             }
         );
     };

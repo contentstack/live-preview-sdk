@@ -4,8 +4,13 @@ import { LiveEditorPostMessageEvents } from "../utils/types/postMessage.types";
 
 // Define the interface for the ScrollToField event data
 export interface IScrollToFieldEventData {
-    cslpValue: string;
-    clickNeeded?: boolean;
+    cslpData: {
+        content_type_uid: string;
+        entry_uid: string;
+        locale: string;
+        cslpValue: string;
+      };
+      absolutePath: string;
 }
 
 export interface IScrollToFieldEvent {
@@ -13,8 +18,8 @@ export interface IScrollToFieldEvent {
 }
 
 const handleScrollToField = (event: IScrollToFieldEvent) => {
-    const { cslpValue, clickNeeded } = event.data;
-    const element = document.querySelector(`[data-cslp="${cslpValue}"]`);
+    const { cslpData } = event.data;
+    const element = document.querySelector(`[data-cslp="${cslpData.cslpValue}"]`);
     if (element) {
         element.scrollIntoView({ behavior: "smooth", block: "center" });
     }
