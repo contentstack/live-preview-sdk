@@ -28,7 +28,7 @@ const CommentIcon: React.FC<CommentIconProps> = ({
     fieldMetadata,
     fieldSchema,
 }) => {
-    const [discussionUID, setDiscussionUID] = useState<string>("new");
+    const [discussionUID, setDiscussionUID] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(false);
 
     // Fetch discussion ID based on field metadata
@@ -40,7 +40,7 @@ const CommentIcon: React.FC<CommentIconProps> = ({
                     fieldMetadata,
                     fieldSchema
                 });
-                setDiscussionUID(discussionUID ?? "new");
+                setDiscussionUID(discussionUID);
             } catch (error) {
                 console.error("Failed to fetch discussion ID:", error);
                 setDiscussionUID("new");
@@ -86,8 +86,7 @@ const CommentIcon: React.FC<CommentIconProps> = ({
             {
                 fieldMetadata,
                 discussionUID,
-                fieldUID: fieldSchema.uid,
-                displayName: fieldSchema.display_name,
+                fieldSchema,
             }
         );
     };
@@ -107,6 +106,10 @@ const CommentIcon: React.FC<CommentIconProps> = ({
                 <LoadingIcon />
             </button>
         );
+    }
+
+    if(!discussionUID){
+        return
     }
 
     return (

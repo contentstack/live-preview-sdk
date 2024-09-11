@@ -17,7 +17,7 @@ interface GetDiscussionIdParams {
  */
 export async function getDiscussionIdByFieldMetaData(
     params: GetDiscussionIdParams
-): Promise<string> {
+): Promise<string | null> {
     const { fieldMetadata, fieldSchema } = params;
 
     // Send a message to get the discussion ID
@@ -25,7 +25,7 @@ export async function getDiscussionIdByFieldMetaData(
         (await liveEditorPostMessage?.send<string>(
             LiveEditorPostMessageEvents.GET_DISCUSSION_ID,
             { fieldMetadata, fieldSchema }
-        )) ?? "new";
+        )) ?? null;
 
     return discussionUID;
 }
