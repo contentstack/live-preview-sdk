@@ -195,6 +195,27 @@ export interface IExperienceContainerContentTypeSchema
     };
     schema: IContentTypeCommonBlocks[];
 }
+export interface ITaxononmy {
+  taxonomy_uid: string;
+  non_localizable: boolean;
+  mandatory: boolean;
+  max_terms: number;
+}
+
+export interface ITaxanonmyContentTypeSchema
+    extends IContentTypeSchemaCommonData {
+    data_type: "taxonomy";
+    field_metadata: {
+        description: string;
+        default_value: string;
+        version: number;
+    };
+    taxanomies:ITaxononmy[];
+    format: string;
+    error_messages: {
+        format: string;
+    };
+}
 
 export type IContentTypeCommonBlocks =
     | ISingleLineTextBoxContentTypeSchema
@@ -234,7 +255,8 @@ export type IContentTypeRootBlocks =
     | IGlobalFieldContentTypeSchema
     | IExperienceContainerContentTypeSchema
     | ITitleContentTypeSchema
-    | IURLContentTypeSchema;
+    | IURLContentTypeSchema
+    | ITaxanonmyContentTypeSchema;
 
 export interface IModularBlockSingleBlock {
     title: string;

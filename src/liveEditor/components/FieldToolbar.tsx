@@ -5,6 +5,7 @@ import getChildrenDirection from "../utils/getChildrenDirection";
 import {
     ALLOWED_MODAL_EDITABLE_FIELD,
     ALLOWED_REPLACE_FIELDS,
+    DEFAULT_MULTIPLE_FIELDS,
 } from "../utils/constants";
 import { getFieldType } from "../utils/getFieldType";
 import {
@@ -86,10 +87,32 @@ function FieldToolbarComponent(
 
     direction.value = getChildrenDirection(targetElement, parentPath);
 
+     // field is multiple but an instance is not selected
+    // instead the whole field (all instances) is selected.
+    // Currently, when whole featured_blogs is selected in canvas,
+    // the fieldPathWithIndex and instance.fieldPathWithIndex are the same
+    // cannot rely on -1 index, as the non-negative index then refers to the index of
+    // the featured_blogs block in page_components
+    // It is not needed except taxanomy.
+    const isWholeMultipleField =
+        isMultiple &&
+        (fieldMetadata.fieldPathWithIndex ===
+            fieldMetadata.instance.fieldPathWithIndex ||
+            fieldMetadata.multipleFieldMetadata?.index === -1);
+
     const fieldType = getFieldType(fieldSchema);
-    const isModalEditable = ALLOWED_MODAL_EDITABLE_FIELD.includes(fieldType);
-    const isReplaceAllowed = ALLOWED_REPLACE_FIELDS.includes(fieldType);
+    const isModalEditable = ALLOWED_MODAL_EDITABLE_FIELD.includes(fieldType) && !isWholeMultipleField;
+    const isReplaceAllowed = ALLOWED_REPLACE_FIELDS.includes(fieldType) && !isWholeMultipleField;
     const Icon = fieldIcons[fieldType];
+
+    // field is disabled, no actions needed
+    if (isDisabled) {
+        return null;
+    }
+
+    if (DEFAULT_MULTIPLE_FIELDS.includes(fieldType) && isWholeMultipleField) {
+        return null;
+    }
 
     const editButton = Icon ? (
         <button
@@ -136,26 +159,6 @@ function FieldToolbarComponent(
         </button>
     );
 
-    // field is disabled, no actions needed
-    if (isDisabled) {
-        return null;
-    }
-
-    // field is multiple but an instance is not selected
-    // instead the whole field (all instances) is selected.
-    // Currently, when whole featured_blogs is selected in canvas,
-    // the fieldPathWithIndex and instance.fieldPathWithIndex are the same
-    // cannot rely on -1 index, as the non-negative index then refers to the index of
-    // the featured_blogs block in page_components
-    if (
-        (isMultiple &&
-            fieldMetadata.fieldPathWithIndex ===
-                fieldMetadata.instance.fieldPathWithIndex) ||
-        (isMultiple && fieldMetadata.multipleFieldMetadata?.index === -1)
-    ) {
-        return null;
-    }
-
     const totalElementCount = targetElement?.parentNode?.childElementCount ?? 1;
     const indexOfElement = fieldMetadata?.multipleFieldMetadata?.index;
 
@@ -180,96 +183,116 @@ function FieldToolbarComponent(
                     ]
                 )}
             >
-                {isMultiple ? (
-                    <>
-                        <button
-                            data-testid="visual-builder__focused-toolbar__multiple-field-toolbar__move-left-button"
-                            className={classNames(
-                                `visual-builder__button visual-builder__button--secondary`,
-                                liveEditorStyles()["visual-builder__button"],
-                                liveEditorStyles()[
-                                    "visual-builder__button--secondary"
-                                ]
-                            )}
-                            onClick={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                handleMoveInstance(
-                                    props.fieldMetadata,
-                                    "previous"
-                                );
-                            }}
-                            disabled={disableMoveLeft}
-                        >
-                            <MoveLeftIcon
-                                className={classNames({
-                                    "visual-builder__rotate--90":
-                                        direction.value === "vertical",
-                                    [liveEditorStyles()[
-                                        "visual-builder__rotate--90"
-                                    ]]: direction.value === "vertical",
-                                })}
+                <>
+                    {isMultiple &&
+                    !isWholeMultipleField ? (
+                        <>
+                            <button
+                                data-testid="visual-builder__focused-toolbar__multiple-field-toolbar__move-left-button"
+                                className={classNames(
+                                    `visual-builder__button visual-builder__button--secondary`,
+                                    liveEditorStyles()[
+                                        "visual-builder__button"
+                                    ],
+                                    liveEditorStyles()[
+                                        "visual-builder__button--secondary"
+                                    ]
+                                )}
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    handleMoveInstance(
+                                        props.fieldMetadata,
+                                        "previous"
+                                    );
+                                }}
                                 disabled={disableMoveLeft}
-                            />
-                        </button>
+                            >
+                                <MoveLeftIcon
+                                    className={classNames({
+                                        "visual-builder__rotate--90":
+                                            direction.value === "vertical",
+                                        [liveEditorStyles()[
+                                            "visual-builder__rotate--90"
+                                        ]]: direction.value === "vertical",
+                                    })}
+                                    disabled={disableMoveLeft}
+                                />
+                            </button>
 
-                        <button
-                            data-testid="visual-builder__focused-toolbar__multiple-field-toolbar__move-right-button"
-                            className={classNames(
-                                `visual-builder__button visual-builder__button--secondary`,
-                                liveEditorStyles()["visual-builder__button"],
-                                liveEditorStyles()[
-                                    "visual-builder__button--secondary"
-                                ]
-                            )}
-                            onClick={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                handleMoveInstance(props.fieldMetadata, "next");
-                            }}
-                            disabled={disableMoveRight}
-                        >
-                            <MoveRightIcon
-                                className={classNames({
-                                    "visual-builder__rotate--90":
-                                        direction.value === "vertical",
-                                    [liveEditorStyles()[
-                                        "visual-builder__rotate--90"
-                                    ]]: direction.value === "vertical",
-                                })}
+                            <button
+                                data-testid="visual-builder__focused-toolbar__multiple-field-toolbar__move-right-button"
+                                className={classNames(
+                                    `visual-builder__button visual-builder__button--secondary`,
+                                    liveEditorStyles()[
+                                        "visual-builder__button"
+                                    ],
+                                    liveEditorStyles()[
+                                        "visual-builder__button--secondary"
+                                    ]
+                                )}
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    handleMoveInstance(
+                                        props.fieldMetadata,
+                                        "next"
+                                    );
+                                }}
                                 disabled={disableMoveRight}
-                            />
-                        </button>
+                            >
+                                <MoveRightIcon
+                                    className={classNames({
+                                        "visual-builder__rotate--90":
+                                            direction.value === "vertical",
+                                        [liveEditorStyles()[
+                                            "visual-builder__rotate--90"
+                                        ]]: direction.value === "vertical",
+                                    })}
+                                    disabled={disableMoveRight}
+                                />
+                            </button>
 
-                        {isModalEditable ? editButton : null}
-                        {isReplaceAllowed ? replaceButton : null}
+                            {isModalEditable ? editButton : null}
+                            {isReplaceAllowed ? replaceButton : null}
 
-                        <button
-                            data-testid="visual-builder__focused-toolbar__multiple-field-toolbar__delete-button"
-                            className={classNames(
-                                "visual-builder__button visual-builder__button--secondary",
-                                liveEditorStyles()["visual-builder__button"],
-                                liveEditorStyles()[
-                                    "visual-builder__button--secondary"
-                                ]
+                            <button
+                                data-testid="visual-builder__focused-toolbar__multiple-field-toolbar__delete-button"
+                                className={classNames(
+                                    "visual-builder__button visual-builder__button--secondary",
+                                    liveEditorStyles()[
+                                        "visual-builder__button"
+                                    ],
+                                    liveEditorStyles()[
+                                        "visual-builder__button--secondary"
+                                    ]
+                                )}
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    handleDeleteInstance(props.fieldMetadata);
+                                }}
+                            >
+                                <DeleteIcon />
+                            </button>
+                            {isWholeMultipleField && (
+                                <CommentIcon
+                                    fieldMetadata={fieldMetadata}
+                                    fieldSchema={fieldSchema}
+                                />
                             )}
-                            onClick={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                handleDeleteInstance(props.fieldMetadata);
-                            }}
-                        >
-                            <DeleteIcon />
-                        </button>
-                    </>
-                ) : (
-                    <>
-                        {isModalEditable ? editButton : null}
-                        {isReplaceAllowed ? replaceButton : null}
-                        <CommentIcon fieldMetadata={fieldMetadata} fieldSchema={fieldSchema}/>
-                        
-                    </>
-                )}
+                        </>
+                    ) : (
+                        <>
+                            {isModalEditable ? editButton : null}
+                            {isReplaceAllowed ? replaceButton : null}
+                            <CommentIcon
+                                fieldMetadata={fieldMetadata}
+                                fieldSchema={fieldSchema}
+                            />
+                        </>
+                    )}
+                </>
             </div>
         </div>
     );
