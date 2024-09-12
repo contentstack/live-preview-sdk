@@ -275,12 +275,6 @@ function FieldToolbarComponent(
                             >
                                 <DeleteIcon />
                             </button>
-                            {isWholeMultipleField && (
-                                <CommentIcon
-                                    fieldMetadata={fieldMetadata}
-                                    fieldSchema={fieldSchema}
-                                />
-                            )}
                         </>
                     ) : (
                         <>
