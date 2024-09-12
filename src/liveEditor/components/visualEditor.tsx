@@ -4,6 +4,7 @@ import {
     liveEditorStyles,
     VisualBuilderGlobalStyles,
 } from "../liveEditor.style";
+import React from "preact/compat";
 
 interface VisualEditorProps {
     visualEditorContainer: HTMLDivElement | null;

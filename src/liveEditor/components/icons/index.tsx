@@ -1,3 +1,5 @@
+import React from "preact/compat";
+
 type IconProps = {
     disabled?: boolean;
     className?: string;

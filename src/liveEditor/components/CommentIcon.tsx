@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from "preact/compat";
 import { CslpData } from "../../cslp/types/cslp.types";
 import liveEditorPostMessage from "../utils/liveEditorPostMessage";
 import { LiveEditorPostMessageEvents } from "../utils/types/postMessage.types";
@@ -24,10 +24,8 @@ interface RecieveDiscussionEventData {
     };
 }
 
-const CommentIcon: React.FC<CommentIconProps> = ({
-    fieldMetadata,
-    fieldSchema,
-}) => {
+export default function CommentIcon(props: CommentIconProps) {
+    const { fieldMetadata, fieldSchema } = props;
     const [discussionUID, setDiscussionUID] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -120,7 +118,7 @@ const CommentIcon: React.FC<CommentIconProps> = ({
                  liveEditorStyles()["visual-builder__button"],
                  liveEditorStyles()["visual-builder__button--secondary"],
              )}
-            onClick={(e: React.MouseEvent) => {
+            onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
                 handleCommentModal();
@@ -130,5 +128,3 @@ const CommentIcon: React.FC<CommentIconProps> = ({
         </button>
     );
 };
-
-export default CommentIcon;
