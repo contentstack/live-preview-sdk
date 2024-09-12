@@ -40,3 +40,9 @@ export const ALLOWED_REPLACE_FIELDS: FieldDataType[] = [
     FieldDataType.REFERENCE,
     FieldDataType.FILE,
 ];
+
+export const DEFAULT_MULTIPLE_FIELDS: FieldDataType[] = [
+    FieldDataType.GLOBAL_FIELD,
+    FieldDataType.GROUP,
+    FieldDataType.BLOCK,
+];
