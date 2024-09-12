@@ -24,6 +24,6 @@
         "jsx": "react-jsx",
         "module": "ESNext"
     },
-    "include": ["src/**/*.ts", "tsup.config.js", "prettier.config.js"],
+    "include": ["src/**/*.ts", "tsup.config.ts", "prettier.config.js"],
     "exclude": ["src/**/__test__"]
 }

@@ -2,6 +2,10 @@ import { defineConfig, Options } from "tsup";
 import { esbuildPluginFilePathExtensions } from "esbuild-plugin-file-path-extensions";
 import packageJson from "./package.json" assert { type: "json" };
 
+type ConfigOptions = {
+    entry: Required<Options>["entry"];
+};
+
 export default defineConfig([
     modernConfig({
         entry: [
@@ -21,7 +25,7 @@ export default defineConfig([
     }),
 ]);
 
-function modernConfig(opts: Options): Options {
+function modernConfig(opts: ConfigOptions): Options {
     return {
         entry: opts.entry,
         define: {
@@ -47,16 +51,10 @@ function modernConfig(opts: Options): Options {
         esbuildPlugins: [
             esbuildPluginFilePathExtensions({ esmExtension: "js" }),
         ],
-        alias: {
-            react: "preact/compat",
-            "react-dom/test-utils": "preact/test-utils",
-            "react-dom": "preact/compat",
-            "react/jsx-runtime": "preact/jsx-runtime",
-        },
     };
 }
 
-function legacyConfig(opts: Options): Options {
+function legacyConfig(opts: ConfigOptions): Options {
     return {
         entry: opts.entry,
         define: {
