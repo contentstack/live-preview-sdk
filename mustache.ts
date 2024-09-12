@@ -1,9 +1,12 @@
 // index.js
 // import { render } from 'mustache';
 import {render} from 'mustache';
-import { readFile, writeFileSync } from 'fs';
+import { readFile, writeFileSync, readFileSync } from 'fs';
 import packageJson from "./package.json";
+import ssri from 'ssri';
 const MUSTACHE_MAIN_DIR = './main.mustache';
+const fileContent = readFileSync('./dist/index.js'); 
+const integrity = ssri.fromData(fileContent, { algorithms: ['sha384'] }); 
 /**
   * DATA is the object that contains all
   * the data to be provided to Mustache
@@ -11,6 +14,7 @@ const MUSTACHE_MAIN_DIR = './main.mustache';
 */
 const DATA = {
   packageVersion: packageJson.version,
+  integrity: integrity.toString(),
 };
 function generateReadMe() {
   readFile(MUSTACHE_MAIN_DIR, (err, data) =>  {
