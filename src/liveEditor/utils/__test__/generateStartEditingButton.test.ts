@@ -18,7 +18,7 @@ describe("generateStartEditingButton", () => {
     });
 
     afterEach(() => {
-        jest.clearAllMocks();
+        vi.clearAllMocks();
         document.body.removeChild(visualEditorContainer);
     });
 
@@ -62,7 +62,7 @@ describe("generateStartEditingButton", () => {
     });
 
     test("should throw a warning if visualEditorContainer is not found", () => {
-        const spiedWarn = jest.spyOn(PublicLogger, "warn");
+        const spiedWarn = vi.spyOn(PublicLogger, "warn");
 
         generateStartEditingButton(null);
 

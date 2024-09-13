@@ -10,7 +10,7 @@ describe("generateAddInstanceButton", () => {
     });
 
     test("should call the callback when clicked", () => {
-        const callback = jest.fn();
+        const callback = vi.fn();
         const button = generateAddInstanceButton(callback);
         button.click();
         expect(callback).toHaveBeenCalledTimes(1);

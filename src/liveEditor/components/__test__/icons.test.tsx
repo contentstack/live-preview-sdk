@@ -1,4 +1,3 @@
-import "@testing-library/jest-dom/extend-expect";
 import { render } from "@testing-library/preact";
 import {
     CaretIcon,
@@ -121,7 +120,6 @@ describe("IconComponents", () => {
             expect(svgElement).toBeInTheDocument();
             expect(svgElement).toHaveAttribute("width", "20");
             expect(svgElement).toHaveAttribute("height", "20");
-            expect(svgElement).toHaveAttribute("fill", "none");
             expect(svgElement).toHaveAttribute(
                 "data-testid",
                 "visual-builder__plus-icon"

@@ -1,28 +1,27 @@
 import crypto from "crypto";
-
 import { getFieldSchemaMap } from "../../__test__/data/fieldSchemaMap";
 import { sleep } from "../../__test__/utils";
+import Config from "../../configManager/configManager";
 import { VisualEditor } from "../index";
 import { FieldSchemaMap } from "../utils/fieldSchemaMap";
-import Config from "../../configManager/configManager";
 
-jest.mock("../utils/liveEditorPostMessage", () => {
-    const { getAllContentTypes } = jest.requireActual(
-        "../../__test__/data/contentType"
-    );
+vi.mock("../utils/liveEditorPostMessage", async () => {
+    const { getAllContentTypes } = await vi.importActual<
+        typeof import("../../__test__/data/contentType")
+    >("../../__test__/data/contentType");
     const contentTypes = getAllContentTypes();
 
     return {
         __esModule: true,
         default: {
-            send: jest.fn().mockImplementation((eventName: string) => {
+            send: vi.fn().mockImplementation((eventName: string) => {
                 if (eventName === "init")
                     return Promise.resolve({
                         contentTypes,
                     });
                 return Promise.resolve();
             }),
-            on: jest.fn(),
+            on: vi.fn(),
         },
     };
 });
@@ -33,10 +32,10 @@ Object.defineProperty(globalThis, "crypto", {
     },
 });
 
-global.ResizeObserver = jest.fn().mockImplementation(() => ({
-    observe: jest.fn(),
-    unobserve: jest.fn(),
-    disconnect: jest.fn(),
+global.ResizeObserver = vi.fn().mockImplementation(() => ({
+    observe: vi.fn(),
+    unobserve: vi.fn(),
+    disconnect: vi.fn(),
 }));
 
 describe("Visual editor", () => {
@@ -209,7 +208,7 @@ describe("visual editor DOM", () => {
             "all_fields.blt58a50b4cebae75c5.en-us.title"
         );
 
-        h1.getBoundingClientRect = jest.fn(() => ({
+        h1.getBoundingClientRect = vi.fn(() => ({
             left: 10,
             right: 20,
             top: 10,

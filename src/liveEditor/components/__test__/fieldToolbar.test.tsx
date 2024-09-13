@@ -1,6 +1,4 @@
-import "@testing-library/jest-dom/extend-expect";
 import { render, cleanup, fireEvent } from "@testing-library/preact";
-
 import FieldToolbarComponent from "../FieldToolbar";
 import {
     handleMoveInstance,
@@ -10,9 +8,9 @@ import {
 import { CslpData } from "../../../cslp/types/cslp.types";
 import { ISchemaFieldMap } from "../../utils/types/index.types";
 
-jest.mock("../../utils/instanceHandlers", () => ({
-    handleMoveInstance: jest.fn(),
-    handleDeleteInstance: jest.fn(),
+vi.mock("../../utils/instanceHandlers", () => ({
+    handleMoveInstance: vi.fn(),
+    handleDeleteInstance: vi.fn(),
 }));
 
 // TODO - add mock field schema

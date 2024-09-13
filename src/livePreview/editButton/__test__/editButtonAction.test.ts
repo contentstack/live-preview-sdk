@@ -1,12 +1,14 @@
 import crypto from "crypto";
-import { convertObjectToMinifiedString } from "../../__test__/utils";
-import Config from "../../configManager/configManager";
-import { PublicLogger } from "../../logger/logger";
-import { ILivePreviewWindowType } from "../../types/types";
-import { mockLivePreviewInitEventListener } from "../__test__/mock";
-import livePreviewPostMessage from "../eventManager/livePreviewEventManager";
-import { LIVE_PREVIEW_POST_MESSAGE_EVENTS } from "../eventManager/livePreviewEventManager.constant";
-import { LivePreviewEditButton } from "./editButton";
+import { vi } from "vitest";
+import { convertObjectToMinifiedString } from "../../../__test__/utils";
+import Config from "../../../configManager/configManager";
+import { PublicLogger } from "../../../logger/logger";
+import { ILivePreviewWindowType } from "../../../types/types";
+import { mockLivePreviewInitEventListener } from "../../__test__/mock";
+import livePreviewPostMessage from "../../eventManager/livePreviewEventManager";
+import { LIVE_PREVIEW_POST_MESSAGE_EVENTS } from "../../eventManager/livePreviewEventManager.constant";
+import { LivePreviewEditButton } from "../editButton";
+import LivePreview from "../../live-preview";
 
 Object.defineProperty(globalThis, "crypto", {
     value: {
@@ -18,10 +20,10 @@ const TITLE_CSLP_TAG = "content-type-1.entry-uid-1.en-us.field-title";
 const DESC_CSLP_TAG = "content-type-2.entry-uid-2.en-us.field-description";
 const LINK_CSLP_TAG = "content-type-3.entry-uid-3.en-us.field-link";
 
-global.ResizeObserver = jest.fn().mockImplementation(() => ({
-    observe: jest.fn(),
-    unobserve: jest.fn(),
-    disconnect: jest.fn(),
+global.ResizeObserver = vi.fn().mockImplementation(() => ({
+    observe: vi.fn(),
+    unobserve: vi.fn(),
+    disconnect: vi.fn(),
 }));
 
 describe("cslp tooltip", () => {
@@ -132,7 +134,7 @@ describe("cslp tooltip", () => {
             bubbles: true,
         });
 
-        titlePara.getBoundingClientRect = jest.fn(() => ({
+        titlePara.getBoundingClientRect = vi.fn(() => ({
             x: 50,
             y: 50,
             width: 50,
@@ -149,7 +151,7 @@ describe("cslp tooltip", () => {
 
         const expectedTop = -5;
 
-        descPara.getBoundingClientRect = jest.fn(() => ({
+        descPara.getBoundingClientRect = vi.fn(() => ({
             bottom: 16,
             height: 21,
             left: 8,
@@ -182,7 +184,7 @@ describe("cslp tooltip", () => {
         const titlePara = document.querySelector("[data-test-id='title-para']");
         const descPara = document.querySelector("[data-test-id='desc-para']");
 
-        jest.spyOn(window, "open").mockImplementation(
+        vi.spyOn(window, "open").mockImplementation(
             (url?: string | URL, target?: string, features?: string) => {
                 return {} as Window;
             }
@@ -205,14 +207,7 @@ describe("cslp tooltip", () => {
     });
 
     test("should redirect to page when edit tag button is clicked with added branch", () => {
-        new LivePreview({
-            enable: true,
-            stackDetails: {
-                apiKey: "sample-api-key",
-                environment: "sample-environment",
-                branch: "dev",
-            },
-        });
+        new LivePreview();
 
         const singularEditButton = document.querySelector(
             "[data-test-id='cslp-singular-edit-button']"
@@ -221,7 +216,7 @@ describe("cslp tooltip", () => {
         const titlePara = document.querySelector("[data-test-id='title-para']");
         const descPara = document.querySelector("[data-test-id='desc-para']");
 
-        jest.spyOn(window, "open").mockImplementation(
+        vi.spyOn(window, "open").mockImplementation(
             (url?: string | URL, target?: string, features?: string) => {
                 return {} as Window;
             }
@@ -253,7 +248,7 @@ describe("cslp tooltip", () => {
         const titlePara = document.querySelector("[data-test-id='title-para']");
         const descPara = document.querySelector("[data-test-id='desc-para']");
 
-        const spiedConsole = jest.spyOn(PublicLogger, "error");
+        const spiedConsole = vi.spyOn(PublicLogger, "error");
 
         const hoverEvent = new CustomEvent("mouseover", {
             bubbles: true,
@@ -291,7 +286,7 @@ describe("cslp tooltip", () => {
         const titlePara = document.querySelector("[data-test-id='title-para']");
         const descPara = document.querySelector("[data-test-id='desc-para']");
 
-        const spiedConsole = jest.spyOn(PublicLogger, "error");
+        const spiedConsole = vi.spyOn(PublicLogger, "error");
 
         const hoverEvent = new CustomEvent("mouseover", {
             bubbles: true,
@@ -382,9 +377,9 @@ describe("cslp tooltip", () => {
             bubbles: true,
         });
 
-        const mockAssign = jest.fn();
+        const mockAssign = vi.fn();
 
-        const locationSpy = jest
+        const locationSpy = vi
             .spyOn(window, "location", "get")
             .mockImplementation(() => {
                 const mockLocation: Location = JSON.parse(
@@ -409,7 +404,7 @@ describe("cslp tooltip", () => {
     test("should send postMessage for scroll when button is clicked inside an iframe", () => {
         const { location } = window;
 
-        const locationSpy = jest
+        const locationSpy = vi
             .spyOn(window, "location", "get")
             .mockImplementation(() => {
                 const mockLocation = JSON.parse(JSON.stringify(location));
@@ -417,7 +412,7 @@ describe("cslp tooltip", () => {
                 return mockLocation;
             });
 
-        const topLocationSpy = jest
+        const topLocationSpy = vi
             .spyOn(window, "top", "get")
             .mockImplementation(() => {
                 const mockLocation = JSON.parse(JSON.stringify(location));
@@ -436,7 +431,7 @@ describe("cslp tooltip", () => {
         if (!livePreviewPostMessage) {
             throw new Error("livePreviewPostMessage is not defined");
         }
-        const spiedPostMessage = jest.spyOn(livePreviewPostMessage, "send");
+        const spiedPostMessage = vi.spyOn(livePreviewPostMessage, "send");
 
         const hoverEvent = new CustomEvent("mouseover", {
             bubbles: true,
@@ -492,7 +487,7 @@ describe("cslp tooltip", () => {
     test("should disable the edit button even with the query parameter if includeByQueryParameter is false", async () => {
         const { location } = window;
 
-        const locationSpy = jest
+        const locationSpy = vi
             .spyOn(window, "location", "get")
             .mockImplementation(() => {
                 const mockLocation = JSON.parse(JSON.stringify(location));
@@ -540,12 +535,13 @@ describe("cslp tooltip", () => {
     });
 
     test("should re-render the edit button tooltip if not already available even when edit button is enabled", async () => {
-        new LivePreview({
+        Config.replace({
             enable: true,
             editButton: {
                 enable: true,
             },
         });
+        new LivePreview();
 
         let tooltip = document.querySelector(
             "[data-test-id='cs-cslp-tooltip']"

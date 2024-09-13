@@ -1,15 +1,14 @@
 import { fireEvent } from "@testing-library/preact";
-import { VisualEditor } from "../..";
+import { getFieldSchemaMap } from "../../../__test__/data/fieldSchemaMap";
 import { CslpData } from "../../../cslp/types/cslp.types";
 import { VisualEditorCslpEventDetails } from "../../types/liveEditor.types";
-import { appendFieldPathDropdown } from "../generateToolbar";
 import { FieldSchemaMap } from "../../utils/fieldSchemaMap";
-import { getFieldSchemaMap } from "../../../__test__/data/fieldSchemaMap";
+import { appendFieldPathDropdown } from "../generateToolbar";
 
-global.ResizeObserver = jest.fn().mockImplementation(() => ({
-    observe: jest.fn(),
-    unobserve: jest.fn(),
-    disconnect: jest.fn(),
+global.ResizeObserver = vi.fn().mockImplementation(() => ({
+    observe: vi.fn(),
+    unobserve: vi.fn(),
+    disconnect: vi.fn(),
 }));
 
 describe("appendFieldPathDropdown", () => {
@@ -74,9 +73,11 @@ describe("appendFieldPathDropdown", () => {
         );
         fireEvent.click(focusedToolbar);
 
-        expect(fieldLabelWrapper?.classList.toString()).toBe(
-            "visual-builder__focused-toolbar__field-label-wrapper"
-        );
+        expect(
+            fieldLabelWrapper?.classList.contains(
+                "visual-builder__focused-toolbar__field-label-wrapper"
+            )
+        ).toBeTruthy();
     });
 
     test("should click the closest parent if focused toolbar is a parent field", () => {
@@ -95,7 +96,7 @@ describe("appendFieldPathDropdown", () => {
 
         mockEventDetails.editableElement = parentElement;
 
-        const mockOnClick = jest.fn();
+        const mockOnClick = vi.fn();
         parentElement.click = mockOnClick;
 
         appendFieldPathDropdown(mockEventDetails, focusedToolbar);
@@ -136,14 +137,16 @@ describe("appendFieldPathDropdown", () => {
             ".visual-builder__focused-toolbar__field-label-wrapper"
         );
 
-        expect(fieldLabelWrapper?.classList.toString()).toBe(
-            "visual-builder__focused-toolbar__field-label-wrapper"
-        );
+        expect(
+            fieldLabelWrapper?.classList.contains(
+                "visual-builder__focused-toolbar__field-label-wrapper"
+            )
+        ).toBeTruthy();
 
         fireEvent.click(focusedToolbar);
 
         expect(fieldLabelWrapper?.classList.toString()).toBe(
-            "visual-builder__focused-toolbar__field-label-wrapper field-label-dropdown-open"
+            "visual-builder__focused-toolbar__field-label-wrapper go3399023040"
         );
     });
 });

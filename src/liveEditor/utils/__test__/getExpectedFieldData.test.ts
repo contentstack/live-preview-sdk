@@ -3,16 +3,16 @@ import { getExpectedFieldData } from "../getExpectedFieldData";
 import liveEditorPostMessage from "../liveEditorPostMessage";
 import { LiveEditorPostMessageEvents } from "../types/postMessage.types";
 
-jest.mock("../../utils/liveEditorPostMessage", () => {
-    const { getAllContentTypes } = jest.requireActual(
-        "./../../../__test__/data/contentType"
-    );
+vi.mock("../../utils/liveEditorPostMessage", async () => {
+    const { getAllContentTypes } = await vi.importActual<
+        typeof import("./../../../__test__/data/contentType")
+    >("./../../../__test__/data/contentType");
 
     const contentTypes = getAllContentTypes();
     return {
         __esModule: true,
         default: {
-            send: jest.fn().mockImplementation((eventName: string) => {
+            send: vi.fn().mockImplementation((eventName: string) => {
                 if (eventName === "init")
                     return Promise.resolve({
                         contentTypes,
@@ -69,7 +69,7 @@ describe("getExpectedFieldData", () => {
                     },
                     instance: {
                         fieldPathWithIndex: "multi_line_textbox_multiple_.0",
-                    }
+                    },
                 },
             }
         );

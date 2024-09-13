@@ -1,17 +1,16 @@
-import "@testing-library/jest-dom/extend-expect";
 import { render, fireEvent } from "@testing-library/preact";
 import { hideOverlay } from "../../generators/generateOverlay";
 import { VisualEditor } from "../..";
 import VisualEditorComponent from "../visualEditor";
 
-jest.mock("../../generators/generateOverlay", () => ({
-    hideOverlay: jest.fn(),
+vi.mock("../../generators/generateOverlay", () => ({
+    hideOverlay: vi.fn(),
 }));
 
 const mockResizeObserver = {
-    observe: jest.fn(),
-    unobserve: jest.fn(),
-    disconnect: jest.fn(),
+    observe: vi.fn(),
+    unobserve: vi.fn(),
+    disconnect: vi.fn(),
 };
 
 describe("VisualEditorComponent", () => {

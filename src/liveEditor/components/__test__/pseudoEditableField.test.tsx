@@ -1,17 +1,17 @@
-import "@testing-library/jest-dom/extend-expect";
 import { render, cleanup } from "@testing-library/preact";
 import PseudoEditableFieldComponent from "../pseudoEditableField";
 import getStyleOfAnElement from "./../../utils/getStyleOfAnElement";
+import { Mock } from "vitest";
 
-jest.mock("./../../utils/getStyleOfAnElement");
+vi.mock("./../../utils/getStyleOfAnElement");
 
 describe("PseudoEditableFieldComponent", () => {
     afterEach(cleanup);
 
     test("renders correctly with provided props", () => {
-        (getStyleOfAnElement as jest.Mock).mockReturnValue({
+        (getStyleOfAnElement as Mock).mockReturnValue({
             "font-size": "16px",
-            color: "red",
+            color: "rgb(255, 0, 0)",
         });
 
         const editableElement = document.createElement("div");
@@ -30,7 +30,7 @@ describe("PseudoEditableFieldComponent", () => {
         );
         expect(pseudoEditableElement).toBeInTheDocument();
         expect(pseudoEditableElement).toHaveStyle("font-size: 16px");
-        expect(pseudoEditableElement).toHaveStyle("color: red");
+        expect(pseudoEditableElement).toHaveStyle("color: rgb(255, 0, 0)");
         expect(pseudoEditableElement).toHaveTextContent("Editable Text");
     });
 });

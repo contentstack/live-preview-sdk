@@ -142,11 +142,13 @@ export async function handleIndividualFields(
                 window.getComputedStyle(actualEditableField).display;
 
             let textContent =
-                (editableElement as HTMLElement).innerText || editableElement.textContent || "";
+                (editableElement as HTMLElement).innerText ||
+                editableElement.textContent ||
+                "";
 
-            if(fieldType === FieldDataType.MULTILINE) {
+            if (fieldType === FieldDataType.MULTILINE) {
                 textContent = getMultilinePlaintext(actualEditableField);
-                actualEditableField.addEventListener('paste', pasteAsPlainText);
+                actualEditableField.addEventListener("paste", pasteAsPlainText);
             }
             const expectedTextContent = config.expectedFieldData;
             if (
@@ -170,8 +172,11 @@ export async function handleIndividualFields(
                 visualEditorContainer.appendChild(pseudoEditableField);
                 actualEditableField = pseudoEditableField;
 
-                if(fieldType === FieldDataType.MULTILINE) 
-                    actualEditableField.addEventListener('paste', pasteAsPlainText);
+                if (fieldType === FieldDataType.MULTILINE)
+                    actualEditableField.addEventListener(
+                        "paste",
+                        pasteAsPlainText
+                    );
 
                 // we will unobserve this in hideOverlay
                 elements.resizeObserver.observe(pseudoEditableField);
@@ -261,10 +266,7 @@ export function cleanIndividualFieldResidual(elements: {
     );
     if (pseudoEditableElement) {
         elements.resizeObserver.unobserve(pseudoEditableElement);
-        pseudoEditableElement.removeEventListener(
-            "paste",
-            pasteAsPlainText
-        );
+        pseudoEditableElement.removeEventListener("paste", pasteAsPlainText);
         pseudoEditableElement.remove();
         if (previousSelectedEditableDOM) {
             (previousSelectedEditableDOM as HTMLElement).style.removeProperty(
@@ -278,8 +280,16 @@ export function cleanIndividualFieldResidual(elements: {
     }
 }
 
-const pasteAsPlainText = debounce((e: Event) => {
-    e.preventDefault();
-    const clipboardData = (e as ClipboardEvent).clipboardData;
-    document.execCommand('inserttext', false, clipboardData?.getData('text/plain'));
-  }, 100, { leading: true });
+const pasteAsPlainText = debounce(
+    (e: Event) => {
+        e.preventDefault();
+        const clipboardData = (e as ClipboardEvent).clipboardData;
+        document.execCommand(
+            "inserttext",
+            false,
+            clipboardData?.getData("text/plain")
+        );
+    },
+    100,
+    { leading: true }
+);

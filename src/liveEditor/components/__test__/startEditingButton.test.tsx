@@ -1,4 +1,3 @@
-import "@testing-library/jest-dom/extend-expect";
 import { render, fireEvent } from "@testing-library/preact";
 import StartEditingButtonComponent from "../startEditingButton";
 import Config from "../../../configManager/configManager";
@@ -16,7 +15,7 @@ describe("StartEditingButtonComponent", () => {
     });
 
     afterEach(() => {
-        jest.clearAllMocks();
+        vi.clearAllMocks();
         document.body.removeChild(visualEditorContainer);
     });
 

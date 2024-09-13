@@ -1,9 +1,10 @@
 import { PublicLogger } from "../../logger/logger";
 import { addLivePreviewQueryTags, hasWindow } from "../index";
+import { vi } from "vitest";
 
-jest.mock("../../logger/logger", () => ({
+vi.mock("../../logger/logger", () => ({
     PublicLogger: {
-        error: jest.fn(),
+        error: vi.fn(),
     },
 }));
 
@@ -38,7 +39,7 @@ describe("addLivePreviewQueryTags", () => {
             "http://example.com?live_preview=hash&content_type_uid=ctuid&entry_uid=entryuid";
         const expectedLoggedError = "Error while adding live preview to URL";
 
-        jest.spyOn(global, "URL").mockImplementation(() => {
+        vi.spyOn(global, "URL").mockImplementation(() => {
             throw new Error("Mock error");
         });
 

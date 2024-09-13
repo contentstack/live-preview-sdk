@@ -1,5 +1,5 @@
-import "@testing-library/jest-dom/extend-expect";
 import { fireEvent, prettyDOM, screen } from "@testing-library/preact";
+// TODO: @faraazb check if we still need this library. If not let's remove and uninstall it.
 import { userEvent } from "@testing-library/user-event";
 import { act } from "preact/test-utils";
 import { VisualEditor } from "../../..";
@@ -15,19 +15,19 @@ const FIELD_VALUE = "123";
 const CT_UID = "all_fields";
 const FIELD_UID = "number";
 
-global.ResizeObserver = jest.fn().mockImplementation(() => ({
-    observe: jest.fn(),
-    unobserve: jest.fn(),
-    disconnect: jest.fn(),
+global.ResizeObserver = vi.fn().mockImplementation(() => ({
+    observe: vi.fn(),
+    unobserve: vi.fn(),
+    disconnect: vi.fn(),
 }));
 
 const contentTypes = getAllContentTypes();
 
-jest.mock("../../../utils/liveEditorPostMessage", () => {
+vi.mock("../../../utils/liveEditorPostMessage", () => {
     return {
         __esModule: true,
         default: {
-            send: jest
+            send: vi
                 .fn()
                 .mockImplementation((eventName: string, params: any) => {
                     if (eventName === "init")
@@ -63,7 +63,7 @@ jest.mock("../../../utils/liveEditorPostMessage", () => {
                     }
                     return Promise.resolve();
                 }),
-            on: jest.fn(),
+            on: vi.fn(),
         },
     };
 });
@@ -79,7 +79,7 @@ describe("number field", () => {
             `${CT_UID}.bltEntryUid.en-us.${FIELD_UID}`
         );
         numberField.textContent = FIELD_VALUE;
-        numberField.getBoundingClientRect = jest.fn(() => ({
+        numberField.getBoundingClientRect = vi.fn(() => ({
             x: 100,
             y: 100,
             top: 100,
@@ -88,7 +88,7 @@ describe("number field", () => {
             bottom: 0,
             width: 100,
             height: 25,
-            toJSON: jest.fn(),
+            toJSON: vi.fn(),
         }));
 
         document.body.appendChild(numberField);

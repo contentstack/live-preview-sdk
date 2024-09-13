@@ -6,7 +6,7 @@ import {
 describe("generateReplaceAssetButton", () => {
     let targetElement: HTMLImageElement;
     let visualEditorContainer: HTMLDivElement;
-    const onClickCallback = jest.fn();
+    const onClickCallback = vi.fn();
 
     beforeEach(() => {
         visualEditorContainer = document.createElement("div");
@@ -16,7 +16,7 @@ describe("generateReplaceAssetButton", () => {
         targetElement = document.createElement("img");
         targetElement.src = "https://example.com/image.png";
 
-        targetElement.getBoundingClientRect = jest.fn(() => ({
+        targetElement.getBoundingClientRect = vi.fn(() => ({
             x: 50,
             y: 50,
             width: 50,
@@ -32,11 +32,11 @@ describe("generateReplaceAssetButton", () => {
 
     afterEach(() => {
         document.body.innerHTML = "";
-        jest.clearAllMocks();
+        vi.clearAllMocks();
     });
 
     afterAll(() => {
-        jest.restoreAllMocks();
+        vi.restoreAllMocks();
     });
 
     test("should generate a button element with the correct class and text content", () => {
@@ -83,8 +83,8 @@ describe("removeReplaceAssetButton", () => {
         visualEditorContainer.classList.add("visual-builder__container");
         document.body.appendChild(visualEditorContainer);
 
-        generateReplaceAssetButton(visualEditorContainer, jest.fn());
-        generateReplaceAssetButton(visualEditorContainer, jest.fn());
+        generateReplaceAssetButton(visualEditorContainer, vi.fn());
+        generateReplaceAssetButton(visualEditorContainer, vi.fn());
 
         expect(
             visualEditorContainer.querySelectorAll(

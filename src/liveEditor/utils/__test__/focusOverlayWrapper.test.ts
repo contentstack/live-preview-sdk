@@ -1,4 +1,3 @@
-import "@testing-library/jest-dom/extend-expect";
 import { fireEvent } from "@testing-library/preact";
 import {
     addFocusOverlay,
@@ -10,27 +9,27 @@ import { LiveEditorPostMessageEvents } from "../types/postMessage.types";
 import liveEditorPostMessage from "../liveEditorPostMessage";
 import { VisualEditor } from "../..";
 
-jest.mock("../liveEditorPostMessage", () => {
+vi.mock("../liveEditorPostMessage", () => {
     return {
         __esModule: true,
         default: {
-            send: jest.fn(),
-            on: jest.fn(),
+            send: vi.fn(),
+            on: vi.fn(),
         },
     };
 });
 
-jest.mock("../handleIndividualFields", () => {
+vi.mock("../handleIndividualFields", () => {
     return {
         __esModule: true,
-        cleanIndividualFieldResidual: jest.fn(),
+        cleanIndividualFieldResidual: vi.fn(),
     };
 });
 
 const mockResizeObserver = {
-    observe: jest.fn(),
-    unobserve: jest.fn(),
-    disconnect: jest.fn(),
+    observe: vi.fn(),
+    unobserve: vi.fn(),
+    disconnect: vi.fn(),
 };
 
 describe("addFocusOverlay", () => {
@@ -38,13 +37,13 @@ describe("addFocusOverlay", () => {
     let targetElement: HTMLElement;
     let focusOverlayWrapper: HTMLDivElement;
 
-    jest.mock("../../generators/generateOverlay", () => {
-        const originalModule = jest.requireActual(
-            "../../generators/generateOverlay"
-        );
+    vi.mock("../../generators/generateOverlay", async () => {
+        const originalModule = await vi.importActual<
+            typeof import("../../generators/generateOverlay")
+        >("../../generators/generateOverlay");
         return {
             ...originalModule,
-            hideOverlay: jest.fn(),
+            hideOverlay: vi.fn(),
         };
     });
 
@@ -66,7 +65,7 @@ describe("addFocusOverlay", () => {
             "data-cslp",
             "all_fields.blt58a50b4cebae75c5.en-us.title"
         );
-        targetElement.getBoundingClientRect = jest.fn(() => ({
+        targetElement.getBoundingClientRect = vi.fn(() => ({
             left: 10,
             right: 20,
             top: 10,
@@ -79,7 +78,7 @@ describe("addFocusOverlay", () => {
     afterEach(() => {
         // Remove the target element and focus overlay wrapper after each test
         document.body.innerHTML = "";
-        jest.clearAllMocks();
+        vi.clearAllMocks();
     });
 
     test("should set the focus overlay wrapper to visible", () => {
@@ -172,7 +171,7 @@ describe("hideFocusOverlay", () => {
             "all_fields.blt58a50b4cebae75c5.en-us.title"
         );
         editedElement.innerHTML = "Hello World!";
-        editedElement.getBoundingClientRect = jest.fn(() => ({
+        editedElement.getBoundingClientRect = vi.fn(() => ({
             left: 10,
             right: 20,
             top: 10,
@@ -190,7 +189,7 @@ describe("hideFocusOverlay", () => {
 
     afterEach(() => {
         document.body.innerHTML = "";
-        jest.clearAllMocks();
+        vi.clearAllMocks();
     });
 
     test("should not hide the overlay if the focus overlay wrapper is null", () => {

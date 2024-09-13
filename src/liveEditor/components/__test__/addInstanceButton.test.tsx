@@ -1,4 +1,3 @@
-import "@testing-library/jest-dom/extend-expect";
 import {
     render,
     cleanup,
@@ -11,7 +10,7 @@ describe("AddInstanceButtonComponent", () => {
     afterEach(cleanup);
 
     test("renders button with proper class and icon", () => {
-        const onClickCallback = jest.fn();
+        const onClickCallback = vi.fn();
         render(
             <AddInstanceButtonComponent onClickCallback={onClickCallback} />
         );
@@ -27,7 +26,7 @@ describe("AddInstanceButtonComponent", () => {
     });
 
     test("calls onClickCallback when button is clicked", () => {
-        const onClickCallback = jest.fn();
+        const onClickCallback = vi.fn();
         render(
             <AddInstanceButtonComponent onClickCallback={onClickCallback} />
         );

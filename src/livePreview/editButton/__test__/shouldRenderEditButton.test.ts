@@ -1,10 +1,10 @@
-import "@testing-library/jest-dom/extend-expect";
+import { vi } from "vitest";
 import Config from "../../../configManager/configManager";
 import { shouldRenderEditButton } from "../editButton";
 
-jest.mock("../../../common/inIframe", () => ({
+vi.mock("../../../common/inIframe", () => ({
     __esModule: true,
-    inIframe: jest.fn().mockReturnValue(true),
+    inIframe: vi.fn().mockReturnValue(true),
 }));
 
 describe("shouldRenderEditButton", () => {
