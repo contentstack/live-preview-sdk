@@ -1,4 +1,5 @@
 import { fireEvent, prettyDOM, screen } from "@testing-library/preact";
+// TODO: @faraazb check if we still need this library. If not let's remove and uninstall it.
 import { userEvent } from "@testing-library/user-event";
 import { act } from "preact/test-utils";
 import { VisualEditor } from "../../..";
