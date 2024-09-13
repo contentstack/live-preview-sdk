@@ -1,6 +1,6 @@
 import {
     ILivePreviewWindowType,
-    type IVisualEditorInitEvent,
+    type IVisualBuilderInitEvent,
 } from "../../types/types";
 import { LivePreviewInitEventResponse } from "../eventManager/types/livePreviewPostMessageEvent.type";
 
@@ -12,11 +12,11 @@ export function mockLivePreviewInitEventListener(): LivePreviewInitEventResponse
     };
 }
 
-export function mockLiveEditorInitEventListener(): IVisualEditorInitEvent {
+export function mockVisualBuilderInitEventListener(): IVisualBuilderInitEvent {
     return {
         stackDetails: {
             masterLocale: "en-us",
         },
-        windowType: ILivePreviewWindowType.EDITOR,
+        windowType: ILivePreviewWindowType.BUILDER,
     };
 }

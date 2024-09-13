@@ -28,7 +28,7 @@ export declare interface IStackDetails {
     entryUid: string;
     branch: string;
     /**
-     * This locale is currently used by the live editor to
+     * This locale is currently used by the visual builder to
      * redirect to the correct locale if the no data-cslp tag
      * is present in the HTML to extract the locale.
      */
@@ -41,25 +41,25 @@ export declare interface IInitStackDetails {
     environment: string;
     branch: string;
     /**
-     * This locale is currently used by the live editor to
+     * This locale is currently used by the visual builder to
      * redirect to the correct locale if the no data-cslp tag
      * is present in the HTML to extract the locale.
      */
     locale: string;
 }
 
-export declare type ILivePreviewMode = "editor" | "preview";
+export declare type ILivePreviewMode = "builder" | "preview";
 
 //? We kept it as number so that we could disable only the unrequired features,
-//? since the "Editor" mode will contain all the features of the "Preview" mode.
+//? since the "Builder" mode will contain all the features of the "Preview" mode.
 export enum ILivePreviewModeConfig {
     PREVIEW = 1,
-    EDITOR = 2,
+    BUILDER = 2,
 }
 
 export enum ILivePreviewWindowType {
     PREVIEW = "preview",
-    EDITOR = "editor",
+    BUILDER = "builder",
     INDEPENDENT = "independent",
 }
 
@@ -144,7 +144,7 @@ export declare interface IInitData {
 //               "port" | "protocol"
 //           >;
 //           editButton?: IConfigEditButton;
-//           mode: "editor";
+//           mode: "builder";
 //       }
 //     | {
 //           ssr: false;
@@ -169,7 +169,7 @@ export declare interface IInitData {
 //           >;
 //           stackSdk: IStackSdk;
 //           editButton?: IConfigEditButton;
-//           mode: "editor";
+//           mode: "builder";
 //       };
 
 // Post message types
@@ -185,7 +185,7 @@ export declare interface IEditButtonPosition {
 
 // end of Post message types
 
-export interface IVisualEditorInitEvent {
+export interface IVisualBuilderInitEvent {
     windowType: ILivePreviewWindowType;
     stackDetails: {
         masterLocale: string;

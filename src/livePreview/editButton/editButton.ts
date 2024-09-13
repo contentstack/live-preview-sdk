@@ -240,8 +240,8 @@ export function shouldRenderEditButton(): boolean {
     ) {
         return false;
     } else if (iFrameCheck) {
-        // case if inside live editor
-        if (config.windowType === "editor") {
+        // case if inside visual builder
+        if (config.windowType === "builder") {
             return false;
         }
 
