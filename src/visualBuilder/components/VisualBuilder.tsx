@@ -6,12 +6,12 @@ import {
 } from "../visualBuilder.style";
 import React from "preact/compat";
 
-interface VisualEditorProps {
-    visualEditorContainer: HTMLDivElement | null;
+interface VisualBuilderProps {
+    visualBuilderContainer: HTMLDivElement | null;
     resizeObserver: ResizeObserver;
 }
 
-function VisualEditorComponent(props: VisualEditorProps): JSX.Element {
+function VisualBuilderComponent(props: VisualBuilderProps): JSX.Element {
     return (
         <>
             {/* For some reason, goober's glob and createGlobalStyle were not working in this case. */}
@@ -42,8 +42,8 @@ function VisualEditorComponent(props: VisualEditorProps): JSX.Element {
                     ) as HTMLDivElement;
 
                     hideOverlay({
-                        visualEditorContainer: props.visualEditorContainer,
-                        visualEditorOverlayWrapper: targetElement,
+                        visualBuilderContainer: props.visualBuilderContainer,
+                        visualBuilderOverlayWrapper: targetElement,
                         focusedToolbar: focusedToolbar,
                         resizeObserver: props.resizeObserver,
                     });
@@ -109,4 +109,4 @@ function VisualEditorComponent(props: VisualEditorProps): JSX.Element {
     );
 }
 
-export default VisualEditorComponent;
+export default VisualBuilderComponent;

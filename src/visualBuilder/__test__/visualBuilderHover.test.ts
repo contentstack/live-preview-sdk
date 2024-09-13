@@ -1,7 +1,7 @@
 import { getFieldSchemaMap } from "../../__test__/data/fieldSchemaMap";
 import { sleep } from "../../__test__/utils";
 import Config from "../../configManager/configManager";
-import { VisualEditor } from "../index";
+import { VisualBuilder } from "../index";
 import { FieldSchemaMap } from "../utils/fieldSchemaMap";
 import visualBuilderPostMessage from "../utils/visualBuilderPostMessage";
 import { VisualBuilderPostMessageEvents } from "../utils/types/postMessage.types";
@@ -154,7 +154,7 @@ global.ResizeObserver = vi.fn().mockImplementation(() => ({
     disconnect: vi.fn(),
 }));
 
-describe("When an element is hovered in visual editor mode", () => {
+describe("When an element is hovered in visual builder mode", () => {
     let mousemoveEvent: Event;
 
     beforeAll(() => {
@@ -184,7 +184,7 @@ describe("When an element is hovered in visual editor mode", () => {
 
     describe("title field", () => {
         let titleField: HTMLParagraphElement;
-        let visualEditor: VisualEditor;
+        let visualBuilder: VisualBuilder;
 
         beforeEach(() => {
             titleField = document.createElement("p");
@@ -197,11 +197,11 @@ describe("When an element is hovered in visual editor mode", () => {
                 .mockReturnValue(mockDomRect.singleLeft());
             document.body.appendChild(titleField);
 
-            visualEditor = new VisualEditor();
+            visualBuilder = new VisualBuilder();
         });
 
         afterEach(() => {
-            visualEditor.destroy();
+            visualBuilder.destroy();
         });
 
         test("should have outline", () => {
@@ -223,7 +223,7 @@ describe("When an element is hovered in visual editor mode", () => {
 
     describe("single line field", () => {
         let singleLineField: HTMLParagraphElement;
-        let visualEditor: VisualEditor;
+        let visualBuilder: VisualBuilder;
 
         beforeEach(() => {
             singleLineField = document.createElement("p");
@@ -236,11 +236,11 @@ describe("When an element is hovered in visual editor mode", () => {
                 .mockReturnValue(mockDomRect.singleLeft());
             document.body.appendChild(singleLineField);
 
-            visualEditor = new VisualEditor();
+            visualBuilder = new VisualBuilder();
         });
 
         afterEach(() => {
-            visualEditor.destroy();
+            visualBuilder.destroy();
         });
 
         test("should have outline", () => {
@@ -263,7 +263,7 @@ describe("When an element is hovered in visual editor mode", () => {
         let container: HTMLDivElement;
         let firstSingleLineField: HTMLParagraphElement;
         let secondSingleLineField: HTMLParagraphElement;
-        let visualEditor: VisualEditor;
+        let visualBuilder: VisualBuilder;
 
         beforeEach(() => {
             container = document.createElement("div");
@@ -297,11 +297,11 @@ describe("When an element is hovered in visual editor mode", () => {
             container.appendChild(secondSingleLineField);
             document.body.appendChild(container);
 
-            visualEditor = new VisualEditor();
+            visualBuilder = new VisualBuilder();
         });
 
         afterEach(() => {
-            visualEditor.destroy();
+            visualBuilder.destroy();
         });
 
         test("should have outline", () => {
@@ -341,7 +341,7 @@ describe("When an element is hovered in visual editor mode", () => {
             await sleep(0);
 
             const instanceButton = document.querySelectorAll<HTMLButtonElement>(
-                `[data-testid="visual-editor-add-instance-button"]`
+                `[data-testid="visual-builder-add-instance-button"]`
             );
 
             expect(instanceButton).toMatchSnapshot();
@@ -358,7 +358,7 @@ describe("When an element is hovered in visual editor mode", () => {
             firstSingleLineField.dispatchEvent(mousemoveEvent);
             await sleep(0);
             const instanceButton = document.querySelectorAll<HTMLButtonElement>(
-                `[data-testid="visual-editor-add-instance-button"]`
+                `[data-testid="visual-builder-add-instance-button"]`
             );
 
             expect(instanceButton.length).toBe(2);
@@ -428,7 +428,7 @@ describe("When an element is hovered in visual editor mode", () => {
 
     describe("multi line field", () => {
         let multiLineField: HTMLParagraphElement;
-        let visualEditor: VisualEditor;
+        let visualBuilder: VisualBuilder;
 
         beforeEach(() => {
             multiLineField = document.createElement("p");
@@ -443,11 +443,11 @@ describe("When an element is hovered in visual editor mode", () => {
                 .mockReturnValue(mockDomRect.singleLeft());
             document.body.appendChild(multiLineField);
 
-            visualEditor = new VisualEditor();
+            visualBuilder = new VisualBuilder();
         });
 
         afterEach(() => {
-            visualEditor.destroy();
+            visualBuilder.destroy();
         });
 
         test("should have outline", async () => {
@@ -473,7 +473,7 @@ describe("When an element is hovered in visual editor mode", () => {
         let container: HTMLDivElement;
         let firstMultiLineField: HTMLParagraphElement;
         let secondMultiLineField: HTMLParagraphElement;
-        let visualEditor: VisualEditor;
+        let visualBuilder: VisualBuilder;
 
         beforeEach(() => {
             container = document.createElement("div");
@@ -509,11 +509,11 @@ describe("When an element is hovered in visual editor mode", () => {
             container.appendChild(secondMultiLineField);
             document.body.appendChild(container);
 
-            visualEditor = new VisualEditor();
+            visualBuilder = new VisualBuilder();
         });
 
         afterEach(() => {
-            visualEditor.destroy();
+            visualBuilder.destroy();
         });
 
         test("should have outline", async () => {
@@ -556,7 +556,7 @@ describe("When an element is hovered in visual editor mode", () => {
             firstMultiLineField.dispatchEvent(mousemoveEvent);
             await sleep(0);
             const instanceButton = document.querySelectorAll<HTMLButtonElement>(
-                `[data-testid="visual-editor-add-instance-button"]`
+                `[data-testid="visual-builder-add-instance-button"]`
             );
 
             expect(instanceButton).toMatchSnapshot();
@@ -573,7 +573,7 @@ describe("When an element is hovered in visual editor mode", () => {
             firstMultiLineField.dispatchEvent(mousemoveEvent);
             await sleep(0);
             const instanceButton = document.querySelectorAll<HTMLButtonElement>(
-                `[data-testid="visual-editor-add-instance-button"]`
+                `[data-testid="visual-builder-add-instance-button"]`
             );
 
             expect(instanceButton.length).toBe(2);
@@ -642,7 +642,7 @@ describe("When an element is hovered in visual editor mode", () => {
 
     describe("HTML RTE field", () => {
         let htmlRteField: HTMLParagraphElement;
-        let visualEditor: VisualEditor;
+        let visualBuilder: VisualBuilder;
 
         beforeEach(() => {
             htmlRteField = document.createElement("p");
@@ -657,11 +657,11 @@ describe("When an element is hovered in visual editor mode", () => {
 
             document.body.appendChild(htmlRteField);
 
-            visualEditor = new VisualEditor();
+            visualBuilder = new VisualBuilder();
         });
 
         afterEach(() => {
-            visualEditor.destroy();
+            visualBuilder.destroy();
         });
 
         test("should have outline", async () => {
@@ -686,7 +686,7 @@ describe("When an element is hovered in visual editor mode", () => {
         let container: HTMLDivElement;
         let firstHtmlRteField: HTMLParagraphElement;
         let secondHtmlRteField: HTMLParagraphElement;
-        let visualEditor: VisualEditor;
+        let visualBuilder: VisualBuilder;
 
         beforeEach(() => {
             container = document.createElement("div");
@@ -723,11 +723,11 @@ describe("When an element is hovered in visual editor mode", () => {
             container.appendChild(secondHtmlRteField);
             document.body.appendChild(container);
 
-            visualEditor = new VisualEditor();
+            visualBuilder = new VisualBuilder();
         });
 
         afterEach(() => {
-            visualEditor.destroy();
+            visualBuilder.destroy();
         });
 
         test("should have outline", async () => {
@@ -770,7 +770,7 @@ describe("When an element is hovered in visual editor mode", () => {
             firstHtmlRteField.dispatchEvent(mousemoveEvent);
             await sleep(0);
             const instanceButton = document.querySelectorAll<HTMLButtonElement>(
-                `[data-testid="visual-editor-add-instance-button"]`
+                `[data-testid="visual-builder-add-instance-button"]`
             );
 
             expect(instanceButton).toMatchSnapshot();
@@ -787,7 +787,7 @@ describe("When an element is hovered in visual editor mode", () => {
             firstHtmlRteField.dispatchEvent(mousemoveEvent);
             await sleep(0);
             const instanceButton = document.querySelectorAll<HTMLButtonElement>(
-                `[data-testid="visual-editor-add-instance-button"]`
+                `[data-testid="visual-builder-add-instance-button"]`
             );
 
             expect(instanceButton.length).toBe(2);
@@ -853,7 +853,7 @@ describe("When an element is hovered in visual editor mode", () => {
 
     describe("JSON RTE field", () => {
         let jsonRteField: HTMLParagraphElement;
-        let visualEditor: VisualEditor;
+        let visualBuilder: VisualBuilder;
 
         beforeEach(() => {
             jsonRteField = document.createElement("p");
@@ -868,11 +868,11 @@ describe("When an element is hovered in visual editor mode", () => {
 
             document.body.appendChild(jsonRteField);
 
-            visualEditor = new VisualEditor();
+            visualBuilder = new VisualBuilder();
         });
 
         afterEach(() => {
-            visualEditor.destroy();
+            visualBuilder.destroy();
         });
 
         test("should have outline", async () => {
@@ -898,7 +898,7 @@ describe("When an element is hovered in visual editor mode", () => {
         let container: HTMLDivElement;
         let firstJsonRteField: HTMLParagraphElement;
         let secondJsonRteField: HTMLParagraphElement;
-        let visualEditor: VisualEditor;
+        let visualBuilder: VisualBuilder;
 
         beforeEach(() => {
             container = document.createElement("div");
@@ -935,11 +935,11 @@ describe("When an element is hovered in visual editor mode", () => {
             container.appendChild(secondJsonRteField);
             document.body.appendChild(container);
 
-            visualEditor = new VisualEditor();
+            visualBuilder = new VisualBuilder();
         });
 
         afterEach(() => {
-            visualEditor.destroy();
+            visualBuilder.destroy();
         });
 
         test("should have outline", async () => {
@@ -982,7 +982,7 @@ describe("When an element is hovered in visual editor mode", () => {
             firstJsonRteField.dispatchEvent(mousemoveEvent);
             await sleep(0);
             const instanceButton = document.querySelectorAll<HTMLButtonElement>(
-                `[data-testid="visual-editor-add-instance-button"]`
+                `[data-testid="visual-builder-add-instance-button"]`
             );
 
             expect(instanceButton).toMatchSnapshot();
@@ -999,7 +999,7 @@ describe("When an element is hovered in visual editor mode", () => {
             firstJsonRteField.dispatchEvent(mousemoveEvent);
             await sleep(0);
             const instanceButton = document.querySelectorAll<HTMLButtonElement>(
-                `[data-testid="visual-editor-add-instance-button"]`
+                `[data-testid="visual-builder-add-instance-button"]`
             );
 
             expect(instanceButton.length).toBe(2);
@@ -1068,7 +1068,7 @@ describe("When an element is hovered in visual editor mode", () => {
 
     describe("markdown field", () => {
         let markdownField: HTMLParagraphElement;
-        let visualEditor: VisualEditor;
+        let visualBuilder: VisualBuilder;
 
         beforeEach(() => {
             markdownField = document.createElement("p");
@@ -1083,11 +1083,11 @@ describe("When an element is hovered in visual editor mode", () => {
 
             document.body.appendChild(markdownField);
 
-            visualEditor = new VisualEditor();
+            visualBuilder = new VisualBuilder();
         });
 
         afterEach(() => {
-            visualEditor.destroy();
+            visualBuilder.destroy();
         });
 
         test("should have outline", async () => {
@@ -1112,7 +1112,7 @@ describe("When an element is hovered in visual editor mode", () => {
         let container: HTMLDivElement;
         let firstMarkdownField: HTMLParagraphElement;
         let secondMarkdownField: HTMLParagraphElement;
-        let visualEditor: VisualEditor;
+        let visualBuilder: VisualBuilder;
 
         beforeEach(() => {
             container = document.createElement("div");
@@ -1149,11 +1149,11 @@ describe("When an element is hovered in visual editor mode", () => {
             container.appendChild(secondMarkdownField);
             document.body.appendChild(container);
 
-            visualEditor = new VisualEditor();
+            visualBuilder = new VisualBuilder();
         });
 
         afterEach(() => {
-            visualEditor.destroy();
+            visualBuilder.destroy();
         });
 
         test("should have outline", async () => {
@@ -1196,7 +1196,7 @@ describe("When an element is hovered in visual editor mode", () => {
             firstMarkdownField.dispatchEvent(mousemoveEvent);
             await sleep(0);
             const instanceButton = document.querySelectorAll<HTMLButtonElement>(
-                `[data-testid="visual-editor-add-instance-button"]`
+                `[data-testid="visual-builder-add-instance-button"]`
             );
 
             expect(instanceButton).toMatchSnapshot();
@@ -1213,7 +1213,7 @@ describe("When an element is hovered in visual editor mode", () => {
             firstMarkdownField.dispatchEvent(mousemoveEvent);
             await sleep(0);
             const instanceButton = document.querySelectorAll<HTMLButtonElement>(
-                `[data-testid="visual-editor-add-instance-button"]`
+                `[data-testid="visual-builder-add-instance-button"]`
             );
 
             expect(instanceButton.length).toBe(2);
@@ -1279,7 +1279,7 @@ describe("When an element is hovered in visual editor mode", () => {
 
     describe("select field", () => {
         let selectField: HTMLParagraphElement;
-        let visualEditor: VisualEditor;
+        let visualBuilder: VisualBuilder;
 
         beforeEach(() => {
             selectField = document.createElement("p");
@@ -1294,11 +1294,11 @@ describe("When an element is hovered in visual editor mode", () => {
 
             document.body.appendChild(selectField);
 
-            visualEditor = new VisualEditor();
+            visualBuilder = new VisualBuilder();
         });
 
         afterEach(() => {
-            visualEditor.destroy();
+            visualBuilder.destroy();
         });
 
         test("should have outline", async () => {
@@ -1324,7 +1324,7 @@ describe("When an element is hovered in visual editor mode", () => {
         let container: HTMLDivElement;
         let firstSelectField: HTMLParagraphElement;
         let secondSelectField: HTMLParagraphElement;
-        let visualEditor: VisualEditor;
+        let visualBuilder: VisualBuilder;
 
         beforeEach(() => {
             container = document.createElement("div");
@@ -1360,11 +1360,11 @@ describe("When an element is hovered in visual editor mode", () => {
             container.appendChild(secondSelectField);
             document.body.appendChild(container);
 
-            visualEditor = new VisualEditor();
+            visualBuilder = new VisualBuilder();
         });
 
         afterEach(() => {
-            visualEditor.destroy();
+            visualBuilder.destroy();
         });
 
         test("should have outline", async () => {
@@ -1407,7 +1407,7 @@ describe("When an element is hovered in visual editor mode", () => {
             firstSelectField.dispatchEvent(mousemoveEvent);
             await sleep(0);
             const instanceButton = document.querySelectorAll<HTMLButtonElement>(
-                `[data-testid="visual-editor-add-instance-button"]`
+                `[data-testid="visual-builder-add-instance-button"]`
             );
 
             expect(instanceButton).toMatchSnapshot();
@@ -1424,7 +1424,7 @@ describe("When an element is hovered in visual editor mode", () => {
             firstSelectField.dispatchEvent(mousemoveEvent);
             await sleep(0);
             const instanceButton = document.querySelectorAll<HTMLButtonElement>(
-                `[data-testid="visual-editor-add-instance-button"]`
+                `[data-testid="visual-builder-add-instance-button"]`
             );
 
             expect(instanceButton.length).toBe(2);
@@ -1490,7 +1490,7 @@ describe("When an element is hovered in visual editor mode", () => {
 
     describe("number field", () => {
         let numberField: HTMLParagraphElement;
-        let visualEditor: VisualEditor;
+        let visualBuilder: VisualBuilder;
 
         beforeEach(() => {
             numberField = document.createElement("p");
@@ -1505,11 +1505,11 @@ describe("When an element is hovered in visual editor mode", () => {
 
             document.body.appendChild(numberField);
 
-            visualEditor = new VisualEditor();
+            visualBuilder = new VisualBuilder();
         });
 
         afterEach(() => {
-            visualEditor.destroy();
+            visualBuilder.destroy();
         });
 
         test("should have outline", async () => {
@@ -1535,7 +1535,7 @@ describe("When an element is hovered in visual editor mode", () => {
         let container: HTMLDivElement;
         let firstNumberField: HTMLParagraphElement;
         let secondNumberField: HTMLParagraphElement;
-        let visualEditor: VisualEditor;
+        let visualBuilder: VisualBuilder;
 
         beforeEach(() => {
             container = document.createElement("div");
@@ -1569,11 +1569,11 @@ describe("When an element is hovered in visual editor mode", () => {
             container.appendChild(secondNumberField);
             document.body.appendChild(container);
 
-            visualEditor = new VisualEditor();
+            visualBuilder = new VisualBuilder();
         });
 
         afterEach(() => {
-            visualEditor.destroy();
+            visualBuilder.destroy();
         });
 
         test("should have outline", async () => {
@@ -1616,7 +1616,7 @@ describe("When an element is hovered in visual editor mode", () => {
             firstNumberField.dispatchEvent(mousemoveEvent);
             await sleep(0);
             const instanceButton = document.querySelectorAll<HTMLButtonElement>(
-                `[data-testid="visual-editor-add-instance-button"]`
+                `[data-testid="visual-builder-add-instance-button"]`
             );
 
             expect(instanceButton).toMatchSnapshot();
@@ -1633,7 +1633,7 @@ describe("When an element is hovered in visual editor mode", () => {
             firstNumberField.dispatchEvent(mousemoveEvent);
             await sleep(0);
             const instanceButton = document.querySelectorAll<HTMLButtonElement>(
-                `[data-testid="visual-editor-add-instance-button"]`
+                `[data-testid="visual-builder-add-instance-button"]`
             );
 
             expect(instanceButton.length).toBe(2);
@@ -1699,7 +1699,7 @@ describe("When an element is hovered in visual editor mode", () => {
 
     describe("boolean field", () => {
         let booleanField: HTMLParagraphElement;
-        let visualEditor: VisualEditor;
+        let visualBuilder: VisualBuilder;
 
         beforeEach(() => {
             booleanField = document.createElement("p");
@@ -1714,11 +1714,11 @@ describe("When an element is hovered in visual editor mode", () => {
 
             document.body.appendChild(booleanField);
 
-            visualEditor = new VisualEditor();
+            visualBuilder = new VisualBuilder();
         });
 
         afterEach(() => {
-            visualEditor.destroy();
+            visualBuilder.destroy();
         });
 
         test("should have outline", async () => {
@@ -1743,7 +1743,7 @@ describe("When an element is hovered in visual editor mode", () => {
     describe("file field", () => {
         let fileField: HTMLParagraphElement;
         let imageField: HTMLImageElement;
-        let visualEditor: VisualEditor;
+        let visualBuilder: VisualBuilder;
 
         beforeEach(() => {
             fileField = document.createElement("p");
@@ -1765,11 +1765,11 @@ describe("When an element is hovered in visual editor mode", () => {
             document.body.appendChild(fileField);
             document.body.appendChild(imageField);
 
-            visualEditor = new VisualEditor();
+            visualBuilder = new VisualBuilder();
         });
 
         afterEach(() => {
-            visualEditor.destroy();
+            visualBuilder.destroy();
         });
 
         test("should have outline", async () => {
@@ -1814,7 +1814,7 @@ describe("When an element is hovered in visual editor mode", () => {
         let secondFileField: HTMLParagraphElement;
         let firstImageField: HTMLImageElement;
         let secondImageField: HTMLImageElement;
-        let visualEditor: VisualEditor;
+        let visualBuilder: VisualBuilder;
 
         beforeEach(() => {
             container = document.createElement("div");
@@ -1871,11 +1871,11 @@ describe("When an element is hovered in visual editor mode", () => {
             container.appendChild(secondImageField);
             document.body.appendChild(container);
 
-            visualEditor = new VisualEditor();
+            visualBuilder = new VisualBuilder();
         });
 
         afterEach(() => {
-            visualEditor.destroy();
+            visualBuilder.destroy();
         });
 
         test("should have outline", async () => {
@@ -1919,7 +1919,7 @@ describe("When an element is hovered in visual editor mode", () => {
             firstFileField.dispatchEvent(mousemoveEvent);
             await sleep(0);
             const instanceButton = document.querySelectorAll<HTMLButtonElement>(
-                `[data-testid="visual-editor-add-instance-button"]`
+                `[data-testid="visual-builder-add-instance-button"]`
             );
 
             expect(instanceButton).toMatchSnapshot();
@@ -1936,7 +1936,7 @@ describe("When an element is hovered in visual editor mode", () => {
             firstFileField.dispatchEvent(mousemoveEvent);
             await sleep(0);
             const instanceButton = document.querySelectorAll<HTMLButtonElement>(
-                `[data-testid="visual-editor-add-instance-button"]`
+                `[data-testid="visual-builder-add-instance-button"]`
             );
 
             expect(instanceButton.length).toBe(2);
@@ -2020,7 +2020,7 @@ describe("When an element is hovered in visual editor mode", () => {
             firstImageField.dispatchEvent(mousemoveEvent);
             await sleep(0);
             const instanceButton = document.querySelectorAll<HTMLButtonElement>(
-                `[data-testid="visual-editor-add-instance-button"]`
+                `[data-testid="visual-builder-add-instance-button"]`
             );
 
             expect(instanceButton).toMatchSnapshot();
@@ -2038,7 +2038,7 @@ describe("When an element is hovered in visual editor mode", () => {
 
     describe("date field", () => {
         let dataField: HTMLParagraphElement;
-        let visualEditor: VisualEditor;
+        let visualBuilder: VisualBuilder;
 
         beforeEach(() => {
             dataField = document.createElement("p");
@@ -2053,11 +2053,11 @@ describe("When an element is hovered in visual editor mode", () => {
 
             document.body.appendChild(dataField);
 
-            visualEditor = new VisualEditor();
+            visualBuilder = new VisualBuilder();
         });
 
         afterEach(() => {
-            visualEditor.destroy();
+            visualBuilder.destroy();
         });
 
         test("should have outline", async () => {
@@ -2080,7 +2080,7 @@ describe("When an element is hovered in visual editor mode", () => {
 
     describe("link field", () => {
         let linkField: HTMLAnchorElement;
-        let visualEditor: VisualEditor;
+        let visualBuilder: VisualBuilder;
 
         beforeEach(() => {
             linkField = document.createElement("a");
@@ -2095,11 +2095,11 @@ describe("When an element is hovered in visual editor mode", () => {
 
             document.body.appendChild(linkField);
 
-            visualEditor = new VisualEditor();
+            visualBuilder = new VisualBuilder();
         });
 
         afterEach(() => {
-            visualEditor.destroy();
+            visualBuilder.destroy();
         });
 
         test("should have outline", async () => {
@@ -2124,7 +2124,7 @@ describe("When an element is hovered in visual editor mode", () => {
         let container: HTMLDivElement;
         let firstLinkField: HTMLAnchorElement;
         let secondLinkField: HTMLAnchorElement;
-        let visualEditor: VisualEditor;
+        let visualBuilder: VisualBuilder;
 
         beforeEach(() => {
             container = document.createElement("div");
@@ -2158,11 +2158,11 @@ describe("When an element is hovered in visual editor mode", () => {
             container.appendChild(secondLinkField);
             document.body.appendChild(container);
 
-            visualEditor = new VisualEditor();
+            visualBuilder = new VisualBuilder();
         });
 
         afterEach(() => {
-            visualEditor.destroy();
+            visualBuilder.destroy();
         });
 
         test("should have outline", async () => {
@@ -2206,7 +2206,7 @@ describe("When an element is hovered in visual editor mode", () => {
             firstLinkField.dispatchEvent(mousemoveEvent);
             await sleep(0);
             const instanceButton = document.querySelectorAll<HTMLButtonElement>(
-                `[data-testid="visual-editor-add-instance-button"]`
+                `[data-testid="visual-builder-add-instance-button"]`
             );
 
             const customCursor = document.querySelector(
@@ -2228,7 +2228,7 @@ describe("When an element is hovered in visual editor mode", () => {
             firstLinkField.dispatchEvent(mousemoveEvent);
             await sleep(0);
             const instanceButton = document.querySelectorAll<HTMLButtonElement>(
-                `[data-testid="visual-editor-add-instance-button"]`
+                `[data-testid="visual-builder-add-instance-button"]`
             );
 
             expect(instanceButton.length).toBe(2);
@@ -2294,7 +2294,7 @@ describe("When an element is hovered in visual editor mode", () => {
 
     describe("reference field", () => {
         let referenceField: HTMLDivElement;
-        let visualEditor: VisualEditor;
+        let visualBuilder: VisualBuilder;
 
         beforeEach(() => {
             referenceField = document.createElement("div");
@@ -2309,11 +2309,11 @@ describe("When an element is hovered in visual editor mode", () => {
 
             document.body.appendChild(referenceField);
 
-            visualEditor = new VisualEditor();
+            visualBuilder = new VisualBuilder();
         });
 
         afterEach(() => {
-            visualEditor.destroy();
+            visualBuilder.destroy();
         });
 
         test("should have outline", async () => {
@@ -2338,7 +2338,7 @@ describe("When an element is hovered in visual editor mode", () => {
         let container: HTMLDivElement;
         let firstReferenceField: HTMLDivElement;
         let secondReferenceField: HTMLDivElement;
-        let visualEditor: VisualEditor;
+        let visualBuilder: VisualBuilder;
 
         beforeEach(() => {
             container = document.createElement("div");
@@ -2374,11 +2374,11 @@ describe("When an element is hovered in visual editor mode", () => {
             container.appendChild(secondReferenceField);
             document.body.appendChild(container);
 
-            visualEditor = new VisualEditor();
+            visualBuilder = new VisualBuilder();
         });
 
         afterEach(() => {
-            visualEditor.destroy();
+            visualBuilder.destroy();
         });
 
         test("should have outline", async () => {
@@ -2420,7 +2420,7 @@ describe("When an element is hovered in visual editor mode", () => {
             firstReferenceField.dispatchEvent(mousemoveEvent);
             await sleep(0);
             const instanceButton = document.querySelectorAll<HTMLButtonElement>(
-                `[data-testid="visual-editor-add-instance-button"]`
+                `[data-testid="visual-builder-add-instance-button"]`
             );
 
             expect(instanceButton).toMatchSnapshot();
@@ -2437,7 +2437,7 @@ describe("When an element is hovered in visual editor mode", () => {
             firstReferenceField.dispatchEvent(mousemoveEvent);
             await sleep(0);
             const instanceButton = document.querySelectorAll<HTMLButtonElement>(
-                `[data-testid="visual-editor-add-instance-button"]`
+                `[data-testid="visual-builder-add-instance-button"]`
             );
 
             expect(instanceButton.length).toBe(2);
@@ -2505,7 +2505,7 @@ describe("When an element is hovered in visual editor mode", () => {
     describe("group field", () => {
         let groupField: HTMLDivElement;
         let nestedSingleLine: HTMLParagraphElement;
-        let visualEditor: VisualEditor;
+        let visualBuilder: VisualBuilder;
 
         beforeEach(() => {
             groupField = document.createElement("div");
@@ -2531,11 +2531,11 @@ describe("When an element is hovered in visual editor mode", () => {
             groupField.appendChild(nestedSingleLine);
             document.body.appendChild(groupField);
 
-            visualEditor = new VisualEditor();
+            visualBuilder = new VisualBuilder();
         });
 
         afterEach(() => {
-            visualEditor.destroy();
+            visualBuilder.destroy();
         });
 
         test("should have outline", async () => {
@@ -2603,7 +2603,7 @@ describe("When an element is hovered in visual editor mode", () => {
         let firstGroupField: HTMLDivElement;
         let firstNestedMultiLine: HTMLParagraphElement;
         let secondGroupField: HTMLDivElement;
-        let visualEditor: VisualEditor;
+        let visualBuilder: VisualBuilder;
 
         beforeEach(() => {
             container = document.createElement("div");
@@ -2653,11 +2653,11 @@ describe("When an element is hovered in visual editor mode", () => {
 
             document.body.appendChild(container);
 
-            visualEditor = new VisualEditor();
+            visualBuilder = new VisualBuilder();
         });
 
         afterEach(() => {
-            visualEditor.destroy();
+            visualBuilder.destroy();
         });
 
         test("should have outline", async () => {
@@ -2680,7 +2680,7 @@ describe("When an element is hovered in visual editor mode", () => {
             firstGroupField.dispatchEvent(mousemoveEvent);
             await sleep(0);
             const instanceButton = document.querySelectorAll<HTMLButtonElement>(
-                `[data-testid="visual-editor-add-instance-button"]`
+                `[data-testid="visual-builder-add-instance-button"]`
             );
 
             expect(instanceButton).toMatchSnapshot();
@@ -2697,7 +2697,7 @@ describe("When an element is hovered in visual editor mode", () => {
             firstGroupField.dispatchEvent(mousemoveEvent);
             await sleep(0);
             const instanceButton = document.querySelectorAll<HTMLButtonElement>(
-                `[data-testid="visual-editor-add-instance-button"]`
+                `[data-testid="visual-builder-add-instance-button"]`
             );
 
             expect(instanceButton.length).toBe(2);
@@ -2783,7 +2783,7 @@ describe("When an element is hovered in visual editor mode", () => {
             firstNestedMultiLine.dispatchEvent(mousemoveEvent);
             await sleep(0);
             const instanceButton = document.querySelectorAll<HTMLButtonElement>(
-                `[data-testid="visual-editor-add-instance-button"]`
+                `[data-testid="visual-builder-add-instance-button"]`
             );
 
             expect(instanceButton.length).toBe(0);

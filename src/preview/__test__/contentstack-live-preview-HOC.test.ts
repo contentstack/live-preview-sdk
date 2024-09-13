@@ -82,7 +82,7 @@ describe("Live Preview HOC init", () => {
         expect(visualBuilderPostMessageSpy).toHaveBeenCalledTimes(0);
     });
 
-    test("should initialize both live preview and live editor when mode is editor", async () => {
+    test("should initialize both live preview and visual builder when mode is builder", async () => {
         if (!livePreviewPostMessage || !visualBuilderPostMessage) {
             throw new Error(
                 "livePreviewPostMessage or visualBuilder is unavailable"
@@ -100,7 +100,7 @@ describe("Live Preview HOC init", () => {
         );
 
         ContentstackLivePreview.init({
-            mode: "editor",
+            mode: "builder",
             stackDetails: {
                 environment: "development",
                 apiKey: "livePreviewApiKey123",

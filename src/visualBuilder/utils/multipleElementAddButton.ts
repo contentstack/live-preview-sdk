@@ -1,4 +1,4 @@
-import { VisualEditorCslpEventDetails } from "../types/visualBuilder.types";
+import { VisualBuilderCslpEventDetails } from "../types/visualBuilder.types";
 import {
     generateAddInstanceButton,
     getAddInstanceButtons,
@@ -14,15 +14,15 @@ const WAIT_FOR_NEW_INSTANCE_TIMEOUT = 4000;
 /**
  * The function that handles the add instance buttons for multiple fields.
  * @param eventDetails The details containing the field metadata and cslp value.
- * @param elements The elements object that contain the editable element and visual editor wrapper.
+ * @param elements The elements object that contain the editable element and visual builder wrapper.
  * @param config The configuration object that contains the expected field data and disabled state.
  * @returns void
  */
 export function handleAddButtonsForMultiple(
-    eventDetails: VisualEditorCslpEventDetails,
+    eventDetails: VisualBuilderCslpEventDetails,
     elements: {
         editableElement: Element | null;
-        visualEditorContainer: HTMLDivElement | null;
+        visualBuilderContainer: HTMLDivElement | null;
         resizeObserver: ResizeObserver;
     },
     config: {
@@ -31,7 +31,8 @@ export function handleAddButtonsForMultiple(
         label: string | undefined;
     }
 ): void {
-    const { editableElement, visualEditorContainer, resizeObserver } = elements;
+    const { editableElement, visualBuilderContainer, resizeObserver } =
+        elements;
     const { expectedFieldData, disabled, label } = config;
 
     const parentCslpValue =
@@ -43,32 +44,32 @@ export function handleAddButtonsForMultiple(
     }
 
     const direction = getChildrenDirection(editableElement, parentCslpValue);
-    if (direction === "none" || !visualEditorContainer) {
+    if (direction === "none" || !visualBuilderContainer) {
         return;
     }
 
     const targetDOMDimension = editableElement.getBoundingClientRect();
     removeAddInstanceButtons(
         {
-            visualEditorContainer: visualEditorContainer,
+            visualBuilderContainer: visualBuilderContainer,
             eventTarget: null,
             overlayWrapper: null,
         },
         true
     );
 
-    const overlayWrapper = visualEditorContainer.querySelector(
+    const overlayWrapper = visualBuilderContainer.querySelector(
         ".visual-builder__overlay__wrapper"
     );
-    const focusedToolbar = visualEditorContainer.querySelector(
+    const focusedToolbar = visualBuilderContainer.querySelector(
         ".visual-builder__focused-toolbar"
     );
 
     const hideOverlayAndHoverOutline = () => {
-        hideHoverOutline(visualEditorContainer);
+        hideHoverOutline(visualBuilderContainer);
         hideOverlay({
-            visualEditorContainer: visualEditorContainer,
-            visualEditorOverlayWrapper: overlayWrapper as HTMLDivElement,
+            visualBuilderContainer: visualBuilderContainer,
+            visualBuilderOverlayWrapper: overlayWrapper as HTMLDivElement,
             focusedToolbar: focusedToolbar as HTMLDivElement,
             resizeObserver,
         });
@@ -118,12 +119,12 @@ export function handleAddButtonsForMultiple(
             .then(onMessageSent.bind(null, nextIndex));
     }, label);
 
-    if (!visualEditorContainer.contains(previousButton)) {
-        visualEditorContainer.appendChild(previousButton);
+    if (!visualBuilderContainer.contains(previousButton)) {
+        visualBuilderContainer.appendChild(previousButton);
     }
 
-    if (!visualEditorContainer.contains(nextButton)) {
-        visualEditorContainer.appendChild(nextButton);
+    if (!visualBuilderContainer.contains(nextButton)) {
+        visualBuilderContainer.appendChild(nextButton);
     }
 
     if (direction === "horizontal") {
@@ -154,28 +155,28 @@ export function handleAddButtonsForMultiple(
 
 export function removeAddInstanceButtons(
     elements: {
-        visualEditorContainer: HTMLDivElement | null;
+        visualBuilderContainer: HTMLDivElement | null;
         overlayWrapper: HTMLDivElement | null;
         eventTarget: EventTarget | null;
     },
     forceRemoveAll = false
 ): void {
-    const { visualEditorContainer, overlayWrapper, eventTarget } = elements;
+    const { visualBuilderContainer, overlayWrapper, eventTarget } = elements;
 
-    if (!visualEditorContainer) {
+    if (!visualBuilderContainer) {
         return;
     }
 
     if (forceRemoveAll) {
         const addInstanceButtons = getAddInstanceButtons(
-            visualEditorContainer,
+            visualBuilderContainer,
             true
         );
 
         addInstanceButtons?.forEach((button) => button.remove());
     }
 
-    const addInstanceButtons = getAddInstanceButtons(visualEditorContainer);
+    const addInstanceButtons = getAddInstanceButtons(visualBuilderContainer);
 
     if (!addInstanceButtons) {
         return;

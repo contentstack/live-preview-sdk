@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`Visual editor > inline editing > should add overlay to DOM when clicked 1`] = `
+exports[`Visual Builder > inline editing > should add overlay to DOM when clicked 1`] = `
 <body>
   <h1
     data-cslp="all_fields.blt58a50b4cebae75c5.en-us.modular_blocks.0.block.single_line"
@@ -12,9 +12,9 @@ exports[`Visual editor > inline editing > should add overlay to DOM when clicked
     data-testid="visual-builder__container"
   >
     <style>
-      
+
        @import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
-       
+
        [data-cslp] [contenteditable="true"] {
             outline: none;
         }
@@ -62,16 +62,16 @@ exports[`Visual editor > inline editing > should add overlay to DOM when clicked
 </body>
 `;
 
-exports[`Visual editor > on click, the sdk > inline elements must be contenteditable > file should render a replacer and remove when it is not 1`] = `
+exports[`Visual Builder > on click, the sdk > inline elements must be contenteditable > file should render a replacer and remove when it is not 1`] = `
 <h1
   data-cslp="all_fields.blt58a50b4cebae75c5.en-us.file"
   data-cslp-field-type="file"
 />
 `;
 
-exports[`Visual editor > on click, the sdk > inline elements must be contenteditable > file should render a replacer and remove when it is not 2`] = `undefined`;
+exports[`Visual Builder > on click, the sdk > inline elements must be contenteditable > file should render a replacer and remove when it is not 2`] = `undefined`;
 
-exports[`Visual editor > on click, the sdk > inline elements must be contenteditable > multi line should be contenteditable 1`] = `
+exports[`Visual Builder > on click, the sdk > inline elements must be contenteditable > multi line should be contenteditable 1`] = `
 <h1
   data-cslp="all_fields.blt58a50b4cebae75c5.en-us.multi_line"
   data-cslp-field-type="multiline"
@@ -79,7 +79,7 @@ exports[`Visual editor > on click, the sdk > inline elements must be contentedit
 />
 `;
 
-exports[`Visual editor > on click, the sdk > inline elements must be contenteditable > single line should be contenteditable 1`] = `
+exports[`Visual Builder > on click, the sdk > inline elements must be contenteditable > single line should be contenteditable 1`] = `
 <h1
   data-cslp="all_fields.blt58a50b4cebae75c5.en-us.single_line"
   data-cslp-field-type="singleline"
@@ -87,7 +87,7 @@ exports[`Visual editor > on click, the sdk > inline elements must be contentedit
 />
 `;
 
-exports[`Visual editor > on click, the sdk > should do nothing if data-cslp not available 1`] = `
+exports[`Visual Builder > on click, the sdk > should do nothing if data-cslp not available 1`] = `
 <body>
   <h1 />
   <div
@@ -95,9 +95,9 @@ exports[`Visual editor > on click, the sdk > should do nothing if data-cslp not 
     data-testid="visual-builder__container"
   >
     <style>
-      
+
        @import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
-       
+
        [data-cslp] [contenteditable="true"] {
             outline: none;
         }
@@ -145,15 +145,15 @@ exports[`Visual editor > on click, the sdk > should do nothing if data-cslp not 
 </body>
 `;
 
-exports[`Visual editor > should append a visual editor container to the DOM 1`] = `
+exports[`Visual Builder > should append a visual builder container to the DOM 1`] = `
 <div
   class="go263407482 visual-builder__container"
   data-testid="visual-builder__container"
 >
   <style>
-    
+
        @import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
-       
+
        [data-cslp] [contenteditable="true"] {
             outline: none;
         }
@@ -200,7 +200,7 @@ exports[`Visual editor > should append a visual editor container to the DOM 1`] 
 </div>
 `;
 
-exports[`visual editor DOM > should have an overlay over the element 1`] = `
+exports[`visual builder DOM > should have an overlay over the element 1`] = `
 <div
   class="go842373233 visual-builder__overlay__wrapper"
   data-testid="visual-builder__overlay__wrapper"
@@ -228,7 +228,7 @@ exports[`visual editor DOM > should have an overlay over the element 1`] = `
 </div>
 `;
 
-exports[`visual editor DOM > should have an overlay over the element 2`] = `
+exports[`visual builder DOM > should have an overlay over the element 2`] = `
 <div
   class="go842373233 visual-builder__overlay__wrapper"
   data-testid="visual-builder__overlay__wrapper"

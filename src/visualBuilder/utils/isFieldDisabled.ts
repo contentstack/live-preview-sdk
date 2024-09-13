@@ -1,7 +1,7 @@
-import { VisualEditorCslpEventDetails } from "../types/visualBuilder.types";
+import { VisualBuilderCslpEventDetails } from "../types/visualBuilder.types";
 import Config from "../../configManager/configManager";
 import { ISchemaFieldMap } from "./types/index.types";
-import { VisualEditor } from "..";
+import { VisualBuilder } from "..";
 import { visualBuilderStyles } from "../visualBuilder.style";
 
 const getReason = (
@@ -23,7 +23,7 @@ const getReason = (
 
 export const isFieldDisabled = (
     fieldSchemaMap: ISchemaFieldMap,
-    eventDetails: VisualEditorCslpEventDetails
+    eventDetails: VisualBuilderCslpEventDetails
 ): any => {
     const masterLocale = Config.get().stackDetails.masterLocale || "en-us";
     const updateRestrictDueToRole = Boolean(
@@ -32,7 +32,7 @@ export const isFieldDisabled = (
     let updateRestrictDueToAudienceMode = false;
 
     if (
-        VisualEditor.VisualEditorGlobalState.value.audienceMode &&
+        VisualBuilder.VisualBuilderGlobalState.value.audienceMode &&
         !eventDetails.editableElement.classList.contains(
             visualBuilderStyles()["visual-builder__variant-field"]
         )

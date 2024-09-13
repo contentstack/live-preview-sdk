@@ -1,7 +1,7 @@
 import crypto from "crypto";
 
 import { sleep } from "../../__test__/utils";
-import { VisualEditor } from "../index";
+import { VisualBuilder } from "../index";
 import Config from "../../configManager/configManager";
 
 Object.defineProperty(globalThis, "crypto", {
@@ -16,7 +16,7 @@ global.ResizeObserver = vi.fn().mockImplementation(() => ({
     disconnect: vi.fn(),
 }));
 
-describe("When outside the Visual editor, the Visual Editor", () => {
+describe("When outside the Visual Builder, the Visual Builder", () => {
     beforeAll(() => {
         Config.set("mode", 2);
     });
@@ -24,7 +24,7 @@ describe("When outside the Visual editor, the Visual Editor", () => {
         Config.reset();
     });
     test("should have the start editing button", async () => {
-        new VisualEditor();
+        new VisualBuilder();
 
         await sleep(100);
 
@@ -44,7 +44,7 @@ describe("When outside the Visual editor, the Visual Editor", () => {
 
         document.body.appendChild(h1);
 
-        new VisualEditor();
+        new VisualBuilder();
 
         await sleep(0);
         h1.click();

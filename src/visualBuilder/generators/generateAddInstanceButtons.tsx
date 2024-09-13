@@ -25,16 +25,16 @@ export function generateAddInstanceButton(
 }
 
 /**
- * Returns an array of HTMLButtonElement instances that can be used to add new instances to the visual editor.
- * @param visualEditorContainer - The HTMLDivElement that contains the visual editor.
+ * Returns an array of HTMLButtonElement instances that can be used to add new instances to the visual builder.
+ * @param visualBuilderContainer - The HTMLDivElement that contains the visual builder.
  * @param getAllButtons - If true, returns all add instance buttons. If false, returns only the previous and next buttons.
  * @returns An array of HTMLButtonElement instances or null if there are less than 2 buttons.
  */
 export function getAddInstanceButtons(
-    visualEditorContainer: HTMLDivElement,
+    visualBuilderContainer: HTMLDivElement,
     getAllButtons = false
 ): HTMLButtonElement[] | [HTMLButtonElement, HTMLButtonElement] | null {
-    const buttons = visualEditorContainer.getElementsByClassName(
+    const buttons = visualBuilderContainer.getElementsByClassName(
         "visual-builder__add-button"
     );
 

@@ -1,13 +1,13 @@
 import { debounce, throttle } from "lodash-es";
-import { VisualEditor } from "..";
+import { VisualBuilder } from "..";
 import {
     generatePseudoEditableElement,
     isEllipsisActive,
 } from "../generators/generatePseudoEditableField";
-import { VisualEditorCslpEventDetails } from "../types/visualBuilder.types";
+import { VisualBuilderCslpEventDetails } from "../types/visualBuilder.types";
 import {
     ALLOWED_INLINE_EDITABLE_FIELD,
-    LIVE_EDITOR_FIELD_TYPE_ATTRIBUTE_KEY,
+    VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY,
 } from "./constants";
 import { FieldSchemaMap } from "./fieldSchemaMap";
 import { getFieldData } from "./getFieldData";
@@ -27,18 +27,19 @@ import { getMultilinePlaintext } from "./getMultilinePlaintext";
 /**
  * It handles all the fields based on their data type and its "multiple" property.
  * @param eventDetails The event details object that contain cslp and field metadata.
- * @param elements The elements object that contain the visual editor wrapper.
+ * @param elements The elements object that contain the visual builder wrapper.
  */
 export async function handleIndividualFields(
-    eventDetails: VisualEditorCslpEventDetails,
+    eventDetails: VisualBuilderCslpEventDetails,
     elements: {
-        visualEditorContainer: HTMLDivElement;
+        visualBuilderContainer: HTMLDivElement;
         resizeObserver: ResizeObserver;
         lastEditedField: Element | null;
     }
 ): Promise<void> {
     const { fieldMetadata, editableElement } = eventDetails;
-    const { visualEditorContainer, lastEditedField, resizeObserver } = elements;
+    const { visualBuilderContainer, lastEditedField, resizeObserver } =
+        elements;
     const {
         content_type_uid,
         entry_uid,
@@ -63,7 +64,7 @@ export async function handleIndividualFields(
     const { isDisabled: disabled } = isFieldDisabled(fieldSchema, eventDetails);
 
     editableElement.setAttribute(
-        LIVE_EDITOR_FIELD_TYPE_ATTRIBUTE_KEY,
+        VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY,
         fieldType
     );
 
@@ -85,7 +86,7 @@ export async function handleIndividualFields(
                 eventDetails,
                 {
                     editableElement: eventDetails.editableElement,
-                    visualEditorContainer: visualEditorContainer,
+                    visualBuilderContainer: visualBuilderContainer,
                     resizeObserver: resizeObserver,
                 },
                 {
@@ -101,7 +102,7 @@ export async function handleIndividualFields(
             handleSingleField(
                 {
                     editableElement,
-                    visualEditorContainer,
+                    visualBuilderContainer,
                     resizeObserver: elements.resizeObserver,
                 },
                 { expectedFieldData, disabled }
@@ -111,7 +112,7 @@ export async function handleIndividualFields(
         handleSingleField(
             {
                 editableElement,
-                visualEditorContainer,
+                visualBuilderContainer,
                 resizeObserver: elements.resizeObserver,
             },
             { expectedFieldData, disabled }
@@ -124,12 +125,12 @@ export async function handleIndividualFields(
     function handleSingleField(
         elements: {
             editableElement: Element;
-            visualEditorContainer: HTMLDivElement;
+            visualBuilderContainer: HTMLDivElement;
             resizeObserver: ResizeObserver;
         },
         config: { expectedFieldData: string; disabled?: boolean }
     ) {
-        const { editableElement, visualEditorContainer } = elements;
+        const { editableElement, visualBuilderContainer } = elements;
 
         if (config.disabled) {
             return;
@@ -166,10 +167,10 @@ export async function handleIndividualFields(
                 // set field type attribute to the pseudo editable field
                 // ensures proper keydown handling similar to the actual editable field
                 pseudoEditableField.setAttribute(
-                    LIVE_EDITOR_FIELD_TYPE_ATTRIBUTE_KEY,
+                    VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY,
                     fieldType
                 );
-                visualEditorContainer.appendChild(pseudoEditableField);
+                visualBuilderContainer.appendChild(pseudoEditableField);
                 actualEditableField = pseudoEditableField;
 
                 if (fieldType === FieldDataType.MULTILINE)
@@ -183,15 +184,15 @@ export async function handleIndividualFields(
             } else if (elementComputedDisplay === "inline") {
                 // if the editable field is inline
                 const onInlineElementInput = throttle(() => {
-                    const overlayWrapper = visualEditorContainer.querySelector(
+                    const overlayWrapper = visualBuilderContainer.querySelector(
                         ".visual-builder__overlay__wrapper"
                     ) as HTMLDivElement;
-                    const focusedToolbar = visualEditorContainer.querySelector(
+                    const focusedToolbar = visualBuilderContainer.querySelector(
                         ".visual-builder__focused-toolbar"
                     ) as HTMLDivElement;
                     updateFocussedState({
                         editableElement: actualEditableField,
-                        visualEditorContainer,
+                        visualBuilderContainer,
                         overlayWrapper,
                         resizeObserver,
                         focusedToolbar,
@@ -224,26 +225,27 @@ export async function handleIndividualFields(
 
 export function cleanIndividualFieldResidual(elements: {
     overlayWrapper: HTMLDivElement;
-    visualEditorContainer: HTMLDivElement | null;
+    visualBuilderContainer: HTMLDivElement | null;
     focusedToolbar: HTMLDivElement | null;
     resizeObserver: ResizeObserver;
 }): void {
-    const { overlayWrapper, visualEditorContainer, focusedToolbar } = elements;
+    const { overlayWrapper, visualBuilderContainer, focusedToolbar } = elements;
 
     removeAddInstanceButtons(
         {
             eventTarget: null,
-            visualEditorContainer: visualEditorContainer,
+            visualBuilderContainer: visualBuilderContainer,
             overlayWrapper: overlayWrapper,
         },
         true
     );
 
     const previousSelectedEditableDOM =
-        VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM;
+        VisualBuilder.VisualBuilderGlobalState.value
+            .previousSelectedEditableDOM;
     if (previousSelectedEditableDOM) {
         previousSelectedEditableDOM.removeAttribute(
-            LIVE_EDITOR_FIELD_TYPE_ATTRIBUTE_KEY
+            VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
         );
         previousSelectedEditableDOM.removeAttribute("contenteditable");
         previousSelectedEditableDOM.removeEventListener(
@@ -264,7 +266,7 @@ export function cleanIndividualFieldResidual(elements: {
         elements.resizeObserver.unobserve(previousSelectedEditableDOM);
     }
 
-    const pseudoEditableElement = visualEditorContainer?.querySelector(
+    const pseudoEditableElement = visualBuilderContainer?.querySelector(
         ".visual-builder__pseudo-editable-element"
     );
     if (pseudoEditableElement) {

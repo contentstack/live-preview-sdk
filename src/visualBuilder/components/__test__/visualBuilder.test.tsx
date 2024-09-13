@@ -1,7 +1,7 @@
 import { render, fireEvent } from "@testing-library/preact";
 import { hideOverlay } from "../../generators/generateOverlay";
-import { VisualEditor } from "../..";
-import VisualEditorComponent from "../VisualBuilder";
+import { VisualBuilder } from "../..";
+import VisualBuilderComponent from "../VisualBuilder";
 
 vi.mock("../../generators/generateOverlay", () => ({
     hideOverlay: vi.fn(),
@@ -13,11 +13,11 @@ const mockResizeObserver = {
     disconnect: vi.fn(),
 };
 
-describe("VisualEditorComponent", () => {
-    test("renders VisualEditorComponent correctly", () => {
+describe("VisualBuilderComponent", () => {
+    test("renders VisualBuilderComponent correctly", () => {
         const { getByTestId } = render(
-            <VisualEditorComponent
-                visualEditorContainer={document.createElement("div")}
+            <VisualBuilderComponent
+                visualBuilderContainer={document.createElement("div")}
                 resizeObserver={mockResizeObserver}
             />
         );
@@ -32,10 +32,10 @@ describe("VisualEditorComponent", () => {
     });
 
     test("hides overlay and unobserves element on click", () => {
-        const visualEditorContainer = document.createElement("div");
+        const visualBuilderContainer = document.createElement("div");
         const { getByTestId } = render(
-            <VisualEditorComponent
-                visualEditorContainer={visualEditorContainer}
+            <VisualBuilderComponent
+                visualBuilderContainer={visualBuilderContainer}
                 resizeObserver={mockResizeObserver}
             />
         );
@@ -44,23 +44,23 @@ describe("VisualEditorComponent", () => {
         fireEvent.click(overlayWrapper);
 
         expect(hideOverlay).toHaveBeenCalledWith({
-            visualEditorContainer,
-            visualEditorOverlayWrapper: overlayWrapper,
+            visualBuilderContainer,
+            visualBuilderOverlayWrapper: overlayWrapper,
             focusedToolbar: expect.any(HTMLDivElement),
             resizeObserver: mockResizeObserver,
         });
     });
 
-    test("hides overlay without throwing error if VisualEditorGlobalState is null", () => {
-        const visualEditorContainer = document.createElement("div");
-        VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM =
+    test("hides overlay without throwing error if VisualBuilderGlobalState is null", () => {
+        const visualBuilderContainer = document.createElement("div");
+        VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
             null;
-        VisualEditor.VisualEditorGlobalState.value.previousHoveredTargetDOM =
+        VisualBuilder.VisualBuilderGlobalState.value.previousHoveredTargetDOM =
             null;
 
         const { getByTestId } = render(
-            <VisualEditorComponent
-                visualEditorContainer={visualEditorContainer}
+            <VisualBuilderComponent
+                visualBuilderContainer={visualBuilderContainer}
                 resizeObserver={mockResizeObserver}
             />
         );
@@ -71,15 +71,15 @@ describe("VisualEditorComponent", () => {
         expect(() => {}).not.toThrow();
     });
 
-    test("unobserves element if VisualEditorGlobalState is null", () => {
-        const visualEditorContainer = document.createElement("div");
+    test("unobserves element if VisualBuilderGlobalState is null", () => {
+        const visualBuilderContainer = document.createElement("div");
         const targetElement = document.createElement("div");
-        VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM =
+        VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
             targetElement;
 
         const { getByTestId } = render(
-            <VisualEditorComponent
-                visualEditorContainer={visualEditorContainer}
+            <VisualBuilderComponent
+                visualBuilderContainer={visualBuilderContainer}
                 resizeObserver={mockResizeObserver}
             />
         );

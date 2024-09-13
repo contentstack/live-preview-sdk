@@ -2,7 +2,7 @@ import Config from "../../configManager/configManager";
 import { extractDetailsFromCslp } from "../../cslp";
 
 /**
- * Returns the redirection URL for the Live Editor.
+ * Returns the redirection URL for the Visual builder.
  * @returns {URL} The redirection URL.
  */
 export default function getVisualBuilderRedirectionUrl(): URL {

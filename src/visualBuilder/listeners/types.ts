@@ -1,13 +1,13 @@
-import { VisualEditorCslpEventDetails } from "../types/visualBuilder.types";
+import { VisualBuilderCslpEventDetails } from "../types/visualBuilder.types";
 
 interface EventListenerHandlerParams {
     event: MouseEvent;
     overlayWrapper: HTMLDivElement | null;
-    visualEditorContainer: HTMLDivElement | null;
+    visualBuilderContainer: HTMLDivElement | null;
     previousSelectedEditableDOM: Element | null;
     focusedToolbar: HTMLDivElement | null;
     resizeObserver: ResizeObserver;
-    eventDetails: VisualEditorCslpEventDetails;
+    eventDetails: VisualBuilderCslpEventDetails;
     customCursor: HTMLDivElement | null;
 }
 

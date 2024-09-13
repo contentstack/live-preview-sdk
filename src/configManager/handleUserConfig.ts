@@ -93,9 +93,9 @@ export const handleInitData = (initData: Partial<IInitData>): void => {
             initData.editButton?.exclude
                 ? initData.editButton?.exclude
                 : Array.isArray(stackSdk.live_preview?.exclude) &&
-                  stackSdk.live_preview?.exclude
-                ? stackSdk.live_preview?.exclude
-                : config.editButton.exclude ?? [],
+                    stackSdk.live_preview?.exclude
+                  ? stackSdk.live_preview?.exclude
+                  : (config.editButton.exclude ?? []),
         position:
             initData.editButton?.position ??
             stackSdk.live_preview?.position ??
@@ -122,13 +122,13 @@ export const handleInitData = (initData: Partial<IInitData>): void => {
                 Config.set("mode", ILivePreviewModeConfig.PREVIEW);
                 break;
             }
-            case "editor": {
-                Config.set("mode", ILivePreviewModeConfig.EDITOR);
+            case "builder": {
+                Config.set("mode", ILivePreviewModeConfig.BUILDER);
                 break;
             }
             default: {
                 throw new TypeError(
-                    "Live Preview SDK: The mode must be either 'editor' or 'preview'"
+                    "Live Preview SDK: The mode must be either 'builder' or 'preview'"
                 );
             }
         }
@@ -172,7 +172,7 @@ function handleStackDetails(
         initData.stackDetails?.locale ?? config.stackDetails.locale
     );
 
-    if (config.mode >= ILivePreviewModeConfig.EDITOR) {
+    if (config.mode >= ILivePreviewModeConfig.BUILDER) {
         if (!config.stackDetails.environment) {
             throw Error("Live preview SDK: environment is required");
         }

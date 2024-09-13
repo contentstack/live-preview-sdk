@@ -2,7 +2,7 @@ import crypto from "crypto";
 
 import { getFieldSchemaMap } from "../../../__test__/data/fieldSchemaMap";
 import { sleep } from "../../../__test__/utils";
-import { VisualEditorCslpEventDetails } from "../../types/visualBuilder.types";
+import { VisualBuilderCslpEventDetails } from "../../types/visualBuilder.types";
 import { FieldSchemaMap } from "../fieldSchemaMap";
 import { getCsDataOfElement } from "../getCsDataOfElement";
 import { generateAddInstanceButton } from "./../../generators/generateAddInstanceButtons";
@@ -57,15 +57,15 @@ describe("generateAddInstanceButton", () => {
 
 // TODO: rewrite this
 describe("getChildrenDirection", () => {
-    let visualEditorContainer: HTMLDivElement;
+    let visualBuilderContainer: HTMLDivElement;
     let firstChild: HTMLElement;
     let secondChild: HTMLElement;
     let container: HTMLElement;
 
     beforeEach(() => {
-        visualEditorContainer = document.createElement("div");
-        visualEditorContainer.classList.add("visual-builder__container");
-        document.body.appendChild(visualEditorContainer);
+        visualBuilderContainer = document.createElement("div");
+        visualBuilderContainer.classList.add("visual-builder__container");
+        document.body.appendChild(visualBuilderContainer);
 
         firstChild = document.createElement("div");
         firstChild.setAttribute(
@@ -84,7 +84,7 @@ describe("getChildrenDirection", () => {
         container.appendChild(firstChild);
         container.appendChild(secondChild);
 
-        visualEditorContainer.appendChild(container);
+        visualBuilderContainer.appendChild(container);
     });
 
     afterEach(() => {
@@ -172,13 +172,13 @@ describe("handleAddButtonsForMultiple", () => {
         let firstChild: HTMLElement;
         let secondChild: HTMLElement;
         let container: HTMLElement;
-        let visualEditorContainer: HTMLDivElement;
-        let eventDetails: VisualEditorCslpEventDetails;
+        let visualBuilderContainer: HTMLDivElement;
+        let eventDetails: VisualBuilderCslpEventDetails;
 
         beforeEach(() => {
-            visualEditorContainer = document.createElement("div");
-            visualEditorContainer.classList.add("visual-builder__container");
-            document.body.appendChild(visualEditorContainer);
+            visualBuilderContainer = document.createElement("div");
+            visualBuilderContainer.classList.add("visual-builder__container");
+            document.body.appendChild(visualBuilderContainer);
 
             firstChild = document.createElement("div");
             firstChild.setAttribute(
@@ -214,7 +214,7 @@ describe("handleAddButtonsForMultiple", () => {
             container.appendChild(firstChild);
             container.appendChild(secondChild);
 
-            visualEditorContainer.appendChild(container);
+            visualBuilderContainer.appendChild(container);
 
             const mouseEvent = new MouseEvent("click", {
                 bubbles: true,
@@ -224,7 +224,7 @@ describe("handleAddButtonsForMultiple", () => {
 
             eventDetails = getCsDataOfElement(
                 mouseEvent
-            ) as VisualEditorCslpEventDetails;
+            ) as VisualBuilderCslpEventDetails;
         });
 
         afterEach(() => {
@@ -235,11 +235,11 @@ describe("handleAddButtonsForMultiple", () => {
         test("should not add buttons if the editable element is not found", () => {
             handleAddButtonsForMultiple(eventDetails, {
                 editableElement: null,
-                visualEditorContainer: visualEditorContainer,
+                visualBuilderContainer: visualBuilderContainer,
             });
 
-            const addInstanceButtons = visualEditorContainer.querySelectorAll(
-                `[data-testid="visual-editor-add-instance-button"]`
+            const addInstanceButtons = visualBuilderContainer.querySelectorAll(
+                `[data-testid="visual-builder-add-instance-button"]`
             );
 
             expect(addInstanceButtons.length).toBe(0);
@@ -249,38 +249,38 @@ describe("handleAddButtonsForMultiple", () => {
             container.removeAttribute("data-cslp");
             handleAddButtonsForMultiple(eventDetails, {
                 editableElement: firstChild,
-                visualEditorContainer,
+                visualBuilderContainer,
             });
 
-            const addInstanceButtons = visualEditorContainer.querySelectorAll(
-                `[data-testid="visual-editor-add-instance-button"]`
+            const addInstanceButtons = visualBuilderContainer.querySelectorAll(
+                `[data-testid="visual-builder-add-instance-button"]`
             );
 
             expect(addInstanceButtons.length).toBe(0);
         });
 
-        test("should not add buttons if the visual editor wrapper is not found", () => {
+        test("should not add buttons if the visual builder wrapper is not found", () => {
             handleAddButtonsForMultiple(eventDetails, {
                 editableElement: firstChild,
-                visualEditorContainer: null,
+                visualBuilderContainer: null,
             });
 
-            const addInstanceButtons = visualEditorContainer.querySelectorAll(
-                `[data-testid="visual-editor-add-instance-button"]`
+            const addInstanceButtons = visualBuilderContainer.querySelectorAll(
+                `[data-testid="visual-builder-add-instance-button"]`
             );
 
             expect(addInstanceButtons.length).toBe(0);
         });
 
-        test("should append the buttons to the visual editor wrapper", async () => {
+        test("should append the buttons to the visual builder wrapper", async () => {
             handleAddButtonsForMultiple(eventDetails, {
                 editableElement: firstChild,
-                visualEditorContainer,
+                visualBuilderContainer,
             });
 
             await sleep(0);
-            const addInstanceButtons = visualEditorContainer.querySelectorAll(
-                `[data-testid="visual-editor-add-instance-button"]`
+            const addInstanceButtons = visualBuilderContainer.querySelectorAll(
+                `[data-testid="visual-builder-add-instance-button"]`
             );
 
             expect(addInstanceButtons.length).toBe(2);
@@ -289,12 +289,12 @@ describe("handleAddButtonsForMultiple", () => {
         test("should add the buttons to the center if the direction is horizontal", async () => {
             handleAddButtonsForMultiple(eventDetails, {
                 editableElement: firstChild,
-                visualEditorContainer,
+                visualBuilderContainer,
             });
             await sleep(0);
 
-            const addInstanceButtons = visualEditorContainer.querySelectorAll(
-                `[data-testid="visual-editor-add-instance-button"]`
+            const addInstanceButtons = visualBuilderContainer.querySelectorAll(
+                `[data-testid="visual-builder-add-instance-button"]`
             );
 
             const previousButton = addInstanceButtons[0] as HTMLButtonElement;
@@ -323,12 +323,12 @@ describe("handleAddButtonsForMultiple", () => {
             });
             handleAddButtonsForMultiple(eventDetails, {
                 editableElement: firstChild,
-                visualEditorContainer,
+                visualBuilderContainer,
             });
             await sleep(0);
 
-            const addInstanceButtons = visualEditorContainer.querySelectorAll(
-                `[data-testid="visual-editor-add-instance-button"]`
+            const addInstanceButtons = visualBuilderContainer.querySelectorAll(
+                `[data-testid="visual-builder-add-instance-button"]`
             );
 
             const previousButton = addInstanceButtons[0] as HTMLButtonElement;
@@ -346,13 +346,13 @@ describe("handleAddButtonsForMultiple", () => {
         let firstChild: HTMLElement;
         let secondChild: HTMLElement;
         let container: HTMLElement;
-        let visualEditorContainer: HTMLDivElement;
-        let eventDetails: VisualEditorCslpEventDetails;
+        let visualBuilderContainer: HTMLDivElement;
+        let eventDetails: VisualBuilderCslpEventDetails;
 
         beforeEach(() => {
-            visualEditorContainer = document.createElement("div");
-            visualEditorContainer.classList.add("visual-builder__container");
-            document.body.appendChild(visualEditorContainer);
+            visualBuilderContainer = document.createElement("div");
+            visualBuilderContainer.classList.add("visual-builder__container");
+            document.body.appendChild(visualBuilderContainer);
 
             firstChild = document.createElement("div");
             firstChild.setAttribute(
@@ -388,7 +388,7 @@ describe("handleAddButtonsForMultiple", () => {
             container.appendChild(firstChild);
             container.appendChild(secondChild);
 
-            visualEditorContainer.appendChild(container);
+            visualBuilderContainer.appendChild(container);
 
             const mouseEvent = new MouseEvent("click", {
                 bubbles: true,
@@ -398,7 +398,7 @@ describe("handleAddButtonsForMultiple", () => {
 
             eventDetails = getCsDataOfElement(
                 mouseEvent
-            ) as VisualEditorCslpEventDetails;
+            ) as VisualBuilderCslpEventDetails;
         });
 
         afterEach(() => {
@@ -409,12 +409,12 @@ describe("handleAddButtonsForMultiple", () => {
         test("should send an add instance message to the parent", async () => {
             handleAddButtonsForMultiple(eventDetails, {
                 editableElement: firstChild,
-                visualEditorContainer,
+                visualBuilderContainer,
             });
 
             await sleep(0);
-            const addInstanceButtons = visualEditorContainer.querySelectorAll(
-                `[data-testid="visual-editor-add-instance-button"]`
+            const addInstanceButtons = visualBuilderContainer.querySelectorAll(
+                `[data-testid="visual-builder-add-instance-button"]`
             );
 
             expect(addInstanceButtons.length).toBe(2);
@@ -480,25 +480,25 @@ describe("handleAddButtonsForMultiple", () => {
 });
 
 describe("removeAddInstanceButtons", () => {
-    let visualEditorContainer: HTMLDivElement;
+    let visualBuilderContainer: HTMLDivElement;
     let previousButton: HTMLButtonElement;
     let nextButton: HTMLButtonElement;
     let overlayWrapper: HTMLDivElement;
     let eventTarget: EventTarget;
 
     beforeEach(() => {
-        visualEditorContainer = document.createElement("div");
-        visualEditorContainer.classList.add("visual-builder__container");
-        document.body.appendChild(visualEditorContainer);
+        visualBuilderContainer = document.createElement("div");
+        visualBuilderContainer.classList.add("visual-builder__container");
+        document.body.appendChild(visualBuilderContainer);
 
         previousButton = generateAddInstanceButton(() => {});
         nextButton = generateAddInstanceButton(() => {});
         overlayWrapper = document.createElement("div");
         eventTarget = document.createElement("div");
 
-        visualEditorContainer.appendChild(previousButton);
-        visualEditorContainer.appendChild(nextButton);
-        visualEditorContainer.appendChild(overlayWrapper);
+        visualBuilderContainer.appendChild(previousButton);
+        visualBuilderContainer.appendChild(nextButton);
+        visualBuilderContainer.appendChild(overlayWrapper);
     });
 
     afterEach(() => {
@@ -508,13 +508,13 @@ describe("removeAddInstanceButtons", () => {
 
     test("should not remove buttons if wrapper or buttons are not present", () => {
         removeAddInstanceButtons({
-            visualEditorContainer: null,
+            visualBuilderContainer: null,
             eventTarget: eventTarget,
             overlayWrapper: overlayWrapper,
         });
 
-        const addInstanceButtons = visualEditorContainer.querySelectorAll(
-            `[data-testid="visual-editor-add-instance-button"]`
+        const addInstanceButtons = visualBuilderContainer.querySelectorAll(
+            `[data-testid="visual-builder-add-instance-button"]`
         );
 
         expect(addInstanceButtons.length).toBe(2);
@@ -524,25 +524,25 @@ describe("removeAddInstanceButtons", () => {
         overlayWrapper.classList.add("visible");
 
         removeAddInstanceButtons({
-            visualEditorContainer: visualEditorContainer,
+            visualBuilderContainer: visualBuilderContainer,
             eventTarget: previousButton,
             overlayWrapper: overlayWrapper,
         });
 
-        let addInstanceButtons = visualEditorContainer.querySelectorAll(
-            `[data-testid="visual-editor-add-instance-button"]`
+        let addInstanceButtons = visualBuilderContainer.querySelectorAll(
+            `[data-testid="visual-builder-add-instance-button"]`
         );
 
         expect(addInstanceButtons.length).toBe(2);
 
         removeAddInstanceButtons({
-            visualEditorContainer: visualEditorContainer,
+            visualBuilderContainer: visualBuilderContainer,
             eventTarget: nextButton,
             overlayWrapper: overlayWrapper,
         });
 
-        addInstanceButtons = visualEditorContainer.querySelectorAll(
-            `[data-testid="visual-editor-add-instance-button"]`
+        addInstanceButtons = visualBuilderContainer.querySelectorAll(
+            `[data-testid="visual-builder-add-instance-button"]`
         );
 
         expect(addInstanceButtons.length).toBe(2);
@@ -552,13 +552,13 @@ describe("removeAddInstanceButtons", () => {
         overlayWrapper.classList.add("visible");
 
         removeAddInstanceButtons({
-            visualEditorContainer: visualEditorContainer,
+            visualBuilderContainer: visualBuilderContainer,
             eventTarget: eventTarget,
             overlayWrapper: overlayWrapper,
         });
 
-        const addInstanceButtons = visualEditorContainer.querySelectorAll(
-            `[data-testid="visual-editor-add-instance-button"]`
+        const addInstanceButtons = visualBuilderContainer.querySelectorAll(
+            `[data-testid="visual-builder-add-instance-button"]`
         );
 
         expect(addInstanceButtons.length).toBe(2);
@@ -566,38 +566,38 @@ describe("removeAddInstanceButtons", () => {
 
     test("should remove the buttons", () => {
         removeAddInstanceButtons({
-            visualEditorContainer: visualEditorContainer,
+            visualBuilderContainer: visualBuilderContainer,
             eventTarget: eventTarget,
             overlayWrapper: overlayWrapper,
         });
 
-        expect(visualEditorContainer.contains(previousButton)).toBeFalsy();
-        expect(visualEditorContainer.contains(nextButton)).toBeFalsy();
+        expect(visualBuilderContainer.contains(previousButton)).toBeFalsy();
+        expect(visualBuilderContainer.contains(nextButton)).toBeFalsy();
     });
 
     test("should remove all buttons if forceRemoveAll is true", () => {
         for (let i = 0; i < 5; i++) {
             const button = generateAddInstanceButton(() => {});
-            visualEditorContainer.appendChild(button);
+            visualBuilderContainer.appendChild(button);
         }
 
-        let buttons = visualEditorContainer.querySelectorAll(
-            `[data-testid="visual-editor-add-instance-button"]`
+        let buttons = visualBuilderContainer.querySelectorAll(
+            `[data-testid="visual-builder-add-instance-button"]`
         );
 
         expect(buttons.length).toBe(7);
 
         removeAddInstanceButtons(
             {
-                visualEditorContainer: visualEditorContainer,
+                visualBuilderContainer: visualBuilderContainer,
                 eventTarget: eventTarget,
                 overlayWrapper: overlayWrapper,
             },
             true
         );
 
-        buttons = visualEditorContainer.querySelectorAll(
-            `[data-testid="visual-editor-add-instance-button"]`
+        buttons = visualBuilderContainer.querySelectorAll(
+            `[data-testid="visual-builder-add-instance-button"]`
         );
 
         expect(buttons.length).toBe(0);
@@ -606,30 +606,30 @@ describe("removeAddInstanceButtons", () => {
     test("should not remove all buttons if forceRemoveAll is false", () => {
         for (let i = 0; i < 5; i++) {
             const button = generateAddInstanceButton(() => {});
-            visualEditorContainer.appendChild(button);
+            visualBuilderContainer.appendChild(button);
         }
 
-        let buttons = visualEditorContainer.querySelectorAll(
-            `[data-testid="visual-editor-add-instance-button"]`
+        let buttons = visualBuilderContainer.querySelectorAll(
+            `[data-testid="visual-builder-add-instance-button"]`
         );
 
         expect(buttons.length).toBe(7);
 
         removeAddInstanceButtons(
             {
-                visualEditorContainer: visualEditorContainer,
+                visualBuilderContainer: visualBuilderContainer,
                 eventTarget: eventTarget,
                 overlayWrapper: overlayWrapper,
             },
             false
         );
 
-        buttons = visualEditorContainer.querySelectorAll(
-            `[data-testid="visual-editor-add-instance-button"]`
+        buttons = visualBuilderContainer.querySelectorAll(
+            `[data-testid="visual-builder-add-instance-button"]`
         );
 
-        const addInstanceButtons = visualEditorContainer.querySelectorAll(
-            `[data-testid="visual-editor-add-instance-button"]`
+        const addInstanceButtons = visualBuilderContainer.querySelectorAll(
+            `[data-testid="visual-builder-add-instance-button"]`
         );
 
         expect(addInstanceButtons.length).toBe(5);

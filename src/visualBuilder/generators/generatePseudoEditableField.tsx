@@ -34,7 +34,7 @@ export function generatePseudoEditableElement(
 ): HTMLDivElement {
     const { editableElement } = elements;
 
-    const visualEditorContainer = document.querySelector(
+    const visualBuilderContainer = document.querySelector(
         ".visual-builder__container"
     );
     const wrapper = document.createDocumentFragment();
@@ -46,7 +46,7 @@ export function generatePseudoEditableElement(
         wrapper
     );
 
-    visualEditorContainer?.appendChild(wrapper);
+    visualBuilderContainer?.appendChild(wrapper);
 
     const pseudoEditableElement = document.querySelector(
         ".visual-builder__pseudo-editable-element"

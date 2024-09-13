@@ -1,16 +1,16 @@
 import { generatePseudoEditableElement } from "./../../generators/generatePseudoEditableField";
 
 describe("generatePseudoEditableElement", () => {
-    let visualEditorContainer: HTMLDivElement;
+    let visualBuilderContainer: HTMLDivElement;
 
     beforeEach(() => {
-        visualEditorContainer = document.createElement("div");
-        visualEditorContainer.classList.add("visual-builder__container");
-        document.body.appendChild(visualEditorContainer);
+        visualBuilderContainer = document.createElement("div");
+        visualBuilderContainer.classList.add("visual-builder__container");
+        document.body.appendChild(visualBuilderContainer);
     });
 
     afterEach(() => {
-        document.body.removeChild(visualEditorContainer);
+        document.body.removeChild(visualBuilderContainer);
     });
 
     test("it should generate a pseudo editable element", () => {

@@ -16,7 +16,7 @@ describe("AddInstanceButtonComponent", () => {
         );
         const buttonElement = getByTestId(
             document.body,
-            "visual-editor-add-instance-button"
+            "visual-builder-add-instance-button"
         );
         expect(buttonElement).toBeInTheDocument();
         expect(buttonElement).toHaveClass("visual-builder__add-button");
@@ -32,7 +32,7 @@ describe("AddInstanceButtonComponent", () => {
         );
         const buttonElement = getByTestId(
             document.body,
-            "visual-editor-add-instance-button"
+            "visual-builder-add-instance-button"
         );
         fireEvent.click(buttonElement);
         expect(onClickCallback).toHaveBeenCalled();

@@ -1,4 +1,4 @@
-import { VisualEditor } from "..";
+import { VisualBuilder } from "..";
 import { extractDetailsFromCslp } from "../../cslp";
 import { getAddInstanceButtons } from "../generators/generateAddInstanceButtons";
 import { addFocusOverlay } from "../generators/generateOverlay";
@@ -10,38 +10,39 @@ import getStyleOfAnElement from "./getStyleOfAnElement";
 /**
  * This function can be used to re-draw/update the focussed state of an element.
  * The focussed state includes the overlay, psuedo-editable, toolbar, and multiple
- * instance add buttons. It is similar to handleEditorInteraction but it does not
+ * instance add buttons. It is similar to handleBuilderInteraction but it does not
  * create new elements, it just updates the existing ones whenever possible.
  * NOTE: breakdown this function into multiple functions when the need arises
  */
 export function updateFocussedState({
     editableElement,
-    visualEditorContainer,
+    visualBuilderContainer,
     overlayWrapper,
     focusedToolbar,
     resizeObserver,
 }: {
     editableElement: HTMLElement | null;
-    visualEditorContainer: HTMLDivElement | null;
+    visualBuilderContainer: HTMLDivElement | null;
     overlayWrapper: HTMLDivElement | null;
     focusedToolbar: HTMLDivElement | null;
     resizeObserver: ResizeObserver;
 }): void {
     const previousSelectedEditableDOM =
-        VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM;
+        VisualBuilder.VisualBuilderGlobalState.value
+            .previousSelectedEditableDOM;
     if (
-        !visualEditorContainer ||
+        !visualBuilderContainer ||
         !editableElement ||
         !previousSelectedEditableDOM ||
         !overlayWrapper
     ) {
         return;
     }
-    hideHoverOutline(visualEditorContainer);
+    hideHoverOutline(visualBuilderContainer);
     addFocusOverlay(previousSelectedEditableDOM, overlayWrapper);
 
     // update psuedo editable element if present
-    const psuedoEditableElement = visualEditorContainer.querySelector(
+    const psuedoEditableElement = visualBuilderContainer.querySelector(
         ".visual-builder__pseudo-editable-element"
     ) as HTMLElement;
     if (psuedoEditableElement) {
@@ -76,7 +77,7 @@ export function updateFocussedState({
     );
 
     // re-add multiple instance add buttons
-    const buttons = getAddInstanceButtons(visualEditorContainer);
+    const buttons = getAddInstanceButtons(visualBuilderContainer);
     const parentCslpValue =
         fieldMetadata.multipleFieldMetadata?.parentDetails?.parentCslpValue;
     if (

@@ -1,4 +1,4 @@
-import { VisualEditorCslpEventDetails } from "../types/visualBuilder.types";
+import { VisualBuilderCslpEventDetails } from "../types/visualBuilder.types";
 import {
     DATA_CSLP_ATTR_SELECTOR,
     LIVE_PREVIEW_OUTLINE_WIDTH_IN_PX,
@@ -17,7 +17,7 @@ import { FieldDataType } from "../utils/types/index.types";
 import { IReferenceContentTypeSchema } from "../../cms/types/contentTypeSchema.types";
 
 export function appendFocusedToolbar(
-    eventDetails: VisualEditorCslpEventDetails,
+    eventDetails: VisualBuilderCslpEventDetails,
     focusedToolbarElement: HTMLDivElement
 ): void {
     appendFieldPathDropdown(eventDetails, focusedToolbarElement);
@@ -25,7 +25,7 @@ export function appendFocusedToolbar(
 }
 
 export function appendFieldToolbar(
-    eventDetails: VisualEditorCslpEventDetails,
+    eventDetails: VisualBuilderCslpEventDetails,
     focusedToolbarElement: HTMLDivElement
 ): void {
     const { editableElement: targetElement, fieldMetadata } = eventDetails;
@@ -59,7 +59,7 @@ export function appendFieldToolbar(
 }
 
 export function appendFieldPathDropdown(
-    eventDetails: VisualEditorCslpEventDetails,
+    eventDetails: VisualBuilderCslpEventDetails,
     focusedToolbarElement: HTMLDivElement
 ): void {
     const { editableElement: targetElement, fieldMetadata } = eventDetails;

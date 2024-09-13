@@ -2,8 +2,8 @@ import { waitFor } from "@testing-library/preact";
 import "@testing-library/jest-dom";
 import { getFieldSchemaMap } from "../../__test__/data/fieldSchemaMap";
 import Config from "../../configManager/configManager";
-import { VisualEditor } from "../index";
-import { LIVE_EDITOR_FIELD_TYPE_ATTRIBUTE_KEY } from "../utils/constants";
+import { VisualBuilder } from "../index";
+import { VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY } from "../utils/constants";
 import { FieldSchemaMap } from "../utils/fieldSchemaMap";
 import { getDOMEditStack } from "../utils/getCsDataOfElement";
 import visualBuilderPostMessage from "../utils/visualBuilderPostMessage";
@@ -37,7 +37,7 @@ vi.mock("../utils/visualBuilderPostMessage", async () => {
     };
 });
 
-describe("When an element is clicked in visual editor mode", () => {
+describe("When an element is clicked in visual builder mode", () => {
     let mouseClickEvent: Event;
 
     beforeAll(() => {
@@ -67,7 +67,7 @@ describe("When an element is clicked in visual editor mode", () => {
 
     describe("single line field", () => {
         let singleLineField: HTMLParagraphElement;
-        let visualEditor: VisualEditor;
+        let visualBuilder: VisualBuilder;
 
         beforeEach(() => {
             singleLineField = document.createElement("p");
@@ -77,11 +77,11 @@ describe("When an element is clicked in visual editor mode", () => {
             );
             document.body.appendChild(singleLineField);
 
-            visualEditor = new VisualEditor();
+            visualBuilder = new VisualBuilder();
         });
 
         afterEach(() => {
-            visualEditor.destroy();
+            visualBuilder.destroy();
         });
 
         test("should have outline", () => {
@@ -104,7 +104,7 @@ describe("When an element is clicked in visual editor mode", () => {
         });
 
         test("should contain a data-cslp-field-type attribute", async () => {
-            VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM =
+            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
                 singleLineField;
 
             await waitFor(() => {
@@ -112,12 +112,12 @@ describe("When an element is clicked in visual editor mode", () => {
             });
 
             expect(singleLineField).toHaveAttribute(
-                LIVE_EDITOR_FIELD_TYPE_ATTRIBUTE_KEY
+                VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
             );
         });
 
         test("should contain a contenteditable attribute", async () => {
-            VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM =
+            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
                 singleLineField;
 
             await waitFor(() => {
@@ -128,7 +128,7 @@ describe("When an element is clicked in visual editor mode", () => {
         });
 
         test("should send a focus field message to parent", async () => {
-            VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM =
+            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
                 singleLineField;
 
             await waitFor(() => {
@@ -148,7 +148,7 @@ describe("When an element is clicked in visual editor mode", () => {
         let container: HTMLDivElement;
         let firstSingleLineField: HTMLParagraphElement;
         let secondSingleLineField: HTMLParagraphElement;
-        let visualEditor: VisualEditor;
+        let visualBuilder: VisualBuilder;
 
         beforeEach(() => {
             container = document.createElement("div");
@@ -173,11 +173,11 @@ describe("When an element is clicked in visual editor mode", () => {
             container.appendChild(secondSingleLineField);
             document.body.appendChild(container);
 
-            visualEditor = new VisualEditor();
+            visualBuilder = new VisualBuilder();
         });
 
         afterEach(() => {
-            visualEditor.destroy();
+            visualBuilder.destroy();
         });
 
         test("should have outline", () => {
@@ -217,7 +217,7 @@ describe("When an element is clicked in visual editor mode", () => {
         });
 
         test("should contain a data-cslp-field-type attribute", async () => {
-            VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM =
+            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
                 container;
 
             await waitFor(() => {
@@ -225,12 +225,12 @@ describe("When an element is clicked in visual editor mode", () => {
             });
 
             expect(container).toHaveAttribute(
-                LIVE_EDITOR_FIELD_TYPE_ATTRIBUTE_KEY
+                VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
             );
         });
 
         test("container should not contain a contenteditable attribute but the children can", async () => {
-            VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM =
+            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
                 container;
 
             await waitFor(() => {
@@ -308,7 +308,7 @@ describe("When an element is clicked in visual editor mode", () => {
         });
 
         test("should send a focus field message to parent", async () => {
-            VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM =
+            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
                 container;
 
             await waitFor(() => {
@@ -326,7 +326,7 @@ describe("When an element is clicked in visual editor mode", () => {
 
     describe("multi line field", () => {
         let multiLineField: HTMLParagraphElement;
-        let visualEditor: VisualEditor;
+        let visualBuilder: VisualBuilder;
 
         beforeEach(() => {
             multiLineField = document.createElement("p");
@@ -335,11 +335,11 @@ describe("When an element is clicked in visual editor mode", () => {
                 "all_fields.bltapikey.en-us.multi_line"
             );
             document.body.appendChild(multiLineField);
-            visualEditor = new VisualEditor();
+            visualBuilder = new VisualBuilder();
         });
 
         afterEach(() => {
-            visualEditor.destroy();
+            visualBuilder.destroy();
         });
 
         test("should have outline", () => {
@@ -362,7 +362,7 @@ describe("When an element is clicked in visual editor mode", () => {
         });
 
         test("should contain a data-cslp-field-type attribute", async () => {
-            VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM =
+            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
                 multiLineField;
 
             await waitFor(() => {
@@ -370,12 +370,12 @@ describe("When an element is clicked in visual editor mode", () => {
             });
 
             expect(multiLineField).toHaveAttribute(
-                LIVE_EDITOR_FIELD_TYPE_ATTRIBUTE_KEY
+                VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
             );
         });
 
         test("should contain a contenteditable attribute", async () => {
-            VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM =
+            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
                 multiLineField;
 
             await waitFor(() => {
@@ -386,7 +386,7 @@ describe("When an element is clicked in visual editor mode", () => {
         });
 
         test("should send a focus field message to parent", async () => {
-            VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM =
+            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
                 multiLineField;
 
             await waitFor(() => {
@@ -406,7 +406,7 @@ describe("When an element is clicked in visual editor mode", () => {
         let container: HTMLDivElement;
         let firstMultiLineField: HTMLParagraphElement;
         let secondMultiLineField: HTMLParagraphElement;
-        let visualEditor: VisualEditor;
+        let visualBuilder: VisualBuilder;
 
         beforeEach(() => {
             container = document.createElement("div");
@@ -431,11 +431,11 @@ describe("When an element is clicked in visual editor mode", () => {
             container.appendChild(secondMultiLineField);
             document.body.appendChild(container);
 
-            visualEditor = new VisualEditor();
+            visualBuilder = new VisualBuilder();
         });
 
         afterEach(() => {
-            visualEditor.destroy();
+            visualBuilder.destroy();
         });
 
         test("should have outline", () => {
@@ -513,7 +513,7 @@ describe("When an element is clicked in visual editor mode", () => {
         });
 
         test("should contain a data-cslp-field-type attribute", async () => {
-            VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM =
+            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
                 container;
 
             await waitFor(() => {
@@ -521,12 +521,12 @@ describe("When an element is clicked in visual editor mode", () => {
             });
 
             expect(container).toHaveAttribute(
-                LIVE_EDITOR_FIELD_TYPE_ATTRIBUTE_KEY
+                VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
             );
         });
 
         test("container should not contain a contenteditable attribute but the children can", async () => {
-            VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM =
+            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
                 container;
 
             await waitFor(() => {
@@ -549,7 +549,7 @@ describe("When an element is clicked in visual editor mode", () => {
         });
 
         test("should send a focus field message to parent", async () => {
-            VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM =
+            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
                 container;
 
             await waitFor(() => {
@@ -567,7 +567,7 @@ describe("When an element is clicked in visual editor mode", () => {
 
     describe("HTML RTE field", () => {
         let htmlRteField: HTMLParagraphElement;
-        let visualEditor: VisualEditor;
+        let visualBuilder: VisualBuilder;
 
         beforeEach(() => {
             htmlRteField = document.createElement("p");
@@ -576,11 +576,11 @@ describe("When an element is clicked in visual editor mode", () => {
                 "all_fields.bltapikey.en-us.rich_text_editor"
             );
             document.body.appendChild(htmlRteField);
-            visualEditor = new VisualEditor();
+            visualBuilder = new VisualBuilder();
         });
 
         afterEach(() => {
-            visualEditor.destroy();
+            visualBuilder.destroy();
         });
 
         test("should have outline", () => {
@@ -603,7 +603,7 @@ describe("When an element is clicked in visual editor mode", () => {
         });
 
         test("should contain a data-cslp-field-type attribute", async () => {
-            VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM =
+            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
                 htmlRteField;
 
             await waitFor(() => {
@@ -611,12 +611,12 @@ describe("When an element is clicked in visual editor mode", () => {
             });
 
             expect(htmlRteField).toHaveAttribute(
-                LIVE_EDITOR_FIELD_TYPE_ATTRIBUTE_KEY
+                VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
             );
         });
 
         test("should not contain a contenteditable attribute", async () => {
-            VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM =
+            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
                 htmlRteField;
 
             await waitFor(() => {
@@ -627,7 +627,7 @@ describe("When an element is clicked in visual editor mode", () => {
         });
 
         test("should send a focus field message to parent", async () => {
-            VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM =
+            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
                 htmlRteField;
 
             await waitFor(() => {
@@ -643,7 +643,7 @@ describe("When an element is clicked in visual editor mode", () => {
         });
 
         test("should send a open quick form message to parent", async () => {
-            VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM =
+            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
                 htmlRteField;
 
             await waitFor(() => {
@@ -679,7 +679,7 @@ describe("When an element is clicked in visual editor mode", () => {
         let container: HTMLDivElement;
         let firstHtmlRteField: HTMLParagraphElement;
         let secondHtmlRteField: HTMLParagraphElement;
-        let visualEditor: VisualEditor;
+        let visualBuilder: VisualBuilder;
 
         beforeEach(() => {
             container = document.createElement("div");
@@ -704,10 +704,10 @@ describe("When an element is clicked in visual editor mode", () => {
             container.appendChild(secondHtmlRteField);
             document.body.appendChild(container);
 
-            visualEditor = new VisualEditor();
+            visualBuilder = new VisualBuilder();
         });
         afterEach(() => {
-            visualEditor.destroy();
+            visualBuilder.destroy();
         });
 
         test("should have outline", () => {
@@ -785,7 +785,7 @@ describe("When an element is clicked in visual editor mode", () => {
         });
 
         test("should contain a data-cslp-field-type attribute", async () => {
-            VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM =
+            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
                 container;
 
             await waitFor(() => {
@@ -793,12 +793,12 @@ describe("When an element is clicked in visual editor mode", () => {
             });
 
             expect(container).toHaveAttribute(
-                LIVE_EDITOR_FIELD_TYPE_ATTRIBUTE_KEY
+                VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
             );
         });
 
         test("both container and its children should not contain a contenteditable attribute", async () => {
-            VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM =
+            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
                 container;
 
             await waitFor(() => {
@@ -825,7 +825,7 @@ describe("When an element is clicked in visual editor mode", () => {
         });
 
         test("should send a focus field message to parent", async () => {
-            VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM =
+            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
                 container;
 
             await waitFor(() => {
@@ -843,7 +843,7 @@ describe("When an element is clicked in visual editor mode", () => {
 
     describe("JSON RTE field", () => {
         let jsonRteField: HTMLParagraphElement;
-        let visualEditor: VisualEditor;
+        let visualBuilder: VisualBuilder;
 
         beforeEach(() => {
             jsonRteField = document.createElement("p");
@@ -852,11 +852,11 @@ describe("When an element is clicked in visual editor mode", () => {
                 "all_fields.bltapikey.en-us.rich_text_editor"
             );
             document.body.appendChild(jsonRteField);
-            visualEditor = new VisualEditor();
+            visualBuilder = new VisualBuilder();
         });
 
         afterEach(() => {
-            visualEditor.destroy();
+            visualBuilder.destroy();
         });
 
         test("should have outline", () => {
@@ -879,7 +879,7 @@ describe("When an element is clicked in visual editor mode", () => {
         });
 
         test("should contain a data-cslp-field-type attribute", async () => {
-            VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM =
+            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
                 jsonRteField;
 
             await waitFor(() => {
@@ -887,12 +887,12 @@ describe("When an element is clicked in visual editor mode", () => {
             });
 
             expect(jsonRteField).toHaveAttribute(
-                LIVE_EDITOR_FIELD_TYPE_ATTRIBUTE_KEY
+                VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
             );
         });
 
         test("should not contain a contenteditable attribute", async () => {
-            VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM =
+            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
                 jsonRteField;
 
             await waitFor(() => {
@@ -903,7 +903,7 @@ describe("When an element is clicked in visual editor mode", () => {
         });
 
         test("should send a focus field message to parent", async () => {
-            VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM =
+            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
                 jsonRteField;
 
             await waitFor(() => {
@@ -923,7 +923,7 @@ describe("When an element is clicked in visual editor mode", () => {
         let container: HTMLDivElement;
         let firstJsonRteField: HTMLParagraphElement;
         let secondJsonRteField: HTMLParagraphElement;
-        let visualEditor: VisualEditor;
+        let visualBuilder: VisualBuilder;
 
         beforeEach(() => {
             container = document.createElement("div");
@@ -948,11 +948,11 @@ describe("When an element is clicked in visual editor mode", () => {
             container.appendChild(secondJsonRteField);
             document.body.appendChild(container);
 
-            visualEditor = new VisualEditor();
+            visualBuilder = new VisualBuilder();
         });
 
         afterEach(() => {
-            visualEditor.destroy();
+            visualBuilder.destroy();
         });
 
         test("should have outline", () => {
@@ -1030,7 +1030,7 @@ describe("When an element is clicked in visual editor mode", () => {
         });
 
         test("should contain a data-cslp-field-type attribute", async () => {
-            VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM =
+            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
                 container;
 
             await waitFor(() => {
@@ -1038,12 +1038,12 @@ describe("When an element is clicked in visual editor mode", () => {
             });
 
             expect(container).toHaveAttribute(
-                LIVE_EDITOR_FIELD_TYPE_ATTRIBUTE_KEY
+                VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
             );
         });
 
         test("both container and its children should not contain a contenteditable attribute", async () => {
-            VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM =
+            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
                 container;
 
             await waitFor(() => {
@@ -1070,7 +1070,7 @@ describe("When an element is clicked in visual editor mode", () => {
         });
 
         test("should send a focus field message to parent", async () => {
-            VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM =
+            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
                 container;
 
             await waitFor(() => {
@@ -1088,7 +1088,7 @@ describe("When an element is clicked in visual editor mode", () => {
 
     describe("markdown field", () => {
         let markdownField: HTMLParagraphElement;
-        let visualEditor: VisualEditor;
+        let visualBuilder: VisualBuilder;
 
         beforeEach(() => {
             markdownField = document.createElement("p");
@@ -1099,11 +1099,11 @@ describe("When an element is clicked in visual editor mode", () => {
 
             document.body.appendChild(markdownField);
 
-            visualEditor = new VisualEditor();
+            visualBuilder = new VisualBuilder();
         });
 
         afterEach(() => {
-            visualEditor.destroy();
+            visualBuilder.destroy();
         });
 
         test("should have outline", () => {
@@ -1126,7 +1126,7 @@ describe("When an element is clicked in visual editor mode", () => {
         });
 
         test("should contain a data-cslp-field-type attribute", async () => {
-            VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM =
+            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
                 markdownField;
 
             await waitFor(() => {
@@ -1134,12 +1134,12 @@ describe("When an element is clicked in visual editor mode", () => {
             });
 
             expect(markdownField).toHaveAttribute(
-                LIVE_EDITOR_FIELD_TYPE_ATTRIBUTE_KEY
+                VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
             );
         });
 
         test("should not contain a contenteditable attribute", async () => {
-            VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM =
+            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
                 markdownField;
 
             await waitFor(() => {
@@ -1150,7 +1150,7 @@ describe("When an element is clicked in visual editor mode", () => {
         });
 
         test("should send a focus field message to parent", async () => {
-            VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM =
+            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
                 markdownField;
 
             await waitFor(() => {
@@ -1166,7 +1166,7 @@ describe("When an element is clicked in visual editor mode", () => {
         });
 
         test("should send a open quick form message to parent", async () => {
-            VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM =
+            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
                 markdownField;
 
             await waitFor(() => {
@@ -1201,7 +1201,7 @@ describe("When an element is clicked in visual editor mode", () => {
         let container: HTMLDivElement;
         let firstMarkdownField: HTMLParagraphElement;
         let secondMarkdownField: HTMLParagraphElement;
-        let visualEditor: VisualEditor;
+        let visualBuilder: VisualBuilder;
 
         beforeEach(() => {
             container = document.createElement("div");
@@ -1226,11 +1226,11 @@ describe("When an element is clicked in visual editor mode", () => {
             container.appendChild(secondMarkdownField);
             document.body.appendChild(container);
 
-            visualEditor = new VisualEditor();
+            visualBuilder = new VisualBuilder();
         });
 
         afterEach(() => {
-            visualEditor.destroy();
+            visualBuilder.destroy();
         });
 
         test("should have outline", () => {
@@ -1308,7 +1308,7 @@ describe("When an element is clicked in visual editor mode", () => {
         });
 
         test("should contain a data-cslp-field-type attribute", async () => {
-            VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM =
+            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
                 container;
 
             await waitFor(() => {
@@ -1316,12 +1316,12 @@ describe("When an element is clicked in visual editor mode", () => {
             });
 
             expect(container).toHaveAttribute(
-                LIVE_EDITOR_FIELD_TYPE_ATTRIBUTE_KEY
+                VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
             );
         });
 
         test("both container and its children should not contain a contenteditable attribute", async () => {
-            VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM =
+            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
                 container;
 
             await waitFor(() => {
@@ -1348,7 +1348,7 @@ describe("When an element is clicked in visual editor mode", () => {
         });
 
         test("should send a focus field message to parent", async () => {
-            VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM =
+            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
                 container;
 
             await waitFor(() => {
@@ -1366,7 +1366,7 @@ describe("When an element is clicked in visual editor mode", () => {
 
     describe("select field", () => {
         let selectField: HTMLParagraphElement;
-        let visualEditor: VisualEditor;
+        let visualBuilder: VisualBuilder;
 
         beforeEach(() => {
             selectField = document.createElement("p");
@@ -1376,11 +1376,11 @@ describe("When an element is clicked in visual editor mode", () => {
             );
             document.body.appendChild(selectField);
 
-            visualEditor = new VisualEditor();
+            visualBuilder = new VisualBuilder();
         });
 
         afterEach(() => {
-            visualEditor.destroy();
+            visualBuilder.destroy();
         });
 
         test("should have outline", () => {
@@ -1403,7 +1403,7 @@ describe("When an element is clicked in visual editor mode", () => {
         });
 
         test("should contain a data-cslp-field-type attribute", async () => {
-            VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM =
+            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
                 selectField;
 
             await waitFor(() => {
@@ -1411,12 +1411,12 @@ describe("When an element is clicked in visual editor mode", () => {
             });
 
             expect(selectField).toHaveAttribute(
-                LIVE_EDITOR_FIELD_TYPE_ATTRIBUTE_KEY
+                VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
             );
         });
 
         test("should contain a contenteditable attribute", async () => {
-            VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM =
+            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
                 selectField;
 
             await waitFor(() => {
@@ -1427,7 +1427,7 @@ describe("When an element is clicked in visual editor mode", () => {
         });
 
         test("should send a focus field message to parent", async () => {
-            VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM =
+            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
                 selectField;
 
             await waitFor(() => {
@@ -1447,7 +1447,7 @@ describe("When an element is clicked in visual editor mode", () => {
         let container: HTMLDivElement;
         let firstSelectField: HTMLParagraphElement;
         let secondSelectField: HTMLParagraphElement;
-        let visualEditor: VisualEditor;
+        let visualBuilder: VisualBuilder;
 
         beforeEach(() => {
             container = document.createElement("div");
@@ -1472,11 +1472,11 @@ describe("When an element is clicked in visual editor mode", () => {
             container.appendChild(secondSelectField);
             document.body.appendChild(container);
 
-            visualEditor = new VisualEditor();
+            visualBuilder = new VisualBuilder();
         });
 
         afterEach(() => {
-            visualEditor.destroy();
+            visualBuilder.destroy();
         });
 
         test("should have outline", () => {
@@ -1554,7 +1554,7 @@ describe("When an element is clicked in visual editor mode", () => {
         });
 
         test("should contain a data-cslp-field-type attribute", async () => {
-            VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM =
+            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
                 container;
 
             await waitFor(() => {
@@ -1562,12 +1562,12 @@ describe("When an element is clicked in visual editor mode", () => {
             });
 
             expect(container).toHaveAttribute(
-                LIVE_EDITOR_FIELD_TYPE_ATTRIBUTE_KEY
+                VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
             );
         });
 
         test("both container and its children should not contain a contenteditable attribute", async () => {
-            VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM =
+            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
                 container;
 
             await waitFor(() => {
@@ -1594,7 +1594,7 @@ describe("When an element is clicked in visual editor mode", () => {
         });
 
         test("should send a focus field message to parent", async () => {
-            VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM =
+            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
                 container;
 
             await waitFor(() => {
@@ -1612,7 +1612,7 @@ describe("When an element is clicked in visual editor mode", () => {
 
     describe("number field", () => {
         let numberField: HTMLParagraphElement;
-        let visualEditor: VisualEditor;
+        let visualBuilder: VisualBuilder;
 
         beforeEach(() => {
             numberField = document.createElement("p");
@@ -1623,11 +1623,11 @@ describe("When an element is clicked in visual editor mode", () => {
 
             document.body.appendChild(numberField);
 
-            visualEditor = new VisualEditor();
+            visualBuilder = new VisualBuilder();
         });
 
         afterEach(() => {
-            visualEditor.destroy();
+            visualBuilder.destroy();
         });
 
         test("should have outline", () => {
@@ -1650,7 +1650,7 @@ describe("When an element is clicked in visual editor mode", () => {
         });
 
         test("should contain a data-cslp-field-type attribute", async () => {
-            VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM =
+            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
                 numberField;
 
             await waitFor(() => {
@@ -1658,12 +1658,12 @@ describe("When an element is clicked in visual editor mode", () => {
             });
 
             expect(numberField).toHaveAttribute(
-                LIVE_EDITOR_FIELD_TYPE_ATTRIBUTE_KEY
+                VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
             );
         });
 
         test("should send a focus field message to parent", async () => {
-            VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM =
+            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
                 numberField;
 
             await waitFor(() => {
@@ -1683,7 +1683,7 @@ describe("When an element is clicked in visual editor mode", () => {
         let container: HTMLDivElement;
         let firstNumberField: HTMLParagraphElement;
         let secondNumberField: HTMLParagraphElement;
-        let visualEditor: VisualEditor;
+        let visualBuilder: VisualBuilder;
 
         beforeEach(() => {
             container = document.createElement("div");
@@ -1708,11 +1708,11 @@ describe("When an element is clicked in visual editor mode", () => {
             container.appendChild(secondNumberField);
             document.body.appendChild(container);
 
-            visualEditor = new VisualEditor();
+            visualBuilder = new VisualBuilder();
         });
 
         afterEach(() => {
-            visualEditor.destroy();
+            visualBuilder.destroy();
         });
 
         test("should have outline", () => {
@@ -1790,7 +1790,7 @@ describe("When an element is clicked in visual editor mode", () => {
         });
 
         test("should contain a data-cslp-field-type attribute", async () => {
-            VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM =
+            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
                 container;
 
             await waitFor(() => {
@@ -1798,12 +1798,12 @@ describe("When an element is clicked in visual editor mode", () => {
             });
 
             expect(container).toHaveAttribute(
-                LIVE_EDITOR_FIELD_TYPE_ATTRIBUTE_KEY
+                VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
             );
         });
 
         test("container should not contain a contenteditable attribute but the children can", async () => {
-            VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM =
+            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
                 container;
 
             await waitFor(() => {
@@ -1826,7 +1826,7 @@ describe("When an element is clicked in visual editor mode", () => {
         });
 
         test("should send a focus field message to parent", async () => {
-            VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM =
+            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
                 container;
 
             await waitFor(() => {
@@ -1844,7 +1844,7 @@ describe("When an element is clicked in visual editor mode", () => {
 
     describe("boolean field", () => {
         let booleanField: HTMLParagraphElement;
-        let visualEditor: VisualEditor;
+        let visualBuilder: VisualBuilder;
 
         beforeEach(() => {
             booleanField = document.createElement("p");
@@ -1854,11 +1854,11 @@ describe("When an element is clicked in visual editor mode", () => {
             );
             document.body.appendChild(booleanField);
 
-            visualEditor = new VisualEditor();
+            visualBuilder = new VisualBuilder();
         });
 
         afterEach(() => {
-            visualEditor.destroy();
+            visualBuilder.destroy();
         });
 
         test("should have outline", () => {
@@ -1881,7 +1881,7 @@ describe("When an element is clicked in visual editor mode", () => {
         });
 
         test("should contain a data-cslp-field-type attribute", async () => {
-            VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM =
+            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
                 booleanField;
 
             await waitFor(() => {
@@ -1889,12 +1889,12 @@ describe("When an element is clicked in visual editor mode", () => {
             });
 
             expect(booleanField).toHaveAttribute(
-                LIVE_EDITOR_FIELD_TYPE_ATTRIBUTE_KEY
+                VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
             );
         });
 
         test("should contain a contenteditable attribute", async () => {
-            VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM =
+            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
                 booleanField;
 
             await waitFor(() => {
@@ -1905,7 +1905,7 @@ describe("When an element is clicked in visual editor mode", () => {
         });
 
         test("should send a focus field message to parent", async () => {
-            VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM =
+            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
                 booleanField;
 
             await waitFor(() => {
@@ -1924,7 +1924,7 @@ describe("When an element is clicked in visual editor mode", () => {
     describe("file field", () => {
         let fileField: HTMLParagraphElement;
         let imageField: HTMLImageElement;
-        let visualEditor: VisualEditor;
+        let visualBuilder: VisualBuilder;
 
         beforeEach(() => {
             fileField = document.createElement("p");
@@ -1941,11 +1941,11 @@ describe("When an element is clicked in visual editor mode", () => {
 
             document.body.appendChild(fileField);
             document.body.appendChild(imageField);
-            visualEditor = new VisualEditor();
+            visualBuilder = new VisualBuilder();
         });
 
         afterEach(() => {
-            visualEditor.destroy();
+            visualBuilder.destroy();
         });
 
         test("should have outline", () => {
@@ -2004,7 +2004,7 @@ describe("When an element is clicked in visual editor mode", () => {
         });
 
         test("should contain a data-cslp-field-type attribute", async () => {
-            VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM =
+            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
                 fileField;
 
             await waitFor(() => {
@@ -2012,12 +2012,12 @@ describe("When an element is clicked in visual editor mode", () => {
             });
 
             expect(fileField).toHaveAttribute(
-                LIVE_EDITOR_FIELD_TYPE_ATTRIBUTE_KEY
+                VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
             );
         });
 
         test("should not contain a contenteditable attribute", async () => {
-            VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM =
+            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
                 fileField;
 
             await waitFor(() => {
@@ -2028,7 +2028,7 @@ describe("When an element is clicked in visual editor mode", () => {
         });
 
         test("should send a focus field message to parent", async () => {
-            VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM =
+            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
                 fileField;
 
             await waitFor(() => {
@@ -2050,7 +2050,7 @@ describe("When an element is clicked in visual editor mode", () => {
         let secondFileField: HTMLParagraphElement;
         let firstImageField: HTMLImageElement;
         let secondImageField: HTMLImageElement;
-        let visualEditor: VisualEditor;
+        let visualBuilder: VisualBuilder;
 
         beforeEach(() => {
             container = document.createElement("div");
@@ -2089,11 +2089,11 @@ describe("When an element is clicked in visual editor mode", () => {
             container.appendChild(secondImageField);
             document.body.appendChild(container);
 
-            visualEditor = new VisualEditor();
+            visualBuilder = new VisualBuilder();
         });
 
         afterEach(() => {
-            visualEditor.destroy();
+            visualBuilder.destroy();
         });
 
         test("should have outline", () => {
@@ -2200,7 +2200,7 @@ describe("When an element is clicked in visual editor mode", () => {
         });
 
         test("should contain a data-cslp-field-type attribute", async () => {
-            VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM =
+            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
                 container;
 
             await waitFor(() => {
@@ -2208,12 +2208,12 @@ describe("When an element is clicked in visual editor mode", () => {
             });
 
             expect(container).toHaveAttribute(
-                LIVE_EDITOR_FIELD_TYPE_ATTRIBUTE_KEY
+                VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
             );
         });
 
         test("both container and its children should not contain a contenteditable attribute", async () => {
-            VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM =
+            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
                 container;
 
             await waitFor(() => {
@@ -2240,7 +2240,7 @@ describe("When an element is clicked in visual editor mode", () => {
         });
 
         test("should send a focus field message to parent", async () => {
-            VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM =
+            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
                 container;
 
             await waitFor(() => {
@@ -2258,7 +2258,7 @@ describe("When an element is clicked in visual editor mode", () => {
 
     describe("date field", () => {
         let dateField: HTMLParagraphElement;
-        let visualEditor: VisualEditor;
+        let visualBuilder: VisualBuilder;
 
         beforeEach(() => {
             dateField = document.createElement("p");
@@ -2268,11 +2268,11 @@ describe("When an element is clicked in visual editor mode", () => {
             );
             document.body.appendChild(dateField);
 
-            visualEditor = new VisualEditor();
+            visualBuilder = new VisualBuilder();
         });
 
         afterEach(() => {
-            visualEditor.destroy();
+            visualBuilder.destroy();
         });
 
         test("should have outline", () => {
@@ -2295,7 +2295,7 @@ describe("When an element is clicked in visual editor mode", () => {
         });
 
         test("should contain a data-cslp-field-type attribute", async () => {
-            VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM =
+            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
                 dateField;
 
             await waitFor(() => {
@@ -2303,12 +2303,12 @@ describe("When an element is clicked in visual editor mode", () => {
             });
 
             expect(dateField).toHaveAttribute(
-                LIVE_EDITOR_FIELD_TYPE_ATTRIBUTE_KEY
+                VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
             );
         });
 
         test("should contain a contenteditable attribute", async () => {
-            VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM =
+            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
                 dateField;
 
             await waitFor(() => {
@@ -2319,7 +2319,7 @@ describe("When an element is clicked in visual editor mode", () => {
         });
 
         test("should send a focus field message to parent", async () => {
-            VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM =
+            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
                 dateField;
 
             await waitFor(() => {
@@ -2337,7 +2337,7 @@ describe("When an element is clicked in visual editor mode", () => {
 
     describe("link field", () => {
         let linkField: HTMLAnchorElement;
-        let visualEditor: VisualEditor;
+        let visualBuilder: VisualBuilder;
 
         beforeEach(() => {
             linkField = document.createElement("a");
@@ -2347,11 +2347,11 @@ describe("When an element is clicked in visual editor mode", () => {
             );
 
             document.body.appendChild(linkField);
-            visualEditor = new VisualEditor();
+            visualBuilder = new VisualBuilder();
         });
 
         afterEach(() => {
-            visualEditor.destroy();
+            visualBuilder.destroy();
         });
 
         test("should have outline", () => {
@@ -2399,7 +2399,7 @@ describe("When an element is clicked in visual editor mode", () => {
         });
 
         test("should contain a data-cslp-field-type attribute", async () => {
-            VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM =
+            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
                 linkField;
 
             await waitFor(() => {
@@ -2407,12 +2407,12 @@ describe("When an element is clicked in visual editor mode", () => {
             });
 
             expect(linkField).toHaveAttribute(
-                LIVE_EDITOR_FIELD_TYPE_ATTRIBUTE_KEY
+                VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
             );
         });
 
         test("should not contain a contenteditable attribute", async () => {
-            VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM =
+            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
                 linkField;
 
             await waitFor(() => {
@@ -2423,7 +2423,7 @@ describe("When an element is clicked in visual editor mode", () => {
         });
 
         test("should send a focus field message to parent", async () => {
-            VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM =
+            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
                 linkField;
 
             await waitFor(() => {
@@ -2439,7 +2439,7 @@ describe("When an element is clicked in visual editor mode", () => {
         });
 
         test("should send a open quick form message to parent", async () => {
-            VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM =
+            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
                 linkField;
 
             await waitFor(() => {
@@ -2475,7 +2475,7 @@ describe("When an element is clicked in visual editor mode", () => {
         let container: HTMLDivElement;
         let firstLinkField: HTMLAnchorElement;
         let secondLinkField: HTMLAnchorElement;
-        let visualEditor: VisualEditor;
+        let visualBuilder: VisualBuilder;
 
         beforeEach(() => {
             container = document.createElement("div");
@@ -2500,11 +2500,11 @@ describe("When an element is clicked in visual editor mode", () => {
             container.appendChild(secondLinkField);
             document.body.appendChild(container);
 
-            visualEditor = new VisualEditor();
+            visualBuilder = new VisualBuilder();
         });
 
         afterEach(() => {
-            visualEditor.destroy();
+            visualBuilder.destroy();
         });
 
         test("should have outline", () => {
@@ -2582,7 +2582,7 @@ describe("When an element is clicked in visual editor mode", () => {
         });
 
         test("should contain a data-cslp-field-type attribute", async () => {
-            VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM =
+            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
                 container;
 
             await waitFor(() => {
@@ -2590,12 +2590,12 @@ describe("When an element is clicked in visual editor mode", () => {
             });
 
             expect(container).toHaveAttribute(
-                LIVE_EDITOR_FIELD_TYPE_ATTRIBUTE_KEY
+                VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
             );
         });
 
         test("both container and its children should not contain a contenteditable attribute", async () => {
-            VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM =
+            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
                 container;
 
             await waitFor(() => {
@@ -2622,7 +2622,7 @@ describe("When an element is clicked in visual editor mode", () => {
         });
 
         test("should send a focus field message to parent", async () => {
-            VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM =
+            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
                 container;
 
             await waitFor(() => {
@@ -2640,7 +2640,7 @@ describe("When an element is clicked in visual editor mode", () => {
 
     describe("reference field", () => {
         let referenceField: HTMLParagraphElement;
-        let visualEditor: VisualEditor;
+        let visualBuilder: VisualBuilder;
 
         beforeEach(() => {
             referenceField = document.createElement("p");
@@ -2650,11 +2650,11 @@ describe("When an element is clicked in visual editor mode", () => {
             );
             document.body.appendChild(referenceField);
 
-            visualEditor = new VisualEditor();
+            visualBuilder = new VisualBuilder();
         });
 
         afterEach(() => {
-            visualEditor.destroy();
+            visualBuilder.destroy();
         });
 
         test("should have outline", () => {
@@ -2677,7 +2677,7 @@ describe("When an element is clicked in visual editor mode", () => {
         });
 
         test("should contain a data-cslp-field-type attribute", async () => {
-            VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM =
+            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
                 referenceField;
 
             await waitFor(() => {
@@ -2685,12 +2685,12 @@ describe("When an element is clicked in visual editor mode", () => {
             });
 
             expect(referenceField).toHaveAttribute(
-                LIVE_EDITOR_FIELD_TYPE_ATTRIBUTE_KEY
+                VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
             );
         });
 
         test("should contain a contenteditable attribute", async () => {
-            VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM =
+            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
                 referenceField;
 
             await waitFor(() => {
@@ -2701,7 +2701,7 @@ describe("When an element is clicked in visual editor mode", () => {
         });
 
         test("should send a focus field message to parent", async () => {
-            VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM =
+            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
                 referenceField;
 
             await waitFor(() => {
@@ -2722,7 +2722,7 @@ describe("When an element is clicked in visual editor mode", () => {
         let container: HTMLDivElement;
         let firstReferenceField: HTMLDivElement;
         let secondReferenceField: HTMLDivElement;
-        let visualEditor: VisualEditor;
+        let visualBuilder: VisualBuilder;
 
         beforeEach(() => {
             container = document.createElement("div");
@@ -2747,11 +2747,11 @@ describe("When an element is clicked in visual editor mode", () => {
             container.appendChild(secondReferenceField);
             document.body.appendChild(container);
 
-            visualEditor = new VisualEditor();
+            visualBuilder = new VisualBuilder();
         });
 
         afterEach(() => {
-            visualEditor.destroy();
+            visualBuilder.destroy();
         });
 
         test("should have outline", () => {
@@ -2829,7 +2829,7 @@ describe("When an element is clicked in visual editor mode", () => {
         });
 
         test("should contain a data-cslp-field-type attribute", async () => {
-            VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM =
+            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
                 container;
 
             await waitFor(() => {
@@ -2837,12 +2837,12 @@ describe("When an element is clicked in visual editor mode", () => {
             });
 
             expect(container).toHaveAttribute(
-                LIVE_EDITOR_FIELD_TYPE_ATTRIBUTE_KEY
+                VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
             );
         });
 
         test("both container and its children should not contain a contenteditable attribute", async () => {
-            VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM =
+            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
                 container;
 
             await waitFor(() => {
@@ -2869,7 +2869,7 @@ describe("When an element is clicked in visual editor mode", () => {
         });
 
         test("should send a focus field message to parent", async () => {
-            VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM =
+            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
                 container;
 
             await waitFor(() => {
@@ -2888,7 +2888,7 @@ describe("When an element is clicked in visual editor mode", () => {
     // BUG ?: test failing : should send a open quick form message to parent
     describe("group field", () => {
         let groupField: HTMLParagraphElement;
-        let visualEditor: VisualEditor;
+        let visualBuilder: VisualBuilder;
 
         beforeEach(() => {
             groupField = document.createElement("p");
@@ -2898,12 +2898,12 @@ describe("When an element is clicked in visual editor mode", () => {
             );
             document.body.appendChild(groupField);
 
-            visualEditor = new VisualEditor();
+            visualBuilder = new VisualBuilder();
         });
 
         afterEach(() => {
             vi.clearAllMocks();
-            visualEditor.destroy();
+            visualBuilder.destroy();
         });
 
         test("should have outline", () => {
@@ -2926,7 +2926,7 @@ describe("When an element is clicked in visual editor mode", () => {
         });
 
         test("should contain a data-cslp-field-type attribute", async () => {
-            VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM =
+            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
                 groupField;
 
             await waitFor(() => {
@@ -2934,12 +2934,12 @@ describe("When an element is clicked in visual editor mode", () => {
             });
 
             expect(groupField).toHaveAttribute(
-                LIVE_EDITOR_FIELD_TYPE_ATTRIBUTE_KEY
+                VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
             );
         });
 
         test("should contain a contenteditable attribute", async () => {
-            VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM =
+            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
                 groupField;
 
             await waitFor(() => {
@@ -2950,7 +2950,7 @@ describe("When an element is clicked in visual editor mode", () => {
         });
 
         test("should send a focus field message to parent", async () => {
-            VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM =
+            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
                 groupField;
 
             await waitFor(() => {
@@ -2966,7 +2966,7 @@ describe("When an element is clicked in visual editor mode", () => {
         });
 
         test("should send a open quick form message to parent", async () => {
-            VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM =
+            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
                 groupField;
 
             await waitFor(() => {
@@ -3007,7 +3007,7 @@ describe("When an element is clicked in visual editor mode", () => {
         let firstGroupField: HTMLDivElement;
         let firstNestedMultiLine: HTMLParagraphElement;
         let secondGroupField: HTMLDivElement;
-        let visualEditor: VisualEditor;
+        let visualBuilder: VisualBuilder;
 
         beforeEach(() => {
             container = document.createElement("div");
@@ -3041,11 +3041,11 @@ describe("When an element is clicked in visual editor mode", () => {
 
             document.body.appendChild(container);
 
-            visualEditor = new VisualEditor();
+            visualBuilder = new VisualBuilder();
         });
 
         afterEach(() => {
-            visualEditor.destroy();
+            visualBuilder.destroy();
         });
 
         test("should have outline", () => {
@@ -3123,7 +3123,7 @@ describe("When an element is clicked in visual editor mode", () => {
         });
 
         test("should contain a data-cslp-field-type attribute", async () => {
-            VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM =
+            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
                 container;
 
             await waitFor(() => {
@@ -3131,12 +3131,12 @@ describe("When an element is clicked in visual editor mode", () => {
             });
 
             expect(container).toHaveAttribute(
-                LIVE_EDITOR_FIELD_TYPE_ATTRIBUTE_KEY
+                VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
             );
         });
 
         test("should not contain a contenteditable attribute", async () => {
-            VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM =
+            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
                 container;
 
             await waitFor(() => {
@@ -3147,7 +3147,7 @@ describe("When an element is clicked in visual editor mode", () => {
         });
 
         test("should send a focus field message to parent", async () => {
-            VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM =
+            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
                 container;
 
             await waitFor(() => {

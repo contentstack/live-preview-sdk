@@ -2,11 +2,11 @@ import { fireEvent, prettyDOM, screen } from "@testing-library/preact";
 // TODO: @faraazb check if we still need this library. If not let's remove and uninstall it.
 import { userEvent } from "@testing-library/user-event";
 import { act } from "preact/test-utils";
-import { VisualEditor } from "../../..";
+import { VisualBuilder } from "../../..";
 import { getAllContentTypes } from "../../../../__test__/data/contentType";
 import Config from "../../../../configManager/configManager";
 import { ILivePreviewModeConfig } from "../../../../types/types";
-import { LIVE_EDITOR_FIELD_TYPE_ATTRIBUTE_KEY } from "../../../utils/constants";
+import { VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY } from "../../../utils/constants";
 import { getDOMEditStack } from "../../../utils/getCsDataOfElement";
 import visualBuilderPostMessage from "../../../utils/visualBuilderPostMessage";
 import { VisualBuilderPostMessageEvents } from "../../../utils/types/postMessage.types";
@@ -71,7 +71,7 @@ vi.mock("../../../utils/visualBuilderPostMessage", () => {
 
 describe("number field", () => {
     let numberField: HTMLParagraphElement;
-    let visualEditor: VisualEditor;
+    let visualBuilder: VisualBuilder;
 
     beforeEach(() => {
         numberField = document.createElement("p");
@@ -94,13 +94,13 @@ describe("number field", () => {
 
         document.body.appendChild(numberField);
 
-        Config.set("mode", ILivePreviewModeConfig.EDITOR);
-        visualEditor = new VisualEditor();
+        Config.set("mode", ILivePreviewModeConfig.BUILDER);
+        visualBuilder = new VisualBuilder();
     });
 
     afterEach(() => {
         numberField.remove();
-        visualEditor.destroy();
+        visualBuilder.destroy();
     });
 
     test("should have hover outline (dashed) on hover", async () => {
@@ -152,18 +152,18 @@ describe("number field", () => {
     });
 
     test("should contain a data-cslp-field-type attribute", async () => {
-        VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM =
+        VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
             numberField;
 
         await userEvent.click(numberField);
 
         expect(numberField).toHaveAttribute(
-            LIVE_EDITOR_FIELD_TYPE_ATTRIBUTE_KEY
+            VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
         );
     });
 
     test("should send a focus field message to parent", async () => {
-        VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM =
+        VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
             numberField;
 
         await userEvent.click(numberField);
@@ -177,7 +177,7 @@ describe("number field", () => {
     });
 
     test("should only accept characters like a number input", async () => {
-        VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM =
+        VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
             numberField;
 
         await userEvent.click(numberField);

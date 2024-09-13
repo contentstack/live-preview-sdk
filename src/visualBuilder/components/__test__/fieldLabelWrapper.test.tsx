@@ -1,7 +1,7 @@
 import { render, cleanup, waitFor } from "@testing-library/preact";
 import FieldLabelWrapperComponent from "../fieldLabelWrapper";
 import { CslpData } from "../../../cslp/types/cslp.types";
-import { VisualEditorCslpEventDetails } from "../../types/visualBuilder.types";
+import { VisualBuilderCslpEventDetails } from "../../types/visualBuilder.types";
 
 vi.mock("../../utils/fieldSchemaMap", () => {
     let ind = 0;
@@ -57,7 +57,7 @@ describe("FieldLabelWrapperComponent", () => {
         },
     };
 
-    const mockEventDetails: VisualEditorCslpEventDetails = {
+    const mockEventDetails: VisualBuilderCslpEventDetails = {
         editableElement: document.createElement("div"),
         cslpData: "",
         fieldMetadata: mockFieldMetadata,

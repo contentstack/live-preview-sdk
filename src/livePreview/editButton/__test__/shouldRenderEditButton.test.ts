@@ -94,7 +94,7 @@ describe("shouldRenderEditButton", () => {
         expect(shouldRenderEditButton()).toBe(false);
     });
 
-    test("should not render if inside live editor ", () => {
+    test("should not render if inside visual builder ", () => {
         Config.replace({
             enable: true,
             editButton: {
@@ -102,7 +102,7 @@ describe("shouldRenderEditButton", () => {
             },
         });
 
-        Config.set("windowType", "editor");
+        Config.set("windowType", "builder");
         expect(shouldRenderEditButton()).toBe(false);
     });
 

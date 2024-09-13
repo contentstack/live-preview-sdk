@@ -5,13 +5,13 @@ import {
 
 describe("generateReplaceAssetButton", () => {
     let targetElement: HTMLImageElement;
-    let visualEditorContainer: HTMLDivElement;
+    let visualBuilderContainer: HTMLDivElement;
     const onClickCallback = vi.fn();
 
     beforeEach(() => {
-        visualEditorContainer = document.createElement("div");
-        visualEditorContainer.classList.add("visual-builder__container");
-        document.body.appendChild(visualEditorContainer);
+        visualBuilderContainer = document.createElement("div");
+        visualBuilderContainer.classList.add("visual-builder__container");
+        document.body.appendChild(visualBuilderContainer);
 
         targetElement = document.createElement("img");
         targetElement.src = "https://example.com/image.png";
@@ -27,7 +27,7 @@ describe("generateReplaceAssetButton", () => {
             left: 50,
         })) as any;
 
-        visualEditorContainer.appendChild(targetElement);
+        visualBuilderContainer.appendChild(targetElement);
     });
 
     afterEach(() => {
@@ -75,37 +75,37 @@ describe("generateReplaceAssetButton", () => {
 });
 
 describe("removeReplaceAssetButton", () => {
-    let visualEditorContainer: HTMLDivElement;
+    let visualBuilderContainer: HTMLDivElement;
 
-    test("should remove all existing replace asset buttons from the provided visual editor wrapper element", () => {
-        visualEditorContainer = document.createElement("div");
-        visualEditorContainer = document.createElement("div");
-        visualEditorContainer.classList.add("visual-builder__container");
-        document.body.appendChild(visualEditorContainer);
+    test("should remove all existing replace asset buttons from the provided visual builder wrapper element", () => {
+        visualBuilderContainer = document.createElement("div");
+        visualBuilderContainer = document.createElement("div");
+        visualBuilderContainer.classList.add("visual-builder__container");
+        document.body.appendChild(visualBuilderContainer);
 
-        generateReplaceAssetButton(visualEditorContainer, vi.fn());
-        generateReplaceAssetButton(visualEditorContainer, vi.fn());
+        generateReplaceAssetButton(visualBuilderContainer, vi.fn());
+        generateReplaceAssetButton(visualBuilderContainer, vi.fn());
 
         expect(
-            visualEditorContainer.querySelectorAll(
-                `[data-testid="visual-editor-replace-asset"]`
+            visualBuilderContainer.querySelectorAll(
+                `[data-testid="visual-builder-replace-asset"]`
             ).length
         ).toBe(2);
 
-        removeReplaceAssetButton(visualEditorContainer);
+        removeReplaceAssetButton(visualBuilderContainer);
 
         expect(
-            visualEditorContainer.querySelectorAll(
-                `[data-testid="visual-editor-replace-asset"]`
+            visualBuilderContainer.querySelectorAll(
+                `[data-testid="visual-builder-replace-asset"]`
             ).length
         ).toBe(0);
     });
 
-    test("should do nothing if the provided visual editor wrapper element is null", () => {
-        const visualEditorContainer = null;
+    test("should do nothing if the provided visual builder wrapper element is null", () => {
+        const visualBuilderContainer = null;
 
         expect(() =>
-            removeReplaceAssetButton(visualEditorContainer)
+            removeReplaceAssetButton(visualBuilderContainer)
         ).not.toThrow();
     });
 });

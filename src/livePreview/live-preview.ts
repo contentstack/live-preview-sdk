@@ -49,12 +49,12 @@ export default class LivePreview {
 
             // TODO: capetown: add test cases for this condition.
             // TODO: mjrf: Check if we need the second condition here.
-            // We are already handling the functions separately in the live editor.
+            // We are already handling the functions separately in the visual builder.
             // render the hover outline only when edit button enable
 
             if (
                 config.editButton.enable ||
-                config.mode >= ILivePreviewModeConfig.EDITOR
+                config.mode >= ILivePreviewModeConfig.BUILDER
             ) {
                 LivePreviewEditButton.livePreviewEditButton =
                     new LivePreviewEditButton();

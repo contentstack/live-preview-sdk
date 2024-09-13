@@ -2,7 +2,7 @@ import crypto from "crypto";
 import { getFieldSchemaMap } from "../../__test__/data/fieldSchemaMap";
 import { sleep } from "../../__test__/utils";
 import Config from "../../configManager/configManager";
-import { VisualEditor } from "../index";
+import { VisualBuilder } from "../index";
 import { FieldSchemaMap } from "../utils/fieldSchemaMap";
 
 vi.mock("../utils/visualBuilderPostMessage", async () => {
@@ -38,7 +38,7 @@ global.ResizeObserver = vi.fn().mockImplementation(() => ({
     disconnect: vi.fn(),
 }));
 
-describe("Visual editor", () => {
+describe("Visual builder", () => {
     beforeAll(() => {
         FieldSchemaMap.setFieldSchema(
             "all_fields",
@@ -55,20 +55,20 @@ describe("Visual editor", () => {
         FieldSchemaMap.clear();
     });
 
-    test("should append a visual editor container to the DOM", () => {
-        let visualEditorDOM = document.querySelector(
+    test("should append a visual builder container to the DOM", () => {
+        let visualBuilderDOM = document.querySelector(
             ".visual-builder__container"
         );
 
-        expect(visualEditorDOM).toBeNull();
+        expect(visualBuilderDOM).toBeNull();
 
-        new VisualEditor();
+        new VisualBuilder();
 
-        visualEditorDOM = document.querySelector(
+        visualBuilderDOM = document.querySelector(
             `[data-testid="visual-builder__container"]`
         );
 
-        expect(visualEditorDOM).toMatchSnapshot();
+        expect(visualBuilderDOM).toMatchSnapshot();
     });
 
     describe("inline editing", () => {
@@ -85,7 +85,7 @@ describe("Visual editor", () => {
         });
 
         test("should add overlay to DOM when clicked", async () => {
-            new VisualEditor();
+            new VisualBuilder();
 
             await sleep(0);
             h1Tag.click();
@@ -104,7 +104,7 @@ describe("Visual editor", () => {
             const h1 = document.createElement("h1");
 
             document.body.appendChild(h1);
-            new VisualEditor();
+            new VisualBuilder();
 
             h1.click();
             await sleep(0);
@@ -122,7 +122,7 @@ describe("Visual editor", () => {
                 );
 
                 document.body.appendChild(h1);
-                new VisualEditor();
+                new VisualBuilder();
 
                 await sleep(0);
                 h1.click();
@@ -139,7 +139,7 @@ describe("Visual editor", () => {
                     "all_fields.blt58a50b4cebae75c5.en-us.multi_line"
                 );
                 document.body.appendChild(h1);
-                new VisualEditor();
+                new VisualBuilder();
 
                 h1.click();
                 await sleep(0);
@@ -159,7 +159,7 @@ describe("Visual editor", () => {
                     "all_fields.blt58a50b4cebae75c5.en-us.file"
                 );
                 document.body.appendChild(h1);
-                new VisualEditor();
+                new VisualBuilder();
                 h1.click();
                 await sleep(0);
 
@@ -190,7 +190,7 @@ describe("Visual editor", () => {
     });
 });
 
-describe("visual editor DOM", () => {
+describe("visual builder DOM", () => {
     let h1: HTMLHeadElement;
 
     beforeAll(() => {
@@ -227,77 +227,77 @@ describe("visual editor DOM", () => {
     });
 
     test("should have an overlay over the element", async () => {
-        new VisualEditor();
+        new VisualBuilder();
 
-        let visualEditorOverlayWrapper = document.querySelector(
+        let visualBuilderOverlayWrapper = document.querySelector(
             `[data-testid="visual-builder__overlay__wrapper"]`
         );
 
-        expect(visualEditorOverlayWrapper).toMatchSnapshot();
+        expect(visualBuilderOverlayWrapper).toMatchSnapshot();
 
         await sleep(0);
         h1.click();
         await sleep(0);
 
-        visualEditorOverlayWrapper = document.querySelector(
+        visualBuilderOverlayWrapper = document.querySelector(
             `[data-testid="visual-builder__overlay__wrapper"]`
         );
 
-        expect(visualEditorOverlayWrapper).toMatchSnapshot();
-        expect(visualEditorOverlayWrapper?.classList.contains("visible")).toBe(
+        expect(visualBuilderOverlayWrapper).toMatchSnapshot();
+        expect(visualBuilderOverlayWrapper?.classList.contains("visible")).toBe(
             true
         );
 
-        const visualEditorWrapperTopOverlay = document.querySelector(
+        const visualBuilderWrapperTopOverlay = document.querySelector(
             `[data-testid="visual-builder__overlay--top"]`
         ) as HTMLDivElement;
-        const visualEditorWrapperLeftOverlay = document.querySelector(
+        const visualBuilderWrapperLeftOverlay = document.querySelector(
             `[data-testid="visual-builder__overlay--left"]`
         ) as HTMLDivElement;
-        const visualEditorWrapperRightOverlay = document.querySelector(
+        const visualBuilderWrapperRightOverlay = document.querySelector(
             `[data-testid="visual-builder__overlay--right"]`
         ) as HTMLDivElement;
-        const visualEditorWrapperBottomOverlay = document.querySelector(
+        const visualBuilderWrapperBottomOverlay = document.querySelector(
             `[data-testid="visual-builder__overlay--bottom"]`
         ) as HTMLDivElement;
 
-        expect(visualEditorWrapperTopOverlay.style.top).toBe("0px");
-        expect(visualEditorWrapperTopOverlay.style.left).toBe("0px");
-        expect(visualEditorWrapperTopOverlay.style.width).toBe("100%");
-        expect(visualEditorWrapperTopOverlay.style.height).toBe(
+        expect(visualBuilderWrapperTopOverlay.style.top).toBe("0px");
+        expect(visualBuilderWrapperTopOverlay.style.left).toBe("0px");
+        expect(visualBuilderWrapperTopOverlay.style.width).toBe("100%");
+        expect(visualBuilderWrapperTopOverlay.style.height).toBe(
             "calc(10px - 2px)"
         );
 
-        expect(visualEditorWrapperBottomOverlay.style.top).toBe(
+        expect(visualBuilderWrapperBottomOverlay.style.top).toBe(
             "calc(20px + 2px)"
         );
-        expect(visualEditorWrapperBottomOverlay.style.left).toBe("0px");
-        expect(visualEditorWrapperBottomOverlay.style.width).toBe("100%");
-        expect(visualEditorWrapperBottomOverlay.style.height).toBe(
+        expect(visualBuilderWrapperBottomOverlay.style.left).toBe("0px");
+        expect(visualBuilderWrapperBottomOverlay.style.width).toBe("100%");
+        expect(visualBuilderWrapperBottomOverlay.style.height).toBe(
             "calc(-20px - 2px)"
         );
 
-        expect(visualEditorWrapperLeftOverlay.style.top).toBe(
+        expect(visualBuilderWrapperLeftOverlay.style.top).toBe(
             "calc(10px - 2px)"
         );
-        expect(visualEditorWrapperLeftOverlay.style.left).toBe("0px");
-        expect(visualEditorWrapperLeftOverlay.style.width).toBe(
+        expect(visualBuilderWrapperLeftOverlay.style.left).toBe("0px");
+        expect(visualBuilderWrapperLeftOverlay.style.width).toBe(
             "calc(10px - 2px)"
         );
 
-        expect(visualEditorWrapperRightOverlay.style.top).toBe(
+        expect(visualBuilderWrapperRightOverlay.style.top).toBe(
             "calc(10px - 2px)"
         );
-        expect(visualEditorWrapperRightOverlay.style.left).toBe(
+        expect(visualBuilderWrapperRightOverlay.style.left).toBe(
             "calc(20px + 2px)"
         );
-        expect(visualEditorWrapperRightOverlay.style.width).toBe(
+        expect(visualBuilderWrapperRightOverlay.style.width).toBe(
             "calc(1004px - 2px)"
         );
     });
 
     test("should remove the DOM when method is triggered", async () => {
-        const visualEditor = new VisualEditor();
+        const visualBuilder = new VisualBuilder();
 
         await sleep(0);
         h1.click();
@@ -305,23 +305,23 @@ describe("visual editor DOM", () => {
         // the overlay is being rendered.
         await sleep(0);
 
-        let visualEditorContainer = document.querySelector(
+        let visualBuilderContainer = document.querySelector(
             `[data-testid="visual-builder__container"]`
         );
 
-        expect(visualEditorContainer).toBeDefined();
+        expect(visualBuilderContainer).toBeDefined();
 
-        visualEditor.destroy();
+        visualBuilder.destroy();
 
-        visualEditorContainer = document.querySelector(
+        visualBuilderContainer = document.querySelector(
             `[data-testid="visual-builder__container"]`
         );
 
-        expect(visualEditorContainer).toBeNull();
+        expect(visualBuilderContainer).toBeNull();
     });
 
     test("should hide the DOM, when it is clicked", async () => {
-        new VisualEditor();
+        new VisualBuilder();
 
         await sleep(0);
         h1.click();
@@ -329,23 +329,23 @@ describe("visual editor DOM", () => {
         // the overlay is being rendered.
         await sleep(0);
 
-        let visualEditorOverlayWrapper = document.querySelector(
+        let visualBuilderOverlayWrapper = document.querySelector(
             `[data-testid="visual-builder__overlay__wrapper"]`
         );
-        expect(visualEditorOverlayWrapper?.classList.contains("visible")).toBe(
+        expect(visualBuilderOverlayWrapper?.classList.contains("visible")).toBe(
             true
         );
         expect(h1.getAttribute("contenteditable")).toBe("true");
 
-        const visualEditorOverlayTop = document.querySelector(`
+        const visualBuilderOverlayTop = document.querySelector(`
         [data-testid="visual-builder__overlay--top"]`) as HTMLDivElement;
 
-        visualEditorOverlayTop?.click();
+        visualBuilderOverlayTop?.click();
 
-        visualEditorOverlayWrapper = document.querySelector(
+        visualBuilderOverlayWrapper = document.querySelector(
             `[data-testid="visual-builder__overlay__wrapper"]`
         );
-        expect(visualEditorOverlayWrapper?.classList.contains("visible")).toBe(
+        expect(visualBuilderOverlayWrapper?.classList.contains("visible")).toBe(
             false
         );
         expect(h1.getAttribute("contenteditable")).toBeNull();

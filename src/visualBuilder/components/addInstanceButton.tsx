@@ -20,7 +20,7 @@ function AddInstanceButtonComponent(
                     "visual-builder__add-button--with-label": props.label,
                 }
             )}
-            data-testid="visual-editor-add-instance-button"
+            data-testid="visual-builder-add-instance-button"
             onClick={(e) => {
                 const event = e as unknown as MouseEvent;
                 props.onClickCallback(event);

@@ -1,6 +1,6 @@
 import { fireEvent, waitFor } from "@testing-library/preact";
 import Config from "../../configManager/configManager";
-import { VisualEditor } from "../index";
+import { VisualBuilder } from "../index";
 import { FieldSchemaMap } from "../utils/fieldSchemaMap";
 import { getFieldSchemaMap } from "../../__test__/data/fieldSchemaMap";
 import visualBuilderPostMessage from "../utils/visualBuilderPostMessage";
@@ -33,7 +33,7 @@ vi.mock("../utils/visualBuilderPostMessage", async () => {
     };
 });
 
-describe("When an inline element is edited in visual editor mode", () => {
+describe("When an inline element is edited in visual builder mode", () => {
     let mouseClickEvent: Event;
 
     beforeAll(() => {
@@ -63,7 +63,7 @@ describe("When an inline element is edited in visual editor mode", () => {
 
     describe("single line field", () => {
         let singleLineField: HTMLParagraphElement;
-        let visualEditor: VisualEditor;
+        let visualBuilder: VisualBuilder;
         let overlayWrapper: HTMLDivElement;
 
         beforeEach(() => {
@@ -74,14 +74,14 @@ describe("When an inline element is edited in visual editor mode", () => {
             );
             document.body.appendChild(singleLineField);
 
-            visualEditor = new VisualEditor();
+            visualBuilder = new VisualBuilder();
             overlayWrapper = document.querySelector(
                 ".visual-builder__overlay__wrapper"
             ) as HTMLDivElement;
         });
 
         afterEach(() => {
-            visualEditor.destroy();
+            visualBuilder.destroy();
         });
 
         test("should have outline", () => {
@@ -96,7 +96,7 @@ describe("When an inline element is edited in visual editor mode", () => {
         });
 
         test("should be able to edit inline text present", async () => {
-            VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM =
+            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
                 singleLineField;
 
             await waitFor(() => {
@@ -114,7 +114,7 @@ describe("When an inline element is edited in visual editor mode", () => {
         });
 
         test("should send a update field message to parent", async () => {
-            VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM =
+            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
                 singleLineField;
 
             await waitFor(() => {
@@ -161,7 +161,7 @@ describe("When an inline element is edited in visual editor mode", () => {
         let container: HTMLDivElement;
         let firstSingleLineField: HTMLParagraphElement;
         let secondSingleLineField: HTMLParagraphElement;
-        let visualEditor: VisualEditor;
+        let visualBuilder: VisualBuilder;
         let overlayWrapper: HTMLDivElement;
 
         beforeEach(() => {
@@ -187,14 +187,14 @@ describe("When an inline element is edited in visual editor mode", () => {
             container.appendChild(secondSingleLineField);
             document.body.appendChild(container);
 
-            visualEditor = new VisualEditor();
+            visualBuilder = new VisualBuilder();
             overlayWrapper = document.querySelector(
                 ".visual-builder__overlay__wrapper"
             ) as HTMLDivElement;
         });
 
         afterEach(() => {
-            visualEditor.destroy();
+            visualBuilder.destroy();
         });
 
         test("should have outline", () => {
@@ -209,7 +209,7 @@ describe("When an inline element is edited in visual editor mode", () => {
         });
 
         test("should be able to edit individual inline text present", async () => {
-            VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM =
+            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
                 firstSingleLineField;
 
             await waitFor(() => {
@@ -225,7 +225,7 @@ describe("When an inline element is edited in visual editor mode", () => {
 
             expect(firstSingleLineField).toHaveTextContent("test text");
 
-            VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM =
+            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
                 secondSingleLineField;
 
             await waitFor(() => {
@@ -243,7 +243,7 @@ describe("When an inline element is edited in visual editor mode", () => {
         });
 
         test("should send a update field message to parent when editing an individual element", async () => {
-            VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM =
+            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
                 firstSingleLineField;
 
             await waitFor(() => {
@@ -295,7 +295,7 @@ describe("When an inline element is edited in visual editor mode", () => {
             });
             fireEvent.click(overlayWrapper);
 
-            VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM =
+            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
                 secondSingleLineField;
 
             await waitFor(() => {
@@ -346,7 +346,7 @@ describe("When an inline element is edited in visual editor mode", () => {
 
     describe("multi line field", () => {
         let multiLineField: HTMLParagraphElement;
-        let visualEditor: VisualEditor;
+        let visualBuilder: VisualBuilder;
         let overlayWrapper: HTMLDivElement;
 
         beforeEach(() => {
@@ -356,14 +356,14 @@ describe("When an inline element is edited in visual editor mode", () => {
                 "all_fields.bltapikey.en-us.multi_line"
             );
             document.body.appendChild(multiLineField);
-            visualEditor = new VisualEditor();
+            visualBuilder = new VisualBuilder();
             overlayWrapper = document.querySelector(
                 ".visual-builder__overlay__wrapper"
             ) as HTMLDivElement;
         });
 
         afterEach(() => {
-            visualEditor.destroy();
+            visualBuilder.destroy();
         });
 
         test("should have outline", () => {
@@ -378,7 +378,7 @@ describe("When an inline element is edited in visual editor mode", () => {
         });
 
         test("should be able to edit inline text present", async () => {
-            VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM =
+            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
                 multiLineField;
 
             await waitFor(() => {
@@ -396,7 +396,7 @@ describe("When an inline element is edited in visual editor mode", () => {
         });
 
         test("should send a update field message to parent", async () => {
-            VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM =
+            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
                 multiLineField;
 
             await waitFor(() => {
@@ -443,7 +443,7 @@ describe("When an inline element is edited in visual editor mode", () => {
         let container: HTMLDivElement;
         let firstMultiLineField: HTMLParagraphElement;
         let secondMultiLineField: HTMLParagraphElement;
-        let visualEditor: VisualEditor;
+        let visualBuilder: VisualBuilder;
         let overlayWrapper: HTMLDivElement;
 
         beforeEach(() => {
@@ -469,14 +469,14 @@ describe("When an inline element is edited in visual editor mode", () => {
             container.appendChild(secondMultiLineField);
             document.body.appendChild(container);
 
-            visualEditor = new VisualEditor();
+            visualBuilder = new VisualBuilder();
             overlayWrapper = document.querySelector(
                 ".visual-builder__overlay__wrapper"
             ) as HTMLDivElement;
         });
 
         afterEach(() => {
-            visualEditor.destroy();
+            visualBuilder.destroy();
         });
 
         test("should have outline", () => {
@@ -491,7 +491,7 @@ describe("When an inline element is edited in visual editor mode", () => {
         });
 
         test("should be able to edit individual inline text present", async () => {
-            VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM =
+            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
                 firstMultiLineField;
 
             await waitFor(() => {
@@ -507,7 +507,7 @@ describe("When an inline element is edited in visual editor mode", () => {
 
             expect(firstMultiLineField).toHaveTextContent("test text");
 
-            VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM =
+            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
                 secondMultiLineField;
 
             await waitFor(() => {
@@ -525,7 +525,7 @@ describe("When an inline element is edited in visual editor mode", () => {
         });
 
         test("should send a update field message to parent when editing an individual element", async () => {
-            VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM =
+            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
                 firstMultiLineField;
 
             await waitFor(() => {
@@ -578,7 +578,7 @@ describe("When an inline element is edited in visual editor mode", () => {
             });
             fireEvent.click(overlayWrapper);
 
-            VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM =
+            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
                 secondMultiLineField;
 
             await waitFor(() => {

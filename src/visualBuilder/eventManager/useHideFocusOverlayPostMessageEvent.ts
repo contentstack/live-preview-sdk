@@ -9,7 +9,7 @@ type HideFocusOverlayEventHandlerParams = Omit<
 >;
 
 export function useHideFocusOverlayPostMessageEvent({
-    visualEditorContainer,
+    visualBuilderContainer,
     overlayWrapper,
     focusedToolbar,
     resizeObserver,
@@ -18,8 +18,8 @@ export function useHideFocusOverlayPostMessageEvent({
         VisualBuilderPostMessageEvents.HIDE_FOCUS_OVERLAY,
         () => {
             hideOverlay({
-                visualEditorOverlayWrapper: overlayWrapper,
-                visualEditorContainer,
+                visualBuilderOverlayWrapper: overlayWrapper,
+                visualBuilderContainer,
                 focusedToolbar,
                 resizeObserver,
             });

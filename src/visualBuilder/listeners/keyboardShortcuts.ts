@@ -10,7 +10,7 @@ type AddKeyboardShortcutsParams = Omit<
 // like hotkeys, etc.
 export function addKeyboardShortcuts({
     overlayWrapper,
-    visualEditorContainer,
+    visualBuilderContainer,
     focusedToolbar,
     resizeObserver,
 }: AddKeyboardShortcutsParams): void {
@@ -20,8 +20,8 @@ export function addKeyboardShortcuts({
         if (event.key === "Escape") {
             // previously, this was achieved by clicking on overlayWrapper
             hideOverlay({
-                visualEditorOverlayWrapper: overlayWrapper,
-                visualEditorContainer,
+                visualBuilderOverlayWrapper: overlayWrapper,
+                visualBuilderContainer,
                 focusedToolbar: focusedToolbar,
                 resizeObserver: resizeObserver,
             });

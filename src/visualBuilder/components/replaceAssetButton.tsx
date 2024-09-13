@@ -18,7 +18,7 @@ function ReplaceAssetButtonComponent(
                 visualBuilderStyles()["visual-builder__button"],
                 visualBuilderStyles()["visual-builder__button--secondary"]
             )}
-            data-testid="visual-editor-replace-asset"
+            data-testid="visual-builder-replace-asset"
             onClick={props.onClickCallback}
         >
             <ReplaceAssetIcon />

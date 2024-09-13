@@ -35,7 +35,7 @@ describe("ReplaceAssetButtonComponent", () => {
                 onClickCallback={() => {}}
             />
         );
-        const button = getByTestId("visual-editor-replace-asset");
+        const button = getByTestId("visual-builder-replace-asset");
         // @hiteshshetty-dev: This styles not seems to be correct
         expect(button).toHaveStyle("top: 70px");
         expect(button).toHaveStyle("right: 924px");
@@ -50,7 +50,7 @@ describe("ReplaceAssetButtonComponent", () => {
             />
         );
 
-        fireEvent.click(getByTestId("visual-editor-replace-asset"));
+        fireEvent.click(getByTestId("visual-builder-replace-asset"));
         expect(onClickMock).toHaveBeenCalled();
     });
 });

@@ -1,5 +1,5 @@
 import { render } from "preact";
-import VisualEditorComponent from "./VisualBuilder";
+import VisualBuilderComponent from "./VisualBuilder";
 import { visualBuilderStyles } from "../visualBuilder.style";
 import React from "preact/compat";
 
@@ -8,28 +8,28 @@ interface InitUIParams {
 }
 
 function initUI(props: InitUIParams): void {
-    const visualEditorDOM = document.querySelector(
+    const visualBuilderDOM = document.querySelector(
         `.visual-builder__container`
     );
-    if (!visualEditorDOM) {
-        const visualEditorContainer = document.createElement("div");
-        visualEditorContainer.classList.add(
+    if (!visualBuilderDOM) {
+        const visualBuilderContainer = document.createElement("div");
+        visualBuilderContainer.classList.add(
             visualBuilderStyles()["visual-builder__container"],
             "visual-builder__container"
         );
-        visualEditorContainer.setAttribute(
+        visualBuilderContainer.setAttribute(
             "data-testid",
             "visual-builder__container"
         );
 
-        document.body.appendChild(visualEditorContainer);
+        document.body.appendChild(visualBuilderContainer);
 
         render(
-            <VisualEditorComponent
-                visualEditorContainer={visualEditorContainer}
+            <VisualBuilderComponent
+                visualBuilderContainer={visualBuilderContainer}
                 resizeObserver={props.resizeObserver}
             />,
-            visualEditorContainer
+            visualBuilderContainer
         );
     }
 

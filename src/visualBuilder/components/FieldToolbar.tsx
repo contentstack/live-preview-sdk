@@ -149,7 +149,7 @@ function FieldToolbarComponent(
                 visualBuilderStyles()["visual-builder__button"],
                 visualBuilderStyles()["visual-builder__button--secondary"]
             )}
-            data-testid={`visual-editor-replace-${fieldType}`}
+            data-testid={`visual-builder-replace-${fieldType}`}
             onClick={(e) => {
                 e.stopPropagation();
                 e.preventDefault();

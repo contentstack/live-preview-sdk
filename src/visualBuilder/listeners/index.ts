@@ -1,6 +1,6 @@
 import EventListenerHandlerParams from "./types";
-import { VisualEditor } from "..";
-import handleEditorInteraction from "./mouseClick";
+import { VisualBuilder } from "..";
+import handleBuilderInteraction from "./mouseClick";
 import handleMouseHover, {
     hideCustomCursor,
     hideHoverOutline,
@@ -22,12 +22,12 @@ export function addEventListeners(params: AddEventListenersParams): void {
     window.addEventListener(
         "click",
         (event) => {
-            handleEditorInteraction({
+            handleBuilderInteraction({
                 event: event,
                 overlayWrapper: params.overlayWrapper,
-                visualEditorContainer: params.visualEditorContainer,
+                visualBuilderContainer: params.visualBuilderContainer,
                 previousSelectedEditableDOM:
-                    VisualEditor.VisualEditorGlobalState.value
+                    VisualBuilder.VisualBuilderGlobalState.value
                         .previousSelectedEditableDOM,
                 focusedToolbar: params.focusedToolbar,
                 resizeObserver: params.resizeObserver,
@@ -40,14 +40,14 @@ export function addEventListeners(params: AddEventListenersParams): void {
         handleMouseHover({
             event: event as MouseEvent,
             overlayWrapper: params.overlayWrapper,
-            visualEditorContainer: params.visualEditorContainer,
+            visualBuilderContainer: params.visualBuilderContainer,
             customCursor: params.customCursor,
         });
     });
 
     document.documentElement.addEventListener("mouseleave", () => {
         hideCustomCursor(params.customCursor);
-        hideHoverOutline(params.visualEditorContainer);
+        hideHoverOutline(params.visualBuilderContainer);
     });
 
     document.documentElement.addEventListener("mouseenter", () => {
@@ -57,12 +57,12 @@ export function addEventListeners(params: AddEventListenersParams): void {
 
 export function removeEventListeners(params: RemoveEventListenersParams): void {
     window.removeEventListener("click", (event) => {
-        handleEditorInteraction({
+        handleBuilderInteraction({
             event: event,
             overlayWrapper: params.overlayWrapper,
-            visualEditorContainer: params.visualEditorContainer,
+            visualBuilderContainer: params.visualBuilderContainer,
             previousSelectedEditableDOM:
-                VisualEditor.VisualEditorGlobalState.value
+                VisualBuilder.VisualBuilderGlobalState.value
                     .previousSelectedEditableDOM,
             focusedToolbar: params.focusedToolbar,
             resizeObserver: params.resizeObserver,
@@ -73,7 +73,7 @@ export function removeEventListeners(params: RemoveEventListenersParams): void {
         handleMouseHover({
             event: event as MouseEvent,
             overlayWrapper: params.overlayWrapper,
-            visualEditorContainer: params.visualEditorContainer,
+            visualBuilderContainer: params.visualBuilderContainer,
             customCursor: params.customCursor,
         });
     });

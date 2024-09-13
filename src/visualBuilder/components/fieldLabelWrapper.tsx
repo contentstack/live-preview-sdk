@@ -2,7 +2,7 @@ import classNames from "classnames";
 import React, { useEffect, useState } from "preact/compat";
 import { extractDetailsFromCslp } from "../../cslp";
 import { CslpData } from "../../cslp/types/cslp.types";
-import { VisualEditorCslpEventDetails } from "../types/visualBuilder.types";
+import { VisualBuilderCslpEventDetails } from "../types/visualBuilder.types";
 import { FieldSchemaMap } from "../utils/fieldSchemaMap";
 import { isFieldDisabled } from "../utils/isFieldDisabled";
 import visualBuilderPostMessage from "../utils/visualBuilderPostMessage";
@@ -22,7 +22,7 @@ async function getFieldDisplayNames(fieldMetadata: CslpData[]) {
 
 interface FieldLabelWrapperProps {
     fieldMetadata: CslpData;
-    eventDetails: VisualEditorCslpEventDetails;
+    eventDetails: VisualBuilderCslpEventDetails;
     parentPaths: string[];
     getParentEditableElement: (cslp: string) => HTMLElement | null;
 }

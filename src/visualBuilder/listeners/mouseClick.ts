@@ -16,13 +16,12 @@ import visualBuilderPostMessage from "../utils/visualBuilderPostMessage";
 
 import { VisualBuilderPostMessageEvents } from "../utils/types/postMessage.types";
 
-import EventListenerHandlerParams from "./types";
-import { VisualEditor } from "..";
+import { VisualBuilder } from "..";
 import { FieldSchemaMap } from "../utils/fieldSchemaMap";
 import { isFieldDisabled } from "../utils/isFieldDisabled";
-import { visualBuilderStyles } from "../visualBuilder.style";
+import EventListenerHandlerParams from "./types";
 
-type HandleEditorInteractionParams = Omit<
+type HandleBuilderInteractionParams = Omit<
     EventListenerHandlerParams,
     "eventDetails" | "customCursor"
 >;
@@ -56,8 +55,8 @@ export function addFocusedToolbar(params: AddFocusedToolbarParams): void {
     appendFocusedToolbar(params.eventDetails, params.focusedToolbar);
 }
 
-async function handleEditorInteraction(
-    params: HandleEditorInteractionParams
+async function handleBuilderInteraction(
+    params: HandleBuilderInteractionParams
 ): Promise<void> {
     const eventTarget = params.event.target as HTMLElement | null;
     const isAnchorElement = eventTarget instanceof HTMLAnchorElement;
@@ -79,21 +78,21 @@ async function handleEditorInteraction(
     if (
         !eventDetails ||
         !params.overlayWrapper ||
-        !params.visualEditorContainer
+        !params.visualBuilderContainer
     ) {
         return;
     }
     const { editableElement } = eventDetails;
 
     if (
-        VisualEditor.VisualEditorGlobalState.value
+        VisualBuilder.VisualBuilderGlobalState.value
             .previousSelectedEditableDOM &&
-        VisualEditor.VisualEditorGlobalState.value
+        VisualBuilder.VisualBuilderGlobalState.value
             .previousSelectedEditableDOM !== editableElement
     ) {
         cleanIndividualFieldResidual({
             overlayWrapper: params.overlayWrapper,
-            visualEditorContainer: params.visualEditorContainer,
+            visualBuilderContainer: params.visualBuilderContainer,
             focusedToolbar: params.focusedToolbar,
             resizeObserver: params.resizeObserver,
         });
@@ -114,7 +113,8 @@ async function handleEditorInteraction(
     // not equal to text content in DOM) when performing mouse
     // selections in the content editable
     const previousSelectedElement =
-        VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM;
+        VisualBuilder.VisualBuilderGlobalState.value
+            .previousSelectedEditableDOM;
     if (
         previousSelectedElement &&
         previousSelectedElement === editableElement
@@ -122,7 +122,7 @@ async function handleEditorInteraction(
         return;
     }
 
-    VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM =
+    VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
         editableElement;
 
     addOverlay({
@@ -166,13 +166,13 @@ async function handleEditorInteraction(
     // ) {
     //     handleAddButtonsForMultiple(eventDetails, {
     //         editableElement: editableElement,
-    //         visualEditorContainer: params.visualEditorContainer,
+    //         visualBuilderContainer: params.visualBuilderContainer,
     //         resizeObserver: params.resizeObserver,
     //     });
     // } else {
     //     removeAddInstanceButtons({
     //         eventTarget: params.event.target,
-    //         visualEditorContainer: params.visualEditorContainer,
+    //         visualBuilderContainer: params.visualBuilderContainer,
     //         overlayWrapper: params.overlayWrapper,
     //     });
     // }
@@ -181,10 +181,10 @@ async function handleEditorInteraction(
     });
 
     await handleIndividualFields(eventDetails, {
-        visualEditorContainer: params.visualEditorContainer,
+        visualBuilderContainer: params.visualBuilderContainer,
         resizeObserver: params.resizeObserver,
         lastEditedField: previousSelectedElement,
     });
 }
 
-export default handleEditorInteraction;
+export default handleBuilderInteraction;

@@ -2,19 +2,20 @@ import { render } from "preact";
 import ReplaceAssetButtonComponent from "../components/replaceAssetButton";
 
 /**
- * Removes all existing replace asset buttons from the provided visual editor wrapper element.
- * @param visualEditorContainer - The visual editor wrapper element to remove replace asset buttons from.
+ * Removes all existing replace asset buttons from the provided visual builder wrapper element.
+ * @param visualBuilderContainer - The visual builder wrapper element to remove replace asset buttons from.
  */
 export function removeReplaceAssetButton(
-    visualEditorContainer: HTMLDivElement | null
+    visualBuilderContainer: HTMLDivElement | null
 ): void {
-    if (!visualEditorContainer) {
+    if (!visualBuilderContainer) {
         return;
     }
 
-    const existingReplaceButtons = visualEditorContainer.getElementsByClassName(
-        "visual-builder__replace-button"
-    );
+    const existingReplaceButtons =
+        visualBuilderContainer.getElementsByClassName(
+            "visual-builder__replace-button"
+        );
 
     for (const existingReplaceButton of Array.from(existingReplaceButtons)) {
         existingReplaceButton.remove();
@@ -38,7 +39,7 @@ export function generateReplaceAssetButton(
         return isReplaceButtonAlreadyPresent;
     }
 
-    const visualEditorContainer = document.querySelector(
+    const visualBuilderContainer = document.querySelector(
         ".visual-builder__focused-toolbar__button-group"
     );
     const wrapper = document.createDocumentFragment();
@@ -50,15 +51,15 @@ export function generateReplaceAssetButton(
         wrapper
     );
 
-    if (visualEditorContainer) {
-        const childrenCount = visualEditorContainer.children.length;
+    if (visualBuilderContainer) {
+        const childrenCount = visualBuilderContainer.children.length;
         if (childrenCount === 3) {
-            visualEditorContainer.insertBefore(
+            visualBuilderContainer.insertBefore(
                 wrapper,
-                visualEditorContainer.children[2]
+                visualBuilderContainer.children[2]
             );
         } else {
-            visualEditorContainer.appendChild(wrapper);
+            visualBuilderContainer.appendChild(wrapper);
         }
     }
 

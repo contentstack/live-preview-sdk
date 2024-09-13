@@ -7,7 +7,7 @@ import initUI from "../../components";
 import { cleanIndividualFieldResidual } from "../handleIndividualFields";
 import { VisualBuilderPostMessageEvents } from "../types/postMessage.types";
 import visualBuilderPostMessage from "../visualBuilderPostMessage";
-import { VisualEditor } from "../..";
+import { VisualBuilder } from "../..";
 
 vi.mock("../visualBuilderPostMessage", () => {
     return {
@@ -33,7 +33,7 @@ const mockResizeObserver = {
 };
 
 describe("addFocusOverlay", () => {
-    let visualEditorContainer: HTMLDivElement;
+    let visualBuilderContainer: HTMLDivElement;
     let targetElement: HTMLElement;
     let focusOverlayWrapper: HTMLDivElement;
 
@@ -51,7 +51,7 @@ describe("addFocusOverlay", () => {
         initUI({
             resizeObserver: mockResizeObserver,
         });
-        visualEditorContainer = document.querySelector(
+        visualBuilderContainer = document.querySelector(
             ".visual-builder__container"
         ) as HTMLDivElement;
 
@@ -72,7 +72,7 @@ describe("addFocusOverlay", () => {
             bottom: 20,
         })) as any;
 
-        visualEditorContainer.appendChild(targetElement);
+        visualBuilderContainer.appendChild(targetElement);
     });
 
     afterEach(() => {
@@ -98,57 +98,57 @@ describe("addFocusOverlay", () => {
         expect(focusOverlayWrapper).toMatchSnapshot();
         expect(focusOverlayWrapper?.classList.contains("visible")).toBe(true);
 
-        const visualEditorWrapperTopOverlay = document.querySelector(
+        const visualBuilderWrapperTopOverlay = document.querySelector(
             `[data-testid="visual-builder__overlay--top"]`
         ) as HTMLDivElement;
-        const visualEditorWrapperLeftOverlay = document.querySelector(
+        const visualBuilderWrapperLeftOverlay = document.querySelector(
             `[data-testid="visual-builder__overlay--left"]`
         ) as HTMLDivElement;
-        const visualEditorWrapperRightOverlay = document.querySelector(
+        const visualBuilderWrapperRightOverlay = document.querySelector(
             `[data-testid="visual-builder__overlay--right"]`
         ) as HTMLDivElement;
-        const visualEditorWrapperBottomOverlay = document.querySelector(
+        const visualBuilderWrapperBottomOverlay = document.querySelector(
             `[data-testid="visual-builder__overlay--bottom"]`
         ) as HTMLDivElement;
 
-        expect(visualEditorWrapperTopOverlay.style.top).toBe("0px");
-        expect(visualEditorWrapperTopOverlay.style.left).toBe("0px");
-        expect(visualEditorWrapperTopOverlay.style.width).toBe("100%");
-        expect(visualEditorWrapperTopOverlay.style.height).toBe(
+        expect(visualBuilderWrapperTopOverlay.style.top).toBe("0px");
+        expect(visualBuilderWrapperTopOverlay.style.left).toBe("0px");
+        expect(visualBuilderWrapperTopOverlay.style.width).toBe("100%");
+        expect(visualBuilderWrapperTopOverlay.style.height).toBe(
             "calc(10px - 2px)"
         );
 
-        expect(visualEditorWrapperBottomOverlay.style.top).toBe(
+        expect(visualBuilderWrapperBottomOverlay.style.top).toBe(
             "calc(20px + 2px)"
         );
-        expect(visualEditorWrapperBottomOverlay.style.left).toBe("0px");
-        expect(visualEditorWrapperBottomOverlay.style.width).toBe("100%");
-        expect(visualEditorWrapperBottomOverlay.style.height).toBe(
+        expect(visualBuilderWrapperBottomOverlay.style.left).toBe("0px");
+        expect(visualBuilderWrapperBottomOverlay.style.width).toBe("100%");
+        expect(visualBuilderWrapperBottomOverlay.style.height).toBe(
             "calc(-20px - 2px)"
         );
 
-        expect(visualEditorWrapperLeftOverlay.style.top).toBe(
+        expect(visualBuilderWrapperLeftOverlay.style.top).toBe(
             "calc(10px - 2px)"
         );
-        expect(visualEditorWrapperLeftOverlay.style.left).toBe("0px");
-        expect(visualEditorWrapperLeftOverlay.style.width).toBe(
+        expect(visualBuilderWrapperLeftOverlay.style.left).toBe("0px");
+        expect(visualBuilderWrapperLeftOverlay.style.width).toBe(
             "calc(10px - 2px)"
         );
 
-        expect(visualEditorWrapperRightOverlay.style.top).toBe(
+        expect(visualBuilderWrapperRightOverlay.style.top).toBe(
             "calc(10px - 2px)"
         );
-        expect(visualEditorWrapperRightOverlay.style.left).toBe(
+        expect(visualBuilderWrapperRightOverlay.style.left).toBe(
             "calc(20px + 2px)"
         );
-        expect(visualEditorWrapperRightOverlay.style.width).toBe(
+        expect(visualBuilderWrapperRightOverlay.style.width).toBe(
             "calc(1004px - 2px)"
         );
     });
 });
 
 describe("hideFocusOverlay", () => {
-    let visualEditorContainer: HTMLDivElement;
+    let visualBuilderContainer: HTMLDivElement;
     let editedElement: HTMLParagraphElement;
     let focusOverlayWrapper: HTMLDivElement;
     let singleFocusOverlay: HTMLDivElement;
@@ -157,7 +157,7 @@ describe("hideFocusOverlay", () => {
         initUI({
             resizeObserver: mockResizeObserver,
         });
-        visualEditorContainer = document.querySelector(
+        visualBuilderContainer = document.querySelector(
             ".visual-builder__container"
         ) as HTMLDivElement;
 
@@ -196,8 +196,8 @@ describe("hideFocusOverlay", () => {
         expect(focusOverlayWrapper.classList.contains("visible")).toBe(true);
 
         hideFocusOverlay({
-            visualEditorContainer,
-            visualEditorOverlayWrapper: null,
+            visualBuilderContainer,
+            visualBuilderOverlayWrapper: null,
             focusedToolbar: null,
         });
 
@@ -228,7 +228,7 @@ describe("hideFocusOverlay", () => {
         editedElement.setAttribute("contenteditable", "true");
 
         // We"ll always click one of the overlays, so we can just grab the first one. Manually pointing the global state to the editedElement as we are not simulating mouse click on window here.
-        VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM =
+        VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
             editedElement;
 
         // already called addFocusOverlay, hence visible is set to true
@@ -265,7 +265,7 @@ describe("hideFocusOverlay", () => {
 
     test("should run cleanup function", () => {
         // We"ll always click one of the overlays, so we can just grab the first one. Manually pointing the global state to the editedElement as we are not simulating mouse click on window here.
-        VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM =
+        VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
             editedElement;
         fireEvent.click(focusOverlayWrapper);
 

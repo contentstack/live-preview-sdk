@@ -1,4 +1,4 @@
-import { VisualEditor } from "..";
+import { VisualBuilder } from "..";
 import { visualBuilderStyles } from "../visualBuilder.style";
 import visualBuilderPostMessage from "../utils/visualBuilderPostMessage";
 import { VisualBuilderPostMessageEvents } from "../utils/types/postMessage.types";
@@ -41,7 +41,7 @@ function removeVariantFieldClass(): void {
 }
 
 function setAudienceMode(mode: boolean): void {
-    VisualEditor.VisualEditorGlobalState.value.audienceMode = mode;
+    VisualBuilder.VisualBuilderGlobalState.value.audienceMode = mode;
 }
 
 export function useVariantFieldsPostMessageEvent(): void {

@@ -3,20 +3,20 @@ import StartEditingButtonComponent from "../startEditingButton";
 import Config from "../../../configManager/configManager";
 
 describe("StartEditingButtonComponent", () => {
-    let visualEditorContainer: HTMLDivElement;
+    let visualBuilderContainer: HTMLDivElement;
 
     beforeEach(() => {
         Config.reset();
         Config.set("stackDetails.apiKey", "bltapikey");
         Config.set("stackDetails.environment", "bltenvironment");
 
-        visualEditorContainer = document.createElement("div");
-        document.body.appendChild(visualEditorContainer);
+        visualBuilderContainer = document.createElement("div");
+        document.body.appendChild(visualBuilderContainer);
     });
 
     afterEach(() => {
         vi.clearAllMocks();
-        document.body.removeChild(visualEditorContainer);
+        document.body.removeChild(visualBuilderContainer);
     });
 
     afterAll(() => {
@@ -41,7 +41,7 @@ describe("StartEditingButtonComponent", () => {
         fireEvent.click(button);
 
         expect(button?.getAttribute("href")).toBe(
-            "https://app.contentstack.com/live-editor/stack/bltapikey/environment/bltenvironment?branch=main&target-url=http%3A%2F%2Flocalhost%2F&locale=en-us"
+            "https://app.contentstack.com/visual-builder/stack/bltapikey/environment/bltenvironment?branch=main&target-url=http%3A%2F%2Flocalhost%2F&locale=en-us"
         );
     });
 });

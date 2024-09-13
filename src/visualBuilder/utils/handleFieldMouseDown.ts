@@ -1,5 +1,5 @@
 import {
-    LIVE_EDITOR_FIELD_TYPE_ATTRIBUTE_KEY,
+    VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY,
     numericInputRegex,
 } from "./constants";
 import { FieldDataType } from "./types/index.types";
@@ -16,7 +16,7 @@ export function handleFieldKeyDown(e: Event): void {
     const event = e as KeyboardEvent;
     const targetElement = event.target as HTMLElement;
     const fieldType = targetElement.getAttribute(
-        LIVE_EDITOR_FIELD_TYPE_ATTRIBUTE_KEY
+        VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
     ) as FieldDataType | null;
 
     if (fieldType === FieldDataType.NUMBER) {

@@ -9,7 +9,7 @@ import {
 import {
     ILivePreviewModeConfig,
     ILivePreviewWindowType,
-    IVisualEditorInitEvent,
+    IVisualBuilderInitEvent,
 } from "../types/types";
 import { generateStartEditingButton } from "./generators/generateStartEditingButton";
 
@@ -37,20 +37,20 @@ import { FieldSchemaMap } from "./utils/fieldSchemaMap";
 import { isFieldDisabled } from "./utils/isFieldDisabled";
 import { updateFocussedState } from "./utils/updateFocussedState";
 
-interface VisualEditorGlobalStateImpl {
+interface VisualBuilderGlobalStateImpl {
     previousSelectedEditableDOM: HTMLElement | Element | null;
     previousHoveredTargetDOM: Element | null;
     previousEmptyBlockParents: Element[] | [];
     audienceMode: boolean;
 }
 
-export class VisualEditor {
+export class VisualBuilder {
     private customCursor: HTMLDivElement | null = null;
     private overlayWrapper: HTMLDivElement | null = null;
-    private visualEditorContainer: HTMLDivElement | null = null;
+    private visualBuilderContainer: HTMLDivElement | null = null;
     private focusedToolbar: HTMLDivElement | null = null;
 
-    static VisualEditorGlobalState: Signal<VisualEditorGlobalStateImpl> =
+    static VisualBuilderGlobalState: Signal<VisualBuilderGlobalStateImpl> =
         signal({
             previousSelectedEditableDOM: null,
             previousHoveredTargetDOM: null,
@@ -61,7 +61,7 @@ export class VisualEditor {
     private handlePositionChange(editableElement: HTMLElement) {
         updateFocussedState({
             editableElement,
-            visualEditorContainer: this.visualEditorContainer,
+            visualBuilderContainer: this.visualBuilderContainer,
             overlayWrapper: this.overlayWrapper,
             focusedToolbar: this.focusedToolbar,
             resizeObserver: this.resizeObserver,
@@ -70,7 +70,7 @@ export class VisualEditor {
 
     private resizeEventHandler = () => {
         const previousSelectedEditableDOM =
-            VisualEditor.VisualEditorGlobalState.value
+            VisualBuilder.VisualBuilderGlobalState.value
                 .previousSelectedEditableDOM;
         if (previousSelectedEditableDOM) {
             this.handlePositionChange(
@@ -81,7 +81,7 @@ export class VisualEditor {
 
     private resizeObserver = new ResizeObserver(([entry]) => {
         const previousSelectedEditableDOM =
-            VisualEditor.VisualEditorGlobalState.value
+            VisualBuilder.VisualBuilderGlobalState.value
                 .previousSelectedEditableDOM;
 
         if (!this.overlayWrapper || !previousSelectedEditableDOM) {
@@ -166,8 +166,8 @@ export class VisualEditor {
                     )
                 );
 
-                const previousEmptyBlockParents = VisualEditor
-                    .VisualEditorGlobalState.value
+                const previousEmptyBlockParents = VisualBuilder
+                    .VisualBuilderGlobalState.value
                     .previousEmptyBlockParents as Element[];
 
                 if (!isEqual(emptyBlockParents, previousEmptyBlockParents)) {
@@ -182,8 +182,8 @@ export class VisualEditor {
                     removeEmptyBlocks(noMoreEmptyBlockParent);
                     await generateEmptyBlocks(newEmptyBlockParent);
 
-                    VisualEditor.VisualEditorGlobalState.value = {
-                        ...VisualEditor.VisualEditorGlobalState.value,
+                    VisualBuilder.VisualBuilderGlobalState.value = {
+                        ...VisualBuilder.VisualBuilderGlobalState.value,
                         previousEmptyBlockParents: emptyBlockParents,
                     };
                 }
@@ -195,7 +195,7 @@ export class VisualEditor {
 
     constructor() {
         // Handles changes in element positions due to sidebar toggling or window resizing,
-        // triggering a redraw of the visual editor
+        // triggering a redraw of the visual builder
         window.addEventListener("resize", this.resizeEventHandler);
 
         initUI({
@@ -205,7 +205,7 @@ export class VisualEditor {
         // Initializing goober for css-in-js
         setup(h);
 
-        this.visualEditorContainer = document.querySelector(
+        this.visualBuilderContainer = document.querySelector(
             ".visual-builder__container"
         );
         this.overlayWrapper = document.querySelector(
@@ -218,16 +218,16 @@ export class VisualEditor {
 
         const config = Config.get();
 
-        if (!config.enable || config.mode < ILivePreviewModeConfig.EDITOR) {
+        if (!config.enable || config.mode < ILivePreviewModeConfig.BUILDER) {
             return;
         }
         visualBuilderPostMessage
-            ?.send<IVisualEditorInitEvent>("init", {
+            ?.send<IVisualBuilderInitEvent>("init", {
                 isSSR: config.ssr,
             })
             .then((data) => {
                 const {
-                    windowType = ILivePreviewWindowType.EDITOR,
+                    windowType = ILivePreviewWindowType.BUILDER,
                     stackDetails,
                 } = data;
                 Config.set("windowType", windowType);
@@ -238,9 +238,9 @@ export class VisualEditor {
 
                 addEventListeners({
                     overlayWrapper: this.overlayWrapper,
-                    visualEditorContainer: this.visualEditorContainer,
+                    visualBuilderContainer: this.visualBuilderContainer,
                     previousSelectedEditableDOM:
-                        VisualEditor.VisualEditorGlobalState.value
+                        VisualBuilder.VisualBuilderGlobalState.value
                             .previousSelectedEditableDOM,
                     focusedToolbar: this.focusedToolbar,
                     resizeObserver: this.resizeObserver,
@@ -249,7 +249,7 @@ export class VisualEditor {
 
                 addKeyboardShortcuts({
                     overlayWrapper: this.overlayWrapper,
-                    visualEditorContainer: this.visualEditorContainer,
+                    visualBuilderContainer: this.visualBuilderContainer,
                     focusedToolbar: this.focusedToolbar,
                     resizeObserver: this.resizeObserver,
                 });
@@ -267,7 +267,7 @@ export class VisualEditor {
 
                 useHideFocusOverlayPostMessageEvent({
                     overlayWrapper: this.overlayWrapper,
-                    visualEditorContainer: this.visualEditorContainer,
+                    visualBuilderContainer: this.visualBuilderContainer,
                     focusedToolbar: this.focusedToolbar,
                     resizeObserver: this.resizeObserver,
                 });
@@ -280,7 +280,7 @@ export class VisualEditor {
             })
             .catch(() => {
                 if (!inIframe()) {
-                    generateStartEditingButton(this.visualEditorContainer);
+                    generateStartEditingButton(this.visualBuilderContainer);
                 }
             });
     }
@@ -290,9 +290,9 @@ export class VisualEditor {
         window.removeEventListener("resize", this.resizeEventHandler);
         removeEventListeners({
             overlayWrapper: this.overlayWrapper,
-            visualEditorContainer: this.visualEditorContainer,
+            visualBuilderContainer: this.visualBuilderContainer,
             previousSelectedEditableDOM:
-                VisualEditor.VisualEditorGlobalState.value
+                VisualBuilder.VisualBuilderGlobalState.value
                     .previousSelectedEditableDOM,
             focusedToolbar: this.focusedToolbar,
             resizeObserver: this.resizeObserver,
@@ -301,8 +301,8 @@ export class VisualEditor {
         this.resizeObserver.disconnect();
         this.mutationObserver.disconnect();
 
-        if (this.visualEditorContainer) {
-            window.document.body.removeChild(this.visualEditorContainer);
+        if (this.visualBuilderContainer) {
+            window.document.body.removeChild(this.visualBuilderContainer);
         }
         this.customCursor = null;
     };

@@ -1,6 +1,6 @@
 import { CslpData } from "../../cslp/types/cslp.types";
 
-export interface VisualEditorCslpEventDetails {
+export interface VisualBuilderCslpEventDetails {
     editableElement: Element;
     cslpData: string;
     fieldMetadata: CslpData;

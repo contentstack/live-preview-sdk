@@ -1,7 +1,7 @@
 import { fireEvent } from "@testing-library/preact";
 import { getFieldSchemaMap } from "../../../__test__/data/fieldSchemaMap";
 import { CslpData } from "../../../cslp/types/cslp.types";
-import { VisualEditorCslpEventDetails } from "../../types/visualBuilder.types";
+import { VisualBuilderCslpEventDetails } from "../../types/visualBuilder.types";
 import { FieldSchemaMap } from "../../utils/fieldSchemaMap";
 import { appendFieldPathDropdown } from "../generateToolbar";
 
@@ -15,7 +15,7 @@ describe("appendFieldPathDropdown", () => {
     let singleLineField: HTMLParagraphElement;
     let focusedToolbar: HTMLDivElement;
     let mockFieldMetadata: CslpData;
-    let mockEventDetails: VisualEditorCslpEventDetails;
+    let mockEventDetails: VisualBuilderCslpEventDetails;
 
     beforeEach(() => {
         FieldSchemaMap.setFieldSchema(

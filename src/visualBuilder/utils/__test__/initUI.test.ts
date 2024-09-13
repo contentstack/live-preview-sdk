@@ -6,7 +6,7 @@ const mockResizeObserver = {
     disconnect: vi.fn(),
 };
 
-describe("VisualEditorComponent", () => {
+describe("VisualBuilderComponent", () => {
     test("should render the component", () => {
         initUI({
             resizeObserver: mockResizeObserver,

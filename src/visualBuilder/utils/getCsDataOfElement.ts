@@ -1,5 +1,5 @@
 import { CslpData } from "../../cslp/types/cslp.types";
-import { VisualEditorCslpEventDetails } from "../types/visualBuilder.types";
+import { VisualBuilderCslpEventDetails } from "../types/visualBuilder.types";
 import { extractDetailsFromCslp } from "../../cslp/cslpdata";
 import { DATA_CSLP_ATTR_SELECTOR } from "./constants";
 
@@ -12,7 +12,7 @@ import { DATA_CSLP_ATTR_SELECTOR } from "./constants";
  */
 export function getCsDataOfElement(
     event: MouseEvent
-): VisualEditorCslpEventDetails | undefined {
+): VisualBuilderCslpEventDetails | undefined {
     const targetElement = event.target as HTMLElement;
     if (!targetElement) {
         return;

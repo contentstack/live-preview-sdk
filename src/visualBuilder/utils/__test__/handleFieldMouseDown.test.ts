@@ -1,5 +1,5 @@
 import { MockInstance } from "vitest";
-import { LIVE_EDITOR_FIELD_TYPE_ATTRIBUTE_KEY } from "../constants";
+import { VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY } from "../constants";
 import { handleFieldKeyDown } from "../handleFieldMouseDown";
 
 describe("handle numeric field key down", () => {
@@ -10,7 +10,7 @@ describe("handle numeric field key down", () => {
         h1 = document.createElement("h1");
         h1.innerHTML = "2.2";
         h1.setAttribute("contenteditable", "true");
-        h1.setAttribute(LIVE_EDITOR_FIELD_TYPE_ATTRIBUTE_KEY, "number");
+        h1.setAttribute(VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY, "number");
 
         h1.addEventListener("keydown", (e) => {
             spiedPreventDefault = vi.spyOn(e, "preventDefault");

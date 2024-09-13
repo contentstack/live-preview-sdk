@@ -7,14 +7,14 @@ import { isFieldDisabled } from "../utils/isFieldDisabled";
 import { getFieldType } from "../utils/getFieldType";
 
 import EventListenerHandlerParams from "./types";
-import { VisualEditor } from "..";
+import { VisualBuilder } from "..";
 import { addHoverOutline } from "../generators/generateHoverOutline";
 import { visualBuilderStyles } from "../visualBuilder.style";
 
 export interface HandleMouseHoverParams
     extends Pick<
         EventListenerHandlerParams,
-        "event" | "overlayWrapper" | "visualEditorContainer"
+        "event" | "overlayWrapper" | "visualBuilderContainer"
     > {
     customCursor: HTMLDivElement | null;
 }
@@ -72,12 +72,12 @@ function showDefaultCursor(): void {
 }
 
 export function hideHoverOutline(
-    visualEditorContainer: HTMLDivElement | null
+    visualBuilderContainer: HTMLDivElement | null
 ): void {
-    if (!visualEditorContainer) {
+    if (!visualBuilderContainer) {
         return;
     }
-    const hoverOutline = visualEditorContainer.querySelector(
+    const hoverOutline = visualBuilderContainer.querySelector(
         ".visual-builder__hover-outline"
     );
     if (!hoverOutline) {
@@ -123,7 +123,7 @@ async function handleMouseHover(params: HandleMouseHoverParams): Promise<void> {
             resetCustomCursor(params.customCursor);
             removeAddInstanceButtons({
                 eventTarget: params.event.target,
-                visualEditorContainer: params.visualEditorContainer,
+                visualBuilderContainer: params.visualBuilderContainer,
                 overlayWrapper: params.overlayWrapper,
             });
             handleCursorPosition(params.event, params.customCursor);
@@ -134,9 +134,9 @@ async function handleMouseHover(params: HandleMouseHoverParams): Promise<void> {
         const { content_type_uid, fieldPath } = fieldMetadata;
 
         if (
-            VisualEditor.VisualEditorGlobalState.value
+            VisualBuilder.VisualBuilderGlobalState.value
                 .previousSelectedEditableDOM &&
-            VisualEditor.VisualEditorGlobalState.value.previousSelectedEditableDOM.isSameNode(
+            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM.isSameNode(
                 editableElement
             )
         ) {
@@ -146,13 +146,13 @@ async function handleMouseHover(params: HandleMouseHoverParams): Promise<void> {
 
         if (params.customCursor) {
             if (
-                VisualEditor.VisualEditorGlobalState.value
+                VisualBuilder.VisualBuilderGlobalState.value
                     .previousHoveredTargetDOM !== editableElement
             ) {
                 resetCustomCursor(params.customCursor);
                 removeAddInstanceButtons({
                     eventTarget: params.event.target,
-                    visualEditorContainer: params.visualEditorContainer,
+                    visualBuilderContainer: params.visualBuilderContainer,
                     overlayWrapper: params.overlayWrapper,
                 });
             }
@@ -207,13 +207,13 @@ async function handleMouseHover(params: HandleMouseHoverParams): Promise<void> {
         }
 
         if (
-            VisualEditor.VisualEditorGlobalState.value
+            VisualBuilder.VisualBuilderGlobalState.value
                 .previousHoveredTargetDOM === editableElement
         ) {
             return;
         }
 
-        VisualEditor.VisualEditorGlobalState.value.previousHoveredTargetDOM =
+        VisualBuilder.VisualBuilderGlobalState.value.previousHoveredTargetDOM =
             editableElement;
     }, 10)(params);
 }
