@@ -25,6 +25,7 @@ import { fieldIcons } from "./icons/fields";
 import classNames from "classnames";
 import { liveEditorStyles } from "../liveEditor.style";
 import CommentIcon from "./CommentIcon";
+import React from "preact/compat";
 
 interface MultipleFieldToolbarProps {
     fieldMetadata: CslpData;
@@ -123,7 +124,7 @@ function FieldToolbarComponent(
                 liveEditorStyles()["visual-builder__button--secondary"],
                 liveEditorStyles()["visual-builder__button--edit"]
             )}
-            onClick={(e: React.MouseEvent) => {
+            onClick={(e) => {
                 // TODO the listener for field path is attached to the common parent requiring
                 // propagation to be stopped, should ideally only attach onClick to fieldpath dropdown
                 e.preventDefault();
@@ -143,7 +144,7 @@ function FieldToolbarComponent(
                 liveEditorStyles()["visual-builder__button--secondary"]
             )}
             data-testid={`visual-editor-replace-${fieldType}`}
-            onClick={(e: React.MouseEvent) => {
+            onClick={(e) => {
                 e.stopPropagation();
                 e.preventDefault();
                 if (fieldType === FieldDataType.REFERENCE) {

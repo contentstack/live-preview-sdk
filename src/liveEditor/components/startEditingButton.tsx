@@ -2,6 +2,7 @@ import classNames from "classnames";
 import getLiveEditorRedirectionUrl from "../utils/getLiveEditorRedirectionUrl";
 import { EditIcon } from "./icons";
 import { liveEditorStyles } from "../liveEditor.style";
+import React from "preact/compat";
 
 function StartEditingButtonComponent(): JSX.Element {
     return (

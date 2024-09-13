@@ -1,6 +1,6 @@
-import { SVGProps } from "react";
+import React from "preact/compat";
 
-export function UrlIcon(props: SVGProps<SVGSVGElement>): JSX.Element {
+export function UrlIcon(): JSX.Element {
     return (
         <svg
             width="16"
@@ -8,7 +8,6 @@ export function UrlIcon(props: SVGProps<SVGSVGElement>): JSX.Element {
             viewBox="0 0 24 24"
             fill="#475161"
             xmlns="http://www.w3.org/2000/svg"
-            {...props}
         >
             <path
                 fill-rule="evenodd"

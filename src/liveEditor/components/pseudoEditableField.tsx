@@ -1,5 +1,6 @@
 import getCamelCaseStyles from "../utils/getCamelCaseStyles";
 import getStyleOfAnElement from "../utils/getStyleOfAnElement";
+import React from "preact/compat";
 
 interface PseudoEditableFieldProps {
     editableElement: HTMLElement;

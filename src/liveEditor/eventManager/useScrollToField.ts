@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect } from "preact/compat";
 import liveEditorPostMessage from "../utils/liveEditorPostMessage";
 import { LiveEditorPostMessageEvents } from "../utils/types/postMessage.types";
 

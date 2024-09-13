@@ -1,6 +1,6 @@
-import { SVGProps } from "react";
+import React from "preact/compat";
 
-export function MarkdownRteIcon(props: SVGProps<SVGSVGElement>): JSX.Element {
+export function MarkdownRteIcon(): JSX.Element {
     return (
         <svg
             width="24"
@@ -8,7 +8,6 @@ export function MarkdownRteIcon(props: SVGProps<SVGSVGElement>): JSX.Element {
             viewBox="0 0 24 24"
             fill="#475161"
             xmlns="http://www.w3.org/2000/svg"
-            {...props}
         >
             <path d="M11.3163 16.1134L11.3051 11.4011L8.9938 15.2831H8.17475L5.87469 11.502V16.1134H4.16928V8.25951H5.67273L8.61232 13.1401L11.507 8.25951H12.9993L13.0217 16.1134H11.3163Z" />
             <path

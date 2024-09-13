@@ -1,6 +1,6 @@
-import { SVGProps } from "react";
+import React from "preact/compat";
 
-export function VariantIcon(props: SVGProps<SVGSVGElement>): JSX.Element {
+export function VariantIcon(): JSX.Element {
     return (
         <svg
             width="12"

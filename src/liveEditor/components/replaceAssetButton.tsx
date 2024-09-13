@@ -1,6 +1,7 @@
 import classNames from "classnames";
 import { ReplaceAssetIcon } from "./icons";
 import { liveEditorStyles } from "../liveEditor.style";
+import React from "preact/compat";
 
 interface ReplaceAssetButtonProp {
     targetElement: Element;

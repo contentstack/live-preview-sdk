@@ -29,9 +29,7 @@ function modernConfig(opts) {
     clean: true,
     esbuildPlugins: [esbuildPluginFilePathExtensions({ esmExtension: 'js' })],
     alias: {
-      react: 'preact/compat',
       'react-dom/test-utils': 'preact/test-utils',
-      'react-dom': 'preact/compat',
       'react/jsx-runtime': 'preact/jsx-runtime',
     },
   }
@@ -51,9 +49,7 @@ function legacyConfig(opts) {
     clean: true,
     esbuildPlugins: [esbuildPluginFilePathExtensions({ esmExtension: 'js' })],
     alias: {
-      react: 'preact/compat',
       'react-dom/test-utils': 'preact/test-utils',
-      'react-dom': 'preact/compat',
       'react/jsx-runtime': 'preact/jsx-runtime',
     },
     esbuildOptions(options) {
