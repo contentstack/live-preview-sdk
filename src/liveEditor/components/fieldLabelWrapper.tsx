@@ -31,6 +31,7 @@ interface FieldLabelWrapperProps {
 function FieldLabelWrapperComponent(
     props: FieldLabelWrapperProps
 ): JSX.Element {
+    const { eventDetails } = props;
     const [currentField, setCurrentField] = useState({
         text: "",
         icon: <CaretIcon />,
@@ -70,7 +71,7 @@ function FieldLabelWrapperComponent(
             );
             const { isDisabled: fieldDisabled, reason } = isFieldDisabled(
                 fieldSchema,
-                props.eventDetails
+                eventDetails
             );
 
             const currentFieldDisplayName =

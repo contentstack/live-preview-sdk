@@ -1,7 +1,6 @@
 import { useSignal } from "@preact/signals";
 import { CslpData } from "../../cslp/types/cslp.types";
 import getChildrenDirection from "../utils/getChildrenDirection";
-
 import {
     ALLOWED_MODAL_EDITABLE_FIELD,
     ALLOWED_REPLACE_FIELDS,
@@ -25,15 +24,14 @@ import { fieldIcons } from "./icons/fields";
 import classNames from "classnames";
 import { liveEditorStyles } from "../liveEditor.style";
 import CommentIcon from "./CommentIcon";
-import React from "preact/compat";
+import React, { useEffect, useState } from "preact/compat";
+import { FieldSchemaMap } from "../utils/fieldSchemaMap";
+import { isFieldDisabled } from "../utils/isFieldDisabled";
+import { IReferenceContentTypeSchema } from "../../cms/types/contentTypeSchema.types";
+import { VisualEditorCslpEventDetails } from "../types/liveEditor.types";
 
-interface MultipleFieldToolbarProps {
-    fieldMetadata: CslpData;
-    fieldSchema: ISchemaFieldMap;
-    targetElement: Element;
-    isMultiple: boolean;
-    isDisabled: boolean;
-}
+export type FieldDetails = Pick<VisualEditorCslpEventDetails, "editableElement" | "fieldMetadata">;
+interface MultipleFieldToolbarProps extends FieldDetails {};
 
 function handleReplaceAsset(fieldMetadata: CslpData) {
     // TODO avoid sending whole fieldMetadata
@@ -75,45 +73,47 @@ function FieldToolbarComponent(
     props: MultipleFieldToolbarProps
 ): JSX.Element | null {
     const {
-        isDisabled,
-        isMultiple,
         fieldMetadata,
-        fieldSchema,
-        targetElement,
+        editableElement: targetElement,
     } = props;
     const direction = useSignal("");
     const parentPath =
         fieldMetadata?.multipleFieldMetadata?.parentDetails?.parentCslpValue ||
         "";
+    const [fieldSchema, setFieldSchema] = useState<ISchemaFieldMap | null>(null);
 
+    let isModalEditable = false;
+    let isReplaceAllowed = false;
+    let isMultiple = false;
+    let Icon = null;
+    let fieldType = null;
+
+    if(fieldSchema) {
+        const { isDisabled } = isFieldDisabled(
+            fieldSchema,
+            {
+                editableElement: targetElement,
+                fieldMetadata
+            }
+        );
+
+        // field is disabled, no actions needed
+        if (isDisabled) {
+            return null;
+        }
+
+        fieldType = getFieldType(fieldSchema);
+        isModalEditable = ALLOWED_MODAL_EDITABLE_FIELD.includes(fieldType);
+        isReplaceAllowed = ALLOWED_REPLACE_FIELDS.includes(fieldType);
+
+        Icon = fieldIcons[fieldType];
+
+        isMultiple = fieldSchema.multiple || false;
+        if(fieldType === FieldDataType.REFERENCE)
+            isMultiple = (fieldSchema as IReferenceContentTypeSchema).field_metadata.ref_multiple;
+    }
+    
     direction.value = getChildrenDirection(targetElement, parentPath);
-
-     // field is multiple but an instance is not selected
-    // instead the whole field (all instances) is selected.
-    // Currently, when whole featured_blogs is selected in canvas,
-    // the fieldPathWithIndex and instance.fieldPathWithIndex are the same
-    // cannot rely on -1 index, as the non-negative index then refers to the index of
-    // the featured_blogs block in page_components
-    // It is not needed except taxanomy.
-    const isWholeMultipleField =
-        isMultiple &&
-        (fieldMetadata.fieldPathWithIndex ===
-            fieldMetadata.instance.fieldPathWithIndex ||
-            fieldMetadata.multipleFieldMetadata?.index === -1);
-
-    const fieldType = getFieldType(fieldSchema);
-    const isModalEditable = ALLOWED_MODAL_EDITABLE_FIELD.includes(fieldType) && !isWholeMultipleField;
-    const isReplaceAllowed = ALLOWED_REPLACE_FIELDS.includes(fieldType) && !isWholeMultipleField;
-    const Icon = fieldIcons[fieldType];
-
-    // field is disabled, no actions needed
-    if (isDisabled) {
-        return null;
-    }
-
-    if (DEFAULT_MULTIPLE_FIELDS.includes(fieldType) && isWholeMultipleField) {
-        return null;
-    }
 
     const editButton = Icon ? (
         <button
@@ -132,11 +132,11 @@ function FieldToolbarComponent(
                 handleEdit(props.fieldMetadata);
             }}
         >
-            {Icon && <Icon />}
+            <Icon />
         </button>
     ) : null;
 
-    const replaceButton = (
+    const replaceButton = fieldType ? (
         <button
             className={classNames(
                 "visual-builder__replace-button visual-builder__button visual-builder__button--secondary",
@@ -158,13 +158,39 @@ function FieldToolbarComponent(
         >
             <ReplaceAssetIcon />
         </button>
-    );
+    ) : null;
+
+    // field is multiple but an instance is not selected
+    // instead the whole field (all instances) is selected.
+    // Currently, when whole featured_blogs is selected in canvas,
+    // the fieldPathWithIndex and instance.fieldPathWithIndex are the same
+    // cannot rely on -1 index, as the non-negative index then refers to the index of
+    // the featured_blogs block in page_components
+    if (
+        (isMultiple &&
+            fieldMetadata.fieldPathWithIndex ===
+                fieldMetadata.instance.fieldPathWithIndex) ||
+        (isMultiple && fieldMetadata.multipleFieldMetadata?.index === -1)
+    ) {
+        return null;
+    }
 
     const totalElementCount = targetElement?.parentNode?.childElementCount ?? 1;
     const indexOfElement = fieldMetadata?.multipleFieldMetadata?.index;
 
     const disableMoveLeft = indexOfElement === 0; // first element
     const disableMoveRight = indexOfElement === totalElementCount - 1; // last element
+
+    useEffect(() => {
+        async function fetchFieldSchema() {
+            const fieldSchema = await FieldSchemaMap.getFieldSchema(
+                fieldMetadata.content_type_uid,
+                fieldMetadata.fieldPath
+            );
+            setFieldSchema(fieldSchema);
+        }
+        fetchFieldSchema();
+    }, [fieldMetadata]);
 
     return (
         <div
@@ -176,25 +202,22 @@ function FieldToolbarComponent(
             )}
             data-testid="visual-builder__focused-toolbar__multiple-field-toolbar"
         >
-            <div
-                className={classNames(
-                    "visual-builder__focused-toolbar__button-group",
-                    liveEditorStyles()[
-                        "visual-builder__focused-toolbar__button-group"
-                    ]
-                )}
-            >
-                <>
-                    {isMultiple &&
-                    !isWholeMultipleField ? (
+            { fieldSchema ? 
+                <div
+                    className={classNames(
+                        "visual-builder__focused-toolbar__button-group",
+                        liveEditorStyles()[
+                            "visual-builder__focused-toolbar__button-group"
+                        ]
+                    )}
+                >
+                    {isMultiple ? (
                         <>
                             <button
                                 data-testid="visual-builder__focused-toolbar__multiple-field-toolbar__move-left-button"
                                 className={classNames(
                                     `visual-builder__button visual-builder__button--secondary`,
-                                    liveEditorStyles()[
-                                        "visual-builder__button"
-                                    ],
+                                    liveEditorStyles()["visual-builder__button"],
                                     liveEditorStyles()[
                                         "visual-builder__button--secondary"
                                     ]
@@ -203,7 +226,7 @@ function FieldToolbarComponent(
                                     e.preventDefault();
                                     e.stopPropagation();
                                     handleMoveInstance(
-                                        props.fieldMetadata,
+                                        fieldMetadata,
                                         "previous"
                                     );
                                 }}
@@ -225,9 +248,7 @@ function FieldToolbarComponent(
                                 data-testid="visual-builder__focused-toolbar__multiple-field-toolbar__move-right-button"
                                 className={classNames(
                                     `visual-builder__button visual-builder__button--secondary`,
-                                    liveEditorStyles()[
-                                        "visual-builder__button"
-                                    ],
+                                    liveEditorStyles()["visual-builder__button"],
                                     liveEditorStyles()[
                                         "visual-builder__button--secondary"
                                     ]
@@ -235,10 +256,7 @@ function FieldToolbarComponent(
                                 onClick={(e) => {
                                     e.preventDefault();
                                     e.stopPropagation();
-                                    handleMoveInstance(
-                                        props.fieldMetadata,
-                                        "next"
-                                    );
+                                    handleMoveInstance(fieldMetadata, "next");
                                 }}
                                 disabled={disableMoveRight}
                             >
@@ -261,9 +279,7 @@ function FieldToolbarComponent(
                                 data-testid="visual-builder__focused-toolbar__multiple-field-toolbar__delete-button"
                                 className={classNames(
                                     "visual-builder__button visual-builder__button--secondary",
-                                    liveEditorStyles()[
-                                        "visual-builder__button"
-                                    ],
+                                    liveEditorStyles()["visual-builder__button"],
                                     liveEditorStyles()[
                                         "visual-builder__button--secondary"
                                     ]
@@ -271,30 +287,23 @@ function FieldToolbarComponent(
                                 onClick={(e) => {
                                     e.preventDefault();
                                     e.stopPropagation();
-                                    handleDeleteInstance(props.fieldMetadata);
+                                    handleDeleteInstance(fieldMetadata);
                                 }}
                             >
                                 <DeleteIcon />
                             </button>
-                            {isWholeMultipleField && (
-                                <CommentIcon
-                                    fieldMetadata={fieldMetadata}
-                                    fieldSchema={fieldSchema}
-                                />
-                            )}
                         </>
                     ) : (
                         <>
                             {isModalEditable ? editButton : null}
                             {isReplaceAllowed ? replaceButton : null}
-                            <CommentIcon
-                                fieldMetadata={fieldMetadata}
-                                fieldSchema={fieldSchema}
-                            />
+                            <CommentIcon fieldMetadata={fieldMetadata} fieldSchema={fieldSchema}/>
+                            
                         </>
                     )}
-                </>
-            </div>
+                </div>
+            : null}
+            
         </div>
     );
 }

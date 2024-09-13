@@ -83,7 +83,7 @@ async function handleEditorInteraction(
     ) {
         return;
     }
-    const { editableElement } = eventDetails;
+    const { editableElement, fieldMetadata } = eventDetails;
 
     if (
         VisualEditor.VisualEditorGlobalState.value
@@ -136,7 +136,7 @@ async function handleEditorInteraction(
         focusedToolbar: params.focusedToolbar,
     });
 
-    const { content_type_uid, fieldPath } = eventDetails.fieldMetadata;
+    const { content_type_uid, fieldPath } = fieldMetadata;
 
     const fieldSchema = await FieldSchemaMap.getFieldSchema(
         content_type_uid,

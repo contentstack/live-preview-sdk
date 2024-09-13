@@ -70,10 +70,7 @@ describe("MultipleFieldToolbarComponent", () => {
         const { getByTestId } = render(
             <FieldToolbarComponent
                 fieldMetadata={mockFieldMetadata}
-                fieldSchema={mockLinkFieldSchema}
-                targetElement={targetElement}
-                isMultiple={false}
-                isDisabled={false}
+                editableElement={targetElement}
             />
         );
 
@@ -96,10 +93,7 @@ describe("MultipleFieldToolbarComponent", () => {
         const { getByTestId } = render(
             <FieldToolbarComponent
                 fieldMetadata={mockFieldMetadata}
-                fieldSchema={mockLinkFieldSchema}
-                targetElement={targetElement}
-                isMultiple={false}
-                isDisabled={false}
+                editableElement={targetElement}
             />
         );
 
@@ -121,10 +115,7 @@ describe("MultipleFieldToolbarComponent", () => {
         const { getByTestId } = render(
             <FieldToolbarComponent
                 fieldMetadata={mockFieldMetadata}
-                fieldSchema={mockLinkFieldSchema}
-                targetElement={targetElement}
-                isMultiple={false}
-                isDisabled={false}
+                editableElement={targetElement}
             />
         );
 
@@ -146,10 +137,7 @@ describe("MultipleFieldToolbarComponent", () => {
         const { getByTestId } = render(
             <FieldToolbarComponent
                 fieldMetadata={mockFieldMetadata}
-                fieldSchema={mockLinkFieldSchema}
-                targetElement={targetElement}
-                isMultiple={false}
-                isDisabled={false}
+                editableElement={targetElement}
             />
         );
 
