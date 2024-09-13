@@ -1,10 +1,11 @@
 import { PublicLogger } from "../logger";
+import { vi } from "vitest";
 
 describe("PublicLogger", () => {
     const OLD_ENV = process.env;
 
     beforeEach(() => {
-        jest.resetModules();
+        vi.resetModules();
         process.env = { ...OLD_ENV };
     });
 
@@ -18,8 +19,8 @@ describe("PublicLogger", () => {
         });
 
         test("debug message", () => {
-            jest.spyOn(global.console, "debug");
-            jest.spyOn(PublicLogger, "debug");
+            vi.spyOn(global.console, "debug");
+            vi.spyOn(PublicLogger, "debug");
             PublicLogger.debug(["test debug message"]);
 
             expect(PublicLogger.debug).toBeCalledTimes(1);
@@ -30,8 +31,8 @@ describe("PublicLogger", () => {
         });
 
         test("warn message", () => {
-            jest.spyOn(global.console, "warn");
-            jest.spyOn(PublicLogger, "warn");
+            vi.spyOn(global.console, "warn");
+            vi.spyOn(PublicLogger, "warn");
             PublicLogger.warn(["test warn message"]);
 
             expect(PublicLogger.warn).toBeCalledTimes(1);
@@ -42,8 +43,8 @@ describe("PublicLogger", () => {
         });
 
         test("error message", () => {
-            jest.spyOn(global.console, "error");
-            jest.spyOn(PublicLogger, "error");
+            vi.spyOn(global.console, "error");
+            vi.spyOn(PublicLogger, "error");
             PublicLogger.error(["test error message"]);
 
             expect(PublicLogger.error).toBeCalledTimes(1);
@@ -60,22 +61,22 @@ describe("PublicLogger", () => {
         });
 
         test("debug message", () => {
-            jest.spyOn(global.console, "debug");
-            jest.spyOn(PublicLogger, "debug");
+            vi.spyOn(global.console, "debug");
+            vi.spyOn(PublicLogger, "debug");
             PublicLogger.debug(["test debug message"]);
             expect(PublicLogger.debug).toBeCalledWith(["test debug message"]);
         });
 
         test("warn message", () => {
-            jest.spyOn(global.console, "warn");
-            jest.spyOn(PublicLogger, "warn");
+            vi.spyOn(global.console, "warn");
+            vi.spyOn(PublicLogger, "warn");
             PublicLogger.warn(["test warn message"]);
             expect(PublicLogger.warn).toBeCalledWith(["test warn message"]);
         });
 
         test("error message", () => {
-            jest.spyOn(global.console, "error");
-            jest.spyOn(PublicLogger, "error");
+            vi.spyOn(global.console, "error");
+            vi.spyOn(PublicLogger, "error");
             PublicLogger.error(["test error message"]);
             expect(PublicLogger.error).toBeCalledWith(["test error message"]);
         });

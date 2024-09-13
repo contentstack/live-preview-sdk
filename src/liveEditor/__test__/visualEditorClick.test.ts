@@ -1,45 +1,38 @@
-import "@testing-library/jest-dom/extend-expect";
-import { fireEvent, waitFor } from "@testing-library/preact";
+import { waitFor } from "@testing-library/preact";
+import "@testing-library/jest-dom";
+import { getFieldSchemaMap } from "../../__test__/data/fieldSchemaMap";
 import Config from "../../configManager/configManager";
 import { VisualEditor } from "../index";
-import { cleanIndividualFieldResidual } from "../utils/handleIndividualFields";
+import { LIVE_EDITOR_FIELD_TYPE_ATTRIBUTE_KEY } from "../utils/constants";
 import { FieldSchemaMap } from "../utils/fieldSchemaMap";
-import { getFieldSchemaMap } from "../../__test__/data/fieldSchemaMap";
-import {
-    LIVE_EDITOR_FIELD_TYPE_ATTRIBUTE_KEY,
-    numericInputRegex,
-} from "../utils/constants";
+import { getDOMEditStack } from "../utils/getCsDataOfElement";
 import liveEditorPostMessage from "../utils/liveEditorPostMessage";
-import {
-    getCsDataOfElement,
-    getDOMEditStack,
-} from "../utils/getCsDataOfElement";
+import { vi } from "vitest";
 
 import { LiveEditorPostMessageEvents } from "../utils/types/postMessage.types";
-import { sleep } from "../../__test__/utils";
 
-global.ResizeObserver = jest.fn().mockImplementation(() => ({
-    observe: jest.fn(),
-    unobserve: jest.fn(),
-    disconnect: jest.fn(),
+global.ResizeObserver = vi.fn().mockImplementation(() => ({
+    observe: vi.fn(),
+    unobserve: vi.fn(),
+    disconnect: vi.fn(),
 }));
 
-jest.mock("../utils/liveEditorPostMessage", () => {
-    const { getAllContentTypes } = jest.requireActual(
-        "../../__test__/data/contentType"
-    );
+vi.mock("../utils/liveEditorPostMessage", async () => {
+    const { getAllContentTypes } = await vi.importActual<
+        typeof import("../../__test__/data/contentType")
+    >("../../__test__/data/contentType");
     const contentTypes = getAllContentTypes();
     return {
         __esModule: true,
         default: {
-            send: jest.fn().mockImplementation((eventName: string) => {
+            send: vi.fn().mockImplementation((eventName: string) => {
                 if (eventName === "init")
                     return Promise.resolve({
                         contentTypes,
                     });
                 return Promise.resolve();
             }),
-            on: jest.fn(),
+            on: vi.fn(),
         },
     };
 });
@@ -64,7 +57,7 @@ describe("When an element is clicked in visual editor mode", () => {
     });
 
     afterEach(() => {
-        jest.clearAllMocks();
+        vi.clearAllMocks();
         document.body.innerHTML = "";
     });
 
@@ -2909,7 +2902,7 @@ describe("When an element is clicked in visual editor mode", () => {
         });
 
         afterEach(() => {
-            jest.clearAllMocks();
+            vi.clearAllMocks();
             visualEditor.destroy();
         });
 

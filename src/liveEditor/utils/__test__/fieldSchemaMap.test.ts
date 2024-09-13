@@ -2,15 +2,15 @@ import { getFieldSchemaMap } from "../../../__test__/data/fieldSchemaMap";
 import { FieldSchemaMap } from "../fieldSchemaMap";
 import { LiveEditorPostMessageEvents } from "../types/postMessage.types";
 
-jest.mock("../../utils/liveEditorPostMessage", () => {
-    const { getFieldSchemaMap } = jest.requireActual(
-        "../../../__test__/data/fieldSchemaMap.ts"
-    );
+vi.mock("../../utils/liveEditorPostMessage", async () => {
+    const { getFieldSchemaMap } = await vi.importActual<
+        typeof import("../../../__test__/data/fieldSchemaMap")
+    >("../../../__test__/data/fieldSchemaMap.ts");
     const fieldSchemaMap = getFieldSchemaMap();
     return {
         __esModule: true,
         default: {
-            send: jest.fn().mockImplementation((eventName: string) => {
+            send: vi.fn().mockImplementation((eventName: string) => {
                 if (
                     eventName === LiveEditorPostMessageEvents.GET_FIELD_SCHEMA
                 ) {
@@ -20,7 +20,7 @@ jest.mock("../../utils/liveEditorPostMessage", () => {
                 }
                 return Promise.resolve();
             }),
-            on: jest.fn(),
+            on: vi.fn(),
         },
     };
 });

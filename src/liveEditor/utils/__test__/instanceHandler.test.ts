@@ -6,15 +6,15 @@ import {
     handleMoveInstance,
 } from "./../instanceHandlers";
 
-jest.mock("../liveEditorPostMessage", () => {
+vi.mock("../liveEditorPostMessage", () => {
     return {
         __esModule: true,
         default: {
-            send: jest.fn().mockImplementation((eventName: string) => {
+            send: vi.fn().mockImplementation((eventName: string) => {
                 if (eventName === "delete-instance") return Promise.resolve();
                 return Promise.resolve();
             }),
-            on: jest.fn(),
+            on: vi.fn(),
         },
     };
 });

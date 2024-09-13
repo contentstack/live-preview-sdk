@@ -1,3 +1,4 @@
+import { vi } from "vitest";
 import { PublicLogger } from "../../logger/logger";
 import { removeFromOnChangeSubscribers } from "../removeFromOnChangeSubscribers";
 
@@ -7,15 +8,15 @@ describe("removeFromOnChangeSubscribers", () => {
 
     beforeEach(() => {
         callbackStack = {
-            callback1: jest.fn(),
-            callback2: jest.fn(),
+            callback1: vi.fn(),
+            callback2: vi.fn(),
         };
-        mockWarn = jest.spyOn(PublicLogger, "warn");
+        mockWarn = vi.spyOn(PublicLogger, "warn");
     });
 
     afterEach(() => {
         callbackStack = null;
-        jest.clearAllMocks();
+        vi.clearAllMocks();
     });
 
     test("should remove subscriber by callback UID if found", () => {
@@ -44,7 +45,7 @@ describe("removeFromOnChangeSubscribers", () => {
     });
 
     test("should warn and not remove subscriber if no subscriber found with the given function", () => {
-        const nonExistentFunction = jest.fn();
+        const nonExistentFunction = vi.fn();
         removeFromOnChangeSubscribers(callbackStack, nonExistentFunction);
         expect(callbackStack["callback1"]).toBeDefined();
         expect(callbackStack["callback2"]).toBeDefined();

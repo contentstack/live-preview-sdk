@@ -6,15 +6,15 @@ import { FieldSchemaMap } from "../utils/fieldSchemaMap";
 import liveEditorPostMessage from "../utils/liveEditorPostMessage";
 import { LiveEditorPostMessageEvents } from "../utils/types/postMessage.types";
 
-jest.mock("../utils/liveEditorPostMessage", () => {
-    const { getAllContentTypes } = jest.requireActual(
-        "../../__test__/data/contentType"
-    );
+vi.mock("../utils/liveEditorPostMessage", async () => {
+    const { getAllContentTypes } = await vi.importActual<
+        typeof import("../../__test__/data/contentType")
+    >("../../__test__/data/contentType");
     const contentTypes = getAllContentTypes();
     return {
         __esModule: true,
         default: {
-            send: jest.fn().mockImplementation((eventName: string) => {
+            send: vi.fn().mockImplementation((eventName: string) => {
                 if (eventName === "init")
                     return Promise.resolve({
                         contentTypes,
@@ -148,10 +148,10 @@ const mockDomRect = {
     }),
 };
 
-global.ResizeObserver = jest.fn().mockImplementation(() => ({
-    observe: jest.fn(),
-    unobserve: jest.fn(),
-    disconnect: jest.fn(),
+global.ResizeObserver = vi.fn().mockImplementation(() => ({
+    observe: vi.fn(),
+    unobserve: vi.fn(),
+    disconnect: vi.fn(),
 }));
 
 describe("When an element is hovered in visual editor mode", () => {
@@ -174,7 +174,7 @@ describe("When an element is hovered in visual editor mode", () => {
     });
 
     afterEach(() => {
-        jest.clearAllMocks();
+        vi.clearAllMocks();
         document.getElementsByTagName("html")[0].innerHTML = "";
     });
 
@@ -192,7 +192,7 @@ describe("When an element is hovered in visual editor mode", () => {
                 "data-cslp",
                 "all_fields.bltapikey.en-us.title"
             );
-            titleField.getBoundingClientRect = jest
+            titleField.getBoundingClientRect = vi
                 .fn()
                 .mockReturnValue(mockDomRect.singleLeft());
             document.body.appendChild(titleField);
@@ -231,7 +231,7 @@ describe("When an element is hovered in visual editor mode", () => {
                 "data-cslp",
                 "all_fields.bltapikey.en-us.single_line"
             );
-            singleLineField.getBoundingClientRect = jest
+            singleLineField.getBoundingClientRect = vi
                 .fn()
                 .mockReturnValue(mockDomRect.singleLeft());
             document.body.appendChild(singleLineField);
@@ -271,8 +271,7 @@ describe("When an element is hovered in visual editor mode", () => {
                 "data-cslp",
                 "all_fields.bltapikey.en-us.single_line_textbox_multiple_"
             );
-            container.getBoundingClientRect = jest
-
+            container.getBoundingClientRect = vi
                 .fn()
                 .mockReturnValue(mockDomRect.singleHorizontal());
 
@@ -281,7 +280,7 @@ describe("When an element is hovered in visual editor mode", () => {
                 "data-cslp",
                 "all_fields.bltapikey.en-us.single_line_textbox_multiple_.0"
             );
-            firstSingleLineField.getBoundingClientRect = jest
+            firstSingleLineField.getBoundingClientRect = vi
                 .fn()
                 .mockReturnValue(mockDomRect.singleLeft());
 
@@ -290,7 +289,7 @@ describe("When an element is hovered in visual editor mode", () => {
                 "data-cslp",
                 "all_fields.bltapikey.en-us.single_line_textbox_multiple_.1"
             );
-            secondSingleLineField.getBoundingClientRect = jest
+            secondSingleLineField.getBoundingClientRect = vi
                 .fn()
                 .mockReturnValue(mockDomRect.singleRight());
 
@@ -365,6 +364,7 @@ describe("When an element is hovered in visual editor mode", () => {
             expect(instanceButton.length).toBe(2);
 
             instanceButton[0].click();
+
             expect(liveEditorPostMessage?.send).lastCalledWith(
                 LiveEditorPostMessageEvents.ADD_INSTANCE,
                 {
@@ -385,9 +385,9 @@ describe("When an element is hovered in visual editor mode", () => {
                             },
                         },
                         instance: {
-                            fieldPathWithIndex: "single_line_textbox_multiple_.0",
+                            fieldPathWithIndex:
+                                "single_line_textbox_multiple_.0",
                         },
-                        }
                     },
                     index: 0,
                 }
@@ -414,16 +414,17 @@ describe("When an element is hovered in visual editor mode", () => {
                             },
                         },
                         instance: {
-                            fieldPathWithIndex: "single_line_textbox_multiple_.0",
-                        }
+                            fieldPathWithIndex:
+                                "single_line_textbox_multiple_.0",
+                        },
                     },
                     index: 1,
                 }
             );
-
             expect(liveEditorPostMessage?.send).toHaveBeenCalledTimes(3);
         });
     });
+    // before here you must past
 
     describe("multi line field", () => {
         let multiLineField: HTMLParagraphElement;
@@ -436,7 +437,7 @@ describe("When an element is hovered in visual editor mode", () => {
                 "all_fields.bltapikey.en-us.multi_line"
             );
 
-            multiLineField.getBoundingClientRect = jest
+            multiLineField.getBoundingClientRect = vi
 
                 .fn()
                 .mockReturnValue(mockDomRect.singleLeft());
@@ -480,7 +481,7 @@ describe("When an element is hovered in visual editor mode", () => {
                 "data-cslp",
                 "all_fields.bltapikey.en-us.multi_line_textbox_multiple_"
             );
-            container.getBoundingClientRect = jest
+            container.getBoundingClientRect = vi
                 .fn()
                 .mockReturnValue(mockDomRect.singleHorizontal());
 
@@ -490,7 +491,7 @@ describe("When an element is hovered in visual editor mode", () => {
                 "all_fields.bltapikey.en-us.multi_line_textbox_multiple_.0"
             );
 
-            firstMultiLineField.getBoundingClientRect = jest
+            firstMultiLineField.getBoundingClientRect = vi
                 .fn()
                 .mockReturnValue(mockDomRect.singleLeft());
 
@@ -500,7 +501,7 @@ describe("When an element is hovered in visual editor mode", () => {
                 "all_fields.bltapikey.en-us.multi_line_textbox_multiple_.1"
             );
 
-            secondMultiLineField.getBoundingClientRect = jest
+            secondMultiLineField.getBoundingClientRect = vi
                 .fn()
                 .mockReturnValue(mockDomRect.singleRight());
 
@@ -598,8 +599,9 @@ describe("When an element is hovered in visual editor mode", () => {
                             index: 0,
                         },
                         instance: {
-                            fieldPathWithIndex: "multi_line_textbox_multiple_.0",
-                        }
+                            fieldPathWithIndex:
+                                "multi_line_textbox_multiple_.0",
+                        },
                     },
                     index: 0,
                 }
@@ -626,8 +628,9 @@ describe("When an element is hovered in visual editor mode", () => {
                             index: 0,
                         },
                         instance: {
-                            fieldPathWithIndex: "multi_line_textbox_multiple_.0",
-                        }
+                            fieldPathWithIndex:
+                                "multi_line_textbox_multiple_.0",
+                        },
                     },
                     index: 1,
                 }
@@ -648,7 +651,7 @@ describe("When an element is hovered in visual editor mode", () => {
                 "all_fields.bltapikey.en-us.rich_text_editor"
             );
 
-            htmlRteField.getBoundingClientRect = jest
+            htmlRteField.getBoundingClientRect = vi
                 .fn()
                 .mockReturnValue(mockDomRect.singleLeft());
 
@@ -691,7 +694,7 @@ describe("When an element is hovered in visual editor mode", () => {
                 "data-cslp",
                 "all_fields.bltapikey.en-us.rich_text_editor_multiple_"
             );
-            container.getBoundingClientRect = jest
+            container.getBoundingClientRect = vi
 
                 .fn()
                 .mockReturnValue(mockDomRect.singleHorizontal());
@@ -702,7 +705,7 @@ describe("When an element is hovered in visual editor mode", () => {
                 "all_fields.bltapikey.en-us.rich_text_editor_multiple_.0"
             );
 
-            firstHtmlRteField.getBoundingClientRect = jest
+            firstHtmlRteField.getBoundingClientRect = vi
                 .fn()
                 .mockReturnValue(mockDomRect.singleLeft());
 
@@ -712,7 +715,7 @@ describe("When an element is hovered in visual editor mode", () => {
                 "all_fields.bltapikey.en-us.rich_text_editor_multiple_.1"
             );
 
-            secondHtmlRteField.getBoundingClientRect = jest
+            secondHtmlRteField.getBoundingClientRect = vi
                 .fn()
                 .mockReturnValue(mockDomRect.singleRight());
 
@@ -812,7 +815,7 @@ describe("When an element is hovered in visual editor mode", () => {
                         },
                         instance: {
                             fieldPathWithIndex: "rich_text_editor_multiple_.0",
-                        }
+                        },
                     },
                     index: 0,
                 }
@@ -840,7 +843,7 @@ describe("When an element is hovered in visual editor mode", () => {
                         },
                         instance: {
                             fieldPathWithIndex: "rich_text_editor_multiple_.0",
-                        }
+                        },
                     },
                     index: 1,
                 }
@@ -859,7 +862,7 @@ describe("When an element is hovered in visual editor mode", () => {
                 "all_fields.bltapikey.en-us.json_rte"
             );
 
-            jsonRteField.getBoundingClientRect = jest
+            jsonRteField.getBoundingClientRect = vi
                 .fn()
                 .mockReturnValue(mockDomRect.singleLeft());
 
@@ -904,7 +907,7 @@ describe("When an element is hovered in visual editor mode", () => {
                 "all_fields.bltapikey.en-us.json_rich_text_editor_multiple_"
             );
 
-            container.getBoundingClientRect = jest
+            container.getBoundingClientRect = vi
                 .fn()
                 .mockReturnValue(mockDomRect.singleHorizontal());
 
@@ -914,7 +917,7 @@ describe("When an element is hovered in visual editor mode", () => {
                 "all_fields.bltapikey.en-us.json_rich_text_editor_multiple_.0"
             );
 
-            firstJsonRteField.getBoundingClientRect = jest
+            firstJsonRteField.getBoundingClientRect = vi
                 .fn()
                 .mockReturnValue(mockDomRect.singleLeft());
 
@@ -924,7 +927,7 @@ describe("When an element is hovered in visual editor mode", () => {
                 "all_fields.bltapikey.en-us.json_rich_text_editor_multiple_.1"
             );
 
-            secondJsonRteField.getBoundingClientRect = jest
+            secondJsonRteField.getBoundingClientRect = vi
                 .fn()
                 .mockReturnValue(mockDomRect.singleRight());
 
@@ -1022,8 +1025,9 @@ describe("When an element is hovered in visual editor mode", () => {
                             index: 0,
                         },
                         instance: {
-                            fieldPathWithIndex: "json_rich_text_editor_multiple_.0",
-                        }
+                            fieldPathWithIndex:
+                                "json_rich_text_editor_multiple_.0",
+                        },
                     },
                     index: 0,
                 }
@@ -1050,8 +1054,9 @@ describe("When an element is hovered in visual editor mode", () => {
                             index: 0,
                         },
                         instance: {
-                            fieldPathWithIndex: "json_rich_text_editor_multiple_.0",
-                        }
+                            fieldPathWithIndex:
+                                "json_rich_text_editor_multiple_.0",
+                        },
                     },
                     index: 1,
                 }
@@ -1072,7 +1077,7 @@ describe("When an element is hovered in visual editor mode", () => {
                 "all_fields.bltapikey.en-us.markdown"
             );
 
-            markdownField.getBoundingClientRect = jest
+            markdownField.getBoundingClientRect = vi
                 .fn()
                 .mockReturnValue(mockDomRect.singleLeft());
 
@@ -1116,7 +1121,7 @@ describe("When an element is hovered in visual editor mode", () => {
                 "all_fields.bltapikey.en-us.markdown_multiple_"
             );
 
-            container.getBoundingClientRect = jest
+            container.getBoundingClientRect = vi
                 .fn()
                 .mockReturnValue(mockDomRect.singleHorizontal());
 
@@ -1126,7 +1131,7 @@ describe("When an element is hovered in visual editor mode", () => {
                 "all_fields.bltapikey.en-us.markdown_multiple_.0"
             );
 
-            firstMarkdownField.getBoundingClientRect = jest
+            firstMarkdownField.getBoundingClientRect = vi
                 .fn()
                 .mockReturnValue(mockDomRect.singleLeft());
 
@@ -1136,7 +1141,7 @@ describe("When an element is hovered in visual editor mode", () => {
                 "all_fields.bltapikey.en-us.markdown_multiple_.1"
             );
 
-            secondMarkdownField.getBoundingClientRect = jest
+            secondMarkdownField.getBoundingClientRect = vi
                 .fn()
                 .mockReturnValue(mockDomRect.singleRight());
 
@@ -1236,7 +1241,7 @@ describe("When an element is hovered in visual editor mode", () => {
                         },
                         instance: {
                             fieldPathWithIndex: "markdown_multiple_.0",
-                        }
+                        },
                     },
                     index: 0,
                 }
@@ -1264,7 +1269,7 @@ describe("When an element is hovered in visual editor mode", () => {
                         },
                         instance: {
                             fieldPathWithIndex: "markdown_multiple_.0",
-                        }
+                        },
                     },
                     index: 1,
                 }
@@ -1283,7 +1288,7 @@ describe("When an element is hovered in visual editor mode", () => {
                 "all_fields.bltapikey.en-us.select"
             );
 
-            selectField.getBoundingClientRect = jest
+            selectField.getBoundingClientRect = vi
                 .fn()
                 .mockReturnValue(mockDomRect.singleLeft());
 
@@ -1327,7 +1332,7 @@ describe("When an element is hovered in visual editor mode", () => {
                 "data-cslp",
                 "all_fields.bltapikey.en-us.select_multiple_"
             );
-            container.getBoundingClientRect = jest
+            container.getBoundingClientRect = vi
                 .fn()
                 .mockReturnValue(mockDomRect.singleHorizontal());
 
@@ -1337,7 +1342,7 @@ describe("When an element is hovered in visual editor mode", () => {
                 "all_fields.bltapikey.en-us.select_multiple_.0"
             );
 
-            firstSelectField.getBoundingClientRect = jest
+            firstSelectField.getBoundingClientRect = vi
                 .fn()
                 .mockReturnValue(mockDomRect.singleLeft());
 
@@ -1347,7 +1352,7 @@ describe("When an element is hovered in visual editor mode", () => {
                 "all_fields.bltapikey.en-us.select_multiple_.1"
             );
 
-            secondSelectField.getBoundingClientRect = jest
+            secondSelectField.getBoundingClientRect = vi
                 .fn()
                 .mockReturnValue(mockDomRect.singleLeft());
 
@@ -1447,7 +1452,7 @@ describe("When an element is hovered in visual editor mode", () => {
                         },
                         instance: {
                             fieldPathWithIndex: "select_multiple_.0",
-                        }
+                        },
                     },
                     index: 0,
                 }
@@ -1475,7 +1480,7 @@ describe("When an element is hovered in visual editor mode", () => {
                         },
                         instance: {
                             fieldPathWithIndex: "select_multiple_.0",
-                        }
+                        },
                     },
                     index: 1,
                 }
@@ -1494,7 +1499,7 @@ describe("When an element is hovered in visual editor mode", () => {
                 "all_fields.bltapikey.en-us.number"
             );
 
-            numberField.getBoundingClientRect = jest
+            numberField.getBoundingClientRect = vi
                 .fn()
                 .mockReturnValue(mockDomRect.singleLeft());
 
@@ -1538,7 +1543,7 @@ describe("When an element is hovered in visual editor mode", () => {
                 "data-cslp",
                 "all_fields.bltapikey.en-us.number_multiple_"
             );
-            container.getBoundingClientRect = jest
+            container.getBoundingClientRect = vi
                 .fn()
                 .mockReturnValue(mockDomRect.singleHorizontal());
 
@@ -1547,7 +1552,7 @@ describe("When an element is hovered in visual editor mode", () => {
                 "data-cslp",
                 "all_fields.bltapikey.en-us.number_multiple_.0"
             );
-            firstNumberField.getBoundingClientRect = jest
+            firstNumberField.getBoundingClientRect = vi
                 .fn()
                 .mockReturnValue(mockDomRect.singleLeft());
 
@@ -1556,7 +1561,7 @@ describe("When an element is hovered in visual editor mode", () => {
                 "data-cslp",
                 "all_fields.bltapikey.en-us.number_multiple_.1"
             );
-            secondNumberField.getBoundingClientRect = jest
+            secondNumberField.getBoundingClientRect = vi
                 .fn()
                 .mockReturnValue(mockDomRect.singleRight());
 
@@ -1656,7 +1661,7 @@ describe("When an element is hovered in visual editor mode", () => {
                         },
                         instance: {
                             fieldPathWithIndex: "number_multiple_.0",
-                        }
+                        },
                     },
                     index: 0,
                 }
@@ -1684,7 +1689,7 @@ describe("When an element is hovered in visual editor mode", () => {
                         },
                         instance: {
                             fieldPathWithIndex: "number_multiple_.0",
-                        }
+                        },
                     },
                     index: 1,
                 }
@@ -1703,7 +1708,7 @@ describe("When an element is hovered in visual editor mode", () => {
                 "all_fields.bltapikey.en-us.boolean"
             );
 
-            booleanField.getBoundingClientRect = jest
+            booleanField.getBoundingClientRect = vi
                 .fn()
                 .mockReturnValue(mockDomRect.singleLeft());
 
@@ -1747,7 +1752,7 @@ describe("When an element is hovered in visual editor mode", () => {
                 "all_fields.bltapikey.en-us.file"
             );
 
-            fileField.getBoundingClientRect = jest
+            fileField.getBoundingClientRect = vi
                 .fn()
                 .mockReturnValue(mockDomRect.singleLeft());
 
@@ -1818,7 +1823,7 @@ describe("When an element is hovered in visual editor mode", () => {
                 "all_fields.bltapikey.en-us.file_multiple_"
             );
 
-            container.getBoundingClientRect = jest
+            container.getBoundingClientRect = vi
                 .fn()
                 .mockReturnValue(mockDomRect.singleHorizontal());
 
@@ -1828,7 +1833,7 @@ describe("When an element is hovered in visual editor mode", () => {
                 "all_fields.bltapikey.en-us.file_multiple_.0"
             );
 
-            firstFileField.getBoundingClientRect = jest
+            firstFileField.getBoundingClientRect = vi
                 .fn()
                 .mockReturnValue(mockDomRect.singleLeft());
 
@@ -1838,7 +1843,7 @@ describe("When an element is hovered in visual editor mode", () => {
                 "all_fields.bltapikey.en-us.file_multiple_.1"
             );
 
-            secondFileField.getBoundingClientRect = jest
+            secondFileField.getBoundingClientRect = vi
                 .fn()
                 .mockReturnValue(mockDomRect.singleRight());
 
@@ -1847,7 +1852,7 @@ describe("When an element is hovered in visual editor mode", () => {
                 "data-cslp",
                 "all_fields.bltapikey.en-us.file_multiple_.0.url"
             );
-            firstImageField.getBoundingClientRect = jest
+            firstImageField.getBoundingClientRect = vi
                 .fn()
                 .mockReturnValue(mockDomRect.singleLeft());
 
@@ -1856,7 +1861,7 @@ describe("When an element is hovered in visual editor mode", () => {
                 "data-cslp",
                 "all_fields.bltapikey.en-us.file_multiple_.1.url"
             );
-            secondFileField.getBoundingClientRect = jest
+            secondFileField.getBoundingClientRect = vi
                 .fn()
                 .mockReturnValue(mockDomRect.singleRight());
 
@@ -1958,7 +1963,7 @@ describe("When an element is hovered in visual editor mode", () => {
                         },
                         instance: {
                             fieldPathWithIndex: "file_multiple_.0",
-                        }
+                        },
                     },
                     index: 0,
                 }
@@ -1986,7 +1991,7 @@ describe("When an element is hovered in visual editor mode", () => {
                         },
                         instance: {
                             fieldPathWithIndex: "file_multiple_.0",
-                        }
+                        },
                     },
                     index: 1,
                 }
@@ -2042,7 +2047,7 @@ describe("When an element is hovered in visual editor mode", () => {
                 "all_fields.bltapikey.en-us.date"
             );
 
-            dataField.getBoundingClientRect = jest
+            dataField.getBoundingClientRect = vi
                 .fn()
                 .mockReturnValue(mockDomRect.singleLeft());
 
@@ -2084,7 +2089,7 @@ describe("When an element is hovered in visual editor mode", () => {
                 "all_fields.bltapikey.en-us.link.href"
             );
 
-            linkField.getBoundingClientRect = jest
+            linkField.getBoundingClientRect = vi
                 .fn()
                 .mockReturnValue(mockDomRect.singleLeft());
 
@@ -2127,7 +2132,7 @@ describe("When an element is hovered in visual editor mode", () => {
                 "data-cslp",
                 "all_fields.bltapikey.en-us.link_multiple_"
             );
-            container.getBoundingClientRect = jest
+            container.getBoundingClientRect = vi
                 .fn()
                 .mockReturnValue(mockDomRect.singleHorizontal());
 
@@ -2136,7 +2141,7 @@ describe("When an element is hovered in visual editor mode", () => {
                 "data-cslp",
                 "all_fields.blt366df6233d9915f5.en-us.link_multiple_.0.href"
             );
-            firstLinkField.getBoundingClientRect = jest
+            firstLinkField.getBoundingClientRect = vi
                 .fn()
                 .mockReturnValue(mockDomRect.singleLeft());
 
@@ -2145,7 +2150,7 @@ describe("When an element is hovered in visual editor mode", () => {
                 "data-cslp",
                 "all_fields.bltapikey.en-us.link_multiple_.1.href"
             );
-            secondLinkField.getBoundingClientRect = jest
+            secondLinkField.getBoundingClientRect = vi
                 .fn()
                 .mockReturnValue(mockDomRect.singleRight());
 
@@ -2251,7 +2256,7 @@ describe("When an element is hovered in visual editor mode", () => {
                         },
                         instance: {
                             fieldPathWithIndex: "link_multiple_.0",
-                        }
+                        },
                     },
                     index: 0,
                 }
@@ -2279,7 +2284,7 @@ describe("When an element is hovered in visual editor mode", () => {
                         },
                         instance: {
                             fieldPathWithIndex: "link_multiple_.0",
-                        }
+                        },
                     },
                     index: 1,
                 }
@@ -2298,7 +2303,7 @@ describe("When an element is hovered in visual editor mode", () => {
                 "all_fields.bltapikey.en-us.reference"
             );
 
-            referenceField.getBoundingClientRect = jest
+            referenceField.getBoundingClientRect = vi
                 .fn()
                 .mockReturnValue(mockDomRect.singleLeft());
 
@@ -2341,7 +2346,7 @@ describe("When an element is hovered in visual editor mode", () => {
                 "data-cslp",
                 "all_fields.bltapikey.en-us.reference_multiple_"
             );
-            container.getBoundingClientRect = jest
+            container.getBoundingClientRect = vi
                 .fn()
                 .mockReturnValue(mockDomRect.singleHorizontal());
 
@@ -2351,7 +2356,7 @@ describe("When an element is hovered in visual editor mode", () => {
                 "all_fields.bltapikey.en-us.reference_multiple_.0"
             );
 
-            firstReferenceField.getBoundingClientRect = jest
+            firstReferenceField.getBoundingClientRect = vi
                 .fn()
                 .mockReturnValue(mockDomRect.singleLeft());
 
@@ -2361,7 +2366,7 @@ describe("When an element is hovered in visual editor mode", () => {
                 "all_fields.bltapikey.en-us.reference_multiple_.1"
             );
 
-            secondReferenceField.getBoundingClientRect = jest
+            secondReferenceField.getBoundingClientRect = vi
                 .fn()
                 .mockReturnValue(mockDomRect.singleRight());
 
@@ -2460,7 +2465,7 @@ describe("When an element is hovered in visual editor mode", () => {
                         },
                         instance: {
                             fieldPathWithIndex: "reference_multiple_.0",
-                        }
+                        },
                     },
                     index: 0,
                 }
@@ -2489,7 +2494,7 @@ describe("When an element is hovered in visual editor mode", () => {
                         },
                         instance: {
                             fieldPathWithIndex: "reference_multiple_.0",
-                        }
+                        },
                     },
                     index: 1,
                 }
@@ -2509,7 +2514,7 @@ describe("When an element is hovered in visual editor mode", () => {
                 "all_fields.bltapikey.en-us.group"
             );
 
-            groupField.getBoundingClientRect = jest
+            groupField.getBoundingClientRect = vi
                 .fn()
                 .mockReturnValue(mockDomRect.singleLeft());
 
@@ -2519,7 +2524,7 @@ describe("When an element is hovered in visual editor mode", () => {
                 "all_fields.bltapikey.en-us.group.single_line"
             );
 
-            nestedSingleLine.getBoundingClientRect = jest
+            nestedSingleLine.getBoundingClientRect = vi
                 .fn()
                 .mockReturnValue(mockDomRect.singleLeft());
 
@@ -2557,7 +2562,7 @@ describe("When an element is hovered in visual editor mode", () => {
                 "all_fields.bltapikey.en-us.group.single_line"
             );
 
-            singleLine.getBoundingClientRect = jest
+            singleLine.getBoundingClientRect = vi
                 .fn()
                 .mockReturnValue(mockDomRect.singleLeft());
 
@@ -2576,7 +2581,7 @@ describe("When an element is hovered in visual editor mode", () => {
                 "all_fields.bltapikey.en-us.group.single_line"
             );
 
-            singleLine.getBoundingClientRect = jest
+            singleLine.getBoundingClientRect = vi
                 .fn()
                 .mockReturnValue(mockDomRect.singleLeft());
 
@@ -2607,7 +2612,7 @@ describe("When an element is hovered in visual editor mode", () => {
                 "all_fields.bltapikey.en-us.group_multiple_"
             );
 
-            container.getBoundingClientRect = jest
+            container.getBoundingClientRect = vi
                 .fn()
                 .mockReturnValue(mockDomRect.singleHorizontal());
 
@@ -2617,7 +2622,7 @@ describe("When an element is hovered in visual editor mode", () => {
                 "all_fields.bltapikey.en-us.group_multiple_.0"
             );
 
-            firstGroupField.getBoundingClientRect = jest
+            firstGroupField.getBoundingClientRect = vi
                 .fn()
                 .mockReturnValue(mockDomRect.singleLeft());
 
@@ -2627,7 +2632,7 @@ describe("When an element is hovered in visual editor mode", () => {
                 "all_fields.bltapikey.en-us.group_multiple_.0.multi_line"
             );
 
-            firstNestedMultiLine.getBoundingClientRect = jest
+            firstNestedMultiLine.getBoundingClientRect = vi
                 .fn()
                 .mockReturnValue(mockDomRect.singleLeft());
 
@@ -2637,7 +2642,7 @@ describe("When an element is hovered in visual editor mode", () => {
                 "all_fields.bltapikey.en-us.group_multiple_.1"
             );
 
-            secondGroupField.getBoundingClientRect = jest
+            secondGroupField.getBoundingClientRect = vi
                 .fn()
                 .mockReturnValue(mockDomRect.singleRight());
 
@@ -2720,7 +2725,7 @@ describe("When an element is hovered in visual editor mode", () => {
                         },
                         instance: {
                             fieldPathWithIndex: "group_multiple_.0",
-                        }
+                        },
                     },
                     index: 0,
                 }
@@ -2749,7 +2754,7 @@ describe("When an element is hovered in visual editor mode", () => {
                         },
                         instance: {
                             fieldPathWithIndex: "group_multiple_.0",
-                        }
+                        },
                     },
                     index: 1,
                 }

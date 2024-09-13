@@ -1,4 +1,3 @@
-import "@testing-library/jest-dom/extend-expect";
 import { fireEvent, waitFor } from "@testing-library/preact";
 import Config from "../../configManager/configManager";
 import { VisualEditor } from "../index";
@@ -8,28 +7,28 @@ import liveEditorPostMessage from "../utils/liveEditorPostMessage";
 
 import { LiveEditorPostMessageEvents } from "../utils/types/postMessage.types";
 
-global.ResizeObserver = jest.fn().mockImplementation(() => ({
-    observe: jest.fn(),
-    unobserve: jest.fn(),
-    disconnect: jest.fn(),
+global.ResizeObserver = vi.fn().mockImplementation(() => ({
+    observe: vi.fn(),
+    unobserve: vi.fn(),
+    disconnect: vi.fn(),
 }));
 
-jest.mock("../utils/liveEditorPostMessage", () => {
-    const { getAllContentTypes } = jest.requireActual(
-        "../../__test__/data/contentType"
-    );
+vi.mock("../utils/liveEditorPostMessage", async () => {
+    const { getAllContentTypes } = await vi.importActual<
+        typeof import("../../__test__/data/contentType")
+    >("../../__test__/data/contentType");
     const contentTypes = getAllContentTypes();
     return {
         __esModule: true,
         default: {
-            send: jest.fn().mockImplementation((eventName: string) => {
+            send: vi.fn().mockImplementation((eventName: string) => {
                 if (eventName === "init")
                     return Promise.resolve({
                         contentTypes,
                     });
                 return Promise.resolve();
             }),
-            on: jest.fn(),
+            on: vi.fn(),
         },
     };
 });
@@ -54,7 +53,7 @@ describe("When an inline element is edited in visual editor mode", () => {
     });
 
     afterEach(() => {
-        jest.clearAllMocks();
+        vi.clearAllMocks();
         document.body.innerHTML = "";
     });
 

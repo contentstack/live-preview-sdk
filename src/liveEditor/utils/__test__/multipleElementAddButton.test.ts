@@ -20,22 +20,22 @@ Object.defineProperty(globalThis, "crypto", {
     },
 });
 
-jest.mock("../liveEditorPostMessage", () => {
-    const { getAllContentTypes } = jest.requireActual(
-        "../../../__test__/data/contentType"
-    );
+vi.mock("../liveEditorPostMessage", async () => {
+    const { getAllContentTypes } = await vi.importActual<
+        typeof import("../../../__test__/data/contentType")
+    >("../../../__test__/data/contentType");
     const contentTypes = getAllContentTypes();
     return {
         __esModule: true,
         default: {
-            send: jest.fn().mockImplementation((eventName: string) => {
+            send: vi.fn().mockImplementation((eventName: string) => {
                 if (eventName === "init")
                     return Promise.resolve({
                         contentTypes,
                     });
                 return Promise.resolve();
             }),
-            on: jest.fn(),
+            on: vi.fn(),
         },
     };
 });
@@ -47,7 +47,7 @@ describe("generateAddInstanceButton", () => {
     });
 
     test("should run the callback when the button is clicked", () => {
-        const mockCallback = jest.fn();
+        const mockCallback = vi.fn();
         const button = generateAddInstanceButton(mockCallback);
 
         button.click();
@@ -89,7 +89,7 @@ describe("getChildrenDirection", () => {
 
     afterEach(() => {
         document.getElementsByTagName("body")[0].innerHTML = "";
-        jest.resetAllMocks();
+        vi.resetAllMocks();
     });
 
     test(`should return "none" if it is not a list type`, () => {
@@ -116,12 +116,12 @@ describe("getChildrenDirection", () => {
     });
 
     test("should return 'horizontal' if the parent container is found and the children are in a horizontal list", () => {
-        firstChild.getBoundingClientRect = jest.fn().mockReturnValue({
+        firstChild.getBoundingClientRect = vi.fn().mockReturnValue({
             left: 10,
             top: 10,
         });
 
-        secondChild.getBoundingClientRect = jest.fn().mockReturnValue({
+        secondChild.getBoundingClientRect = vi.fn().mockReturnValue({
             left: 20,
             top: 10,
         });
@@ -134,7 +134,7 @@ describe("getChildrenDirection", () => {
     test("should create a clone and determine direction when one child is present", () => {
         container.removeChild(secondChild);
 
-        firstChild.getBoundingClientRect = jest.fn().mockReturnValue({
+        firstChild.getBoundingClientRect = vi.fn().mockReturnValue({
             left: -10,
             top: 10,
         });
@@ -192,14 +192,14 @@ describe("handleAddButtonsForMultiple", () => {
                 "all_fields.bltapikey.en-us.group.1"
             );
 
-            firstChild.getBoundingClientRect = jest.fn().mockReturnValue({
+            firstChild.getBoundingClientRect = vi.fn().mockReturnValue({
                 left: 10,
                 right: 20,
                 top: 10,
                 bottom: 20,
             });
 
-            secondChild.getBoundingClientRect = jest.fn().mockReturnValue({
+            secondChild.getBoundingClientRect = vi.fn().mockReturnValue({
                 left: 20,
                 right: 30,
                 top: 10,
@@ -229,7 +229,7 @@ describe("handleAddButtonsForMultiple", () => {
 
         afterEach(() => {
             document.getElementsByTagName("body")[0].innerHTML = "";
-            jest.resetAllMocks();
+            vi.resetAllMocks();
         });
 
         test("should not add buttons if the editable element is not found", () => {
@@ -308,14 +308,14 @@ describe("handleAddButtonsForMultiple", () => {
         });
 
         test("should add the buttons to the middle if the direction is vertical", async () => {
-            firstChild.getBoundingClientRect = jest.fn().mockReturnValue({
+            firstChild.getBoundingClientRect = vi.fn().mockReturnValue({
                 left: 10,
                 right: 20,
                 top: 10,
                 bottom: 20,
             });
 
-            secondChild.getBoundingClientRect = jest.fn().mockReturnValue({
+            secondChild.getBoundingClientRect = vi.fn().mockReturnValue({
                 left: 10,
                 right: 20,
                 top: 20,
@@ -366,14 +366,14 @@ describe("handleAddButtonsForMultiple", () => {
                 "all_fields.bltapikey.en-us.group.1"
             );
 
-            firstChild.getBoundingClientRect = jest.fn().mockReturnValue({
+            firstChild.getBoundingClientRect = vi.fn().mockReturnValue({
                 left: 10,
                 right: 20,
                 top: 10,
                 bottom: 20,
             });
 
-            secondChild.getBoundingClientRect = jest.fn().mockReturnValue({
+            secondChild.getBoundingClientRect = vi.fn().mockReturnValue({
                 left: 20,
                 right: 30,
                 top: 10,
@@ -403,7 +403,7 @@ describe("handleAddButtonsForMultiple", () => {
 
         afterEach(() => {
             document.getElementsByTagName("body")[0].innerHTML = "";
-            jest.resetAllMocks();
+            vi.resetAllMocks();
         });
 
         test("should send an add instance message to the parent", async () => {
@@ -442,8 +442,8 @@ describe("handleAddButtonsForMultiple", () => {
                         instance: {
                             fieldPathWithIndex: "group.0",
                         },
-                        }
                     },
+
                     index: 0,
                 }
             );
@@ -503,7 +503,7 @@ describe("removeAddInstanceButtons", () => {
 
     afterEach(() => {
         document.getElementsByTagName("body")[0].innerHTML = "";
-        jest.resetAllMocks();
+        vi.resetAllMocks();
     });
 
     test("should not remove buttons if wrapper or buttons are not present", () => {

@@ -1,9 +1,10 @@
+import { MockInstance } from "vitest";
 import { LIVE_EDITOR_FIELD_TYPE_ATTRIBUTE_KEY } from "../constants";
 import { handleFieldKeyDown } from "../handleFieldMouseDown";
 
 describe("handle numeric field key down", () => {
     let h1: HTMLHeadingElement;
-    let spiedPreventDefault: jest.SpyInstance<void, []> | undefined;
+    let spiedPreventDefault: MockInstance<(e: []) => void> | undefined;
 
     beforeEach(() => {
         h1 = document.createElement("h1");
@@ -12,11 +13,11 @@ describe("handle numeric field key down", () => {
         h1.setAttribute(LIVE_EDITOR_FIELD_TYPE_ATTRIBUTE_KEY, "number");
 
         h1.addEventListener("keydown", (e) => {
-            spiedPreventDefault = jest.spyOn(e, "preventDefault");
+            spiedPreventDefault = vi.spyOn(e, "preventDefault");
             handleFieldKeyDown(e);
         });
 
-        jest.spyOn(window, "getSelection").mockReturnValue({
+        vi.spyOn(window, "getSelection").mockReturnValue({
             // @ts-ignore
             getRangeAt: (n: number) => ({
                 startOffset: 0,
@@ -29,11 +30,11 @@ describe("handle numeric field key down", () => {
 
     afterEach(() => {
         document.body.innerHTML = "";
-        jest.clearAllMocks();
+        vi.clearAllMocks();
     });
 
     afterAll(() => {
-        jest.restoreAllMocks();
+        vi.restoreAllMocks();
     });
 
     test("should allow utility buttons", () => {

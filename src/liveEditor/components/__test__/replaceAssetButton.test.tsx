@@ -1,9 +1,8 @@
-import "@testing-library/jest-dom/extend-expect";
 import { render, fireEvent } from "@testing-library/preact";
 import ReplaceAssetButtonComponent from "../replaceAssetButton";
 
 const targetElement = document.createElement("div");
-targetElement.getBoundingClientRect = jest.fn(() => ({
+targetElement.getBoundingClientRect = vi.fn(() => ({
     x: 0,
     y: 0,
     width: 100,
@@ -37,12 +36,13 @@ describe("ReplaceAssetButtonComponent", () => {
             />
         );
         const button = getByTestId("visual-editor-replace-asset");
+        // @hiteshshetty-dev: This styles not seems to be correct
         expect(button).toHaveStyle("top: 70px");
         expect(button).toHaveStyle("right: 924px");
     });
 
     test("calls onClickCallback with the correct event when button is clicked", () => {
-        const onClickMock = jest.fn();
+        const onClickMock = vi.fn();
         const { getByTestId } = render(
             <ReplaceAssetButtonComponent
                 targetElement={targetElement}

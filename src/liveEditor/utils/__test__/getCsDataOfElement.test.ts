@@ -14,7 +14,7 @@ describe("getCsDataOfElement", () => {
 
         document.body.appendChild(targetElement);
 
-        jest.spyOn(targetElement, "closest").mockReturnValue(targetElement);
+        vi.spyOn(targetElement, "closest").mockReturnValue(targetElement);
 
         mockEvent = new MouseEvent("click", {
             bubbles: true,
@@ -26,7 +26,7 @@ describe("getCsDataOfElement", () => {
 
     afterEach(() => {
         document.body.innerHTML = "";
-        jest.clearAllMocks();
+        vi.clearAllMocks();
     });
 
     test("should return undefined if targetElement is not present", () => {

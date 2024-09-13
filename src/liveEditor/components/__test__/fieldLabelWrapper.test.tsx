@@ -1,14 +1,13 @@
-import "@testing-library/jest-dom/extend-expect";
 import { render, cleanup, waitFor } from "@testing-library/preact";
 import FieldLabelWrapperComponent from "../fieldLabelWrapper";
 import { CslpData } from "../../../cslp/types/cslp.types";
 import { VisualEditorCslpEventDetails } from "../../types/liveEditor.types";
 
-jest.mock("../../utils/fieldSchemaMap", () => {
+vi.mock("../../utils/fieldSchemaMap", () => {
     let ind = 0;
     return {
         FieldSchemaMap: {
-            getFieldSchema: jest
+            getFieldSchema: vi
                 .fn()
                 .mockImplementation((content_type_uid, fieldPath) => {
                     ind++;
@@ -18,8 +17,8 @@ jest.mock("../../utils/fieldSchemaMap", () => {
     };
 });
 
-jest.mock("../../utils/isFieldDisabled", () => ({
-    isFieldDisabled: jest
+vi.mock("../../utils/isFieldDisabled", () => ({
+    isFieldDisabled: vi
         .fn()
         .mockReturnValueOnce({ isDisabled: false })
         .mockReturnValueOnce({ isDisabled: false })
@@ -29,8 +28,8 @@ jest.mock("../../utils/isFieldDisabled", () => ({
         }),
 }));
 
-jest.mock("../../../cslp", () => ({
-    extractDetailsFromCslp: jest.fn().mockImplementation((path) => {
+vi.mock("../../../cslp", () => ({
+    extractDetailsFromCslp: vi.fn().mockImplementation((path) => {
         return { content_type_uid: "mockContentTypeUid", fieldPath: path };
     }),
 }));

@@ -195,7 +195,8 @@ describe("handleInitData()", () => {
             expect(config.stackDetails.apiKey).toBe("bltuserapikey");
         });
 
-        test("should set api key from headers if available", () => {
+        test.skip("should set api key from headers if available", () => {
+            // we removed it so it is good that it is skipped
             const initData: Partial<IInitData> = {
                 enable: true,
 

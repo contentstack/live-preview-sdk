@@ -1,29 +1,23 @@
 {
-    "$schema": "https://json.schemastore.org/tsconfig",
     "compilerOptions": {
-        "allowJs": true,
         "target": "ES2020",
         "exactOptionalPropertyTypes": true,
         "resolveJsonModule": true,
         "declaration": true ,
         "declarationMap": true ,
         "lib": ["DOM", "DOM.Iterable", "ES2022"],
+        "types": ["vitest/globals"],
         "sourceMap": true ,
         "outDir": "./dist" ,
         "rootDir": "." ,
         "noEmitOnError": false,
         "strict": true ,
         "moduleResolution": "Bundler" ,
-        "typeRoots": [
-            "./types",
-            "./node_modules/@types"
-        ] ,
         "esModuleInterop": true ,
         "skipLibCheck": true ,
         "forceConsistentCasingInFileNames": true ,
         "jsx": "react-jsx",
         "module": "ESNext"
     },
-    "include": ["src/**/*.ts", "tsup.config.ts", "prettier.config.js"],
-    "exclude": ["src/**/__test__"]
+    "include": ["src"]
 }

@@ -27,7 +27,7 @@ describe("generatePseudoEditableElement", () => {
             y: 34,
         };
 
-        editableElement.getBoundingClientRect = jest
+        editableElement.getBoundingClientRect = vi
             .fn()
             .mockReturnValue(mockedBoundingClientRect);
 
