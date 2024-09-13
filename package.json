@@ -85,8 +85,6 @@
         "lodash-es": "^4.17.21",
         "mustache": "^4.2.0",
         "preact": "^10.19.5",
-        "react": "npm:@preact/compat",
-        "react-dom": "npm:@preact/compat",
         "uuid": "^8.3.2"
     },
     "lint-staged": {

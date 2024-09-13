@@ -5,6 +5,7 @@ import liveEditorPostMessage from "../utils/liveEditorPostMessage";
 import { observeParentAndFocusNewInstance } from "../utils/multipleElementAddButton";
 import { ISchemaFieldMap } from "../utils/types/index.types";
 import { LiveEditorPostMessageEvents } from "../utils/types/postMessage.types";
+import React from "preact/compat";
 
 interface EmptyBlockProps {
     details: {

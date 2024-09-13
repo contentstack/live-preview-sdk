@@ -1,6 +1,7 @@
 import { render } from "preact";
 import VisualEditorComponent from "./visualEditor";
 import { liveEditorStyles } from "../liveEditor.style";
+import React from "preact/compat";
 
 interface InitUIParams {
     resizeObserver: ResizeObserver;

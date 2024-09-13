@@ -1,6 +1,7 @@
 import classNames from "classnames";
 import { liveEditorStyles } from "../liveEditor.style";
 import { PlusIcon } from "./icons";
+import React from "preact/compat";
 
 interface AddInstanceButtonProps {
     onClickCallback: (event: MouseEvent) => void;

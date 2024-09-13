@@ -1,6 +1,5 @@
 import classNames from "classnames";
-import { useEffect, useState } from "react";
-
+import React , { useEffect, useState } from "preact/compat";
 import { extractDetailsFromCslp } from "../../cslp";
 import { CslpData } from "../../cslp/types/cslp.types";
 import { VisualEditorCslpEventDetails } from "../types/liveEditor.types";
