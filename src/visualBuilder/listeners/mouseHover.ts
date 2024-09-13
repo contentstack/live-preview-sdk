@@ -9,7 +9,7 @@ import { getFieldType } from "../utils/getFieldType";
 import EventListenerHandlerParams from "./types";
 import { VisualEditor } from "..";
 import { addHoverOutline } from "../generators/generateHoverOutline";
-import { liveEditorStyles } from "../visualBuilder.style";
+import { visualBuilderStyles } from "../visualBuilder.style";
 
 export interface HandleMouseHoverParams
     extends Pick<
@@ -51,11 +51,11 @@ function hideDefaultCursor(): void {
     if (
         document?.body &&
         !document.body.classList.contains(
-            liveEditorStyles()["visual-builder__default-cursor--disabled"]
+            visualBuilderStyles()["visual-builder__default-cursor--disabled"]
         )
     )
         document.body.classList.add(
-            liveEditorStyles()["visual-builder__default-cursor--disabled"]
+            visualBuilderStyles()["visual-builder__default-cursor--disabled"]
         );
 }
 
@@ -63,11 +63,11 @@ function showDefaultCursor(): void {
     if (
         document?.body &&
         document.body.classList.contains(
-            liveEditorStyles()["visual-builder__default-cursor--disabled"]
+            visualBuilderStyles()["visual-builder__default-cursor--disabled"]
         )
     )
         document.body.classList.remove(
-            liveEditorStyles()["visual-builder__default-cursor--disabled"]
+            visualBuilderStyles()["visual-builder__default-cursor--disabled"]
         );
 }
 
@@ -84,7 +84,7 @@ export function hideHoverOutline(
         return;
     }
     hoverOutline.classList.add(
-        liveEditorStyles()["visual-builder__hover-outline--hidden"]
+        visualBuilderStyles()["visual-builder__hover-outline--hidden"]
     );
 }
 

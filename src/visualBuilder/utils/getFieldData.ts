@@ -1,6 +1,6 @@
 import { CslpData } from "../../cslp/types/cslp.types";
-import liveEditorPostMessage from "./visualBuilderPostMessage";
-import { LiveEditorPostMessageEvents } from "./types/postMessage.types";
+import visualBuilderPostMessage from "./visualBuilderPostMessage";
+import { VisualBuilderPostMessageEvents } from "./types/postMessage.types";
 
 /**
  * Retrieves the expected field data based on the provided field metadata.
@@ -13,8 +13,8 @@ export async function getFieldData(
     fieldMetadata: Pick<CslpData, "content_type_uid" | "entry_uid" | "locale">,
     entryPath?: string
 ): Promise<any> {
-    const data = await liveEditorPostMessage?.send<{ fieldData: unknown }>(
-        LiveEditorPostMessageEvents.GET_FIELD_DATA,
+    const data = await visualBuilderPostMessage?.send<{ fieldData: unknown }>(
+        VisualBuilderPostMessageEvents.GET_FIELD_DATA,
         { fieldMetadata, entryPath: entryPath ?? "" }
     );
 

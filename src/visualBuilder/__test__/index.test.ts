@@ -5,7 +5,7 @@ import Config from "../../configManager/configManager";
 import { VisualEditor } from "../index";
 import { FieldSchemaMap } from "../utils/fieldSchemaMap";
 
-vi.mock("../utils/liveEditorPostMessage", async () => {
+vi.mock("../utils/visualBuilderPostMessage", async () => {
     const { getAllContentTypes } = await vi.importActual<
         typeof import("../../__test__/data/contentType")
     >("../../__test__/data/contentType");

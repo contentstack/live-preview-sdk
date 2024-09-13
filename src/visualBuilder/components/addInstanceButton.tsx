@@ -1,5 +1,5 @@
 import classNames from "classnames";
-import { liveEditorStyles } from "../visualBuilder.style";
+import { visualBuilderStyles } from "../visualBuilder.style";
 import { PlusIcon } from "./icons";
 import React from "preact/compat";
 
@@ -15,7 +15,7 @@ function AddInstanceButtonComponent(
         <button
             className={classNames(
                 "visual-builder__add-button",
-                liveEditorStyles()["visual-builder__add-button"],
+                visualBuilderStyles()["visual-builder__add-button"],
                 {
                     "visual-builder__add-button--with-label": props.label,
                 }
@@ -32,7 +32,9 @@ function AddInstanceButtonComponent(
                     title={props.label}
                     className={classNames(
                         "visual-builder__add-button-label",
-                        liveEditorStyles()["visual-builder__add-button-label"]
+                        visualBuilderStyles()[
+                            "visual-builder__add-button-label"
+                        ]
                     )}
                 >
                     {props.label}

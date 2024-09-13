@@ -1,23 +1,23 @@
 import classNames from "classnames";
-import getLiveEditorRedirectionUrl from "../utils/getLiveEditorRedirectionUrl";
+import getVisualBuilderRedirectionUrl from "../utils/getVisualBuilderRedirectionUrl";
 import { EditIcon } from "./icons";
-import { liveEditorStyles } from "../visualBuilder.style";
+import { visualBuilderStyles } from "../visualBuilder.style";
 import React from "preact/compat";
 
 function StartEditingButtonComponent(): JSX.Element {
     return (
         <a
-            href={getLiveEditorRedirectionUrl().toString()}
+            href={getVisualBuilderRedirectionUrl().toString()}
             className={classNames(
                 "visual-builder__start-editing-btn",
-                liveEditorStyles()["visual-builder__start-editing-btn"]
+                visualBuilderStyles()["visual-builder__start-editing-btn"]
             )}
             data-testid="vcms-start-editing-btn"
             onClick={(e) => {
                 const targetElement = e.target as HTMLAnchorElement;
                 targetElement.setAttribute(
                     "href",
-                    getLiveEditorRedirectionUrl().toString()
+                    getVisualBuilderRedirectionUrl().toString()
                 );
             }}
         >

@@ -1,7 +1,7 @@
 import { render, fireEvent } from "@testing-library/preact";
 import { hideOverlay } from "../../generators/generateOverlay";
 import { VisualEditor } from "../..";
-import VisualEditorComponent from "../visualEditor";
+import VisualEditorComponent from "../VisualBuilder";
 
 vi.mock("../../generators/generateOverlay", () => ({
     hideOverlay: vi.fn(),

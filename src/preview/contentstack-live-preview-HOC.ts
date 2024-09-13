@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from "uuid";
 import { isEmpty } from "lodash-es";
 import { getUserInitData } from "../configManager/config.default";
 import Config, { updateConfigFromUrl } from "../configManager/configManager";
-import { VisualEditor } from "../liveEditor";
+import { VisualEditor } from "../visualBuilder";
 import LivePreview from "../livePreview/live-preview";
 import { removeFromOnChangeSubscribers } from "../livePreview/removeFromOnChangeSubscribers";
 import {
@@ -22,7 +22,7 @@ class ContentstackLivePreview {
     private static previewConstructors:
         | {
               livePreview: LivePreview;
-              liveEditor: VisualEditor;
+              visualBuilder: VisualEditor;
           }
         | Record<string, never> = {};
 
@@ -78,7 +78,7 @@ class ContentstackLivePreview {
     private static initializePreview() {
         ContentstackLivePreview.previewConstructors = {
             livePreview: new LivePreview(),
-            liveEditor: new VisualEditor(),
+            visualBuilder: new VisualEditor(),
         };
 
         // set up onEntryChange callbacks added when the SDK was not initialized

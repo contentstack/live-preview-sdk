@@ -1,10 +1,10 @@
 import classNames from "classnames";
 import { CslpData } from "../../cslp/types/cslp.types";
-import { liveEditorStyles } from "../visualBuilder.style";
-import liveEditorPostMessage from "../utils/visualBuilderPostMessage";
+import { visualBuilderStyles } from "../visualBuilder.style";
+import visualBuilderPostMessage from "../utils/visualBuilderPostMessage";
 import { observeParentAndFocusNewInstance } from "../utils/multipleElementAddButton";
 import { ISchemaFieldMap } from "../utils/types/index.types";
-import { LiveEditorPostMessageEvents } from "../utils/types/postMessage.types";
+import { VisualBuilderPostMessageEvents } from "../utils/types/postMessage.types";
 import React from "preact/compat";
 
 interface EmptyBlockProps {
@@ -20,8 +20,8 @@ export function EmptyBlock(props: EmptyBlockProps): JSX.Element {
     const blockParentName = details.fieldSchema.display_name;
 
     async function sendAddInstanceEvent() {
-        await liveEditorPostMessage?.send(
-            LiveEditorPostMessageEvents.ADD_INSTANCE,
+        await visualBuilderPostMessage?.send(
+            VisualBuilderPostMessageEvents.ADD_INSTANCE,
             {
                 fieldMetadata: details.fieldMetadata,
                 index: 0,
@@ -37,13 +37,13 @@ export function EmptyBlock(props: EmptyBlockProps): JSX.Element {
         <div
             className={classNames(
                 "visual-builder__empty-block",
-                liveEditorStyles()["visual-builder__empty-block"]
+                visualBuilderStyles()["visual-builder__empty-block"]
             )}
         >
             <div
                 className={classNames(
                     "visual-builder__empty-block-title",
-                    liveEditorStyles()["visual-builder__empty-block-title"]
+                    visualBuilderStyles()["visual-builder__empty-block-title"]
                 )}
             >
                 There are no {blockParentName.toLowerCase()} to show in this
@@ -52,7 +52,9 @@ export function EmptyBlock(props: EmptyBlockProps): JSX.Element {
             <button
                 className={classNames(
                     "visual-builder__empty-block-add-button",
-                    liveEditorStyles()["visual-builder__empty-block-add-button"]
+                    visualBuilderStyles()[
+                        "visual-builder__empty-block-add-button"
+                    ]
                 )}
                 onClick={() => sendAddInstanceEvent()}
             >

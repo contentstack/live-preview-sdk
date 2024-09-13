@@ -1,10 +1,10 @@
-import liveEditorPostMessage from "./visualBuilderPostMessage";
-import { LiveEditorPostMessageEvents } from "./../utils/types/postMessage.types";
+import visualBuilderPostMessage from "./visualBuilderPostMessage";
+import { VisualBuilderPostMessageEvents } from "./../utils/types/postMessage.types";
 import { CslpData } from "../../cslp/types/cslp.types";
 
 export function handleDeleteInstance(fieldMetadata: CslpData): void {
-    liveEditorPostMessage
-        ?.send(LiveEditorPostMessageEvents.DELETE_INSTANCE, {
+    visualBuilderPostMessage
+        ?.send(VisualBuilderPostMessageEvents.DELETE_INSTANCE, {
             data:
                 fieldMetadata.fieldPathWithIndex +
                 "." +
@@ -19,8 +19,8 @@ export function handleMoveInstance(
     direction: "previous" | "next"
 ): void {
     //TODO: Disable first and last instance move
-    liveEditorPostMessage
-        ?.send(LiveEditorPostMessageEvents.MOVE_INSTANCE, {
+    visualBuilderPostMessage
+        ?.send(VisualBuilderPostMessageEvents.MOVE_INSTANCE, {
             data:
                 fieldMetadata.fieldPathWithIndex +
                 "." +

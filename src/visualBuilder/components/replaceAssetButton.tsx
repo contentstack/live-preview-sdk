@@ -1,6 +1,6 @@
 import classNames from "classnames";
 import { ReplaceAssetIcon } from "./icons";
-import { liveEditorStyles } from "../visualBuilder.style";
+import { visualBuilderStyles } from "../visualBuilder.style";
 import React from "preact/compat";
 
 interface ReplaceAssetButtonProp {
@@ -15,8 +15,8 @@ function ReplaceAssetButtonComponent(
         <button
             className={classNames(
                 "visual-builder__replace-button visual-builder__button visual-builder__button--secondary",
-                liveEditorStyles()["visual-builder__button"],
-                liveEditorStyles()["visual-builder__button--secondary"]
+                visualBuilderStyles()["visual-builder__button"],
+                visualBuilderStyles()["visual-builder__button--secondary"]
             )}
             data-testid="visual-editor-replace-asset"
             onClick={props.onClickCallback}

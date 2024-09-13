@@ -14,12 +14,12 @@ import { getFieldData } from "./getFieldData";
 import { getFieldType } from "./getFieldType";
 import { handleFieldInput, handleFieldKeyDown } from "./handleFieldMouseDown";
 import { isFieldDisabled } from "./isFieldDisabled";
-import liveEditorPostMessage from "./visualBuilderPostMessage";
+import visualBuilderPostMessage from "./visualBuilderPostMessage";
 import {
     handleAddButtonsForMultiple,
     removeAddInstanceButtons,
 } from "./multipleElementAddButton";
-import { LiveEditorPostMessageEvents } from "./types/postMessage.types";
+import { VisualBuilderPostMessageEvents } from "./types/postMessage.types";
 import { updateFocussedState } from "./updateFocussedState";
 import { FieldDataType } from "./types/index.types";
 import { getMultilinePlaintext } from "./getMultilinePlaintext";
@@ -213,10 +213,13 @@ export async function handleIndividualFields(
         }
     }
 
-    liveEditorPostMessage?.send(LiveEditorPostMessageEvents.OPEN_QUICK_FORM, {
-        fieldMetadata: eventDetails.fieldMetadata,
-        cslpData: eventDetails.cslpData,
-    });
+    visualBuilderPostMessage?.send(
+        VisualBuilderPostMessageEvents.OPEN_QUICK_FORM,
+        {
+            fieldMetadata: eventDetails.fieldMetadata,
+            cslpData: eventDetails.cslpData,
+        }
+    );
 }
 
 export function cleanIndividualFieldResidual(elements: {

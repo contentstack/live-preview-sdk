@@ -1,6 +1,6 @@
 import { useEffect } from "preact/compat";
-import liveEditorPostMessage from "../utils/visualBuilderPostMessage";
-import { LiveEditorPostMessageEvents } from "../utils/types/postMessage.types";
+import visualBuilderPostMessage from "../utils/visualBuilderPostMessage";
+import { VisualBuilderPostMessageEvents } from "../utils/types/postMessage.types";
 
 // Define the interface for the ScrollToField event data
 export interface IScrollToFieldEventData {
@@ -30,8 +30,8 @@ const handleScrollToField = (event: IScrollToFieldEvent) => {
 };
 
 export const useScrollToField = () => {
-    liveEditorPostMessage?.on(
-        LiveEditorPostMessageEvents.SCROLL_TO_FIELD,
+    visualBuilderPostMessage?.on(
+        VisualBuilderPostMessageEvents.SCROLL_TO_FIELD,
         handleScrollToField
     );
 };

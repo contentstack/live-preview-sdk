@@ -6,10 +6,10 @@ import { VisualEditor } from "../index";
 import { LIVE_EDITOR_FIELD_TYPE_ATTRIBUTE_KEY } from "../utils/constants";
 import { FieldSchemaMap } from "../utils/fieldSchemaMap";
 import { getDOMEditStack } from "../utils/getCsDataOfElement";
-import liveEditorPostMessage from "../utils/visualBuilderPostMessage";
+import visualBuilderPostMessage from "../utils/visualBuilderPostMessage";
 import { vi } from "vitest";
 
-import { LiveEditorPostMessageEvents } from "../utils/types/postMessage.types";
+import { VisualBuilderPostMessageEvents } from "../utils/types/postMessage.types";
 
 global.ResizeObserver = vi.fn().mockImplementation(() => ({
     observe: vi.fn(),
@@ -17,7 +17,7 @@ global.ResizeObserver = vi.fn().mockImplementation(() => ({
     disconnect: vi.fn(),
 }));
 
-vi.mock("../utils/liveEditorPostMessage", async () => {
+vi.mock("../utils/visualBuilderPostMessage", async () => {
     const { getAllContentTypes } = await vi.importActual<
         typeof import("../../__test__/data/contentType")
     >("../../__test__/data/contentType");
@@ -135,8 +135,8 @@ describe("When an element is clicked in visual editor mode", () => {
                 singleLineField.dispatchEvent(mouseClickEvent);
             });
 
-            expect(liveEditorPostMessage?.send).toBeCalledWith(
-                LiveEditorPostMessageEvents.FOCUS_FIELD,
+            expect(visualBuilderPostMessage?.send).toBeCalledWith(
+                VisualBuilderPostMessageEvents.FOCUS_FIELD,
                 {
                     DOMEditStack: getDOMEditStack(singleLineField),
                 }
@@ -315,8 +315,8 @@ describe("When an element is clicked in visual editor mode", () => {
                 container.dispatchEvent(mouseClickEvent);
             });
 
-            expect(liveEditorPostMessage?.send).toBeCalledWith(
-                LiveEditorPostMessageEvents.FOCUS_FIELD,
+            expect(visualBuilderPostMessage?.send).toBeCalledWith(
+                VisualBuilderPostMessageEvents.FOCUS_FIELD,
                 {
                     DOMEditStack: getDOMEditStack(container),
                 }
@@ -393,8 +393,8 @@ describe("When an element is clicked in visual editor mode", () => {
                 multiLineField.dispatchEvent(mouseClickEvent);
             });
 
-            expect(liveEditorPostMessage?.send).toBeCalledWith(
-                LiveEditorPostMessageEvents.FOCUS_FIELD,
+            expect(visualBuilderPostMessage?.send).toBeCalledWith(
+                VisualBuilderPostMessageEvents.FOCUS_FIELD,
                 {
                     DOMEditStack: getDOMEditStack(multiLineField),
                 }
@@ -556,8 +556,8 @@ describe("When an element is clicked in visual editor mode", () => {
                 container.dispatchEvent(mouseClickEvent);
             });
 
-            expect(liveEditorPostMessage?.send).toBeCalledWith(
-                LiveEditorPostMessageEvents.FOCUS_FIELD,
+            expect(visualBuilderPostMessage?.send).toBeCalledWith(
+                VisualBuilderPostMessageEvents.FOCUS_FIELD,
                 {
                     DOMEditStack: getDOMEditStack(container),
                 }
@@ -634,8 +634,8 @@ describe("When an element is clicked in visual editor mode", () => {
                 htmlRteField.dispatchEvent(mouseClickEvent);
             });
 
-            expect(liveEditorPostMessage?.send).toBeCalledWith(
-                LiveEditorPostMessageEvents.FOCUS_FIELD,
+            expect(visualBuilderPostMessage?.send).toBeCalledWith(
+                VisualBuilderPostMessageEvents.FOCUS_FIELD,
                 {
                     DOMEditStack: getDOMEditStack(htmlRteField),
                 }
@@ -650,8 +650,8 @@ describe("When an element is clicked in visual editor mode", () => {
                 htmlRteField.dispatchEvent(mouseClickEvent);
             });
 
-            expect(liveEditorPostMessage?.send).toBeCalledWith(
-                LiveEditorPostMessageEvents.OPEN_QUICK_FORM,
+            expect(visualBuilderPostMessage?.send).toBeCalledWith(
+                VisualBuilderPostMessageEvents.OPEN_QUICK_FORM,
                 {
                     fieldMetadata: {
                         entry_uid: "bltapikey",
@@ -832,8 +832,8 @@ describe("When an element is clicked in visual editor mode", () => {
                 container.dispatchEvent(mouseClickEvent);
             });
 
-            expect(liveEditorPostMessage?.send).toBeCalledWith(
-                LiveEditorPostMessageEvents.FOCUS_FIELD,
+            expect(visualBuilderPostMessage?.send).toBeCalledWith(
+                VisualBuilderPostMessageEvents.FOCUS_FIELD,
                 {
                     DOMEditStack: getDOMEditStack(container),
                 }
@@ -910,8 +910,8 @@ describe("When an element is clicked in visual editor mode", () => {
                 jsonRteField.dispatchEvent(mouseClickEvent);
             });
 
-            expect(liveEditorPostMessage?.send).toBeCalledWith(
-                LiveEditorPostMessageEvents.FOCUS_FIELD,
+            expect(visualBuilderPostMessage?.send).toBeCalledWith(
+                VisualBuilderPostMessageEvents.FOCUS_FIELD,
                 {
                     DOMEditStack: getDOMEditStack(jsonRteField),
                 }
@@ -1077,8 +1077,8 @@ describe("When an element is clicked in visual editor mode", () => {
                 container.dispatchEvent(mouseClickEvent);
             });
 
-            expect(liveEditorPostMessage?.send).toBeCalledWith(
-                LiveEditorPostMessageEvents.FOCUS_FIELD,
+            expect(visualBuilderPostMessage?.send).toBeCalledWith(
+                VisualBuilderPostMessageEvents.FOCUS_FIELD,
                 {
                     DOMEditStack: getDOMEditStack(container),
                 }
@@ -1157,8 +1157,8 @@ describe("When an element is clicked in visual editor mode", () => {
                 markdownField.dispatchEvent(mouseClickEvent);
             });
 
-            expect(liveEditorPostMessage?.send).toBeCalledWith(
-                LiveEditorPostMessageEvents.FOCUS_FIELD,
+            expect(visualBuilderPostMessage?.send).toBeCalledWith(
+                VisualBuilderPostMessageEvents.FOCUS_FIELD,
                 {
                     DOMEditStack: getDOMEditStack(markdownField),
                 }
@@ -1173,8 +1173,8 @@ describe("When an element is clicked in visual editor mode", () => {
                 markdownField.dispatchEvent(mouseClickEvent);
             });
 
-            expect(liveEditorPostMessage?.send).toBeCalledWith(
-                LiveEditorPostMessageEvents.OPEN_QUICK_FORM,
+            expect(visualBuilderPostMessage?.send).toBeCalledWith(
+                VisualBuilderPostMessageEvents.OPEN_QUICK_FORM,
                 {
                     fieldMetadata: {
                         entry_uid: "bltapikey",
@@ -1355,8 +1355,8 @@ describe("When an element is clicked in visual editor mode", () => {
                 container.dispatchEvent(mouseClickEvent);
             });
 
-            expect(liveEditorPostMessage?.send).toBeCalledWith(
-                LiveEditorPostMessageEvents.FOCUS_FIELD,
+            expect(visualBuilderPostMessage?.send).toBeCalledWith(
+                VisualBuilderPostMessageEvents.FOCUS_FIELD,
                 {
                     DOMEditStack: getDOMEditStack(container),
                 }
@@ -1434,8 +1434,8 @@ describe("When an element is clicked in visual editor mode", () => {
                 selectField.dispatchEvent(mouseClickEvent);
             });
 
-            expect(liveEditorPostMessage?.send).toBeCalledWith(
-                LiveEditorPostMessageEvents.FOCUS_FIELD,
+            expect(visualBuilderPostMessage?.send).toBeCalledWith(
+                VisualBuilderPostMessageEvents.FOCUS_FIELD,
                 {
                     DOMEditStack: getDOMEditStack(selectField),
                 }
@@ -1601,8 +1601,8 @@ describe("When an element is clicked in visual editor mode", () => {
                 container.dispatchEvent(mouseClickEvent);
             });
 
-            expect(liveEditorPostMessage?.send).toBeCalledWith(
-                LiveEditorPostMessageEvents.FOCUS_FIELD,
+            expect(visualBuilderPostMessage?.send).toBeCalledWith(
+                VisualBuilderPostMessageEvents.FOCUS_FIELD,
                 {
                     DOMEditStack: getDOMEditStack(container),
                 }
@@ -1670,8 +1670,8 @@ describe("When an element is clicked in visual editor mode", () => {
                 numberField.dispatchEvent(mouseClickEvent);
             });
 
-            expect(liveEditorPostMessage?.send).toBeCalledWith(
-                LiveEditorPostMessageEvents.FOCUS_FIELD,
+            expect(visualBuilderPostMessage?.send).toBeCalledWith(
+                VisualBuilderPostMessageEvents.FOCUS_FIELD,
                 {
                     DOMEditStack: getDOMEditStack(numberField),
                 }
@@ -1833,8 +1833,8 @@ describe("When an element is clicked in visual editor mode", () => {
                 container.dispatchEvent(mouseClickEvent);
             });
 
-            expect(liveEditorPostMessage?.send).toBeCalledWith(
-                LiveEditorPostMessageEvents.FOCUS_FIELD,
+            expect(visualBuilderPostMessage?.send).toBeCalledWith(
+                VisualBuilderPostMessageEvents.FOCUS_FIELD,
                 {
                     DOMEditStack: getDOMEditStack(container),
                 }
@@ -1912,8 +1912,8 @@ describe("When an element is clicked in visual editor mode", () => {
                 booleanField.dispatchEvent(mouseClickEvent);
             });
 
-            expect(liveEditorPostMessage?.send).toBeCalledWith(
-                LiveEditorPostMessageEvents.FOCUS_FIELD,
+            expect(visualBuilderPostMessage?.send).toBeCalledWith(
+                VisualBuilderPostMessageEvents.FOCUS_FIELD,
                 {
                     DOMEditStack: getDOMEditStack(booleanField),
                 }
@@ -2035,8 +2035,8 @@ describe("When an element is clicked in visual editor mode", () => {
                 fileField.dispatchEvent(mouseClickEvent);
             });
 
-            expect(liveEditorPostMessage?.send).toBeCalledWith(
-                LiveEditorPostMessageEvents.FOCUS_FIELD,
+            expect(visualBuilderPostMessage?.send).toBeCalledWith(
+                VisualBuilderPostMessageEvents.FOCUS_FIELD,
                 {
                     DOMEditStack: getDOMEditStack(fileField),
                 }
@@ -2247,8 +2247,8 @@ describe("When an element is clicked in visual editor mode", () => {
                 container.dispatchEvent(mouseClickEvent);
             });
 
-            expect(liveEditorPostMessage?.send).toBeCalledWith(
-                LiveEditorPostMessageEvents.FOCUS_FIELD,
+            expect(visualBuilderPostMessage?.send).toBeCalledWith(
+                VisualBuilderPostMessageEvents.FOCUS_FIELD,
                 {
                     DOMEditStack: getDOMEditStack(container),
                 }
@@ -2326,8 +2326,8 @@ describe("When an element is clicked in visual editor mode", () => {
                 dateField.dispatchEvent(mouseClickEvent);
             });
 
-            expect(liveEditorPostMessage?.send).toBeCalledWith(
-                LiveEditorPostMessageEvents.FOCUS_FIELD,
+            expect(visualBuilderPostMessage?.send).toBeCalledWith(
+                VisualBuilderPostMessageEvents.FOCUS_FIELD,
                 {
                     DOMEditStack: getDOMEditStack(dateField),
                 }
@@ -2430,8 +2430,8 @@ describe("When an element is clicked in visual editor mode", () => {
                 linkField.dispatchEvent(mouseClickEvent);
             });
 
-            expect(liveEditorPostMessage?.send).toBeCalledWith(
-                LiveEditorPostMessageEvents.FOCUS_FIELD,
+            expect(visualBuilderPostMessage?.send).toBeCalledWith(
+                VisualBuilderPostMessageEvents.FOCUS_FIELD,
                 {
                     DOMEditStack: getDOMEditStack(linkField),
                 }
@@ -2446,8 +2446,8 @@ describe("When an element is clicked in visual editor mode", () => {
                 linkField.dispatchEvent(mouseClickEvent);
             });
 
-            expect(liveEditorPostMessage?.send).toBeCalledWith(
-                LiveEditorPostMessageEvents.OPEN_QUICK_FORM,
+            expect(visualBuilderPostMessage?.send).toBeCalledWith(
+                VisualBuilderPostMessageEvents.OPEN_QUICK_FORM,
                 {
                     fieldMetadata: {
                         entry_uid: "bltapikey",
@@ -2629,8 +2629,8 @@ describe("When an element is clicked in visual editor mode", () => {
                 container.dispatchEvent(mouseClickEvent);
             });
 
-            expect(liveEditorPostMessage?.send).toBeCalledWith(
-                LiveEditorPostMessageEvents.FOCUS_FIELD,
+            expect(visualBuilderPostMessage?.send).toBeCalledWith(
+                VisualBuilderPostMessageEvents.FOCUS_FIELD,
                 {
                     DOMEditStack: getDOMEditStack(container),
                 }
@@ -2708,8 +2708,8 @@ describe("When an element is clicked in visual editor mode", () => {
                 referenceField.dispatchEvent(mouseClickEvent);
             });
 
-            expect(liveEditorPostMessage?.send).toBeCalledWith(
-                LiveEditorPostMessageEvents.FOCUS_FIELD,
+            expect(visualBuilderPostMessage?.send).toBeCalledWith(
+                VisualBuilderPostMessageEvents.FOCUS_FIELD,
                 {
                     DOMEditStack: getDOMEditStack(referenceField),
                 }
@@ -2876,8 +2876,8 @@ describe("When an element is clicked in visual editor mode", () => {
                 container.dispatchEvent(mouseClickEvent);
             });
 
-            expect(liveEditorPostMessage?.send).toBeCalledWith(
-                LiveEditorPostMessageEvents.FOCUS_FIELD,
+            expect(visualBuilderPostMessage?.send).toBeCalledWith(
+                VisualBuilderPostMessageEvents.FOCUS_FIELD,
                 {
                     DOMEditStack: getDOMEditStack(container),
                 }
@@ -2957,8 +2957,8 @@ describe("When an element is clicked in visual editor mode", () => {
                 groupField.dispatchEvent(mouseClickEvent);
             });
 
-            expect(liveEditorPostMessage?.send).toBeCalledWith(
-                LiveEditorPostMessageEvents.FOCUS_FIELD,
+            expect(visualBuilderPostMessage?.send).toBeCalledWith(
+                VisualBuilderPostMessageEvents.FOCUS_FIELD,
                 {
                     DOMEditStack: getDOMEditStack(groupField),
                 }
@@ -2973,8 +2973,8 @@ describe("When an element is clicked in visual editor mode", () => {
                 groupField.dispatchEvent(mouseClickEvent);
             });
 
-            expect(liveEditorPostMessage?.send).toBeCalledWith(
-                LiveEditorPostMessageEvents.OPEN_QUICK_FORM,
+            expect(visualBuilderPostMessage?.send).toBeCalledWith(
+                VisualBuilderPostMessageEvents.OPEN_QUICK_FORM,
                 {
                     fieldMetadata: {
                         entry_uid: "bltapikey",
@@ -3154,8 +3154,8 @@ describe("When an element is clicked in visual editor mode", () => {
                 container.dispatchEvent(mouseClickEvent);
             });
 
-            expect(liveEditorPostMessage?.send).toBeCalledWith(
-                LiveEditorPostMessageEvents.FOCUS_FIELD,
+            expect(visualBuilderPostMessage?.send).toBeCalledWith(
+                VisualBuilderPostMessageEvents.FOCUS_FIELD,
                 {
                     DOMEditStack: getDOMEditStack(container),
                 }

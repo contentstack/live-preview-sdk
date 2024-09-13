@@ -3,10 +3,10 @@ import crypto from "crypto";
 import packageJson from "../../../package.json";
 import { sleep } from "../../__test__/utils";
 import Config from "../../configManager/configManager";
-import liveEditorPostMessage from "../../liveEditor/utils/liveEditorPostMessage";
-import { LiveEditorPostMessageEvents } from "../../liveEditor/utils/types/postMessage.types";
+import visualBuilderPostMessage from "../../visualBuilder/utils/visualBuilderPostMessage";
+import { VisualBuilderPostMessageEvents } from "../../visualBuilder/utils/types/postMessage.types";
 import {
-    mockLiveEditorInitEventListener,
+    mockVisualBuilderInitEventListener,
     mockLivePreviewInitEventListener,
 } from "../../livePreview/__test__/mock";
 import livePreviewPostMessage from "../../livePreview/eventManager/livePreviewEventManager";
@@ -37,9 +37,9 @@ describe("Live Preview HOC init", () => {
             mockLivePreviewInitEventListener
         );
 
-        liveEditorPostMessage?.on(
-            LiveEditorPostMessageEvents.INIT,
-            mockLiveEditorInitEventListener
+        visualBuilderPostMessage?.on(
+            VisualBuilderPostMessageEvents.INIT,
+            mockVisualBuilderInitEventListener
         );
     });
 
@@ -51,7 +51,7 @@ describe("Live Preview HOC init", () => {
         // @ts-ignore
         ContentstackLivePreview.previewConstructors = {};
         livePreviewPostMessage?.destroy({ soft: true });
-        liveEditorPostMessage?.destroy({ soft: true });
+        visualBuilderPostMessage?.destroy({ soft: true });
         vi.clearAllMocks();
     });
 
@@ -60,9 +60,9 @@ describe("Live Preview HOC init", () => {
     });
 
     test("should initialize only the live preview ", async () => {
-        if (!livePreviewPostMessage || !liveEditorPostMessage) {
+        if (!livePreviewPostMessage || !visualBuilderPostMessage) {
             throw new Error(
-                "livePreviewPostMessage or liveEditor is unavailable"
+                "livePreviewPostMessage or visualBuilder is unavailable"
             );
         }
 
@@ -71,21 +71,21 @@ describe("Live Preview HOC init", () => {
             "send"
         );
 
-        const liveEditorPostMessageSpy = vi.spyOn(
-            liveEditorPostMessage,
+        const visualBuilderPostMessageSpy = vi.spyOn(
+            visualBuilderPostMessage,
             "send"
         );
 
         ContentstackLivePreview.init({});
 
         expect(livePreviewPostMessageSpy).toHaveBeenCalledTimes(1);
-        expect(liveEditorPostMessageSpy).toHaveBeenCalledTimes(0);
+        expect(visualBuilderPostMessageSpy).toHaveBeenCalledTimes(0);
     });
 
     test("should initialize both live preview and live editor when mode is editor", async () => {
-        if (!livePreviewPostMessage || !liveEditorPostMessage) {
+        if (!livePreviewPostMessage || !visualBuilderPostMessage) {
             throw new Error(
-                "livePreviewPostMessage or liveEditor is unavailable"
+                "livePreviewPostMessage or visualBuilder is unavailable"
             );
         }
 
@@ -94,8 +94,8 @@ describe("Live Preview HOC init", () => {
             "send"
         );
 
-        const liveEditorPostMessageSpy = vi.spyOn(
-            liveEditorPostMessage,
+        const visualBuilderPostMessageSpy = vi.spyOn(
+            visualBuilderPostMessage,
             "send"
         );
 
@@ -109,7 +109,7 @@ describe("Live Preview HOC init", () => {
 
         await sleep();
         expect(livePreviewPostMessageSpy).toHaveBeenCalledTimes(1);
-        expect(liveEditorPostMessageSpy).toHaveBeenCalledTimes(1);
+        expect(visualBuilderPostMessageSpy).toHaveBeenCalledTimes(1);
     });
 
     test("should return the existing live preview instance if it is already initialized", async () => {
@@ -134,9 +134,9 @@ describe("Live Preview HOC config", () => {
             mockLivePreviewInitEventListener
         );
 
-        liveEditorPostMessage?.on(
-            LiveEditorPostMessageEvents.INIT,
-            mockLiveEditorInitEventListener
+        visualBuilderPostMessage?.on(
+            VisualBuilderPostMessageEvents.INIT,
+            mockVisualBuilderInitEventListener
         );
     });
 
@@ -148,7 +148,7 @@ describe("Live Preview HOC config", () => {
         // @ts-ignore
         ContentstackLivePreview.previewConstructors = {};
         livePreviewPostMessage?.destroy({ soft: true });
-        liveEditorPostMessage?.destroy({ soft: true });
+        visualBuilderPostMessage?.destroy({ soft: true });
         vi.clearAllMocks();
     });
 
@@ -234,9 +234,9 @@ describe("Live Preview HOC hash", () => {
             mockLivePreviewInitEventListener
         );
 
-        liveEditorPostMessage?.on(
-            LiveEditorPostMessageEvents.INIT,
-            mockLiveEditorInitEventListener
+        visualBuilderPostMessage?.on(
+            VisualBuilderPostMessageEvents.INIT,
+            mockVisualBuilderInitEventListener
         );
     });
 
@@ -248,7 +248,7 @@ describe("Live Preview HOC hash", () => {
         // @ts-ignore
         ContentstackLivePreview.previewConstructors = {};
         livePreviewPostMessage?.destroy({ soft: true });
-        liveEditorPostMessage?.destroy({ soft: true });
+        visualBuilderPostMessage?.destroy({ soft: true });
 
         Config.reset();
         vi.clearAllMocks();

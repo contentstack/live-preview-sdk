@@ -5,11 +5,11 @@ import {
 } from "./../../generators/generateOverlay";
 import initUI from "../../components";
 import { cleanIndividualFieldResidual } from "../handleIndividualFields";
-import { LiveEditorPostMessageEvents } from "../types/postMessage.types";
-import liveEditorPostMessage from "../visualBuilderPostMessage";
+import { VisualBuilderPostMessageEvents } from "../types/postMessage.types";
+import visualBuilderPostMessage from "../visualBuilderPostMessage";
 import { VisualEditor } from "../..";
 
-vi.mock("../liveEditorPostMessage", () => {
+vi.mock("../visualBuilderPostMessage", () => {
     return {
         __esModule: true,
         default: {
@@ -244,9 +244,9 @@ describe("hideFocusOverlay", () => {
         await fireEvent.click(focusOverlayWrapper);
         expect(focusOverlayWrapper.classList.contains("visible")).toBe(false);
 
-        expect(liveEditorPostMessage?.send).toHaveBeenCalledTimes(1);
-        expect(liveEditorPostMessage?.send).toHaveBeenCalledWith(
-            LiveEditorPostMessageEvents.UPDATE_FIELD,
+        expect(visualBuilderPostMessage?.send).toHaveBeenCalledTimes(1);
+        expect(visualBuilderPostMessage?.send).toHaveBeenCalledWith(
+            VisualBuilderPostMessageEvents.UPDATE_FIELD,
             {
                 data: editedElement.textContent,
                 fieldMetadata: {

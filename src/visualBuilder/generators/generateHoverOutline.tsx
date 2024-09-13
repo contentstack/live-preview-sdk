@@ -1,4 +1,4 @@
-import { liveEditorStyles } from "../visualBuilder.style";
+import { visualBuilderStyles } from "../visualBuilder.style";
 
 /**
  * Adds a hover outline to the target element.
@@ -18,16 +18,16 @@ export function addHoverOutline(
 
     if (hoverOutline) {
         hoverOutline.classList.remove(
-            liveEditorStyles()["visual-builder__hover-outline--hidden"]
+            visualBuilderStyles()["visual-builder__hover-outline--hidden"]
         );
 
         if (disabled) {
             hoverOutline.classList.add(
-                liveEditorStyles()["visual-builder__hover-outline--disabled"]
+                visualBuilderStyles()["visual-builder__hover-outline--disabled"]
             );
         } else {
             hoverOutline.classList.remove(
-                liveEditorStyles()["visual-builder__hover-outline--disabled"]
+                visualBuilderStyles()["visual-builder__hover-outline--disabled"]
             );
         }
 

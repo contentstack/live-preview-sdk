@@ -1,7 +1,7 @@
 import { extractDetailsFromCslp } from "../../cslp/cslpdata";
 import { cleanIndividualFieldResidual } from "../utils/handleIndividualFields";
-import liveEditorPostMessage from "../utils/visualBuilderPostMessage";
-import { LiveEditorPostMessageEvents } from "../utils/types/postMessage.types";
+import visualBuilderPostMessage from "../utils/visualBuilderPostMessage";
+import { VisualBuilderPostMessageEvents } from "../utils/types/postMessage.types";
 
 import { VisualEditor } from "..";
 import EventListenerHandlerParams from "../listeners/types";
@@ -155,8 +155,8 @@ export function hideFocusOverlay(elements: HideOverlayParams): void {
                         }
                     })
                     .finally(() => {
-                        liveEditorPostMessage?.send(
-                            LiveEditorPostMessageEvents.UPDATE_FIELD,
+                        visualBuilderPostMessage?.send(
+                            VisualBuilderPostMessageEvents.UPDATE_FIELD,
                             {
                                 data,
                                 fieldMetadata,

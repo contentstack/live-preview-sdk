@@ -1,7 +1,7 @@
 import { hideOverlay } from "../generators/generateOverlay";
 import EventListenerHandlerParams from "../listeners/types";
-import liveEditorPostMessage from "../utils/visualBuilderPostMessage";
-import { LiveEditorPostMessageEvents } from "../utils/types/postMessage.types";
+import visualBuilderPostMessage from "../utils/visualBuilderPostMessage";
+import { VisualBuilderPostMessageEvents } from "../utils/types/postMessage.types";
 
 type HideFocusOverlayEventHandlerParams = Omit<
     EventListenerHandlerParams,
@@ -14,8 +14,8 @@ export function useHideFocusOverlayPostMessageEvent({
     focusedToolbar,
     resizeObserver,
 }: HideFocusOverlayEventHandlerParams): void {
-    liveEditorPostMessage?.on(
-        LiveEditorPostMessageEvents.HIDE_FOCUS_OVERLAY,
+    visualBuilderPostMessage?.on(
+        VisualBuilderPostMessageEvents.HIDE_FOCUS_OVERLAY,
         () => {
             hideOverlay({
                 visualEditorOverlayWrapper: overlayWrapper,

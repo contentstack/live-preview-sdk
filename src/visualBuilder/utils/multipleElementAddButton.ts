@@ -3,8 +3,8 @@ import {
     generateAddInstanceButton,
     getAddInstanceButtons,
 } from "../generators/generateAddInstanceButtons";
-import liveEditorPostMessage from "./visualBuilderPostMessage";
-import { LiveEditorPostMessageEvents } from "./types/postMessage.types";
+import visualBuilderPostMessage from "./visualBuilderPostMessage";
+import { VisualBuilderPostMessageEvents } from "./types/postMessage.types";
 import getChildrenDirection from "./getChildrenDirection";
 import { hideOverlay } from "../generators/generateOverlay";
 import { hideHoverOutline } from "../listeners/mouseHover";
@@ -101,8 +101,8 @@ export function handleAddButtonsForMultiple(
     };
 
     const previousButton = generateAddInstanceButton(() => {
-        liveEditorPostMessage
-            ?.send(LiveEditorPostMessageEvents.ADD_INSTANCE, {
+        visualBuilderPostMessage
+            ?.send(VisualBuilderPostMessageEvents.ADD_INSTANCE, {
                 fieldMetadata: eventDetails.fieldMetadata,
                 index: prevIndex,
             })
@@ -110,8 +110,8 @@ export function handleAddButtonsForMultiple(
     }, label);
 
     const nextButton = generateAddInstanceButton(() => {
-        liveEditorPostMessage
-            ?.send(LiveEditorPostMessageEvents.ADD_INSTANCE, {
+        visualBuilderPostMessage
+            ?.send(VisualBuilderPostMessageEvents.ADD_INSTANCE, {
                 fieldMetadata: eventDetails.fieldMetadata,
                 index: nextIndex,
             })

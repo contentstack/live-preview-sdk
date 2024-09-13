@@ -1,9 +1,9 @@
 import { CslpData } from "../../../cslp/types/cslp.types";
 import { getExpectedFieldData } from "../getExpectedFieldData";
-import liveEditorPostMessage from "../visualBuilderPostMessage";
-import { LiveEditorPostMessageEvents } from "../types/postMessage.types";
+import visualBuilderPostMessage from "../visualBuilderPostMessage";
+import { VisualBuilderPostMessageEvents } from "../types/postMessage.types";
 
-vi.mock("../../utils/liveEditorPostMessage", async () => {
+vi.mock("../../utils/visualBuilderPostMessage", async () => {
     const { getAllContentTypes } = await vi.importActual<
         typeof import("./../../../__test__/data/contentType")
     >("./../../../__test__/data/contentType");
@@ -48,8 +48,8 @@ describe("getExpectedFieldData", () => {
         const expectedFieldData = await getExpectedFieldData(mockFieldMetadata);
         expect(expectedFieldData).toBe("");
 
-        expect(liveEditorPostMessage?.send).lastCalledWith(
-            LiveEditorPostMessageEvents.GET_FIELD_DATA,
+        expect(visualBuilderPostMessage?.send).lastCalledWith(
+            VisualBuilderPostMessageEvents.GET_FIELD_DATA,
             {
                 fieldMetadata: {
                     entry_uid: "bltapikey",
@@ -74,6 +74,6 @@ describe("getExpectedFieldData", () => {
             }
         );
 
-        expect(liveEditorPostMessage?.send).toHaveBeenCalledTimes(1);
+        expect(visualBuilderPostMessage?.send).toHaveBeenCalledTimes(1);
     });
 });

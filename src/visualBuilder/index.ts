@@ -15,8 +15,8 @@ import { generateStartEditingButton } from "./generators/generateStartEditingBut
 
 import { addFocusOverlay } from "./generators/generateOverlay";
 import { getEntryIdentifiersInCurrentPage } from "./utils/getEntryIdentifiersInCurrentPage";
-import liveEditorPostMessage from "./utils/visualBuilderPostMessage";
-import { LiveEditorPostMessageEvents } from "./utils/types/postMessage.types";
+import visualBuilderPostMessage from "./utils/visualBuilderPostMessage";
+import { VisualBuilderPostMessageEvents } from "./utils/types/postMessage.types";
 
 import { setup } from "goober";
 import { debounce, isEqual } from "lodash-es";
@@ -221,7 +221,7 @@ export class VisualEditor {
         if (!config.enable || config.mode < ILivePreviewModeConfig.EDITOR) {
             return;
         }
-        liveEditorPostMessage
+        visualBuilderPostMessage
             ?.send<IVisualEditorInitEvent>("init", {
                 isSSR: config.ssr,
             })
@@ -260,8 +260,8 @@ export class VisualEditor {
                     subtree: true,
                 });
 
-                liveEditorPostMessage?.on(
-                    LiveEditorPostMessageEvents.GET_ALL_ENTRIES_IN_CURRENT_PAGE,
+                visualBuilderPostMessage?.on(
+                    VisualBuilderPostMessageEvents.GET_ALL_ENTRIES_IN_CURRENT_PAGE,
                     getEntryIdentifiersInCurrentPage
                 );
 

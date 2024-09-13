@@ -11,8 +11,8 @@ import {
     removeAddInstanceButtons,
 } from "../multipleElementAddButton";
 import getChildrenDirection from "../getChildrenDirection";
-import liveEditorPostMessage from "../visualBuilderPostMessage";
-import { LiveEditorPostMessageEvents } from "../types/postMessage.types";
+import visualBuilderPostMessage from "../visualBuilderPostMessage";
+import { VisualBuilderPostMessageEvents } from "../types/postMessage.types";
 
 Object.defineProperty(globalThis, "crypto", {
     value: {
@@ -20,7 +20,7 @@ Object.defineProperty(globalThis, "crypto", {
     },
 });
 
-vi.mock("../liveEditorPostMessage", async () => {
+vi.mock("../visualBuilderPostMessage", async () => {
     const { getAllContentTypes } = await vi.importActual<
         typeof import("../../../__test__/data/contentType")
     >("../../../__test__/data/contentType");
@@ -421,8 +421,8 @@ describe("handleAddButtonsForMultiple", () => {
 
             (addInstanceButtons[0] as HTMLButtonElement).click();
 
-            expect(liveEditorPostMessage?.send).toBeCalledWith(
-                LiveEditorPostMessageEvents.ADD_INSTANCE,
+            expect(visualBuilderPostMessage?.send).toBeCalledWith(
+                VisualBuilderPostMessageEvents.ADD_INSTANCE,
                 {
                     fieldMetadata: {
                         entry_uid: "bltapikey",
@@ -450,8 +450,8 @@ describe("handleAddButtonsForMultiple", () => {
 
             (addInstanceButtons[1] as HTMLButtonElement).click();
 
-            expect(liveEditorPostMessage?.send).lastCalledWith(
-                LiveEditorPostMessageEvents.ADD_INSTANCE,
+            expect(visualBuilderPostMessage?.send).lastCalledWith(
+                VisualBuilderPostMessageEvents.ADD_INSTANCE,
                 {
                     fieldMetadata: {
                         entry_uid: "bltapikey",

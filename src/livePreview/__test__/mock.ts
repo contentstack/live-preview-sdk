@@ -12,7 +12,7 @@ export function mockLivePreviewInitEventListener(): LivePreviewInitEventResponse
     };
 }
 
-export function mockLiveEditorInitEventListener(): IVisualEditorInitEvent {
+export function mockVisualBuilderInitEventListener(): IVisualEditorInitEvent {
     return {
         stackDetails: {
             masterLocale: "en-us",

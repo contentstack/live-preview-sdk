@@ -1,12 +1,12 @@
 import { CslpData } from "../../../cslp/types/cslp.types";
-import liveEditorPostMessage from "../visualBuilderPostMessage";
-import { LiveEditorPostMessageEvents } from "../types/postMessage.types";
+import visualBuilderPostMessage from "../visualBuilderPostMessage";
+import { VisualBuilderPostMessageEvents } from "../types/postMessage.types";
 import {
     handleDeleteInstance,
     handleMoveInstance,
 } from "./../instanceHandlers";
 
-vi.mock("../liveEditorPostMessage", () => {
+vi.mock("../visualBuilderPostMessage", () => {
     return {
         __esModule: true,
         default: {
@@ -42,9 +42,9 @@ describe("instanceHandlers", () => {
 
         await handleDeleteInstance(mockFieldMetadata);
 
-        expect(liveEditorPostMessage?.send).toBeCalledTimes(1);
-        expect(liveEditorPostMessage?.send).toBeCalledWith(
-            LiveEditorPostMessageEvents.DELETE_INSTANCE,
+        expect(visualBuilderPostMessage?.send).toBeCalledTimes(1);
+        expect(visualBuilderPostMessage?.send).toBeCalledWith(
+            VisualBuilderPostMessageEvents.DELETE_INSTANCE,
             {
                 data:
                     mockFieldMetadata.fieldPathWithIndex +
@@ -76,8 +76,8 @@ describe("instanceHandlers", () => {
         };
 
         await handleMoveInstance(mockFieldMetadata, "previous");
-        expect(liveEditorPostMessage?.send).toBeCalledWith(
-            LiveEditorPostMessageEvents.MOVE_INSTANCE,
+        expect(visualBuilderPostMessage?.send).toBeCalledWith(
+            VisualBuilderPostMessageEvents.MOVE_INSTANCE,
             {
                 data:
                     mockFieldMetadata.fieldPathWithIndex +
@@ -90,8 +90,8 @@ describe("instanceHandlers", () => {
 
         handleMoveInstance(mockFieldMetadata, "next");
 
-        expect(liveEditorPostMessage?.send).toBeCalledWith(
-            LiveEditorPostMessageEvents.MOVE_INSTANCE,
+        expect(visualBuilderPostMessage?.send).toBeCalledWith(
+            VisualBuilderPostMessageEvents.MOVE_INSTANCE,
             {
                 data:
                     mockFieldMetadata.fieldPathWithIndex +

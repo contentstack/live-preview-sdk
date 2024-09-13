@@ -8,8 +8,8 @@ import Config from "../../../../configManager/configManager";
 import { ILivePreviewModeConfig } from "../../../../types/types";
 import { LIVE_EDITOR_FIELD_TYPE_ATTRIBUTE_KEY } from "../../../utils/constants";
 import { getDOMEditStack } from "../../../utils/getCsDataOfElement";
-import liveEditorPostMessage from "../../../utils/visualBuilderPostMessage";
-import { LiveEditorPostMessageEvents } from "../../../utils/types/postMessage.types";
+import visualBuilderPostMessage from "../../../utils/visualBuilderPostMessage";
+import { VisualBuilderPostMessageEvents } from "../../../utils/types/postMessage.types";
 
 const FIELD_VALUE = "123";
 const CT_UID = "all_fields";
@@ -23,7 +23,7 @@ global.ResizeObserver = vi.fn().mockImplementation(() => ({
 
 const contentTypes = getAllContentTypes();
 
-vi.mock("../../../utils/liveEditorPostMessage", () => {
+vi.mock("../../../utils/visualBuilderPostMessage", () => {
     return {
         __esModule: true,
         default: {
@@ -36,7 +36,7 @@ vi.mock("../../../utils/liveEditorPostMessage", () => {
                         });
                     else if (
                         eventName ===
-                        LiveEditorPostMessageEvents.GET_FIELD_SCHEMA
+                        VisualBuilderPostMessageEvents.GET_FIELD_SCHEMA
                     ) {
                         const { contentTypeUid } = params;
                         const numberField = contentTypes[
@@ -55,7 +55,8 @@ vi.mock("../../../utils/liveEditorPostMessage", () => {
                             },
                         };
                     } else if (
-                        eventName === LiveEditorPostMessageEvents.GET_FIELD_DATA
+                        eventName ===
+                        VisualBuilderPostMessageEvents.GET_FIELD_DATA
                     ) {
                         return Promise.resolve({
                             fieldData: FIELD_VALUE,
@@ -167,8 +168,8 @@ describe("number field", () => {
 
         await userEvent.click(numberField);
 
-        expect(liveEditorPostMessage?.send).toBeCalledWith(
-            LiveEditorPostMessageEvents.FOCUS_FIELD,
+        expect(visualBuilderPostMessage?.send).toBeCalledWith(
+            VisualBuilderPostMessageEvents.FOCUS_FIELD,
             {
                 DOMEditStack: getDOMEditStack(numberField),
             }

@@ -1,6 +1,6 @@
 import { css } from "goober";
 
-export function liveEditorStyles() {
+export function visualBuilderStyles() {
     return {
         "visual-builder__container": css`
             --outline-transition: all 0.15s ease-in;
@@ -85,8 +85,11 @@ export function liveEditorStyles() {
             align-content: center;
             gap: 0;
 
-            transition: grid-template-columns 0.25s, left 0.15s ease-in,
-                top 0.15s ease-in, gap 0.15s ease-in;
+            transition:
+                grid-template-columns 0.25s,
+                left 0.15s ease-in,
+                top 0.15s ease-in,
+                gap 0.15s ease-in;
 
             &:has(.visual-builder__add-button-label):hover {
                 grid-template-columns: min-content 1fr;
@@ -108,7 +111,8 @@ export function liveEditorStyles() {
             position: fixed;
             bottom: 30px;
             right: 30px;
-            box-shadow: 0px 4px 15px 0px rgba(108, 92, 231, 0.2),
+            box-shadow:
+                0px 4px 15px 0px rgba(108, 92, 231, 0.2),
                 0px 3px 14px 3px rgba(0, 0, 0, 0.12),
                 0px 8px 10px 1px rgba(0, 0, 0, 0.14);
             display: inline-flex;
@@ -120,8 +124,10 @@ export function liveEditorStyles() {
             border-radius: 4px;
             border: 1px solid transparent;
             background: #6c5ce7;
-            transition: background-color 0.15s ease-in-out,
-                border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out,
+            transition:
+                background-color 0.15s ease-in-out,
+                border-color 0.15s ease-in-out,
+                box-shadow 0.15s ease-in-out,
                 -webkit-box-shadow 0.15s ease-in-out;
 
             &:hover {
@@ -248,9 +254,11 @@ export function liveEditorStyles() {
             line-height: 100%;
             padding: 8px 16px;
             text-align: center;
-            transition: color 0.15s ease-in-out,
+            transition:
+                color 0.15s ease-in-out,
                 background-color 0.15s ease-in-out,
-                border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+                border-color 0.15s ease-in-out,
+                box-shadow 0.15s ease-in-out;
             // vertical-align: middle;
         `,
         "visual-builder__button--primary": css`
@@ -475,7 +483,7 @@ export function liveEditorStyles() {
 
 export const VisualBuilderGlobalStyles = `
        @import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
-       
+
        [data-cslp] [contenteditable="true"] {
             outline: none;
         }

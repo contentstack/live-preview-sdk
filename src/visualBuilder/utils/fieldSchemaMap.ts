@@ -4,8 +4,8 @@ import {
     ISchemaIndividualFieldMap,
 } from "./types/index.types";
 
-import liveEditorPostMessage from "./visualBuilderPostMessage";
-import { LiveEditorPostMessageEvents } from "./types/postMessage.types";
+import visualBuilderPostMessage from "./visualBuilderPostMessage";
+import { VisualBuilderPostMessageEvents } from "./types/postMessage.types";
 
 interface IFieldSchemaMapResponse {
     fieldSchemaMap: ISchemaIndividualFieldMap;
@@ -27,8 +27,8 @@ export class FieldSchemaMap {
     private static async fetchFieldSchema(content_type_uid: string) {
         if (!FieldSchemaMap.fieldSchemaPromise?.[content_type_uid]) {
             FieldSchemaMap.fieldSchemaPromise[content_type_uid] =
-                liveEditorPostMessage?.send<IFieldSchemaMapResponse>(
-                    LiveEditorPostMessageEvents.GET_FIELD_SCHEMA,
+                visualBuilderPostMessage?.send<IFieldSchemaMapResponse>(
+                    VisualBuilderPostMessageEvents.GET_FIELD_SCHEMA,
                     {
                         contentTypeUid: content_type_uid,
                     }

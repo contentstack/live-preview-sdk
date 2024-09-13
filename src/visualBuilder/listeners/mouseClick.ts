@@ -12,15 +12,15 @@ import { appendFocusedToolbar } from "../generators/generateToolbar";
 
 import { addFocusOverlay } from "../generators/generateOverlay";
 
-import liveEditorPostMessage from "../utils/visualBuilderPostMessage";
+import visualBuilderPostMessage from "../utils/visualBuilderPostMessage";
 
-import { LiveEditorPostMessageEvents } from "../utils/types/postMessage.types";
+import { VisualBuilderPostMessageEvents } from "../utils/types/postMessage.types";
 
 import EventListenerHandlerParams from "./types";
 import { VisualEditor } from "..";
 import { FieldSchemaMap } from "../utils/fieldSchemaMap";
 import { isFieldDisabled } from "../utils/isFieldDisabled";
-import { liveEditorStyles } from "../visualBuilder.style";
+import { visualBuilderStyles } from "../visualBuilder.style";
 
 type HandleEditorInteractionParams = Omit<
     EventListenerHandlerParams,
@@ -176,7 +176,7 @@ async function handleEditorInteraction(
     //         overlayWrapper: params.overlayWrapper,
     //     });
     // }
-    liveEditorPostMessage?.send(LiveEditorPostMessageEvents.FOCUS_FIELD, {
+    visualBuilderPostMessage?.send(VisualBuilderPostMessageEvents.FOCUS_FIELD, {
         DOMEditStack: getDOMEditStack(editableElement),
     });
 

@@ -2,7 +2,7 @@ import { VisualEditorCslpEventDetails } from "../types/visualBuilder.types";
 import Config from "../../configManager/configManager";
 import { ISchemaFieldMap } from "./types/index.types";
 import { VisualEditor } from "..";
-import { liveEditorStyles } from "../visualBuilder.style";
+import { visualBuilderStyles } from "../visualBuilder.style";
 
 const getReason = (
     updateRestrictDueToRole: boolean,
@@ -34,7 +34,7 @@ export const isFieldDisabled = (
     if (
         VisualEditor.VisualEditorGlobalState.value.audienceMode &&
         !eventDetails.editableElement.classList.contains(
-            liveEditorStyles()["visual-builder__variant-field"]
+            visualBuilderStyles()["visual-builder__variant-field"]
         )
     ) {
         updateRestrictDueToAudienceMode = true;

@@ -5,7 +5,7 @@ import { extractDetailsFromCslp } from "../../cslp";
  * Returns the redirection URL for the Live Editor.
  * @returns {URL} The redirection URL.
  */
-export default function getLiveEditorRedirectionUrl(): URL {
+export default function getVisualBuilderRedirectionUrl(): URL {
     const { stackDetails, clientUrlParams } = Config.get();
     const { branch, apiKey, environment, locale } = stackDetails;
     const { url: appUrl } = clientUrlParams;

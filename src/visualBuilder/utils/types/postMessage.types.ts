@@ -1,4 +1,4 @@
-export enum LiveEditorPostMessageEvents {
+export enum VisualBuilderPostMessageEvents {
     INIT = "init",
     ADD_INSTANCE = "add-instance",
     UPDATE_FIELD = "update-field",
@@ -13,7 +13,7 @@ export enum LiveEditorPostMessageEvents {
     DELETE_INSTANCE = "delete-instance",
     MOVE_INSTANCE = "move-instance",
     GET_DISCUSSION_ID = "get-discussion-id-for-comment-modal",
-    OPEN_FIELD_COMMENT_MODAL  = "open-field-comment-modal",
+    OPEN_FIELD_COMMENT_MODAL = "open-field-comment-modal",
     // FROM visual editor
     GET_ALL_ENTRIES_IN_CURRENT_PAGE = "get-entries-in-current-page",
     HIDE_FOCUS_OVERLAY = "hide-focus-overlay",
@@ -24,5 +24,4 @@ export enum LiveEditorPostMessageEvents {
     SET_AUDIENCE_MODE = "set-audience-mode",
     UPDATE_DISCUSSION_ID = "update-discussion-id-for-focus-field",
     SCROLL_TO_FIELD = "scroll-to-view-field-by-cslp-value",
-
 }

@@ -1,8 +1,8 @@
 import { getFieldSchemaMap } from "../../../__test__/data/fieldSchemaMap";
 import { FieldSchemaMap } from "../fieldSchemaMap";
-import { LiveEditorPostMessageEvents } from "../types/postMessage.types";
+import { VisualBuilderPostMessageEvents } from "../types/postMessage.types";
 
-vi.mock("../../utils/liveEditorPostMessage", async () => {
+vi.mock("../../utils/visualBuilderPostMessage", async () => {
     const { getFieldSchemaMap } = await vi.importActual<
         typeof import("../../../__test__/data/fieldSchemaMap")
     >("../../../__test__/data/fieldSchemaMap.ts");
@@ -12,7 +12,8 @@ vi.mock("../../utils/liveEditorPostMessage", async () => {
         default: {
             send: vi.fn().mockImplementation((eventName: string) => {
                 if (
-                    eventName === LiveEditorPostMessageEvents.GET_FIELD_SCHEMA
+                    eventName ===
+                    VisualBuilderPostMessageEvents.GET_FIELD_SCHEMA
                 ) {
                     return Promise.resolve({
                         fieldSchemaMap: fieldSchemaMap.all_fields,

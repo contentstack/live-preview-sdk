@@ -3,9 +3,9 @@ import Config from "../../configManager/configManager";
 import { VisualEditor } from "../index";
 import { FieldSchemaMap } from "../utils/fieldSchemaMap";
 import { getFieldSchemaMap } from "../../__test__/data/fieldSchemaMap";
-import liveEditorPostMessage from "../utils/visualBuilderPostMessage";
+import visualBuilderPostMessage from "../utils/visualBuilderPostMessage";
 
-import { LiveEditorPostMessageEvents } from "../utils/types/postMessage.types";
+import { VisualBuilderPostMessageEvents } from "../utils/types/postMessage.types";
 
 global.ResizeObserver = vi.fn().mockImplementation(() => ({
     observe: vi.fn(),
@@ -13,7 +13,7 @@ global.ResizeObserver = vi.fn().mockImplementation(() => ({
     disconnect: vi.fn(),
 }));
 
-vi.mock("../utils/liveEditorPostMessage", async () => {
+vi.mock("../utils/visualBuilderPostMessage", async () => {
     const { getAllContentTypes } = await vi.importActual<
         typeof import("../../__test__/data/contentType")
     >("../../__test__/data/contentType");
@@ -133,8 +133,8 @@ describe("When an inline element is edited in visual editor mode", () => {
             });
             fireEvent.click(overlayWrapper);
 
-            expect(liveEditorPostMessage?.send).toHaveBeenCalledWith(
-                LiveEditorPostMessageEvents.UPDATE_FIELD,
+            expect(visualBuilderPostMessage?.send).toHaveBeenCalledWith(
+                VisualBuilderPostMessageEvents.UPDATE_FIELD,
                 {
                     data: "",
                     fieldMetadata: {
@@ -262,8 +262,8 @@ describe("When an inline element is edited in visual editor mode", () => {
             });
             fireEvent.click(overlayWrapper);
 
-            expect(liveEditorPostMessage?.send).toHaveBeenCalledWith(
-                LiveEditorPostMessageEvents.UPDATE_FIELD,
+            expect(visualBuilderPostMessage?.send).toHaveBeenCalledWith(
+                VisualBuilderPostMessageEvents.UPDATE_FIELD,
                 {
                     data: "",
                     fieldMetadata: {
@@ -314,8 +314,8 @@ describe("When an inline element is edited in visual editor mode", () => {
             });
             fireEvent.click(overlayWrapper);
 
-            expect(liveEditorPostMessage?.send).toHaveBeenCalledWith(
-                LiveEditorPostMessageEvents.UPDATE_FIELD,
+            expect(visualBuilderPostMessage?.send).toHaveBeenCalledWith(
+                VisualBuilderPostMessageEvents.UPDATE_FIELD,
                 {
                     data: "",
                     fieldMetadata: {
@@ -415,8 +415,8 @@ describe("When an inline element is edited in visual editor mode", () => {
             });
             fireEvent.click(overlayWrapper);
 
-            expect(liveEditorPostMessage?.send).toHaveBeenCalledWith(
-                LiveEditorPostMessageEvents.UPDATE_FIELD,
+            expect(visualBuilderPostMessage?.send).toHaveBeenCalledWith(
+                VisualBuilderPostMessageEvents.UPDATE_FIELD,
                 {
                     data: "",
                     fieldMetadata: {
@@ -545,8 +545,8 @@ describe("When an inline element is edited in visual editor mode", () => {
 
             fireEvent.click(overlayWrapper);
 
-            expect(liveEditorPostMessage?.send).toHaveBeenCalledWith(
-                LiveEditorPostMessageEvents.UPDATE_FIELD,
+            expect(visualBuilderPostMessage?.send).toHaveBeenCalledWith(
+                VisualBuilderPostMessageEvents.UPDATE_FIELD,
                 {
                     data: "",
                     fieldMetadata: {
@@ -597,8 +597,8 @@ describe("When an inline element is edited in visual editor mode", () => {
             });
             fireEvent.click(overlayWrapper);
 
-            expect(liveEditorPostMessage?.send).toHaveBeenCalledWith(
-                LiveEditorPostMessageEvents.UPDATE_FIELD,
+            expect(visualBuilderPostMessage?.send).toHaveBeenCalledWith(
+                VisualBuilderPostMessageEvents.UPDATE_FIELD,
                 {
                     data: "",
                     fieldMetadata: {

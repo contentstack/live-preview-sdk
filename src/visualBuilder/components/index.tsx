@@ -1,6 +1,6 @@
 import { render } from "preact";
-import VisualEditorComponent from "./visualEditor";
-import { liveEditorStyles } from "../visualBuilder.style";
+import VisualEditorComponent from "./VisualBuilder";
+import { visualBuilderStyles } from "../visualBuilder.style";
 import React from "preact/compat";
 
 interface InitUIParams {
@@ -14,7 +14,7 @@ function initUI(props: InitUIParams): void {
     if (!visualEditorDOM) {
         const visualEditorContainer = document.createElement("div");
         visualEditorContainer.classList.add(
-            liveEditorStyles()["visual-builder__container"],
+            visualBuilderStyles()["visual-builder__container"],
             "visual-builder__container"
         );
         visualEditorContainer.setAttribute(

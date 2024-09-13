@@ -12,9 +12,9 @@ import {
     handleDeleteInstance,
     handleMoveInstance,
 } from "../utils/instanceHandlers";
-import liveEditorPostMessage from "../utils/visualBuilderPostMessage";
+import visualBuilderPostMessage from "../utils/visualBuilderPostMessage";
 import { FieldDataType, ISchemaFieldMap } from "../utils/types/index.types";
-import { LiveEditorPostMessageEvents } from "../utils/types/postMessage.types";
+import { VisualBuilderPostMessageEvents } from "../utils/types/postMessage.types";
 import {
     DeleteIcon,
     MoveLeftIcon,
@@ -23,7 +23,7 @@ import {
 } from "./icons";
 import { fieldIcons } from "./icons/fields";
 import classNames from "classnames";
-import { liveEditorStyles } from "../visualBuilder.style";
+import { visualBuilderStyles } from "../visualBuilder.style";
 import CommentIcon from "./CommentIcon";
 import React from "preact/compat";
 
@@ -37,9 +37,12 @@ interface MultipleFieldToolbarProps {
 
 function handleReplaceAsset(fieldMetadata: CslpData) {
     // TODO avoid sending whole fieldMetadata
-    liveEditorPostMessage?.send(LiveEditorPostMessageEvents.OPEN_ASSET_MODAL, {
-        fieldMetadata,
-    });
+    visualBuilderPostMessage?.send(
+        VisualBuilderPostMessageEvents.OPEN_ASSET_MODAL,
+        {
+            fieldMetadata,
+        }
+    );
 }
 
 function handleReplaceReference(fieldMetadata: CslpData) {
@@ -51,8 +54,8 @@ function handleReplaceReference(fieldMetadata: CslpData) {
         ? fieldMetadata.instance.fieldPathWithIndex
         : fieldMetadata.fieldPathWithIndex;
 
-    liveEditorPostMessage?.send(
-        LiveEditorPostMessageEvents.OPEN_REFERENCE_MODAL,
+    visualBuilderPostMessage?.send(
+        VisualBuilderPostMessageEvents.OPEN_REFERENCE_MODAL,
         {
             entry_uid: fieldMetadata.entry_uid,
             content_type_uid: fieldMetadata.content_type_uid,
@@ -65,8 +68,8 @@ function handleReplaceReference(fieldMetadata: CslpData) {
 }
 
 function handleEdit(fieldMetadata: CslpData) {
-    liveEditorPostMessage?.send(
-        LiveEditorPostMessageEvents.OPEN_FIELD_EDIT_MODAL,
+    visualBuilderPostMessage?.send(
+        VisualBuilderPostMessageEvents.OPEN_FIELD_EDIT_MODAL,
         { fieldMetadata }
     );
 }
@@ -123,9 +126,9 @@ function FieldToolbarComponent(
             data-testid="visual-builder__focused-toolbar__multiple-field-toolbar__edit-button"
             className={classNames(
                 "visual-builder__button visual-builder__button--secondary visual-builder__button--edit",
-                liveEditorStyles()["visual-builder__button"],
-                liveEditorStyles()["visual-builder__button--secondary"],
-                liveEditorStyles()["visual-builder__button--edit"]
+                visualBuilderStyles()["visual-builder__button"],
+                visualBuilderStyles()["visual-builder__button--secondary"],
+                visualBuilderStyles()["visual-builder__button--edit"]
             )}
             onClick={(e) => {
                 // TODO the listener for field path is attached to the common parent requiring
@@ -143,8 +146,8 @@ function FieldToolbarComponent(
         <button
             className={classNames(
                 "visual-builder__replace-button visual-builder__button visual-builder__button--secondary",
-                liveEditorStyles()["visual-builder__button"],
-                liveEditorStyles()["visual-builder__button--secondary"]
+                visualBuilderStyles()["visual-builder__button"],
+                visualBuilderStyles()["visual-builder__button--secondary"]
             )}
             data-testid={`visual-editor-replace-${fieldType}`}
             onClick={(e) => {
@@ -173,7 +176,7 @@ function FieldToolbarComponent(
         <div
             className={classNames(
                 "visual-builder__focused-toolbar__multiple-field-toolbar",
-                liveEditorStyles()[
+                visualBuilderStyles()[
                     "visual-builder__focused-toolbar__multiple-field-toolbar"
                 ]
             )}
@@ -182,7 +185,7 @@ function FieldToolbarComponent(
             <div
                 className={classNames(
                     "visual-builder__focused-toolbar__button-group",
-                    liveEditorStyles()[
+                    visualBuilderStyles()[
                         "visual-builder__focused-toolbar__button-group"
                     ]
                 )}
@@ -194,10 +197,10 @@ function FieldToolbarComponent(
                                 data-testid="visual-builder__focused-toolbar__multiple-field-toolbar__move-left-button"
                                 className={classNames(
                                     `visual-builder__button visual-builder__button--secondary`,
-                                    liveEditorStyles()[
+                                    visualBuilderStyles()[
                                         "visual-builder__button"
                                     ],
-                                    liveEditorStyles()[
+                                    visualBuilderStyles()[
                                         "visual-builder__button--secondary"
                                     ]
                                 )}
@@ -215,7 +218,7 @@ function FieldToolbarComponent(
                                     className={classNames({
                                         "visual-builder__rotate--90":
                                             direction.value === "vertical",
-                                        [liveEditorStyles()[
+                                        [visualBuilderStyles()[
                                             "visual-builder__rotate--90"
                                         ]]: direction.value === "vertical",
                                     })}
@@ -227,10 +230,10 @@ function FieldToolbarComponent(
                                 data-testid="visual-builder__focused-toolbar__multiple-field-toolbar__move-right-button"
                                 className={classNames(
                                     `visual-builder__button visual-builder__button--secondary`,
-                                    liveEditorStyles()[
+                                    visualBuilderStyles()[
                                         "visual-builder__button"
                                     ],
-                                    liveEditorStyles()[
+                                    visualBuilderStyles()[
                                         "visual-builder__button--secondary"
                                     ]
                                 )}
@@ -248,7 +251,7 @@ function FieldToolbarComponent(
                                     className={classNames({
                                         "visual-builder__rotate--90":
                                             direction.value === "vertical",
-                                        [liveEditorStyles()[
+                                        [visualBuilderStyles()[
                                             "visual-builder__rotate--90"
                                         ]]: direction.value === "vertical",
                                     })}
@@ -263,10 +266,10 @@ function FieldToolbarComponent(
                                 data-testid="visual-builder__focused-toolbar__multiple-field-toolbar__delete-button"
                                 className={classNames(
                                     "visual-builder__button visual-builder__button--secondary",
-                                    liveEditorStyles()[
+                                    visualBuilderStyles()[
                                         "visual-builder__button"
                                     ],
-                                    liveEditorStyles()[
+                                    visualBuilderStyles()[
                                         "visual-builder__button--secondary"
                                     ]
                                 )}

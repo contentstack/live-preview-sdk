@@ -1,7 +1,7 @@
 import { VisualEditor } from "..";
-import { liveEditorStyles } from "../visualBuilder.style";
-import liveEditorPostMessage from "../utils/visualBuilderPostMessage";
-import { LiveEditorPostMessageEvents } from "../utils/types/postMessage.types";
+import { visualBuilderStyles } from "../visualBuilder.style";
+import visualBuilderPostMessage from "../utils/visualBuilderPostMessage";
+import { VisualBuilderPostMessageEvents } from "../utils/types/postMessage.types";
 
 interface VariantFieldsEvent {
     data: {
@@ -23,7 +23,7 @@ function addVariantFieldClass(variant_uid: string): void {
         const dataCslp = element.getAttribute("data-cslp");
         if (dataCslp && new RegExp(variant_uid).test(dataCslp)) {
             element.classList.add(
-                liveEditorStyles()["visual-builder__variant-field"]
+                visualBuilderStyles()["visual-builder__variant-field"]
             );
         }
     });
@@ -31,11 +31,11 @@ function addVariantFieldClass(variant_uid: string): void {
 
 function removeVariantFieldClass(): void {
     const variantFieldElements = document.querySelectorAll(
-        `.${liveEditorStyles()["visual-builder__variant-field"]}`
+        `.${visualBuilderStyles()["visual-builder__variant-field"]}`
     );
     variantFieldElements.forEach((element) => {
         element.classList.remove(
-            liveEditorStyles()["visual-builder__variant-field"]
+            visualBuilderStyles()["visual-builder__variant-field"]
         );
     });
 }
@@ -45,21 +45,21 @@ function setAudienceMode(mode: boolean): void {
 }
 
 export function useVariantFieldsPostMessageEvent(): void {
-    liveEditorPostMessage?.on(
-        LiveEditorPostMessageEvents.SET_AUDIENCE_MODE,
+    visualBuilderPostMessage?.on(
+        VisualBuilderPostMessageEvents.SET_AUDIENCE_MODE,
         (event: AudienceEvent) => {
             setAudienceMode(event.data.audienceMode);
         }
     );
-    liveEditorPostMessage?.on(
-        LiveEditorPostMessageEvents.SHOW_VARIANT_FIELDS,
+    visualBuilderPostMessage?.on(
+        VisualBuilderPostMessageEvents.SHOW_VARIANT_FIELDS,
         (event: VariantFieldsEvent) => {
             removeVariantFieldClass();
             addVariantFieldClass(event.data.variant_data.variant);
         }
     );
-    liveEditorPostMessage?.on(
-        LiveEditorPostMessageEvents.REMOVE_VARIANT_FIELDS,
+    visualBuilderPostMessage?.on(
+        VisualBuilderPostMessageEvents.REMOVE_VARIANT_FIELDS,
         () => {
             removeVariantFieldClass();
         }

@@ -3,10 +3,10 @@ import { sleep } from "../../__test__/utils";
 import Config from "../../configManager/configManager";
 import { VisualEditor } from "../index";
 import { FieldSchemaMap } from "../utils/fieldSchemaMap";
-import liveEditorPostMessage from "../utils/visualBuilderPostMessage";
-import { LiveEditorPostMessageEvents } from "../utils/types/postMessage.types";
+import visualBuilderPostMessage from "../utils/visualBuilderPostMessage";
+import { VisualBuilderPostMessageEvents } from "../utils/types/postMessage.types";
 
-vi.mock("../utils/liveEditorPostMessage", async () => {
+vi.mock("../utils/visualBuilderPostMessage", async () => {
     const { getAllContentTypes } = await vi.importActual<
         typeof import("../../__test__/data/contentType")
     >("../../__test__/data/contentType");
@@ -365,8 +365,8 @@ describe("When an element is hovered in visual editor mode", () => {
 
             instanceButton[0].click();
 
-            expect(liveEditorPostMessage?.send).lastCalledWith(
-                LiveEditorPostMessageEvents.ADD_INSTANCE,
+            expect(visualBuilderPostMessage?.send).lastCalledWith(
+                VisualBuilderPostMessageEvents.ADD_INSTANCE,
                 {
                     fieldMetadata: {
                         content_type_uid: "all_fields",
@@ -394,8 +394,8 @@ describe("When an element is hovered in visual editor mode", () => {
             );
 
             instanceButton[1].click();
-            expect(liveEditorPostMessage?.send).lastCalledWith(
-                LiveEditorPostMessageEvents.ADD_INSTANCE,
+            expect(visualBuilderPostMessage?.send).lastCalledWith(
+                VisualBuilderPostMessageEvents.ADD_INSTANCE,
                 {
                     fieldMetadata: {
                         content_type_uid: "all_fields",
@@ -421,7 +421,7 @@ describe("When an element is hovered in visual editor mode", () => {
                     index: 1,
                 }
             );
-            expect(liveEditorPostMessage?.send).toHaveBeenCalledTimes(3);
+            expect(visualBuilderPostMessage?.send).toHaveBeenCalledTimes(3);
         });
     });
     // before here you must past
@@ -579,8 +579,8 @@ describe("When an element is hovered in visual editor mode", () => {
             expect(instanceButton.length).toBe(2);
 
             instanceButton[0].click();
-            expect(liveEditorPostMessage?.send).lastCalledWith(
-                LiveEditorPostMessageEvents.ADD_INSTANCE,
+            expect(visualBuilderPostMessage?.send).lastCalledWith(
+                VisualBuilderPostMessageEvents.ADD_INSTANCE,
                 {
                     fieldMetadata: {
                         entry_uid: "bltapikey",
@@ -608,8 +608,8 @@ describe("When an element is hovered in visual editor mode", () => {
             );
 
             instanceButton[1].click();
-            expect(liveEditorPostMessage?.send).lastCalledWith(
-                LiveEditorPostMessageEvents.ADD_INSTANCE,
+            expect(visualBuilderPostMessage?.send).lastCalledWith(
+                VisualBuilderPostMessageEvents.ADD_INSTANCE,
                 {
                     fieldMetadata: {
                         entry_uid: "bltapikey",
@@ -636,7 +636,7 @@ describe("When an element is hovered in visual editor mode", () => {
                 }
             );
 
-            expect(liveEditorPostMessage?.send).toHaveBeenCalledTimes(3);
+            expect(visualBuilderPostMessage?.send).toHaveBeenCalledTimes(3);
         });
     });
 
@@ -794,8 +794,8 @@ describe("When an element is hovered in visual editor mode", () => {
 
             instanceButton[0].click();
 
-            expect(liveEditorPostMessage?.send).lastCalledWith(
-                LiveEditorPostMessageEvents.ADD_INSTANCE,
+            expect(visualBuilderPostMessage?.send).lastCalledWith(
+                VisualBuilderPostMessageEvents.ADD_INSTANCE,
                 {
                     fieldMetadata: {
                         entry_uid: "bltapikey",
@@ -822,8 +822,8 @@ describe("When an element is hovered in visual editor mode", () => {
             );
 
             instanceButton[1].click();
-            expect(liveEditorPostMessage?.send).lastCalledWith(
-                LiveEditorPostMessageEvents.ADD_INSTANCE,
+            expect(visualBuilderPostMessage?.send).lastCalledWith(
+                VisualBuilderPostMessageEvents.ADD_INSTANCE,
                 {
                     fieldMetadata: {
                         entry_uid: "bltapikey",
@@ -1005,8 +1005,8 @@ describe("When an element is hovered in visual editor mode", () => {
             expect(instanceButton.length).toBe(2);
 
             instanceButton[0].click();
-            expect(liveEditorPostMessage?.send).lastCalledWith(
-                LiveEditorPostMessageEvents.ADD_INSTANCE,
+            expect(visualBuilderPostMessage?.send).lastCalledWith(
+                VisualBuilderPostMessageEvents.ADD_INSTANCE,
                 {
                     fieldMetadata: {
                         entry_uid: "bltapikey",
@@ -1034,8 +1034,8 @@ describe("When an element is hovered in visual editor mode", () => {
             );
 
             instanceButton[1].click();
-            expect(liveEditorPostMessage?.send).lastCalledWith(
-                LiveEditorPostMessageEvents.ADD_INSTANCE,
+            expect(visualBuilderPostMessage?.send).lastCalledWith(
+                VisualBuilderPostMessageEvents.ADD_INSTANCE,
                 {
                     fieldMetadata: {
                         entry_uid: "bltapikey",
@@ -1062,7 +1062,7 @@ describe("When an element is hovered in visual editor mode", () => {
                 }
             );
 
-            expect(liveEditorPostMessage?.send).toHaveBeenCalledTimes(3);
+            expect(visualBuilderPostMessage?.send).toHaveBeenCalledTimes(3);
         });
     });
 
@@ -1220,8 +1220,8 @@ describe("When an element is hovered in visual editor mode", () => {
 
             instanceButton[0].click();
 
-            expect(liveEditorPostMessage?.send).lastCalledWith(
-                LiveEditorPostMessageEvents.ADD_INSTANCE,
+            expect(visualBuilderPostMessage?.send).lastCalledWith(
+                VisualBuilderPostMessageEvents.ADD_INSTANCE,
                 {
                     fieldMetadata: {
                         entry_uid: "bltapikey",
@@ -1248,8 +1248,8 @@ describe("When an element is hovered in visual editor mode", () => {
             );
 
             instanceButton[1].click();
-            expect(liveEditorPostMessage?.send).lastCalledWith(
-                LiveEditorPostMessageEvents.ADD_INSTANCE,
+            expect(visualBuilderPostMessage?.send).lastCalledWith(
+                VisualBuilderPostMessageEvents.ADD_INSTANCE,
                 {
                     fieldMetadata: {
                         entry_uid: "bltapikey",
@@ -1431,8 +1431,8 @@ describe("When an element is hovered in visual editor mode", () => {
 
             instanceButton[0].click();
 
-            expect(liveEditorPostMessage?.send).lastCalledWith(
-                LiveEditorPostMessageEvents.ADD_INSTANCE,
+            expect(visualBuilderPostMessage?.send).lastCalledWith(
+                VisualBuilderPostMessageEvents.ADD_INSTANCE,
                 {
                     fieldMetadata: {
                         entry_uid: "bltapikey",
@@ -1459,8 +1459,8 @@ describe("When an element is hovered in visual editor mode", () => {
             );
 
             instanceButton[1].click();
-            expect(liveEditorPostMessage?.send).lastCalledWith(
-                LiveEditorPostMessageEvents.ADD_INSTANCE,
+            expect(visualBuilderPostMessage?.send).lastCalledWith(
+                VisualBuilderPostMessageEvents.ADD_INSTANCE,
                 {
                     fieldMetadata: {
                         entry_uid: "bltapikey",
@@ -1640,8 +1640,8 @@ describe("When an element is hovered in visual editor mode", () => {
 
             instanceButton[0].click();
 
-            expect(liveEditorPostMessage?.send).lastCalledWith(
-                LiveEditorPostMessageEvents.ADD_INSTANCE,
+            expect(visualBuilderPostMessage?.send).lastCalledWith(
+                VisualBuilderPostMessageEvents.ADD_INSTANCE,
                 {
                     fieldMetadata: {
                         entry_uid: "bltapikey",
@@ -1668,8 +1668,8 @@ describe("When an element is hovered in visual editor mode", () => {
             );
 
             instanceButton[1].click();
-            expect(liveEditorPostMessage?.send).lastCalledWith(
-                LiveEditorPostMessageEvents.ADD_INSTANCE,
+            expect(visualBuilderPostMessage?.send).lastCalledWith(
+                VisualBuilderPostMessageEvents.ADD_INSTANCE,
                 {
                     fieldMetadata: {
                         entry_uid: "bltapikey",
@@ -1942,8 +1942,8 @@ describe("When an element is hovered in visual editor mode", () => {
             expect(instanceButton.length).toBe(2);
 
             instanceButton[0].click();
-            expect(liveEditorPostMessage?.send).lastCalledWith(
-                LiveEditorPostMessageEvents.ADD_INSTANCE,
+            expect(visualBuilderPostMessage?.send).lastCalledWith(
+                VisualBuilderPostMessageEvents.ADD_INSTANCE,
                 {
                     fieldMetadata: {
                         entry_uid: "bltapikey",
@@ -1970,8 +1970,8 @@ describe("When an element is hovered in visual editor mode", () => {
             );
 
             instanceButton[1].click();
-            expect(liveEditorPostMessage?.send).lastCalledWith(
-                LiveEditorPostMessageEvents.ADD_INSTANCE,
+            expect(visualBuilderPostMessage?.send).lastCalledWith(
+                VisualBuilderPostMessageEvents.ADD_INSTANCE,
                 {
                     fieldMetadata: {
                         entry_uid: "bltapikey",
@@ -1997,7 +1997,7 @@ describe("When an element is hovered in visual editor mode", () => {
                 }
             );
 
-            expect(liveEditorPostMessage?.send).toHaveBeenCalledTimes(3);
+            expect(visualBuilderPostMessage?.send).toHaveBeenCalledTimes(3);
         });
 
         test("should have outline on the url", async () => {
@@ -2235,8 +2235,8 @@ describe("When an element is hovered in visual editor mode", () => {
 
             instanceButton[0].click();
 
-            expect(liveEditorPostMessage?.send).lastCalledWith(
-                LiveEditorPostMessageEvents.ADD_INSTANCE,
+            expect(visualBuilderPostMessage?.send).lastCalledWith(
+                VisualBuilderPostMessageEvents.ADD_INSTANCE,
                 {
                     fieldMetadata: {
                         entry_uid: "bltapikey",
@@ -2263,8 +2263,8 @@ describe("When an element is hovered in visual editor mode", () => {
             );
 
             instanceButton[1].click();
-            expect(liveEditorPostMessage?.send).lastCalledWith(
-                LiveEditorPostMessageEvents.ADD_INSTANCE,
+            expect(visualBuilderPostMessage?.send).lastCalledWith(
+                VisualBuilderPostMessageEvents.ADD_INSTANCE,
                 {
                     fieldMetadata: {
                         entry_uid: "bltapikey",
@@ -2444,8 +2444,8 @@ describe("When an element is hovered in visual editor mode", () => {
 
             instanceButton[0].click();
 
-            expect(liveEditorPostMessage?.send).lastCalledWith(
-                LiveEditorPostMessageEvents.ADD_INSTANCE,
+            expect(visualBuilderPostMessage?.send).lastCalledWith(
+                VisualBuilderPostMessageEvents.ADD_INSTANCE,
                 {
                     fieldMetadata: {
                         entry_uid: "bltapikey",
@@ -2473,8 +2473,8 @@ describe("When an element is hovered in visual editor mode", () => {
 
             instanceButton[1].click();
 
-            expect(liveEditorPostMessage?.send).lastCalledWith(
-                LiveEditorPostMessageEvents.ADD_INSTANCE,
+            expect(visualBuilderPostMessage?.send).lastCalledWith(
+                VisualBuilderPostMessageEvents.ADD_INSTANCE,
                 {
                     fieldMetadata: {
                         entry_uid: "bltapikey",
@@ -2704,8 +2704,8 @@ describe("When an element is hovered in visual editor mode", () => {
 
             instanceButton[0].click();
 
-            expect(liveEditorPostMessage?.send).lastCalledWith(
-                LiveEditorPostMessageEvents.ADD_INSTANCE,
+            expect(visualBuilderPostMessage?.send).lastCalledWith(
+                VisualBuilderPostMessageEvents.ADD_INSTANCE,
                 {
                     fieldMetadata: {
                         entry_uid: "bltapikey",
@@ -2733,8 +2733,8 @@ describe("When an element is hovered in visual editor mode", () => {
 
             instanceButton[1].click();
 
-            expect(liveEditorPostMessage?.send).lastCalledWith(
-                LiveEditorPostMessageEvents.ADD_INSTANCE,
+            expect(visualBuilderPostMessage?.send).lastCalledWith(
+                VisualBuilderPostMessageEvents.ADD_INSTANCE,
                 {
                     fieldMetadata: {
                         entry_uid: "bltapikey",

@@ -1,7 +1,7 @@
 import { CslpData } from "../../cslp/types/cslp.types";
-import liveEditorPostMessage from "./visualBuilderPostMessage";
+import visualBuilderPostMessage from "./visualBuilderPostMessage";
 import { ISchemaFieldMap } from "./types/index.types";
-import { LiveEditorPostMessageEvents } from "./types/postMessage.types";
+import { VisualBuilderPostMessageEvents } from "./types/postMessage.types";
 
 // Define an interface for the argument structure
 interface GetDiscussionIdParams {
@@ -22,8 +22,8 @@ export async function getDiscussionIdByFieldMetaData(
 
     // Send a message to get the discussion ID
     const discussionUID =
-        (await liveEditorPostMessage?.send<string>(
-            LiveEditorPostMessageEvents.GET_DISCUSSION_ID,
+        (await visualBuilderPostMessage?.send<string>(
+            VisualBuilderPostMessageEvents.GET_DISCUSSION_ID,
             { fieldMetadata, fieldSchema }
         )) ?? null;
 

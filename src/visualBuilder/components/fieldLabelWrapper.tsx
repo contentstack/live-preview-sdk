@@ -5,19 +5,18 @@ import { CslpData } from "../../cslp/types/cslp.types";
 import { VisualEditorCslpEventDetails } from "../types/visualBuilder.types";
 import { FieldSchemaMap } from "../utils/fieldSchemaMap";
 import { isFieldDisabled } from "../utils/isFieldDisabled";
-import liveEditorPostMessage from "../utils/visualBuilderPostMessage";
+import visualBuilderPostMessage from "../utils/visualBuilderPostMessage";
 import { CaretIcon, InfoIcon } from "./icons";
 import { LoadingIcon } from "./icons/loading";
 import { getFieldIcon } from "../generators/generateCustomCursor";
 import { uniqBy } from "lodash-es";
-import { liveEditorStyles } from "../visualBuilder.style";
+import { visualBuilderStyles } from "../visualBuilder.style";
 import { VariantIcon } from "./icons/variant";
 
 async function getFieldDisplayNames(fieldMetadata: CslpData[]) {
-    const result = await liveEditorPostMessage?.send<{ [k: string]: string }>(
-        "get-field-display-names",
-        fieldMetadata
-    );
+    const result = await visualBuilderPostMessage?.send<{
+        [k: string]: string;
+    }>("get-field-display-names", fieldMetadata);
     return result;
 }
 
@@ -122,7 +121,7 @@ function FieldLabelWrapperComponent(
         <div
             className={classNames(
                 "visual-builder__focused-toolbar__field-label-wrapper",
-                liveEditorStyles()[
+                visualBuilderStyles()[
                     "visual-builder__focused-toolbar__field-label-wrapper"
                 ],
                 {
@@ -130,13 +129,13 @@ function FieldLabelWrapperComponent(
                         currentField.disabled,
                 },
                 {
-                    [liveEditorStyles()[
+                    [visualBuilderStyles()[
                         "visual-builder__focused-toolbar--field-disabled"
                     ]]: currentField.disabled,
                 },
                 {
                     "field-label-dropdown-open": isDropdownOpen,
-                    [liveEditorStyles()["field-label-dropdown-open"]]:
+                    [visualBuilderStyles()["field-label-dropdown-open"]]:
                         isDropdownOpen,
                 }
             )}
@@ -145,12 +144,12 @@ function FieldLabelWrapperComponent(
             <button
                 className={classNames(
                     "visual-builder__focused-toolbar__field-label-wrapper__current-field visual-builder__button visual-builder__button--primary visual-builder__button-loader",
-                    liveEditorStyles()[
+                    visualBuilderStyles()[
                         "visual-builder__focused-toolbar__field-label-wrapper__current-field"
                     ],
-                    liveEditorStyles()["visual-builder__button"],
-                    liveEditorStyles()["visual-builder__button--primary"],
-                    liveEditorStyles()["visual-builder__button-loader"]
+                    visualBuilderStyles()["visual-builder__button"],
+                    visualBuilderStyles()["visual-builder__button--primary"],
+                    visualBuilderStyles()["visual-builder__button-loader"]
                 )}
                 disabled={displayNamesLoading}
             >
@@ -158,7 +157,7 @@ function FieldLabelWrapperComponent(
                     <div
                         className={classNames(
                             "visual-builder__field-icon",
-                            liveEditorStyles()["visual-builder__field-icon"]
+                            visualBuilderStyles()["visual-builder__field-icon"]
                         )}
                         dangerouslySetInnerHTML={{
                             __html: currentField.prefixIcon,
@@ -169,7 +168,7 @@ function FieldLabelWrapperComponent(
                     <div
                         className={classNames(
                             "visual-builder__focused-toolbar__text",
-                            liveEditorStyles()[
+                            visualBuilderStyles()[
                                 "visual-builder__focused-toolbar__text"
                             ]
                         )}
@@ -182,7 +181,7 @@ function FieldLabelWrapperComponent(
                     <div
                         className={classNames(
                             "visual-builder__field-icon",
-                            liveEditorStyles()["visual-builder__field-icon"]
+                            visualBuilderStyles()["visual-builder__field-icon"]
                         )}
                     >
                         <VariantIcon />
@@ -194,12 +193,14 @@ function FieldLabelWrapperComponent(
                     key={path}
                     className={classNames(
                         "visual-builder__focused-toolbar__field-label-wrapper__parent-field visual-builder__button visual-builder__button--secondary visual-builder__focused-toolbar__text",
-                        liveEditorStyles()[
+                        visualBuilderStyles()[
                             "visual-builder__focused-toolbar__field-label-wrapper__parent-field"
                         ],
-                        liveEditorStyles()["visual-builder__button"],
-                        liveEditorStyles()["visual-builder__button--secondary"],
-                        liveEditorStyles()[
+                        visualBuilderStyles()["visual-builder__button"],
+                        visualBuilderStyles()[
+                            "visual-builder__button--secondary"
+                        ],
+                        visualBuilderStyles()[
                             "visual-builder__focused-toolbar__text"
                         ]
                     )}
