@@ -3,10 +3,10 @@ import crypto from "crypto";
 import packageJson from "../../../package.json";
 import { sleep } from "../../__test__/utils";
 import Config from "../../configManager/configManager";
-import liveEditorPostMessage from "../../liveEditor/utils/liveEditorPostMessage";
-import { LiveEditorPostMessageEvents } from "../../liveEditor/utils/types/postMessage.types";
+import visualBuilderPostMessage from "../../visualBuilder/utils/visualBuilderPostMessage";
+import { VisualBuilderPostMessageEvents } from "../../visualBuilder/utils/types/postMessage.types";
 import {
-    mockLiveEditorInitEventListener,
+    mockVisualBuilderInitEventListener,
     mockLivePreviewInitEventListener,
 } from "../../livePreview/__test__/mock";
 import livePreviewPostMessage from "../../livePreview/eventManager/livePreviewEventManager";
@@ -14,6 +14,7 @@ import { LIVE_PREVIEW_POST_MESSAGE_EVENTS } from "../../livePreview/eventManager
 import { PublicLogger } from "../../logger/logger";
 import { IInitData } from "../../types/types";
 import ContentstackLivePreview from "../contentstack-live-preview-HOC";
+import { vi } from "vitest";
 
 Object.defineProperty(globalThis, "crypto", {
     value: {
@@ -21,10 +22,10 @@ Object.defineProperty(globalThis, "crypto", {
     },
 });
 
-global.ResizeObserver = jest.fn().mockImplementation(() => ({
-    observe: jest.fn(),
-    unobserve: jest.fn(),
-    disconnect: jest.fn(),
+global.ResizeObserver = vi.fn().mockImplementation(() => ({
+    observe: vi.fn(),
+    unobserve: vi.fn(),
+    disconnect: vi.fn(),
 }));
 
 describe("Live Preview HOC init", () => {
@@ -36,22 +37,22 @@ describe("Live Preview HOC init", () => {
             mockLivePreviewInitEventListener
         );
 
-        liveEditorPostMessage?.on(
-            LiveEditorPostMessageEvents.INIT,
-            mockLiveEditorInitEventListener
+        visualBuilderPostMessage?.on(
+            VisualBuilderPostMessageEvents.INIT,
+            mockVisualBuilderInitEventListener
         );
     });
 
     afterAll(() => {
-        jest.restoreAllMocks();
+        vi.restoreAllMocks();
     });
 
     afterEach(() => {
         // @ts-ignore
         ContentstackLivePreview.previewConstructors = {};
         livePreviewPostMessage?.destroy({ soft: true });
-        liveEditorPostMessage?.destroy({ soft: true });
-        jest.clearAllMocks();
+        visualBuilderPostMessage?.destroy({ soft: true });
+        vi.clearAllMocks();
     });
 
     afterAll(() => {
@@ -59,47 +60,47 @@ describe("Live Preview HOC init", () => {
     });
 
     test("should initialize only the live preview ", async () => {
-        if (!livePreviewPostMessage || !liveEditorPostMessage) {
+        if (!livePreviewPostMessage || !visualBuilderPostMessage) {
             throw new Error(
-                "livePreviewPostMessage or liveEditor is unavailable"
+                "livePreviewPostMessage or visualBuilder is unavailable"
             );
         }
 
-        const livePreviewPostMessageSpy = jest.spyOn(
+        const livePreviewPostMessageSpy = vi.spyOn(
             livePreviewPostMessage,
             "send"
         );
 
-        const liveEditorPostMessageSpy = jest.spyOn(
-            liveEditorPostMessage,
+        const visualBuilderPostMessageSpy = vi.spyOn(
+            visualBuilderPostMessage,
             "send"
         );
 
         ContentstackLivePreview.init({});
 
         expect(livePreviewPostMessageSpy).toHaveBeenCalledTimes(1);
-        expect(liveEditorPostMessageSpy).toHaveBeenCalledTimes(0);
+        expect(visualBuilderPostMessageSpy).toHaveBeenCalledTimes(0);
     });
 
-    test("should initialize both live preview and live editor when mode is editor", async () => {
-        if (!livePreviewPostMessage || !liveEditorPostMessage) {
+    test("should initialize both live preview and visual builder when mode is builder", async () => {
+        if (!livePreviewPostMessage || !visualBuilderPostMessage) {
             throw new Error(
-                "livePreviewPostMessage or liveEditor is unavailable"
+                "livePreviewPostMessage or visualBuilder is unavailable"
             );
         }
 
-        const livePreviewPostMessageSpy = jest.spyOn(
+        const livePreviewPostMessageSpy = vi.spyOn(
             livePreviewPostMessage,
             "send"
         );
 
-        const liveEditorPostMessageSpy = jest.spyOn(
-            liveEditorPostMessage,
+        const visualBuilderPostMessageSpy = vi.spyOn(
+            visualBuilderPostMessage,
             "send"
         );
 
         ContentstackLivePreview.init({
-            mode: "editor",
+            mode: "builder",
             stackDetails: {
                 environment: "development",
                 apiKey: "livePreviewApiKey123",
@@ -108,11 +109,11 @@ describe("Live Preview HOC init", () => {
 
         await sleep();
         expect(livePreviewPostMessageSpy).toHaveBeenCalledTimes(1);
-        expect(liveEditorPostMessageSpy).toHaveBeenCalledTimes(1);
+        expect(visualBuilderPostMessageSpy).toHaveBeenCalledTimes(1);
     });
 
     test("should return the existing live preview instance if it is already initialized", async () => {
-        const PublicLoggerWarnSpy = jest.spyOn(PublicLogger, "warn");
+        const PublicLoggerWarnSpy = vi.spyOn(PublicLogger, "warn");
 
         ContentstackLivePreview.init();
         ContentstackLivePreview.init();
@@ -133,22 +134,22 @@ describe("Live Preview HOC config", () => {
             mockLivePreviewInitEventListener
         );
 
-        liveEditorPostMessage?.on(
-            LiveEditorPostMessageEvents.INIT,
-            mockLiveEditorInitEventListener
+        visualBuilderPostMessage?.on(
+            VisualBuilderPostMessageEvents.INIT,
+            mockVisualBuilderInitEventListener
         );
     });
 
     afterAll(() => {
-        jest.restoreAllMocks();
+        vi.restoreAllMocks();
     });
 
     afterEach(() => {
         // @ts-ignore
         ContentstackLivePreview.previewConstructors = {};
         livePreviewPostMessage?.destroy({ soft: true });
-        liveEditorPostMessage?.destroy({ soft: true });
-        jest.clearAllMocks();
+        visualBuilderPostMessage?.destroy({ soft: true });
+        vi.clearAllMocks();
     });
 
     afterAll(() => {
@@ -233,24 +234,24 @@ describe("Live Preview HOC hash", () => {
             mockLivePreviewInitEventListener
         );
 
-        liveEditorPostMessage?.on(
-            LiveEditorPostMessageEvents.INIT,
-            mockLiveEditorInitEventListener
+        visualBuilderPostMessage?.on(
+            VisualBuilderPostMessageEvents.INIT,
+            mockVisualBuilderInitEventListener
         );
     });
 
     afterAll(() => {
-        jest.restoreAllMocks();
+        vi.restoreAllMocks();
     });
 
     afterEach(() => {
         // @ts-ignore
         ContentstackLivePreview.previewConstructors = {};
         livePreviewPostMessage?.destroy({ soft: true });
-        liveEditorPostMessage?.destroy({ soft: true });
+        visualBuilderPostMessage?.destroy({ soft: true });
 
         Config.reset();
-        jest.clearAllMocks();
+        vi.clearAllMocks();
     });
 
     test("should return empty string if live preview is not initialized", async () => {
@@ -303,8 +304,8 @@ describe("Live preview HOC onEntryChange", () => {
         );
     });
     test("should save the callback when SDK is not yet initialized", async () => {
-        const onChangeCallback1 = jest.fn();
-        const onChangeCallback2 = jest.fn();
+        const onChangeCallback1 = vi.fn();
+        const onChangeCallback2 = vi.fn();
         ContentstackLivePreview.onEntryChange(onChangeCallback1, {
             skipInitialRender: true,
         });
@@ -335,8 +336,8 @@ describe("Live preview HOC onEntryChange", () => {
 
         await sleep();
 
-        const onChangeCallback1 = jest.fn();
-        const onChangeCallback2 = jest.fn();
+        const onChangeCallback1 = vi.fn();
+        const onChangeCallback2 = vi.fn();
         ContentstackLivePreview.onEntryChange(onChangeCallback1, {
             skipInitialRender: true,
         });
@@ -355,7 +356,7 @@ describe("Live preview HOC onEntryChange", () => {
     });
 
     test("should run the callback saved when SDK was uninitialized when the entry is changed", async () => {
-        const onChangeCallback1 = jest.fn();
+        const onChangeCallback1 = vi.fn();
         ContentstackLivePreview.onEntryChange(onChangeCallback1);
 
         ContentstackLivePreview.init({
@@ -367,8 +368,8 @@ describe("Live preview HOC onEntryChange", () => {
     });
 
     test("should honor the skipInitialRender option", async () => {
-        const onChangeCallback1 = jest.fn();
-        const onChangeCallback2 = jest.fn();
+        const onChangeCallback1 = vi.fn();
+        const onChangeCallback2 = vi.fn();
         ContentstackLivePreview.onEntryChange(onChangeCallback1, {
             skipInitialRender: true,
         });
@@ -386,7 +387,7 @@ describe("Live preview HOC onEntryChange", () => {
 
 describe("Live preview HOC onLiveEdit", () => {
     test("should not run the callback when the live preview is not initialized", () => {
-        const onLiveEditCallback = jest.fn();
+        const onLiveEditCallback = vi.fn();
         ContentstackLivePreview.onLiveEdit(onLiveEditCallback);
 
         expect(onLiveEditCallback).toHaveBeenCalledTimes(0);
@@ -396,8 +397,8 @@ describe("Live preview HOC onLiveEdit", () => {
 describe("Live Preview HOC unsubscribeOnEntryChange", () => {
     describe("unsubscribing with callback ID", () => {
         test("callback should be removed, before SDK has initialized", async () => {
-            const onChangeCallbackToStay = jest.fn();
-            const onChangeCallbackToBeRemoved = jest.fn();
+            const onChangeCallbackToStay = vi.fn();
+            const onChangeCallbackToBeRemoved = vi.fn();
 
             ContentstackLivePreview.onEntryChange(onChangeCallbackToStay);
 
@@ -424,8 +425,8 @@ describe("Live Preview HOC unsubscribeOnEntryChange", () => {
             expect(onChangeCallbackToStay).toHaveBeenCalledTimes(2);
         });
         test("callback should be removed, after SDK has initialized", async () => {
-            const onChangeCallbackToStay = jest.fn();
-            const onChangeCallbackToBeRemoved = jest.fn();
+            const onChangeCallbackToStay = vi.fn();
+            const onChangeCallbackToBeRemoved = vi.fn();
 
             ContentstackLivePreview.onEntryChange(onChangeCallbackToStay);
 
@@ -453,7 +454,7 @@ describe("Live Preview HOC unsubscribeOnEntryChange", () => {
             expect(onChangeCallbackToStay).toHaveBeenCalledTimes(2);
         });
         test("should warn user if callback is not present", async () => {
-            const spiedConsole = jest.spyOn(PublicLogger, "warn");
+            const spiedConsole = vi.spyOn(PublicLogger, "warn");
 
             ContentstackLivePreview.unsubscribeOnEntryChange(
                 "invalidCallbackId"
@@ -470,11 +471,11 @@ describe("Live Preview HOC unsubscribeOnEntryChange", () => {
 
     describe("unsubscribing with callback function", () => {
         afterAll(() => {
-            jest.clearAllMocks();
+            vi.clearAllMocks();
         });
         test("callback should be removed, before SDK has initialized", async () => {
-            const onChangeCallbackToStay = jest.fn();
-            const onChangeCallbackToBeRemoved = jest.fn();
+            const onChangeCallbackToStay = vi.fn();
+            const onChangeCallbackToBeRemoved = vi.fn();
 
             ContentstackLivePreview.onEntryChange(onChangeCallbackToStay);
             ContentstackLivePreview.onEntryChange(onChangeCallbackToBeRemoved);
@@ -497,8 +498,8 @@ describe("Live Preview HOC unsubscribeOnEntryChange", () => {
             expect(onChangeCallbackToStay).toHaveBeenCalledTimes(2);
         });
         test("callback should be removed, after SDK has initialized", async () => {
-            const onChangeCallbackToStay = jest.fn();
-            const onChangeCallbackToBeRemoved = jest.fn();
+            const onChangeCallbackToStay = vi.fn();
+            const onChangeCallbackToBeRemoved = vi.fn();
 
             ContentstackLivePreview.onEntryChange(onChangeCallbackToStay);
             ContentstackLivePreview.onEntryChange(onChangeCallbackToBeRemoved);
@@ -521,9 +522,9 @@ describe("Live Preview HOC unsubscribeOnEntryChange", () => {
             expect(onChangeCallbackToStay).toHaveBeenCalledTimes(2);
         });
         test("should warn user if callback is not present", async () => {
-            const spiedConsole = jest.spyOn(PublicLogger, "warn");
+            const spiedConsole = vi.spyOn(PublicLogger, "warn");
 
-            ContentstackLivePreview.unsubscribeOnEntryChange(jest.fn());
+            ContentstackLivePreview.unsubscribeOnEntryChange(vi.fn());
 
             expect(spiedConsole).toHaveBeenCalledTimes(1);
             expect(spiedConsole).toHaveBeenCalledWith(
@@ -535,6 +536,12 @@ describe("Live Preview HOC unsubscribeOnEntryChange", () => {
 
 describe("getSdkVersion", () => {
     test("should return current version", () => {
+        // we put the version from the package.json file
+        // to the environment variable. Hence, we will add
+        // the version from the package.json file to the
+        // environment variable.
+        process.env.PACKAGE_VERSION = packageJson.version;
+
         expect(ContentstackLivePreview.getSdkVersion()).toBe(
             packageJson.version
         );

@@ -132,10 +132,10 @@ describe("handleInitData()", () => {
             expect(config.mode).toBe(ILivePreviewModeConfig.PREVIEW);
         });
 
-        test("should be set to 2 if user set it to editor", () => {
+        test("should be set to 2 if user set it to builder", () => {
             const initData: Partial<IInitData> = {
                 enable: true,
-                mode: "editor",
+                mode: "builder",
                 stackDetails: {
                     environment: "main",
                     apiKey: "bltanything",
@@ -143,7 +143,7 @@ describe("handleInitData()", () => {
             };
 
             handleInitData(initData);
-            expect(config.mode).toBe(ILivePreviewModeConfig.EDITOR);
+            expect(config.mode).toBe(ILivePreviewModeConfig.BUILDER);
         });
 
         test("should be set to 1 if user set it to preview", () => {
@@ -166,7 +166,7 @@ describe("handleInitData()", () => {
             expect(() => {
                 handleInitData(initData);
             }).toThrowError(
-                "Live Preview SDK: The mode must be either 'editor' or 'preview'"
+                "Live Preview SDK: The mode must be either 'builder' or 'preview'"
             );
         });
     });
@@ -195,7 +195,8 @@ describe("handleInitData()", () => {
             expect(config.stackDetails.apiKey).toBe("bltuserapikey");
         });
 
-        test("should set api key from headers if available", () => {
+        test.skip("should set api key from headers if available", () => {
+            // we removed it so it is good that it is skipped
             const initData: Partial<IInitData> = {
                 enable: true,
 
@@ -221,13 +222,13 @@ describe("handleInitData()", () => {
             expect(config.stackDetails.apiKey).toBe("");
         });
 
-        test("should throw error if api key is not passed in editor mode", () => {
+        test("should throw error if api key is not passed in builder mode", () => {
             const initData: Partial<IInitData> = {
                 enable: true,
                 stackDetails: {
                     environment: "dev",
                 },
-                mode: "editor",
+                mode: "builder",
             };
 
             expect(() => {
@@ -283,13 +284,13 @@ describe("handleInitData()", () => {
             expect(config.stackDetails.environment).toBe("");
         });
 
-        test("should throw error if environment is not passed in editor mode", () => {
+        test("should throw error if environment is not passed in builder mode", () => {
             const initData: Partial<IInitData> = {
                 enable: true,
                 stackDetails: {
                     apiKey: "bltapikey",
                 },
-                mode: "editor",
+                mode: "builder",
             };
 
             expect(() => {

@@ -11,15 +11,6 @@ import {
 import livePreviewPostMessage from "../eventManager/livePreviewEventManager";
 import { EDIT_BUTTON_TOOLTIP_ID } from "./editButton.constant";
 
-effect(function handleWindowTypeChange() {
-    // we need to specify when to run this effect.
-    // here, we run it when the value of windowType changes
-    Config.get().windowType;
-    if (LivePreviewEditButton) {
-        toggleEditButtonElement();
-    }
-});
-
 function calculateEditButtonPosition(
     currentHoveredElement: HTMLElement,
     cslpButtonPosition: string
@@ -249,8 +240,8 @@ export function shouldRenderEditButton(): boolean {
     ) {
         return false;
     } else if (iFrameCheck) {
-        // case if inside live editor
-        if (config.windowType === "editor") {
+        // case if inside visual builder
+        if (config.windowType === "builder") {
             return false;
         }
 
@@ -532,3 +523,12 @@ export class LivePreviewEditButton {
         this.tooltip?.remove();
     }
 }
+
+effect(function handleWindowTypeChange() {
+    // we need to specify when to run this effect.
+    // here, we run it when the value of windowType changes
+    Config.get().windowType;
+    if (LivePreviewEditButton) {
+        toggleEditButtonElement();
+    }
+});

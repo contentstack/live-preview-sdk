@@ -1,4 +1,4 @@
-import { ISchemaIndividualFieldMap } from "../../liveEditor/utils/types/index.types";
+import { ISchemaIndividualFieldMap } from "../../visualBuilder/utils/types/index.types";
 
 export function getFieldSchemaMap(): {
     all_fields: ISchemaIndividualFieldMap;

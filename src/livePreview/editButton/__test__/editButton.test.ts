@@ -1,3 +1,4 @@
+import { Mock } from "vitest";
 import { DOMRect } from "../../../__test__/utils";
 import {
     createMultipleEditButton,
@@ -5,15 +6,18 @@ import {
     getEditButtonPosition,
 } from "../editButton";
 
-let editCallback: jest.Mock<void, [e: MouseEvent]> | undefined;
-let linkCallback: jest.Mock<void, [e: MouseEvent]> | undefined;
+let editCallback: Mock<(e: MouseEvent) => void> | undefined;
+let linkCallback: Mock<(e: MouseEvent) => void> | undefined;
 let editButtonForHyperlink: HTMLDivElement | undefined;
 let editButtonForNonHyperlink: HTMLDivElement | undefined;
 let tooltipChild: HTMLCollectionOf<HTMLDivElement> | undefined;
 
 describe("Edit button", () => {
+    beforeAll(() => {
+        document.body.innerHTML = "";
+    });
     beforeEach(() => {
-        editCallback = jest.fn();
+        editCallback = vi.fn();
 
         editButtonForNonHyperlink = createSingularEditButton(editCallback);
 
@@ -35,7 +39,7 @@ describe("Edit button", () => {
 
     test("runs edit callback when clicked", () => {
         if (!(editCallback && editButtonForNonHyperlink && tooltipChild))
-            fail("missing dependencies");
+            assert.fail("missing dependencies");
 
         const editButton = tooltipChild[0];
         editButton.click();
@@ -48,7 +52,7 @@ describe("getEditButtonPosition: Edit button", () => {
         const titlePara = document.createElement("h3");
         titlePara.setAttribute("data-test-id", "title-para");
         if (titlePara) {
-            titlePara.getBoundingClientRect = jest.fn(
+            titlePara.getBoundingClientRect = vi.fn(
                 () => new DOMRect(53, 75, 1529, 10)
             );
         }
@@ -58,7 +62,7 @@ describe("getEditButtonPosition: Edit button", () => {
 
     afterAll(() => {
         document.getElementsByTagName("html")[0].innerHTML = "";
-        jest.clearAllMocks();
+        vi.clearAllMocks();
     });
 
     test("should be positioned on top of hovered element", async () => {
@@ -177,8 +181,8 @@ describe("getEditButtonPosition: Edit button", () => {
 
 describe("Edit button for Link", () => {
     beforeEach(() => {
-        editCallback = jest.fn();
-        linkCallback = jest.fn();
+        editCallback = vi.fn();
+        linkCallback = vi.fn();
 
         editButtonForHyperlink = createMultipleEditButton(
             editCallback,
@@ -214,7 +218,7 @@ describe("Edit button for Link", () => {
                 tooltipChild
             )
         )
-            fail("missing dependencies");
+            assert.fail("missing dependencies");
 
         const editButton = tooltipChild[0];
         editButton.click();
@@ -230,7 +234,7 @@ describe("Edit button for Link", () => {
                 tooltipChild
             )
         )
-            fail("missing dependencies");
+            assert.fail("missing dependencies");
 
         const linkButton = tooltipChild[1];
         linkButton.click();

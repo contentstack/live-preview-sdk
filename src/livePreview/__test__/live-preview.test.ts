@@ -1,42 +1,47 @@
+/**
+ * @vitest-environment jsdom
+ */
+
+import { fireEvent } from "@testing-library/preact";
 import crypto from "crypto";
-import { fireEvent, waitFor } from "@testing-library/preact";
+import { vi } from "vitest";
 import { sleep } from "../../__test__/utils";
 import { getDefaultConfig } from "../../configManager/config.default";
 import Config from "../../configManager/configManager";
 import { PublicLogger } from "../../logger/logger";
 import { ILivePreviewWindowType } from "../../types/types";
+import { addLivePreviewQueryTags } from "../../utils";
 import livePreviewPostMessage from "../eventManager/livePreviewEventManager";
-import LivePreview from "../live-preview";
 import { LIVE_PREVIEW_POST_MESSAGE_EVENTS } from "../eventManager/livePreviewEventManager.constant";
-import { mockLivePreviewInitEventListener } from "./mock";
 import {
     HistoryLivePreviewPostMessageEventData,
     OnChangeLivePreviewPostMessageEventData,
 } from "../eventManager/types/livePreviewPostMessageEvent.type";
-import { addLivePreviewQueryTags } from "../../utils";
+import LivePreview from "../live-preview";
+import { mockLivePreviewInitEventListener } from "./mock";
 
-jest.mock("../../liveEditor/utils/liveEditorPostMessage", () => {
-    const { getAllContentTypes } = jest.requireActual(
-        "../../__test__/data/contentType"
-    );
+vi.mock("../../visualBuilder/utils/visualBuilderPostMessage", async () => {
+    const { getAllContentTypes } = await vi.importActual<
+        typeof import("../../__test__/data/contentType")
+    >("../../__test__/data/contentType");
     const contentTypes = getAllContentTypes();
     return {
         __esModule: true,
         default: {
-            send: jest.fn().mockImplementation((eventName: string) => {
+            send: vi.fn().mockImplementation((eventName: string) => {
                 if (eventName === "init")
                     return Promise.resolve({
                         contentTypes,
                     });
                 return Promise.resolve();
             }),
-            on: jest.fn(),
+            on: vi.fn(),
         },
     };
 });
 
-jest.mock("../../utils", () => ({
-    addLivePreviewQueryTags: jest.fn(),
+vi.mock("../../utils", () => ({
+    addLivePreviewQueryTags: vi.fn(),
 }));
 
 Object.defineProperty(globalThis, "crypto", {
@@ -49,10 +54,10 @@ const TITLE_CSLP_TAG = "content-type-1.entry-uid-1.en-us.field-title";
 const DESC_CSLP_TAG = "content-type-2.entry-uid-2.en-us.field-description";
 const LINK_CSLP_TAG = "content-type-3.entry-uid-3.en-us.field-link";
 
-global.ResizeObserver = jest.fn().mockImplementation(() => ({
-    observe: jest.fn(),
-    unobserve: jest.fn(),
-    disconnect: jest.fn(),
+global.ResizeObserver = vi.fn().mockImplementation(() => ({
+    observe: vi.fn(),
+    unobserve: vi.fn(),
+    disconnect: vi.fn(),
 }));
 
 describe("cslp tooltip", () => {
@@ -174,7 +179,7 @@ describe("cslp tooltip", () => {
     test("should disable the edit button when the editButton config is disabled for inside live preview panel", async () => {
         const { location } = window;
 
-        const locationSpy = jest
+        const locationSpy = vi
             .spyOn(window, "location", "get")
             .mockImplementation(() => {
                 const mockLocation = JSON.parse(JSON.stringify(location));
@@ -182,7 +187,7 @@ describe("cslp tooltip", () => {
                 return mockLocation;
             });
 
-        const topLocationSpy = jest
+        const topLocationSpy = vi
             .spyOn(window, "top", "get")
             .mockImplementation(() => {
                 const mockLocation = JSON.parse(JSON.stringify(location));
@@ -227,7 +232,7 @@ describe("cslp tooltip", () => {
     test("should enable the edit button when the editButton config is disabled for outside live preview panel but query parameter is passed", async () => {
         const { location } = window;
 
-        const locationSpy = jest
+        const locationSpy = vi
             .spyOn(window, "location", "get")
             .mockImplementation(() => {
                 const mockLocation = JSON.parse(JSON.stringify(location));
@@ -288,7 +293,7 @@ describe("debug module", () => {
     });
 
     test("should display config when debug is true", () => {
-        const spiedConsole = jest.spyOn(PublicLogger, "debug");
+        const spiedConsole = vi.spyOn(PublicLogger, "debug");
         Config.replace({
             debug: true,
         });
@@ -353,7 +358,7 @@ describe("incoming postMessage", () => {
         await sleep();
 
         // set user onChange function
-        const userOnChange = jest.fn();
+        const userOnChange = vi.fn();
 
         livePreview.subscribeToOnEntryChange(userOnChange, "mock-callback-uid");
 
@@ -395,9 +400,9 @@ describe("incoming postMessage", () => {
         new LivePreview();
         await sleep();
 
-        jest.spyOn(window.history, "forward");
-        jest.spyOn(window.history, "back");
-        jest.spyOn(window.history, "go").mockImplementation(() => {});
+        vi.spyOn(window.history, "forward");
+        vi.spyOn(window.history, "back");
+        vi.spyOn(window.history, "go").mockImplementation(() => {});
 
         // for forward
         livePreviewPostMessage?.send(LIVE_PREVIEW_POST_MESSAGE_EVENTS.HISTORY, {
@@ -457,11 +462,11 @@ describe("testing window event listeners", () => {
 
         Config.set("windowType", ILivePreviewWindowType.PREVIEW);
 
-        addEventListenerMock = jest.spyOn(window, "addEventListener");
+        addEventListenerMock = vi.spyOn(window, "addEventListener");
     });
 
     afterEach(() => {
-        jest.restoreAllMocks();
+        vi.restoreAllMocks();
         document.getElementsByTagName("html")[0].innerHTML = "";
     });
 

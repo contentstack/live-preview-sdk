@@ -1,22 +1,21 @@
-import "@testing-library/jest-dom/extend-expect";
-import {
-    doesEditButtonExist,
-    shouldRenderEditButton,
-    toggleEditButtonElement,
-} from "../editButton";
+import { vi } from "vitest";
 import Config from "../../../configManager/configManager";
+import { toggleEditButtonElement } from "../editButton";
 
-jest.mock("../editButton", () => ({
-    __esModule: true,
-    ...jest.requireActual("../editButton"),
-    doesEditButtonExist: jest.fn(),
-    shouldRenderEditButton: jest.fn(),
-}));
+vi.mock("../editButton", async () => {
+    const editButton = await vi.importActual("../editButton");
+    return {
+        __esModule: true,
+        ...editButton,
+        doesEditButtonExist: vi.fn(),
+        shouldRenderEditButton: vi.fn(),
+    };
+});
 
 describe("toggleEditButtonElement", () => {
     beforeEach(() => {
         Config.reset();
-        jest.clearAllMocks();
+        vi.clearAllMocks();
     });
 
     afterAll(() => {
