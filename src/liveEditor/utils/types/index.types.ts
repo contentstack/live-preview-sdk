@@ -54,3 +54,12 @@ export enum FieldDataType {
     GLOBAL_FIELD = "global_field",
     TAXONOMY = "taxonomy",
 }
+
+// Define the event data for handling comments
+export interface IHighlightComments {
+    paths: string[]; // Array of paths where comments exist
+}
+
+export interface IHighlightCommentsEvent {
+    data: IHighlightComments;
+}

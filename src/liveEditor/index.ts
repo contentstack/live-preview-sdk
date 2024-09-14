@@ -1,6 +1,7 @@
 import { Signal, signal } from "@preact/signals";
 
 import { generateStartEditingButton } from "./generators/generateStartEditingButton";
+import { highlightCommentsOnCanvas, updateHighlightedCommentIconPosition } from "./generators/generateHighlightedComment";
 import { inIframe } from "../common/inIframe";
 import Config from "../configManager/configManager";
 import {
@@ -37,6 +38,7 @@ import { setup } from "goober";
 import { globalLiveEditorStyles } from "./liveEditor.style";
 import { useVariantFieldsPostMessageEvent } from "./eventManager/useVariantsPostMessageEvent";
 import { useScrollToField } from "./eventManager/useScrollToField";
+import { IHighlightCommentsEvent } from "./utils/types/index.types";
 
 interface VisualEditorGlobalStateImpl {
     previousSelectedEditableDOM: HTMLElement | Element | null;
@@ -73,6 +75,7 @@ export class VisualEditor {
         const previousSelectedEditableDOM =
             VisualEditor.VisualEditorGlobalState.value
                 .previousSelectedEditableDOM;
+        updateHighlightedCommentIconPosition(); // Update icons position
         if (previousSelectedEditableDOM) {
             this.handlePositionChange(
                 previousSelectedEditableDOM as HTMLElement
@@ -80,11 +83,24 @@ export class VisualEditor {
         }
     };
 
+    private scrollEventHandler = () => {
+        updateHighlightedCommentIconPosition(); // Update icons position
+    };
+
+    private handleAddCommentIcons(event: IHighlightCommentsEvent) {
+        const { paths } = event.data; // Get the array of paths with comments
+        highlightCommentsOnCanvas(paths);
+    }
+
+    private handleRemoveCommentIcons(): void {
+        const icons = document.querySelectorAll(".highlighted-comment");
+        icons?.forEach((icon) => icon?.remove());
+    }
+
     private resizeObserver = new ResizeObserver(([entry]) => {
         const previousSelectedEditableDOM =
             VisualEditor.VisualEditorGlobalState.value
                 .previousSelectedEditableDOM;
-
         if (!this.overlayWrapper || !previousSelectedEditableDOM) {
             return;
         }
@@ -125,7 +141,6 @@ export class VisualEditor {
         } else if (editableElement) {
             this.handlePositionChange(editableElement);
         }
-
         // update the overlay if field is disabled
         const cslpData =
             editableElement && editableElement.getAttribute("data-cslp");
@@ -198,6 +213,7 @@ export class VisualEditor {
         // Handles changes in element positions due to sidebar toggling or window resizing,
         // triggering a redraw of the visual editor
         window.addEventListener("resize", this.resizeEventHandler);
+        window.addEventListener("scroll", this.scrollEventHandler);
 
         initUI({
             resizeObserver: this.resizeObserver,
@@ -255,7 +271,16 @@ export class VisualEditor {
                     focusedToolbar: this.focusedToolbar,
                     resizeObserver: this.resizeObserver,
                 });
-                useScrollToField()
+                useScrollToField();
+
+                liveEditorPostMessage?.on(
+                    LiveEditorPostMessageEvents.HIGHLIGHT_ACTIVE_COMMENTS,
+                    this.handleAddCommentIcons
+                );
+                liveEditorPostMessage?.on(
+                    LiveEditorPostMessageEvents.REMOVE_HIGHLIGHTED_COMMENTS,
+                    this.handleRemoveCommentIcons
+                );
 
                 this.mutationObserver.observe(document.body, {
                     childList: true,
@@ -290,6 +315,7 @@ export class VisualEditor {
     // TODO: write test cases
     destroy = (): void => {
         window.removeEventListener("resize", this.resizeEventHandler);
+        window.removeEventListener("scroll", this.scrollEventHandler)
         removeEventListeners({
             overlayWrapper: this.overlayWrapper,
             visualEditorContainer: this.visualEditorContainer,

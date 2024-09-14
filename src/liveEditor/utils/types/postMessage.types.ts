@@ -24,5 +24,6 @@ export enum LiveEditorPostMessageEvents {
     SET_AUDIENCE_MODE = "set-audience-mode",
     UPDATE_DISCUSSION_ID = "update-discussion-id-for-focus-field",
     SCROLL_TO_FIELD = "scroll-to-view-field-by-cslp-value",
-
+    HIGHLIGHT_ACTIVE_COMMENTS = "highlight-active-comments-by-data-cs",   
+    REMOVE_HIGHLIGHTED_COMMENTS = "remove-highlighted-comments"  
 }
