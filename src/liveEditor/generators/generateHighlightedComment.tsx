@@ -2,7 +2,7 @@ import { render } from "preact";
 import HighlightedCommentIcon from "../HighlightedCommentIcon";
 import React from "react";
 
-export function highlightCommentsOnCanvas(hasCommentPaths: string[]): void {
+export function highlightCommentIconOnCanvas(hasCommentPaths: string[]): void {
     hasCommentPaths.forEach((path) => {
         const element = document.querySelector(`[data-cslp="${path}"]`);
         if (element && element instanceof HTMLElement) {

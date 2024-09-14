@@ -1,7 +1,7 @@
 import { Signal, signal } from "@preact/signals";
 
 import { generateStartEditingButton } from "./generators/generateStartEditingButton";
-import { highlightCommentsOnCanvas, updateHighlightedCommentIconPosition } from "./generators/generateHighlightedComment";
+import { highlightCommentIconOnCanvas, updateHighlightedCommentIconPosition } from "./generators/generateHighlightedComment";
 import { inIframe } from "../common/inIframe";
 import Config from "../configManager/configManager";
 import {
@@ -89,7 +89,7 @@ export class VisualEditor {
 
     private handleAddCommentIcons(event: IHighlightCommentsEvent) {
         const { paths } = event.data; // Get the array of paths with comments
-        highlightCommentsOnCanvas(paths);
+        highlightCommentIconOnCanvas(paths);
     }
 
     private handleRemoveCommentIcons(): void {
