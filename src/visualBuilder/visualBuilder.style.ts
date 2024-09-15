@@ -181,15 +181,6 @@ export function visualBuilderStyles() {
         `,
         "visual-builder__cursor-icon--loader": css`
             animation: visual-builder__spinner 1s linear infinite;
-
-            @keyframes visual-builder__spinner {
-                0% {
-                    transform: rotate(0deg);
-                }
-                100% {
-                    transform: rotate(360deg);
-                }
-            }
         `,
         "visual-builder__focused-toolbar": css`
             position: absolute;
@@ -479,6 +470,9 @@ export function visualBuilderStyles() {
         "visual-builder__variant-field": css`
             outline: 2px solid var(--Brand-Colors-Brand-Orange, #eb5646);
         `,
+        "visual-builder__pseudo-editable-element": css`
+            z-index: 200 !important;
+        `
     };
 }
 
@@ -487,6 +481,15 @@ export const VisualBuilderGlobalStyles = `
 
        [data-cslp] [contenteditable="true"] {
             outline: none;
+        }
+        
+        @keyframes visual-builder__spinner {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
         }
 
 `;
