@@ -527,6 +527,7 @@ export class LivePreviewEditButton {
 effect(function handleWindowTypeChange() {
     // we need to specify when to run this effect.
     // here, we run it when the value of windowType changes
+    if (typeof window === "undefined") return;
     Config.get().windowType;
     if (LivePreviewEditButton) {
         toggleEditButtonElement();

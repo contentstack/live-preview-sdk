@@ -107,6 +107,7 @@ export function visualBuilderStyles() {
             text-overflow: ellipsis;
         `,
         "visual-builder__start-editing-btn": css`
+            z-index: 1000;
             text-decoration: none;
             position: fixed;
             bottom: 30px;
