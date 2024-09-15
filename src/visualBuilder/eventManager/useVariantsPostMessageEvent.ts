@@ -21,9 +21,20 @@ function addVariantFieldClass(variant_uid: string): void {
     const elements = document.querySelectorAll(`[data-cslp]`);
     elements.forEach((element) => {
         const dataCslp = element.getAttribute("data-cslp");
-        if (dataCslp && new RegExp(variant_uid).test(dataCslp)) {
+        if(!dataCslp) return;
+        if (new RegExp(variant_uid).test(dataCslp)) {
             element.classList.add(
-                visualBuilderStyles()["visual-builder__variant-field"]
+                visualBuilderStyles()["visual-builder__variant-field"],
+                "visual-builder__variant-field"
+            );
+        }
+        // For base variant editing
+        if (!dataCslp.startsWith("v2:")){
+            element.classList.add(
+                visualBuilderStyles()["visual-builder__variant-field"],
+                "visual-builder__variant-field",
+                visualBuilderStyles()["visual-builder__base-field"],
+                "visual-builder__base-field"
             );
         }
     });
@@ -31,11 +42,14 @@ function addVariantFieldClass(variant_uid: string): void {
 
 function removeVariantFieldClass(): void {
     const variantFieldElements = document.querySelectorAll(
-        `.${visualBuilderStyles()["visual-builder__variant-field"]}`
+        ".visual-builder__variant-field"
     );
     variantFieldElements.forEach((element) => {
         element.classList.remove(
-            visualBuilderStyles()["visual-builder__variant-field"]
+            visualBuilderStyles()["visual-builder__variant-field"],
+            ".visual-builder__variant-field",
+            visualBuilderStyles()["visual-builder__base-field"],
+            "visual-builder__base-field"
         );
     });
 }

@@ -465,10 +465,13 @@ export function visualBuilderStyles() {
             cursor: none;
         `,
         "visual-builder__draft-field": css`
-            outline: 2px dashed var(--Brand-Colors-Brand-Orange, #eb5646);
+            outline: 2px dashed #eb5646;
         `,
         "visual-builder__variant-field": css`
-            outline: 2px solid var(--Brand-Colors-Brand-Orange, #eb5646);
+            outline: 2px solid #bd59fa;
+        `,
+        "visual-builder__base-field": css`
+            outline: 2px solid #eb5646;
         `,
         "visual-builder__pseudo-editable-element": css`
             z-index: 200 !important;

@@ -29,7 +29,7 @@
         "test:once": "vitest run",
         "test:coverage": "vitest --coverage",
         "dev": "tsup --watch",
-        "prepare": "npm run build && husky install",
+        "prepack": "npm run build && husky install",
         "lint": "eslint src",
         "lint:fix": "eslint --fix",
         "prettier": "prettier src --check",

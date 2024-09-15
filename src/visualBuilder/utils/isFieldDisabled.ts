@@ -30,11 +30,11 @@ export const isFieldDisabled = (
         fieldSchemaMap?.field_metadata?.updateRestrict
     );
     let updateRestrictDueToAudienceMode = false;
-
+    
     if (
         VisualBuilder.VisualBuilderGlobalState.value.audienceMode &&
         !eventDetails.editableElement.classList.contains(
-            visualBuilderStyles()["visual-builder__variant-field"]
+            ".visual-builder__variant-field"
         )
     ) {
         updateRestrictDueToAudienceMode = true;
