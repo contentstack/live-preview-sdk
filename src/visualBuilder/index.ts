@@ -36,6 +36,8 @@ import { addKeyboardShortcuts } from "./listeners/keyboardShortcuts";
 import { FieldSchemaMap } from "./utils/fieldSchemaMap";
 import { isFieldDisabled } from "./utils/isFieldDisabled";
 import { updateFocussedState } from "./utils/updateFocussedState";
+import { useHighlightCommentIcon } from "./eventManager/useHighlightCommentIcon";
+import { updateHighlightedCommentIconPosition } from "./generators/generateHighlightedComment";
 
 interface VisualBuilderGlobalStateImpl {
     previousSelectedEditableDOM: HTMLElement | Element | null;
@@ -68,10 +70,15 @@ export class VisualBuilder {
         });
     }
 
+    private scrollEventHandler = () => {
+        updateHighlightedCommentIconPosition(); // Update icons position
+    };
+
     private resizeEventHandler = () => {
         const previousSelectedEditableDOM =
             VisualBuilder.VisualBuilderGlobalState.value
                 .previousSelectedEditableDOM;
+        updateHighlightedCommentIconPosition(); // 
         if (previousSelectedEditableDOM) {
             this.handlePositionChange(
                 previousSelectedEditableDOM as HTMLElement
@@ -197,7 +204,7 @@ export class VisualBuilder {
         // Handles changes in element positions due to sidebar toggling or window resizing,
         // triggering a redraw of the visual builder
         window.addEventListener("resize", this.resizeEventHandler);
-
+        window.addEventListener("scroll", this.scrollEventHandler);
         initUI({
             resizeObserver: this.resizeObserver,
         });
@@ -254,7 +261,7 @@ export class VisualBuilder {
                     resizeObserver: this.resizeObserver,
                 });
                 useScrollToField();
-
+                useHighlightCommentIcon()
                 this.mutationObserver.observe(document.body, {
                     childList: true,
                     subtree: true,
@@ -288,6 +295,7 @@ export class VisualBuilder {
     // TODO: write test cases
     destroy = (): void => {
         window.removeEventListener("resize", this.resizeEventHandler);
+        window.removeEventListener("scroll", this.scrollEventHandler)
         removeEventListeners({
             overlayWrapper: this.overlayWrapper,
             visualBuilderContainer: this.visualBuilderContainer,

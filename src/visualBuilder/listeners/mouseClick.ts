@@ -20,6 +20,7 @@ import { VisualBuilder } from "..";
 import { FieldSchemaMap } from "../utils/fieldSchemaMap";
 import { isFieldDisabled } from "../utils/isFieldDisabled";
 import EventListenerHandlerParams from "./types";
+import { removeHighlightedCommentIcon } from "../generators/generateHighlightedComment";
 
 type HandleBuilderInteractionParams = Omit<
     EventListenerHandlerParams,
@@ -136,8 +137,10 @@ async function handleBuilderInteraction(
         focusedToolbar: params.focusedToolbar,
     });
 
-    const { content_type_uid, fieldPath } = eventDetails.fieldMetadata;
+    const { content_type_uid, fieldPath ,cslpValue } = eventDetails.fieldMetadata;
 
+    removeHighlightedCommentIcon(cslpValue)
+    
     const fieldSchema = await FieldSchemaMap.getFieldSchema(
         content_type_uid,
         fieldPath
