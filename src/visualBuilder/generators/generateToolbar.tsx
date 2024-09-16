@@ -28,34 +28,19 @@ export function appendFieldToolbar(
     eventDetails: VisualBuilderCslpEventDetails,
     focusedToolbarElement: HTMLDivElement
 ): void {
-    const { editableElement: targetElement, fieldMetadata } = eventDetails;
-    FieldSchemaMap.getFieldSchema(
-        fieldMetadata.content_type_uid,
-        fieldMetadata.fieldPath
-    ).then((fieldSchema) => {
-        const { isDisabled: fieldDisabled } = isFieldDisabled(
-            fieldSchema,
-            eventDetails
-        );
-        const fieldType = getFieldType(fieldSchema);
-        let isMultiple = fieldSchema.multiple || false;
-        if (fieldType === FieldDataType.REFERENCE)
-            isMultiple = (fieldSchema as IReferenceContentTypeSchema)
-                .field_metadata.ref_multiple;
-        const wrapper = document.createDocumentFragment();
-        render(
-            <FieldToolbarComponent
-                fieldMetadata={fieldMetadata}
-                fieldSchema={fieldSchema}
-                targetElement={targetElement}
-                isMultiple={isMultiple}
-                isDisabled={fieldDisabled}
-            />,
-            wrapper
-        );
+    if(focusedToolbarElement.querySelector(".visual-builder__focused-toolbar__multiple-field-toolbar"))
+        return;
+    const { editableElement, fieldMetadata } = eventDetails;
+    const wrapper = document.createDocumentFragment();
+    render(
+        <FieldToolbarComponent
+            fieldMetadata={fieldMetadata}
+            editableElement={editableElement}
+        />,
+        wrapper
+    );
 
-        focusedToolbarElement.append(wrapper);
-    });
+    focusedToolbarElement.append(wrapper);
 }
 
 export function appendFieldPathDropdown(
