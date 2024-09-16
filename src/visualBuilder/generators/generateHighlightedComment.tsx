@@ -29,7 +29,18 @@ export function highlightCommentIconOnCanvas(hasCommentPaths: string[]): void {
                 iconContainer
             );
 
-            document.body.appendChild(iconContainer); // Append to body
+            const visualBuilderContainer = document.querySelector(
+                ".visual-builder__container"
+            );
+            if (visualBuilderContainer) {
+                let highlightCommentWrapper = visualBuilderContainer.querySelector('.visual-builder__highlighted-comment-wrapper');
+                if (!highlightCommentWrapper) {
+                    highlightCommentWrapper = document.createElement('div');
+                    highlightCommentWrapper.className = 'visual-builder__highlighted-comment-wrapper';
+                    visualBuilderContainer.appendChild(highlightCommentWrapper);
+                }
+                highlightCommentWrapper.appendChild(iconContainer);
+            }
         }
     });
 }
