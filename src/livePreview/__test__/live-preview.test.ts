@@ -20,7 +20,7 @@ import {
 import LivePreview from "../live-preview";
 import { mockLivePreviewInitEventListener } from "./mock";
 
-vi.mock("../../liveEditor/utils/liveEditorPostMessage", async () => {
+vi.mock("../../visualBuilder/utils/visualBuilderPostMessage", async () => {
     const { getAllContentTypes } = await vi.importActual<
         typeof import("../../__test__/data/contentType")
     >("../../__test__/data/contentType");

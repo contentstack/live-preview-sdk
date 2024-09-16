@@ -1,0 +1,257 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Visual Builder > inline editing > should add overlay to DOM when clicked 1`] = `
+<body>
+  <h1
+    data-cslp="all_fields.blt58a50b4cebae75c5.en-us.modular_blocks.0.block.single_line"
+    data-cslp-field-type="singleline"
+    style="visibility: hidden;"
+  />
+  <div
+    class="go263407482 visual-builder__container"
+    data-testid="visual-builder__container"
+  >
+    <style>
+
+       @import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
+
+       [data-cslp] [contenteditable="true"] {
+            outline: none;
+        }
+
+
+    </style>
+    <div
+      class="go3297149271 visual-builder__cursor"
+      data-testid="visual-builder__cursor"
+    />
+    <div
+      class="go842373233 visual-builder__overlay__wrapper"
+      data-testid="visual-builder__overlay__wrapper"
+    >
+      <div
+        class="visual-builder__overlay visual-builder__overlay--top go2262268276"
+        data-testid="visual-builder__overlay--top"
+      />
+      <div
+        class="visual-builder__overlay visual-builder__overlay--left go2262268276"
+        data-testid="visual-builder__overlay--left"
+      />
+      <div
+        class="visual-builder__overlay visual-builder__overlay--right go2262268276"
+        data-testid="visual-builder__overlay--right"
+      />
+      <div
+        class="visual-builder__overlay visual-builder__overlay--bottom go2262268276"
+        data-testid="visual-builder__overlay--bottom"
+      />
+      <div
+        class="visual-builder__overlay--outline go3391008271"
+        data-testid="visual-builder__overlay--outline"
+      />
+    </div>
+    <div
+      class="visual-builder__hover-outline visual-builder__hover-outline--unclickable go3930459604 go1719569523"
+      data-testid="visual-builder__hover-outline"
+    />
+    <div
+      class="visual-builder__focused-toolbar go635291819"
+      data-testid="visual-builder__focused-toolbar"
+    />
+  </div>
+</body>
+`;
+
+exports[`Visual Builder > on click, the sdk > inline elements must be contenteditable > file should render a replacer and remove when it is not 1`] = `
+<h1
+  data-cslp="all_fields.blt58a50b4cebae75c5.en-us.file"
+  data-cslp-field-type="file"
+/>
+`;
+
+exports[`Visual Builder > on click, the sdk > inline elements must be contenteditable > file should render a replacer and remove when it is not 2`] = `undefined`;
+
+exports[`Visual Builder > on click, the sdk > inline elements must be contenteditable > multi line should be contenteditable 1`] = `
+<h1
+  data-cslp="all_fields.blt58a50b4cebae75c5.en-us.multi_line"
+  data-cslp-field-type="multiline"
+  style="visibility: hidden;"
+/>
+`;
+
+exports[`Visual Builder > on click, the sdk > inline elements must be contenteditable > single line should be contenteditable 1`] = `
+<h1
+  data-cslp="all_fields.blt58a50b4cebae75c5.en-us.single_line"
+  data-cslp-field-type="singleline"
+  style="visibility: hidden;"
+/>
+`;
+
+exports[`Visual Builder > on click, the sdk > should do nothing if data-cslp not available 1`] = `
+<body>
+  <h1 />
+  <div
+    class="go263407482 visual-builder__container"
+    data-testid="visual-builder__container"
+  >
+    <style>
+
+       @import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
+
+       [data-cslp] [contenteditable="true"] {
+            outline: none;
+        }
+
+
+    </style>
+    <div
+      class="go3297149271 visual-builder__cursor"
+      data-testid="visual-builder__cursor"
+    />
+    <div
+      class="go842373233 visual-builder__overlay__wrapper"
+      data-testid="visual-builder__overlay__wrapper"
+    >
+      <div
+        class="visual-builder__overlay visual-builder__overlay--top go2262268276"
+        data-testid="visual-builder__overlay--top"
+      />
+      <div
+        class="visual-builder__overlay visual-builder__overlay--left go2262268276"
+        data-testid="visual-builder__overlay--left"
+      />
+      <div
+        class="visual-builder__overlay visual-builder__overlay--right go2262268276"
+        data-testid="visual-builder__overlay--right"
+      />
+      <div
+        class="visual-builder__overlay visual-builder__overlay--bottom go2262268276"
+        data-testid="visual-builder__overlay--bottom"
+      />
+      <div
+        class="visual-builder__overlay--outline go3391008271"
+        data-testid="visual-builder__overlay--outline"
+      />
+    </div>
+    <div
+      class="visual-builder__hover-outline visual-builder__hover-outline--unclickable go3930459604 go1719569523"
+      data-testid="visual-builder__hover-outline"
+    />
+    <div
+      class="visual-builder__focused-toolbar go635291819"
+      data-testid="visual-builder__focused-toolbar"
+    />
+  </div>
+</body>
+`;
+
+exports[`Visual Builder > should append a visual builder container to the DOM 1`] = `
+<div
+  class="go263407482 visual-builder__container"
+  data-testid="visual-builder__container"
+>
+  <style>
+
+       @import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
+
+       [data-cslp] [contenteditable="true"] {
+            outline: none;
+        }
+
+
+  </style>
+  <div
+    class="go3297149271 visual-builder__cursor"
+    data-testid="visual-builder__cursor"
+  />
+  <div
+    class="go842373233 visual-builder__overlay__wrapper"
+    data-testid="visual-builder__overlay__wrapper"
+  >
+    <div
+      class="visual-builder__overlay visual-builder__overlay--top go2262268276"
+      data-testid="visual-builder__overlay--top"
+    />
+    <div
+      class="visual-builder__overlay visual-builder__overlay--left go2262268276"
+      data-testid="visual-builder__overlay--left"
+    />
+    <div
+      class="visual-builder__overlay visual-builder__overlay--right go2262268276"
+      data-testid="visual-builder__overlay--right"
+    />
+    <div
+      class="visual-builder__overlay visual-builder__overlay--bottom go2262268276"
+      data-testid="visual-builder__overlay--bottom"
+    />
+    <div
+      class="visual-builder__overlay--outline go3391008271"
+      data-testid="visual-builder__overlay--outline"
+    />
+  </div>
+  <div
+    class="visual-builder__hover-outline visual-builder__hover-outline--unclickable go3930459604 go1719569523"
+    data-testid="visual-builder__hover-outline"
+  />
+  <div
+    class="visual-builder__focused-toolbar go635291819"
+    data-testid="visual-builder__focused-toolbar"
+  />
+</div>
+`;
+
+exports[`visual builder DOM > should have an overlay over the element 1`] = `
+<div
+  class="go842373233 visual-builder__overlay__wrapper"
+  data-testid="visual-builder__overlay__wrapper"
+>
+  <div
+    class="visual-builder__overlay visual-builder__overlay--top go2262268276"
+    data-testid="visual-builder__overlay--top"
+  />
+  <div
+    class="visual-builder__overlay visual-builder__overlay--left go2262268276"
+    data-testid="visual-builder__overlay--left"
+  />
+  <div
+    class="visual-builder__overlay visual-builder__overlay--right go2262268276"
+    data-testid="visual-builder__overlay--right"
+  />
+  <div
+    class="visual-builder__overlay visual-builder__overlay--bottom go2262268276"
+    data-testid="visual-builder__overlay--bottom"
+  />
+  <div
+    class="visual-builder__overlay--outline go3391008271"
+    data-testid="visual-builder__overlay--outline"
+  />
+</div>
+`;
+
+exports[`visual builder DOM > should have an overlay over the element 2`] = `
+<div
+  class="go842373233 visual-builder__overlay__wrapper"
+  data-testid="visual-builder__overlay__wrapper"
+>
+  <div
+    class="visual-builder__overlay visual-builder__overlay--top go2262268276"
+    data-testid="visual-builder__overlay--top"
+  />
+  <div
+    class="visual-builder__overlay visual-builder__overlay--left go2262268276"
+    data-testid="visual-builder__overlay--left"
+  />
+  <div
+    class="visual-builder__overlay visual-builder__overlay--right go2262268276"
+    data-testid="visual-builder__overlay--right"
+  />
+  <div
+    class="visual-builder__overlay visual-builder__overlay--bottom go2262268276"
+    data-testid="visual-builder__overlay--bottom"
+  />
+  <div
+    class="visual-builder__overlay--outline go3391008271"
+    data-testid="visual-builder__overlay--outline"
+  />
+</div>
+`;

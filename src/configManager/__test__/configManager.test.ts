@@ -65,7 +65,7 @@ describe("Config", () => {
 
         Config.replace({
             ssr: false,
-            mode: "editor",
+            mode: "builder",
             stackDetails: {
                 environment: "development",
                 apiKey: "api-key",
