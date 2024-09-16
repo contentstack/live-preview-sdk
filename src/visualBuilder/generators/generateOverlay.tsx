@@ -10,6 +10,7 @@ import { FieldDataType } from "../utils/types/index.types";
 import { getFieldType } from "../utils/getFieldType";
 import { CslpData } from "../../cslp/types/cslp.types";
 import { getMultilinePlaintext } from "../utils/getMultilinePlaintext";
+import { showAllHiddenHighlightedCommentIcons } from "./generateHighlightedComment";
 
 /**
  * Adds a focus overlay to the target element.
@@ -190,7 +191,7 @@ export function hideOverlay(params: HideOverlayParams): void {
         focusedToolbar: params.focusedToolbar,
         resizeObserver: params.resizeObserver,
     });
-
+    showAllHiddenHighlightedCommentIcons()
     if (
         !VisualBuilder.VisualBuilderGlobalState.value
             .previousSelectedEditableDOM
