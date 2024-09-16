@@ -34,7 +34,7 @@ export const isFieldDisabled = (
     if (
         VisualBuilder.VisualBuilderGlobalState.value.audienceMode &&
         !eventDetails.editableElement.classList.contains(
-            ".visual-builder__variant-field"
+            "visual-builder__variant-field"
         )
     ) {
         updateRestrictDueToAudienceMode = true;

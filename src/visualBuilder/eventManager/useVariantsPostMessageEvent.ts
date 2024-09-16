@@ -47,7 +47,7 @@ function removeVariantFieldClass(): void {
     variantFieldElements.forEach((element) => {
         element.classList.remove(
             visualBuilderStyles()["visual-builder__variant-field"],
-            ".visual-builder__variant-field",
+            "visual-builder__variant-field",
             visualBuilderStyles()["visual-builder__base-field"],
             "visual-builder__base-field"
         );
