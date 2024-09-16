@@ -1,6 +1,7 @@
 import { h, VNode } from "preact"; // Explicitly import VNode from Preact
 import { render } from "preact";
 import HighlightedCommentIcon from "../components/HighlightedCommentIcon";
+import { css } from "goober";
 import React from "preact/compat";
 
 /**
@@ -92,4 +93,47 @@ export function removeHighlightedCommentIcon(pathToRemove: string): void {
 export function removeAllHighlightedCommentIcons(): void {
     const icons = document.querySelectorAll(".highlighted-comment");
     icons?.forEach((icon) => icon?.remove());
+}
+
+
+// Define a hidden class in goober
+const hiddenClass = css`
+    display: none;
+`;
+
+
+/**
+ * Toggle display style of a specific highlighted comment icon.
+ *
+ * @param path - The data-cslp attribute of the element whose corresponding highlighted comment icon should be toggled.
+ * @param shouldShow - Boolean value to determine whether to show or hide the icon.
+ * If true, the icon will be displayed. If false, the icon will be hidden.
+ */
+export function toggleHighlightedCommentIconDisplay(path: string, shouldShow: boolean): void {
+    const icons = document.querySelectorAll<HTMLElement>(
+        `.highlighted-comment[field-path="${path}"]`
+    );
+
+    icons.forEach((icon) => {
+        if (shouldShow) {
+            icon.classList.remove(hiddenClass); // Show the element
+        } else {
+            icon.classList.add(hiddenClass); // Hide the element using goober's hidden class
+        }
+    });
+}
+
+/**
+ * Show all .highlighted-comment icons that have the hiddenClass applied.
+ */
+export function showAllHiddenHighlightedCommentIcons(): void {
+    // Query all elements that have both .highlighted-comment and hiddenClass
+    const hiddenIcons = document.querySelectorAll<HTMLElement>(
+        `.highlighted-comment.${hiddenClass}`
+    );
+
+    // Loop through each hidden icon and remove the hiddenClass
+    hiddenIcons.forEach((icon) => {
+        icon.classList.remove(hiddenClass); // Remove the hiddenClass to show the icon
+    });
 }
