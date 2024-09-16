@@ -8,9 +8,10 @@ import React from "preact/compat";
  *
  * @param hasCommentPaths - Array of data-cslp to insert.
  */
-
+const highlighCommentOffset = 25;
 export function highlightCommentIconOnCanvas(hasCommentPaths: string[]): void {
-    hasCommentPaths.forEach((path) => {
+    const uniqueHasCommentPaths = Array.from(new Set(hasCommentPaths));
+    uniqueHasCommentPaths.forEach((path) => {
         const element = document.querySelector(`[data-cslp="${path}"]`);
         if (element && element instanceof HTMLElement) {
             const { top, left } = element.getBoundingClientRect();
@@ -19,8 +20,8 @@ export function highlightCommentIconOnCanvas(hasCommentPaths: string[]): void {
             iconContainer.setAttribute("field-path", path);
 
             iconContainer.style.position = "fixed";
-            iconContainer.style.top = `${top - 12}px`;
-            iconContainer.style.left = `${left - 12}px`;
+            iconContainer.style.top = `${top - highlighCommentOffset}px`;
+            iconContainer.style.left = `${left - highlighCommentOffset}px`;
             iconContainer.style.zIndex = "1000";
             iconContainer.className = "highlighted-comment";
             // Render the HighlightedCommentIcon using Preact's render method
@@ -67,8 +68,8 @@ export function updateHighlightedCommentIconPosition() {
                     const { top, left } = targetElement.getBoundingClientRect();
 
                     // Update the position of the icon container
-                    icon.style.top = `${top - 12}px`; // Adjust based on the target element's top
-                    icon.style.left = `${left - 12}px`; // Adjust based on the target element's left
+                    icon.style.top = `${top - highlighCommentOffset}px`; // Adjust based on the target element's top
+                    icon.style.left = `${left - highlighCommentOffset}px`; // Adjust based on the target element's left
                 }
             }
         }
