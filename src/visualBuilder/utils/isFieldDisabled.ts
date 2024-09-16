@@ -2,7 +2,7 @@ import { VisualBuilderCslpEventDetails } from "../types/visualBuilder.types";
 import Config from "../../configManager/configManager";
 import { ISchemaFieldMap } from "./types/index.types";
 import { VisualBuilder } from "..";
-import { visualBuilderStyles } from "../visualBuilder.style";
+import { FieldDetails } from "../components/FieldToolbar";
 
 const getReason = (
     updateRestrictDueToRole: boolean,
@@ -23,8 +23,9 @@ const getReason = (
 
 export const isFieldDisabled = (
     fieldSchemaMap: ISchemaFieldMap,
-    eventDetails: VisualBuilderCslpEventDetails
+    eventFieldDetails: FieldDetails
 ): any => {
+    const { editableElement, fieldMetadata } = eventFieldDetails;
     const masterLocale = Config.get().stackDetails.masterLocale || "en-us";
     const updateRestrictDueToRole = Boolean(
         fieldSchemaMap?.field_metadata?.updateRestrict
@@ -33,7 +34,7 @@ export const isFieldDisabled = (
     
     if (
         VisualBuilder.VisualBuilderGlobalState.value.audienceMode &&
-        !eventDetails.editableElement.classList.contains(
+        !editableElement.classList.contains(
             ".visual-builder__variant-field"
         )
     ) {
@@ -42,7 +43,7 @@ export const isFieldDisabled = (
 
     const updateRestrictDueToNonLocalizableFields =
         Boolean(fieldSchemaMap?.non_localizable) &&
-        masterLocale !== eventDetails.fieldMetadata.locale;
+        masterLocale !== fieldMetadata.locale;
 
     return {
         isDisabled:

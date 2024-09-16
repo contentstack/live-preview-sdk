@@ -149,11 +149,12 @@ export class VisualBuilder {
             if (!fieldSchema) {
                 return;
             }
-            const { isDisabled } = isFieldDisabled(fieldSchema, {
-                editableElement,
-                fieldMetadata,
-                cslpData,
-            });
+            const { isDisabled } = isFieldDisabled(fieldSchema,
+                {
+                    editableElement,
+                    fieldMetadata
+                }
+            );
             if (isDisabled) {
                 addFocusOverlay(
                     editableElement,

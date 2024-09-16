@@ -83,7 +83,7 @@ async function handleBuilderInteraction(
     ) {
         return;
     }
-    const { editableElement } = eventDetails;
+    const { editableElement, fieldMetadata } = eventDetails;
 
     if (
         VisualBuilder.VisualBuilderGlobalState.value
@@ -137,7 +137,7 @@ async function handleBuilderInteraction(
         focusedToolbar: params.focusedToolbar,
     });
 
-    const { content_type_uid, fieldPath ,cslpValue } = eventDetails.fieldMetadata;
+    const { content_type_uid, fieldPath, cslpValue } = fieldMetadata;
 
     removeHighlightedCommentIcon(cslpValue)
     
