@@ -188,9 +188,6 @@ export async function handleIndividualFields(
                     const overlayWrapper = visualBuilderContainer.querySelector(
                         ".visual-builder__overlay__wrapper"
                     ) as HTMLDivElement;
-                    const focusedToolbar = visualBuilderContainer.querySelector(
-                        ".visual-builder__focused-toolbar"
-                    ) as HTMLDivElement;
                     const previousSelectedEditableDOM =
                     VisualBuilder.VisualBuilderGlobalState.value
                         .previousSelectedEditableDOM;
