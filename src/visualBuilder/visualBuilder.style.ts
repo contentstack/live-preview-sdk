@@ -15,6 +15,7 @@ export function visualBuilderStyles() {
                 position: fixed;
                 top: 0;
                 left: 0;
+                z-index: 2147483647 !important;
 
                 color: #fff;
 
@@ -28,7 +29,6 @@ export function visualBuilderStyles() {
                 pointer-events: none !important;
                 position: fixed !important;
                 cursor: none;
-                z-index: 9999;
             }
         `,
         "visual-builder__overlay__wrapper": css`
@@ -451,6 +451,7 @@ export function visualBuilderStyles() {
             position: absolute;
             outline: 2px dashed #6c5ce7;
             transition: var(--outline-transition);
+            z-index: 2147483647 !important;
         `,
         "visual-builder__hover-outline--hidden": css`
             visibility: hidden;
