@@ -3,31 +3,49 @@ import { render } from "preact";
 import HighlightedCommentIcon from "../components/HighlightedCommentIcon";
 import { css } from "goober";
 import React from "preact/compat";
+import { IHighlightCommentData } from "../eventManager/useHighlightCommentIcon";
 
 /**
- * To insert highlighted comment icon based on an array of paths.
+ * Inserts highlighted comment icons based on an array of paths.
  *
- * @param hasCommentPaths - Array of data-cslp to insert.
+ * This function locates elements in the DOM based on the `fieldMetadata.cslpValue`,
+ * and appends a comment icon near each matching element.
+ *
+ * @param payload - Array of comment data with field metadata, schema, absolutePath and discussion ID.
  */
 const highlighCommentOffset = 25;
-export function highlightCommentIconOnCanvas(hasCommentPaths: string[]): void {
-    const uniqueHasCommentPaths = Array.from(new Set(hasCommentPaths));
-    uniqueHasCommentPaths.forEach((path) => {
-        const element = document.querySelector(`[data-cslp="${path}"]`);
+
+export function highlightCommentIconOnCanvas(
+    payload: IHighlightCommentData[]
+): void {
+    const uniquePaths: { [key: string]: boolean } = {}; // Using object for uniqueness
+
+    payload.forEach((data) => {
+        const cslpValue = data?.fieldMetadata?.cslpValue;
+
+        // Check if the cslpValue is already in the Object
+        if (!cslpValue || uniquePaths[cslpValue]) {
+            return; // Skip if the value is not unique
+        }
+
+        uniquePaths[cslpValue] = true; // Mark it as processed
+
+        const element = document.querySelector(`[data-cslp="${cslpValue}"]`);
         if (element && element instanceof HTMLElement) {
             const { top, left } = element.getBoundingClientRect();
 
             const iconContainer = document.createElement("div");
-            iconContainer.setAttribute("field-path", path);
+            iconContainer.setAttribute("field-path", cslpValue);
 
             iconContainer.style.position = "fixed";
             iconContainer.style.top = `${top - highlighCommentOffset}px`;
             iconContainer.style.left = `${left - highlighCommentOffset}px`;
             iconContainer.style.zIndex = "1000";
             iconContainer.className = "highlighted-comment";
+
             // Render the HighlightedCommentIcon using Preact's render method
             render(
-                h(HighlightedCommentIcon, {}), // Use h directly with Preact
+                h(HighlightedCommentIcon, { data }), // Use h directly with Preact
                 iconContainer
             );
 
@@ -35,10 +53,14 @@ export function highlightCommentIconOnCanvas(hasCommentPaths: string[]): void {
                 ".visual-builder__container"
             );
             if (visualBuilderContainer) {
-                let highlightCommentWrapper = visualBuilderContainer.querySelector('.visual-builder__highlighted-comment-wrapper');
+                let highlightCommentWrapper =
+                    visualBuilderContainer.querySelector(
+                        ".visual-builder__highlighted-comment-wrapper"
+                    );
                 if (!highlightCommentWrapper) {
-                    highlightCommentWrapper = document.createElement('div');
-                    highlightCommentWrapper.className = 'visual-builder__highlighted-comment-wrapper';
+                    highlightCommentWrapper = document.createElement("div");
+                    highlightCommentWrapper.className =
+                        "visual-builder__highlighted-comment-wrapper";
                     visualBuilderContainer.appendChild(highlightCommentWrapper);
                 }
                 highlightCommentWrapper.appendChild(iconContainer);
@@ -95,12 +117,10 @@ export function removeAllHighlightedCommentIcons(): void {
     icons?.forEach((icon) => icon?.remove());
 }
 
-
 // Define a hidden class in goober
 const hiddenClass = css`
     display: none;
 `;
-
 
 /**
  * Toggle display style of a specific highlighted comment icon.
@@ -109,7 +129,10 @@ const hiddenClass = css`
  * @param shouldShow - Boolean value to determine whether to show or hide the icon.
  * If true, the icon will be displayed. If false, the icon will be hidden.
  */
-export function toggleHighlightedCommentIconDisplay(path: string, shouldShow: boolean): void {
+export function toggleHighlightedCommentIconDisplay(
+    path: string,
+    shouldShow: boolean
+): void {
     const icons = document.querySelectorAll<HTMLElement>(
         `.highlighted-comment[field-path="${path}"]`
     );

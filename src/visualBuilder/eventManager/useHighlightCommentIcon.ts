@@ -1,11 +1,25 @@
+import React from "preact/compat";
 import visualBuilderPostMessage from "../utils/visualBuilderPostMessage";
 import { VisualBuilderPostMessageEvents } from "../utils/types/postMessage.types";
 import { highlightCommentIconOnCanvas, removeAllHighlightedCommentIcons } from "../generators/generateHighlightedComment";
-import React from "preact/compat";
+import { CslpData } from "../../cslp/types/cslp.types";
+import { ISchemaFieldMap } from "../utils/types/index.types";
 
 // Define the event data for handling comments
+export interface IHighlightFieldMetadata extends Omit<CslpData, 'instance' | 'multipleFieldMetadata'> {}
+export type IFieldSchemaForDiscussion = Pick<
+  ISchemaFieldMap,
+  "uid" | "display_name" | "data_type"
+>;
+export interface IHighlightCommentData {
+    fieldMetadata: IHighlightFieldMetadata; 
+    fieldSchema: IFieldSchemaForDiscussion;
+    discussionUID: string;
+    absolutePath: string;
+}
+
 export interface IHighlightComments {
-    paths: string[]; // Array of paths where comments exist
+    payload: IHighlightCommentData[]; // Array of paths where comments exist
 }
 
 export interface IHighlightCommentsEvent {
@@ -13,8 +27,8 @@ export interface IHighlightCommentsEvent {
 }
 
 const handleAddCommentIcons = (event: IHighlightCommentsEvent) => {
-    const { paths } = event.data; // Get the array of paths with comments
-    highlightCommentIconOnCanvas(paths);
+    const { payload } = event.data; // Get the array of path and its data
+    highlightCommentIconOnCanvas(payload);
 };
 
 const handleRemoveCommentIcons = (): void => {
