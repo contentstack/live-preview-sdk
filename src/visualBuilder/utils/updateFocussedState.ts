@@ -63,18 +63,21 @@ export function updateFocussedState({
     const cslp = editableElement?.getAttribute("data-cslp") || "";
     const fieldMetadata = extractDetailsFromCslp(cslp);
 
-    // re-add focussed toolbar
-    if (focusedToolbar) {
-        focusedToolbar.innerHTML = "";
+    const targetElementDimension = editableElement.getBoundingClientRect();
+    if (targetElementDimension.width && targetElementDimension.height) {
+        // re-add focussed toolbar
+        if (focusedToolbar) {
+            focusedToolbar.innerHTML = "";
+        }
+        appendFocusedToolbar(
+            {
+                editableElement: editableElement as HTMLElement,
+                cslpData: cslp,
+                fieldMetadata,
+            },
+            focusedToolbar as HTMLDivElement
+        );
     }
-    appendFocusedToolbar(
-        {
-            editableElement: editableElement as HTMLElement,
-            cslpData: cslp,
-            fieldMetadata,
-        },
-        focusedToolbar as HTMLDivElement
-    );
 
     // re-add multiple instance add buttons
     const buttons = getAddInstanceButtons(visualBuilderContainer);

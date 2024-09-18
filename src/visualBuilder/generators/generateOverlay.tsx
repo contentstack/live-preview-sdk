@@ -24,7 +24,7 @@ export function addFocusOverlay(
     disabled?: boolean
 ): void {
     const targetElementDimension = targetElement.getBoundingClientRect();
-
+    if(targetElementDimension.width === 0 || targetElementDimension.height === 0) return;
     focusOverlayWrapper.classList.add("visible");
 
     const distanceFromTop = targetElementDimension.top + window.scrollY;

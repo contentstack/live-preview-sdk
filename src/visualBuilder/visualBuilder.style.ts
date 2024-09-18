@@ -451,7 +451,7 @@ export function visualBuilderStyles() {
             position: absolute;
             outline: 2px dashed #6c5ce7;
             transition: var(--outline-transition);
-            z-index: 2147483647 !important;
+            z-index: 199 !important;
         `,
         "visual-builder__hover-outline--hidden": css`
             visibility: hidden;
