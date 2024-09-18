@@ -1,5 +1,7 @@
 import Config, { setConfigFromParams } from "../../configManager/configManager";
 import { ILivePreviewWindowType } from "../../types/types";
+import { VisualBuilder } from "../../visualBuilder";
+import { visualBuilderStyles } from "../../visualBuilder/visualBuilder.style";
 import livePreviewPostMessage from "./livePreviewEventManager";
 import { LIVE_PREVIEW_POST_MESSAGE_EVENTS } from "./livePreviewEventManager.constant";
 import {
@@ -52,8 +54,41 @@ export function useOnEntryUpdatePostMessageEvent(): void {
             if (!ssr) {
                 onChange();
             }
+            if (VisualBuilder.VisualBuilderGlobalState.value.audienceMode) {
+                recalculateVariantClasses();
+            }
         }
     );
+}
+
+function recalculateVariantClasses(): void {
+    const elements = document.querySelectorAll("[data-cslp]");
+    const observer = new MutationObserver((mutations, obs) => {
+        mutations.forEach((mutation) => {
+            if (
+                mutation.type === "attributes" &&
+                mutation.attributeName === "data-cslp"
+            ) {
+                const element = mutation.target as HTMLElement;
+                const dataCslp = element.getAttribute("data-cslp");
+                if (!dataCslp) return;
+                if (
+                    dataCslp.startsWith("v2:") &&
+                    element.classList.contains("visual-builder__base-field")
+                ) {
+                    element.classList.remove(
+                        visualBuilderStyles()["visual-builder__base-field"],
+                        "visual-builder__base-field"
+                    );
+                }
+                obs.disconnect();
+            }
+        });
+    });
+
+    elements.forEach((element) => {
+        observer.observe(element, { attributes: true });
+    });
 }
 
 export function sendInitializeLivePreviewPostMessageEvent(): void {
