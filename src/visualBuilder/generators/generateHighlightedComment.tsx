@@ -5,8 +5,6 @@ import { css } from "goober";
 import React from "preact/compat";
 import { IHighlightCommentData } from "../eventManager/useHighlightCommentIcon";
 
-
-
 /**
  * Inserts highlighted comment icons based on an array of paths.
  *
@@ -17,19 +15,27 @@ import { IHighlightCommentData } from "../eventManager/useHighlightCommentIcon";
  */
 const highlighCommentOffset = 25;
 
-export function highlightCommentIconOnCanvas(payload: IHighlightCommentData[]): void {
+export function highlightCommentIconOnCanvas(
+    payload: IHighlightCommentData[]
+): void {
+    const uniquePaths: { [key: string]: boolean } = {}; // Using object for uniqueness
+
     payload.forEach((data) => {
-        const element = document.querySelector(
-            `[data-cslp="${data?.fieldMetadata?.cslpValue}"]`
-        );
+        const cslpValue = data?.fieldMetadata?.cslpValue;
+
+        // Check if the cslpValue is already in the Object
+        if (!cslpValue || uniquePaths[cslpValue]) {
+            return; // Skip if the value is not unique
+        }
+
+        uniquePaths[cslpValue] = true; // Mark it as processed
+
+        const element = document.querySelector(`[data-cslp="${cslpValue}"]`);
         if (element && element instanceof HTMLElement) {
             const { top, left } = element.getBoundingClientRect();
 
             const iconContainer = document.createElement("div");
-            iconContainer.setAttribute(
-                "field-path",
-                data?.fieldMetadata?.cslpValue
-            );
+            iconContainer.setAttribute("field-path", cslpValue);
 
             iconContainer.style.position = "fixed";
             iconContainer.style.top = `${top - highlighCommentOffset}px`;

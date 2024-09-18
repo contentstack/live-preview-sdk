@@ -12,7 +12,7 @@ export type IFieldSchemaForDiscussion = Pick<
   "uid" | "display_name" | "data_type"
 >;
 export interface IHighlightCommentData {
-    fieldMetadata: IHighlightFieldMetadata; // Using the previously defined IFieldMetadata
+    fieldMetadata: IHighlightFieldMetadata; 
     fieldSchema: IFieldSchemaForDiscussion;
     discussionUID: string;
     absolutePath: string;
