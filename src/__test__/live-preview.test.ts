@@ -9,6 +9,8 @@ import {
 } from "./utils";
 
 const TITLE_CSLP_TAG = "content-type-1.entry-uid-1.en-us.field-title";
+const VARIANT_TITLE_CSLP_TAG =
+    "v2:content-type-1.entry-uid-1_variant-uid-1.en-us.field-title";
 const DESC_CSLP_TAG = "content-type-2.entry-uid-2.en-us.field-description";
 const LINK_CSLP_TAG = "content-type-3.entry-uid-3.en-us.field-link";
 
@@ -17,6 +19,10 @@ describe("cslp tooltip", () => {
         const titlePara = document.createElement("h3");
         titlePara.setAttribute("data-cslp", TITLE_CSLP_TAG);
         titlePara.setAttribute("data-test-id", "title-para");
+
+        const variantTitlePara = document.createElement("h3");
+        variantTitlePara.setAttribute("data-cslp", VARIANT_TITLE_CSLP_TAG);
+        variantTitlePara.setAttribute("data-test-id", "title-variant-para");
 
         const descPara = document.createElement("p");
         descPara.setAttribute("data-cslp", DESC_CSLP_TAG);
@@ -28,6 +34,7 @@ describe("cslp tooltip", () => {
         linkPara.setAttribute("data-test-id", "link-para");
 
         document.body.appendChild(titlePara);
+        document.body.appendChild(variantTitlePara);
         document.body.appendChild(descPara);
         document.body.appendChild(linkPara);
     });
@@ -216,6 +223,47 @@ describe("cslp tooltip", () => {
 
         const expectedRedirectUrl =
             "https://app.contentstack.com/#!/stack/sample-api-key/content-type/content-type-1/en-us/entry/entry-uid-1/edit?branch=dev&preview-field=field-title&preview-locale=en-us&preview-environment=sample-environment";
+
+        expect(window.open).toHaveBeenCalledWith(expectedRedirectUrl, "_blank");
+
+        descPara?.dispatchEvent(hoverEvent);
+    });
+
+    test("should redirect to page when edit tag button is clicked for variant field", () => {
+        new LivePreview({
+            enable: true,
+            stackDetails: {
+                apiKey: "sample-api-key",
+                environment: "sample-environment",
+                branch: "dev",
+            },
+        });
+
+        const singularEditButton = document.querySelector(
+            "[data-test-id='cslp-singular-edit-button']"
+        ) as HTMLDivElement;
+
+        const variantTitlePara = document.querySelector(
+            "[data-test-id='title-variant-para']"
+        );
+        const descPara = document.querySelector("[data-test-id='desc-para']");
+
+        jest.spyOn(window, "open").mockImplementation(
+            (url?: string | URL, target?: string, features?: string) => {
+                return {} as Window;
+            }
+        );
+
+        const hoverEvent = new CustomEvent("mouseover", {
+            bubbles: true,
+        });
+
+        variantTitlePara?.dispatchEvent(hoverEvent);
+
+        singularEditButton?.click();
+
+        const expectedRedirectUrl =
+            "https://app.contentstack.com/#!/stack/sample-api-key/content-type/content-type-1/en-us/entry/entry-uid-1/variant/variant-uid-1/edit?branch=dev&preview-field=field-title&preview-locale=en-us&preview-environment=sample-environment";
 
         expect(window.open).toHaveBeenCalledWith(expectedRedirectUrl, "_blank");
 
@@ -487,6 +535,7 @@ describe("cslp tooltip", () => {
                     content_type_uid: "content-type-1",
                     entry_uid: "entry-uid-1",
                     locale: "en-us",
+                    variant: undefined,
                 },
             },
             "*"
