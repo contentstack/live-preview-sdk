@@ -2,6 +2,9 @@ import ContentstackLivePreviewHOC, {
     ICSLivePreview,
 } from "./contentstack-live-preview-HOC";
 
+import { IStackSdk as ExternalStackSdkType } from "./utils/types";
+export type IStackSdk = ExternalStackSdkType;
+
 const LightLivePreviewHoC = {
     init() {},
     onLiveEdit() {},

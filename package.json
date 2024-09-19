@@ -1,6 +1,6 @@
 {
     "name": "@contentstack/live-preview-utils",
-    "version": "2.0.3",
+    "version": "2.0.4",
     "description": "Contentstack provides the Live Preview SDK to establish a communication channel between the various Contentstack SDKs and your website, transmitting  live changes to the preview pane.",
     "type": "module",
     "types": "dist/legacy/index.d.ts",
@@ -50,6 +50,7 @@
         "@types/jest": "^27.0.1",
         "@types/mustache": "^4.2.2",
         "@types/post-robot": "^10.0.6",
+        "@types/ssri": "^7.1.5",
         "@types/uuid": "^8.3.1",
         "@typescript-eslint/eslint-plugin": "^4.31.1",
         "@typescript-eslint/parser": "^4.31.1",
@@ -65,6 +66,7 @@
         "mini-css-extract-plugin": "^2.3.0",
         "prettier": "^2.8.4",
         "prettier-eslint": "^15.0.1",
+        "ssri": "^11.0.0",
         "style-loader": "^2.0.0",
         "ts-jest": "^29.1.2",
         "ts-loader": "^9.4.2",
@@ -84,9 +86,10 @@
     "dependencies": {
         "goober": "^2.1.14",
         "just-camel-case": "^4.0.2",
+        "lodash-es": "^4.17.21",
         "morphdom": "^2.6.1",
         "mustache": "^4.2.0",
-        "post-robot": "^8.0.31",
+        "post-robot": "8.0.31",
         "uuid": "^8.3.2"
     },
     "lint-staged": {
