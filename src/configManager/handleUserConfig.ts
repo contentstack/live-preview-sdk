@@ -163,6 +163,7 @@ function handleStackDetails(
     Config.set(
         "stackDetails.branch",
         initData.stackDetails?.branch ??
+            stackSdk.branch ??
             stackSdk.headers?.branch ??
             config.stackDetails.branch
     );
