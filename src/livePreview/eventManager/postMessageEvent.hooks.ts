@@ -86,33 +86,39 @@ function recalculateVariantClasses(
         `[data-cslp="${expectedCSLPValues.variant}"]`
     );
     if (variantElement) {
-        console.log("Element found:", variantElement);
+        // No need to recalculate classList for variant fields
+        return;
     } else {
-        console.log("Element not found.");
+        const baseElement = document.querySelector(
+            `[data-cslp="${expectedCSLPValues.base}"]`
+        );
+        if (!baseElement) return;
+
+        const observer = new MutationObserver((mutations, obs) => {
+            mutations.forEach((mutation) => {
+                if (
+                    mutation.type === "attributes" &&
+                    mutation.attributeName === "data-cslp"
+                ) {
+                    const element = mutation.target as HTMLElement;
+                    const dataCslp = element.getAttribute("data-cslp");
+                    if (!dataCslp) return;
+                    if (
+                        dataCslp.startsWith("v2:") &&
+                        element.classList.contains("visual-builder__base-field")
+                    ) {
+                        element.classList.remove(
+                            visualBuilderStyles()["visual-builder__base-field"],
+                            "visual-builder__base-field"
+                        );
+                    }
+                    obs.disconnect();
+                }
+            });
+        });
+
+        observer.observe(baseElement, { attributes: true });
     }
-    // const elements = document.querySelectorAll("[data-cslp]");
-    // const observer = new MutationObserver((mutations, obs) => {
-    //     mutations.forEach((mutation) => {
-    //         if (
-    //             mutation.type === "attributes" &&
-    //             mutation.attributeName === "data-cslp"
-    //         ) {
-    //             const element = mutation.target as HTMLElement;
-    //             const dataCslp = element.getAttribute("data-cslp");
-    //             if (!dataCslp) return;
-    //             if (
-    //                 dataCslp.startsWith("v2:") &&
-    //                 element.classList.contains("visual-builder__base-field")
-    //             ) {
-    //                 element.classList.remove(
-    //                     visualBuilderStyles()["visual-builder__base-field"],
-    //                     "visual-builder__base-field"
-    //                 );
-    //             }
-    //             obs.disconnect();
-    //         }
-    //     });
-    // });
 }
 
 export function sendInitializeLivePreviewPostMessageEvent(): void {
