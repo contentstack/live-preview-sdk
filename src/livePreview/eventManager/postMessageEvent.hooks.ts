@@ -71,12 +71,6 @@ export function useRecalculateVariantDataCSLPValues(): void {
         LIVE_PREVIEW_POST_MESSAGE_EVENTS.VARIANT_PATCH,
         (event) => {
             if (VisualBuilder.VisualBuilderGlobalState.value.audienceMode) {
-                console.log(
-                    "updated value VARIANT_PATCH",
-                    "audmode",
-                    VisualBuilder.VisualBuilderGlobalState.value.audienceMode,
-                    { expectedCSLPValues: event.data.expectedCSLPValues }
-                );
                 recalculateVariantClasses(event.data.expectedCSLPValues);
             }
         }
