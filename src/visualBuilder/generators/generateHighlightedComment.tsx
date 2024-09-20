@@ -41,6 +41,7 @@ export function highlightCommentIconOnCanvas(
             iconContainer.style.top = `${top - highlighCommentOffset}px`;
             iconContainer.style.left = `${left - highlighCommentOffset}px`;
             iconContainer.style.zIndex = "1000";
+            iconContainer.style.cursor = "pointer"
             iconContainer.className = "highlighted-comment";
 
             // Render the HighlightedCommentIcon using Preact's render method
