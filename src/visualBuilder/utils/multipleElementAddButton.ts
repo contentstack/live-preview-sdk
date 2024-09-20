@@ -8,8 +8,7 @@ import { VisualBuilderPostMessageEvents } from "./types/postMessage.types";
 import getChildrenDirection from "./getChildrenDirection";
 import { hideOverlay } from "../generators/generateOverlay";
 import { hideHoverOutline } from "../listeners/mouseHover";
-
-const WAIT_FOR_NEW_INSTANCE_TIMEOUT = 4000;
+import { WAIT_FOR_NEW_INSTANCE_TIMEOUT } from "./constants";
 
 /**
  * The function that handles the add instance buttons for multiple fields.

@@ -1,6 +1,10 @@
 import Config, { setConfigFromParams } from "../../configManager/configManager";
 import { ILivePreviewWindowType } from "../../types/types";
 import { VisualBuilder } from "../../visualBuilder";
+import {
+    DATA_CSLP_ATTR_SELECTOR,
+    WAIT_FOR_NEW_INSTANCE_TIMEOUT,
+} from "../../visualBuilder/utils/constants";
 import { visualBuilderStyles } from "../../visualBuilder/visualBuilder.style";
 import livePreviewPostMessage from "./livePreviewEventManager";
 import { LIVE_PREVIEW_POST_MESSAGE_EVENTS } from "./livePreviewEventManager.constant";
@@ -83,25 +87,30 @@ function recalculateVariantClasses(
     expectedCSLPValues: OnAudienceModeVariantPatchUpdate["expectedCSLPValues"]
 ): void {
     const variantElement = document.querySelector(
-        `[data-cslp="${expectedCSLPValues.variant}"]`
+        `[${DATA_CSLP_ATTR_SELECTOR}="${expectedCSLPValues.variant}"]`
     );
     if (variantElement) {
         // No need to recalculate classList for variant fields
         return;
     } else {
         const baseElement = document.querySelector(
-            `[data-cslp="${expectedCSLPValues.base}"]`
+            `[${DATA_CSLP_ATTR_SELECTOR}="${expectedCSLPValues.base}"]`
         );
         if (!baseElement) return;
+
+        let hasObserverDisconnected = false;
+        let timeoutId: ReturnType<typeof setTimeout> | null = null;
 
         const observer = new MutationObserver((mutations, obs) => {
             mutations.forEach((mutation) => {
                 if (
                     mutation.type === "attributes" &&
-                    mutation.attributeName === "data-cslp"
+                    mutation.attributeName === DATA_CSLP_ATTR_SELECTOR
                 ) {
                     const element = mutation.target as HTMLElement;
-                    const dataCslp = element.getAttribute("data-cslp");
+                    const dataCslp = element.getAttribute(
+                        DATA_CSLP_ATTR_SELECTOR
+                    );
                     if (!dataCslp) return;
                     if (
                         dataCslp.startsWith("v2:") &&
@@ -113,8 +122,17 @@ function recalculateVariantClasses(
                         );
                     }
                     obs.disconnect();
+                    hasObserverDisconnected = true;
+                    return;
                 }
             });
+            if (!hasObserverDisconnected && !timeoutId) {
+                // disconnect the observer whether we found the new instance or not after timeout
+                timeoutId = setTimeout(() => {
+                    obs.disconnect();
+                    hasObserverDisconnected = false;
+                }, WAIT_FOR_NEW_INSTANCE_TIMEOUT);
+            }
         });
 
         observer.observe(baseElement, { attributes: true });
