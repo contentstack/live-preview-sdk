@@ -5,6 +5,7 @@ import Config from "../configManager/configManager";
 import {
     useHistoryPostMessageEvent,
     useOnEntryUpdatePostMessageEvent,
+    useRecalculateVariantDataCSLPValues,
 } from "../livePreview/eventManager/postMessageEvent.hooks";
 import {
     ILivePreviewModeConfig,
@@ -78,7 +79,7 @@ export class VisualBuilder {
         const previousSelectedEditableDOM =
             VisualBuilder.VisualBuilderGlobalState.value
                 .previousSelectedEditableDOM;
-        updateHighlightedCommentIconPosition(); // 
+        updateHighlightedCommentIconPosition(); //
         if (previousSelectedEditableDOM) {
             this.handlePositionChange(
                 previousSelectedEditableDOM as HTMLElement
@@ -149,12 +150,10 @@ export class VisualBuilder {
             if (!fieldSchema) {
                 return;
             }
-            const { isDisabled } = isFieldDisabled(fieldSchema,
-                {
-                    editableElement,
-                    fieldMetadata
-                }
-            );
+            const { isDisabled } = isFieldDisabled(fieldSchema, {
+                editableElement,
+                fieldMetadata,
+            });
             if (isDisabled) {
                 addFocusOverlay(
                     editableElement,
@@ -262,7 +261,7 @@ export class VisualBuilder {
                     resizeObserver: this.resizeObserver,
                 });
                 useScrollToField();
-                useHighlightCommentIcon()
+                useHighlightCommentIcon();
                 this.mutationObserver.observe(document.body, {
                     childList: true,
                     subtree: true,
@@ -283,6 +282,7 @@ export class VisualBuilder {
                 // These events are used to sync the data when we made some changes in the entry without invoking live preview module.
                 useHistoryPostMessageEvent();
                 useOnEntryUpdatePostMessageEvent();
+                useRecalculateVariantDataCSLPValues();
                 useDraftFieldsPostMessageEvent();
                 useVariantFieldsPostMessageEvent();
             })
@@ -296,7 +296,7 @@ export class VisualBuilder {
     // TODO: write test cases
     destroy = (): void => {
         window.removeEventListener("resize", this.resizeEventHandler);
-        window.removeEventListener("scroll", this.scrollEventHandler)
+        window.removeEventListener("scroll", this.scrollEventHandler);
         removeEventListeners({
             overlayWrapper: this.overlayWrapper,
             visualBuilderContainer: this.visualBuilderContainer,

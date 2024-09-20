@@ -1,10 +1,13 @@
 import Config, { setConfigFromParams } from "../../configManager/configManager";
 import { ILivePreviewWindowType } from "../../types/types";
+import { VisualBuilder } from "../../visualBuilder";
+import { visualBuilderStyles } from "../../visualBuilder/visualBuilder.style";
 import livePreviewPostMessage from "./livePreviewEventManager";
 import { LIVE_PREVIEW_POST_MESSAGE_EVENTS } from "./livePreviewEventManager.constant";
 import {
     HistoryLivePreviewPostMessageEventData,
     LivePreviewInitEventResponse,
+    OnAudienceModeVariantPatchUpdate,
     OnChangeLivePreviewPostMessageEventData,
 } from "./types/livePreviewPostMessageEvent.type";
 
@@ -54,6 +57,62 @@ export function useOnEntryUpdatePostMessageEvent(): void {
             }
         }
     );
+}
+
+/**
+ * Registers a post message event listener for updating the variant / base classes in the live preview for audience mode.
+ */
+export function useRecalculateVariantDataCSLPValues(): void {
+    livePreviewPostMessage?.on<OnAudienceModeVariantPatchUpdate>(
+        LIVE_PREVIEW_POST_MESSAGE_EVENTS.VARIANT_PATCH,
+        (event) => {
+            if (VisualBuilder.VisualBuilderGlobalState.value.audienceMode) {
+                console.log(
+                    "updated value VARIANT_PATCH",
+                    "audmode",
+                    VisualBuilder.VisualBuilderGlobalState.value.audienceMode,
+                    { expectedCSLPValues: event.data.expectedCSLPValues }
+                );
+                recalculateVariantClasses(event.data.expectedCSLPValues);
+            }
+        }
+    );
+}
+
+function recalculateVariantClasses(
+    expectedCSLPValues: OnAudienceModeVariantPatchUpdate["expectedCSLPValues"]
+): void {
+    const variantElement = document.querySelector(
+        `[data-cslp="${expectedCSLPValues.variant}"]`
+    );
+    if (variantElement) {
+        console.log("Element found:", variantElement);
+    } else {
+        console.log("Element not found.");
+    }
+    // const elements = document.querySelectorAll("[data-cslp]");
+    // const observer = new MutationObserver((mutations, obs) => {
+    //     mutations.forEach((mutation) => {
+    //         if (
+    //             mutation.type === "attributes" &&
+    //             mutation.attributeName === "data-cslp"
+    //         ) {
+    //             const element = mutation.target as HTMLElement;
+    //             const dataCslp = element.getAttribute("data-cslp");
+    //             if (!dataCslp) return;
+    //             if (
+    //                 dataCslp.startsWith("v2:") &&
+    //                 element.classList.contains("visual-builder__base-field")
+    //             ) {
+    //                 element.classList.remove(
+    //                     visualBuilderStyles()["visual-builder__base-field"],
+    //                     "visual-builder__base-field"
+    //                 );
+    //             }
+    //             obs.disconnect();
+    //         }
+    //     });
+    // });
 }
 
 export function sendInitializeLivePreviewPostMessageEvent(): void {
