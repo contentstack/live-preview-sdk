@@ -117,34 +117,6 @@ export default class LivePreview {
             if (this.config.editButton.enable) {
                 window.addEventListener("mouseover", this.addEditStyleOnHover);
             }
-
-            if (this.config.ssr) {
-                window.addEventListener("load", (e) => {
-                    const allATags = document.querySelectorAll("a");
-                    allATags.forEach((tag) => {
-                        const docOrigin: string = document.location.origin;
-                        if (tag.href && tag.href.includes(docOrigin)) {
-                            const newUrl = addLivePreviewQueryTags(tag.href);
-                            tag.href = newUrl;
-                        }
-                    });
-                });
-
-                // Setting the query params to all the click events related to current domain
-                window.addEventListener("click", (event: any) => {
-                    const target: any = event.target;
-                    const targetHref: string | any = target.href;
-                    const docOrigin: string = document.location.origin;
-                    if (
-                        targetHref &&
-                        targetHref.includes(docOrigin) &&
-                        !targetHref.includes("live_preview")
-                    ) {
-                        const newUrl = addLivePreviewQueryTags(target.href);
-                        event.target.href = newUrl || target.href;
-                    }
-                });
-            }
         } else if (this.config.cleanCslpOnProduction) {
             this.removeDataCslp();
         }
@@ -429,6 +401,9 @@ export default class LivePreview {
 
                 this.config.stackDetails.contentTypeUid = contentTypeUid;
                 this.config.stackDetails.entryUid = entryUid;
+                if (this.config.ssr) {
+                    this.addParamsToUrl();
+                }
                 break;
             }
             case "history": {
@@ -612,6 +587,32 @@ export default class LivePreview {
         nodes.forEach((node) => {
             node.removeAttribute("data-cslp");
             node.removeAttribute("data-cslp-button-position");
+        });
+    }
+
+    private addParamsToUrl() {
+        const allATags = document.querySelectorAll("a");
+        allATags.forEach((tag) => {
+            const docOrigin: string = document.location.origin;
+            if (tag.href && tag.href.includes(docOrigin)) {
+                const newUrl = addLivePreviewQueryTags(tag.href);
+                tag.href = newUrl;
+            }
+        });
+
+        // Setting the query params to all the click events related to current domain
+        window.addEventListener("click", (event: any) => {
+            const target: any = event.target;
+            const targetHref: string | any = target.href;
+            const docOrigin: string = document.location.origin;
+            if (
+                targetHref &&
+                targetHref.includes(docOrigin) &&
+                !targetHref.includes("live_preview")
+            ) {
+                const newUrl = addLivePreviewQueryTags(target.href);
+                event.target.href = newUrl || target.href;
+            }
         });
     }
 }
