@@ -16,7 +16,7 @@ const HighlightedCommentIcon = (props: {
             VisualBuilderPostMessageEvents.OPEN_FIELD_COMMENT_MODAL,
             {
                 fieldMetadata: data?.fieldMetadata,
-                discussionUID: data?.discussionUID,
+                discussion: data?.discussion,
                 fieldSchema: data?.fieldSchema,
                 absolutePath: data.absolutePath,
             }
