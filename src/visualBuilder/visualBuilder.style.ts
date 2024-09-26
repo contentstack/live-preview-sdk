@@ -480,7 +480,7 @@ export function visualBuilderStyles() {
         // cslp error styles
         "visual-builder__button-error": css`
             background-color: #ffeeeb;
-            padding: 4px 8px !important;
+            padding: 0px !important;
             &:hover {
                 background-color: #ffeeeb;
             }
@@ -490,6 +490,7 @@ export function visualBuilderStyles() {
             justify-content: center;
             align-items: center;
             column-gap: 3px;
+            padding: 4px 8px;
         `,
         "visual-builder__focused-toolbar__error-text": css`
             font-weight: 400;
