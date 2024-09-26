@@ -73,6 +73,7 @@ function FieldLabelWrapperComponent(
             
             if(!fieldSchema){
                 setError(true)
+                setDisplayNamesLoading(false)
                 return; 
             }
             
@@ -162,7 +163,7 @@ function FieldLabelWrapperComponent(
                     error &&
                         visualBuilderStyles()["visual-builder__button-error"]
                 )}
-                disabled={displayNamesLoading || error}
+                disabled={displayNamesLoading}
             >
                 {currentField.prefixIcon ? (
                     <div
