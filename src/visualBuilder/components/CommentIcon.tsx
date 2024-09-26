@@ -90,7 +90,7 @@ export default function CommentIcon(props: CommentIconProps) {
         };
     }, []);
 
-    // Handles opening the comment modal with the relevant field metadata and discussion ID
+    // Handles opening the comment modal with the relevant field metadata and discussion data
     const handleCommentModal = async () => {
         visualBuilderPostMessage?.send(
             VisualBuilderPostMessageEvents.OPEN_FIELD_COMMENT_MODAL,
