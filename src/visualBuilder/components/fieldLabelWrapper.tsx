@@ -6,12 +6,13 @@ import { VisualBuilderCslpEventDetails } from "../types/visualBuilder.types";
 import { FieldSchemaMap } from "../utils/fieldSchemaMap";
 import { isFieldDisabled } from "../utils/isFieldDisabled";
 import visualBuilderPostMessage from "../utils/visualBuilderPostMessage";
-import { CaretIcon, InfoIcon } from "./icons";
+import { CaretIcon, InfoIcon, WarningOctagonIcon } from "./icons";
 import { LoadingIcon } from "./icons/loading";
 import { getFieldIcon } from "../generators/generateCustomCursor";
 import { uniqBy } from "lodash-es";
 import { visualBuilderStyles } from "../visualBuilder.style";
 import { VariantIcon } from "./icons/variant";
+import { CslpError } from "./CslpError";
 
 async function getFieldDisplayNames(fieldMetadata: CslpData[]) {
     const result = await visualBuilderPostMessage?.send<{
@@ -42,6 +43,7 @@ function FieldLabelWrapperComponent(
         {}
     );
     const [displayNamesLoading, setDisplayNamesLoading] = useState(true);
+    const [error, setError] = useState(false)
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
     function calculateTopOffset(index: number) {
@@ -68,6 +70,12 @@ function FieldLabelWrapperComponent(
                 props.fieldMetadata.content_type_uid,
                 props.fieldMetadata.fieldPath
             );
+            
+            if(!fieldSchema){
+                setError(true)
+                return; 
+            }
+            
             const { isDisabled: fieldDisabled, reason } = isFieldDisabled(
                 fieldSchema,
                 eventDetails
@@ -150,9 +158,11 @@ function FieldLabelWrapperComponent(
                     ],
                     visualBuilderStyles()["visual-builder__button"],
                     visualBuilderStyles()["visual-builder__button--primary"],
-                    visualBuilderStyles()["visual-builder__button-loader"]
+                    visualBuilderStyles()["visual-builder__button-loader"],
+                    error &&
+                        visualBuilderStyles()["visual-builder__button-error"]
                 )}
-                disabled={displayNamesLoading}
+                disabled={displayNamesLoading || error}
             >
                 {currentField.prefixIcon ? (
                     <div
@@ -177,7 +187,14 @@ function FieldLabelWrapperComponent(
                         {currentField.text}
                     </div>
                 ) : null}
-                {displayNamesLoading ? <LoadingIcon /> : currentField.icon}
+                {error ? null : displayNamesLoading ? (
+                    <LoadingIcon />
+                ) : (
+                    currentField.icon
+                )}
+                {error ? (
+                   <CslpError /> 
+                ) : null}
                 {currentField.isVariant ? (
                     <div
                         className={classNames(
