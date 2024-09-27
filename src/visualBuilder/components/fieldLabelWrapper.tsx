@@ -127,6 +127,16 @@ function FieldLabelWrapperComponent(
         }
     };
 
+    function getCurrentFieldIcon() {
+        if (error) {
+            return null;
+        } else if (displayNamesLoading) {
+            return <LoadingIcon />;
+        } else {
+            return currentField.icon;
+        }
+    }
+
     return (
         <div
             className={classNames(
@@ -188,11 +198,7 @@ function FieldLabelWrapperComponent(
                         {currentField.text}
                     </div>
                 ) : null}
-                {error ? null : displayNamesLoading ? (
-                    <LoadingIcon />
-                ) : (
-                    currentField.icon
-                )}
+                {getCurrentFieldIcon()}
                 {error ? (
                    <CslpError /> 
                 ) : null}
