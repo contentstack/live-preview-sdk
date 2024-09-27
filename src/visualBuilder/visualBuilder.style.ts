@@ -476,7 +476,71 @@ export function visualBuilderStyles() {
         `,
         "visual-builder__pseudo-editable-element": css`
             z-index: 200 !important;
-        `
+        `,
+        // cslp error styles
+        "visual-builder__button-error": css`
+            background-color: #ffeeeb;
+            padding: 0px !important;
+            &:hover {
+                background-color: #ffeeeb;
+            }
+        `,
+        "visual-builder__focused-toolbar__error": css`
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            column-gap: 3px;
+            padding: 4px 8px;
+        `,
+        "visual-builder__focused-toolbar__error-text": css`
+            font-weight: 400;
+            font-size: 12px;
+            line-height: 18px;
+            color: #a31b00;
+        `,
+        "visual-builder__focused-toolbar__error-toolip": css`
+            position: absolute;
+            width: 400px;
+            background-color: red;
+            left: 0;
+            top: -7px;
+            transform: translateY(-100%);
+            background-color: #767676;
+            border-radius: 4px;
+            box-shadow:
+                0px 1px 10px 0px #6c5ce733,
+                0px 5px 5px 0px #0000001f,
+                0px 2px 4px 0px #00000024;
+            padding: 12px;
+            text-align: left;
+            
+            &:before {
+                content: "";
+                position: absolute;
+                bottom: -3px;
+                left: 4%;
+                transform: translateX(-50%) rotate(45deg);
+                width: 10px;
+                height: 10px;
+                background-color: #767676;
+            }
+
+            > p {
+                margin: 0;
+                color: #ffffff;
+                font-size: 14px;
+                font-weight: 600;
+                line-height: 21px;
+                margin-bottom: 4px;
+            }
+
+            > span {
+                color: #ffffff;
+                font-size: 12px;
+                font-weight: 400;
+                line-height: 18px;
+            }
+        `,
     };
 }
 
