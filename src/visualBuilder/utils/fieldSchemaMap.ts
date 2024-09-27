@@ -58,7 +58,7 @@ export class FieldSchemaMap {
             FieldSchemaMap.fieldSchema[contentTypeUid] = data.fieldSchemaMap;
         }
 
-        return FieldSchemaMap.fieldSchema[contentTypeUid][fieldCslp];
+            return FieldSchemaMap?.fieldSchema?.[contentTypeUid]?.[fieldCslp] || null;
     }
 
     static hasFieldSchema(contentTypeUid: string, fieldCslp: string): boolean {

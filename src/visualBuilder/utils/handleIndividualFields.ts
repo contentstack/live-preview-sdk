@@ -71,9 +71,9 @@ export async function handleIndividualFields(
     if (
         // @ts-ignore
         fieldSchema?.multiple ||
-        (fieldSchema.data_type === "reference" &&
+        (fieldSchema?.data_type === "reference" &&
             // @ts-ignore
-            fieldSchema.field_metadata.ref_multiple)
+            fieldSchema?.field_metadata.ref_multiple)
     ) {
         if (lastEditedField !== editableElement) {
             const addButtonLabel =
