@@ -146,15 +146,17 @@ async function handleBuilderInteraction(
         fieldPath
     );
 
-    // after field schema is available re-add disabled overlay
-    const { isDisabled } = isFieldDisabled(fieldSchema, eventDetails);
-    if (isDisabled) {
-        addOverlay({
-            overlayWrapper: params.overlayWrapper,
-            resizeObserver: params.resizeObserver,
-            editableElement: editableElement,
-            isFieldDisabled: true,
-        });
+    if (fieldSchema) {
+        // after field schema is available re-add disabled overlay
+        const { isDisabled } = isFieldDisabled(fieldSchema, eventDetails);
+        if (isDisabled) {
+            addOverlay({
+                overlayWrapper: params.overlayWrapper,
+                resizeObserver: params.resizeObserver,
+                editableElement: editableElement,
+                isFieldDisabled: true,
+            });
+        }
     }
 
     // This is most probably redundant code, as the handleIndividualFields function

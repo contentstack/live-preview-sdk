@@ -192,7 +192,9 @@ function FieldToolbarComponent(
                 fieldMetadata.content_type_uid,
                 fieldMetadata.fieldPath
             );
-            setFieldSchema(fieldSchema);
+            if(fieldSchema){
+                setFieldSchema(fieldSchema);
+            }
         }
         fetchFieldSchema();
     }, [fieldMetadata]);
