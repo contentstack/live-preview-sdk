@@ -76,6 +76,12 @@ async function handleBuilderInteraction(
     }
 
     const eventDetails = getCsDataOfElement(params.event);
+    visualBuilderPostMessage?.send(VisualBuilderPostMessageEvents.MOUSE_CLICK, {
+        cslpData: eventDetails?.cslpData,
+        fieldMetadata: eventDetails?.fieldMetadata
+    }).catch((err) => {
+        console.warn("Error while sending post message", err);
+    });
     if (
         !eventDetails ||
         !params.overlayWrapper ||
