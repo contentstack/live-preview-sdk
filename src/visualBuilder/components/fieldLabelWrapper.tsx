@@ -13,6 +13,12 @@ import { uniqBy } from "lodash-es";
 import { visualBuilderStyles } from "../visualBuilder.style";
 import { VariantIcon } from "./icons/variant";
 import { CslpError } from "./CslpError";
+import {
+    BASE_VARIANT_STATUS,
+    FieldRevertComponent,
+    getFieldVariantStatus,
+    IVariantStatus,
+} from "./FieldRevert/FieldRevertComponent";
 
 async function getFieldDisplayNames(fieldMetadata: CslpData[]) {
     const result = await visualBuilderPostMessage?.send<{
@@ -28,22 +34,34 @@ interface FieldLabelWrapperProps {
     getParentEditableElement: (cslp: string) => HTMLElement | null;
 }
 
+interface ICurrentField {
+    text: string;
+    icon: JSX.Element;
+    prefixIcon: any;
+    disabled: boolean;
+    isVariant: boolean;
+    fieldDataName: string;
+    fieldVariantStatus: IVariantStatus;
+}
+
 function FieldLabelWrapperComponent(
     props: FieldLabelWrapperProps
 ): JSX.Element {
     const { eventDetails } = props;
-    const [currentField, setCurrentField] = useState({
+    const [currentField, setCurrentField] = useState<ICurrentField>({
         text: "",
         icon: <CaretIcon />,
         prefixIcon: null,
         disabled: false,
         isVariant: false,
+        fieldDataName: "",
+        fieldVariantStatus: BASE_VARIANT_STATUS,
     });
     const [displayNames, setDisplayNames] = useState<Record<string, string>>(
         {}
     );
     const [displayNamesLoading, setDisplayNamesLoading] = useState(true);
-    const [error, setError] = useState(false)
+    const [error, setError] = useState(false);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
     function calculateTopOffset(index: number) {
@@ -70,13 +88,17 @@ function FieldLabelWrapperComponent(
                 props.fieldMetadata.content_type_uid,
                 props.fieldMetadata.fieldPath
             );
-            
-            if(!fieldSchema){
-                setError(true)
-                setDisplayNamesLoading(false)
-                return; 
+
+            if (!fieldSchema) {
+                setError(true);
+                setDisplayNamesLoading(false);
+                return;
             }
-            
+
+            const fieldVariantStatus = await getFieldVariantStatus(
+                props.fieldMetadata.fieldPathWithIndex
+            );
+
             const { isDisabled: fieldDisabled, reason } = isFieldDisabled(
                 fieldSchema,
                 eventDetails
@@ -106,6 +128,8 @@ function FieldLabelWrapperComponent(
                 prefixIcon: getFieldIcon(fieldSchema),
                 disabled: fieldDisabled,
                 isVariant: isVariant,
+                fieldDataName: props.fieldMetadata.fieldPathWithIndex,
+                fieldVariantStatus: fieldVariantStatus ?? BASE_VARIANT_STATUS,
             });
 
             if (displayNames) {
@@ -140,102 +164,123 @@ function FieldLabelWrapperComponent(
     return (
         <div
             className={classNames(
-                "visual-builder__focused-toolbar__field-label-wrapper",
+                "visual-builder__focused-toolbar__field-label-container",
                 visualBuilderStyles()[
-                    "visual-builder__focused-toolbar__field-label-wrapper"
-                ],
-                {
-                    "visual-builder__focused-toolbar--field-disabled":
-                        currentField.disabled,
-                },
-                {
-                    [visualBuilderStyles()[
-                        "visual-builder__focused-toolbar--field-disabled"
-                    ]]: currentField.disabled,
-                },
-                {
-                    "field-label-dropdown-open": isDropdownOpen,
-                    [visualBuilderStyles()["field-label-dropdown-open"]]:
-                        isDropdownOpen,
-                }
+                    "visual-builder__focused-toolbar__field-label-container"
+                ]
             )}
-            onClick={() => setIsDropdownOpen((prev) => !prev)}
         >
-            <button
+            <div
                 className={classNames(
-                    "visual-builder__focused-toolbar__field-label-wrapper__current-field visual-builder__button visual-builder__button--primary visual-builder__button-loader",
+                    "visual-builder__focused-toolbar__field-label-wrapper",
                     visualBuilderStyles()[
-                        "visual-builder__focused-toolbar__field-label-wrapper__current-field"
+                        "visual-builder__focused-toolbar__field-label-wrapper"
                     ],
-                    visualBuilderStyles()["visual-builder__button"],
-                    visualBuilderStyles()["visual-builder__button--primary"],
-                    visualBuilderStyles()["visual-builder__button-loader"],
-                    error &&
-                        visualBuilderStyles()["visual-builder__button-error"]
+                    {
+                        "visual-builder__focused-toolbar--field-disabled":
+                            currentField.disabled,
+                    },
+                    {
+                        [visualBuilderStyles()[
+                            "visual-builder__focused-toolbar--field-disabled"
+                        ]]: currentField.disabled,
+                    },
+                    {
+                        "field-label-dropdown-open": isDropdownOpen,
+                        [visualBuilderStyles()["field-label-dropdown-open"]]:
+                            isDropdownOpen,
+                    }
                 )}
-                disabled={displayNamesLoading}
+                onClick={() => setIsDropdownOpen((prev) => !prev)}
             >
-                {currentField.prefixIcon ? (
-                    <div
+                <button
+                    className={classNames(
+                        "visual-builder__focused-toolbar__field-label-wrapper__current-field visual-builder__button visual-builder__button--primary visual-builder__button-loader",
+                        visualBuilderStyles()[
+                            "visual-builder__focused-toolbar__field-label-wrapper__current-field"
+                        ],
+                        visualBuilderStyles()["visual-builder__button"],
+                        visualBuilderStyles()[
+                            "visual-builder__button--primary"
+                        ],
+                        visualBuilderStyles()["visual-builder__button-loader"],
+                        error &&
+                            visualBuilderStyles()[
+                                "visual-builder__button-error"
+                            ]
+                    )}
+                    disabled={displayNamesLoading}
+                >
+                    {currentField.prefixIcon ? (
+                        <div
+                            className={classNames(
+                                "visual-builder__field-icon",
+                                visualBuilderStyles()[
+                                    "visual-builder__field-icon"
+                                ]
+                            )}
+                            dangerouslySetInnerHTML={{
+                                __html: currentField.prefixIcon,
+                            }}
+                        />
+                    ) : null}
+                    {currentField.text ? (
+                        <div
+                            className={classNames(
+                                "visual-builder__focused-toolbar__text",
+                                visualBuilderStyles()[
+                                    "visual-builder__focused-toolbar__text"
+                                ]
+                            )}
+                        >
+                            {currentField.text}
+                        </div>
+                    ) : null}
+                    {getCurrentFieldIcon()}
+                    {error ? <CslpError /> : null}
+                    {currentField.isVariant ? (
+                        <div
+                            className={classNames(
+                                "visual-builder__field-icon",
+                                visualBuilderStyles()[
+                                    "visual-builder__field-icon"
+                                ]
+                            )}
+                        >
+                            <VariantIcon />
+                        </div>
+                    ) : null}
+                </button>
+                {props.parentPaths.map((path, index) => (
+                    <button
+                        key={path}
                         className={classNames(
-                            "visual-builder__field-icon",
-                            visualBuilderStyles()["visual-builder__field-icon"]
-                        )}
-                        dangerouslySetInnerHTML={{
-                            __html: currentField.prefixIcon,
-                        }}
-                    />
-                ) : null}
-                {currentField.text ? (
-                    <div
-                        className={classNames(
-                            "visual-builder__focused-toolbar__text",
+                            "visual-builder__focused-toolbar__field-label-wrapper__parent-field visual-builder__button visual-builder__button--secondary visual-builder__focused-toolbar__text",
+                            visualBuilderStyles()[
+                                "visual-builder__focused-toolbar__field-label-wrapper__parent-field"
+                            ],
+                            visualBuilderStyles()["visual-builder__button"],
+                            visualBuilderStyles()[
+                                "visual-builder__button--secondary"
+                            ],
                             visualBuilderStyles()[
                                 "visual-builder__focused-toolbar__text"
                             ]
                         )}
+                        data-target-cslp={path}
+                        style={{ top: calculateTopOffset(index) }}
+                        onClick={() => onParentPathClick(path)}
                     >
-                        {currentField.text}
-                    </div>
-                ) : null}
-                {getCurrentFieldIcon()}
-                {error ? (
-                   <CslpError /> 
-                ) : null}
-                {currentField.isVariant ? (
-                    <div
-                        className={classNames(
-                            "visual-builder__field-icon",
-                            visualBuilderStyles()["visual-builder__field-icon"]
-                        )}
-                    >
-                        <VariantIcon />
-                    </div>
-                ) : null}
-            </button>
-            {props.parentPaths.map((path, index) => (
-                <button
-                    key={path}
-                    className={classNames(
-                        "visual-builder__focused-toolbar__field-label-wrapper__parent-field visual-builder__button visual-builder__button--secondary visual-builder__focused-toolbar__text",
-                        visualBuilderStyles()[
-                            "visual-builder__focused-toolbar__field-label-wrapper__parent-field"
-                        ],
-                        visualBuilderStyles()["visual-builder__button"],
-                        visualBuilderStyles()[
-                            "visual-builder__button--secondary"
-                        ],
-                        visualBuilderStyles()[
-                            "visual-builder__focused-toolbar__text"
-                        ]
-                    )}
-                    data-target-cslp={path}
-                    style={{ top: calculateTopOffset(index) }}
-                    onClick={() => onParentPathClick(path)}
-                >
-                    {displayNames[path]}
-                </button>
-            ))}
+                        {displayNames[path]}
+                    </button>
+                ))}
+            </div>
+            {currentField.isVariant ? (
+                <FieldRevertComponent
+                    fieldDataName={currentField.fieldDataName}
+                    variantStatus={currentField.fieldVariantStatus}
+                />
+            ) : null}
         </div>
     );
 }
