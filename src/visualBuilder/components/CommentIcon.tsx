@@ -16,7 +16,7 @@ interface CommentIconProps {
 
 interface RecieveDiscussionEventData {
     data: {
-        discussionUID: string;
+        discussion: IActiveDiscussion;
         fieldUID: string;
         fieldPath: string;
         contentTypeId: string;
@@ -24,24 +24,37 @@ interface RecieveDiscussionEventData {
     };
 }
 
+interface Field {
+    uid: string;
+    path: string;
+    og_path: string;
+}
+
+export interface IActiveDiscussion {
+  uid: string;
+  title?: string;
+  field?: Field;
+}
+
+
 export default function CommentIcon(props: CommentIconProps) {
     const { fieldMetadata, fieldSchema } = props;
-    const [discussionUID, setDiscussionUID] = useState<string | null>(null);
+    const [activeDiscussion, setActiveDiscussion] = useState<IActiveDiscussion | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(false);
 
-    // Fetch discussion ID based on field metadata
+    // Fetch discussion data based on field metadata
     useEffect(() => {
         const fetchDiscussionId = async () => {
             try {
                 setIsLoading(true);
-                const discussionUID = await getDiscussionIdByFieldMetaData({
+                const discussion = await getDiscussionIdByFieldMetaData({
                     fieldMetadata,
                     fieldSchema,
                 });
-                setDiscussionUID(discussionUID);
+                setActiveDiscussion(discussion);
             } catch (error) {
                 console.error("Failed to fetch discussion ID:", error);
-                setDiscussionUID("new");
+                setActiveDiscussion({uid:"new"});
             } finally {
                 setIsLoading(false);
             }
@@ -55,14 +68,14 @@ export default function CommentIcon(props: CommentIconProps) {
         const handleReceiveDiscussionId = (
             response: RecieveDiscussionEventData
         ) => {
-            const { entryId, discussionUID, contentTypeId, fieldPath } =
+            const { entryId, discussion, contentTypeId, fieldPath } =
                 response.data;
             if (
                 fieldMetadata.entry_uid === entryId &&
                 fieldMetadata.content_type_uid === contentTypeId &&
                 fieldMetadata.fieldPathWithIndex === fieldPath
             ) {
-                setDiscussionUID(discussionUID ?? "new");
+                setActiveDiscussion(discussion ?? {uid:"new"})
             }
         };
 
@@ -77,13 +90,13 @@ export default function CommentIcon(props: CommentIconProps) {
         };
     }, []);
 
-    // Handles opening the comment modal with the relevant field metadata and discussion ID
+    // Handles opening the comment modal with the relevant field metadata and discussion data
     const handleCommentModal = async () => {
         visualBuilderPostMessage?.send(
             VisualBuilderPostMessageEvents.OPEN_FIELD_COMMENT_MODAL,
             {
                 fieldMetadata,
-                discussionUID,
+                discussion:activeDiscussion,
                 fieldSchema,
             }
         );
@@ -107,7 +120,7 @@ export default function CommentIcon(props: CommentIconProps) {
         );
     }
 
-    if (!discussionUID) {
+    if (!activeDiscussion?.uid) {
         return;
     }
 
@@ -125,7 +138,7 @@ export default function CommentIcon(props: CommentIconProps) {
                 handleCommentModal();
             }}
         >
-            {discussionUID === "new" ? <AddCommentIcon /> : <ReadCommentIcon />}
+            {activeDiscussion?.uid === "new" ? <AddCommentIcon /> : <ReadCommentIcon />}
         </button>
     );
 }
