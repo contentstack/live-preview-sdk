@@ -3,7 +3,7 @@ import { ILivePreviewWindowType } from "../../types/types";
 import { VisualBuilder } from "../../visualBuilder";
 import {
     DATA_CSLP_ATTR_SELECTOR,
-    WAIT_FOR_NEW_INSTANCE_TIMEOUT,
+    TIMEOUT,
 } from "../../visualBuilder/utils/constants";
 import { visualBuilderStyles } from "../../visualBuilder/visualBuilder.style";
 import livePreviewPostMessage from "./livePreviewEventManager";
@@ -125,7 +125,7 @@ function recalculateVariantClasses(
                 timeoutId = setTimeout(() => {
                     obs.disconnect();
                     hasObserverDisconnected = false;
-                }, WAIT_FOR_NEW_INSTANCE_TIMEOUT);
+                }, TIMEOUT.long);
             }
         });
 

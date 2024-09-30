@@ -16,7 +16,9 @@ export const TOOLBAR_EDGE_BUFFER = 8;
 
 export const DATA_CSLP_ATTR_SELECTOR = "data-cslp";
 
-export const WAIT_FOR_NEW_INSTANCE_TIMEOUT = 4000;
+export const TIMEOUT = {
+    long: 4000,
+};
 
 /**
  * The field that can be directly modified using contenteditable=true.
