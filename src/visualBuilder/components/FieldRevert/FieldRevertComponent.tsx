@@ -144,7 +144,11 @@ export const FieldRevertComponent = ({
     const dropdownItems = getDropdownItems();
 
     function handleOnClick(item: IItem) {
-        console.log("Function not implemented.", { item });
+        const { fieldDataName, action } = item;
+        visualBuilderPostMessage?.send("send-variant-revert-action-trigger", {
+            fieldDataName,
+            action,
+        });
     }
 
     return (
