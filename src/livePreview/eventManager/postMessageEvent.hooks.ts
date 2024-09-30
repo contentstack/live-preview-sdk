@@ -125,7 +125,7 @@ function recalculateVariantClasses(
                 timeoutId = setTimeout(() => {
                     obs.disconnect();
                     hasObserverDisconnected = false;
-                }, TIMEOUT.long);
+                }, TIMEOUT.waitForVariantChanges);
             }
         });
 

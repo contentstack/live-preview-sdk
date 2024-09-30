@@ -17,7 +17,7 @@ export const TOOLBAR_EDGE_BUFFER = 8;
 export const DATA_CSLP_ATTR_SELECTOR = "data-cslp";
 
 export const TIMEOUT = {
-    long: 4000,
+    waitForVariantChanges: 4000,
 };
 
 /**
