@@ -8,6 +8,7 @@ export enum VisualBuilderPostMessageEvents {
     GET_FIELD_SCHEMA = "get-field-schema",
     GET_FIELD_DATA = "get-field-data",
     GET_FIELD_PATH_WITH_UID = "get-field-path-with-uid",
+    MOUSE_CLICK = "mouse-click",
     FOCUS_FIELD = "focus-field",
     OPEN_FIELD_EDIT_MODAL = "open-field-edit-modal",
     DELETE_INSTANCE = "delete-instance",

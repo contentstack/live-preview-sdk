@@ -4,6 +4,7 @@ import { VisualBuilderPostMessageEvents } from "../utils/types/postMessage.types
 import { highlightCommentIconOnCanvas, removeAllHighlightedCommentIcons } from "../generators/generateHighlightedComment";
 import { CslpData } from "../../cslp/types/cslp.types";
 import { ISchemaFieldMap } from "../utils/types/index.types";
+import { IActiveDiscussion } from "../components/CommentIcon";
 
 // Define the event data for handling comments
 export interface IHighlightFieldMetadata extends Omit<CslpData, 'instance' | 'multipleFieldMetadata'> {}
@@ -14,7 +15,7 @@ export type IFieldSchemaForDiscussion = Pick<
 export interface IHighlightCommentData {
     fieldMetadata: IHighlightFieldMetadata; 
     fieldSchema: IFieldSchemaForDiscussion;
-    discussionUID: string;
+    discussion: IActiveDiscussion;
     absolutePath: string;
 }
 
