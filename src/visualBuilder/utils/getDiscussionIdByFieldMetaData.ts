@@ -3,6 +3,7 @@ import visualBuilderPostMessage from "./visualBuilderPostMessage";
 import { ISchemaFieldMap } from "./types/index.types";
 import { VisualBuilderPostMessageEvents } from "./types/postMessage.types";
 import { IActiveDiscussion } from "../components/CommentIcon";
+import { hasPostMessageError } from "./errorHandling";
 
 // Define an interface for the argument structure
 interface GetDiscussionIdParams {
@@ -28,5 +29,9 @@ export async function getDiscussionIdByFieldMetaData(
             { fieldMetadata, fieldSchema }
         )) ?? null;
 
+        if(hasPostMessageError(discussion)){
+            return null
+        }
+        
     return discussion;
 }

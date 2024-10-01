@@ -172,6 +172,7 @@ async function handleMouseHover(params: HandleMouseHoverParams): Promise<void> {
              */
             FieldSchemaMap.getFieldSchema(content_type_uid, fieldPath).then(
                 (fieldSchema) => {
+                    if(!fieldSchema) return;
                     if (!params.customCursor) return;
                     const { isDisabled: fieldDisabled } = isFieldDisabled(
                         fieldSchema,
@@ -199,6 +200,7 @@ async function handleMouseHover(params: HandleMouseHoverParams): Promise<void> {
             addOutline(editableElement);
             FieldSchemaMap.getFieldSchema(content_type_uid, fieldPath).then(
                 (fieldSchema) => {
+                    if(!fieldSchema) return;
                     const { isDisabled: fieldDisabled, reason } =
                         isFieldDisabled(fieldSchema, eventDetails);
                     addOutline(editableElement, fieldDisabled);
