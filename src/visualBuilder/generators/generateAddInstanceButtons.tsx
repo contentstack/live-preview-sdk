@@ -1,21 +1,31 @@
 import { render } from "preact";
 import AddInstanceButtonComponent from "../components/addInstanceButton";
+import { ISchemaFieldMap } from "../utils/types/index.types";
 
 /**
  * Generates a button element, when clicked, triggers the provided callback function.
  * @param onClickCallback - The function to be called when the button is clicked.
  * @returns The generated button element.
  */
-export function generateAddInstanceButton(
-    onClickCallback: (event: MouseEvent) => void,
-    label?: string
-): HTMLButtonElement {
+export function generateAddInstanceButton({
+    fieldSchema,
+    value,
+    onClick,
+    label,
+}: {
+    value: any;
+    onClick: (event: MouseEvent) => void;
+    label?: string | undefined;
+    fieldSchema: ISchemaFieldMap | undefined;
+}): HTMLButtonElement {
     const wrapper = document.createDocumentFragment();
 
     render(
         <AddInstanceButtonComponent
+            value={value}
             label={label}
-            onClickCallback={onClickCallback}
+            onClick={onClick}
+            fieldSchema={fieldSchema}
         />,
         wrapper
     );
