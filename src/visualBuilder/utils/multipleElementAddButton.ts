@@ -8,6 +8,7 @@ import { VisualBuilderPostMessageEvents } from "./types/postMessage.types";
 import getChildrenDirection from "./getChildrenDirection";
 import { hideOverlay } from "../generators/generateOverlay";
 import { hideHoverOutline } from "../listeners/mouseHover";
+import { ISchemaFieldMap } from "./types/index.types";
 
 const WAIT_FOR_NEW_INSTANCE_TIMEOUT = 4000;
 
@@ -26,6 +27,10 @@ export function handleAddButtonsForMultiple(
         resizeObserver: ResizeObserver;
     },
     config: {
+        fieldSchema: ISchemaFieldMap;
+        /**
+         * expectedFieldData is the value of the whole multiple field (an array)
+         */
         expectedFieldData: any;
         disabled: boolean;
         label: string | undefined;
@@ -33,7 +38,7 @@ export function handleAddButtonsForMultiple(
 ): void {
     const { editableElement, visualBuilderContainer, resizeObserver } =
         elements;
-    const { expectedFieldData, disabled, label } = config;
+    const { expectedFieldData, fieldSchema, disabled, label } = config;
 
     const parentCslpValue =
         eventDetails.fieldMetadata.multipleFieldMetadata?.parentDetails
@@ -101,23 +106,33 @@ export function handleAddButtonsForMultiple(
         });
     };
 
-    const previousButton = generateAddInstanceButton(() => {
-        visualBuilderPostMessage
-            ?.send(VisualBuilderPostMessageEvents.ADD_INSTANCE, {
-                fieldMetadata: eventDetails.fieldMetadata,
-                index: prevIndex,
-            })
-            .then(onMessageSent.bind(null, prevIndex));
-    }, label);
+    const previousButton = generateAddInstanceButton({
+        onClick: () => {
+            visualBuilderPostMessage
+                ?.send(VisualBuilderPostMessageEvents.ADD_INSTANCE, {
+                    fieldMetadata: eventDetails.fieldMetadata,
+                    index: prevIndex,
+                })
+                .then(onMessageSent.bind(null, prevIndex));
+        },
+        label,
+        fieldSchema,
+        value: expectedFieldData,
+    });
 
-    const nextButton = generateAddInstanceButton(() => {
-        visualBuilderPostMessage
-            ?.send(VisualBuilderPostMessageEvents.ADD_INSTANCE, {
-                fieldMetadata: eventDetails.fieldMetadata,
-                index: nextIndex,
-            })
-            .then(onMessageSent.bind(null, nextIndex));
-    }, label);
+    const nextButton = generateAddInstanceButton({
+        onClick: () => {
+            visualBuilderPostMessage
+                ?.send(VisualBuilderPostMessageEvents.ADD_INSTANCE, {
+                    fieldMetadata: eventDetails.fieldMetadata,
+                    index: nextIndex,
+                })
+                .then(onMessageSent.bind(null, nextIndex));
+        },
+        label,
+        fieldSchema,
+        value: expectedFieldData,
+    });
 
     if (!visualBuilderContainer.contains(previousButton)) {
         visualBuilderContainer.appendChild(previousButton);
