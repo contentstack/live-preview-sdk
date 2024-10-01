@@ -1,3 +1,4 @@
+import React from "preact/compat";
 import classNames from "classnames";
 import { visualBuilderStyles } from "../visualBuilder.style";
 import { PlusIcon } from "./icons";
