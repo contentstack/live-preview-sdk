@@ -100,6 +100,15 @@ export function visualBuilderStyles() {
             svg {
                 fill: #6c5ce7;
             }
+
+            &:disabled {
+                border-color: #bbbec3;
+                cursor: not-allowed;
+            }
+
+            &:disabled svg {
+                fill: #bbbec3;
+            }
         `,
         "visual-builder__add-button-label": css`
             white-space: nowrap;
@@ -513,7 +522,7 @@ export function visualBuilderStyles() {
                 0px 2px 4px 0px #00000024;
             padding: 12px;
             text-align: left;
-            
+
             &:before {
                 content: "";
                 position: absolute;

@@ -5,6 +5,26 @@ import {
     getByTestId,
 } from "@testing-library/preact";
 import AddInstanceButtonComponent from "../addInstanceButton";
+import { ISchemaFieldMap } from "../../utils/types/index.types";
+
+const schema = {
+    data_type: "text",
+    display_name: "Single Line Textbox",
+    uid: "single_line",
+    field_metadata: {
+        description: "",
+        default_value: "",
+        version: 3,
+    },
+    format: "",
+    error_messages: {
+        format: "",
+    },
+    mandatory: false,
+    multiple: true,
+    non_localizable: false,
+    unique: false,
+};
 
 describe("AddInstanceButtonComponent", () => {
     afterEach(cleanup);
@@ -12,7 +32,11 @@ describe("AddInstanceButtonComponent", () => {
     test("renders button with proper class and icon", () => {
         const onClickCallback = vi.fn();
         render(
-            <AddInstanceButtonComponent onClickCallback={onClickCallback} />
+            <AddInstanceButtonComponent
+                value={[]}
+                fieldSchema={schema as ISchemaFieldMap}
+                onClick={onClickCallback}
+            />
         );
         const buttonElement = getByTestId(
             document.body,
@@ -28,7 +52,11 @@ describe("AddInstanceButtonComponent", () => {
     test("calls onClickCallback when button is clicked", () => {
         const onClickCallback = vi.fn();
         render(
-            <AddInstanceButtonComponent onClickCallback={onClickCallback} />
+            <AddInstanceButtonComponent
+                value={[]}
+                fieldSchema={schema as ISchemaFieldMap}
+                onClick={onClickCallback}
+            />
         );
         const buttonElement = getByTestId(
             document.body,

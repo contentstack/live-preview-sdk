@@ -236,6 +236,7 @@ export class VisualBuilder {
         visualBuilderPostMessage
             ?.send<IVisualBuilderInitEvent>("init", {
                 isSSR: config.ssr,
+                href: window.location.href
             })
             .then((data) => {
                 const {

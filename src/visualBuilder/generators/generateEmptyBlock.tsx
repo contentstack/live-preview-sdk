@@ -17,6 +17,10 @@ export async function generateEmptyBlocks(
             fieldMetadata.content_type_uid,
             fieldMetadata.fieldPath
         );
+        
+        if(!fieldSchema){
+            return;
+        }
 
         hydrate(
             <EmptyBlock

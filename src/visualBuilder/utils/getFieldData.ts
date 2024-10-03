@@ -1,6 +1,7 @@
 import { CslpData } from "../../cslp/types/cslp.types";
 import visualBuilderPostMessage from "./visualBuilderPostMessage";
 import { VisualBuilderPostMessageEvents } from "./types/postMessage.types";
+import { hasPostMessageError } from "./errorHandling";
 
 /**
  * Retrieves the expected field data based on the provided field metadata.
@@ -17,6 +18,10 @@ export async function getFieldData(
         VisualBuilderPostMessageEvents.GET_FIELD_DATA,
         { fieldMetadata, entryPath: entryPath ?? "" }
     );
+    
+    if(hasPostMessageError(data)){
+        return "";
+    }
 
     // toString from lodash
     // return toString(data?.fieldData);
