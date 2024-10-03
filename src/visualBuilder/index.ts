@@ -35,7 +35,7 @@ import { addEventListeners, removeEventListeners } from "./listeners";
 import { addKeyboardShortcuts } from "./listeners/keyboardShortcuts";
 import { FieldSchemaMap } from "./utils/fieldSchemaMap";
 import { isFieldDisabled } from "./utils/isFieldDisabled";
-import { updateFocussedState } from "./utils/updateFocussedState";
+import { updateFocussedState, updateFocussedStateOnMutation } from "./utils/updateFocussedState";
 import { useHighlightCommentIcon } from "./eventManager/useHighlightCommentIcon";
 import { updateHighlightedCommentIconPosition } from "./generators/generateHighlightedComment";
 
@@ -168,6 +168,10 @@ export class VisualBuilder {
     private mutationObserver = new MutationObserver(
         debounce(
             async () => {
+                updateFocussedStateOnMutation(
+                    this.overlayWrapper, 
+                    this.focusedToolbar, 
+                    this.visualBuilderContainer);
                 const emptyBlockParents = Array.from(
                     document.querySelectorAll(
                         ".visual-builder__empty-block-parent"
