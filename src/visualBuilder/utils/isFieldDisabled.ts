@@ -7,7 +7,8 @@ import { FieldDetails } from "../components/FieldToolbar";
 const getReason = (
     updateRestrictDueToRole: boolean,
     updateRestrictDueToNonLocalizableFields: boolean,
-    updateRestrictDueToAudienceMode: boolean
+    updateRestrictDueToAudienceMode: boolean,
+    updateRestrictDueToDisabledVariant: boolean
 ): string => {
     switch (true) {
         case updateRestrictDueToRole:
@@ -15,7 +16,9 @@ const getReason = (
         case updateRestrictDueToNonLocalizableFields:
             return "Editing this field is restricted in localized entries";
         case updateRestrictDueToAudienceMode:
-            return "Editing this field is restricted due to audience mode";
+            return "Open an Experience from Audience widget to start editing";
+        case updateRestrictDueToDisabledVariant:
+            return "This field is not editable as it doesn't match the selected variant";
         default:
             return "";
     }
@@ -31,14 +34,22 @@ export const isFieldDisabled = (
         fieldSchemaMap?.field_metadata?.updateRestrict
     );
     let updateRestrictDueToAudienceMode = false;
-    
+    let updateRestrictDueToDisabledVariant = false;
+
     if (
         VisualBuilder.VisualBuilderGlobalState.value.audienceMode &&
-        !editableElement.classList.contains(
-            "visual-builder__variant-field"
-        )
+        !editableElement.classList.contains("visual-builder__variant-field") &&
+        !editableElement.classList.contains("visual-builder__base-field")
     ) {
-        updateRestrictDueToAudienceMode = true;
+        if (
+            editableElement.classList.contains(
+                "visual-builder__disabled-variant-field"
+            )
+        ) {
+            updateRestrictDueToDisabledVariant = true;
+        } else {
+            updateRestrictDueToAudienceMode = true;
+        }
     }
 
     const updateRestrictDueToNonLocalizableFields =
@@ -49,11 +60,13 @@ export const isFieldDisabled = (
         isDisabled:
             updateRestrictDueToRole ||
             updateRestrictDueToNonLocalizableFields ||
-            updateRestrictDueToAudienceMode,
+            updateRestrictDueToAudienceMode ||
+            updateRestrictDueToDisabledVariant,
         reason: getReason(
             updateRestrictDueToRole,
             updateRestrictDueToNonLocalizableFields,
-            updateRestrictDueToAudienceMode
+            updateRestrictDueToAudienceMode,
+            updateRestrictDueToDisabledVariant
         ),
     };
 };

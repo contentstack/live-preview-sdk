@@ -71,14 +71,14 @@ function FieldLabelWrapperComponent(
                 props.fieldMetadata.content_type_uid,
                 props.fieldMetadata.fieldPath
             );
-            
+
             if(hasPostMessageError(displayNames) || !fieldSchema) {
                 setDisplayNamesLoading(false);
                 setError(true)
                 setDisplayNamesLoading(false)
-                return; 
+                return;
             }
-            
+
             const { isDisabled: fieldDisabled, reason } = isFieldDisabled(
                 fieldSchema,
                 eventDetails
@@ -95,7 +95,9 @@ function FieldLabelWrapperComponent(
                 text: currentFieldDisplayName,
                 icon: fieldDisabled ? (
                     <div
-                        className="visual-builder__tooltip"
+                        className={classNames(
+                            visualBuilderStyles()["visual-builder__tooltip"]
+                        )}
                         data-tooltip={reason}
                     >
                         <InfoIcon />
