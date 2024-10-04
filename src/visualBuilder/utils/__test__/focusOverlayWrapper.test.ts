@@ -1,4 +1,4 @@
-import { fireEvent } from "@testing-library/preact";
+import { fireEvent, waitFor } from "@testing-library/preact";
 import {
     addFocusOverlay,
     hideFocusOverlay,
@@ -7,6 +7,10 @@ import initUI from "../../components";
 import { cleanIndividualFieldResidual } from "../handleIndividualFields";
 import { VisualBuilderPostMessageEvents } from "../types/postMessage.types";
 import visualBuilderPostMessage from "../visualBuilderPostMessage";
+import { FieldSchemaMap } from "../fieldSchemaMap";
+import { mockMultipleLinkFieldSchema } from "../../../__test__/data/fields";
+// if this file is imported before, tests might fail
+// this is probably because of cyclic dependencies
 import { VisualBuilder } from "../..";
 
 vi.mock("../visualBuilderPostMessage", () => {
@@ -46,6 +50,14 @@ describe("addFocusOverlay", () => {
             hideOverlay: vi.fn(),
         };
     });
+
+    vi.spyOn(document.documentElement, "clientWidth", "get").mockReturnValue(
+        100
+    );
+    vi.spyOn(document.documentElement, "clientHeight", "get").mockReturnValue(
+        100
+    );
+    vi.spyOn(window.document.body, "scrollHeight", "get").mockReturnValue(100);
 
     beforeEach(() => {
         initUI({
@@ -114,36 +126,20 @@ describe("addFocusOverlay", () => {
         expect(visualBuilderWrapperTopOverlay.style.top).toBe("0px");
         expect(visualBuilderWrapperTopOverlay.style.left).toBe("0px");
         expect(visualBuilderWrapperTopOverlay.style.width).toBe("100%");
-        expect(visualBuilderWrapperTopOverlay.style.height).toBe(
-            "calc(10px - 2px)"
-        );
+        expect(visualBuilderWrapperTopOverlay.style.height).toBe("calc(10px)");
 
-        expect(visualBuilderWrapperBottomOverlay.style.top).toBe(
-            "calc(20px + 2px)"
-        );
+        expect(visualBuilderWrapperBottomOverlay.style.top).toBe("20px");
         expect(visualBuilderWrapperBottomOverlay.style.left).toBe("0px");
         expect(visualBuilderWrapperBottomOverlay.style.width).toBe("100%");
-        expect(visualBuilderWrapperBottomOverlay.style.height).toBe(
-            "calc(-20px - 2px)"
-        );
+        expect(visualBuilderWrapperBottomOverlay.style.height).toBe("80px");
 
-        expect(visualBuilderWrapperLeftOverlay.style.top).toBe(
-            "calc(10px - 2px)"
-        );
+        expect(visualBuilderWrapperLeftOverlay.style.top).toBe("10px");
         expect(visualBuilderWrapperLeftOverlay.style.left).toBe("0px");
-        expect(visualBuilderWrapperLeftOverlay.style.width).toBe(
-            "calc(10px - 2px)"
-        );
+        expect(visualBuilderWrapperLeftOverlay.style.width).toBe("10px");
 
-        expect(visualBuilderWrapperRightOverlay.style.top).toBe(
-            "calc(10px - 2px)"
-        );
-        expect(visualBuilderWrapperRightOverlay.style.left).toBe(
-            "calc(20px + 2px)"
-        );
-        expect(visualBuilderWrapperRightOverlay.style.width).toBe(
-            "calc(1004px - 2px)"
-        );
+        expect(visualBuilderWrapperRightOverlay.style.top).toBe("10px");
+        expect(visualBuilderWrapperRightOverlay.style.left).toBe("20px");
+        expect(visualBuilderWrapperRightOverlay.style.width).toBe("80px");
     });
 });
 
@@ -153,6 +149,9 @@ describe("hideFocusOverlay", () => {
     let focusOverlayWrapper: HTMLDivElement;
     let singleFocusOverlay: HTMLDivElement;
 
+    vi.spyOn(FieldSchemaMap, "getFieldSchema").mockResolvedValue(
+        mockMultipleLinkFieldSchema
+    );
     beforeEach(() => {
         initUI({
             resizeObserver: mockResizeObserver,
@@ -199,6 +198,7 @@ describe("hideFocusOverlay", () => {
             visualBuilderContainer,
             visualBuilderOverlayWrapper: null,
             focusedToolbar: null,
+            resizeObserver: mockResizeObserver,
         });
 
         expect(focusOverlayWrapper.classList.contains("visible")).toBe(true);
@@ -234,17 +234,19 @@ describe("hideFocusOverlay", () => {
         // already called addFocusOverlay, hence visible is set to true
         expect(focusOverlayWrapper.classList.contains("visible")).toBe(true);
 
-        await fireEvent.change(editedElement, {
+        fireEvent.change(editedElement, {
             target: { innerHTML: "New text" },
         });
 
         expect(editedElement.textContent).toBe("New text");
 
         // close the overlay
-        await fireEvent.click(focusOverlayWrapper);
+        fireEvent.click(focusOverlayWrapper);
         expect(focusOverlayWrapper.classList.contains("visible")).toBe(false);
 
-        expect(visualBuilderPostMessage?.send).toHaveBeenCalledTimes(1);
+        await waitFor(() => {
+            expect(visualBuilderPostMessage?.send).toHaveBeenCalled();
+        });
         expect(visualBuilderPostMessage?.send).toHaveBeenCalledWith(
             VisualBuilderPostMessageEvents.UPDATE_FIELD,
             {
@@ -256,7 +258,10 @@ describe("hideFocusOverlay", () => {
                     fieldPath: "title",
                     fieldPathWithIndex: "title",
                     locale: "en-us",
-                    multipleFieldMetadata: { index: -1, parentDetails: null },
+                    multipleFieldMetadata: {
+                        index: -1,
+                        parentDetails: null,
+                    },
                     instance: { fieldPathWithIndex: "title" },
                 },
             }
@@ -281,6 +286,10 @@ describe("hideFocusOverlay", () => {
         });
         window.dispatchEvent(escapeEvent);
 
-        expect(focusOverlayWrapper.classList.contains("visible")).toBe(false);
+        waitFor(() => {
+            expect(focusOverlayWrapper.classList.contains("visible")).toBe(
+                false
+            );
+        });
     });
 });

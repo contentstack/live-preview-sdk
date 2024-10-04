@@ -1,3 +1,5 @@
+import { singleLineFieldSchema } from "../../../__test__/data/fields";
+import { ISchemaFieldMap } from "../types/index.types";
 import {
     getAddInstanceButtons,
     generateAddInstanceButton,
@@ -5,13 +7,21 @@ import {
 
 describe("generateAddInstanceButton", () => {
     test("should generate a button", () => {
-        const button = generateAddInstanceButton(() => {});
+        const button = generateAddInstanceButton({
+            fieldSchema: singleLineFieldSchema,
+            value: "",
+            onClick: () => {},
+        });
         expect(button).toBeInstanceOf(HTMLButtonElement);
     });
 
     test("should call the callback when clicked", () => {
         const callback = vi.fn();
-        const button = generateAddInstanceButton(callback);
+        const button = generateAddInstanceButton({
+            fieldSchema: singleLineFieldSchema,
+            value: "",
+            onClick: callback,
+        });
         button.click();
         expect(callback).toHaveBeenCalledTimes(1);
     });

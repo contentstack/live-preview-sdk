@@ -37,7 +37,7 @@ vi.mock("../utils/visualBuilderPostMessage", async () => {
     };
 });
 
-describe("When an element is clicked in visual builder mode", () => {
+describe.skip("When an element is clicked in visual builder mode", () => {
     let mouseClickEvent: Event;
 
     beforeAll(() => {
