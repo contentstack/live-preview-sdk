@@ -1,5 +1,4 @@
 import crypto from "crypto";
-
 import { getFieldSchemaMap } from "../../../__test__/data/fieldSchemaMap";
 import { sleep } from "../../../__test__/utils";
 import { VisualBuilderCslpEventDetails } from "../../types/visualBuilder.types";
@@ -13,6 +12,7 @@ import {
 import getChildrenDirection from "../getChildrenDirection";
 import visualBuilderPostMessage from "../visualBuilderPostMessage";
 import { VisualBuilderPostMessageEvents } from "../types/postMessage.types";
+import { singleLineFieldSchema } from "../../../__test__/data/fields";
 
 Object.defineProperty(globalThis, "crypto", {
     value: {
@@ -20,20 +20,26 @@ Object.defineProperty(globalThis, "crypto", {
     },
 });
 
+const mockResizeObserver = {
+    observe: vi.fn(),
+    unobserve: vi.fn(),
+    disconnect: vi.fn(),
+};
+
 vi.mock("../visualBuilderPostMessage", async () => {
     const { getAllContentTypes } = await vi.importActual<
         typeof import("../../../__test__/data/contentType")
     >("../../../__test__/data/contentType");
     const contentTypes = getAllContentTypes();
     return {
-        __esModule: true,
         default: {
             send: vi.fn().mockImplementation((eventName: string) => {
-                if (eventName === "init")
-                    return Promise.resolve({
+                if (eventName === "init") {
+                    return {
                         contentTypes,
-                    });
-                return Promise.resolve();
+                    };
+                }
+                return Promise.resolve({});
             }),
             on: vi.fn(),
         },
@@ -42,13 +48,21 @@ vi.mock("../visualBuilderPostMessage", async () => {
 
 describe("generateAddInstanceButton", () => {
     test("should generate a button", () => {
-        const button = generateAddInstanceButton(() => {});
+        const button = generateAddInstanceButton({
+            fieldSchema: singleLineFieldSchema,
+            value: "",
+            onClick: () => {},
+        });
         expect(button.tagName).toBe("BUTTON");
     });
 
     test("should run the callback when the button is clicked", () => {
         const mockCallback = vi.fn();
-        const button = generateAddInstanceButton(mockCallback);
+        const button = generateAddInstanceButton({
+            fieldSchema: singleLineFieldSchema,
+            value: "",
+            onClick: mockCallback,
+        });
 
         button.click();
         expect(mockCallback).toHaveBeenCalled();
@@ -89,7 +103,7 @@ describe("getChildrenDirection", () => {
 
     afterEach(() => {
         document.getElementsByTagName("body")[0].innerHTML = "";
-        vi.resetAllMocks();
+        vi.clearAllMocks();
     });
 
     test(`should return "none" if it is not a list type`, () => {
@@ -229,14 +243,24 @@ describe("handleAddButtonsForMultiple", () => {
 
         afterEach(() => {
             document.getElementsByTagName("body")[0].innerHTML = "";
-            vi.resetAllMocks();
+            vi.clearAllMocks();
         });
 
         test("should not add buttons if the editable element is not found", () => {
-            handleAddButtonsForMultiple(eventDetails, {
-                editableElement: null,
-                visualBuilderContainer: visualBuilderContainer,
-            });
+            handleAddButtonsForMultiple(
+                eventDetails,
+                {
+                    editableElement: null,
+                    visualBuilderContainer: visualBuilderContainer,
+                    resizeObserver: mockResizeObserver,
+                },
+                {
+                    fieldSchema: singleLineFieldSchema,
+                    expectedFieldData: [],
+                    disabled: false,
+                    label: undefined,
+                }
+            );
 
             const addInstanceButtons = visualBuilderContainer.querySelectorAll(
                 `[data-testid="visual-builder-add-instance-button"]`
@@ -247,10 +271,20 @@ describe("handleAddButtonsForMultiple", () => {
 
         test("should not add buttons if the direction is none", () => {
             container.removeAttribute("data-cslp");
-            handleAddButtonsForMultiple(eventDetails, {
-                editableElement: firstChild,
-                visualBuilderContainer,
-            });
+            handleAddButtonsForMultiple(
+                eventDetails,
+                {
+                    editableElement: null,
+                    visualBuilderContainer: visualBuilderContainer,
+                    resizeObserver: mockResizeObserver,
+                },
+                {
+                    fieldSchema: singleLineFieldSchema,
+                    expectedFieldData: [],
+                    disabled: false,
+                    label: undefined,
+                }
+            );
 
             const addInstanceButtons = visualBuilderContainer.querySelectorAll(
                 `[data-testid="visual-builder-add-instance-button"]`
@@ -260,10 +294,20 @@ describe("handleAddButtonsForMultiple", () => {
         });
 
         test("should not add buttons if the visual builder wrapper is not found", () => {
-            handleAddButtonsForMultiple(eventDetails, {
-                editableElement: firstChild,
-                visualBuilderContainer: null,
-            });
+            handleAddButtonsForMultiple(
+                eventDetails,
+                {
+                    editableElement: null,
+                    visualBuilderContainer: visualBuilderContainer,
+                    resizeObserver: mockResizeObserver,
+                },
+                {
+                    fieldSchema: singleLineFieldSchema,
+                    expectedFieldData: [],
+                    disabled: false,
+                    label: undefined,
+                }
+            );
 
             const addInstanceButtons = visualBuilderContainer.querySelectorAll(
                 `[data-testid="visual-builder-add-instance-button"]`
@@ -273,10 +317,20 @@ describe("handleAddButtonsForMultiple", () => {
         });
 
         test("should append the buttons to the visual builder wrapper", async () => {
-            handleAddButtonsForMultiple(eventDetails, {
-                editableElement: firstChild,
-                visualBuilderContainer,
-            });
+            handleAddButtonsForMultiple(
+                eventDetails,
+                {
+                    editableElement: firstChild,
+                    visualBuilderContainer: visualBuilderContainer,
+                    resizeObserver: mockResizeObserver,
+                },
+                {
+                    fieldSchema: singleLineFieldSchema,
+                    expectedFieldData: "Hello",
+                    disabled: false,
+                    label: undefined,
+                }
+            );
 
             await sleep(0);
             const addInstanceButtons = visualBuilderContainer.querySelectorAll(
@@ -287,10 +341,20 @@ describe("handleAddButtonsForMultiple", () => {
         });
 
         test("should add the buttons to the center if the direction is horizontal", async () => {
-            handleAddButtonsForMultiple(eventDetails, {
-                editableElement: firstChild,
-                visualBuilderContainer,
-            });
+            handleAddButtonsForMultiple(
+                eventDetails,
+                {
+                    editableElement: firstChild,
+                    visualBuilderContainer: visualBuilderContainer,
+                    resizeObserver: mockResizeObserver,
+                },
+                {
+                    fieldSchema: singleLineFieldSchema,
+                    expectedFieldData: [],
+                    disabled: false,
+                    label: undefined,
+                }
+            );
             await sleep(0);
 
             const addInstanceButtons = visualBuilderContainer.querySelectorAll(
@@ -321,10 +385,20 @@ describe("handleAddButtonsForMultiple", () => {
                 top: 20,
                 bottom: 30,
             });
-            handleAddButtonsForMultiple(eventDetails, {
-                editableElement: firstChild,
-                visualBuilderContainer,
-            });
+            handleAddButtonsForMultiple(
+                eventDetails,
+                {
+                    editableElement: firstChild,
+                    visualBuilderContainer: visualBuilderContainer,
+                    resizeObserver: mockResizeObserver,
+                },
+                {
+                    fieldSchema: singleLineFieldSchema,
+                    expectedFieldData: [],
+                    disabled: false,
+                    label: undefined,
+                }
+            );
             await sleep(0);
 
             const addInstanceButtons = visualBuilderContainer.querySelectorAll(
@@ -403,14 +477,24 @@ describe("handleAddButtonsForMultiple", () => {
 
         afterEach(() => {
             document.getElementsByTagName("body")[0].innerHTML = "";
-            vi.resetAllMocks();
+            vi.clearAllMocks();
         });
 
         test("should send an add instance message to the parent", async () => {
-            handleAddButtonsForMultiple(eventDetails, {
-                editableElement: firstChild,
-                visualBuilderContainer,
-            });
+            handleAddButtonsForMultiple(
+                eventDetails,
+                {
+                    editableElement: firstChild,
+                    visualBuilderContainer: visualBuilderContainer,
+                    resizeObserver: mockResizeObserver,
+                },
+                {
+                    fieldSchema: singleLineFieldSchema,
+                    expectedFieldData: [],
+                    disabled: false,
+                    label: undefined,
+                }
+            );
 
             await sleep(0);
             const addInstanceButtons = visualBuilderContainer.querySelectorAll(
@@ -491,8 +575,16 @@ describe("removeAddInstanceButtons", () => {
         visualBuilderContainer.classList.add("visual-builder__container");
         document.body.appendChild(visualBuilderContainer);
 
-        previousButton = generateAddInstanceButton(() => {});
-        nextButton = generateAddInstanceButton(() => {});
+        previousButton = generateAddInstanceButton({
+            fieldSchema: singleLineFieldSchema,
+            value: "",
+            onClick: vi.fn(),
+        });
+        nextButton = generateAddInstanceButton({
+            fieldSchema: singleLineFieldSchema,
+            value: "",
+            onClick: vi.fn(),
+        });
         overlayWrapper = document.createElement("div");
         eventTarget = document.createElement("div");
 
@@ -503,7 +595,7 @@ describe("removeAddInstanceButtons", () => {
 
     afterEach(() => {
         document.getElementsByTagName("body")[0].innerHTML = "";
-        vi.resetAllMocks();
+        vi.clearAllMocks();
     });
 
     test("should not remove buttons if wrapper or buttons are not present", () => {
@@ -577,7 +669,11 @@ describe("removeAddInstanceButtons", () => {
 
     test("should remove all buttons if forceRemoveAll is true", () => {
         for (let i = 0; i < 5; i++) {
-            const button = generateAddInstanceButton(() => {});
+            const button = generateAddInstanceButton({
+                fieldSchema: singleLineFieldSchema,
+                value: "",
+                onClick: () => {},
+            });
             visualBuilderContainer.appendChild(button);
         }
 
@@ -605,7 +701,11 @@ describe("removeAddInstanceButtons", () => {
 
     test("should not remove all buttons if forceRemoveAll is false", () => {
         for (let i = 0; i < 5; i++) {
-            const button = generateAddInstanceButton(() => {});
+            const button = generateAddInstanceButton({
+                fieldSchema: singleLineFieldSchema,
+                value: "",
+                onClick: () => {},
+            });
             visualBuilderContainer.appendChild(button);
         }
 

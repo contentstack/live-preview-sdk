@@ -38,10 +38,12 @@ describe("StartEditingButtonComponent", () => {
     test("should update the href when clicked", () => {
         const { getByTestId } = render(<StartEditingButtonComponent />);
         const button = getByTestId("vcms-start-editing-btn");
+
+        // TODO clicking on the link, leads to an error (Not implemented: navigation)
         fireEvent.click(button);
 
         expect(button?.getAttribute("href")).toBe(
-            "https://app.contentstack.com/visual-builder/stack/bltapikey/environment/bltenvironment?branch=main&target-url=http%3A%2F%2Flocalhost%2F&locale=en-us"
+            "https://app.contentstack.com/#!/stack/bltapikey/visual-builder?branch=main&environment=bltenvironment&target-url=http%3A%2F%2Flocalhost%3A3000%2F&locale=en-us"
         );
     });
 });

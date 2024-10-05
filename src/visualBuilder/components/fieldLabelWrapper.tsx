@@ -6,7 +6,7 @@ import { VisualBuilderCslpEventDetails } from "../types/visualBuilder.types";
 import { FieldSchemaMap } from "../utils/fieldSchemaMap";
 import { isFieldDisabled } from "../utils/isFieldDisabled";
 import visualBuilderPostMessage from "../utils/visualBuilderPostMessage";
-import { CaretIcon, InfoIcon, WarningOctagonIcon } from "./icons";
+import { CaretIcon, InfoIcon } from "./icons";
 import { LoadingIcon } from "./icons/loading";
 import { getFieldIcon } from "../generators/generateCustomCursor";
 import { uniqBy } from "lodash-es";
@@ -14,12 +14,12 @@ import { visualBuilderStyles } from "../visualBuilder.style";
 import { VariantIcon } from "./icons/variant";
 import { CslpError } from "./CslpError";
 import { hasPostMessageError } from "../utils/errorHandling";
-
+import { VisualBuilderPostMessageEvents } from "../utils/types/postMessage.types";
 
 async function getFieldDisplayNames(fieldMetadata: CslpData[]) {
     const result = await visualBuilderPostMessage?.send<{
         [k: string]: string;
-    }>("get-field-display-names", fieldMetadata);
+    }>(VisualBuilderPostMessageEvents.GET_FIELD_DISPLAY_NAMES, fieldMetadata);
     return result;
 }
 
@@ -45,7 +45,7 @@ function FieldLabelWrapperComponent(
         {}
     );
     const [displayNamesLoading, setDisplayNamesLoading] = useState(true);
-    const [error, setError] = useState(false)
+    const [error, setError] = useState(false);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
     function calculateTopOffset(index: number) {
@@ -71,14 +71,14 @@ function FieldLabelWrapperComponent(
                 props.fieldMetadata.content_type_uid,
                 props.fieldMetadata.fieldPath
             );
-            
-            if(hasPostMessageError(displayNames) || !fieldSchema) {
+
+            if (hasPostMessageError(displayNames) || !fieldSchema) {
                 setDisplayNamesLoading(false);
-                setError(true)
-                setDisplayNamesLoading(false)
-                return; 
+                setError(true);
+                setDisplayNamesLoading(false);
+                return;
             }
-            
+
             const { isDisabled: fieldDisabled, reason } = isFieldDisabled(
                 fieldSchema,
                 eventDetails
@@ -162,6 +162,7 @@ function FieldLabelWrapperComponent(
                 }
             )}
             onClick={() => setIsDropdownOpen((prev) => !prev)}
+            data-testid="visual-builder__focused-toolbar__field-label-wrapper"
         >
             <button
                 className={classNames(
@@ -186,6 +187,7 @@ function FieldLabelWrapperComponent(
                         dangerouslySetInnerHTML={{
                             __html: currentField.prefixIcon,
                         }}
+                        data-testid="visual-builder__field-icon"
                     />
                 ) : null}
                 {currentField.text ? (
@@ -196,14 +198,13 @@ function FieldLabelWrapperComponent(
                                 "visual-builder__focused-toolbar__text"
                             ]
                         )}
+                        data-testid="visual-builder__focused-toolbar__text"
                     >
                         {currentField.text}
                     </div>
                 ) : null}
                 {getCurrentFieldIcon()}
-                {error ? (
-                   <CslpError /> 
-                ) : null}
+                {error ? <CslpError /> : null}
                 {currentField.isVariant ? (
                     <div
                         className={classNames(

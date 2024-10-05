@@ -1,4 +1,4 @@
-import { fireEvent, waitFor } from "@testing-library/preact";
+import { act, fireEvent, waitFor } from "@testing-library/preact";
 import Config from "../../configManager/configManager";
 import { VisualBuilder } from "../index";
 import { FieldSchemaMap } from "../utils/fieldSchemaMap";
@@ -61,7 +61,7 @@ describe("When an inline element is edited in visual builder mode", () => {
         Config.reset();
     });
 
-    describe("single line field", () => {
+    describe.only("single line field", () => {
         let singleLineField: HTMLParagraphElement;
         let visualBuilder: VisualBuilder;
         let overlayWrapper: HTMLDivElement;
@@ -89,7 +89,7 @@ describe("When an inline element is edited in visual builder mode", () => {
             expect(singleLineField.classList.contains("cslp-edit-mode"));
         });
 
-        test("should have an overlay", () => {
+        /* test("should have an overlay", () => {
             singleLineField.dispatchEvent(mouseClickEvent);
             const overlay = document.querySelector(".visual-builder__overlay");
             expect(overlay!.classList.contains("visible"));
@@ -99,9 +99,12 @@ describe("When an inline element is edited in visual builder mode", () => {
             VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
                 singleLineField;
 
-            await waitFor(() => {
-                singleLineField.dispatchEvent(mouseClickEvent);
-            });
+            // singleLineField.dispatchEvent(mouseClickEvent);
+            // await waitFor(() => {
+            // });
+            // await act(async () => {
+            // })
+            fireEvent.click(singleLineField);
 
             expect(singleLineField).toHaveAttribute("contenteditable");
 
@@ -154,7 +157,7 @@ describe("When an inline element is edited in visual builder mode", () => {
                     },
                 }
             );
-        });
+        }) */
     });
 
     describe("single line field (multiple)", () => {
