@@ -306,6 +306,7 @@ export class LivePreviewEditButton {
             editButton.enable &&
             shouldRenderEditButton()
         ) {
+            console.log("createCslpTooltip");
             const tooltip = document.createElement("button");
             this.tooltip = tooltip;
 
@@ -317,6 +318,8 @@ export class LivePreviewEditButton {
                 "beforeend",
                 this.tooltip
             );
+
+            console.log("createCslpTooltip", window.document.body.innerHTML);
 
             this.tooltipChild.singular = createSingularEditButton(
                 this.scrollHandler

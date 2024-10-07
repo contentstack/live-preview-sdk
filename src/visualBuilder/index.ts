@@ -78,7 +78,7 @@ export class VisualBuilder {
         const previousSelectedEditableDOM =
             VisualBuilder.VisualBuilderGlobalState.value
                 .previousSelectedEditableDOM;
-        updateHighlightedCommentIconPosition(); // 
+        updateHighlightedCommentIconPosition();
         if (previousSelectedEditableDOM) {
             this.handlePositionChange(
                 previousSelectedEditableDOM as HTMLElement
@@ -149,12 +149,10 @@ export class VisualBuilder {
             if (!fieldSchema) {
                 return;
             }
-            const { isDisabled } = isFieldDisabled(fieldSchema,
-                {
-                    editableElement,
-                    fieldMetadata
-                }
-            );
+            const { isDisabled } = isFieldDisabled(fieldSchema, {
+                editableElement,
+                fieldMetadata,
+            });
             if (isDisabled) {
                 addFocusOverlay(
                     editableElement,
@@ -232,7 +230,7 @@ export class VisualBuilder {
         visualBuilderPostMessage
             ?.send<IVisualBuilderInitEvent>("init", {
                 isSSR: config.ssr,
-                href: window.location.href
+                href: window.location.href,
             })
             .then((data) => {
                 const {
@@ -263,7 +261,7 @@ export class VisualBuilder {
                     resizeObserver: this.resizeObserver,
                 });
                 useScrollToField();
-                useHighlightCommentIcon()
+                useHighlightCommentIcon();
                 this.mutationObserver.observe(document.body, {
                     childList: true,
                     subtree: true,
@@ -297,7 +295,7 @@ export class VisualBuilder {
     // TODO: write test cases
     destroy = (): void => {
         window.removeEventListener("resize", this.resizeEventHandler);
-        window.removeEventListener("scroll", this.scrollEventHandler)
+        window.removeEventListener("scroll", this.scrollEventHandler);
         removeEventListeners({
             overlayWrapper: this.overlayWrapper,
             visualBuilderContainer: this.visualBuilderContainer,

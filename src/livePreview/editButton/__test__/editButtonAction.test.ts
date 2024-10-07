@@ -344,27 +344,30 @@ describe("cslp tooltip", () => {
         );
     });
 
-    test("should move class to another element when that element is hovered", () => {
+    test("should move class to another element when that element is hovered", async () => {
         new LivePreviewEditButton();
 
+        const editButtonTooltip = document.querySelector(
+            "[data-test-id='cs-cslp-tooltip']"
+        );
         const titlePara = document.querySelector("[data-test-id='title-para']");
         const descPara = document.querySelector("[data-test-id='desc-para']");
 
         const hoverEvent = new CustomEvent("mouseover", {
             bubbles: true,
         });
-        expect(titlePara?.classList.contains("cslp-edit-mode")).toBeFalsy();
-        expect(descPara?.classList.contains("cslp-edit-mode")).toBeFalsy();
 
         titlePara?.dispatchEvent(hoverEvent);
-
-        expect(titlePara?.classList.contains("cslp-edit-mode")).toBeTruthy();
-        expect(descPara?.classList.contains("cslp-edit-mode")).toBeFalsy();
+        expect(editButtonTooltip).toHaveAttribute(
+            "current-data-cslp",
+            TITLE_CSLP_TAG
+        );
 
         descPara?.dispatchEvent(hoverEvent);
-
-        expect(titlePara?.classList.contains("cslp-edit-mode")).toBeFalsy();
-        expect(descPara?.classList.contains("cslp-edit-mode")).toBeTruthy();
+        expect(editButtonTooltip).toHaveAttribute(
+            "current-data-cslp",
+            DESC_CSLP_TAG
+        );
     });
 
     test("should redirect to link when multiple Tooltip is clicked", () => {
@@ -562,9 +565,6 @@ describe("cslp tooltip", () => {
         });
 
         titlePara?.dispatchEvent(hoverEvent);
-
-        tooltip = document.querySelector("[data-test-id='cs-cslp-tooltip']");
-        expect(tooltip).toBeDefined();
 
         expect(tooltip?.getAttribute("current-data-cslp")).toBe(TITLE_CSLP_TAG);
 

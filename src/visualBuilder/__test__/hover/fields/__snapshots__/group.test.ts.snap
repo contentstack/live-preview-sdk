@@ -1,0 +1,199 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`When an element is hovered in visual builder mode > group field (multiple) > should have custom cursor 1`] = `
+<div
+  class="go1688149084 visual-builder__cursor visible"
+  data-testid="visual-builder__cursor"
+/>
+`;
+
+exports[`When an element is hovered in visual builder mode > group field (multiple) > should have outline 1`] = `
+<div
+  data-cslp="all_fields.bltapikey.en-us.group_multiple_"
+>
+  <div
+    data-cslp="all_fields.bltapikey.en-us.group_multiple_.0"
+  >
+    <p
+      data-cslp="all_fields.bltapikey.en-us.group_multiple_.0.multi_line"
+    />
+  </div>
+  <div
+    data-cslp="all_fields.bltapikey.en-us.group_multiple_.1"
+  />
+</div>
+`;
+
+exports[`When an element is hovered in visual builder mode > group field (multiple) > should have outline 2`] = `
+<div
+  class="visual-builder__hover-outline visual-builder__hover-outline--unclickable go3177626044 go1719569523"
+  data-testid="visual-builder__hover-outline"
+  style="top: 34px; left: 34px; width: 828px; height: 54.3984375px;"
+/>
+`;
+
+exports[`When an element is hovered in visual builder mode > group field (multiple) > should have outline on the nested field 1`] = `
+<p
+  data-cslp="all_fields.bltapikey.en-us.group_multiple_.0.multi_line"
+/>
+`;
+
+exports[`When an element is hovered in visual builder mode > group field (multiple) > should have outline on the nested field 2`] = `
+<div
+  class="visual-builder__hover-outline visual-builder__hover-outline--unclickable go3177626044 go1719569523"
+  data-testid="visual-builder__hover-outline"
+  style="top: 51px; left: 51px; width: 27.7734375px; height: 20.3984375px;"
+/>
+`;
+
+exports[`When an element is hovered in visual builder mode > group field (multiple) > should have outline on the nested single line 1`] = `
+<p
+  data-cslp="all_fields.bltapikey.en-us.group_multiple_.0.multi_line"
+/>
+`;
+
+exports[`When an element is hovered in visual builder mode > group field (multiple) > should have outline on the nested single line 2`] = `
+<div
+  class="visual-builder__hover-outline visual-builder__hover-outline--unclickable go3177626044 go1719569523"
+  data-testid="visual-builder__hover-outline"
+  style="top: 51px; left: 51px; width: 27.7734375px; height: 20.3984375px;"
+/>
+`;
+
+exports[`When an element is hovered in visual builder mode > group field > should have a outline on the nested single line 1`] = `
+<p
+  data-cslp="all_fields.bltapikey.en-us.group.single_line"
+/>
+`;
+
+exports[`When an element is hovered in visual builder mode > group field > should have a outline on the nested single line 2`] = `
+<div
+  class="visual-builder__hover-outline visual-builder__hover-outline--unclickable go3177626044 go1719569523"
+  data-testid="visual-builder__hover-outline"
+  style="top: 51px; left: 51px; width: 27.7734375px; height: 20.3984375px;"
+/>
+`;
+
+exports[`When an element is hovered in visual builder mode > group field > should have custom cursor 1`] = `
+<div
+  class="go1688149084 visual-builder__cursor visible"
+  data-icon="group"
+  data-testid="visual-builder__cursor"
+>
+  <div
+    class="visual-builder__cursor-wrapper go4230334221"
+  >
+    <div
+      class="visual-builder__cursor-pointer go3046085498"
+    >
+      <svg
+        fill="none"
+        height="16"
+        viewBox="0 0 16 16"
+        width="16"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M0.0167948 0.602214C-0.0784404 0.246792 0.246794 -0.0784402 0.602216 0.0167948L15.6457 4.04767C16.0914 4.1671 16.1259 4.78625 15.6962 4.95447L8.17161 7.90048C8.04753 7.94906 7.94936 8.04723 7.90078 8.17131L4.95449 15.6962C4.78627 16.1259 4.16712 16.0914 4.04769 15.6457L0.0167948 0.602214Z"
+          fill="#5D50BE"
+        />
+      </svg>
+    </div>
+    <div
+      class="visual-builder__cursor-icon go4261356330"
+    >
+      <svg
+        fill="none"
+        height="24"
+        viewBox="0 0 24 24"
+        width="24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          clip-rule="evenodd"
+          d="M2.8125 3.75C2.8125 3.23223 3.23223 2.8125 3.75 2.8125C4.26777 2.8125 4.6875 3.23223 4.6875 3.75C4.6875 4.26777 4.26777 4.6875 3.75 4.6875C3.23223 4.6875 2.8125 4.26777 2.8125 3.75ZM3.75 1.6875C4.69408 1.6875 5.49001 2.32181 5.73486 3.1875H18.2651C18.51 2.32181 19.3059 1.6875 20.25 1.6875C21.3891 1.6875 22.3125 2.61091 22.3125 3.75C22.3125 4.69408 21.6782 5.49002 20.8125 5.73486V18.2651C21.6782 18.51 22.3125 19.3059 22.3125 20.25C22.3125 21.3891 21.3891 22.3125 20.25 22.3125C19.3059 22.3125 18.51 21.6782 18.2651 20.8125H5.73486C5.49001 21.6782 4.69408 22.3125 3.75 22.3125C2.61091 22.3125 1.6875 21.3891 1.6875 20.25C1.6875 19.3059 2.32181 18.51 3.1875 18.2651V5.73486C2.32181 5.49001 1.6875 4.69408 1.6875 3.75C1.6875 2.61091 2.61091 1.6875 3.75 1.6875ZM20.25 4.6875C20.7678 4.6875 21.1875 4.26777 21.1875 3.75C21.1875 3.23223 20.7678 2.8125 20.25 2.8125C19.7322 2.8125 19.3125 3.23223 19.3125 3.75C19.3125 4.26777 19.7322 4.6875 20.25 4.6875ZM18.2651 4.3125C18.4594 4.99938 19.0006 5.54059 19.6875 5.73486V18.2651C19.0006 18.4594 18.4594 19.0006 18.2651 19.6875H5.73486C5.54059 19.0006 4.99938 18.4594 4.3125 18.2651V5.73486C4.99938 5.54059 5.54059 4.99938 5.73486 4.3125H18.2651ZM19.3125 20.25C19.3125 19.7322 19.7322 19.3125 20.25 19.3125C20.7678 19.3125 21.1875 19.7322 21.1875 20.25C21.1875 20.7678 20.7678 21.1875 20.25 21.1875C19.7322 21.1875 19.3125 20.7678 19.3125 20.25ZM4.6875 20.25C4.6875 19.7322 4.26777 19.3125 3.75 19.3125C3.23223 19.3125 2.8125 19.7322 2.8125 20.25C2.8125 20.7678 3.23223 21.1875 3.75 21.1875C4.26777 21.1875 4.6875 20.7678 4.6875 20.25ZM9.75 7.6875C9.75 6.96263 10.3376 6.375 11.0625 6.375H15.5625C16.2874 6.375 16.875 6.96263 16.875 7.6875V13.6875C16.875 14.4124 16.2874 15 15.5625 15H14.625V15.9375C14.625 16.6624 14.0374 17.25 13.3125 17.25H8.8125C8.08763 17.25 7.5 16.6624 7.5 15.9375V9.1875C7.5 8.46263 8.08763 7.875 8.8125 7.875H9.75V7.6875ZM9.75 9H8.8125C8.70895 9 8.625 9.08395 8.625 9.1875V15.9375C8.625 16.0411 8.70895 16.125 8.8125 16.125H13.3125C13.4161 16.125 13.5 16.0411 13.5 15.9375V15H11.0625C10.3376 15 9.75 14.4124 9.75 13.6875V9ZM11.0625 7.5C10.9589 7.5 10.875 7.58395 10.875 7.6875V13.6875C10.875 13.7911 10.9589 13.875 11.0625 13.875H15.5625C15.6661 13.875 15.75 13.7911 15.75 13.6875V7.6875C15.75 7.58395 15.6661 7.5 15.5625 7.5H11.0625Z"
+          fill="white"
+          fill-rule="evenodd"
+        />
+      </svg>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`When an element is hovered in visual builder mode > group field > should have custom cursor on the nested single line 1`] = `
+<div
+  class="go1688149084 visual-builder__cursor visible"
+  data-icon="singleline"
+  data-testid="visual-builder__cursor"
+>
+  <div
+    class="visual-builder__cursor-wrapper go4230334221"
+  >
+    <div
+      class="visual-builder__cursor-pointer go3046085498"
+    >
+      <svg
+        fill="none"
+        height="16"
+        viewBox="0 0 16 16"
+        width="16"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M0.0167948 0.602214C-0.0784404 0.246792 0.246794 -0.0784402 0.602216 0.0167948L15.6457 4.04767C16.0914 4.1671 16.1259 4.78625 15.6962 4.95447L8.17161 7.90048C8.04753 7.94906 7.94936 8.04723 7.90078 8.17131L4.95449 15.6962C4.78627 16.1259 4.16712 16.0914 4.04769 15.6457L0.0167948 0.602214Z"
+          fill="#5D50BE"
+        />
+      </svg>
+    </div>
+    <div
+      class="visual-builder__cursor-icon go4261356330"
+    >
+      <svg
+        fill="none"
+        height="24"
+        viewBox="0 0 24 24"
+        width="24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          clip-rule="evenodd"
+          d="M5.94958 7.8294C5.85419 7.6199 5.64077 7.48967 5.41084 7.50064C5.1809 7.51162 4.98086 7.66158 4.90585 7.87921L3.19036 12.8566L2.2835 15.3717C2.17813 15.664 2.32962 15.9863 2.62186 16.0917C2.9141 16.197 3.23643 16.0455 3.34181 15.7533L3.95144 14.0625H7.53908L8.29768 15.7888C8.42266 16.0732 8.75454 16.2025 9.03895 16.0775C9.32336 15.9525 9.4526 15.6206 9.32762 15.3362L8.22073 12.8173L8.21769 12.8105L5.94958 7.8294ZM7.03937 12.9375L5.51002 9.57881L4.35242 12.9375H7.03937Z"
+          fill="white"
+          fill-rule="evenodd"
+        />
+        <path
+          clip-rule="evenodd"
+          d="M11.625 8.0625C11.625 7.75184 11.3732 7.5 11.0625 7.5C10.7518 7.5 10.5 7.75184 10.5 8.0625V15.5625C10.5 15.8732 10.7518 16.125 11.0625 16.125C11.3731 16.125 11.6249 15.8733 11.625 15.5627C12.0951 15.9158 12.6793 16.125 13.3125 16.125C14.8658 16.125 16.125 14.8658 16.125 13.3125C16.125 11.7592 14.8658 10.5 13.3125 10.5C12.6793 10.5 12.0951 10.7092 11.625 11.0623V8.0625ZM11.625 13.3116C11.625 13.3119 11.625 13.3122 11.625 13.3125C11.625 13.3128 11.625 13.3131 11.625 13.3134C11.6255 14.245 12.3808 15 13.3125 15C14.2445 15 15 14.2445 15 13.3125C15 12.3805 14.2445 11.625 13.3125 11.625C12.3808 11.625 11.6255 12.38 11.625 13.3116Z"
+          fill="white"
+          fill-rule="evenodd"
+        />
+        <path
+          clip-rule="evenodd"
+          d="M19.9448 10.5025C20.4222 10.4825 20.8969 10.5844 21.324 10.7988C21.6017 10.9381 21.7138 11.2762 21.5744 11.5538C21.4351 11.8315 21.0971 11.9436 20.8194 11.8043C20.5631 11.6757 20.2783 11.6145 19.9919 11.6265C19.7054 11.6385 19.4267 11.7233 19.1821 11.8729C18.9375 12.0224 18.735 12.2319 18.5938 12.4814C18.4526 12.731 18.3773 13.0124 18.375 13.2991C18.3728 13.5858 18.4436 13.8684 18.5808 14.1201C18.718 14.3719 18.9171 14.5845 19.1593 14.738C19.4015 14.8914 19.6788 14.9806 19.9651 14.9972C20.2513 15.0137 20.5371 14.9571 20.7953 14.8326C21.0752 14.6977 21.4114 14.8151 21.5463 15.095C21.6812 15.3748 21.5637 15.711 21.2839 15.846C20.8534 16.0535 20.3772 16.1479 19.9001 16.1203C19.423 16.0927 18.9609 15.944 18.5572 15.6883C18.1535 15.4325 17.8217 15.0781 17.593 14.6585C17.3643 14.2389 17.2463 13.768 17.2501 13.2901C17.2539 12.8123 17.3794 12.3433 17.6147 11.9274C17.8501 11.5115 18.1875 11.1624 18.5952 10.9131C19.0029 10.6638 19.4673 10.5225 19.9448 10.5025Z"
+          fill="white"
+          fill-rule="evenodd"
+        />
+      </svg>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`When an element is hovered in visual builder mode > group field > should have outline 1`] = `
+<div
+  data-cslp="all_fields.bltapikey.en-us.group"
+>
+  <p
+    data-cslp="all_fields.bltapikey.en-us.group.single_line"
+  />
+</div>
+`;
+
+exports[`When an element is hovered in visual builder mode > group field > should have outline 2`] = `
+<div
+  class="visual-builder__hover-outline visual-builder__hover-outline--unclickable go3177626044 go1719569523"
+  data-testid="visual-builder__hover-outline"
+  style="top: 51px; left: 51px; width: 27.7734375px; height: 20.3984375px;"
+/>
+`;
