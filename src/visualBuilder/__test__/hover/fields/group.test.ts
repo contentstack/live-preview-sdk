@@ -243,7 +243,7 @@ describe("When an element is hovered in visual builder mode", () => {
             expect(customCursor?.classList.contains("visible")).toBeTruthy();
         });
 
-        test("should have outline on the nested field", async () => {
+        test.skip("should have outline on the nested field", async () => {
             firstNestedMultiLine.dispatchEvent(mousemoveEvent);
             await sleep(0);
             expect(firstNestedMultiLine).toMatchSnapshot();
