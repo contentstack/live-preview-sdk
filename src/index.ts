@@ -27,4 +27,5 @@ class LightLivePreviewHoC implements ContentstackLivePreviewHOC {
 // export const ContentstackLivePreview: ContentstackLivePreviewHOC =
 //     ContentstackLivePreviewHOC;
 
+export const VB_EmptyBlockParentClass = "visual-builder__empty-block-parent";
 export default ContentstackLivePreviewHOC;
