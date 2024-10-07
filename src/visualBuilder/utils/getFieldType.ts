@@ -2,6 +2,7 @@
 import { ISchemaFieldMap, FieldDataType } from "./types/index.types";
 
 export function getFieldType(fieldSchema: ISchemaFieldMap): FieldDataType {
+    if(!fieldSchema) return;
     if (Object.hasOwnProperty.call(fieldSchema, "extension_uid")) {
         return FieldDataType.CUSTOM_FIELD;
     }

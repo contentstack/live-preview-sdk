@@ -2,6 +2,8 @@ interface IContentTypeSchemaCommonData {
     uid: string;
     display_name: string;
     mandatory: boolean;
+    max_instance?: number;
+    min_instance?: number;
     multiple: boolean;
     non_localizable: boolean;
     unique: boolean;
@@ -196,10 +198,10 @@ export interface IExperienceContainerContentTypeSchema
     schema: IContentTypeCommonBlocks[];
 }
 export interface ITaxononmy {
-  taxonomy_uid: string;
-  non_localizable: boolean;
-  mandatory: boolean;
-  max_terms: number;
+    taxonomy_uid: string;
+    non_localizable: boolean;
+    mandatory: boolean;
+    max_terms: number;
 }
 
 export interface ITaxanonmyContentTypeSchema
@@ -210,7 +212,7 @@ export interface ITaxanonmyContentTypeSchema
         default_value: string;
         version: number;
     };
-    taxanomies:ITaxononmy[];
+    taxanomies: ITaxononmy[];
     format: string;
     error_messages: {
         format: string;

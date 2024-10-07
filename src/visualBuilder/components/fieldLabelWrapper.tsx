@@ -19,6 +19,7 @@ import {
     getFieldVariantStatus,
     IVariantStatus,
 } from "./FieldRevert/FieldRevertComponent";
+import { hasPostMessageError } from "../utils/errorHandling";
 
 async function getFieldDisplayNames(fieldMetadata: CslpData[]) {
     const result = await visualBuilderPostMessage?.send<{
@@ -83,13 +84,13 @@ function FieldLabelWrapperComponent(
                 "cslpValue"
             );
             const displayNames = await getFieldDisplayNames(allPaths);
-
             const fieldSchema = await FieldSchemaMap.getFieldSchema(
                 props.fieldMetadata.content_type_uid,
                 props.fieldMetadata.fieldPath
             );
 
-            if (!fieldSchema) {
+            if (hasPostMessageError(displayNames) || !fieldSchema) {
+                setDisplayNamesLoading(false);
                 setError(true);
                 setDisplayNamesLoading(false);
                 return;

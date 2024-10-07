@@ -100,6 +100,15 @@ export function visualBuilderStyles() {
             svg {
                 fill: #6c5ce7;
             }
+
+            &:disabled {
+                border-color: #bbbec3;
+                cursor: not-allowed;
+            }
+
+            &:disabled svg {
+                fill: #bbbec3;
+            }
         `,
         "visual-builder__add-button-label": css`
             white-space: nowrap;

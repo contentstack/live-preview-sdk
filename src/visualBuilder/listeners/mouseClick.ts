@@ -76,6 +76,12 @@ async function handleBuilderInteraction(
     }
 
     const eventDetails = getCsDataOfElement(params.event);
+    visualBuilderPostMessage?.send(VisualBuilderPostMessageEvents.MOUSE_CLICK, {
+        cslpData: eventDetails?.cslpData,
+        fieldMetadata: eventDetails?.fieldMetadata
+    }).catch((err) => {
+        console.warn("Error while sending post message", err);
+    });
     if (
         !eventDetails ||
         !params.overlayWrapper ||
@@ -146,15 +152,17 @@ async function handleBuilderInteraction(
         fieldPath
     );
 
-    // after field schema is available re-add disabled overlay
-    const { isDisabled } = isFieldDisabled(fieldSchema, eventDetails);
-    if (isDisabled) {
-        addOverlay({
-            overlayWrapper: params.overlayWrapper,
-            resizeObserver: params.resizeObserver,
-            editableElement: editableElement,
-            isFieldDisabled: true,
-        });
+    if (fieldSchema) {
+        // after field schema is available re-add disabled overlay
+        const { isDisabled } = isFieldDisabled(fieldSchema, eventDetails);
+        if (isDisabled) {
+            addOverlay({
+                overlayWrapper: params.overlayWrapper,
+                resizeObserver: params.resizeObserver,
+                editableElement: editableElement,
+                isFieldDisabled: true,
+            });
+        }
     }
 
     // This is most probably redundant code, as the handleIndividualFields function

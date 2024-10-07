@@ -48,16 +48,17 @@ export async function handleIndividualFields(
         fieldPathWithIndex,
     } = fieldMetadata;
 
-    // if the fieldPathWithIndex is the same as instance fieldPathWithIndex, it indicates
-    // that the whole multiple field is selected and we need the value of the whole multiple field
-    const entryPath =
-        fieldPathWithIndex === fieldMetadata.instance.fieldPathWithIndex
-            ? fieldPathWithIndex
-            : fieldMetadata.instance.fieldPathWithIndex;
     const [fieldSchema, expectedFieldData] = await Promise.all([
         FieldSchemaMap.getFieldSchema(content_type_uid, fieldPath),
-        getFieldData({ content_type_uid, entry_uid, locale }, entryPath),
+        getFieldData(
+            { content_type_uid, entry_uid, locale },
+            fieldPathWithIndex
+        ),
     ]);
+    // if value is an array, get the value for the instance
+    const expectedFieldInstanceData = Array.isArray(expectedFieldData)
+        ? expectedFieldData.at(fieldMetadata.multipleFieldMetadata.index)
+        : undefined;
 
     const fieldType = getFieldType(fieldSchema);
 
@@ -69,11 +70,11 @@ export async function handleIndividualFields(
     );
 
     if (
-        // @ts-ignore
-        fieldSchema?.multiple ||
-        (fieldSchema.data_type === "reference" &&
-            // @ts-ignore
-            fieldSchema.field_metadata.ref_multiple)
+        fieldSchema &&
+        (fieldSchema?.multiple ||
+            (fieldSchema?.data_type === "reference" &&
+                // @ts-ignore
+                fieldSchema?.field_metadata.ref_multiple))
     ) {
         if (lastEditedField !== editableElement) {
             const addButtonLabel =
@@ -90,6 +91,7 @@ export async function handleIndividualFields(
                     resizeObserver: resizeObserver,
                 },
                 {
+                    fieldSchema,
                     expectedFieldData,
                     disabled,
                     label: addButtonLabel,
@@ -105,7 +107,7 @@ export async function handleIndividualFields(
                     visualBuilderContainer,
                     resizeObserver: elements.resizeObserver,
                 },
-                { expectedFieldData, disabled }
+                { expectedFieldData: expectedFieldInstanceData, disabled }
             );
         }
     } else {
