@@ -10,7 +10,7 @@ const generateIconStyles = ({ disabled = false }: IconProps) => ({
     cursor: disabled ? "not-allowed" : "pointer",
 });
 
-export function CaretIcon(): JSX.Element {
+export function CaretIcon({ open = false }: { open?: boolean }): JSX.Element {
     return (
         <svg
             data-testid="visual-builder__caret-icon"
@@ -19,6 +19,7 @@ export function CaretIcon(): JSX.Element {
             viewBox="0 0 16 16"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
+            style={{ transform: open ? "rotate(180deg)" : "rotate(0deg)" }}
         >
             <path
                 fill-rule="evenodd"

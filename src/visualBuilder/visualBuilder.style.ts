@@ -246,6 +246,11 @@ export function visualBuilderStyles() {
             flex-direction: column-reverse;
             position: relative;
         `,
+        "visual-builder__focused-toolbar__field-label-container": css`
+            display: flex;
+            column-gap: 0.5rem;
+            align-items: center;
+        `,
         "visual-builder__button": css`
             background-color: transparent;
             border: 1px solid transparent;
@@ -548,6 +553,62 @@ export function visualBuilderStyles() {
                 font-size: 12px;
                 font-weight: 400;
                 line-height: 18px;
+            }
+        `,
+        "variant-field-revert-component": css`
+            position: relative;
+            display: inline-block;
+        `,
+        "variant-field-revert-component__dropdown-button": css`
+            background-color: #bd59fa;
+            color: white;
+            padding: 0.3125rem 8px;
+            font-size: 10px;
+            height: 27.2px;
+            margin-right: 3px;
+            min-width: max-content;
+            border: none;
+            cursor: pointer;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            column-gap: 4px;
+            &:focus {
+                outline: none;
+            }
+        `,
+        "variant-field-revert-component__dropdown-content": css`
+            position: absolute;
+            background-color: #ffffff;
+            min-width: max-content;
+            box-shadow:
+                0 4px 15px 0 rgba(108, 92, 231, 0.2),
+                0 3px 14px 3px rgba(0, 0, 0, 0.12),
+                0 8px 10px 1px rgba(0, 0, 0, 0.14);
+            z-index: 9;
+            margin-top: 4px;
+            padding: 4px 0px;
+        `,
+        "variant-field-revert-component__dropdown-content__list-item": css`
+            color: black;
+            padding: 9.6px 16px;
+            text-decoration: none;
+            display: block;
+            font-size: 0.75rem;
+            height: 32px;
+            line-height: 2rem;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            &:hover {
+                background-color: #f1f1f1;
+            }
+            &:hover > span {
+                color: #5d50be;
+            }
+            & > span {
+                margin-top: 4px;
+                margin-bottom: 4px;
             }
         `,
     };
