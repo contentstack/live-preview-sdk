@@ -16,8 +16,10 @@ function ReplaceAssetButtonComponent(
             className={classNames(
                 "visual-builder__replace-button visual-builder__button visual-builder__button--secondary",
                 visualBuilderStyles()["visual-builder__button"],
-                visualBuilderStyles()["visual-builder__button--secondary"]
+                visualBuilderStyles()["visual-builder__button--secondary"],
+                visualBuilderStyles()["visual-builder__tooltip"]
             )}
+            data-tooltip={"Replace"}
             data-testid="visual-builder-replace-asset"
             onClick={props.onClickCallback}
         >

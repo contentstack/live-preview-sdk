@@ -130,8 +130,10 @@ export default function CommentIcon(props: CommentIconProps) {
             className={classNames(
                 "visual-builder__button visual-builder__button--secondary",
                 visualBuilderStyles()["visual-builder__button"],
-                visualBuilderStyles()["visual-builder__button--secondary"]
+                visualBuilderStyles()["visual-builder__button--secondary"],
+                visualBuilderStyles()["visual-builder__tooltip"]
             )}
+            data-tooltip={"Add comment"}
             onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();

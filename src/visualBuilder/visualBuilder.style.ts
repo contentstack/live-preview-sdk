@@ -393,7 +393,6 @@ export function visualBuilderStyles() {
                 position: absolute;
 
                 bottom: 20px;
-                left: -16px;
                 margin-bottom: 16px;
 
                 padding: 12px;

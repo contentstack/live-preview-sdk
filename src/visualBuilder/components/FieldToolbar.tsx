@@ -142,8 +142,10 @@ function FieldToolbarComponent(
                 "visual-builder__button visual-builder__button--secondary visual-builder__button--edit",
                 visualBuilderStyles()["visual-builder__button"],
                 visualBuilderStyles()["visual-builder__button--secondary"],
-                visualBuilderStyles()["visual-builder__button--edit"]
+                visualBuilderStyles()["visual-builder__button--edit"],
+                visualBuilderStyles()["visual-builder__tooltip"]
             )}
+            data-tooltip={"Edit"}
             onClick={(e) => {
                 // TODO the listener for field path is attached to the common parent requiring
                 // propagation to be stopped, should ideally only attach onClick to fieldpath dropdown
@@ -161,8 +163,10 @@ function FieldToolbarComponent(
             className={classNames(
                 "visual-builder__replace-button visual-builder__button visual-builder__button--secondary",
                 visualBuilderStyles()["visual-builder__button"],
-                visualBuilderStyles()["visual-builder__button--secondary"]
+                visualBuilderStyles()["visual-builder__button--secondary"],
+                visualBuilderStyles()["visual-builder__tooltip"]
             )}
+            data-tooltip={"Replace"}
             data-testid={`visual-builder-replace-${fieldType}`}
             onClick={(e) => {
                 e.stopPropagation();
@@ -229,8 +233,10 @@ function FieldToolbarComponent(
                                     ],
                                     visualBuilderStyles()[
                                         "visual-builder__button--secondary"
-                                    ]
+                                    ],
+                                    visualBuilderStyles()["visual-builder__tooltip"]
                                 )}
+                                data-tooltip={direction.value === "vertical"?"Move up":"Move left"}
                                 onClick={(e) => {
                                     e.preventDefault();
                                     e.stopPropagation();
@@ -262,8 +268,10 @@ function FieldToolbarComponent(
                                     ],
                                     visualBuilderStyles()[
                                         "visual-builder__button--secondary"
-                                    ]
+                                    ],
+                                    visualBuilderStyles()["visual-builder__tooltip"]
                                 )}
+                                data-tooltip={direction.value === "vertical"?"Move down":"Move right"}
                                 onClick={(e) => {
                                     e.preventDefault();
                                     e.stopPropagation();
@@ -295,8 +303,10 @@ function FieldToolbarComponent(
                                     ],
                                     visualBuilderStyles()[
                                         "visual-builder__button--secondary"
-                                    ]
+                                    ],
+                                    visualBuilderStyles()["visual-builder__tooltip"]
                                 )}
+                                data-tooltip={"Delete"}
                                 onClick={(e) => {
                                     e.preventDefault();
                                     e.stopPropagation();
