@@ -604,6 +604,9 @@ export function visualBuilderStyles() {
                 margin-bottom: 4px;
             }
         `,
+        "visual-builder__no-cursor-style": css`
+           cursor: none !important; 
+        `
     };
 }
 
