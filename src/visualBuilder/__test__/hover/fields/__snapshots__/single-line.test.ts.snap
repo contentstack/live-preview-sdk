@@ -1,0 +1,84 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`When an element is hovered in visual builder mode > single line field (multiple) > should have custom cursor 1`] = `
+<div
+  class="go1688149084 visual-builder__cursor visible"
+  data-testid="visual-builder__cursor"
+/>
+`;
+
+exports[`When an element is hovered in visual builder mode > single line field (multiple) > should have custom cursor on individual instances 1`] = `
+<div
+  class="go1688149084 visual-builder__cursor visible"
+  data-testid="visual-builder__cursor"
+/>
+`;
+
+exports[`When an element is hovered in visual builder mode > single line field (multiple) > should have outline 1`] = `
+<div
+  data-cslp="all_fields.bltapikey.en-us.single_line_textbox_multiple_"
+>
+  <p
+    data-cslp="all_fields.bltapikey.en-us.single_line_textbox_multiple_.0"
+  />
+  <p
+    data-cslp="all_fields.bltapikey.en-us.single_line_textbox_multiple_.1"
+  />
+</div>
+`;
+
+exports[`When an element is hovered in visual builder mode > single line field (multiple) > should have outline 2`] = `
+<div
+  class="visual-builder__hover-outline visual-builder__hover-outline--unclickable go3177626044 go1719569523"
+  data-testid="visual-builder__hover-outline"
+  style="top: 34px; left: 34px; width: 828px; height: 54.3984375px;"
+/>
+`;
+
+exports[`When an element is hovered in visual builder mode > single line field (multiple) > should have outline on individual instances 1`] = `
+<p
+  data-cslp="all_fields.bltapikey.en-us.single_line_textbox_multiple_.0"
+/>
+`;
+
+exports[`When an element is hovered in visual builder mode > single line field (multiple) > should have outline on individual instances 2`] = `
+<div
+  class="visual-builder__hover-outline visual-builder__hover-outline--unclickable go3177626044 go1719569523"
+  data-testid="visual-builder__hover-outline"
+  style="top: 51px; left: 51px; width: 27.7734375px; height: 20.3984375px;"
+/>
+`;
+
+exports[`When an element is hovered in visual builder mode > single line field > should have custom cursor 1`] = `
+<div
+  class="go1688149084 visual-builder__cursor visible"
+  data-testid="visual-builder__cursor"
+/>
+`;
+
+exports[`When an element is hovered in visual builder mode > single line field > should have outline 1`] = `
+<p
+  data-cslp="all_fields.bltapikey.en-us.single_line"
+/>
+`;
+
+exports[`When an element is hovered in visual builder mode > title field > should have custom cursor 1`] = `
+<div
+  class="go1688149084 visual-builder__cursor visible"
+  data-testid="visual-builder__cursor"
+/>
+`;
+
+exports[`When an element is hovered in visual builder mode > title field > should have outline 1`] = `
+<p
+  data-cslp="all_fields.bltapikey.en-us.title"
+/>
+`;
+
+exports[`When an element is hovered in visual builder mode > title field > should have outline 2`] = `
+<div
+  class="visual-builder__hover-outline visual-builder__hover-outline--unclickable go3177626044 go1719569523"
+  data-testid="visual-builder__hover-outline"
+  style="top: 51px; left: 51px; width: 27.7734375px; height: 20.3984375px;"
+/>
+`;

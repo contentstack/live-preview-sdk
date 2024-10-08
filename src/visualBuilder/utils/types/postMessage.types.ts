@@ -8,6 +8,7 @@ export enum VisualBuilderPostMessageEvents {
     GET_FIELD_SCHEMA = "get-field-schema",
     GET_FIELD_DATA = "get-field-data",
     GET_FIELD_PATH_WITH_UID = "get-field-path-with-uid",
+    GET_FIELD_DISPLAY_NAMES = "get-field-display-names",
     MOUSE_CLICK = "mouse-click",
     FOCUS_FIELD = "focus-field",
     OPEN_FIELD_EDIT_MODAL = "open-field-edit-modal",
@@ -25,6 +26,6 @@ export enum VisualBuilderPostMessageEvents {
     SET_AUDIENCE_MODE = "set-audience-mode",
     UPDATE_DISCUSSION_ID = "update-discussion-id-for-focus-field",
     SCROLL_TO_FIELD = "scroll-to-view-field-by-cslp-value",
-    HIGHLIGHT_ACTIVE_COMMENTS = "highlight-active-comments-by-data-cs",   
-    REMOVE_HIGHLIGHTED_COMMENTS = "remove-highlighted-comments"  
+    HIGHLIGHT_ACTIVE_COMMENTS = "highlight-active-comments-by-data-cs",
+    REMOVE_HIGHLIGHTED_COMMENTS = "remove-highlighted-comments",
 }

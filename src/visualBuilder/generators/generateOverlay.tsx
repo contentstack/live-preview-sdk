@@ -24,7 +24,11 @@ export function addFocusOverlay(
     disabled?: boolean
 ): void {
     const targetElementDimension = targetElement.getBoundingClientRect();
-    if(targetElementDimension.width === 0 || targetElementDimension.height === 0) return;
+    if (
+        targetElementDimension.width === 0 ||
+        targetElementDimension.height === 0
+    )
+        return;
     focusOverlayWrapper.classList.add("visible");
 
     const distanceFromTop = targetElementDimension.top + window.scrollY;
@@ -191,7 +195,7 @@ export function hideOverlay(params: HideOverlayParams): void {
         focusedToolbar: params.focusedToolbar,
         resizeObserver: params.resizeObserver,
     });
-    showAllHiddenHighlightedCommentIcons()
+    showAllHiddenHighlightedCommentIcons();
     if (
         !VisualBuilder.VisualBuilderGlobalState.value
             .previousSelectedEditableDOM

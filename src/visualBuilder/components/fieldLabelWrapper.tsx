@@ -6,7 +6,7 @@ import { VisualBuilderCslpEventDetails } from "../types/visualBuilder.types";
 import { FieldSchemaMap } from "../utils/fieldSchemaMap";
 import { isFieldDisabled } from "../utils/isFieldDisabled";
 import visualBuilderPostMessage from "../utils/visualBuilderPostMessage";
-import { CaretIcon, InfoIcon, WarningOctagonIcon } from "./icons";
+import { CaretIcon, InfoIcon } from "./icons";
 import { LoadingIcon } from "./icons/loading";
 import { getFieldIcon } from "../generators/generateCustomCursor";
 import { uniqBy } from "lodash-es";
@@ -20,11 +20,12 @@ import {
     IVariantStatus,
 } from "./FieldRevert/FieldRevertComponent";
 import { hasPostMessageError } from "../utils/errorHandling";
+import { VisualBuilderPostMessageEvents } from "../utils/types/postMessage.types";
 
 async function getFieldDisplayNames(fieldMetadata: CslpData[]) {
     const result = await visualBuilderPostMessage?.send<{
         [k: string]: string;
-    }>("get-field-display-names", fieldMetadata);
+    }>(VisualBuilderPostMessageEvents.GET_FIELD_DISPLAY_NAMES, fieldMetadata);
     return result;
 }
 
@@ -195,6 +196,7 @@ function FieldLabelWrapperComponent(
                     }
                 )}
                 onClick={() => setIsDropdownOpen((prev) => !prev)}
+                data-testid="visual-builder__focused-toolbar__field-label-wrapper"
             >
                 <button
                     className={classNames(
@@ -225,6 +227,7 @@ function FieldLabelWrapperComponent(
                             dangerouslySetInnerHTML={{
                                 __html: currentField.prefixIcon,
                             }}
+                            data-testid="visual-builder__field-icon"
                         />
                     ) : null}
                     {currentField.text ? (
@@ -235,6 +238,7 @@ function FieldLabelWrapperComponent(
                                     "visual-builder__focused-toolbar__text"
                                 ]
                             )}
+                            data-testid="visual-builder__focused-toolbar__text"
                         >
                             {currentField.text}
                         </div>

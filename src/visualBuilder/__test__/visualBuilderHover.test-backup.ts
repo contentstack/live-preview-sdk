@@ -259,7 +259,7 @@ describe("When an element is hovered in visual builder mode", () => {
         });
     });
 
-    describe("single line field (multiple)", () => {
+    describe.only("single line field (multiple)", () => {
         let container: HTMLDivElement;
         let firstSingleLineField: HTMLParagraphElement;
         let secondSingleLineField: HTMLParagraphElement;
@@ -1488,7 +1488,7 @@ describe("When an element is hovered in visual builder mode", () => {
         });
     });
 
-    describe("number field", () => {
+    describe.only("number field", () => {
         let numberField: HTMLParagraphElement;
         let visualBuilder: VisualBuilder;
 

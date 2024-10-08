@@ -1,28 +1,39 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`Visual Builder > inline editing > should add overlay to DOM when clicked 1`] = `
+exports[`Visual builder > inline editing > should add overlay to DOM when clicked 1`] = `
 <body>
   <h1
     data-cslp="all_fields.blt58a50b4cebae75c5.en-us.modular_blocks.0.block.single_line"
     data-cslp-field-type="singleline"
     style="visibility: hidden;"
-  />
+  >
+    Hello World
+  </h1>
   <div
     class="go263407482 visual-builder__container"
     data-testid="visual-builder__container"
   >
     <style>
-
+      
        @import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
 
        [data-cslp] [contenteditable="true"] {
             outline: none;
         }
+        
+        @keyframes visual-builder__spinner {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
 
 
     </style>
     <div
-      class="go3297149271 visual-builder__cursor"
+      class="go1688149084 visual-builder__cursor"
       data-testid="visual-builder__cursor"
     />
     <div
@@ -51,7 +62,7 @@ exports[`Visual Builder > inline editing > should add overlay to DOM when clicke
       />
     </div>
     <div
-      class="visual-builder__hover-outline visual-builder__hover-outline--unclickable go3930459604 go1719569523"
+      class="visual-builder__hover-outline visual-builder__hover-outline--unclickable go3177626044 go1719569523"
       data-testid="visual-builder__hover-outline"
     />
     <div
@@ -62,32 +73,36 @@ exports[`Visual Builder > inline editing > should add overlay to DOM when clicke
 </body>
 `;
 
-exports[`Visual Builder > on click, the sdk > inline elements must be contenteditable > file should render a replacer and remove when it is not 1`] = `
+exports[`Visual builder > on click, the sdk > inline elements must be contenteditable > file should render a replacer and remove when it is not 1`] = `
 <h1
   data-cslp="all_fields.blt58a50b4cebae75c5.en-us.file"
   data-cslp-field-type="file"
 />
 `;
 
-exports[`Visual Builder > on click, the sdk > inline elements must be contenteditable > file should render a replacer and remove when it is not 2`] = `undefined`;
+exports[`Visual builder > on click, the sdk > inline elements must be contenteditable > file should render a replacer and remove when it is not 2`] = `undefined`;
 
-exports[`Visual Builder > on click, the sdk > inline elements must be contenteditable > multi line should be contenteditable 1`] = `
+exports[`Visual builder > on click, the sdk > inline elements must be contenteditable > multi line should be contenteditable 1`] = `
 <h1
+  contenteditable="true"
   data-cslp="all_fields.blt58a50b4cebae75c5.en-us.multi_line"
   data-cslp-field-type="multiline"
-  style="visibility: hidden;"
-/>
+>
+  Hello World
+</h1>
 `;
 
-exports[`Visual Builder > on click, the sdk > inline elements must be contenteditable > single line should be contenteditable 1`] = `
+exports[`Visual builder > on click, the sdk > inline elements must be contenteditable > single line should be contenteditable 1`] = `
 <h1
+  contenteditable="true"
   data-cslp="all_fields.blt58a50b4cebae75c5.en-us.single_line"
   data-cslp-field-type="singleline"
-  style="visibility: hidden;"
-/>
+>
+  Hello World
+</h1>
 `;
 
-exports[`Visual Builder > on click, the sdk > should do nothing if data-cslp not available 1`] = `
+exports[`Visual builder > on click, the sdk > should do nothing if data-cslp not available 1`] = `
 <body>
   <h1 />
   <div
@@ -95,17 +110,26 @@ exports[`Visual Builder > on click, the sdk > should do nothing if data-cslp not
     data-testid="visual-builder__container"
   >
     <style>
-
+      
        @import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
 
        [data-cslp] [contenteditable="true"] {
             outline: none;
         }
+        
+        @keyframes visual-builder__spinner {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
 
 
     </style>
     <div
-      class="go3297149271 visual-builder__cursor"
+      class="go1688149084 visual-builder__cursor"
       data-testid="visual-builder__cursor"
     />
     <div
@@ -134,7 +158,7 @@ exports[`Visual Builder > on click, the sdk > should do nothing if data-cslp not
       />
     </div>
     <div
-      class="visual-builder__hover-outline visual-builder__hover-outline--unclickable go3930459604 go1719569523"
+      class="visual-builder__hover-outline visual-builder__hover-outline--unclickable go3177626044 go1719569523"
       data-testid="visual-builder__hover-outline"
     />
     <div
@@ -145,23 +169,32 @@ exports[`Visual Builder > on click, the sdk > should do nothing if data-cslp not
 </body>
 `;
 
-exports[`Visual Builder > should append a visual builder container to the DOM 1`] = `
+exports[`Visual builder > should append a visual builder container to the DOM 1`] = `
 <div
   class="go263407482 visual-builder__container"
   data-testid="visual-builder__container"
 >
   <style>
-
+    
        @import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
 
        [data-cslp] [contenteditable="true"] {
             outline: none;
         }
+        
+        @keyframes visual-builder__spinner {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
 
 
   </style>
   <div
-    class="go3297149271 visual-builder__cursor"
+    class="go1688149084 visual-builder__cursor"
     data-testid="visual-builder__cursor"
   />
   <div
@@ -190,7 +223,7 @@ exports[`Visual Builder > should append a visual builder container to the DOM 1`
     />
   </div>
   <div
-    class="visual-builder__hover-outline visual-builder__hover-outline--unclickable go3930459604 go1719569523"
+    class="visual-builder__hover-outline visual-builder__hover-outline--unclickable go3177626044 go1719569523"
     data-testid="visual-builder__hover-outline"
   />
   <div
@@ -230,28 +263,33 @@ exports[`visual builder DOM > should have an overlay over the element 1`] = `
 
 exports[`visual builder DOM > should have an overlay over the element 2`] = `
 <div
-  class="go842373233 visual-builder__overlay__wrapper"
+  class="go842373233 visual-builder__overlay__wrapper visible"
   data-testid="visual-builder__overlay__wrapper"
 >
   <div
     class="visual-builder__overlay visual-builder__overlay--top go2262268276"
     data-testid="visual-builder__overlay--top"
+    style="top: 0px; left: 0px; width: 100%; height: calc(10px);"
   />
   <div
     class="visual-builder__overlay visual-builder__overlay--left go2262268276"
     data-testid="visual-builder__overlay--left"
+    style="left: 0px; top: 10px; height: 5px; width: 10px;"
   />
   <div
     class="visual-builder__overlay visual-builder__overlay--right go2262268276"
     data-testid="visual-builder__overlay--right"
+    style="left: 20px; top: 10px; height: 5px; width: 80px;"
   />
   <div
     class="visual-builder__overlay visual-builder__overlay--bottom go2262268276"
     data-testid="visual-builder__overlay--bottom"
+    style="top: 20px; height: 80px; left: 0px; width: 100%;"
   />
   <div
     class="visual-builder__overlay--outline go3391008271"
     data-testid="visual-builder__overlay--outline"
+    style="top: 10px; height: 5px; width: 10px; left: 10px; outline-color: rgb(113, 92, 221);"
   />
 </div>
 `;

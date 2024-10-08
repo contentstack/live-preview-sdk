@@ -76,12 +76,14 @@ async function handleBuilderInteraction(
     }
 
     const eventDetails = getCsDataOfElement(params.event);
-    visualBuilderPostMessage?.send(VisualBuilderPostMessageEvents.MOUSE_CLICK, {
-        cslpData: eventDetails?.cslpData,
-        fieldMetadata: eventDetails?.fieldMetadata
-    }).catch((err) => {
-        console.warn("Error while sending post message", err);
-    });
+    visualBuilderPostMessage
+        ?.send(VisualBuilderPostMessageEvents.MOUSE_CLICK, {
+            cslpData: eventDetails?.cslpData,
+            fieldMetadata: eventDetails?.fieldMetadata,
+        })
+        .catch((err) => {
+            console.warn("Error while sending post message", err);
+        });
     if (
         !eventDetails ||
         !params.overlayWrapper ||
@@ -145,8 +147,8 @@ async function handleBuilderInteraction(
 
     const { content_type_uid, fieldPath, cslpValue } = fieldMetadata;
 
-    toggleHighlightedCommentIconDisplay(cslpValue,false)
-    
+    toggleHighlightedCommentIconDisplay(cslpValue, false);
+
     const fieldSchema = await FieldSchemaMap.getFieldSchema(
         content_type_uid,
         fieldPath

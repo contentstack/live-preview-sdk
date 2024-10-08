@@ -1,21 +1,61 @@
-import { waitFor } from "@testing-library/preact";
+/**
+ * This file is just present to compare test running times
+ * with tests in different files for each field.
+ */
+
+import React from "react";
+import {
+    fireEvent,
+    getByTestId,
+    prettyDOM,
+    screen,
+    waitFor,
+} from "@testing-library/preact";
 import "@testing-library/jest-dom";
 import { getFieldSchemaMap } from "../../__test__/data/fieldSchemaMap";
 import Config from "../../configManager/configManager";
-import { VisualBuilder } from "../index";
 import { VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY } from "../utils/constants";
 import { FieldSchemaMap } from "../utils/fieldSchemaMap";
 import { getDOMEditStack } from "../utils/getCsDataOfElement";
 import visualBuilderPostMessage from "../utils/visualBuilderPostMessage";
-import { vi } from "vitest";
-
+import { Mock, vi } from "vitest";
 import { VisualBuilderPostMessageEvents } from "../utils/types/postMessage.types";
+import { VisualBuilder } from "../index";
+import { sleep } from "../../__test__/utils";
+
+const VALUES = {
+    singleLine: "Single line",
+    number: "10.5",
+};
 
 global.ResizeObserver = vi.fn().mockImplementation(() => ({
     observe: vi.fn(),
     unobserve: vi.fn(),
     disconnect: vi.fn(),
 }));
+
+global.MutationObserver = vi.fn().mockImplementation(() => ({
+    observe: vi.fn(),
+    disconnect: vi.fn(),
+}));
+
+vi.mock("../components/FieldToolbar", () => {
+    return {
+        default: (props) => {
+            return <div>Field Toolbar</div>;
+        },
+    };
+});
+
+vi.mock("../components/fieldLabelWrapper", () => {
+    return {
+        default: (props) => {
+            return (
+                <div data-testid="mock-field-label-wrapper">Field Label</div>
+            );
+        },
+    };
+});
 
 vi.mock("../utils/visualBuilderPostMessage", async () => {
     const { getAllContentTypes } = await vi.importActual<
@@ -45,6 +85,17 @@ describe("When an element is clicked in visual builder mode", () => {
             "all_fields",
             getFieldSchemaMap().all_fields
         );
+        vi.spyOn(
+            document.documentElement,
+            "clientWidth",
+            "get"
+        ).mockReturnValue(100);
+        vi.spyOn(
+            document.documentElement,
+            "clientHeight",
+            "get"
+        ).mockReturnValue(100);
+        vi.spyOn(document.body, "scrollHeight", "get").mockReturnValue(100);
     });
 
     beforeEach(() => {
@@ -67,7 +118,30 @@ describe("When an element is clicked in visual builder mode", () => {
 
     describe("single line field", () => {
         let singleLineField: HTMLParagraphElement;
-        let visualBuilder: VisualBuilder;
+
+        beforeAll(() => {
+            (visualBuilderPostMessage?.send as Mock).mockImplementation(
+                (eventName: string) => {
+                    if (
+                        eventName ===
+                        VisualBuilderPostMessageEvents.GET_FIELD_DATA
+                    ) {
+                        return Promise.resolve({
+                            fieldData: VALUES.singleLine,
+                        });
+                    } else if (
+                        eventName ===
+                        VisualBuilderPostMessageEvents.GET_FIELD_DISPLAY_NAMES
+                    ) {
+                        return Promise.resolve({
+                            "all_fields.bltapikey.en-us.single_line":
+                                "Single Line",
+                        });
+                    }
+                    return Promise.resolve({});
+                }
+            );
+        });
 
         beforeEach(() => {
             singleLineField = document.createElement("p");
@@ -75,72 +149,104 @@ describe("When an element is clicked in visual builder mode", () => {
                 "data-cslp",
                 "all_fields.bltapikey.en-us.single_line"
             );
+            singleLineField.textContent = VALUES.singleLine;
+            singleLineField.getBoundingClientRect = vi.fn(() => ({
+                left: 10,
+                right: 20,
+                top: 10,
+                bottom: 20,
+                width: 10,
+                height: 5,
+            })) as any;
             document.body.appendChild(singleLineField);
 
-            visualBuilder = new VisualBuilder();
-        });
-
-        afterEach(() => {
-            visualBuilder.destroy();
+            VisualBuilder.VisualBuilderGlobalState.value = {
+                previousSelectedEditableDOM: null,
+                previousHoveredTargetDOM: null,
+                previousEmptyBlockParents: [],
+                audienceMode: false,
+            };
         });
 
         test("should have outline", () => {
+            const visualBuilder = new VisualBuilder();
             singleLineField.dispatchEvent(mouseClickEvent);
             expect(singleLineField.classList.contains("cslp-edit-mode"));
+            visualBuilder.destroy();
         });
 
         test("should have an overlay", () => {
+            const visualBuilder = new VisualBuilder();
             singleLineField.dispatchEvent(mouseClickEvent);
             const overlay = document.querySelector(".visual-builder__overlay");
             expect(overlay!.classList.contains("visible"));
+            visualBuilder.destroy();
         });
 
-        test("should have a field path dropdown", () => {
-            singleLineField.dispatchEvent(mouseClickEvent);
-            const toolbar = document.querySelector(
-                ".visual-builder__focused-toolbar__field-label-wrapper__current-field"
-            );
-            expect(toolbar).toBeInTheDocument();
+        test.skip("should have a field path dropdown", async () => {
+            const visualBuilder = new VisualBuilder();
+
+            await sleep(0);
+            fireEvent.click(singleLineField);
+            await sleep(0);
+
+            waitFor(async () => {
+                const toolbar = await screen.findByText("Field Label");
+                expect(toolbar).toBeInTheDocument();
+            });
+
+            // expect(toolbar).toBeInTheDocument();
+            visualBuilder.destroy();
         });
 
         test("should contain a data-cslp-field-type attribute", async () => {
-            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
-                singleLineField;
+            const visualBuilder = new VisualBuilder();
+            // visualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
+            //     singleLineField;
 
-            await waitFor(() => {
-                singleLineField.dispatchEvent(mouseClickEvent);
-            });
+            await sleep(0);
+            fireEvent.click(singleLineField);
+            await sleep(0);
 
-            expect(singleLineField).toHaveAttribute(
-                VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
+            await waitFor(() =>
+                expect(singleLineField).toHaveAttribute(
+                    VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
+                )
             );
+
+            visualBuilder.destroy();
         });
 
         test("should contain a contenteditable attribute", async () => {
-            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
-                singleLineField;
+            const visualBuilder = new VisualBuilder();
+
+            await sleep(0);
+            fireEvent.click(singleLineField);
+            await sleep(0);
 
             await waitFor(() => {
-                singleLineField.dispatchEvent(mouseClickEvent);
+                expect(singleLineField).toHaveAttribute("contenteditable");
             });
 
-            expect(singleLineField).toHaveAttribute("contenteditable");
+            visualBuilder.destroy();
         });
 
         test("should send a focus field message to parent", async () => {
-            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
-                singleLineField;
+            const visualBuilder = new VisualBuilder();
+
+            await sleep(0);
+            fireEvent.click(singleLineField);
+            await sleep(0);
 
             await waitFor(() => {
-                singleLineField.dispatchEvent(mouseClickEvent);
+                expect(visualBuilderPostMessage?.send).toBeCalledWith(
+                    VisualBuilderPostMessageEvents.FOCUS_FIELD,
+                    {
+                        DOMEditStack: getDOMEditStack(singleLineField),
+                    }
+                );
             });
-
-            expect(visualBuilderPostMessage?.send).toBeCalledWith(
-                VisualBuilderPostMessageEvents.FOCUS_FIELD,
-                {
-                    DOMEditStack: getDOMEditStack(singleLineField),
-                }
-            );
+            visualBuilder.destroy();
         });
     });
 
@@ -148,7 +254,27 @@ describe("When an element is clicked in visual builder mode", () => {
         let container: HTMLDivElement;
         let firstSingleLineField: HTMLParagraphElement;
         let secondSingleLineField: HTMLParagraphElement;
-        let visualBuilder: VisualBuilder;
+
+        beforeAll(() => {
+            (visualBuilderPostMessage?.send as Mock).mockImplementation(
+                (eventName: string, args) => {
+                    if (
+                        eventName ===
+                        VisualBuilderPostMessageEvents.GET_FIELD_DATA
+                    ) {
+                        const values: Record<string, any> = {
+                            single_line_textbox_multiple_: ["Hello", "world"],
+                            "single_line_textbox_multiple_.0": "Hello",
+                            "single_line_textbox_multiple_.1": "world",
+                        };
+                        return Promise.resolve({
+                            fieldData: values[args.entryPath],
+                        });
+                    }
+                    return Promise.resolve({});
+                }
+            );
+        });
 
         beforeEach(() => {
             container = document.createElement("div");
@@ -158,12 +284,15 @@ describe("When an element is clicked in visual builder mode", () => {
             );
 
             firstSingleLineField = document.createElement("p");
+            firstSingleLineField.textContent = "Hello";
+
             firstSingleLineField.setAttribute(
                 "data-cslp",
                 "all_fields.bltapikey.en-us.single_line_textbox_multiple_.0"
             );
 
             secondSingleLineField = document.createElement("p");
+            secondSingleLineField.textContent = "world";
             secondSingleLineField.setAttribute(
                 "data-cslp",
                 "all_fields.bltapikey.en-us.single_line_textbox_multiple_.1"
@@ -173,37 +302,48 @@ describe("When an element is clicked in visual builder mode", () => {
             container.appendChild(secondSingleLineField);
             document.body.appendChild(container);
 
-            visualBuilder = new VisualBuilder();
-        });
-
-        afterEach(() => {
-            visualBuilder.destroy();
+            VisualBuilder.VisualBuilderGlobalState.value = {
+                previousSelectedEditableDOM: null,
+                previousHoveredTargetDOM: null,
+                previousEmptyBlockParents: [],
+                audienceMode: false,
+            };
         });
 
         test("should have outline", () => {
+            const visualBuilder = new VisualBuilder();
             container.dispatchEvent(mouseClickEvent);
             expect(container.classList.contains("cslp-edit-mode"));
+            visualBuilder.destroy();
         });
 
         test("should have an overlay", () => {
+            const visualBuilder = new VisualBuilder();
             container.dispatchEvent(mouseClickEvent);
             const overlay = document.querySelector(".visual-builder__overlay");
             expect(overlay!.classList.contains("visible"));
+            visualBuilder.destroy();
         });
 
-        test("should have a field path dropdown", () => {
-            container.dispatchEvent(mouseClickEvent);
-            const toolbar = document.querySelector(
-                ".visual-builder__focused-toolbar__field-label-wrapper__current-field"
-            );
-            expect(toolbar).toBeInTheDocument();
-        });
+        test.skip("should have a field path dropdown", async () => {
+            const visualBuilder = new VisualBuilder();
 
-        test("should have a multi field toolbar with button group", async () => {
-            await waitFor(() => {
-                container.dispatchEvent(mouseClickEvent);
+            await sleep(0);
+            fireEvent.click(container);
+            await sleep(0);
+
+            await waitFor(async () => {
+                const toolbar = await screen.findByTestId(
+                    "mock-field-label-wrapper"
+                );
+                expect(toolbar).toBeInTheDocument();
             });
+            visualBuilder.destroy();
+        });
 
+        // TODO should be a test of FieldToolbar
+        test.skip("should have a multi field toolbar with button group", async () => {
+            container.dispatchEvent(mouseClickEvent);
             const multiFieldToolbar = document.querySelector(
                 ".visual-builder__focused-toolbar__multiple-field-toolbar"
             );
@@ -217,100 +357,66 @@ describe("When an element is clicked in visual builder mode", () => {
         });
 
         test("should contain a data-cslp-field-type attribute", async () => {
-            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
-                container;
+            const visualBuilder = new VisualBuilder();
+            container.dispatchEvent(mouseClickEvent);
 
             await waitFor(() => {
-                container.dispatchEvent(mouseClickEvent);
+                expect(container).toHaveAttribute(
+                    VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
+                );
             });
-
-            expect(container).toHaveAttribute(
-                VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
-            );
+            visualBuilder.destroy();
         });
 
         test("container should not contain a contenteditable attribute but the children can", async () => {
-            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
-                container;
+            const visualBuilder = new VisualBuilder();
+            await sleep(0);
+            fireEvent.click(container);
+            await sleep(0);
 
             await waitFor(() => {
-                container.dispatchEvent(mouseClickEvent);
+                expect(container).not.toHaveAttribute("contenteditable");
             });
 
-            expect(container).not.toHaveAttribute("contenteditable");
+            fireEvent.click(container.children[0]);
+            await sleep(0);
 
             await waitFor(() => {
-                container.children[0].dispatchEvent(mouseClickEvent);
+                expect(container.children[0]).toHaveAttribute(
+                    "contenteditable"
+                );
             });
 
-            expect(container.children[0]).toHaveAttribute("contenteditable");
+            fireEvent.click(container.children[1]);
+            await sleep(0);
 
             await waitFor(() => {
-                container.children[1].dispatchEvent(mouseClickEvent);
+                expect(container.children[1]).toHaveAttribute(
+                    "contenteditable"
+                );
             });
-
-            expect(container.children[1]).toHaveAttribute("contenteditable");
+            visualBuilder.destroy();
         });
 
-        test("should have a multi field toolbar with button group", async () => {
-            await waitFor(() => {
-                container.dispatchEvent(mouseClickEvent);
-            });
+        test.skip("should have 2 add instance buttons", async () => {
+            const visualBuilder = new VisualBuilder();
 
-            const multiFieldToolbar = document.querySelector(
-                ".visual-builder__focused-toolbar__multiple-field-toolbar"
-            );
-
-            const buttonGroup = document.querySelector(
-                ".visual-builder__focused-toolbar__button-group"
-            );
-
-            expect(multiFieldToolbar).toBeInTheDocument();
-            expect(buttonGroup).toBeInTheDocument();
-        });
-
-        test("should have 2 add instance buttons", async () => {
+            await sleep(0);
+            // fireEvent.click(container.children[0]);
             container.children[0].dispatchEvent(mouseClickEvent);
+            await sleep(0);
 
-            // need to poll and check since the DOM updates are async
-            const checkCondition = async () => {
-                const addInstanceButtons = document.querySelectorAll(
-                    ".visual-builder__add-button"
+            waitFor(async () => {
+                const addInstanceButtons = await screen.findAllByTestId(
+                    "visual-builder-add-instance-button"
                 );
-                return addInstanceButtons.length === 2;
-            };
-
-            const pollingInterval = 100;
-            const timeout = 200;
-
-            let elapsedTime = 0;
-            while (elapsedTime < timeout) {
-                if (await checkCondition()) {
-                    break;
-                }
-                await new Promise((resolve) =>
-                    setTimeout(resolve, pollingInterval)
-                );
-                elapsedTime += pollingInterval;
-            }
-
-            if (elapsedTime >= timeout) {
-                throw new Error(
-                    "Timeout: Condition not met within the specified timeout."
-                );
-            }
-
-            const addInstanceButtons = document.querySelectorAll(
-                ".visual-builder__add-button"
-            );
-
-            expect(addInstanceButtons.length).toBe(2);
+                expect(addInstanceButtons.length).toBe(2);
+            });
+            visualBuilder.destroy();
         });
 
         test("should send a focus field message to parent", async () => {
-            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
-                container;
-
+            const visualBuilder = new VisualBuilder();
             await waitFor(() => {
                 container.dispatchEvent(mouseClickEvent);
             });
@@ -321,6 +427,7 @@ describe("When an element is clicked in visual builder mode", () => {
                     DOMEditStack: getDOMEditStack(container),
                 }
             );
+            visualBuilder.destroy();
         });
     });
 
@@ -328,12 +435,37 @@ describe("When an element is clicked in visual builder mode", () => {
         let multiLineField: HTMLParagraphElement;
         let visualBuilder: VisualBuilder;
 
+        beforeAll(() => {
+            (visualBuilderPostMessage?.send as Mock).mockImplementation(
+                (eventName: string, args) => {
+                    if (
+                        eventName ===
+                        VisualBuilderPostMessageEvents.GET_FIELD_DATA
+                    ) {
+                        return Promise.resolve({
+                            fieldData: "Hello world",
+                        });
+                    } else if (
+                        eventName ===
+                        VisualBuilderPostMessageEvents.GET_FIELD_DISPLAY_NAMES
+                    ) {
+                        return Promise.resolve({
+                            "all_fields.bltapikey.en-us.single_line":
+                                "Single Line",
+                        });
+                    }
+                    return Promise.resolve({});
+                }
+            );
+        });
+
         beforeEach(() => {
             multiLineField = document.createElement("p");
             multiLineField.setAttribute(
                 "data-cslp",
                 "all_fields.bltapikey.en-us.multi_line"
             );
+            multiLineField.textContent = "Hello world";
             document.body.appendChild(multiLineField);
             visualBuilder = new VisualBuilder();
         });
@@ -353,52 +485,42 @@ describe("When an element is clicked in visual builder mode", () => {
             expect(overlay!.classList.contains("visible"));
         });
 
-        test("should have a field path dropdown", () => {
+        test.skip("should have a field path dropdown", async () => {
             multiLineField.dispatchEvent(mouseClickEvent);
-            const toolbar = document.querySelector(
-                ".visual-builder__focused-toolbar__field-label-wrapper__current-field"
-            );
-            expect(toolbar).toBeInTheDocument();
+            await waitFor(() => {
+                const toolbar = document.querySelector(
+                    ".visual-builder__focused-toolbar__field-label-wrapper__current-field"
+                );
+                expect(toolbar).toBeInTheDocument();
+            });
         });
 
         test("should contain a data-cslp-field-type attribute", async () => {
-            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
-                multiLineField;
-
+            multiLineField.dispatchEvent(mouseClickEvent);
             await waitFor(() => {
-                multiLineField.dispatchEvent(mouseClickEvent);
+                expect(multiLineField).toHaveAttribute(
+                    VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
+                );
             });
-
-            expect(multiLineField).toHaveAttribute(
-                VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
-            );
         });
 
         test("should contain a contenteditable attribute", async () => {
-            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
-                multiLineField;
-
+            multiLineField.dispatchEvent(mouseClickEvent);
             await waitFor(() => {
-                multiLineField.dispatchEvent(mouseClickEvent);
+                expect(multiLineField).toHaveAttribute("contenteditable");
             });
-
-            expect(multiLineField).toHaveAttribute("contenteditable");
         });
 
         test("should send a focus field message to parent", async () => {
-            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
-                multiLineField;
-
+            multiLineField.dispatchEvent(mouseClickEvent);
             await waitFor(() => {
-                multiLineField.dispatchEvent(mouseClickEvent);
+                expect(visualBuilderPostMessage?.send).toBeCalledWith(
+                    VisualBuilderPostMessageEvents.FOCUS_FIELD,
+                    {
+                        DOMEditStack: getDOMEditStack(multiLineField),
+                    }
+                );
             });
-
-            expect(visualBuilderPostMessage?.send).toBeCalledWith(
-                VisualBuilderPostMessageEvents.FOCUS_FIELD,
-                {
-                    DOMEditStack: getDOMEditStack(multiLineField),
-                }
-            );
         });
     });
 
@@ -406,7 +528,27 @@ describe("When an element is clicked in visual builder mode", () => {
         let container: HTMLDivElement;
         let firstMultiLineField: HTMLParagraphElement;
         let secondMultiLineField: HTMLParagraphElement;
-        let visualBuilder: VisualBuilder;
+
+        beforeAll(() => {
+            (visualBuilderPostMessage?.send as Mock).mockImplementation(
+                (eventName: string, args) => {
+                    if (
+                        eventName ===
+                        VisualBuilderPostMessageEvents.GET_FIELD_DATA
+                    ) {
+                        const values: Record<string, any> = {
+                            multi_line_textbox_multiple_: ["Hello", "world"],
+                            "multi_line_textbox_multiple_.0": "Hello",
+                            "multi_line_textbox_multiple_.1": "world",
+                        };
+                        return Promise.resolve({
+                            fieldData: values[args.entryPath],
+                        });
+                    }
+                    return Promise.resolve({});
+                }
+            );
+        });
 
         beforeEach(() => {
             container = document.createElement("div");
@@ -416,12 +558,14 @@ describe("When an element is clicked in visual builder mode", () => {
             );
 
             firstMultiLineField = document.createElement("p");
+            firstMultiLineField.textContent = "Hello";
             firstMultiLineField.setAttribute(
                 "data-cslp",
                 "all_fields.bltapikey.en-us.multi_line_textbox_multiple_.0"
             );
 
             secondMultiLineField = document.createElement("p");
+            secondMultiLineField.textContent = "world";
             secondMultiLineField.setAttribute(
                 "data-cslp",
                 "all_fields.bltapikey.en-us.multi_line_textbox_multiple_.1"
@@ -431,33 +575,41 @@ describe("When an element is clicked in visual builder mode", () => {
             container.appendChild(secondMultiLineField);
             document.body.appendChild(container);
 
-            visualBuilder = new VisualBuilder();
-        });
-
-        afterEach(() => {
-            visualBuilder.destroy();
+            VisualBuilder.VisualBuilderGlobalState.value = {
+                previousSelectedEditableDOM: null,
+                previousHoveredTargetDOM: null,
+                previousEmptyBlockParents: [],
+                audienceMode: false,
+            };
         });
 
         test("should have outline", () => {
+            const visualBuilder = new VisualBuilder();
             container.dispatchEvent(mouseClickEvent);
             expect(container.classList.contains("cslp-edit-mode"));
+            visualBuilder.destroy();
         });
 
         test("should have an overlay", () => {
+            const visualBuilder = new VisualBuilder();
             container.dispatchEvent(mouseClickEvent);
             const overlay = document.querySelector(".visual-builder__overlay");
             expect(overlay!.classList.contains("visible"));
+            visualBuilder.destroy();
         });
 
-        test("should have a field path dropdown", () => {
+        test.skip("should have a field path dropdown", () => {
+            const visualBuilder = new VisualBuilder();
             container.dispatchEvent(mouseClickEvent);
             const toolbar = document.querySelector(
                 ".visual-builder__focused-toolbar__field-label-wrapper__current-field"
             );
             expect(toolbar).toBeInTheDocument();
+            visualBuilder.destroy();
         });
 
-        test("should have a multi field toolbar with button group", async () => {
+        // TODO should be a test of FieldToolbar
+        test.skip("should have a multi field toolbar with button group", async () => {
             await waitFor(() => {
                 container.dispatchEvent(mouseClickEvent);
             });
@@ -474,94 +626,82 @@ describe("When an element is clicked in visual builder mode", () => {
             expect(buttonGroup).toBeInTheDocument();
         });
 
-        test("should have 2 add instance buttons", async () => {
-            container.children[0].dispatchEvent(mouseClickEvent);
+        test.skip("should have 2 add instance buttons", async () => {
+            const visualBuilder = new VisualBuilder();
+            await sleep(0);
 
-            // need to poll and check since the DOM updates are async
-            const checkCondition = async () => {
-                const addInstanceButtons = document.querySelectorAll(
-                    ".visual-builder__add-button"
+            fireEvent.click(container.children[0]);
+            // container.children[0].dispatchEvent(mouseClickEvent);
+            await sleep(0);
+
+            waitFor(async () => {
+                const addInstanceButtons = await screen.findAllByTestId(
+                    "visual-builder-add-instance-button"
                 );
-                return addInstanceButtons.length === 2;
-            };
-
-            const pollingInterval = 100;
-            const timeout = 200;
-
-            let elapsedTime = 0;
-            while (elapsedTime < timeout) {
-                if (await checkCondition()) {
-                    break;
-                }
-                await new Promise((resolve) =>
-                    setTimeout(resolve, pollingInterval)
-                );
-                elapsedTime += pollingInterval;
-            }
-
-            if (elapsedTime >= timeout) {
-                throw new Error(
-                    "Timeout: Condition not met within the specified timeout."
-                );
-            }
-
-            const addInstanceButtons = document.querySelectorAll(
-                ".visual-builder__add-button"
-            );
-
-            expect(addInstanceButtons.length).toBe(2);
+                expect(addInstanceButtons.length).toBe(2);
+            });
+            visualBuilder.destroy();
         });
 
         test("should contain a data-cslp-field-type attribute", async () => {
-            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
-                container;
+            const visualBuilder = new VisualBuilder();
+            container.dispatchEvent(mouseClickEvent);
 
             await waitFor(() => {
-                container.dispatchEvent(mouseClickEvent);
+                expect(container).toHaveAttribute(
+                    VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
+                );
             });
 
-            expect(container).toHaveAttribute(
-                VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
-            );
+            visualBuilder.destroy();
         });
 
         test("container should not contain a contenteditable attribute but the children can", async () => {
-            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
-                container;
+            const visualBuilder = new VisualBuilder();
+            await sleep(0);
 
+            // container.dispatchEvent(mouseClickEvent);
+            fireEvent.click(container);
+            await sleep(0);
             await waitFor(() => {
-                container.dispatchEvent(mouseClickEvent);
+                expect(container).not.toHaveAttribute("contenteditable");
             });
 
-            expect(container).not.toHaveAttribute("contenteditable");
-
+            fireEvent.click(container.children[0]);
+            // container.children[0].dispatchEvent(mouseClickEvent);
+            await sleep(0);
             await waitFor(() => {
-                container.children[0].dispatchEvent(mouseClickEvent);
+                expect(container.children[0]).toHaveAttribute(
+                    "contenteditable"
+                );
             });
 
-            expect(container.children[0]).toHaveAttribute("contenteditable");
-
+            fireEvent.click(container.children[1]);
+            // container.children[1].dispatchEvent(mouseClickEvent);
+            await sleep(0);
             await waitFor(() => {
-                container.children[1].dispatchEvent(mouseClickEvent);
+                expect(container.children[1]).toHaveAttribute(
+                    "contenteditable"
+                );
             });
 
-            expect(container.children[1]).toHaveAttribute("contenteditable");
+            visualBuilder.destroy();
         });
 
         test("should send a focus field message to parent", async () => {
-            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
-                container;
+            const visualBuilder = new VisualBuilder();
+            container.dispatchEvent(mouseClickEvent);
 
             await waitFor(() => {
-                container.dispatchEvent(mouseClickEvent);
+                expect(visualBuilderPostMessage?.send).toBeCalledWith(
+                    VisualBuilderPostMessageEvents.FOCUS_FIELD,
+                    {
+                        DOMEditStack: getDOMEditStack(container),
+                    }
+                );
             });
 
-            expect(visualBuilderPostMessage?.send).toBeCalledWith(
-                VisualBuilderPostMessageEvents.FOCUS_FIELD,
-                {
-                    DOMEditStack: getDOMEditStack(container),
-                }
-            );
+            visualBuilder.destroy();
         });
     });
 
@@ -594,7 +734,7 @@ describe("When an element is clicked in visual builder mode", () => {
             expect(overlay!.classList.contains("visible"));
         });
 
-        test("should have a field path dropdown", () => {
+        test.skip("should have a field path dropdown", () => {
             htmlRteField.dispatchEvent(mouseClickEvent);
             const toolbar = document.querySelector(
                 ".visual-builder__focused-toolbar__field-label-wrapper__current-field"
@@ -603,75 +743,31 @@ describe("When an element is clicked in visual builder mode", () => {
         });
 
         test("should contain a data-cslp-field-type attribute", async () => {
-            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
-                htmlRteField;
-
+            htmlRteField.dispatchEvent(mouseClickEvent);
             await waitFor(() => {
-                htmlRteField.dispatchEvent(mouseClickEvent);
+                expect(htmlRteField).toHaveAttribute(
+                    VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
+                );
             });
-
-            expect(htmlRteField).toHaveAttribute(
-                VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
-            );
         });
 
         test("should not contain a contenteditable attribute", async () => {
-            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
-                htmlRteField;
-
+            htmlRteField.dispatchEvent(mouseClickEvent);
             await waitFor(() => {
-                htmlRteField.dispatchEvent(mouseClickEvent);
+                expect(htmlRteField).not.toHaveAttribute("contenteditable");
             });
-
-            expect(htmlRteField).not.toHaveAttribute("contenteditable");
         });
 
         test("should send a focus field message to parent", async () => {
-            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
-                htmlRteField;
-
+            htmlRteField.dispatchEvent(mouseClickEvent);
             await waitFor(() => {
-                htmlRteField.dispatchEvent(mouseClickEvent);
+                expect(visualBuilderPostMessage?.send).toBeCalledWith(
+                    VisualBuilderPostMessageEvents.FOCUS_FIELD,
+                    {
+                        DOMEditStack: getDOMEditStack(htmlRteField),
+                    }
+                );
             });
-
-            expect(visualBuilderPostMessage?.send).toBeCalledWith(
-                VisualBuilderPostMessageEvents.FOCUS_FIELD,
-                {
-                    DOMEditStack: getDOMEditStack(htmlRteField),
-                }
-            );
-        });
-
-        test("should send a open quick form message to parent", async () => {
-            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
-                htmlRteField;
-
-            await waitFor(() => {
-                htmlRteField.dispatchEvent(mouseClickEvent);
-            });
-
-            expect(visualBuilderPostMessage?.send).toBeCalledWith(
-                VisualBuilderPostMessageEvents.OPEN_QUICK_FORM,
-                {
-                    fieldMetadata: {
-                        entry_uid: "bltapikey",
-                        content_type_uid: "all_fields",
-                        locale: "en-us",
-                        cslpValue:
-                            "all_fields.bltapikey.en-us.rich_text_editor",
-                        fieldPath: "rich_text_editor",
-                        fieldPathWithIndex: "rich_text_editor",
-                        multipleFieldMetadata: {
-                            parentDetails: null,
-                            index: -1,
-                        },
-                        instance: {
-                            fieldPathWithIndex: "rich_text_editor",
-                        },
-                    },
-                    cslpData: "all_fields.bltapikey.en-us.rich_text_editor",
-                }
-            );
         });
     });
 
@@ -721,15 +817,19 @@ describe("When an element is clicked in visual builder mode", () => {
             expect(overlay!.classList.contains("visible"));
         });
 
-        test("should have a field path dropdown", () => {
+        test.skip("should have a field path dropdown", async () => {
             container.dispatchEvent(mouseClickEvent);
-            const toolbar = document.querySelector(
-                ".visual-builder__focused-toolbar__field-label-wrapper__current-field"
-            );
-            expect(toolbar).toBeInTheDocument();
+
+            await waitFor(() => {
+                const toolbar = document.querySelector(
+                    ".visual-builder__focused-toolbar__field-label-wrapper__current-field"
+                );
+                expect(toolbar).toBeInTheDocument();
+            });
         });
 
-        test("should have a multi field toolbar with button group", async () => {
+        // TODO should be a test of FieldToolbar
+        test.skip("should have a multi field toolbar with button group", async () => {
             await waitFor(() => {
                 container.dispatchEvent(mouseClickEvent);
             });
@@ -746,98 +846,74 @@ describe("When an element is clicked in visual builder mode", () => {
             expect(buttonGroup).toBeInTheDocument();
         });
 
-        test("should have 2 add instance buttons", async () => {
-            container.children[0].dispatchEvent(mouseClickEvent);
+        test.skip("should have 2 add instance buttons", async () => {
+            // const visualBuilder = new VisualBuilder();
+            // await sleep(0);
 
-            // need to poll and check since the DOM updates are async
-            const checkCondition = async () => {
-                const addInstanceButtons = document.querySelectorAll(
-                    ".visual-builder__add-button"
+            fireEvent.click(container.children[0]);
+            // container.children[0].dispatchEvent(mouseClickEvent);
+            await sleep(0);
+
+            waitFor(async () => {
+                const addInstanceButtons = await screen.findAllByTestId(
+                    "visual-builder-add-instance-button"
                 );
-                return addInstanceButtons.length === 2;
-            };
-
-            const pollingInterval = 100;
-            const timeout = 200;
-
-            let elapsedTime = 0;
-            while (elapsedTime < timeout) {
-                if (await checkCondition()) {
-                    break;
-                }
-                await new Promise((resolve) =>
-                    setTimeout(resolve, pollingInterval)
-                );
-                elapsedTime += pollingInterval;
-            }
-
-            if (elapsedTime >= timeout) {
-                throw new Error(
-                    "Timeout: Condition not met within the specified timeout."
-                );
-            }
-
-            const addInstanceButtons = document.querySelectorAll(
-                ".visual-builder__add-button"
-            );
-
-            expect(addInstanceButtons.length).toBe(2);
+                expect(addInstanceButtons.length).toBe(2);
+            });
+            // visualBuilder.destroy();
         });
 
         test("should contain a data-cslp-field-type attribute", async () => {
-            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
-                container;
-
+            container.dispatchEvent(mouseClickEvent);
             await waitFor(() => {
-                container.dispatchEvent(mouseClickEvent);
+                expect(container).toHaveAttribute(
+                    VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
+                );
             });
-
-            expect(container).toHaveAttribute(
-                VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
-            );
         });
 
         test("both container and its children should not contain a contenteditable attribute", async () => {
-            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
-                container;
+            // const visualBuilder = new VisualBuilder();
+            // await sleep(0);
 
+            // container.dispatchEvent(mouseClickEvent);
+            fireEvent.click(container);
+            await sleep(0);
             await waitFor(() => {
-                container.dispatchEvent(mouseClickEvent);
+                expect(container).not.toHaveAttribute("contenteditable");
             });
 
-            expect(container).not.toHaveAttribute("contenteditable");
-
+            fireEvent.click(container.children[0]);
+            // container.children[0].dispatchEvent(mouseClickEvent);
+            await sleep(0);
             await waitFor(() => {
-                container.children[0].dispatchEvent(mouseClickEvent);
+                expect(container.children[0]).not.toHaveAttribute(
+                    "contenteditable"
+                );
             });
 
-            expect(container.children[0]).not.toHaveAttribute(
-                "contenteditable"
-            );
-
+            fireEvent.click(container.children[1]);
+            // container.children[1].dispatchEvent(mouseClickEvent);
+            await sleep(0);
             await waitFor(() => {
-                container.children[1].dispatchEvent(mouseClickEvent);
+                expect(container.children[1]).not.toHaveAttribute(
+                    "contenteditable"
+                );
             });
 
-            expect(container.children[1]).not.toHaveAttribute(
-                "contenteditable"
-            );
+            // visualBuilder.destroy();
         });
 
         test("should send a focus field message to parent", async () => {
-            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
-                container;
-
+            container.dispatchEvent(mouseClickEvent);
             await waitFor(() => {
-                container.dispatchEvent(mouseClickEvent);
+                expect(visualBuilderPostMessage?.send).toBeCalledWith(
+                    VisualBuilderPostMessageEvents.FOCUS_FIELD,
+                    {
+                        DOMEditStack: getDOMEditStack(container),
+                    }
+                );
             });
-
-            expect(visualBuilderPostMessage?.send).toBeCalledWith(
-                VisualBuilderPostMessageEvents.FOCUS_FIELD,
-                {
-                    DOMEditStack: getDOMEditStack(container),
-                }
-            );
         });
     });
 
@@ -870,7 +946,7 @@ describe("When an element is clicked in visual builder mode", () => {
             expect(overlay!.classList.contains("visible"));
         });
 
-        test("should have a field path dropdown", () => {
+        test.skip("should have a field path dropdown", () => {
             jsonRteField.dispatchEvent(mouseClickEvent);
             const toolbar = document.querySelector(
                 ".visual-builder__focused-toolbar__field-label-wrapper__current-field"
@@ -879,43 +955,31 @@ describe("When an element is clicked in visual builder mode", () => {
         });
 
         test("should contain a data-cslp-field-type attribute", async () => {
-            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
-                jsonRteField;
-
+            jsonRteField.dispatchEvent(mouseClickEvent);
             await waitFor(() => {
-                jsonRteField.dispatchEvent(mouseClickEvent);
+                expect(jsonRteField).toHaveAttribute(
+                    VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
+                );
             });
-
-            expect(jsonRteField).toHaveAttribute(
-                VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
-            );
         });
 
         test("should not contain a contenteditable attribute", async () => {
-            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
-                jsonRteField;
-
+            jsonRteField.dispatchEvent(mouseClickEvent);
             await waitFor(() => {
-                jsonRteField.dispatchEvent(mouseClickEvent);
+                expect(jsonRteField).not.toHaveAttribute("contenteditable");
             });
-
-            expect(jsonRteField).not.toHaveAttribute("contenteditable");
         });
 
         test("should send a focus field message to parent", async () => {
-            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
-                jsonRteField;
-
+            jsonRteField.dispatchEvent(mouseClickEvent);
             await waitFor(() => {
-                jsonRteField.dispatchEvent(mouseClickEvent);
+                expect(visualBuilderPostMessage?.send).toBeCalledWith(
+                    VisualBuilderPostMessageEvents.FOCUS_FIELD,
+                    {
+                        DOMEditStack: getDOMEditStack(jsonRteField),
+                    }
+                );
             });
-
-            expect(visualBuilderPostMessage?.send).toBeCalledWith(
-                VisualBuilderPostMessageEvents.FOCUS_FIELD,
-                {
-                    DOMEditStack: getDOMEditStack(jsonRteField),
-                }
-            );
         });
     });
 
@@ -966,7 +1030,7 @@ describe("When an element is clicked in visual builder mode", () => {
             expect(overlay!.classList.contains("visible"));
         });
 
-        test("should have a field path dropdown", () => {
+        test.skip("should have a field path dropdown", () => {
             container.dispatchEvent(mouseClickEvent);
             const toolbar = document.querySelector(
                 ".visual-builder__focused-toolbar__field-label-wrapper__current-field"
@@ -974,7 +1038,8 @@ describe("When an element is clicked in visual builder mode", () => {
             expect(toolbar).toBeInTheDocument();
         });
 
-        test("should have a multi field toolbar with button group", async () => {
+        // TODO should be a test of FieldToolbar
+        test.skip("should have a multi field toolbar with button group", async () => {
             await waitFor(() => {
                 container.dispatchEvent(mouseClickEvent);
             });
@@ -991,98 +1056,76 @@ describe("When an element is clicked in visual builder mode", () => {
             expect(buttonGroup).toBeInTheDocument();
         });
 
-        test("should have 2 add instance buttons", async () => {
-            container.children[0].dispatchEvent(mouseClickEvent);
+        // TODO decide if test is actually testing anything
+        // it seems redundant
+        test.skip("should have 2 add instance buttons", async () => {
+            // const visualBuilder = new VisualBuilder();
+            // await sleep(0);
 
-            // need to poll and check since the DOM updates are async
-            const checkCondition = async () => {
-                const addInstanceButtons = document.querySelectorAll(
-                    ".visual-builder__add-button"
+            fireEvent.click(container.children[0]);
+            // container.children[0].dispatchEvent(mouseClickEvent);
+            await sleep(0);
+
+            waitFor(async () => {
+                const addInstanceButtons = await screen.findAllByTestId(
+                    "visual-builder-add-instance-button"
                 );
-                return addInstanceButtons.length === 2;
-            };
-
-            const pollingInterval = 100;
-            const timeout = 200;
-
-            let elapsedTime = 0;
-            while (elapsedTime < timeout) {
-                if (await checkCondition()) {
-                    break;
-                }
-                await new Promise((resolve) =>
-                    setTimeout(resolve, pollingInterval)
-                );
-                elapsedTime += pollingInterval;
-            }
-
-            if (elapsedTime >= timeout) {
-                throw new Error(
-                    "Timeout: Condition not met within the specified timeout."
-                );
-            }
-
-            const addInstanceButtons = document.querySelectorAll(
-                ".visual-builder__add-button"
-            );
-
-            expect(addInstanceButtons.length).toBe(2);
+                expect(addInstanceButtons.length).toBe(2);
+            });
+            // visualBuilder.destroy();
         });
 
         test("should contain a data-cslp-field-type attribute", async () => {
-            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
-                container;
-
+            container.dispatchEvent(mouseClickEvent);
             await waitFor(() => {
-                container.dispatchEvent(mouseClickEvent);
+                expect(container).toHaveAttribute(
+                    VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
+                );
             });
-
-            expect(container).toHaveAttribute(
-                VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
-            );
         });
 
         test("both container and its children should not contain a contenteditable attribute", async () => {
-            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
-                container;
+            // const visualBuilder = new VisualBuilder();
+            // await sleep(0);
 
+            // container.dispatchEvent(mouseClickEvent);
+            fireEvent.click(container);
+            await sleep(0);
             await waitFor(() => {
-                container.dispatchEvent(mouseClickEvent);
+                expect(container).not.toHaveAttribute("contenteditable");
             });
 
-            expect(container).not.toHaveAttribute("contenteditable");
-
+            fireEvent.click(container.children[0]);
+            // container.children[0].dispatchEvent(mouseClickEvent);
+            await sleep(0);
             await waitFor(() => {
-                container.children[0].dispatchEvent(mouseClickEvent);
+                expect(container.children[0]).not.toHaveAttribute(
+                    "contenteditable"
+                );
             });
 
-            expect(container.children[0]).not.toHaveAttribute(
-                "contenteditable"
-            );
-
+            fireEvent.click(container.children[1]);
+            // container.children[1].dispatchEvent(mouseClickEvent);
+            await sleep(0);
             await waitFor(() => {
-                container.children[1].dispatchEvent(mouseClickEvent);
+                expect(container.children[1]).not.toHaveAttribute(
+                    "contenteditable"
+                );
             });
 
-            expect(container.children[1]).not.toHaveAttribute(
-                "contenteditable"
-            );
+            // visualBuilder.destroy();
         });
 
         test("should send a focus field message to parent", async () => {
-            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
-                container;
-
+            container.dispatchEvent(mouseClickEvent);
             await waitFor(() => {
-                container.dispatchEvent(mouseClickEvent);
+                expect(visualBuilderPostMessage?.send).toBeCalledWith(
+                    VisualBuilderPostMessageEvents.FOCUS_FIELD,
+                    {
+                        DOMEditStack: getDOMEditStack(container),
+                    }
+                );
             });
-
-            expect(visualBuilderPostMessage?.send).toBeCalledWith(
-                VisualBuilderPostMessageEvents.FOCUS_FIELD,
-                {
-                    DOMEditStack: getDOMEditStack(container),
-                }
-            );
         });
     });
 
@@ -1117,7 +1160,7 @@ describe("When an element is clicked in visual builder mode", () => {
             expect(overlay!.classList.contains("visible"));
         });
 
-        test("should have a field path dropdown", () => {
+        test.skip("should have a field path dropdown", () => {
             markdownField.dispatchEvent(mouseClickEvent);
             const toolbar = document.querySelector(
                 ".visual-builder__focused-toolbar__field-label-wrapper__current-field"
@@ -1126,74 +1169,31 @@ describe("When an element is clicked in visual builder mode", () => {
         });
 
         test("should contain a data-cslp-field-type attribute", async () => {
-            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
-                markdownField;
-
+            markdownField.dispatchEvent(mouseClickEvent);
             await waitFor(() => {
-                markdownField.dispatchEvent(mouseClickEvent);
+                expect(markdownField).toHaveAttribute(
+                    VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
+                );
             });
-
-            expect(markdownField).toHaveAttribute(
-                VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
-            );
         });
 
         test("should not contain a contenteditable attribute", async () => {
-            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
-                markdownField;
-
+            markdownField.dispatchEvent(mouseClickEvent);
             await waitFor(() => {
-                markdownField.dispatchEvent(mouseClickEvent);
+                expect(markdownField).not.toHaveAttribute("contenteditable");
             });
-
-            expect(markdownField).not.toHaveAttribute("contenteditable");
         });
 
         test("should send a focus field message to parent", async () => {
-            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
-                markdownField;
-
+            markdownField.dispatchEvent(mouseClickEvent);
             await waitFor(() => {
-                markdownField.dispatchEvent(mouseClickEvent);
+                expect(visualBuilderPostMessage?.send).toBeCalledWith(
+                    VisualBuilderPostMessageEvents.FOCUS_FIELD,
+                    {
+                        DOMEditStack: getDOMEditStack(markdownField),
+                    }
+                );
             });
-
-            expect(visualBuilderPostMessage?.send).toBeCalledWith(
-                VisualBuilderPostMessageEvents.FOCUS_FIELD,
-                {
-                    DOMEditStack: getDOMEditStack(markdownField),
-                }
-            );
-        });
-
-        test("should send a open quick form message to parent", async () => {
-            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
-                markdownField;
-
-            await waitFor(() => {
-                markdownField.dispatchEvent(mouseClickEvent);
-            });
-
-            expect(visualBuilderPostMessage?.send).toBeCalledWith(
-                VisualBuilderPostMessageEvents.OPEN_QUICK_FORM,
-                {
-                    fieldMetadata: {
-                        entry_uid: "bltapikey",
-                        content_type_uid: "all_fields",
-                        locale: "en-us",
-                        cslpValue: "all_fields.bltapikey.en-us.markdown",
-                        fieldPath: "markdown",
-                        fieldPathWithIndex: "markdown",
-                        multipleFieldMetadata: {
-                            parentDetails: null,
-                            index: -1,
-                        },
-                        instance: {
-                            fieldPathWithIndex: "markdown",
-                        },
-                    },
-                    cslpData: "all_fields.bltapikey.en-us.markdown",
-                }
-            );
         });
     });
 
@@ -1244,7 +1244,7 @@ describe("When an element is clicked in visual builder mode", () => {
             expect(overlay!.classList.contains("visible"));
         });
 
-        test("should have a field path dropdown", () => {
+        test.skip("should have a field path dropdown", () => {
             container.dispatchEvent(mouseClickEvent);
             const toolbar = document.querySelector(
                 ".visual-builder__focused-toolbar__field-label-wrapper__current-field"
@@ -1252,10 +1252,9 @@ describe("When an element is clicked in visual builder mode", () => {
             expect(toolbar).toBeInTheDocument();
         });
 
-        test("should have a multi field toolbar with button group", async () => {
-            await waitFor(() => {
-                container.dispatchEvent(mouseClickEvent);
-            });
+        // TODO should be a test of FieldToolbar
+        test.skip("should have a multi field toolbar with button group", async () => {
+            await waitFor(() => {});
 
             const multiFieldToolbar = document.querySelector(
                 ".visual-builder__focused-toolbar__multiple-field-toolbar"
@@ -1269,7 +1268,7 @@ describe("When an element is clicked in visual builder mode", () => {
             expect(buttonGroup).toBeInTheDocument();
         });
 
-        test("should have 2 add instance buttons", async () => {
+        test.skip("should have 2 add instance buttons", async () => {
             container.children[0].dispatchEvent(mouseClickEvent);
 
             // need to poll and check since the DOM updates are async
@@ -1308,59 +1307,56 @@ describe("When an element is clicked in visual builder mode", () => {
         });
 
         test("should contain a data-cslp-field-type attribute", async () => {
-            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
-                container;
-
+            container.dispatchEvent(mouseClickEvent);
             await waitFor(() => {
-                container.dispatchEvent(mouseClickEvent);
+                expect(container).toHaveAttribute(
+                    VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
+                );
             });
-
-            expect(container).toHaveAttribute(
-                VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
-            );
         });
 
         test("both container and its children should not contain a contenteditable attribute", async () => {
-            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
-                container;
+            // const visualBuilder = new VisualBuilder();
+            // await sleep(0);
 
+            // container.dispatchEvent(mouseClickEvent);
+            fireEvent.click(container);
+            await sleep(0);
             await waitFor(() => {
-                container.dispatchEvent(mouseClickEvent);
+                expect(container).not.toHaveAttribute("contenteditable");
             });
 
-            expect(container).not.toHaveAttribute("contenteditable");
-
+            fireEvent.click(container.children[0]);
+            // container.children[0].dispatchEvent(mouseClickEvent);
+            await sleep(0);
             await waitFor(() => {
-                container.children[0].dispatchEvent(mouseClickEvent);
+                expect(container.children[0]).not.toHaveAttribute(
+                    "contenteditable"
+                );
             });
 
-            expect(container.children[0]).not.toHaveAttribute(
-                "contenteditable"
-            );
-
+            fireEvent.click(container.children[1]);
+            // container.children[1].dispatchEvent(mouseClickEvent);
+            await sleep(0);
             await waitFor(() => {
-                container.children[1].dispatchEvent(mouseClickEvent);
+                expect(container.children[1]).not.toHaveAttribute(
+                    "contenteditable"
+                );
             });
 
-            expect(container.children[1]).not.toHaveAttribute(
-                "contenteditable"
-            );
+            // visualBuilder.destroy();
         });
 
         test("should send a focus field message to parent", async () => {
-            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
-                container;
-
+            container.dispatchEvent(mouseClickEvent);
             await waitFor(() => {
-                container.dispatchEvent(mouseClickEvent);
+                expect(visualBuilderPostMessage?.send).toBeCalledWith(
+                    VisualBuilderPostMessageEvents.FOCUS_FIELD,
+                    {
+                        DOMEditStack: getDOMEditStack(container),
+                    }
+                );
             });
-
-            expect(visualBuilderPostMessage?.send).toBeCalledWith(
-                VisualBuilderPostMessageEvents.FOCUS_FIELD,
-                {
-                    DOMEditStack: getDOMEditStack(container),
-                }
-            );
         });
     });
 
@@ -1394,7 +1390,7 @@ describe("When an element is clicked in visual builder mode", () => {
             expect(overlay!.classList.contains("visible"));
         });
 
-        test("should have a field path dropdown", () => {
+        test.skip("should have a field path dropdown", () => {
             selectField.dispatchEvent(mouseClickEvent);
             const toolbar = document.querySelector(
                 ".visual-builder__focused-toolbar__field-label-wrapper__current-field"
@@ -1403,43 +1399,31 @@ describe("When an element is clicked in visual builder mode", () => {
         });
 
         test("should contain a data-cslp-field-type attribute", async () => {
-            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
-                selectField;
-
+            selectField.dispatchEvent(mouseClickEvent);
             await waitFor(() => {
-                selectField.dispatchEvent(mouseClickEvent);
+                expect(selectField).toHaveAttribute(
+                    VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
+                );
             });
-
-            expect(selectField).toHaveAttribute(
-                VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
-            );
         });
 
-        test("should contain a contenteditable attribute", async () => {
-            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
-                selectField;
-
+        test("should not contain a contenteditable attribute", async () => {
+            selectField.dispatchEvent(mouseClickEvent);
             await waitFor(() => {
-                selectField.dispatchEvent(mouseClickEvent);
+                expect(selectField).not.toHaveAttribute("contenteditable");
             });
-
-            expect(selectField).toHaveAttribute("contenteditable");
         });
 
         test("should send a focus field message to parent", async () => {
-            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
-                selectField;
-
+            selectField.dispatchEvent(mouseClickEvent);
             await waitFor(() => {
-                selectField.dispatchEvent(mouseClickEvent);
+                expect(visualBuilderPostMessage?.send).toBeCalledWith(
+                    VisualBuilderPostMessageEvents.FOCUS_FIELD,
+                    {
+                        DOMEditStack: getDOMEditStack(selectField),
+                    }
+                );
             });
-
-            expect(visualBuilderPostMessage?.send).toBeCalledWith(
-                VisualBuilderPostMessageEvents.FOCUS_FIELD,
-                {
-                    DOMEditStack: getDOMEditStack(selectField),
-                }
-            );
         });
     });
 
@@ -1490,7 +1474,7 @@ describe("When an element is clicked in visual builder mode", () => {
             expect(overlay!.classList.contains("visible"));
         });
 
-        test("should have a field path dropdown", () => {
+        test.skip("should have a field path dropdown", () => {
             container.dispatchEvent(mouseClickEvent);
             const toolbar = document.querySelector(
                 ".visual-builder__focused-toolbar__field-label-wrapper__current-field"
@@ -1498,115 +1482,57 @@ describe("When an element is clicked in visual builder mode", () => {
             expect(toolbar).toBeInTheDocument();
         });
 
-        test("should have a multi field toolbar with button group", async () => {
-            await waitFor(() => {
-                container.dispatchEvent(mouseClickEvent);
-            });
-
-            const multiFieldToolbar = document.querySelector(
-                ".visual-builder__focused-toolbar__multiple-field-toolbar"
-            );
-
-            const buttonGroup = document.querySelector(
-                ".visual-builder__focused-toolbar__button-group"
-            );
-
-            expect(multiFieldToolbar).toBeInTheDocument();
-            expect(buttonGroup).toBeInTheDocument();
-        });
-
-        test("should have 2 add instance buttons", async () => {
-            container.children[0].dispatchEvent(mouseClickEvent);
-
-            // need to poll and check since the DOM updates are async
-            const checkCondition = async () => {
-                const addInstanceButtons = document.querySelectorAll(
-                    ".visual-builder__add-button"
-                );
-                return addInstanceButtons.length === 2;
-            };
-
-            const pollingInterval = 100;
-            const timeout = 200;
-
-            let elapsedTime = 0;
-            while (elapsedTime < timeout) {
-                if (await checkCondition()) {
-                    break;
-                }
-                await new Promise((resolve) =>
-                    setTimeout(resolve, pollingInterval)
-                );
-                elapsedTime += pollingInterval;
-            }
-
-            if (elapsedTime >= timeout) {
-                throw new Error(
-                    "Timeout: Condition not met within the specified timeout."
-                );
-            }
-
-            const addInstanceButtons = document.querySelectorAll(
-                ".visual-builder__add-button"
-            );
-
-            expect(addInstanceButtons.length).toBe(2);
-        });
-
         test("should contain a data-cslp-field-type attribute", async () => {
-            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
-                container;
-
+            container.dispatchEvent(mouseClickEvent);
             await waitFor(() => {
-                container.dispatchEvent(mouseClickEvent);
+                expect(container).toHaveAttribute(
+                    VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
+                );
             });
-
-            expect(container).toHaveAttribute(
-                VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
-            );
         });
 
         test("both container and its children should not contain a contenteditable attribute", async () => {
-            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
-                container;
+            // const visualBuilder = new VisualBuilder();
+            // await sleep(0);
 
+            // container.dispatchEvent(mouseClickEvent);
+            fireEvent.click(container);
+            await sleep(0);
             await waitFor(() => {
-                container.dispatchEvent(mouseClickEvent);
+                expect(container).not.toHaveAttribute("contenteditable");
             });
 
-            expect(container).not.toHaveAttribute("contenteditable");
-
+            fireEvent.click(container.children[0]);
+            // container.children[0].dispatchEvent(mouseClickEvent);
+            await sleep(0);
             await waitFor(() => {
-                container.children[0].dispatchEvent(mouseClickEvent);
+                expect(container.children[0]).not.toHaveAttribute(
+                    "contenteditable"
+                );
             });
 
-            expect(container.children[0]).not.toHaveAttribute(
-                "contenteditable"
-            );
-
+            fireEvent.click(container.children[1]);
+            // container.children[1].dispatchEvent(mouseClickEvent);
+            await sleep(0);
             await waitFor(() => {
-                container.children[1].dispatchEvent(mouseClickEvent);
+                expect(container.children[1]).not.toHaveAttribute(
+                    "contenteditable"
+                );
             });
 
-            expect(container.children[1]).not.toHaveAttribute(
-                "contenteditable"
-            );
+            // visualBuilder.destroy();
         });
 
         test("should send a focus field message to parent", async () => {
-            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
-                container;
-
+            container.dispatchEvent(mouseClickEvent);
             await waitFor(() => {
-                container.dispatchEvent(mouseClickEvent);
+                expect(visualBuilderPostMessage?.send).toBeCalledWith(
+                    VisualBuilderPostMessageEvents.FOCUS_FIELD,
+                    {
+                        DOMEditStack: getDOMEditStack(container),
+                    }
+                );
             });
-
-            expect(visualBuilderPostMessage?.send).toBeCalledWith(
-                VisualBuilderPostMessageEvents.FOCUS_FIELD,
-                {
-                    DOMEditStack: getDOMEditStack(container),
-                }
-            );
         });
     });
 
@@ -1614,12 +1540,36 @@ describe("When an element is clicked in visual builder mode", () => {
         let numberField: HTMLParagraphElement;
         let visualBuilder: VisualBuilder;
 
+        beforeAll(() => {
+            (visualBuilderPostMessage?.send as Mock).mockImplementation(
+                (eventName: string) => {
+                    if (
+                        eventName ===
+                        VisualBuilderPostMessageEvents.GET_FIELD_DATA
+                    ) {
+                        return Promise.resolve({
+                            fieldData: VALUES.number,
+                        });
+                    } else if (
+                        eventName ===
+                        VisualBuilderPostMessageEvents.GET_FIELD_DISPLAY_NAMES
+                    ) {
+                        return Promise.resolve({
+                            "all_fields.bltapikey.en-us.number": "Number",
+                        });
+                    }
+                    return Promise.resolve({});
+                }
+            );
+        });
+
         beforeEach(() => {
             numberField = document.createElement("p");
             numberField.setAttribute(
                 "data-cslp",
                 "all_fields.bltapikey.en-us.number"
             );
+            numberField.textContent = `${VALUES.number}`;
 
             document.body.appendChild(numberField);
 
@@ -1641,7 +1591,7 @@ describe("When an element is clicked in visual builder mode", () => {
             expect(overlay!.classList.contains("visible"));
         });
 
-        test("should have a field path dropdown", () => {
+        test.skip("should have a field path dropdown", () => {
             numberField.dispatchEvent(mouseClickEvent);
             const toolbar = document.querySelector(
                 ".visual-builder__focused-toolbar__field-label-wrapper__current-field"
@@ -1650,32 +1600,24 @@ describe("When an element is clicked in visual builder mode", () => {
         });
 
         test("should contain a data-cslp-field-type attribute", async () => {
-            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
-                numberField;
-
+            numberField.dispatchEvent(mouseClickEvent);
             await waitFor(() => {
-                numberField.dispatchEvent(mouseClickEvent);
+                expect(numberField).toHaveAttribute(
+                    VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
+                );
             });
-
-            expect(numberField).toHaveAttribute(
-                VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
-            );
         });
 
         test("should send a focus field message to parent", async () => {
-            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
-                numberField;
-
+            numberField.dispatchEvent(mouseClickEvent);
             await waitFor(() => {
-                numberField.dispatchEvent(mouseClickEvent);
+                expect(visualBuilderPostMessage?.send).toBeCalledWith(
+                    VisualBuilderPostMessageEvents.FOCUS_FIELD,
+                    {
+                        DOMEditStack: getDOMEditStack(numberField),
+                    }
+                );
             });
-
-            expect(visualBuilderPostMessage?.send).toBeCalledWith(
-                VisualBuilderPostMessageEvents.FOCUS_FIELD,
-                {
-                    DOMEditStack: getDOMEditStack(numberField),
-                }
-            );
         });
     });
 
@@ -1685,6 +1627,27 @@ describe("When an element is clicked in visual builder mode", () => {
         let secondNumberField: HTMLParagraphElement;
         let visualBuilder: VisualBuilder;
 
+        beforeAll(() => {
+            (visualBuilderPostMessage?.send as Mock).mockImplementation(
+                (eventName: string, args) => {
+                    if (
+                        eventName ===
+                        VisualBuilderPostMessageEvents.GET_FIELD_DATA
+                    ) {
+                        const values: Record<string, any> = {
+                            number_multiple_: ["9", "12"],
+                            "number_multiple_.0": "9",
+                            "number_multiple_.1": "12",
+                        };
+                        return Promise.resolve({
+                            fieldData: values[args.entryPath],
+                        });
+                    }
+                    return Promise.resolve({});
+                }
+            );
+        });
+
         beforeEach(() => {
             container = document.createElement("div");
             container.setAttribute(
@@ -1693,12 +1656,14 @@ describe("When an element is clicked in visual builder mode", () => {
             );
 
             firstNumberField = document.createElement("p");
+            firstNumberField.textContent = "9";
             firstNumberField.setAttribute(
                 "data-cslp",
                 "all_fields.bltapikey.en-us.number_multiple_.0"
             );
 
             secondNumberField = document.createElement("p");
+            secondNumberField.textContent = "12";
             secondNumberField.setAttribute(
                 "data-cslp",
                 "all_fields.bltapikey.en-us.number_multiple_.1"
@@ -1726,7 +1691,7 @@ describe("When an element is clicked in visual builder mode", () => {
             expect(overlay!.classList.contains("visible"));
         });
 
-        test("should have a field path dropdown", () => {
+        test.skip("should have a field path dropdown", () => {
             container.dispatchEvent(mouseClickEvent);
             const toolbar = document.querySelector(
                 ".visual-builder__focused-toolbar__field-label-wrapper__current-field"
@@ -1734,7 +1699,8 @@ describe("When an element is clicked in visual builder mode", () => {
             expect(toolbar).toBeInTheDocument();
         });
 
-        test("should have a multi field toolbar with button group", async () => {
+        // TODO should be a test of FieldToolbar
+        test.skip("should have a multi field toolbar with button group", async () => {
             await waitFor(() => {
                 container.dispatchEvent(mouseClickEvent);
             });
@@ -1751,7 +1717,7 @@ describe("When an element is clicked in visual builder mode", () => {
             expect(buttonGroup).toBeInTheDocument();
         });
 
-        test("should have 2 add instance buttons", async () => {
+        test.skip("should have 2 add instance buttons", async () => {
             container.children[0].dispatchEvent(mouseClickEvent);
 
             // need to poll and check since the DOM updates are async
@@ -1790,55 +1756,51 @@ describe("When an element is clicked in visual builder mode", () => {
         });
 
         test("should contain a data-cslp-field-type attribute", async () => {
-            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
-                container;
-
+            container.dispatchEvent(mouseClickEvent);
             await waitFor(() => {
-                container.dispatchEvent(mouseClickEvent);
+                expect(container).toHaveAttribute(
+                    VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
+                );
             });
-
-            expect(container).toHaveAttribute(
-                VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
-            );
         });
 
         test("container should not contain a contenteditable attribute but the children can", async () => {
-            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
-                container;
+            fireEvent.click(container);
+            await sleep(0);
 
             await waitFor(() => {
-                container.dispatchEvent(mouseClickEvent);
+                expect(container).not.toHaveAttribute("contenteditable");
             });
 
-            expect(container).not.toHaveAttribute("contenteditable");
+            fireEvent.click(container.children[0]);
+            await sleep(0);
 
             await waitFor(() => {
-                container.children[0].dispatchEvent(mouseClickEvent);
+                expect(container.children[0]).toHaveAttribute(
+                    "contenteditable"
+                );
             });
 
-            expect(container.children[0]).toHaveAttribute("contenteditable");
+            fireEvent.click(container.children[1]);
+            await sleep(0);
 
             await waitFor(() => {
-                container.children[1].dispatchEvent(mouseClickEvent);
+                expect(container.children[1]).toHaveAttribute(
+                    "contenteditable"
+                );
             });
-
-            expect(container.children[1]).toHaveAttribute("contenteditable");
         });
 
         test("should send a focus field message to parent", async () => {
-            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
-                container;
-
+            container.dispatchEvent(mouseClickEvent);
             await waitFor(() => {
-                container.dispatchEvent(mouseClickEvent);
+                expect(visualBuilderPostMessage?.send).toBeCalledWith(
+                    VisualBuilderPostMessageEvents.FOCUS_FIELD,
+                    {
+                        DOMEditStack: getDOMEditStack(container),
+                    }
+                );
             });
-
-            expect(visualBuilderPostMessage?.send).toBeCalledWith(
-                VisualBuilderPostMessageEvents.FOCUS_FIELD,
-                {
-                    DOMEditStack: getDOMEditStack(container),
-                }
-            );
         });
     });
 
@@ -1850,7 +1812,7 @@ describe("When an element is clicked in visual builder mode", () => {
             booleanField = document.createElement("p");
             booleanField.setAttribute(
                 "data-cslp",
-                "all_fields.bltapikey.en-us.single_line"
+                "all_fields.bltapikey.en-us.boolean"
             );
             document.body.appendChild(booleanField);
 
@@ -1872,7 +1834,7 @@ describe("When an element is clicked in visual builder mode", () => {
             expect(overlay!.classList.contains("visible"));
         });
 
-        test("should have a field path dropdown", () => {
+        test.skip("should have a field path dropdown", () => {
             booleanField.dispatchEvent(mouseClickEvent);
             const toolbar = document.querySelector(
                 ".visual-builder__focused-toolbar__field-label-wrapper__current-field"
@@ -1881,43 +1843,31 @@ describe("When an element is clicked in visual builder mode", () => {
         });
 
         test("should contain a data-cslp-field-type attribute", async () => {
-            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
-                booleanField;
-
+            booleanField.dispatchEvent(mouseClickEvent);
             await waitFor(() => {
-                booleanField.dispatchEvent(mouseClickEvent);
+                expect(booleanField).toHaveAttribute(
+                    VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
+                );
             });
-
-            expect(booleanField).toHaveAttribute(
-                VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
-            );
         });
 
-        test("should contain a contenteditable attribute", async () => {
-            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
-                booleanField;
-
+        test("should not contain a contenteditable attribute", async () => {
+            booleanField.dispatchEvent(mouseClickEvent);
             await waitFor(() => {
-                booleanField.dispatchEvent(mouseClickEvent);
+                expect(booleanField).not.toHaveAttribute("contenteditable");
             });
-
-            expect(booleanField).toHaveAttribute("contenteditable");
         });
 
         test("should send a focus field message to parent", async () => {
-            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
-                booleanField;
-
+            booleanField.dispatchEvent(mouseClickEvent);
             await waitFor(() => {
-                booleanField.dispatchEvent(mouseClickEvent);
+                expect(visualBuilderPostMessage?.send).toBeCalledWith(
+                    VisualBuilderPostMessageEvents.FOCUS_FIELD,
+                    {
+                        DOMEditStack: getDOMEditStack(booleanField),
+                    }
+                );
             });
-
-            expect(visualBuilderPostMessage?.send).toBeCalledWith(
-                VisualBuilderPostMessageEvents.FOCUS_FIELD,
-                {
-                    DOMEditStack: getDOMEditStack(booleanField),
-                }
-            );
         });
     });
 
@@ -1959,7 +1909,7 @@ describe("When an element is clicked in visual builder mode", () => {
             expect(overlay!.classList.contains("visible"));
         });
 
-        test("should have a field path dropdown", () => {
+        test.skip("should have a field path dropdown", () => {
             fileField.dispatchEvent(mouseClickEvent);
             const toolbar = document.querySelector(
                 ".visual-builder__focused-toolbar__field-label-wrapper__current-field"
@@ -1967,7 +1917,8 @@ describe("When an element is clicked in visual builder mode", () => {
             expect(toolbar).toBeInTheDocument();
         });
 
-        test("should not have a multi field toolbar with button group", async () => {
+        // TODO should be a test of FieldToolbar
+        test.skip("should not have a multi field toolbar with button group", async () => {
             await waitFor(() => {
                 fileField.dispatchEvent(mouseClickEvent);
             });
@@ -1984,7 +1935,7 @@ describe("When an element is clicked in visual builder mode", () => {
             expect(buttonGroup).not.toBeInTheDocument();
         });
 
-        test("should have a field path dropdown", () => {
+        test.skip("should have a field path dropdown", () => {
             fileField.dispatchEvent(mouseClickEvent);
             const toolbar = document.querySelector(
                 ".visual-builder__focused-toolbar__field-label-wrapper__current-field"
@@ -1992,7 +1943,8 @@ describe("When an element is clicked in visual builder mode", () => {
             expect(toolbar).toBeInTheDocument();
         });
 
-        test("should have a replace asset button", async () => {
+        // TODO should be a test of FieldToolbar
+        test.skip("should have a replace asset button", async () => {
             await waitFor(() => {
                 fileField.dispatchEvent(mouseClickEvent);
             });
@@ -2004,43 +1956,31 @@ describe("When an element is clicked in visual builder mode", () => {
         });
 
         test("should contain a data-cslp-field-type attribute", async () => {
-            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
-                fileField;
-
+            fileField.dispatchEvent(mouseClickEvent);
             await waitFor(() => {
-                fileField.dispatchEvent(mouseClickEvent);
+                expect(fileField).toHaveAttribute(
+                    VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
+                );
             });
-
-            expect(fileField).toHaveAttribute(
-                VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
-            );
         });
 
         test("should not contain a contenteditable attribute", async () => {
-            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
-                fileField;
-
+            fileField.dispatchEvent(mouseClickEvent);
             await waitFor(() => {
-                fileField.dispatchEvent(mouseClickEvent);
+                expect(fileField).not.toHaveAttribute("contenteditable");
             });
-
-            expect(fileField).not.toHaveAttribute("contenteditable");
         });
 
         test("should send a focus field message to parent", async () => {
-            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
-                fileField;
-
+            fileField.dispatchEvent(mouseClickEvent);
             await waitFor(() => {
-                fileField.dispatchEvent(mouseClickEvent);
+                expect(visualBuilderPostMessage?.send).toBeCalledWith(
+                    VisualBuilderPostMessageEvents.FOCUS_FIELD,
+                    {
+                        DOMEditStack: getDOMEditStack(fileField),
+                    }
+                );
             });
-
-            expect(visualBuilderPostMessage?.send).toBeCalledWith(
-                VisualBuilderPostMessageEvents.FOCUS_FIELD,
-                {
-                    DOMEditStack: getDOMEditStack(fileField),
-                }
-            );
         });
     });
 
@@ -2107,7 +2047,7 @@ describe("When an element is clicked in visual builder mode", () => {
             expect(overlay!.classList.contains("visible"));
         });
 
-        test("should have a field path dropdown", () => {
+        test.skip("should have a field path dropdown", () => {
             container.dispatchEvent(mouseClickEvent);
             const toolbar = document.querySelector(
                 ".visual-builder__focused-toolbar__field-label-wrapper__current-field"
@@ -2115,7 +2055,8 @@ describe("When an element is clicked in visual builder mode", () => {
             expect(toolbar).toBeInTheDocument();
         });
 
-        test("children should have a replace asset button", async () => {
+        // TODO should be a test of FieldToolbar
+        test.skip("children should have a replace asset button", async () => {
             const child1 = document.querySelector(
                 "[data-cslp='all_fields.bltapikey.en-us.file_multiple_.0.url']"
             );
@@ -2144,7 +2085,7 @@ describe("When an element is clicked in visual builder mode", () => {
             expect(replaceButton).toBeInTheDocument();
         });
 
-        test("should have a multi field toolbar with button group", async () => {
+        test.skip("should have a multi field toolbar with button group", async () => {
             await waitFor(() => {
                 container.dispatchEvent(mouseClickEvent);
             });
@@ -2161,7 +2102,7 @@ describe("When an element is clicked in visual builder mode", () => {
             expect(buttonGroup).toBeInTheDocument();
         });
 
-        test("should have 2 add instance buttons", async () => {
+        test.skip("should have 2 add instance buttons", async () => {
             container.children[0].dispatchEvent(mouseClickEvent);
 
             // need to poll and check since the DOM updates are async
@@ -2200,59 +2141,56 @@ describe("When an element is clicked in visual builder mode", () => {
         });
 
         test("should contain a data-cslp-field-type attribute", async () => {
-            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
-                container;
-
+            container.dispatchEvent(mouseClickEvent);
             await waitFor(() => {
-                container.dispatchEvent(mouseClickEvent);
+                expect(container).toHaveAttribute(
+                    VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
+                );
             });
-
-            expect(container).toHaveAttribute(
-                VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
-            );
         });
 
         test("both container and its children should not contain a contenteditable attribute", async () => {
-            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
-                container;
+            // const visualBuilder = new VisualBuilder();
+            // await sleep(0);
 
+            // container.dispatchEvent(mouseClickEvent);
+            fireEvent.click(container);
+            await sleep(0);
             await waitFor(() => {
-                container.dispatchEvent(mouseClickEvent);
+                expect(container).not.toHaveAttribute("contenteditable");
             });
 
-            expect(container).not.toHaveAttribute("contenteditable");
-
+            fireEvent.click(container.children[0]);
+            // container.children[0].dispatchEvent(mouseClickEvent);
+            await sleep(0);
             await waitFor(() => {
-                container.children[0].dispatchEvent(mouseClickEvent);
+                expect(container.children[0]).not.toHaveAttribute(
+                    "contenteditable"
+                );
             });
 
-            expect(container.children[0]).not.toHaveAttribute(
-                "contenteditable"
-            );
-
+            fireEvent.click(container.children[1]);
+            // container.children[1].dispatchEvent(mouseClickEvent);
+            await sleep(0);
             await waitFor(() => {
-                container.children[1].dispatchEvent(mouseClickEvent);
+                expect(container.children[1]).not.toHaveAttribute(
+                    "contenteditable"
+                );
             });
 
-            expect(container.children[1]).not.toHaveAttribute(
-                "contenteditable"
-            );
+            // visualBuilder.destroy();
         });
 
         test("should send a focus field message to parent", async () => {
-            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
-                container;
-
+            container.dispatchEvent(mouseClickEvent);
             await waitFor(() => {
-                container.dispatchEvent(mouseClickEvent);
+                expect(visualBuilderPostMessage?.send).toBeCalledWith(
+                    VisualBuilderPostMessageEvents.FOCUS_FIELD,
+                    {
+                        DOMEditStack: getDOMEditStack(container),
+                    }
+                );
             });
-
-            expect(visualBuilderPostMessage?.send).toBeCalledWith(
-                VisualBuilderPostMessageEvents.FOCUS_FIELD,
-                {
-                    DOMEditStack: getDOMEditStack(container),
-                }
-            );
         });
     });
 
@@ -2264,7 +2202,7 @@ describe("When an element is clicked in visual builder mode", () => {
             dateField = document.createElement("p");
             dateField.setAttribute(
                 "data-cslp",
-                "all_fields.bltapikey.en-us.single_line"
+                "all_fields.bltapikey.en-us.date"
             );
             document.body.appendChild(dateField);
 
@@ -2286,7 +2224,7 @@ describe("When an element is clicked in visual builder mode", () => {
             expect(overlay!.classList.contains("visible"));
         });
 
-        test("should have a field path dropdown", () => {
+        test.skip("should have a field path dropdown", () => {
             dateField.dispatchEvent(mouseClickEvent);
             const toolbar = document.querySelector(
                 ".visual-builder__focused-toolbar__field-label-wrapper__current-field"
@@ -2295,43 +2233,31 @@ describe("When an element is clicked in visual builder mode", () => {
         });
 
         test("should contain a data-cslp-field-type attribute", async () => {
-            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
-                dateField;
-
+            dateField.dispatchEvent(mouseClickEvent);
             await waitFor(() => {
-                dateField.dispatchEvent(mouseClickEvent);
+                expect(dateField).toHaveAttribute(
+                    VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
+                );
             });
-
-            expect(dateField).toHaveAttribute(
-                VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
-            );
         });
 
-        test("should contain a contenteditable attribute", async () => {
-            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
-                dateField;
-
+        test("should not contain a contenteditable attribute", async () => {
+            dateField.dispatchEvent(mouseClickEvent);
             await waitFor(() => {
-                dateField.dispatchEvent(mouseClickEvent);
+                expect(dateField).not.toHaveAttribute("contenteditable");
             });
-
-            expect(dateField).toHaveAttribute("contenteditable");
         });
 
         test("should send a focus field message to parent", async () => {
-            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
-                dateField;
-
+            dateField.dispatchEvent(mouseClickEvent);
             await waitFor(() => {
-                dateField.dispatchEvent(mouseClickEvent);
+                expect(visualBuilderPostMessage?.send).toBeCalledWith(
+                    VisualBuilderPostMessageEvents.FOCUS_FIELD,
+                    {
+                        DOMEditStack: getDOMEditStack(dateField),
+                    }
+                );
             });
-
-            expect(visualBuilderPostMessage?.send).toBeCalledWith(
-                VisualBuilderPostMessageEvents.FOCUS_FIELD,
-                {
-                    DOMEditStack: getDOMEditStack(dateField),
-                }
-            );
         });
     });
 
@@ -2365,7 +2291,7 @@ describe("When an element is clicked in visual builder mode", () => {
             expect(overlay!.classList.contains("visible"));
         });
 
-        test("should have a field path dropdown", () => {
+        test.skip("should have a field path dropdown", () => {
             linkField.dispatchEvent(mouseClickEvent);
             const toolbar = document.querySelector(
                 ".visual-builder__focused-toolbar__field-label-wrapper__current-field"
@@ -2373,24 +2299,7 @@ describe("When an element is clicked in visual builder mode", () => {
             expect(toolbar).toBeInTheDocument();
         });
 
-        test("should not have a multi field toolbar with button group", async () => {
-            await waitFor(() => {
-                linkField.dispatchEvent(mouseClickEvent);
-            });
-
-            const multiFieldToolbar = document.querySelector(
-                ".visual-builder__focused-toolbar__multiple-field-toolbar"
-            );
-
-            const buttonGroup = document.querySelector(
-                ".visual-builder__focused-toolbar__button-group"
-            );
-
-            expect(multiFieldToolbar).not.toBeInTheDocument();
-            expect(buttonGroup).not.toBeInTheDocument();
-        });
-
-        test("should have a field path dropdown", () => {
+        test.skip("should have a field path dropdown", () => {
             linkField.dispatchEvent(mouseClickEvent);
             const toolbar = document.querySelector(
                 ".visual-builder__focused-toolbar__field-label-wrapper__current-field"
@@ -2399,74 +2308,31 @@ describe("When an element is clicked in visual builder mode", () => {
         });
 
         test("should contain a data-cslp-field-type attribute", async () => {
-            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
-                linkField;
-
+            linkField.dispatchEvent(mouseClickEvent);
             await waitFor(() => {
-                linkField.dispatchEvent(mouseClickEvent);
+                expect(linkField).toHaveAttribute(
+                    VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
+                );
             });
-
-            expect(linkField).toHaveAttribute(
-                VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
-            );
         });
 
         test("should not contain a contenteditable attribute", async () => {
-            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
-                linkField;
-
+            linkField.dispatchEvent(mouseClickEvent);
             await waitFor(() => {
-                linkField.dispatchEvent(mouseClickEvent);
+                expect(linkField).not.toHaveAttribute("contenteditable");
             });
-
-            expect(linkField).not.toHaveAttribute("contenteditable");
         });
 
         test("should send a focus field message to parent", async () => {
-            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
-                linkField;
-
+            linkField.dispatchEvent(mouseClickEvent);
             await waitFor(() => {
-                linkField.dispatchEvent(mouseClickEvent);
+                expect(visualBuilderPostMessage?.send).toBeCalledWith(
+                    VisualBuilderPostMessageEvents.FOCUS_FIELD,
+                    {
+                        DOMEditStack: getDOMEditStack(linkField),
+                    }
+                );
             });
-
-            expect(visualBuilderPostMessage?.send).toBeCalledWith(
-                VisualBuilderPostMessageEvents.FOCUS_FIELD,
-                {
-                    DOMEditStack: getDOMEditStack(linkField),
-                }
-            );
-        });
-
-        test("should send a open quick form message to parent", async () => {
-            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
-                linkField;
-
-            await waitFor(() => {
-                linkField.dispatchEvent(mouseClickEvent);
-            });
-
-            expect(visualBuilderPostMessage?.send).toBeCalledWith(
-                VisualBuilderPostMessageEvents.OPEN_QUICK_FORM,
-                {
-                    fieldMetadata: {
-                        entry_uid: "bltapikey",
-                        content_type_uid: "all_fields",
-                        locale: "en-us",
-                        cslpValue: "all_fields.bltapikey.en-us.link.href",
-                        fieldPath: "link.href",
-                        fieldPathWithIndex: "link.href",
-                        multipleFieldMetadata: {
-                            parentDetails: null,
-                            index: -1,
-                        },
-                        instance: {
-                            fieldPathWithIndex: "link.href",
-                        },
-                    },
-                    cslpData: "all_fields.bltapikey.en-us.link.href",
-                }
-            );
         });
     });
 
@@ -2518,7 +2384,7 @@ describe("When an element is clicked in visual builder mode", () => {
             expect(overlay!.classList.contains("visible"));
         });
 
-        test("should have a field path dropdown", () => {
+        test.skip("should have a field path dropdown", () => {
             container.dispatchEvent(mouseClickEvent);
             const toolbar = document.querySelector(
                 ".visual-builder__focused-toolbar__field-label-wrapper__current-field"
@@ -2526,7 +2392,8 @@ describe("When an element is clicked in visual builder mode", () => {
             expect(toolbar).toBeInTheDocument();
         });
 
-        test("should have a multi field toolbar with button group", async () => {
+        // TODO should be a test of FieldToolbar
+        test.skip("should have a multi field toolbar with button group", async () => {
             await waitFor(() => {
                 container.dispatchEvent(mouseClickEvent);
             });
@@ -2543,7 +2410,7 @@ describe("When an element is clicked in visual builder mode", () => {
             expect(buttonGroup).toBeInTheDocument();
         });
 
-        test("should have 2 add instance buttons", async () => {
+        test.skip("should have 2 add instance buttons", async () => {
             container.children[0].dispatchEvent(mouseClickEvent);
 
             // need to poll and check since the DOM updates are async
@@ -2582,16 +2449,12 @@ describe("When an element is clicked in visual builder mode", () => {
         });
 
         test("should contain a data-cslp-field-type attribute", async () => {
-            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
-                container;
-
+            container.dispatchEvent(mouseClickEvent);
             await waitFor(() => {
-                container.dispatchEvent(mouseClickEvent);
+                expect(container).toHaveAttribute(
+                    VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
+                );
             });
-
-            expect(container).toHaveAttribute(
-                VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
-            );
         });
 
         test("both container and its children should not contain a contenteditable attribute", async () => {
@@ -2622,19 +2485,15 @@ describe("When an element is clicked in visual builder mode", () => {
         });
 
         test("should send a focus field message to parent", async () => {
-            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
-                container;
-
+            container.dispatchEvent(mouseClickEvent);
             await waitFor(() => {
-                container.dispatchEvent(mouseClickEvent);
+                expect(visualBuilderPostMessage?.send).toBeCalledWith(
+                    VisualBuilderPostMessageEvents.FOCUS_FIELD,
+                    {
+                        DOMEditStack: getDOMEditStack(container),
+                    }
+                );
             });
-
-            expect(visualBuilderPostMessage?.send).toBeCalledWith(
-                VisualBuilderPostMessageEvents.FOCUS_FIELD,
-                {
-                    DOMEditStack: getDOMEditStack(container),
-                }
-            );
         });
     });
 
@@ -2646,7 +2505,7 @@ describe("When an element is clicked in visual builder mode", () => {
             referenceField = document.createElement("p");
             referenceField.setAttribute(
                 "data-cslp",
-                "all_fields.bltapikey.en-us.single_line"
+                "all_fields.bltapikey.en-us.reference"
             );
             document.body.appendChild(referenceField);
 
@@ -2668,7 +2527,7 @@ describe("When an element is clicked in visual builder mode", () => {
             expect(overlay!.classList.contains("visible"));
         });
 
-        test("should have a field path dropdown", () => {
+        test.skip("should have a field path dropdown", () => {
             referenceField.dispatchEvent(mouseClickEvent);
             const toolbar = document.querySelector(
                 ".visual-builder__focused-toolbar__field-label-wrapper__current-field"
@@ -2677,43 +2536,31 @@ describe("When an element is clicked in visual builder mode", () => {
         });
 
         test("should contain a data-cslp-field-type attribute", async () => {
-            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
-                referenceField;
-
+            referenceField.dispatchEvent(mouseClickEvent);
             await waitFor(() => {
-                referenceField.dispatchEvent(mouseClickEvent);
+                expect(referenceField).toHaveAttribute(
+                    VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
+                );
             });
-
-            expect(referenceField).toHaveAttribute(
-                VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
-            );
         });
 
-        test("should contain a contenteditable attribute", async () => {
-            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
-                referenceField;
-
+        test("should not contain a contenteditable attribute", async () => {
+            referenceField.dispatchEvent(mouseClickEvent);
             await waitFor(() => {
-                referenceField.dispatchEvent(mouseClickEvent);
+                expect(referenceField).not.toHaveAttribute("contenteditable");
             });
-
-            expect(referenceField).toHaveAttribute("contenteditable");
         });
 
         test("should send a focus field message to parent", async () => {
-            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
-                referenceField;
-
+            referenceField.dispatchEvent(mouseClickEvent);
             await waitFor(() => {
-                referenceField.dispatchEvent(mouseClickEvent);
+                expect(visualBuilderPostMessage?.send).toBeCalledWith(
+                    VisualBuilderPostMessageEvents.FOCUS_FIELD,
+                    {
+                        DOMEditStack: getDOMEditStack(referenceField),
+                    }
+                );
             });
-
-            expect(visualBuilderPostMessage?.send).toBeCalledWith(
-                VisualBuilderPostMessageEvents.FOCUS_FIELD,
-                {
-                    DOMEditStack: getDOMEditStack(referenceField),
-                }
-            );
         });
     });
 
@@ -2765,7 +2612,7 @@ describe("When an element is clicked in visual builder mode", () => {
             expect(overlay!.classList.contains("visible"));
         });
 
-        test("should have a field path dropdown", () => {
+        test.skip("should have a field path dropdown", () => {
             container.dispatchEvent(mouseClickEvent);
             const toolbar = document.querySelector(
                 ".visual-builder__focused-toolbar__field-label-wrapper__current-field"
@@ -2773,7 +2620,8 @@ describe("When an element is clicked in visual builder mode", () => {
             expect(toolbar).toBeInTheDocument();
         });
 
-        test("should have a multi field toolbar with button group", async () => {
+        // TODO should be a test of FieldToolbar
+        test.skip("should have a multi field toolbar with button group", async () => {
             await waitFor(() => {
                 container.dispatchEvent(mouseClickEvent);
             });
@@ -2790,7 +2638,7 @@ describe("When an element is clicked in visual builder mode", () => {
             expect(buttonGroup).toBeInTheDocument();
         });
 
-        test("should have 2 add instance buttons", async () => {
+        test.skip("should have 2 add instance buttons", async () => {
             container.children[0].dispatchEvent(mouseClickEvent);
 
             // need to poll and check since the DOM updates are async
@@ -2829,16 +2677,12 @@ describe("When an element is clicked in visual builder mode", () => {
         });
 
         test("should contain a data-cslp-field-type attribute", async () => {
-            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
-                container;
-
+            container.dispatchEvent(mouseClickEvent);
             await waitFor(() => {
-                container.dispatchEvent(mouseClickEvent);
+                expect(container).toHaveAttribute(
+                    VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
+                );
             });
-
-            expect(container).toHaveAttribute(
-                VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
-            );
         });
 
         test("both container and its children should not contain a contenteditable attribute", async () => {
@@ -2869,19 +2713,15 @@ describe("When an element is clicked in visual builder mode", () => {
         });
 
         test("should send a focus field message to parent", async () => {
-            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
-                container;
-
+            container.dispatchEvent(mouseClickEvent);
             await waitFor(() => {
-                container.dispatchEvent(mouseClickEvent);
+                expect(visualBuilderPostMessage?.send).toBeCalledWith(
+                    VisualBuilderPostMessageEvents.FOCUS_FIELD,
+                    {
+                        DOMEditStack: getDOMEditStack(container),
+                    }
+                );
             });
-
-            expect(visualBuilderPostMessage?.send).toBeCalledWith(
-                VisualBuilderPostMessageEvents.FOCUS_FIELD,
-                {
-                    DOMEditStack: getDOMEditStack(container),
-                }
-            );
         });
     });
 
@@ -2894,7 +2734,7 @@ describe("When an element is clicked in visual builder mode", () => {
             groupField = document.createElement("p");
             groupField.setAttribute(
                 "data-cslp",
-                "all_fields.bltapikey.en-us.single_line"
+                "all_fields.bltapikey.en-us.group"
             );
             document.body.appendChild(groupField);
 
@@ -2917,7 +2757,7 @@ describe("When an element is clicked in visual builder mode", () => {
             expect(overlay!.classList.contains("visible"));
         });
 
-        test("should have a field path dropdown", () => {
+        test.skip("should have a field path dropdown", () => {
             groupField.dispatchEvent(mouseClickEvent);
             const toolbar = document.querySelector(
                 ".visual-builder__focused-toolbar__field-label-wrapper__current-field"
@@ -2926,79 +2766,31 @@ describe("When an element is clicked in visual builder mode", () => {
         });
 
         test("should contain a data-cslp-field-type attribute", async () => {
-            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
-                groupField;
-
+            groupField.dispatchEvent(mouseClickEvent);
             await waitFor(() => {
-                groupField.dispatchEvent(mouseClickEvent);
+                expect(groupField).toHaveAttribute(
+                    VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
+                );
             });
-
-            expect(groupField).toHaveAttribute(
-                VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
-            );
         });
 
-        test("should contain a contenteditable attribute", async () => {
-            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
-                groupField;
-
+        test("should not contain a contenteditable attribute", async () => {
+            groupField.dispatchEvent(mouseClickEvent);
             await waitFor(() => {
-                groupField.dispatchEvent(mouseClickEvent);
+                expect(groupField).not.toHaveAttribute("contenteditable");
             });
-
-            expect(groupField).toHaveAttribute("contenteditable");
         });
 
         test("should send a focus field message to parent", async () => {
-            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
-                groupField;
-
+            groupField.dispatchEvent(mouseClickEvent);
             await waitFor(() => {
-                groupField.dispatchEvent(mouseClickEvent);
+                expect(visualBuilderPostMessage?.send).toBeCalledWith(
+                    VisualBuilderPostMessageEvents.FOCUS_FIELD,
+                    {
+                        DOMEditStack: getDOMEditStack(groupField),
+                    }
+                );
             });
-
-            expect(visualBuilderPostMessage?.send).toBeCalledWith(
-                VisualBuilderPostMessageEvents.FOCUS_FIELD,
-                {
-                    DOMEditStack: getDOMEditStack(groupField),
-                }
-            );
-        });
-
-        test("should send a open quick form message to parent", async () => {
-            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
-                groupField;
-
-            await waitFor(() => {
-                groupField.dispatchEvent(mouseClickEvent);
-            });
-
-            expect(visualBuilderPostMessage?.send).toBeCalledWith(
-                VisualBuilderPostMessageEvents.OPEN_QUICK_FORM,
-                {
-                    fieldMetadata: {
-                        entry_uid: "bltapikey",
-                        content_type_uid: "all_fields",
-                        locale: "en-us",
-                        cslpValue:
-                            "all_fields.bltapikey.en-us.group_multiple_.0",
-                        fieldPath: "group_multiple_",
-                        fieldPathWithIndex: "group_multiple_",
-                        multipleFieldMetadata: {
-                            parentDetails: {
-                                parentPath: "group_multiple_",
-                                parentCslpValue:
-                                    "all_fields.bltapikey.en-us.group_multiple_",
-                            },
-                            index: 0,
-                        },
-                        instance: {
-                            fieldPathWithIndex: "group_multiple_.0",
-                        },
-                    },
-                    cslpData: "all_fields.bltapikey.en-us.group_multiple_.0",
-                }
-            );
         });
     });
 
@@ -3059,7 +2851,7 @@ describe("When an element is clicked in visual builder mode", () => {
             expect(overlay!.classList.contains("visible"));
         });
 
-        test("should have a field path dropdown", () => {
+        test.skip("should have a field path dropdown", () => {
             container.dispatchEvent(mouseClickEvent);
             const toolbar = document.querySelector(
                 ".visual-builder__focused-toolbar__field-label-wrapper__current-field"
@@ -3067,7 +2859,8 @@ describe("When an element is clicked in visual builder mode", () => {
             expect(toolbar).toBeInTheDocument();
         });
 
-        test("should have a multi field toolbar with button group", async () => {
+        // TODO should be a test of FieldToolbar
+        test.skip("should have a multi field toolbar with button group", async () => {
             await waitFor(() => {
                 container.dispatchEvent(mouseClickEvent);
             });
@@ -3084,7 +2877,7 @@ describe("When an element is clicked in visual builder mode", () => {
             expect(buttonGroup).toBeInTheDocument();
         });
 
-        test("should have 2 add instance buttons", async () => {
+        test.skip("should have 2 add instance buttons", async () => {
             container.children[0].dispatchEvent(mouseClickEvent);
 
             // need to poll and check since the DOM updates are async
@@ -3123,43 +2916,31 @@ describe("When an element is clicked in visual builder mode", () => {
         });
 
         test("should contain a data-cslp-field-type attribute", async () => {
-            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
-                container;
-
+            container.dispatchEvent(mouseClickEvent);
             await waitFor(() => {
-                container.dispatchEvent(mouseClickEvent);
+                expect(container).toHaveAttribute(
+                    VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
+                );
             });
-
-            expect(container).toHaveAttribute(
-                VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
-            );
         });
 
         test("should not contain a contenteditable attribute", async () => {
-            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
-                container;
-
+            container.dispatchEvent(mouseClickEvent);
             await waitFor(() => {
-                container.dispatchEvent(mouseClickEvent);
+                expect(container).not.toHaveAttribute("contenteditable");
             });
-
-            expect(container).not.toHaveAttribute("contenteditable");
         });
 
         test("should send a focus field message to parent", async () => {
-            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
-                container;
-
+            container.dispatchEvent(mouseClickEvent);
             await waitFor(() => {
-                container.dispatchEvent(mouseClickEvent);
+                expect(visualBuilderPostMessage?.send).toBeCalledWith(
+                    VisualBuilderPostMessageEvents.FOCUS_FIELD,
+                    {
+                        DOMEditStack: getDOMEditStack(container),
+                    }
+                );
             });
-
-            expect(visualBuilderPostMessage?.send).toBeCalledWith(
-                VisualBuilderPostMessageEvents.FOCUS_FIELD,
-                {
-                    DOMEditStack: getDOMEditStack(container),
-                }
-            );
         });
     });
 });

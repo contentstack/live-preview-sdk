@@ -1,0 +1,384 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`When an element is hovered in visual builder mode > HTML RTE field > should have custom cursor 1`] = `
+<div
+  class="go1688149084 visual-builder__cursor visible"
+  data-icon="html_rte"
+  data-testid="visual-builder__cursor"
+>
+  <div
+    class="visual-builder__cursor-wrapper go4230334221"
+  >
+    <div
+      class="visual-builder__cursor-pointer go3046085498"
+    >
+      <svg
+        fill="none"
+        height="16"
+        viewBox="0 0 16 16"
+        width="16"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M0.0167948 0.602214C-0.0784404 0.246792 0.246794 -0.0784402 0.602216 0.0167948L15.6457 4.04767C16.0914 4.1671 16.1259 4.78625 15.6962 4.95447L8.17161 7.90048C8.04753 7.94906 7.94936 8.04723 7.90078 8.17131L4.95449 15.6962C4.78627 16.1259 4.16712 16.0914 4.04769 15.6457L0.0167948 0.602214Z"
+          fill="#5D50BE"
+        />
+      </svg>
+    </div>
+    <div
+      class="visual-builder__cursor-icon go4261356330"
+    >
+      <svg
+        fill="none"
+        height="24"
+        viewBox="0 0 24 24"
+        width="24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          clip-rule="evenodd"
+          d="M3.5625 11.4375V5.0625H11.4375V10.7422L10.1108 8.0888C9.82462 7.51646 9.06183 7.39267 8.60936 7.84515L5.017 11.4375H3.5625ZM6.608 11.4375H10.5274L9.2209 8.82459L6.608 11.4375ZM3.375 3.9375C2.85723 3.9375 2.4375 4.35723 2.4375 4.875V11.625C2.4375 12.1428 2.85723 12.5625 3.375 12.5625H11.625C12.1428 12.5625 12.5625 12.1428 12.5625 11.625V4.875C12.5625 4.35723 12.1428 3.9375 11.625 3.9375H3.375Z"
+          fill="white"
+          fill-rule="evenodd"
+        />
+        <path
+          d="M6.11566 7.73132C6.59375 7.73132 6.98132 7.34375 6.98132 6.86566C6.98132 6.38757 6.59375 6 6.11566 6C5.63757 6 5.25 6.38757 5.25 6.86566C5.25 7.34375 5.63757 7.73132 6.11566 7.73132Z"
+          fill="#475161"
+        />
+        <path
+          clip-rule="evenodd"
+          d="M21.5625 6C21.5625 6.31066 21.3107 6.5625 21 6.5625L15 6.5625C14.6893 6.5625 14.4375 6.31066 14.4375 6C14.4375 5.68934 14.6893 5.4375 15 5.4375L21 5.4375C21.3107 5.4375 21.5625 5.68934 21.5625 6Z"
+          fill="white"
+          fill-rule="evenodd"
+        />
+        <path
+          clip-rule="evenodd"
+          d="M21.5625 10.5C21.5625 10.8107 21.3107 11.0625 21 11.0625H15C14.6893 11.0625 14.4375 10.8107 14.4375 10.5C14.4375 10.1893 14.6893 9.9375 15 9.9375L21 9.9375C21.3107 9.9375 21.5625 10.1893 21.5625 10.5Z"
+          fill="white"
+          fill-rule="evenodd"
+        />
+        <path
+          clip-rule="evenodd"
+          d="M21.5625 15C21.5625 15.3107 21.3107 15.5625 21 15.5625L3.75 15.5625C3.43934 15.5625 3.1875 15.3107 3.1875 15C3.1875 14.6893 3.43934 14.4375 3.75 14.4375L21 14.4375C21.3107 14.4375 21.5625 14.6893 21.5625 15Z"
+          fill="white"
+          fill-rule="evenodd"
+        />
+        <path
+          clip-rule="evenodd"
+          d="M21.5625 19.5C21.5625 19.8107 21.3107 20.0625 21 20.0625L3.75 20.0625C3.43934 20.0625 3.1875 19.8107 3.1875 19.5C3.1875 19.1893 3.43934 18.9375 3.75 18.9375L21 18.9375C21.3107 18.9375 21.5625 19.1893 21.5625 19.5Z"
+          fill="white"
+          fill-rule="evenodd"
+        />
+      </svg>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`When an element is hovered in visual builder mode > HTML RTE field > should have outline 1`] = `
+<p
+  data-cslp="all_fields.bltapikey.en-us.rich_text_editor"
+/>
+`;
+
+exports[`When an element is hovered in visual builder mode > multi line field (multiple) > should have custom cursor 1`] = `
+<div
+  class="go1688149084 visual-builder__cursor visible"
+  data-testid="visual-builder__cursor"
+/>
+`;
+
+exports[`When an element is hovered in visual builder mode > multi line field (multiple) > should have custom cursor on individual instances 1`] = `
+<div
+  class="go1688149084 visual-builder__cursor visible"
+  data-icon="multiline"
+  data-testid="visual-builder__cursor"
+>
+  <div
+    class="visual-builder__cursor-wrapper go4230334221"
+  >
+    <div
+      class="visual-builder__cursor-pointer go3046085498"
+    >
+      <svg
+        fill="none"
+        height="16"
+        viewBox="0 0 16 16"
+        width="16"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M0.0167948 0.602214C-0.0784404 0.246792 0.246794 -0.0784402 0.602216 0.0167948L15.6457 4.04767C16.0914 4.1671 16.1259 4.78625 15.6962 4.95447L8.17161 7.90048C8.04753 7.94906 7.94936 8.04723 7.90078 8.17131L4.95449 15.6962C4.78627 16.1259 4.16712 16.0914 4.04769 15.6457L0.0167948 0.602214Z"
+          fill="#5D50BE"
+        />
+      </svg>
+    </div>
+    <div
+      class="visual-builder__cursor-icon go4261356330"
+    >
+      <svg
+        fill="none"
+        height="24"
+        viewBox="0 0 24 24"
+        width="24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          clip-rule="evenodd"
+          d="M20.8125 6.75C20.8125 7.06066 20.5607 7.3125 20.25 7.3125L12.75 7.3125C12.4393 7.3125 12.1875 7.06066 12.1875 6.75C12.1875 6.43934 12.4393 6.1875 12.75 6.1875L20.25 6.1875C20.5607 6.1875 20.8125 6.43934 20.8125 6.75Z"
+          fill="white"
+          fill-rule="evenodd"
+        />
+        <path
+          clip-rule="evenodd"
+          d="M20.8125 11.25C20.8125 11.5607 20.5607 11.8125 20.25 11.8125H12.75C12.4393 11.8125 12.1875 11.5607 12.1875 11.25C12.1875 10.9393 12.4393 10.6875 12.75 10.6875H20.25C20.5607 10.6875 20.8125 10.9393 20.8125 11.25Z"
+          fill="white"
+          fill-rule="evenodd"
+        />
+        <path
+          clip-rule="evenodd"
+          d="M20.8125 15.75C20.8125 16.0607 20.5607 16.3125 20.25 16.3125L3.75 16.3125C3.43934 16.3125 3.1875 16.0607 3.1875 15.75C3.1875 15.4393 3.43934 15.1875 3.75 15.1875L20.25 15.1875C20.5607 15.1875 20.8125 15.4393 20.8125 15.75Z"
+          fill="white"
+          fill-rule="evenodd"
+        />
+        <path
+          clip-rule="evenodd"
+          d="M20.8125 20.25C20.8125 20.5607 20.5607 20.8125 20.25 20.8125L3.75 20.8125C3.43934 20.8125 3.1875 20.5607 3.1875 20.25C3.1875 19.9393 3.43934 19.6875 3.75 19.6875L20.25 19.6875C20.5607 19.6875 20.8125 19.9393 20.8125 20.25Z"
+          fill="white"
+          fill-rule="evenodd"
+        />
+        <path
+          clip-rule="evenodd"
+          d="M6.69958 4.0794C6.60419 3.8699 6.39077 3.73967 6.16084 3.75064C5.9309 3.76162 5.73086 3.91158 5.65585 4.12921L3.94036 9.10658L3.0335 11.6217C2.92813 11.914 3.07962 12.2363 3.37186 12.3417C3.6641 12.447 3.98643 12.2955 4.09181 12.0033L4.70145 10.3125H8.28908L9.04768 12.0388C9.17266 12.3232 9.50454 12.4525 9.78895 12.3275C10.0734 12.2025 10.2026 11.8706 10.0776 11.5862L8.97074 9.06732L8.96769 9.06052L6.69958 4.0794ZM7.78938 9.1875L6.26002 5.8288L5.10242 9.1875H7.78938Z"
+          fill="white"
+          fill-rule="evenodd"
+        />
+      </svg>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`When an element is hovered in visual builder mode > multi line field (multiple) > should have instance button on individual instances 1`] = `NodeList []`;
+
+exports[`When an element is hovered in visual builder mode > multi line field (multiple) > should have outline 1`] = `
+<div
+  data-cslp="all_fields.bltapikey.en-us.multi_line_textbox_multiple_"
+>
+  <p
+    data-cslp="all_fields.bltapikey.en-us.multi_line_textbox_multiple_.0"
+  />
+  <p
+    data-cslp="all_fields.bltapikey.en-us.multi_line_textbox_multiple_.1"
+  />
+</div>
+`;
+
+exports[`When an element is hovered in visual builder mode > multi line field (multiple) > should have outline on individual instances 1`] = `
+<p
+  data-cslp="all_fields.bltapikey.en-us.multi_line_textbox_multiple_.0"
+/>
+`;
+
+exports[`When an element is hovered in visual builder mode > multi line field > should have custom cursor 1`] = `
+<div
+  class="go1688149084 visual-builder__cursor visible"
+  data-icon="multiline"
+  data-testid="visual-builder__cursor"
+>
+  <div
+    class="visual-builder__cursor-wrapper go4230334221"
+  >
+    <div
+      class="visual-builder__cursor-pointer go3046085498"
+    >
+      <svg
+        fill="none"
+        height="16"
+        viewBox="0 0 16 16"
+        width="16"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M0.0167948 0.602214C-0.0784404 0.246792 0.246794 -0.0784402 0.602216 0.0167948L15.6457 4.04767C16.0914 4.1671 16.1259 4.78625 15.6962 4.95447L8.17161 7.90048C8.04753 7.94906 7.94936 8.04723 7.90078 8.17131L4.95449 15.6962C4.78627 16.1259 4.16712 16.0914 4.04769 15.6457L0.0167948 0.602214Z"
+          fill="#5D50BE"
+        />
+      </svg>
+    </div>
+    <div
+      class="visual-builder__cursor-icon go4261356330"
+    >
+      <svg
+        fill="none"
+        height="24"
+        viewBox="0 0 24 24"
+        width="24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          clip-rule="evenodd"
+          d="M20.8125 6.75C20.8125 7.06066 20.5607 7.3125 20.25 7.3125L12.75 7.3125C12.4393 7.3125 12.1875 7.06066 12.1875 6.75C12.1875 6.43934 12.4393 6.1875 12.75 6.1875L20.25 6.1875C20.5607 6.1875 20.8125 6.43934 20.8125 6.75Z"
+          fill="white"
+          fill-rule="evenodd"
+        />
+        <path
+          clip-rule="evenodd"
+          d="M20.8125 11.25C20.8125 11.5607 20.5607 11.8125 20.25 11.8125H12.75C12.4393 11.8125 12.1875 11.5607 12.1875 11.25C12.1875 10.9393 12.4393 10.6875 12.75 10.6875H20.25C20.5607 10.6875 20.8125 10.9393 20.8125 11.25Z"
+          fill="white"
+          fill-rule="evenodd"
+        />
+        <path
+          clip-rule="evenodd"
+          d="M20.8125 15.75C20.8125 16.0607 20.5607 16.3125 20.25 16.3125L3.75 16.3125C3.43934 16.3125 3.1875 16.0607 3.1875 15.75C3.1875 15.4393 3.43934 15.1875 3.75 15.1875L20.25 15.1875C20.5607 15.1875 20.8125 15.4393 20.8125 15.75Z"
+          fill="white"
+          fill-rule="evenodd"
+        />
+        <path
+          clip-rule="evenodd"
+          d="M20.8125 20.25C20.8125 20.5607 20.5607 20.8125 20.25 20.8125L3.75 20.8125C3.43934 20.8125 3.1875 20.5607 3.1875 20.25C3.1875 19.9393 3.43934 19.6875 3.75 19.6875L20.25 19.6875C20.5607 19.6875 20.8125 19.9393 20.8125 20.25Z"
+          fill="white"
+          fill-rule="evenodd"
+        />
+        <path
+          clip-rule="evenodd"
+          d="M6.69958 4.0794C6.60419 3.8699 6.39077 3.73967 6.16084 3.75064C5.9309 3.76162 5.73086 3.91158 5.65585 4.12921L3.94036 9.10658L3.0335 11.6217C2.92813 11.914 3.07962 12.2363 3.37186 12.3417C3.6641 12.447 3.98643 12.2955 4.09181 12.0033L4.70145 10.3125H8.28908L9.04768 12.0388C9.17266 12.3232 9.50454 12.4525 9.78895 12.3275C10.0734 12.2025 10.2026 11.8706 10.0776 11.5862L8.97074 9.06732L8.96769 9.06052L6.69958 4.0794ZM7.78938 9.1875L6.26002 5.8288L5.10242 9.1875H7.78938Z"
+          fill="white"
+          fill-rule="evenodd"
+        />
+      </svg>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`When an element is hovered in visual builder mode > multi line field > should have outline 1`] = `
+<p
+  data-cslp="all_fields.bltapikey.en-us.multi_line"
+/>
+`;
+
+exports[`When an element is hovered in visual builder mode > number field > should have custom cursor 1`] = `
+<div
+  class="go1688149084 visual-builder__cursor visible"
+  data-icon="number"
+  data-testid="visual-builder__cursor"
+>
+  <div
+    class="visual-builder__cursor-wrapper go4230334221"
+  >
+    <div
+      class="visual-builder__cursor-pointer go3046085498"
+    >
+      <svg
+        fill="none"
+        height="16"
+        viewBox="0 0 16 16"
+        width="16"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M0.0167948 0.602214C-0.0784404 0.246792 0.246794 -0.0784402 0.602216 0.0167948L15.6457 4.04767C16.0914 4.1671 16.1259 4.78625 15.6962 4.95447L8.17161 7.90048C8.04753 7.94906 7.94936 8.04723 7.90078 8.17131L4.95449 15.6962C4.78627 16.1259 4.16712 16.0914 4.04769 15.6457L0.0167948 0.602214Z"
+          fill="#5D50BE"
+        />
+      </svg>
+    </div>
+    <div
+      class="visual-builder__cursor-icon go4261356330"
+    >
+      <svg
+        fill="none"
+        height="24"
+        viewBox="0 0 24 24"
+        width="24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          clip-rule="evenodd"
+          d="M6.46172 8.08704C6.45117 8.02147 6.42928 7.9597 6.39813 7.90379C6.35727 7.8301 6.3012 7.7682 6.23536 7.72082C6.16973 7.67343 6.09347 7.63985 6.01084 7.62433C5.94777 7.61236 5.88203 7.61108 5.81629 7.62183C5.78173 7.6274 5.74822 7.63611 5.71607 7.64767L3.47852 8.39352C3.18381 8.49176 3.02453 8.81031 3.12277 9.10503C3.22101 9.39975 3.53956 9.55903 3.83428 9.46079L5.3439 8.95758L5.3439 15.302H4.59375C4.28309 15.302 4.03125 15.5538 4.03125 15.8645C4.03125 16.1752 4.28309 16.427 4.59375 16.427H7.33594C7.6466 16.427 7.89844 16.1752 7.89844 15.8645C7.89844 15.5538 7.6466 15.302 7.33594 15.302H6.4689L6.4689 8.19029C6.4697 8.15613 6.46737 8.12159 6.46172 8.08704Z"
+          fill="white"
+          fill-rule="evenodd"
+        />
+        <path
+          clip-rule="evenodd"
+          d="M9.51562 9.32004C9.51562 8.35585 10.2973 7.57422 11.2614 7.57422H12.8054C13.6809 7.57422 14.3906 8.28395 14.3906 9.15945V10.9828C14.3906 11.6816 13.9922 12.3191 13.3642 12.6254L12.2817 13.1533C12.2739 13.1571 12.266 13.1607 12.258 13.1641L11.3359 13.562C10.6003 13.8794 10.0831 14.537 9.93348 15.302H13.8281C14.1388 15.302 14.3906 15.5538 14.3906 15.8645C14.3906 16.1752 14.1388 16.427 13.8281 16.427H9.36208C9.03756 16.427 8.77241 16.1679 8.76493 15.8435C8.73182 14.4088 9.57261 13.0976 10.8902 12.5291L11.8003 12.1364L12.8711 11.6142C13.1125 11.4965 13.2656 11.2514 13.2656 10.9828V9.15945C13.2656 8.90527 13.0596 8.69922 12.8054 8.69922H11.2614C10.9186 8.69922 10.6406 8.97717 10.6406 9.32004C10.6406 9.6307 10.3888 9.88254 10.0781 9.88254C9.76746 9.88254 9.51562 9.6307 9.51562 9.32004Z"
+          fill="white"
+          fill-rule="evenodd"
+        />
+        <path
+          clip-rule="evenodd"
+          d="M16.5938 7.62677C16.2831 7.62677 16.0312 7.87861 16.0312 8.18927C16.0312 8.49993 16.2831 8.75177 16.5938 8.75177H19.5938C19.6973 8.75177 19.7812 8.83572 19.7812 8.93927V11.4583H16.5938C16.2831 11.4583 16.0312 11.7101 16.0312 12.0208C16.0312 12.3315 16.2831 12.5833 16.5938 12.5833H19.7812V15.1023C19.7812 15.2059 19.6973 15.2898 19.5938 15.2898H16.5938C16.2831 15.2898 16.0312 15.5417 16.0312 15.8523C16.0312 16.163 16.2831 16.4148 16.5938 16.4148H19.5938C20.3186 16.4148 20.9062 15.8272 20.9062 15.1023V8.93927C20.9062 8.2144 20.3186 7.62677 19.5938 7.62677H16.5938Z"
+          fill="white"
+          fill-rule="evenodd"
+        />
+      </svg>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`When an element is hovered in visual builder mode > number field > should have outline 1`] = `
+<p
+  data-cslp="all_fields.bltapikey.en-us.number"
+/>
+`;
+
+exports[`When an element is hovered in visual builder mode > single line field (multiple) > should have custom cursor 1`] = `
+<div
+  class="go1688149084 visual-builder__cursor visible"
+  data-testid="visual-builder__cursor"
+/>
+`;
+
+exports[`When an element is hovered in visual builder mode > single line field (multiple) > should have custom cursor on individual instances 1`] = `
+<div
+  class="go1688149084 visual-builder__cursor visible"
+  data-testid="visual-builder__cursor"
+/>
+`;
+
+exports[`When an element is hovered in visual builder mode > single line field (multiple) > should have instance button on individual instances 1`] = `NodeList []`;
+
+exports[`When an element is hovered in visual builder mode > single line field (multiple) > should have outline 1`] = `
+<div
+  data-cslp="all_fields.bltapikey.en-us.single_line_textbox_multiple_"
+>
+  <p
+    data-cslp="all_fields.bltapikey.en-us.single_line_textbox_multiple_.0"
+  />
+  <p
+    data-cslp="all_fields.bltapikey.en-us.single_line_textbox_multiple_.1"
+  />
+</div>
+`;
+
+exports[`When an element is hovered in visual builder mode > single line field (multiple) > should have outline on individual instances 1`] = `
+<p
+  data-cslp="all_fields.bltapikey.en-us.single_line_textbox_multiple_.0"
+/>
+`;
+
+exports[`When an element is hovered in visual builder mode > single line field > should have custom cursor 1`] = `
+<div
+  class="go1688149084 visual-builder__cursor visible"
+  data-testid="visual-builder__cursor"
+/>
+`;
+
+exports[`When an element is hovered in visual builder mode > single line field > should have outline 1`] = `
+<p
+  data-cslp="all_fields.bltapikey.en-us.single_line"
+/>
+`;
+
+exports[`When an element is hovered in visual builder mode > title field > should have custom cursor 1`] = `
+<div
+  class="go1688149084 visual-builder__cursor visible"
+  data-testid="visual-builder__cursor"
+/>
+`;
+
+exports[`When an element is hovered in visual builder mode > title field > should have outline 1`] = `
+<p
+  data-cslp="all_fields.bltapikey.en-us.title"
+/>
+`;

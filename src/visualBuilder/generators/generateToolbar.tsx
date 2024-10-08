@@ -28,7 +28,11 @@ export function appendFieldToolbar(
     eventDetails: VisualBuilderCslpEventDetails,
     focusedToolbarElement: HTMLDivElement
 ): void {
-    if(focusedToolbarElement.querySelector(".visual-builder__focused-toolbar__multiple-field-toolbar"))
+    if (
+        focusedToolbarElement.querySelector(
+            ".visual-builder__focused-toolbar__multiple-field-toolbar"
+        )
+    )
         return;
     const { editableElement, fieldMetadata } = eventDetails;
     const wrapper = document.createDocumentFragment();
