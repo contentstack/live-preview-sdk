@@ -367,7 +367,6 @@ export function visualBuilderStyles() {
         "visual-builder__focused-toolbar--field-disabled": css`
             pointer-events: none;
             cursor: not-allowed;
-
             .visual-builder__focused-toolbar__field-label-wrapper__current-field {
                 background: #909090;
             }
@@ -401,22 +400,19 @@ export function visualBuilderStyles() {
 
                 width: max-content;
                 max-width: 200px;
-                display: none;
+                display: block;
 
                 color: #fff;
-                background: #767676;
+                background: #909090;
                 font-family: Inter;
                 font-size: 0.75rem;
                 font-style: normal;
                 font-weight: 400;
                 line-height: 132%; /* 0.99rem */
                 letter-spacing: 0.015rem;
+                text-align: left;
             }
 
-            &:hover:before,
-            &:hover:after {
-                display: block;
-            }
             &:after {
                 content: "";
                 position: absolute;
@@ -425,9 +421,9 @@ export function visualBuilderStyles() {
 
                 /* the arrow */
                 border: 10px solid #000;
-                border-color: #767676 transparent transparent transparent;
+                border-color: #909090 transparent transparent transparent;
 
-                display: none;
+                display: block;
             }
         `,
         "visual-builder__empty-block": css`
@@ -484,9 +480,6 @@ export function visualBuilderStyles() {
         `,
         "visual-builder__variant-field": css`
             outline: 2px solid #bd59fa;
-        `,
-        "visual-builder__base-field": css`
-            outline: 2px solid #eb5646;
         `,
         "visual-builder__pseudo-editable-element": css`
             z-index: 200 !important;
