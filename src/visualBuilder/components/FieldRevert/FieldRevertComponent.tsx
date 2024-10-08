@@ -42,12 +42,18 @@ export const BASE_VARIANT_STATUS: IVariantStatus = {
     fieldLevelCustomizations: false,
 };
 
-export async function getFieldVariantStatus(fieldPathWithIndex: string) {
-    const result = await visualBuilderPostMessage?.send<IVariantStatus>(
-        "get-field-variant-status",
-        fieldPathWithIndex
-    );
-    return result;
+export async function getFieldVariantStatus(
+    fieldPathWithIndex: string
+): Promise<IVariantStatus | undefined> {
+    try {
+        const result = await visualBuilderPostMessage?.send<IVariantStatus>(
+            "get-field-variant-status",
+            fieldPathWithIndex
+        );
+        return result;
+    } catch (error) {
+        console.error("Failed to get field variant status:", error);
+    }
 }
 
 export const FieldRevertComponent = ({

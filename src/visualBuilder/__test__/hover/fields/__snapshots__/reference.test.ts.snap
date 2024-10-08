@@ -1,0 +1,163 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`When an element is hovered in visual builder mode > reference field (multiple) > should have custom cursor 1`] = `
+<div
+  class="go1688149084 visual-builder__cursor visible"
+  data-icon="reference"
+  data-testid="visual-builder__cursor"
+>
+  <div
+    class="visual-builder__cursor-wrapper go4230334221"
+  >
+    <div
+      class="visual-builder__cursor-pointer go3046085498"
+    >
+      <svg
+        fill="none"
+        height="16"
+        viewBox="0 0 16 16"
+        width="16"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M0.0167948 0.602214C-0.0784404 0.246792 0.246794 -0.0784402 0.602216 0.0167948L15.6457 4.04767C16.0914 4.1671 16.1259 4.78625 15.6962 4.95447L8.17161 7.90048C8.04753 7.94906 7.94936 8.04723 7.90078 8.17131L4.95449 15.6962C4.78627 16.1259 4.16712 16.0914 4.04769 15.6457L0.0167948 0.602214Z"
+          fill="#5D50BE"
+        />
+      </svg>
+    </div>
+    <div
+      class="visual-builder__cursor-icon go4261356330"
+    >
+      <svg
+        fill="none"
+        height="24"
+        viewBox="0 0 24 24"
+        width="24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          clip-rule="evenodd"
+          d="M4.5 3.9375C4.81066 3.9375 5.0625 4.18934 5.0625 4.5V18.9375H19.5C19.8107 18.9375 20.0625 19.1893 20.0625 19.5C20.0625 19.8107 19.8107 20.0625 19.5 20.0625H4.5C4.18934 20.0625 3.9375 19.8107 3.9375 19.5V4.5C3.9375 4.18934 4.18934 3.9375 4.5 3.9375Z"
+          fill="white"
+          fill-rule="evenodd"
+        />
+        <path
+          clip-rule="evenodd"
+          d="M15.3756 7.08021C15.6074 6.87343 15.963 6.89375 16.1698 7.12559L18.4198 9.64832C18.6151 9.86727 18.6093 10.1995 18.4065 10.4115L16.1565 12.7638C15.9417 12.9883 15.5857 12.9962 15.3612 12.7815C15.1367 12.5668 15.1288 12.2107 15.3435 11.9862L16.6836 10.5852H11.3182C9.52012 10.5852 8.0625 12.0428 8.0625 13.8409V15.75C8.0625 16.0607 7.81066 16.3125 7.5 16.3125C7.18934 16.3125 6.9375 16.0607 6.9375 15.75V13.8409C6.9375 11.4215 8.8988 9.46023 11.3182 9.46023H16.7446L15.3302 7.87441C15.1234 7.64256 15.1437 7.28699 15.3756 7.08021Z"
+          fill="white"
+          fill-rule="evenodd"
+        />
+      </svg>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`When an element is hovered in visual builder mode > reference field (multiple) > should have custom cursor on individual instances 1`] = `
+<div
+  class="go1688149084 visual-builder__cursor visible"
+  data-testid="visual-builder__cursor"
+/>
+`;
+
+exports[`When an element is hovered in visual builder mode > reference field (multiple) > should have outline 1`] = `
+<div
+  data-cslp="all_fields.bltapikey.en-us.reference_multiple_"
+>
+  <div
+    data-cslp="all_fields.bltapikey.en-us.reference_multiple_.0"
+  />
+  <div
+    data-cslp="all_fields.bltapikey.en-us.reference_multiple_.1"
+  />
+</div>
+`;
+
+exports[`When an element is hovered in visual builder mode > reference field (multiple) > should have outline 2`] = `
+<div
+  class="visual-builder__hover-outline visual-builder__hover-outline--unclickable go3177626044 go1719569523"
+  data-testid="visual-builder__hover-outline"
+  style="top: 34px; left: 34px; width: 828px; height: 54.3984375px;"
+/>
+`;
+
+exports[`When an element is hovered in visual builder mode > reference field (multiple) > should have outline on individual instances 1`] = `
+<div
+  data-cslp="all_fields.bltapikey.en-us.reference_multiple_.0"
+/>
+`;
+
+exports[`When an element is hovered in visual builder mode > reference field (multiple) > should have outline on individual instances 2`] = `
+<div
+  class="visual-builder__hover-outline visual-builder__hover-outline--unclickable go3177626044 go1719569523"
+  data-testid="visual-builder__hover-outline"
+  style="top: 51px; left: 51px; width: 27.7734375px; height: 20.3984375px;"
+/>
+`;
+
+exports[`When an element is hovered in visual builder mode > reference field > should have custom cursor 1`] = `
+<div
+  class="go1688149084 visual-builder__cursor visible"
+  data-icon="reference"
+  data-testid="visual-builder__cursor"
+>
+  <div
+    class="visual-builder__cursor-wrapper go4230334221"
+  >
+    <div
+      class="visual-builder__cursor-pointer go3046085498"
+    >
+      <svg
+        fill="none"
+        height="16"
+        viewBox="0 0 16 16"
+        width="16"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M0.0167948 0.602214C-0.0784404 0.246792 0.246794 -0.0784402 0.602216 0.0167948L15.6457 4.04767C16.0914 4.1671 16.1259 4.78625 15.6962 4.95447L8.17161 7.90048C8.04753 7.94906 7.94936 8.04723 7.90078 8.17131L4.95449 15.6962C4.78627 16.1259 4.16712 16.0914 4.04769 15.6457L0.0167948 0.602214Z"
+          fill="#5D50BE"
+        />
+      </svg>
+    </div>
+    <div
+      class="visual-builder__cursor-icon go4261356330"
+    >
+      <svg
+        fill="none"
+        height="24"
+        viewBox="0 0 24 24"
+        width="24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          clip-rule="evenodd"
+          d="M4.5 3.9375C4.81066 3.9375 5.0625 4.18934 5.0625 4.5V18.9375H19.5C19.8107 18.9375 20.0625 19.1893 20.0625 19.5C20.0625 19.8107 19.8107 20.0625 19.5 20.0625H4.5C4.18934 20.0625 3.9375 19.8107 3.9375 19.5V4.5C3.9375 4.18934 4.18934 3.9375 4.5 3.9375Z"
+          fill="white"
+          fill-rule="evenodd"
+        />
+        <path
+          clip-rule="evenodd"
+          d="M15.3756 7.08021C15.6074 6.87343 15.963 6.89375 16.1698 7.12559L18.4198 9.64832C18.6151 9.86727 18.6093 10.1995 18.4065 10.4115L16.1565 12.7638C15.9417 12.9883 15.5857 12.9962 15.3612 12.7815C15.1367 12.5668 15.1288 12.2107 15.3435 11.9862L16.6836 10.5852H11.3182C9.52012 10.5852 8.0625 12.0428 8.0625 13.8409V15.75C8.0625 16.0607 7.81066 16.3125 7.5 16.3125C7.18934 16.3125 6.9375 16.0607 6.9375 15.75V13.8409C6.9375 11.4215 8.8988 9.46023 11.3182 9.46023H16.7446L15.3302 7.87441C15.1234 7.64256 15.1437 7.28699 15.3756 7.08021Z"
+          fill="white"
+          fill-rule="evenodd"
+        />
+      </svg>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`When an element is hovered in visual builder mode > reference field > should have outline 1`] = `
+<div
+  data-cslp="all_fields.bltapikey.en-us.reference"
+/>
+`;
+
+exports[`When an element is hovered in visual builder mode > reference field > should have outline 2`] = `
+<div
+  class="visual-builder__hover-outline visual-builder__hover-outline--unclickable go3177626044 go1719569523"
+  data-testid="visual-builder__hover-outline"
+  style="top: 51px; left: 51px; width: 27.7734375px; height: 20.3984375px;"
+/>
+`;

@@ -7,6 +7,7 @@ interface VariantFieldsEvent {
     data: {
         variant_data: {
             variant: string;
+            highlightVariantFields: boolean;
         };
     };
 }
@@ -17,38 +18,38 @@ interface AudienceEvent {
     };
 }
 
-function addVariantFieldClass(variant_uid: string): void {
+function addVariantFieldClass(
+    variant_uid: string,
+    highlightVariantFields: boolean
+): void {
     const elements = document.querySelectorAll(`[data-cslp]`);
     elements.forEach((element) => {
         const dataCslp = element.getAttribute("data-cslp");
-        if(!dataCslp) return;
+        if (!dataCslp) return;
+
         if (new RegExp(variant_uid).test(dataCslp)) {
-            element.classList.add(
-                visualBuilderStyles()["visual-builder__variant-field"],
-                "visual-builder__variant-field"
-            );
-        }
-        // For base variant editing
-        if (!dataCslp.startsWith("v2:")){
-            element.classList.add(
-                visualBuilderStyles()["visual-builder__variant-field"],
-                "visual-builder__variant-field",
-                visualBuilderStyles()["visual-builder__base-field"],
-                "visual-builder__base-field"
-            );
+            highlightVariantFields &&
+                element.classList.add(
+                    visualBuilderStyles()["visual-builder__variant-field"]
+                );
+            element.classList.add("visual-builder__variant-field");
+        } else if (!dataCslp.startsWith("v2:")) {
+            element.classList.add("visual-builder__base-field");
+        } else {
+            element.classList.add("visual-builder__disabled-variant-field");
         }
     });
 }
 
 function removeVariantFieldClass(): void {
-    const variantFieldElements = document.querySelectorAll(
-        ".visual-builder__variant-field"
+    const variantAndBaseFieldElements = document.querySelectorAll(
+        ".visual-builder__disabled-variant-field, .visual-builder__variant-field, .visual-builder__base-field"
     );
-    variantFieldElements.forEach((element) => {
+    variantAndBaseFieldElements.forEach((element) => {
         element.classList.remove(
-            visualBuilderStyles()["visual-builder__variant-field"],
+            "visual-builder__disabled-variant-field",
             "visual-builder__variant-field",
-            visualBuilderStyles()["visual-builder__base-field"],
+            visualBuilderStyles()["visual-builder__variant-field"],
             "visual-builder__base-field"
         );
     });
@@ -69,7 +70,10 @@ export function useVariantFieldsPostMessageEvent(): void {
         VisualBuilderPostMessageEvents.SHOW_VARIANT_FIELDS,
         (event: VariantFieldsEvent) => {
             removeVariantFieldClass();
-            addVariantFieldClass(event.data.variant_data.variant);
+            addVariantFieldClass(
+                event.data.variant_data.variant,
+                event.data.variant_data.highlightVariantFields
+            );
         }
     );
     visualBuilderPostMessage?.on(

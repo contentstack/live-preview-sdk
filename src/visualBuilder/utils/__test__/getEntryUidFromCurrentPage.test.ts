@@ -1,5 +1,5 @@
 import { JSDOM } from "jsdom";
-import { getEntryUidFromCurrentPage } from "../getEntryUidFromCurrentPage";
+import { getEntryIdentifiersInCurrentPage } from "../getEntryIdentifiersInCurrentPage";
 
 const dom = new JSDOM(`
 <div>
@@ -25,21 +25,21 @@ const domWithNoCslp = new JSDOM(`
 describe("getFieldType", () => {
     test("should return all entries in current page", () => {
         document.body.innerHTML = dom.window.document.body.innerHTML;
-        const { entryUidsInCurrentPage } = getEntryUidFromCurrentPage();
-        expect(entryUidsInCurrentPage.length).toBe(3);
+        const { entriesInCurrentPage } = getEntryIdentifiersInCurrentPage();
+        expect(entriesInCurrentPage.length).toBe(3);
     });
 
     test("should return one entry if there are more than one element with same entry", () => {
         document.body.innerHTML =
             domWithDuplicate.window.document.body.innerHTML;
-        const { entryUidsInCurrentPage } = getEntryUidFromCurrentPage();
-        expect(entryUidsInCurrentPage.length).toBe(1);
+        const { entriesInCurrentPage } = getEntryIdentifiersInCurrentPage();
+        expect(entriesInCurrentPage.length).toBe(1);
     });
 
     test("should return empty array if there are no cslp", () => {
         document.body.innerHTML = domWithNoCslp.window.document.body.innerHTML;
-        const { entryUidsInCurrentPage } = getEntryUidFromCurrentPage();
-        expect(entryUidsInCurrentPage.length).toBe(0);
-        expect(entryUidsInCurrentPage).toEqual([]);
+        const { entriesInCurrentPage } = getEntryIdentifiersInCurrentPage();
+        expect(entriesInCurrentPage.length).toBe(0);
+        expect(entriesInCurrentPage).toEqual([]);
     });
 });

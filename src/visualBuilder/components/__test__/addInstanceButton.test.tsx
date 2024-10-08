@@ -1,30 +1,11 @@
 import {
-    render,
     cleanup,
     fireEvent,
     getByTestId,
+    render,
 } from "@testing-library/preact";
+import { singleLineFieldSchema } from "../../../__test__/data/fields";
 import AddInstanceButtonComponent from "../addInstanceButton";
-import { ISchemaFieldMap } from "../../utils/types/index.types";
-
-const schema = {
-    data_type: "text",
-    display_name: "Single Line Textbox",
-    uid: "single_line",
-    field_metadata: {
-        description: "",
-        default_value: "",
-        version: 3,
-    },
-    format: "",
-    error_messages: {
-        format: "",
-    },
-    mandatory: false,
-    multiple: true,
-    non_localizable: false,
-    unique: false,
-};
 
 describe("AddInstanceButtonComponent", () => {
     afterEach(cleanup);
@@ -34,7 +15,7 @@ describe("AddInstanceButtonComponent", () => {
         render(
             <AddInstanceButtonComponent
                 value={[]}
-                fieldSchema={schema as ISchemaFieldMap}
+                fieldSchema={singleLineFieldSchema}
                 onClick={onClickCallback}
             />
         );
@@ -54,7 +35,7 @@ describe("AddInstanceButtonComponent", () => {
         render(
             <AddInstanceButtonComponent
                 value={[]}
-                fieldSchema={schema as ISchemaFieldMap}
+                fieldSchema={singleLineFieldSchema}
                 onClick={onClickCallback}
             />
         );
