@@ -1,5 +1,40 @@
 import { css } from "goober";
 
+
+const tooltipBaseStyle = `
+    pointer-events: all;
+    svg {
+        pointer-events: none;
+    }
+    &:before {
+        content: attr(data-tooltip);
+        position: absolute;
+        bottom: 20px;
+        margin-bottom: 16px;
+        padding: 12px;
+        border-radius: 4px;
+        width: max-content;
+        max-width: 200px;
+        color: #fff;
+        font-family: Inter;
+        font-size: 0.75rem;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 132%; /* 0.99rem */
+        letter-spacing: 0.015rem;
+        background: #767676;
+    }
+    &:after {
+        content: "";
+        position: absolute;
+        bottom: 17px;
+        /* the arrow */
+        border: 10px solid #000;
+        border-color: #767676 transparent transparent transparent;
+    }
+`;
+
+
 export function visualBuilderStyles() {
     return {
         "visual-builder__container": css`
@@ -381,50 +416,33 @@ export function visualBuilderStyles() {
             }
         `,
         "visual-builder__tooltip": css`
-            pointer-events: all;
+        ${tooltipBaseStyle}
 
-            svg {
-                pointer-events: none;
-            }
+        &:before {
+            display: none;
+        }
 
-            &:before {
-                content: attr(data-tooltip);
-                position: absolute;
+        &:hover:before,
+        &:hover:after {
+            display: block;
+        }
 
-                bottom: 20px;
-                margin-bottom: 16px;
+        &:after {
+            display: none;
+        }
+    `,
 
-                padding: 12px;
-                border-radius: 4px;
+    "visual-builder__tooltip--persistent": css`
+        ${tooltipBaseStyle}
 
-                width: max-content;
-                max-width: 200px;
-                display: block;
+        &:before {
+            display: block;
+        }
 
-                color: #fff;
-                background: #909090;
-                font-family: Inter;
-                font-size: 0.75rem;
-                font-style: normal;
-                font-weight: 400;
-                line-height: 132%; /* 0.99rem */
-                letter-spacing: 0.015rem;
-                text-align: left;
-            }
-
-            &:after {
-                content: "";
-                position: absolute;
-
-                bottom: 17px;
-
-                /* the arrow */
-                border: 10px solid #000;
-                border-color: #909090 transparent transparent transparent;
-
-                display: block;
-            }
-        `,
+        &:after {
+            display: block;
+        }
+    `,
         "visual-builder__empty-block": css`
             width: 100%;
             height: 100%;
