@@ -22,13 +22,14 @@ const tooltipBaseStyle = `
         font-weight: 400;
         line-height: 132%; /* 0.99rem */
         letter-spacing: 0.015rem;
+        background: #767676;
     }
     &:after {
         content: "";
         position: absolute;
         bottom: 17px;
         border: 10px solid #000;
-        border-color: transparent transparent transparent transparent;
+        border-color: #767676 transparent transparent transparent;
     }
 `;
 
@@ -417,7 +418,6 @@ export function visualBuilderStyles() {
         ${tooltipBaseStyle}
 
         &:before {
-            background: #767676;
             display: none;
         }
 
@@ -427,7 +427,6 @@ export function visualBuilderStyles() {
         }
 
         &:after {
-            border-color: #767676 transparent transparent transparent;
             display: none;
         }
     `,
@@ -436,12 +435,10 @@ export function visualBuilderStyles() {
         ${tooltipBaseStyle}
 
         &:before {
-            background: #909090;
             display: block;
         }
 
         &:after {
-            border-color: #909090 transparent transparent transparent;
             display: block;
         }
     `,
