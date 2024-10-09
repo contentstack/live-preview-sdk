@@ -28,6 +28,7 @@ const tooltipBaseStyle = `
         content: "";
         position: absolute;
         bottom: 17px;
+        /* the arrow */
         border: 10px solid #000;
         border-color: #767676 transparent transparent transparent;
     }
