@@ -60,9 +60,7 @@ export function CslpError({}: CslpErrorProps) {
                 >
                     <p>Invalid CSLP tag</p>
                     <span>
-                        Due to the invalid CSLP tag, the related Contentstack
-                        field cannot be identified, and therefore, the content
-                        cannot be modified.
+                    The CSLP is invalid or incorrectly generated.
                     </span>
                 </div>
             ) : null}

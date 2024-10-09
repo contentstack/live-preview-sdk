@@ -46,8 +46,7 @@ export function EmptyBlock(props: EmptyBlockProps): JSX.Element {
                     visualBuilderStyles()["visual-builder__empty-block-title"]
                 )}
             >
-                There are no {blockParentName.toLowerCase()} to show in this
-                section.
+                There are no {blockParentName.toLowerCase()} on this page yet. Click the button below to add one.
             </div>
             <button
                 className={classNames(

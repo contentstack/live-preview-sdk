@@ -27,8 +27,10 @@ function AddInstanceButtonComponent(
                 visualBuilderStyles()["visual-builder__add-button"],
                 {
                     "visual-builder__add-button--with-label": props.label,
-                }
+                },
+                visualBuilderStyles()["visual-builder__tooltip"]
             )}
+            data-tooltip={"Add section"}
             data-testid="visual-builder-add-instance-button"
             disabled={disabled}
             title={
