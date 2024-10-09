@@ -1,5 +1,38 @@
 import { css } from "goober";
 
+
+const tooltipBaseStyle = `
+    pointer-events: all;
+    svg {
+        pointer-events: none;
+    }
+    &:before {
+        content: attr(data-tooltip);
+        position: absolute;
+        bottom: 20px;
+        margin-bottom: 16px;
+        padding: 12px;
+        border-radius: 4px;
+        width: max-content;
+        max-width: 200px;
+        color: #fff;
+        font-family: Inter;
+        font-size: 0.75rem;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 132%; /* 0.99rem */
+        letter-spacing: 0.015rem;
+    }
+    &:after {
+        content: "";
+        position: absolute;
+        bottom: 17px;
+        border: 10px solid #000;
+        border-color: transparent transparent transparent transparent;
+    }
+`;
+
+
 export function visualBuilderStyles() {
     return {
         "visual-builder__container": css`
@@ -381,98 +414,37 @@ export function visualBuilderStyles() {
             }
         `,
         "visual-builder__tooltip": css`
-        pointer-events: all;
-
-        svg {
-            pointer-events: none;
-        }
+        ${tooltipBaseStyle}
 
         &:before {
-            content: attr(data-tooltip);
-            position: absolute;
-
-            bottom: 20px;
-            margin-bottom: 16px;
-
-            padding: 12px;
-            border-radius: 4px;
-
-            width: max-content;
-            max-width: 200px;
-            display: none;
-
-            color: #fff;
             background: #767676;
-            font-family: Inter;
-            font-size: 0.75rem;
-            font-style: normal;
-            font-weight: 400;
-            line-height: 132%; /* 0.99rem */
-            letter-spacing: 0.015rem;
+            display: none;
         }
 
         &:hover:before,
         &:hover:after {
             display: block;
         }
+
         &:after {
-            content: "";
-            position: absolute;
-
-            bottom: 17px;
-
-            /* the arrow */
-            border: 10px solid #000;
             border-color: #767676 transparent transparent transparent;
-
             display: none;
         }
     `,
-        "visual-builder__tooltip--persistent": css`
-            pointer-events: all;
 
-            svg {
-                pointer-events: none;
-            }
+    "visual-builder__tooltip--persistent": css`
+        ${tooltipBaseStyle}
 
-            &:before {
-                content: attr(data-tooltip);
-                position: absolute;
+        &:before {
+            background: #909090;
+            display: block;
+        }
 
-                bottom: 20px;
-                margin-bottom: 16px;
-
-                padding: 12px;
-                border-radius: 4px;
-
-                width: max-content;
-                max-width: 200px;
-                display: block;
-
-                color: #fff;
-                background: #909090;
-                font-family: Inter;
-                font-size: 0.75rem;
-                font-style: normal;
-                font-weight: 400;
-                line-height: 132%; /* 0.99rem */
-                letter-spacing: 0.015rem;
-                text-align: left;
-            }
-
-            &:after {
-                content: "";
-                position: absolute;
-
-                bottom: 17px;
-
-                /* the arrow */
-                border: 10px solid #000;
-                border-color: #909090 transparent transparent transparent;
-
-                display: block;
-            }
-        `,
+        &:after {
+            border-color: #909090 transparent transparent transparent;
+            display: block;
+        }
+    `,
         "visual-builder__empty-block": css`
             width: 100%;
             height: 100%;
