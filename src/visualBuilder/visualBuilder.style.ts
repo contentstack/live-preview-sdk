@@ -381,6 +381,54 @@ export function visualBuilderStyles() {
             }
         `,
         "visual-builder__tooltip": css`
+        pointer-events: all;
+
+        svg {
+            pointer-events: none;
+        }
+
+        &:before {
+            content: attr(data-tooltip);
+            position: absolute;
+
+            bottom: 20px;
+            margin-bottom: 16px;
+
+            padding: 12px;
+            border-radius: 4px;
+
+            width: max-content;
+            max-width: 200px;
+            display: none;
+
+            color: #fff;
+            background: #767676;
+            font-family: Inter;
+            font-size: 0.75rem;
+            font-style: normal;
+            font-weight: 400;
+            line-height: 132%; /* 0.99rem */
+            letter-spacing: 0.015rem;
+        }
+
+        &:hover:before,
+        &:hover:after {
+            display: block;
+        }
+        &:after {
+            content: "";
+            position: absolute;
+
+            bottom: 17px;
+
+            /* the arrow */
+            border: 10px solid #000;
+            border-color: #767676 transparent transparent transparent;
+
+            display: none;
+        }
+    `,
+        "visual-builder__tooltip--persistent": css`
             pointer-events: all;
 
             svg {

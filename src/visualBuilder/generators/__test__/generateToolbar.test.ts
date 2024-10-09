@@ -90,7 +90,7 @@ describe("appendFieldPathDropdown", () => {
     });
 
     test("should not do anything if tooltip is already present", () => {
-        focusedToolbar.classList.add("visual-builder__tooltip");
+        focusedToolbar.classList.add("visual-builder__tooltip--persistent");
 
         appendFieldPathDropdown(mockEventDetails, focusedToolbar);
 
