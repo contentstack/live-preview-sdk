@@ -118,7 +118,7 @@ function FieldLabelWrapperComponent(
                 icon: fieldDisabled ? (
                     <div
                         className={classNames(
-                            visualBuilderStyles()["visual-builder__tooltip"]
+                            visualBuilderStyles()["visual-builder__tooltip--persistent"]
                         )}
                         data-tooltip={reason}
                     >
