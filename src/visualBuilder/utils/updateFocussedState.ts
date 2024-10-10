@@ -2,10 +2,58 @@ import { VisualBuilder } from "..";
 import { extractDetailsFromCslp } from "../../cslp";
 import { getAddInstanceButtons } from "../generators/generateAddInstanceButtons";
 import { addFocusOverlay } from "../generators/generateOverlay";
-import { appendFocusedToolbar } from "../generators/generateToolbar";
 import { hideHoverOutline } from "../listeners/mouseHover";
 import getChildrenDirection from "./getChildrenDirection";
 import getStyleOfAnElement from "./getStyleOfAnElement";
+import { LIVE_PREVIEW_OUTLINE_WIDTH_IN_PX, RIGHT_EDGE_BUFFER, TOOLBAR_EDGE_BUFFER, TOP_EDGE_BUFFER } from "./constants";
+
+interface ToolbarPositionParams {
+    focusedToolbar: HTMLElement | null;
+    selectedElementDimension: DOMRect;
+}
+/**
+ * Adjust the position of the field toolbar instead of clearing the innerhtml fo the focused toolbar.
+ * By doing this, can avoid the re-rendering of the focus field toolbar.
+*/
+function positionToolbar({
+    focusedToolbar,
+    selectedElementDimension,
+}: ToolbarPositionParams): void {
+    if (focusedToolbar) {
+        const targetElementRightEdgeOffset = window.scrollX + window.innerWidth - selectedElementDimension.left;
+        const distanceFromTop = selectedElementDimension.top + window.scrollY - TOOLBAR_EDGE_BUFFER;
+
+        // Adjust top position based on the available space
+        const adjustedDistanceFromTop = 
+            selectedElementDimension.top + window.scrollY < TOP_EDGE_BUFFER
+                ? distanceFromTop + selectedElementDimension.height + TOP_EDGE_BUFFER
+                : distanceFromTop;
+
+        const distanceFromLeft = selectedElementDimension.left - LIVE_PREVIEW_OUTLINE_WIDTH_IN_PX;
+        const adjustedDistanceFromLeft = Math.max(distanceFromLeft, TOOLBAR_EDGE_BUFFER);
+
+        // Handle right-edge overflow
+        if (
+            targetElementRightEdgeOffset < RIGHT_EDGE_BUFFER &&
+            (focusedToolbar.style.justifyContent !== "flex-end" ||
+                focusedToolbar.style.left !== `${selectedElementDimension.right + LIVE_PREVIEW_OUTLINE_WIDTH_IN_PX}px`)
+        ) {
+            focusedToolbar.style.justifyContent = "flex-end";
+            focusedToolbar.style.left = `${selectedElementDimension.right + LIVE_PREVIEW_OUTLINE_WIDTH_IN_PX}px`;
+        } else if (
+            focusedToolbar.style.justifyContent !== "flex-start" ||
+            focusedToolbar.style.left !== `${adjustedDistanceFromLeft}px`
+        ) {
+            focusedToolbar.style.justifyContent = "flex-start"; // Default
+            focusedToolbar.style.left = `${adjustedDistanceFromLeft}px`;
+        }
+
+        // Adjust top position if necessary
+        if (focusedToolbar.style.top !== `${adjustedDistanceFromTop}px`) {
+            focusedToolbar.style.top = `${adjustedDistanceFromTop}px`;
+        }
+    }
+}
 
 /**
  * This function can be used to re-draw/update the focussed state of an element.
@@ -65,18 +113,15 @@ export function updateFocussedState({
 
     const targetElementDimension = editableElement.getBoundingClientRect();
     if (targetElementDimension.width && targetElementDimension.height) {
-        // re-add focussed toolbar
-        if (focusedToolbar) {
-            focusedToolbar.innerHTML = "";
-        }
-        appendFocusedToolbar(
-            {
-                editableElement: editableElement as HTMLElement,
-                cslpData: cslp,
-                fieldMetadata,
-            },
-            focusedToolbar as HTMLDivElement
-        );
+        const selectedElement = VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM;
+
+        if(!selectedElement)
+            return;
+        // position the focused tool bar
+        positionToolbar({
+            focusedToolbar: focusedToolbar,
+            selectedElementDimension: selectedElement.getBoundingClientRect(),
+        });
     }
 
     // re-add multiple instance add buttons
