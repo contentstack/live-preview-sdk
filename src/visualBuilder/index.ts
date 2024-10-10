@@ -38,6 +38,7 @@ import { isFieldDisabled } from "./utils/isFieldDisabled";
 import { updateFocussedState } from "./utils/updateFocussedState";
 import { useHighlightCommentIcon } from "./eventManager/useHighlightCommentIcon";
 import { updateHighlightedCommentIconPosition } from "./generators/generateHighlightedComment";
+import { useRecalculateVariantDataCSLPValues } from "./eventManager/useRecalculateVariantDataCSLPValues";
 
 interface VisualBuilderGlobalStateImpl {
     previousSelectedEditableDOM: HTMLElement | Element | null;
@@ -282,6 +283,7 @@ export class VisualBuilder {
                 // These events are used to sync the data when we made some changes in the entry without invoking live preview module.
                 useHistoryPostMessageEvent();
                 useOnEntryUpdatePostMessageEvent();
+                useRecalculateVariantDataCSLPValues();
                 useDraftFieldsPostMessageEvent();
                 useVariantFieldsPostMessageEvent();
             })
