@@ -1,6 +1,5 @@
 import { css } from "goober";
 
-
 const tooltipBaseStyle = `
     pointer-events: all;
     svg {
@@ -33,7 +32,6 @@ const tooltipBaseStyle = `
         border-color: #767676 transparent transparent transparent;
     }
 `;
-
 
 export function visualBuilderStyles() {
     return {
@@ -214,9 +212,6 @@ export function visualBuilderStyles() {
             position: absolute;
             top: 0;
             left: 0;
-        `,
-        "visual-builder__cursor-wrapper": css`
-            position: relative;
         `,
         "visual-builder__cursor-pointer": css`
             position: absolute;
@@ -416,33 +411,33 @@ export function visualBuilderStyles() {
             }
         `,
         "visual-builder__tooltip": css`
-        ${tooltipBaseStyle}
+            ${tooltipBaseStyle}
 
-        &:before {
-            display: none;
-        }
+            &:before {
+                display: none;
+            }
 
-        &:hover:before,
-        &:hover:after {
-            display: block;
-        }
+            &:hover:before,
+            &:hover:after {
+                display: block;
+            }
 
-        &:after {
-            display: none;
-        }
-    `,
+            &:after {
+                display: none;
+            }
+        `,
 
-    "visual-builder__tooltip--persistent": css`
-        ${tooltipBaseStyle}
+        "visual-builder__tooltip--persistent": css`
+            ${tooltipBaseStyle}
 
-        &:before {
-            display: block;
-        }
+            &:before {
+                display: block;
+            }
 
-        &:after {
-            display: block;
-        }
-    `,
+            &:after {
+                display: block;
+            }
+        `,
         "visual-builder__empty-block": css`
             width: 100%;
             height: 100%;
@@ -622,8 +617,8 @@ export function visualBuilderStyles() {
             }
         `,
         "visual-builder__no-cursor-style": css`
-           cursor: none !important; 
-        `
+            cursor: none !important;
+        `,
     };
 }
 

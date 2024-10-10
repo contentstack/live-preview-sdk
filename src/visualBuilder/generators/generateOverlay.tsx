@@ -111,6 +111,13 @@ export function hideFocusOverlay(elements: HideOverlayParams): void {
     if (visualBuilderOverlayWrapper) {
         visualBuilderOverlayWrapper.classList.remove("visible");
 
+        // Cleanup overlay styles: Top, Right, Bottom, Left & Outline
+        visualBuilderOverlayWrapper.childNodes.forEach((childNode) => {
+            if (childNode instanceof Element) {
+                childNode.removeAttribute("style");
+            }
+        });
+
         if (
             VisualBuilder.VisualBuilderGlobalState.value
                 .previousSelectedEditableDOM

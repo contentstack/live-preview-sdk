@@ -52,15 +52,11 @@ export function generateCustomCursor({
     if (prevDataIcon === fieldType) {
         return;
     }
-    customCursor.innerHTML = `<div class="${classNames(
-        "visual-builder__cursor-wrapper",
-        visualBuilderStyles()["visual-builder__cursor-wrapper"],
-        {
-            "visual-builder__cursor-disabled": fieldDisabled,
-            [visualBuilderStyles()["visual-builder__cursor-disabled"]]:
-                fieldDisabled,
-        }
-    )}"><div class="${classNames(
+    customCursor.innerHTML = `<div class="${classNames({
+        "visual-builder__cursor-disabled": fieldDisabled,
+        [visualBuilderStyles()["visual-builder__cursor-disabled"]]:
+            fieldDisabled,
+    })}"><div class="${classNames(
         "visual-builder__cursor-pointer",
         visualBuilderStyles()["visual-builder__cursor-pointer"]
     )}">${cursor}</div><div class="${classNames(
