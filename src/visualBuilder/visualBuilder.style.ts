@@ -1,5 +1,40 @@
 import { css } from "goober";
 
+
+const tooltipBaseStyle = `
+    pointer-events: all;
+    svg {
+        pointer-events: none;
+    }
+    &:before {
+        content: attr(data-tooltip);
+        position: absolute;
+        bottom: 20px;
+        margin-bottom: 16px;
+        padding: 12px;
+        border-radius: 4px;
+        width: max-content;
+        max-width: 200px;
+        color: #fff;
+        font-family: Inter;
+        font-size: 0.75rem;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 132%; /* 0.99rem */
+        letter-spacing: 0.015rem;
+        background: #767676;
+    }
+    &:after {
+        content: "";
+        position: absolute;
+        bottom: 17px;
+        /* the arrow */
+        border: 10px solid #000;
+        border-color: #767676 transparent transparent transparent;
+    }
+`;
+
+
 export function visualBuilderStyles() {
     return {
         "visual-builder__container": css`
@@ -246,6 +281,11 @@ export function visualBuilderStyles() {
             flex-direction: column-reverse;
             position: relative;
         `,
+        "visual-builder__focused-toolbar__field-label-container": css`
+            display: flex;
+            column-gap: 0.5rem;
+            align-items: center;
+        `,
         "visual-builder__button": css`
             background-color: transparent;
             border: 1px solid transparent;
@@ -362,7 +402,6 @@ export function visualBuilderStyles() {
         "visual-builder__focused-toolbar--field-disabled": css`
             pointer-events: none;
             cursor: not-allowed;
-
             .visual-builder__focused-toolbar__field-label-wrapper__current-field {
                 background: #909090;
             }
@@ -377,54 +416,33 @@ export function visualBuilderStyles() {
             }
         `,
         "visual-builder__tooltip": css`
-            pointer-events: all;
+        ${tooltipBaseStyle}
 
-            svg {
-                pointer-events: none;
-            }
+        &:before {
+            display: none;
+        }
 
-            &:before {
-                content: attr(data-tooltip);
-                position: absolute;
+        &:hover:before,
+        &:hover:after {
+            display: block;
+        }
 
-                bottom: 20px;
-                left: -16px;
-                margin-bottom: 16px;
+        &:after {
+            display: none;
+        }
+    `,
 
-                padding: 12px;
-                border-radius: 4px;
+    "visual-builder__tooltip--persistent": css`
+        ${tooltipBaseStyle}
 
-                width: max-content;
-                max-width: 200px;
-                display: none;
+        &:before {
+            display: block;
+        }
 
-                color: #fff;
-                background: #767676;
-                font-family: Inter;
-                font-size: 0.75rem;
-                font-style: normal;
-                font-weight: 400;
-                line-height: 132%; /* 0.99rem */
-                letter-spacing: 0.015rem;
-            }
-
-            &:hover:before,
-            &:hover:after {
-                display: block;
-            }
-            &:after {
-                content: "";
-                position: absolute;
-
-                bottom: 17px;
-
-                /* the arrow */
-                border: 10px solid #000;
-                border-color: #767676 transparent transparent transparent;
-
-                display: none;
-            }
-        `,
+        &:after {
+            display: block;
+        }
+    `,
         "visual-builder__empty-block": css`
             width: 100%;
             height: 100%;
@@ -479,9 +497,6 @@ export function visualBuilderStyles() {
         `,
         "visual-builder__variant-field": css`
             outline: 2px solid #bd59fa;
-        `,
-        "visual-builder__base-field": css`
-            outline: 2px solid #eb5646;
         `,
         "visual-builder__pseudo-editable-element": css`
             z-index: 200 !important;
@@ -550,6 +565,65 @@ export function visualBuilderStyles() {
                 line-height: 18px;
             }
         `,
+        "variant-field-revert-component": css`
+            position: relative;
+            display: inline-block;
+        `,
+        "variant-field-revert-component__dropdown-button": css`
+            background-color: #bd59fa;
+            color: white;
+            padding: 0.3125rem 8px;
+            font-size: 10px;
+            height: 27.2px;
+            margin-right: 3px;
+            min-width: max-content;
+            border: none;
+            cursor: pointer;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            column-gap: 4px;
+            &:focus {
+                outline: none;
+            }
+        `,
+        "variant-field-revert-component__dropdown-content": css`
+            position: absolute;
+            background-color: #ffffff;
+            min-width: max-content;
+            box-shadow:
+                0 4px 15px 0 rgba(108, 92, 231, 0.2),
+                0 3px 14px 3px rgba(0, 0, 0, 0.12),
+                0 8px 10px 1px rgba(0, 0, 0, 0.14);
+            z-index: 9;
+            margin-top: 4px;
+            padding: 4px 0px;
+        `,
+        "variant-field-revert-component__dropdown-content__list-item": css`
+            color: black;
+            padding: 9.6px 16px;
+            text-decoration: none;
+            display: block;
+            font-size: 0.75rem;
+            height: 32px;
+            line-height: 2rem;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            &:hover {
+                background-color: #f1f1f1;
+            }
+            &:hover > span {
+                color: #5d50be;
+            }
+            & > span {
+                margin-top: 4px;
+                margin-bottom: 4px;
+            }
+        `,
+        "visual-builder__no-cursor-style": css`
+           cursor: none !important; 
+        `
     };
 }
 

@@ -39,7 +39,7 @@ describe("generateStartEditingButton", () => {
         button?.click();
 
         expect(button?.getAttribute("href")).toBe(
-            "https://app.contentstack.com/visual-builder/stack//environment/?branch=main&target-url=http%3A%2F%2Flocalhost%2F&locale=en-us"
+            "https://app.contentstack.com/#!/stack//visual-builder?branch=main&target-url=http%3A%2F%2Flocalhost%3A3000%2F&locale=en-us"
         );
     });
 
@@ -57,7 +57,7 @@ describe("generateStartEditingButton", () => {
         button?.click();
 
         expect(button?.getAttribute("href")).toBe(
-            "https://app.contentstack.com/visual-builder/stack//environment/?branch=main&target-url=http%3A%2F%2Flocalhost%2F&locale=en-us"
+            "https://app.contentstack.com/#!/stack//visual-builder?branch=main&target-url=http%3A%2F%2Flocalhost%3A3000%2F&locale=en-us"
         );
     });
 

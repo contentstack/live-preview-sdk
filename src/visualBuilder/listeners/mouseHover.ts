@@ -145,6 +145,15 @@ async function handleMouseHover(params: HandleMouseHoverParams): Promise<void> {
         }
 
         if (params.customCursor) {
+            const elementUnderCursor = document.elementFromPoint(params.event.clientX, params.event.clientY);
+            if(elementUnderCursor){
+                if(elementUnderCursor.nodeName === "A" || elementUnderCursor.nodeName === "BUTTON"){
+                    elementUnderCursor.classList.add(
+                        visualBuilderStyles()['visual-builder__no-cursor-style']
+                    )
+                }
+            }
+
             if (
                 VisualBuilder.VisualBuilderGlobalState.value
                     .previousHoveredTargetDOM !== editableElement

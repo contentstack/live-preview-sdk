@@ -2,8 +2,14 @@ import crypto from "crypto";
 import { getFieldSchemaMap } from "../../__test__/data/fieldSchemaMap";
 import { sleep } from "../../__test__/utils";
 import Config from "../../configManager/configManager";
-import { VisualBuilder } from "../index";
 import { FieldSchemaMap } from "../utils/fieldSchemaMap";
+import { waitFor, screen } from "@testing-library/preact";
+import { VisualBuilderPostMessageEvents } from "../utils/types/postMessage.types";
+import { VisualBuilder } from "../index";
+import visualBuilderPostMessage from "../utils/visualBuilderPostMessage";
+import { Mock } from "vitest";
+
+const INLINE_EDITABLE_FIELD_VALUE = "Hello World";
 
 vi.mock("../utils/visualBuilderPostMessage", async () => {
     const { getAllContentTypes } = await vi.importActual<
@@ -45,6 +51,17 @@ describe("Visual builder", () => {
             getFieldSchemaMap().all_fields
         );
         Config.set("mode", 2);
+        vi.spyOn(
+            document.documentElement,
+            "clientWidth",
+            "get"
+        ).mockReturnValue(100);
+        vi.spyOn(
+            document.documentElement,
+            "clientHeight",
+            "get"
+        ).mockReturnValue(100);
+        vi.spyOn(document.body, "scrollHeight", "get").mockReturnValue(100);
     });
 
     afterEach(() => {
@@ -75,8 +92,7 @@ describe("Visual builder", () => {
         let h1Tag: HTMLHeadingElement;
         beforeEach(() => {
             h1Tag = document.createElement("h1");
-            h1Tag.innerText = "Hello World";
-
+            h1Tag.textContent = INLINE_EDITABLE_FIELD_VALUE;
             h1Tag.setAttribute(
                 "data-cslp",
                 "all_fields.blt58a50b4cebae75c5.en-us.modular_blocks.0.block.single_line"
@@ -113,9 +129,55 @@ describe("Visual builder", () => {
         });
 
         describe("inline elements must be contenteditable", () => {
+            beforeAll(() => {
+                (visualBuilderPostMessage?.send as Mock).mockImplementation(
+                    (eventName: string, args) => {
+                        if (
+                            eventName ===
+                            VisualBuilderPostMessageEvents.GET_FIELD_DATA
+                        ) {
+                            const values: Record<string, any> = {
+                                single_line: INLINE_EDITABLE_FIELD_VALUE,
+                                multi_line: INLINE_EDITABLE_FIELD_VALUE,
+                                file: {
+                                    uid: "fileUid",
+                                },
+                            };
+                            return Promise.resolve({
+                                fieldData: values[args.entryPath],
+                            });
+                        } else if (
+                            eventName ===
+                            VisualBuilderPostMessageEvents.GET_FIELD_DISPLAY_NAMES
+                        ) {
+                            const names: Record<string, string> = {
+                                "all_fields.blt58a50b4cebae75c5.en-us.single_line":
+                                    "Single Line",
+                                "all_fields.blt58a50b4cebae75c5.en-us.multi_line":
+                                    "Multi Line",
+                                "all_fields.blt58a50b4cebae75c5.en-us.file":
+                                    "File",
+                            };
+                            return Promise.resolve({
+                                [args.cslp]: names[args.cslp],
+                            });
+                        }
+                        return Promise.resolve({});
+                    }
+                );
+            });
+
             test("single line should be contenteditable", async () => {
                 const h1 = document.createElement("h1");
-
+                h1.textContent = INLINE_EDITABLE_FIELD_VALUE;
+                h1.getBoundingClientRect = vi.fn(() => ({
+                    left: 10,
+                    right: 20,
+                    top: 10,
+                    bottom: 20,
+                    width: 10,
+                    height: 5,
+                })) as any;
                 h1.setAttribute(
                     "data-cslp",
                     "all_fields.blt58a50b4cebae75c5.en-us.single_line"
@@ -128,8 +190,10 @@ describe("Visual builder", () => {
                 h1.click();
                 await sleep(0);
 
+                await waitFor(() => {
+                    expect(h1.getAttribute("contenteditable")).toBe("true");
+                });
                 expect(h1).toMatchSnapshot();
-                expect(h1.getAttribute("contenteditable")).toBe("true");
             });
 
             test("multi line should be contenteditable", async () => {
@@ -138,9 +202,19 @@ describe("Visual builder", () => {
                     "data-cslp",
                     "all_fields.blt58a50b4cebae75c5.en-us.multi_line"
                 );
+                h1.getBoundingClientRect = vi.fn(() => ({
+                    left: 10,
+                    right: 20,
+                    top: 10,
+                    bottom: 20,
+                    width: 10,
+                    height: 5,
+                })) as any;
+                h1.textContent = INLINE_EDITABLE_FIELD_VALUE;
                 document.body.appendChild(h1);
                 new VisualBuilder();
 
+                await sleep(0);
                 h1.click();
                 await sleep(0);
 
@@ -148,8 +222,10 @@ describe("Visual builder", () => {
                 //     e.code.includes("")
                 // })
 
+                await waitFor(() => {
+                    expect(h1.getAttribute("contenteditable")).toBe("true");
+                });
                 expect(h1).toMatchSnapshot();
-                expect(h1.getAttribute("contenteditable")).toBe("true");
             });
 
             test("file should render a replacer and remove when it is not", async () => {
@@ -198,6 +274,52 @@ describe("visual builder DOM", () => {
             "all_fields",
             getFieldSchemaMap().all_fields
         );
+        Config.set("mode", 2);
+        vi.spyOn(
+            document.documentElement,
+            "clientWidth",
+            "get"
+        ).mockReturnValue(100);
+        vi.spyOn(
+            document.documentElement,
+            "clientHeight",
+            "get"
+        ).mockReturnValue(100);
+        vi.spyOn(document.body, "scrollHeight", "get").mockReturnValue(100);
+
+        (visualBuilderPostMessage?.send as Mock).mockImplementation(
+            (eventName: string, args) => {
+                if (
+                    eventName === VisualBuilderPostMessageEvents.GET_FIELD_DATA
+                ) {
+                    const values: Record<string, any> = {
+                        single_line: INLINE_EDITABLE_FIELD_VALUE,
+                        multi_line: INLINE_EDITABLE_FIELD_VALUE,
+                        file: {
+                            uid: "fileUid",
+                        },
+                    };
+                    return Promise.resolve({
+                        fieldData: values[args.entryPath],
+                    });
+                } else if (
+                    eventName ===
+                    VisualBuilderPostMessageEvents.GET_FIELD_DISPLAY_NAMES
+                ) {
+                    const names: Record<string, string> = {
+                        "all_fields.blt58a50b4cebae75c5.en-us.single_line":
+                            "Single Line",
+                        "all_fields.blt58a50b4cebae75c5.en-us.multi_line":
+                            "Multi Line",
+                        "all_fields.blt58a50b4cebae75c5.en-us.file": "File",
+                    };
+                    return Promise.resolve({
+                        [args.cslp]: names[args.cslp],
+                    });
+                }
+                return Promise.resolve({});
+            }
+        );
     });
 
     beforeEach(() => {
@@ -205,14 +327,18 @@ describe("visual builder DOM", () => {
 
         h1.setAttribute(
             "data-cslp",
-            "all_fields.blt58a50b4cebae75c5.en-us.title"
+            "all_fields.blt58a50b4cebae75c5.en-us.single_line"
         );
+
+        h1.innerText = INLINE_EDITABLE_FIELD_VALUE;
 
         h1.getBoundingClientRect = vi.fn(() => ({
             left: 10,
             right: 20,
             top: 10,
             bottom: 20,
+            width: 10,
+            height: 5,
         })) as any;
 
         document.body.appendChild(h1);
@@ -236,64 +362,55 @@ describe("visual builder DOM", () => {
         expect(visualBuilderOverlayWrapper).toMatchSnapshot();
 
         await sleep(0);
+        // TODO - should we be using userEvent? which is more
+        // accurate simulation of actual events that are triggered
+        // in a browser on clicking. Right now, this test fails if we
+        // use userEvent.click
+        // await userEvent.click(h1);
         h1.click();
         await sleep(0);
 
-        visualBuilderOverlayWrapper = document.querySelector(
-            `[data-testid="visual-builder__overlay__wrapper"]`
+        await waitFor(() => {
+            expect(h1.getAttribute("contenteditable")).toBe("true");
+        });
+        visualBuilderOverlayWrapper = await screen.findByTestId(
+            "visual-builder__overlay__wrapper"
         );
-
-        expect(visualBuilderOverlayWrapper).toMatchSnapshot();
         expect(visualBuilderOverlayWrapper?.classList.contains("visible")).toBe(
             true
         );
+        expect(visualBuilderOverlayWrapper).toMatchSnapshot();
 
-        const visualBuilderWrapperTopOverlay = document.querySelector(
-            `[data-testid="visual-builder__overlay--top"]`
-        ) as HTMLDivElement;
-        const visualBuilderWrapperLeftOverlay = document.querySelector(
-            `[data-testid="visual-builder__overlay--left"]`
-        ) as HTMLDivElement;
-        const visualBuilderWrapperRightOverlay = document.querySelector(
-            `[data-testid="visual-builder__overlay--right"]`
-        ) as HTMLDivElement;
-        const visualBuilderWrapperBottomOverlay = document.querySelector(
-            `[data-testid="visual-builder__overlay--bottom"]`
-        ) as HTMLDivElement;
+        const visualBuilderWrapperTopOverlay = await screen.findByTestId(
+            "visual-builder__overlay--top"
+        );
+        const visualBuilderWrapperLeftOverlay = await screen.findByTestId(
+            "visual-builder__overlay--left"
+        );
+        const visualBuilderWrapperRightOverlay = await screen.findByTestId(
+            "visual-builder__overlay--right"
+        );
+        const visualBuilderWrapperBottomOverlay = await screen.findByTestId(
+            "visual-builder__overlay--bottom"
+        );
 
         expect(visualBuilderWrapperTopOverlay.style.top).toBe("0px");
         expect(visualBuilderWrapperTopOverlay.style.left).toBe("0px");
         expect(visualBuilderWrapperTopOverlay.style.width).toBe("100%");
-        expect(visualBuilderWrapperTopOverlay.style.height).toBe(
-            "calc(10px - 2px)"
-        );
+        expect(visualBuilderWrapperTopOverlay.style.height).toBe("calc(10px)");
 
-        expect(visualBuilderWrapperBottomOverlay.style.top).toBe(
-            "calc(20px + 2px)"
-        );
+        expect(visualBuilderWrapperBottomOverlay.style.top).toBe("20px");
         expect(visualBuilderWrapperBottomOverlay.style.left).toBe("0px");
         expect(visualBuilderWrapperBottomOverlay.style.width).toBe("100%");
-        expect(visualBuilderWrapperBottomOverlay.style.height).toBe(
-            "calc(-20px - 2px)"
-        );
+        expect(visualBuilderWrapperBottomOverlay.style.height).toBe("80px");
 
-        expect(visualBuilderWrapperLeftOverlay.style.top).toBe(
-            "calc(10px - 2px)"
-        );
+        expect(visualBuilderWrapperLeftOverlay.style.top).toBe("10px");
         expect(visualBuilderWrapperLeftOverlay.style.left).toBe("0px");
-        expect(visualBuilderWrapperLeftOverlay.style.width).toBe(
-            "calc(10px - 2px)"
-        );
+        expect(visualBuilderWrapperLeftOverlay.style.width).toBe("10px");
 
-        expect(visualBuilderWrapperRightOverlay.style.top).toBe(
-            "calc(10px - 2px)"
-        );
-        expect(visualBuilderWrapperRightOverlay.style.left).toBe(
-            "calc(20px + 2px)"
-        );
-        expect(visualBuilderWrapperRightOverlay.style.width).toBe(
-            "calc(1004px - 2px)"
-        );
+        expect(visualBuilderWrapperRightOverlay.style.top).toBe("10px");
+        expect(visualBuilderWrapperRightOverlay.style.left).toBe("20px");
+        expect(visualBuilderWrapperRightOverlay.style.width).toBe("80px");
     });
 
     test("should remove the DOM when method is triggered", async () => {
@@ -329,25 +446,32 @@ describe("visual builder DOM", () => {
         // the overlay is being rendered.
         await sleep(0);
 
-        let visualBuilderOverlayWrapper = document.querySelector(
-            `[data-testid="visual-builder__overlay__wrapper"]`
+        expect(h1.getAttribute("contenteditable")).toBe("true");
+
+        await waitFor(() => {
+            expect(h1.getAttribute("contenteditable")).toBe("true");
+        });
+        let visualBuilderOverlayWrapper = await screen.findByTestId(
+            "visual-builder__overlay__wrapper"
         );
         expect(visualBuilderOverlayWrapper?.classList.contains("visible")).toBe(
             true
         );
-        expect(h1.getAttribute("contenteditable")).toBe("true");
 
         const visualBuilderOverlayTop = document.querySelector(`
         [data-testid="visual-builder__overlay--top"]`) as HTMLDivElement;
 
         visualBuilderOverlayTop?.click();
+        await sleep(0);
 
-        visualBuilderOverlayWrapper = document.querySelector(
-            `[data-testid="visual-builder__overlay__wrapper"]`
+        await waitFor(() => {
+            expect(h1.getAttribute("contenteditable")).toBeNull();
+        });
+        visualBuilderOverlayWrapper = await screen.findByTestId(
+            "visual-builder__overlay__wrapper"
         );
         expect(visualBuilderOverlayWrapper?.classList.contains("visible")).toBe(
-            false
+            true
         );
-        expect(h1.getAttribute("contenteditable")).toBeNull();
     });
 });

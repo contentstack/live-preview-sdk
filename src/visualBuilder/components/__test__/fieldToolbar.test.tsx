@@ -1,55 +1,56 @@
-import { render, cleanup, fireEvent } from "@testing-library/preact";
-import FieldToolbarComponent from "../FieldToolbar";
-import {
-    handleMoveInstance,
-    handleDeleteInstance,
-} from "../../utils/instanceHandlers";
-
+import { cleanup, fireEvent, render } from "@testing-library/preact";
 import { CslpData } from "../../../cslp/types/cslp.types";
+import { FieldSchemaMap } from "../../utils/fieldSchemaMap";
+import {
+    handleDeleteInstance,
+    handleMoveInstance,
+} from "../../utils/instanceHandlers";
 import { ISchemaFieldMap } from "../../utils/types/index.types";
+import FieldToolbarComponent from "../FieldToolbar";
+import { mockMultipleLinkFieldSchema } from "../../../__test__/data/fields";
 
 vi.mock("../../utils/instanceHandlers", () => ({
     handleMoveInstance: vi.fn(),
     handleDeleteInstance: vi.fn(),
 }));
 
-// TODO - add mock field schema
+vi.mock("../../utils/visualBuilderPostMessage", async () => {
+    return {
+        default: {
+            send: vi.fn().mockImplementation((_eventName: string) => {
+                return Promise.resolve({});
+            }),
+            on: vi.fn(),
+        },
+    };
+});
 
-const mockFieldMetadata: CslpData = {
+vi.mock("../../utils/getDiscussionIdByFieldMetaData", () => {
+    return {
+        getDiscussionIdByFieldMetaData: vi.fn().mockResolvedValue({
+            uid: "discussionId",
+        }),
+    };
+});
+
+const mockMultipleFieldMetadata: CslpData = {
     entry_uid: "",
     content_type_uid: "",
     cslpValue: "",
     locale: "",
     variant: undefined,
     fieldPath: "",
-    fieldPathWithIndex: "",
+    fieldPathWithIndex: "group.link",
     multipleFieldMetadata: {
         index: 0,
         parentDetails: {
-            parentPath: "",
-            parentCslpValue: "",
+            parentPath: "group",
+            parentCslpValue: "entry.contentType.locale",
         },
     },
     instance: {
-        fieldPathWithIndex: "",
+        fieldPathWithIndex: "group.link.0",
     },
-};
-
-const mockLinkFieldSchema: ISchemaFieldMap = {
-    data_type: "link",
-    display_name: "Link",
-    uid: "link",
-    field_metadata: {
-        description: "",
-        default_value: {
-            title: "Example",
-            url: "https://www.example.com",
-        },
-    },
-    mandatory: false,
-    multiple: false,
-    non_localizable: false,
-    unique: false,
 };
 
 describe("MultipleFieldToolbarComponent", () => {
@@ -59,28 +60,33 @@ describe("MultipleFieldToolbarComponent", () => {
         targetElement = document.createElement("div");
         targetElement.setAttribute("data-testid", "mock-target-element");
         document.body.appendChild(targetElement);
+
+        vi.spyOn(FieldSchemaMap, "getFieldSchema").mockResolvedValue(
+            mockMultipleLinkFieldSchema
+        );
     });
 
     afterEach(() => {
         document.body.removeChild(targetElement);
+        vi.clearAllMocks();
         cleanup();
     });
 
-    test("renders toolbar buttons correctly", () => {
-        const { getByTestId } = render(
+    test("renders toolbar buttons correctly", async () => {
+        const { findByTestId } = render(
             <FieldToolbarComponent
-                fieldMetadata={mockFieldMetadata}
+                fieldMetadata={mockMultipleFieldMetadata}
                 editableElement={targetElement}
             />
         );
 
-        const moveLeftButton = getByTestId(
+        const moveLeftButton = await findByTestId(
             "visual-builder__focused-toolbar__multiple-field-toolbar__move-left-button"
         );
-        const moveRightButton = getByTestId(
+        const moveRightButton = await findByTestId(
             "visual-builder__focused-toolbar__multiple-field-toolbar__move-right-button"
         );
-        const deleteButton = getByTestId(
+        const deleteButton = await findByTestId(
             "visual-builder__focused-toolbar__multiple-field-toolbar__delete-button"
         );
 
@@ -89,66 +95,65 @@ describe("MultipleFieldToolbarComponent", () => {
         expect(deleteButton).toBeInTheDocument();
     });
 
-    test("calls handleMoveInstance with 'previous' when move left button is clicked", () => {
-        const { getByTestId } = render(
+    test("calls handleMoveInstance with 'previous' when move left button is clicked", async () => {
+        const { findByTestId } = render(
             <FieldToolbarComponent
-                fieldMetadata={mockFieldMetadata}
+                fieldMetadata={mockMultipleFieldMetadata}
                 editableElement={targetElement}
             />
         );
 
-        const moveLeftButton = getByTestId(
+        const moveLeftButton = await findByTestId(
             "visual-builder__focused-toolbar__multiple-field-toolbar__move-left-button"
         );
         expect(moveLeftButton).toBeInTheDocument();
 
         fireEvent.click(moveLeftButton);
 
-        expect(handleMoveInstance).toHaveBeenCalled();
         expect(handleMoveInstance).toHaveBeenCalledWith(
-            mockFieldMetadata,
+            mockMultipleFieldMetadata,
             "previous"
         );
     });
 
-    test("calls handleMoveInstance with 'next' when move right button is clicked", () => {
-        const { getByTestId } = render(
+    test("calls handleMoveInstance with 'next' when move right button is clicked", async () => {
+        const { findByTestId } = render(
             <FieldToolbarComponent
-                fieldMetadata={mockFieldMetadata}
+                fieldMetadata={mockMultipleFieldMetadata}
                 editableElement={targetElement}
             />
         );
 
-        const moveRightButton = getByTestId(
+        const moveRightButton = await findByTestId(
             "visual-builder__focused-toolbar__multiple-field-toolbar__move-right-button"
         );
         expect(moveRightButton).toBeInTheDocument();
 
         fireEvent.click(moveRightButton);
 
-        expect(handleMoveInstance).toHaveBeenCalled();
         expect(handleMoveInstance).toHaveBeenCalledWith(
-            mockFieldMetadata,
+            mockMultipleFieldMetadata,
             "next"
         );
     });
 
-    test("calls handleDeleteInstance when delete button is clicked", () => {
-        const { getByTestId } = render(
+    test("calls handleDeleteInstance when delete button is clicked", async () => {
+        const { findByTestId } = render(
             <FieldToolbarComponent
-                fieldMetadata={mockFieldMetadata}
+                fieldMetadata={mockMultipleFieldMetadata}
                 editableElement={targetElement}
             />
         );
 
-        const deleteButton = getByTestId(
+        const deleteButton = await findByTestId(
             "visual-builder__focused-toolbar__multiple-field-toolbar__delete-button"
         );
         expect(deleteButton).toBeInTheDocument();
 
         fireEvent.click(deleteButton);
 
-        expect(handleDeleteInstance).toHaveBeenCalled();
-        expect(handleDeleteInstance).toHaveBeenCalledWith(mockFieldMetadata);
+        expect(handleDeleteInstance).toHaveBeenCalledWith(
+            mockMultipleFieldMetadata
+        );
     });
 });

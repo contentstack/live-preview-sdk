@@ -1,21 +1,16 @@
 import { CslpData } from "../../../cslp/types/cslp.types";
-import { getExpectedFieldData } from "../getExpectedFieldData";
+import { getFieldData } from "../getFieldData";
 import visualBuilderPostMessage from "../visualBuilderPostMessage";
 import { VisualBuilderPostMessageEvents } from "../types/postMessage.types";
 
 vi.mock("../../utils/visualBuilderPostMessage", async () => {
-    const { getAllContentTypes } = await vi.importActual<
-        typeof import("./../../../__test__/data/contentType")
-    >("./../../../__test__/data/contentType");
-
-    const contentTypes = getAllContentTypes();
     return {
         __esModule: true,
         default: {
             send: vi.fn().mockImplementation((eventName: string) => {
-                if (eventName === "init")
+                if (eventName === "get-field-data")
                     return Promise.resolve({
-                        contentTypes,
+                        fieldData: "hello",
                     });
                 return Promise.resolve();
             }),
@@ -23,6 +18,7 @@ vi.mock("../../utils/visualBuilderPostMessage", async () => {
     };
 });
 
+/** @ts-expect-error variant is an optional field */
 const mockFieldMetadata: CslpData = {
     entry_uid: "bltapikey",
     content_type_uid: "all_fields",
@@ -45,12 +41,13 @@ const mockFieldMetadata: CslpData = {
 
 describe("getExpectedFieldData", () => {
     test("should return the expected field data", async () => {
-        const expectedFieldData = await getExpectedFieldData(mockFieldMetadata);
-        expect(expectedFieldData).toBe("");
+        const fieldData = await getFieldData(mockFieldMetadata);
+        expect(fieldData).toBe("hello");
 
         expect(visualBuilderPostMessage?.send).lastCalledWith(
             VisualBuilderPostMessageEvents.GET_FIELD_DATA,
             {
+                entryPath: "",
                 fieldMetadata: {
                     entry_uid: "bltapikey",
                     content_type_uid: "all_fields",
