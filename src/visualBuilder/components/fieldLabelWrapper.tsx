@@ -118,7 +118,9 @@ function FieldLabelWrapperComponent(
                 icon: fieldDisabled ? (
                     <div
                         className={classNames(
-                            visualBuilderStyles()["visual-builder__tooltip--persistent"]
+                            visualBuilderStyles()[
+                                "visual-builder__tooltip--persistent"
+                            ]
                         )}
                         data-tooltip={reason}
                     >
@@ -285,6 +287,7 @@ function FieldLabelWrapperComponent(
             {currentField.isVariant ? (
                 <FieldRevertComponent
                     fieldDataName={currentField.fieldDataName}
+                    fieldMetadata={props.fieldMetadata}
                     variantStatus={currentField.fieldVariantStatus}
                 />
             ) : null}
