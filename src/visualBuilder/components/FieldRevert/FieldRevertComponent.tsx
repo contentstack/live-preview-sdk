@@ -4,6 +4,7 @@ import { visualBuilderStyles } from "../../visualBuilder.style";
 import { VariantIcon } from "../icons/variant";
 import { CaretIcon } from "../icons";
 import visualBuilderPostMessage from "../../utils/visualBuilderPostMessage";
+import { CslpData } from "../../../cslp/types/cslp.types";
 
 export interface IVariantStatus {
     fieldLevelCustomizations: boolean;
@@ -22,7 +23,7 @@ export type TFieldRevertActionCallback =
 
 interface FieldRevertComponentProps {
     fieldDataName: string;
-    // actionCallback: (callbackType: TFieldRevertActionCallback) => void;
+    fieldMetadata: CslpData;
     variantStatus?: IVariantStatus;
 }
 
@@ -58,6 +59,7 @@ export async function getFieldVariantStatus(
 
 export const FieldRevertComponent = ({
     fieldDataName,
+    fieldMetadata,
     variantStatus = BASE_VARIANT_STATUS,
 }: FieldRevertComponentProps) => {
     const [isOpen, setIsOpen] = useState(false);
@@ -154,6 +156,9 @@ export const FieldRevertComponent = ({
         visualBuilderPostMessage?.send("send-variant-revert-action-trigger", {
             fieldDataName,
             action,
+            euid: fieldMetadata.entry_uid,
+            ct_uid: fieldMetadata.content_type_uid,
+            locale: fieldMetadata.locale,
         });
     }
 
