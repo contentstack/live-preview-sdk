@@ -4,7 +4,7 @@ import { LIVE_PREVIEW_POST_MESSAGE_EVENTS } from "../../livePreview/eventManager
 import { DATA_CSLP_ATTR_SELECTOR } from "../utils/constants";
 import { visualBuilderStyles } from "../visualBuilder.style";
 
-const VARIANT_UPDATE_DELAY_MS: Readonly<number> = 4000;
+const VARIANT_UPDATE_DELAY_MS: Readonly<number> = 8000;
 
 type OnAudienceModeVariantPatchUpdate = {
     expectedCSLPValues: Record<"variant" | "base", string>;
