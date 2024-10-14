@@ -54,7 +54,6 @@ export function generateCustomCursor({
     }
     customCursor.innerHTML = `<div class="${classNames(
         "visual-builder__cursor-wrapper",
-        visualBuilderStyles()["visual-builder__cursor-wrapper"],
         {
             "visual-builder__cursor-disabled": fieldDisabled,
             [visualBuilderStyles()["visual-builder__cursor-disabled"]]:
