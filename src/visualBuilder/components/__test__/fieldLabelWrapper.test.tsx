@@ -1,4 +1,4 @@
-import { render, cleanup, waitFor } from "@testing-library/preact";
+import { render, cleanup, waitFor,screen } from "@testing-library/preact";
 import FieldLabelWrapperComponent from "../fieldLabelWrapper";
 import { CslpData } from "../../../cslp/types/cslp.types";
 import { VisualBuilderCslpEventDetails } from "../../types/visualBuilder.types";
@@ -167,10 +167,11 @@ describe("FieldLabelWrapperComponent", () => {
         const fieldLabel = await findByTestId(
             "visual-builder__focused-toolbar__field-label-wrapper"
         );
+       screen.debug(fieldLabel);
 
         waitFor(() => {
             expect(fieldLabel).toHaveClass(
-                "visual-builder__focused-toolbar__field-label-wrapper--disabled"
+                "visual-builder__focused-toolbar--field-disabled"
             );
         });
     });
