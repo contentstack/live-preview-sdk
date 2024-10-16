@@ -6,7 +6,6 @@ import { hideHoverOutline } from "../listeners/mouseHover";
 import { LIVE_PREVIEW_OUTLINE_WIDTH_IN_PX, RIGHT_EDGE_BUFFER, TOOLBAR_EDGE_BUFFER, TOP_EDGE_BUFFER } from "./constants";
 import getChildrenDirection from "./getChildrenDirection";
 import getStyleOfAnElement from "./getStyleOfAnElement";
-import { LIVE_PREVIEW_OUTLINE_WIDTH_IN_PX, RIGHT_EDGE_BUFFER, TOOLBAR_EDGE_BUFFER, TOP_EDGE_BUFFER } from "./constants";
 
 interface ToolbarPositionParams {
     focusedToolbar: HTMLElement | null;
