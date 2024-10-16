@@ -222,7 +222,7 @@ class ContentstackLivePreview {
      * @returns The version of the SDK as a string.
      */
     static getSdkVersion(): string {
-        return process.env.PACKAGE_VERSION!;
+        return process?.env?.PACKAGE_VERSION!;
     }
 }
 

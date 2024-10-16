@@ -20,7 +20,7 @@ class LightLivePreviewHoC implements ContentstackLivePreviewHOC {
     }
 
     static getSdkVersion(): string {
-        return process.env.PACKAGE_VERSION!;
+        return process?.env?.PACKAGE_VERSION!;
     }
 }
 

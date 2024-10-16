@@ -64,7 +64,7 @@ export function sendInitializeLivePreviewPostMessageEvent(): void {
                 config: {
                     shouldReload: Config.get().ssr,
                     href: window.location.href,
-                    sdkVersion: process.env.PACKAGE_VERSION,
+                    sdkVersion: process?.env?.PACKAGE_VERSION,
                     mode: Config.get().mode,
                 },
             }
