@@ -62,6 +62,8 @@ describe("When an inline element is edited in visual builder mode", () => {
     });
 
     beforeEach(() => {
+        vi.clearAllMocks();
+        document.body.innerHTML = "";
         Config.reset();
         Config.set("mode", 2);
         mouseClickEvent = new Event("click", {

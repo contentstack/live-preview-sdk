@@ -42,6 +42,9 @@ describe("When an element is hovered in visual builder mode", () => {
     });
 
     beforeEach(() => {
+        vi.clearAllMocks();
+        document.getElementsByTagName("html")[0].innerHTML = "";
+
         Config.reset();
         Config.set("mode", 2);
         mousemoveEvent = new Event("mousemove", {

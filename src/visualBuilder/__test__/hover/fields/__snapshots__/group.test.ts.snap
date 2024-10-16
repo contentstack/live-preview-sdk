@@ -7,6 +7,56 @@ exports[`When an element is hovered in visual builder mode > group field (multip
 />
 `;
 
+exports[`When an element is hovered in visual builder mode > group field (multiple) > should have outline 1`] = `
+<div
+  data-cslp="all_fields.bltapikey.en-us.group_multiple_"
+>
+  <div
+    data-cslp="all_fields.bltapikey.en-us.group_multiple_.0"
+  >
+    <p
+      data-cslp="all_fields.bltapikey.en-us.group_multiple_.0.multi_line"
+    />
+  </div>
+  <div
+    data-cslp="all_fields.bltapikey.en-us.group_multiple_.1"
+  />
+</div>
+`;
+
+exports[`When an element is hovered in visual builder mode > group field (multiple) > should have outline 2`] = `
+<div
+  class="visual-builder__hover-outline visual-builder__hover-outline--unclickable go3177626044 go1719569523"
+  data-testid="visual-builder__hover-outline"
+  style="top: 34px; left: 34px; width: 828px; height: 54.3984375px;"
+/>
+`;
+
+exports[`When an element is hovered in visual builder mode > group field (multiple) > should have outline 3`] = `
+<div
+  data-cslp="all_fields.bltapikey.en-us.group_multiple_"
+>
+  <div
+    data-cslp="all_fields.bltapikey.en-us.group_multiple_.0"
+  >
+    <p
+      data-cslp="all_fields.bltapikey.en-us.group_multiple_.0.multi_line"
+    />
+  </div>
+  <div
+    data-cslp="all_fields.bltapikey.en-us.group_multiple_.1"
+  />
+</div>
+`;
+
+exports[`When an element is hovered in visual builder mode > group field (multiple) > should have outline 4`] = `
+<div
+  class="visual-builder__hover-outline visual-builder__hover-outline--unclickable go3177626044 go1719569523"
+  data-testid="visual-builder__hover-outline"
+  style="top: 34px; left: 34px; width: 828px; height: 54.3984375px;"
+/>
+`;
+
 exports[`When an element is hovered in visual builder mode > group field (multiple) > should have outline on the nested field 1`] = `
 <p
   data-cslp="all_fields.bltapikey.en-us.group_multiple_.0.multi_line"
@@ -35,6 +85,20 @@ exports[`When an element is hovered in visual builder mode > group field > shoul
 />
 `;
 
+exports[`When an element is hovered in visual builder mode > group field > should have a outline on the nested single line 3`] = `
+<p
+  data-cslp="all_fields.bltapikey.en-us.group.single_line"
+/>
+`;
+
+exports[`When an element is hovered in visual builder mode > group field > should have a outline on the nested single line 4`] = `
+<div
+  class="visual-builder__hover-outline visual-builder__hover-outline--unclickable go3177626044 go1719569523"
+  data-testid="visual-builder__hover-outline"
+  style="top: 51px; left: 51px; width: 27.7734375px; height: 20.3984375px;"
+/>
+`;
+
 exports[`When an element is hovered in visual builder mode > group field > should have custom cursor 1`] = `
 <div
   class="go1688149084 visual-builder__cursor visible"
@@ -42,7 +106,7 @@ exports[`When an element is hovered in visual builder mode > group field > shoul
   data-testid="visual-builder__cursor"
 >
   <div
-    class="visual-builder__cursor-wrapper go4230334221"
+    class="visual-builder__cursor-wrapper"
   >
     <div
       class="visual-builder__cursor-pointer go3046085498"
@@ -89,7 +153,7 @@ exports[`When an element is hovered in visual builder mode > group field > shoul
   data-testid="visual-builder__cursor"
 >
   <div
-    class="visual-builder__cursor-wrapper go4230334221"
+    class="visual-builder__cursor-wrapper"
   >
     <div
       class="visual-builder__cursor-pointer go3046085498"

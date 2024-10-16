@@ -82,6 +82,15 @@ exports[`Visual builder > on click, the sdk > inline elements must be contentedi
 
 exports[`Visual builder > on click, the sdk > inline elements must be contenteditable > file should render a replacer and remove when it is not 2`] = `undefined`;
 
+exports[`Visual builder > on click, the sdk > inline elements must be contenteditable > file should render a replacer and remove when it is not 3`] = `
+<h1
+  data-cslp="all_fields.blt58a50b4cebae75c5.en-us.file"
+  data-cslp-field-type="file"
+/>
+`;
+
+exports[`Visual builder > on click, the sdk > inline elements must be contenteditable > file should render a replacer and remove when it is not 4`] = `undefined`;
+
 exports[`Visual builder > on click, the sdk > inline elements must be contenteditable > multi line should be contenteditable 1`] = `
 <h1
   contenteditable="true"
