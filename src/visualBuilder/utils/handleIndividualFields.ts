@@ -23,6 +23,7 @@ import { VisualBuilderPostMessageEvents } from "./types/postMessage.types";
 import { updateFocussedState } from "./updateFocussedState";
 import { FieldDataType } from "./types/index.types";
 import { getMultilinePlaintext } from "./getMultilinePlaintext";
+import { addFocusOverlay } from "../generators/generateOverlay";
 
 /**
  * It handles all the fields based on their data type and its "multiple" property.
@@ -189,6 +190,23 @@ export async function handleIndividualFields(
                     const overlayWrapper = visualBuilderContainer.querySelector(
                         ".visual-builder__overlay__wrapper"
                     ) as HTMLDivElement;
+                    const previousSelectedEditableDOM =
+                    VisualBuilder.VisualBuilderGlobalState.value
+                        .previousSelectedEditableDOM;
+                    if(!previousSelectedEditableDOM){
+                        return
+                    }
+                    addFocusOverlay(previousSelectedEditableDOM, overlayWrapper);
+                }, 200);
+                actualEditableField.addEventListener(
+                    "input",
+                    onInlineElementInput
+                );
+
+                const updateFocussedStateOnInput = debounce(() => {
+                    const overlayWrapper = visualBuilderContainer.querySelector(
+                        ".visual-builder__overlay__wrapper"
+                    ) as HTMLDivElement;
                     const focusedToolbar = visualBuilderContainer.querySelector(
                         ".visual-builder__focused-toolbar"
                     ) as HTMLDivElement;
@@ -199,10 +217,10 @@ export async function handleIndividualFields(
                         resizeObserver,
                         focusedToolbar,
                     });
-                }, 200);
+                }, 800);
                 actualEditableField.addEventListener(
                     "input",
-                    onInlineElementInput
+                    updateFocussedStateOnInput
                 );
             }
 
