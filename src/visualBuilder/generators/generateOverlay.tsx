@@ -161,7 +161,7 @@ export function hideFocusOverlay(elements: HideOverlayParams): void {
                             ) {
                                 data =
                                     getMultilinePlaintext(actualEditedElement);
-                                (actualEditedElement as HTMLElement).innerText =
+                                (actualEditedElement as HTMLElement).innerHTML =
                                     data as string;
                             }
                         }
