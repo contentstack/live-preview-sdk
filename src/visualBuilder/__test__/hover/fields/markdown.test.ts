@@ -48,6 +48,7 @@ describe("When an element is hovered in visual builder mode", () => {
             bubbles: true,
             cancelable: true,
         });
+        document.getElementsByTagName("html")[0].innerHTML = "";
     });
 
     afterEach(() => {

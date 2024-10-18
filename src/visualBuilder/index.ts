@@ -300,8 +300,11 @@ export class VisualBuilder {
 
     // TODO: write test cases
     destroy = (): void => {
+        // Remove event listeners
         window.removeEventListener("resize", this.resizeEventHandler);
         window.removeEventListener("scroll", this.scrollEventHandler);
+    
+        // Remove custom event listeners
         removeEventListeners({
             overlayWrapper: this.overlayWrapper,
             visualBuilderContainer: this.visualBuilderContainer,
@@ -312,12 +315,37 @@ export class VisualBuilder {
             resizeObserver: this.resizeObserver,
             customCursor: this.customCursor,
         });
+    
+        // Disconnect observers
         this.resizeObserver.disconnect();
         this.mutationObserver.disconnect();
-
+    
+        // Clear global state
+        VisualBuilder.VisualBuilderGlobalState.value = {
+            previousSelectedEditableDOM: null,
+            previousHoveredTargetDOM: null,
+            previousEmptyBlockParents: [],
+            audienceMode: false,
+        };
+    
+        // Remove DOM elements
         if (this.visualBuilderContainer) {
             window.document.body.removeChild(this.visualBuilderContainer);
         }
+        if (this.customCursor) {
+            this.customCursor.remove();
+        }
+        if (this.overlayWrapper) {
+            this.overlayWrapper.remove();
+        }
+        if (this.focusedToolbar) {
+            this.focusedToolbar.remove();
+        }
+    
+        // Nullify references
         this.customCursor = null;
+        this.overlayWrapper = null;
+        this.visualBuilderContainer = null;
+        this.focusedToolbar = null;
     };
 }

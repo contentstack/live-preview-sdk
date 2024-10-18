@@ -10,6 +10,7 @@ import { Mock, vi } from "vitest";
 import { VisualBuilderPostMessageEvents } from "../../../utils/types/postMessage.types";
 import { VisualBuilder } from "../../../index";
 import { sleep } from "../../../../__test__/utils";
+import { act } from "preact/test-utils";
 
 const VALUES = {
     singleLine: "Single line",
@@ -189,8 +190,11 @@ describe("When an element is clicked in visual builder mode", () => {
 
         test("should contain a data-cslp-field-type attribute", async () => {
             const visualBuilder = new VisualBuilder();
+            await sleep(0);
 
-            fireEvent.click(singleLineField);
+            await act(async () => {
+                await fireEvent.click(singleLineField);
+            })
 
             await waitFor(() =>
                 expect(singleLineField).toHaveAttribute(

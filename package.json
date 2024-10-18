@@ -25,7 +25,7 @@
     "sideEffects": false,
     "scripts": {
         "build": "tsup",
-        "test": "vitest",
+        "test": "vitest --no-file-parallelism",
         "test:once": "vitest run",
         "test:coverage": "vitest --coverage",
         "dev": "tsup --watch",

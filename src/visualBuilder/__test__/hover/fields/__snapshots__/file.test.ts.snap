@@ -2,33 +2,6 @@
 
 exports[`When an element is hovered in visual builder mode > file field (multiple) > should have custom cursor 1`] = `
 <div
-  data-cslp="all_fields.bltapikey.en-us.file_multiple_"
->
-  <p
-    data-cslp="all_fields.bltapikey.en-us.file_multiple_.0"
-  />
-  <p
-    data-cslp="all_fields.bltapikey.en-us.file_multiple_.1"
-  />
-  <img
-    data-cslp="all_fields.bltapikey.en-us.file_multiple_.0.url"
-  />
-  <img
-    data-cslp="all_fields.bltapikey.en-us.file_multiple_.1.url"
-  />
-</div>
-`;
-
-exports[`When an element is hovered in visual builder mode > file field (multiple) > should have custom cursor 2`] = `
-<div
-  class="visual-builder__hover-outline visual-builder__hover-outline--unclickable go3177626044 go1719569523"
-  data-testid="visual-builder__hover-outline"
-  style="top: 34px; left: 34px; width: 828px; height: 54.3984375px;"
-/>
-`;
-
-exports[`When an element is hovered in visual builder mode > file field (multiple) > should have custom cursor 3`] = `
-<div
   class="go1688149084 visual-builder__cursor visible"
   data-icon="file"
   data-testid="visual-builder__cursor"
@@ -137,6 +110,33 @@ exports[`When an element is hovered in visual builder mode > file field (multipl
 <div
   class="go1688149084 visual-builder__cursor visible"
   data-testid="visual-builder__cursor"
+/>
+`;
+
+exports[`When an element is hovered in visual builder mode > file field (multiple) > should have outline 1`] = `
+<div
+  data-cslp="all_fields.bltapikey.en-us.file_multiple_"
+>
+  <p
+    data-cslp="all_fields.bltapikey.en-us.file_multiple_.0"
+  />
+  <p
+    data-cslp="all_fields.bltapikey.en-us.file_multiple_.1"
+  />
+  <img
+    data-cslp="all_fields.bltapikey.en-us.file_multiple_.0.url"
+  />
+  <img
+    data-cslp="all_fields.bltapikey.en-us.file_multiple_.1.url"
+  />
+</div>
+`;
+
+exports[`When an element is hovered in visual builder mode > file field (multiple) > should have outline 2`] = `
+<div
+  class="visual-builder__hover-outline visual-builder__hover-outline--unclickable go3177626044 go1719569523"
+  data-testid="visual-builder__hover-outline"
+  style="top: 34px; left: 34px; width: 828px; height: 54.3984375px;"
 />
 `;
 

@@ -114,18 +114,21 @@ describe("Visual builder", () => {
     describe("on click, the sdk", () => {
         afterEach(() => {
             document.getElementsByTagName("html")[0].innerHTML = "";
+            // clear static data in VisualBuilder
+            
         });
 
         test("should do nothing if data-cslp not available", async () => {
             const h1 = document.createElement("h1");
 
             document.body.appendChild(h1);
-            new VisualBuilder();
+            const x = new VisualBuilder();
 
             h1.click();
             await sleep(0);
 
             expect(document.body).toMatchSnapshot();
+            x.destroy();
         });
 
         describe("inline elements must be contenteditable", () => {
@@ -184,7 +187,7 @@ describe("Visual builder", () => {
                 );
 
                 document.body.appendChild(h1);
-                new VisualBuilder();
+                const x = new VisualBuilder();
 
                 await sleep(0);
                 h1.click();
@@ -194,6 +197,7 @@ describe("Visual builder", () => {
                     expect(h1.getAttribute("contenteditable")).toBe("true");
                 });
                 expect(h1).toMatchSnapshot();
+                x.destroy();
             });
 
             test("multi line should be contenteditable", async () => {
@@ -212,7 +216,7 @@ describe("Visual builder", () => {
                 })) as any;
                 h1.textContent = INLINE_EDITABLE_FIELD_VALUE;
                 document.body.appendChild(h1);
-                new VisualBuilder();
+                const x = new VisualBuilder();
 
                 await sleep(0);
                 h1.click();
@@ -226,6 +230,7 @@ describe("Visual builder", () => {
                     expect(h1.getAttribute("contenteditable")).toBe("true");
                 });
                 expect(h1).toMatchSnapshot();
+                x.destroy();
             });
 
             test("file should render a replacer and remove when it is not", async () => {
@@ -235,7 +240,7 @@ describe("Visual builder", () => {
                     "all_fields.blt58a50b4cebae75c5.en-us.file"
                 );
                 document.body.appendChild(h1);
-                new VisualBuilder();
+                const x = new VisualBuilder();
                 h1.click();
                 await sleep(0);
 
@@ -261,6 +266,7 @@ describe("Visual builder", () => {
                 )[0];
 
                 expect(replaceBtn).toBeUndefined();
+                x.destroy();
             });
         });
     });
