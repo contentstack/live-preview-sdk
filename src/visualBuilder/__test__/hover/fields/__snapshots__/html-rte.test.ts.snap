@@ -7,7 +7,7 @@ exports[`When an element is hovered in visual builder mode > HTML RTE field (mul
   data-testid="visual-builder__cursor"
 >
   <div
-    class="visual-builder__cursor-wrapper go4230334221"
+    class="visual-builder__cursor-wrapper"
   >
     <div
       class="visual-builder__cursor-pointer go3046085498"
@@ -117,7 +117,7 @@ exports[`When an element is hovered in visual builder mode > HTML RTE field > sh
   data-testid="visual-builder__cursor"
 >
   <div
-    class="visual-builder__cursor-wrapper go4230334221"
+    class="visual-builder__cursor-wrapper"
   >
     <div
       class="visual-builder__cursor-pointer go3046085498"
