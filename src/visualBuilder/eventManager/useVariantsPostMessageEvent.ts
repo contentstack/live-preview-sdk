@@ -17,7 +17,17 @@ interface AudienceEvent {
         audienceMode: boolean;
     };
 }
+interface VariantEvent {
+    data: {
+        variant: string | null;
+    };
+}
 
+interface LocaleEvent {
+    data: {
+        locale: string;
+    };
+}
 function addVariantFieldClass(
     variant_uid: string,
     highlightVariantFields: boolean
@@ -58,8 +68,26 @@ function removeVariantFieldClass(): void {
 function setAudienceMode(mode: boolean): void {
     VisualBuilder.VisualBuilderGlobalState.value.audienceMode = mode;
 }
+function setVariant(uid: string | null): void {
+    VisualBuilder.VisualBuilderGlobalState.value.variant = uid;
+}
+function setLocale(locale: string): void {
+    VisualBuilder.VisualBuilderGlobalState.value.locale = locale;
+}
 
 export function useVariantFieldsPostMessageEvent(): void {
+    visualBuilderPostMessage?.on(
+        VisualBuilderPostMessageEvents.GET_VARIANT_ID,
+        (event: VariantEvent) => {
+            setVariant(event.data.variant);
+        }
+    );
+    visualBuilderPostMessage?.on(
+        VisualBuilderPostMessageEvents.GET_LOCALE,
+        (event: LocaleEvent) => {
+            setLocale(event.data.locale);
+        }
+    );
     visualBuilderPostMessage?.on(
         VisualBuilderPostMessageEvents.SET_AUDIENCE_MODE,
         (event: AudienceEvent) => {
