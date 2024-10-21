@@ -337,6 +337,8 @@ export class VisualBuilder {
             previousHoveredTargetDOM: null,
             previousEmptyBlockParents: [],
             audienceMode: false,
+            locale: "en-us",
+            variant: null,
         };
     
         // Remove DOM elements
