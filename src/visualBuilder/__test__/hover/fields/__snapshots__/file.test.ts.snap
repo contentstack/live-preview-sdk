@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`When an element is hovered in visual builder mode > file field (multiple) > should have custom cursor 1`] = `
+exports[`When an element is hovered in visual builder mode > file field (multiple) > should have outline and custom cursor 1`] = `
 <div
   data-cslp="all_fields.bltapikey.en-us.file_multiple_"
 >
@@ -19,7 +19,7 @@ exports[`When an element is hovered in visual builder mode > file field (multipl
 </div>
 `;
 
-exports[`When an element is hovered in visual builder mode > file field (multiple) > should have custom cursor 2`] = `
+exports[`When an element is hovered in visual builder mode > file field (multiple) > should have outline and custom cursor 2`] = `
 <div
   class="visual-builder__hover-outline visual-builder__hover-outline--unclickable go3177626044 go1719569523"
   data-testid="visual-builder__hover-outline"
@@ -27,14 +27,14 @@ exports[`When an element is hovered in visual builder mode > file field (multipl
 />
 `;
 
-exports[`When an element is hovered in visual builder mode > file field (multiple) > should have custom cursor 3`] = `
+exports[`When an element is hovered in visual builder mode > file field (multiple) > should have outline and custom cursor 3`] = `
 <div
   class="go1688149084 visual-builder__cursor visible"
   data-icon="file"
   data-testid="visual-builder__cursor"
 >
   <div
-    class="visual-builder__cursor-wrapper go4230334221"
+    class="visual-builder__cursor-wrapper"
   >
     <div
       class="visual-builder__cursor-pointer go3046085498"
@@ -80,73 +80,13 @@ exports[`When an element is hovered in visual builder mode > file field (multipl
 </div>
 `;
 
-exports[`When an element is hovered in visual builder mode > file field (multiple) > should have custom cursor on individual instances 1`] = `
-<div
-  class="go1688149084 visual-builder__cursor visible"
-  data-icon="file"
-  data-testid="visual-builder__cursor"
->
-  <div
-    class="visual-builder__cursor-wrapper go4230334221"
-  >
-    <div
-      class="visual-builder__cursor-pointer go3046085498"
-    >
-      <svg
-        fill="none"
-        height="16"
-        viewBox="0 0 16 16"
-        width="16"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <path
-          d="M0.0167948 0.602214C-0.0784404 0.246792 0.246794 -0.0784402 0.602216 0.0167948L15.6457 4.04767C16.0914 4.1671 16.1259 4.78625 15.6962 4.95447L8.17161 7.90048C8.04753 7.94906 7.94936 8.04723 7.90078 8.17131L4.95449 15.6962C4.78627 16.1259 4.16712 16.0914 4.04769 15.6457L0.0167948 0.602214Z"
-          fill="#5D50BE"
-        />
-      </svg>
-    </div>
-    <div
-      class="visual-builder__cursor-icon go4261356330"
-    >
-      <svg
-        fill="none"
-        height="24"
-        viewBox="0 0 24 24"
-        width="24"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <path
-          clip-rule="evenodd"
-          d="M5.25 3.5625C5.20027 3.5625 5.15258 3.58225 5.11742 3.61742C5.08225 3.65258 5.0625 3.70027 5.0625 3.75V20.25C5.0625 20.2997 5.08225 20.3474 5.11742 20.3826C5.15258 20.4177 5.20027 20.4375 5.25 20.4375H18.75C18.7997 20.4375 18.8474 20.4177 18.8826 20.3826C18.9177 20.3474 18.9375 20.2997 18.9375 20.25V8.483L14.017 3.5625H5.25ZM4.32192 2.82192C4.56806 2.57578 4.9019 2.4375 5.25 2.4375H14.25C14.3992 2.4375 14.5423 2.49676 14.6477 2.60225L19.8977 7.85225C20.0032 7.95774 20.0625 8.10082 20.0625 8.25V20.25C20.0625 20.5981 19.9242 20.9319 19.6781 21.1781C19.4319 21.4242 19.0981 21.5625 18.75 21.5625H5.25C4.9019 21.5625 4.56806 21.4242 4.32192 21.1781C4.07578 20.9319 3.9375 20.5981 3.9375 20.25V3.75C3.9375 3.4019 4.07578 3.06806 4.32192 2.82192Z"
-          fill="white"
-          fill-rule="evenodd"
-        />
-        <path
-          clip-rule="evenodd"
-          d="M14.25 2.4375C14.5607 2.4375 14.8125 2.68934 14.8125 3V7.6875H19.5C19.8107 7.6875 20.0625 7.93934 20.0625 8.25C20.0625 8.56066 19.8107 8.8125 19.5 8.8125H14.25C13.9393 8.8125 13.6875 8.56066 13.6875 8.25V3C13.6875 2.68934 13.9393 2.4375 14.25 2.4375Z"
-          fill="white"
-          fill-rule="evenodd"
-        />
-      </svg>
-    </div>
-  </div>
-</div>
-`;
-
-exports[`When an element is hovered in visual builder mode > file field (multiple) > should have custom cursor on the url 1`] = `
-<div
-  class="go1688149084 visual-builder__cursor visible"
-  data-testid="visual-builder__cursor"
-/>
-`;
-
-exports[`When an element is hovered in visual builder mode > file field (multiple) > should have outline on individual instances 1`] = `
+exports[`When an element is hovered in visual builder mode > file field (multiple) > should have outline and custom cursor on individual instances 1`] = `
 <p
   data-cslp="all_fields.bltapikey.en-us.file_multiple_.0"
 />
 `;
 
-exports[`When an element is hovered in visual builder mode > file field (multiple) > should have outline on individual instances 2`] = `
+exports[`When an element is hovered in visual builder mode > file field (multiple) > should have outline and custom cursor on individual instances 2`] = `
 <div
   class="visual-builder__hover-outline visual-builder__hover-outline--unclickable go3177626044 go1719569523"
   data-testid="visual-builder__hover-outline"
@@ -154,13 +94,13 @@ exports[`When an element is hovered in visual builder mode > file field (multipl
 />
 `;
 
-exports[`When an element is hovered in visual builder mode > file field (multiple) > should have outline on the url 1`] = `
+exports[`When an element is hovered in visual builder mode > file field (multiple) > should have outline and custom cursor on the url 1`] = `
 <img
   data-cslp="all_fields.bltapikey.en-us.file_multiple_.0.url"
 />
 `;
 
-exports[`When an element is hovered in visual builder mode > file field (multiple) > should have outline on the url 2`] = `
+exports[`When an element is hovered in visual builder mode > file field (multiple) > should have outline and custom cursor on the url 2`] = `
 <div
   class="visual-builder__hover-outline visual-builder__hover-outline--unclickable go3177626044 go1719569523"
   data-testid="visual-builder__hover-outline"
@@ -168,13 +108,13 @@ exports[`When an element is hovered in visual builder mode > file field (multipl
 />
 `;
 
-exports[`When an element is hovered in visual builder mode > file field > should have a outline on the url as well 1`] = `
+exports[`When an element is hovered in visual builder mode > file field > should have a outline and custom cursor on the url as well 1`] = `
 <img
   data-cslp="all_fields.bltapikey.en-us.file.url"
 />
 `;
 
-exports[`When an element is hovered in visual builder mode > file field > should have a outline on the url as well 2`] = `
+exports[`When an element is hovered in visual builder mode > file field > should have a outline and custom cursor on the url as well 2`] = `
 <div
   class="visual-builder__hover-outline visual-builder__hover-outline--unclickable go3177626044 go1719569523"
   data-testid="visual-builder__hover-outline"
@@ -182,21 +122,14 @@ exports[`When an element is hovered in visual builder mode > file field > should
 />
 `;
 
-exports[`When an element is hovered in visual builder mode > file field > should have custom cursor 1`] = `
-<div
-  class="go1688149084 visual-builder__cursor visible"
-  data-testid="visual-builder__cursor"
-/>
-`;
-
-exports[`When an element is hovered in visual builder mode > file field > should have custom cursor on the url as well 1`] = `
+exports[`When an element is hovered in visual builder mode > file field > should have a outline and custom cursor on the url as well 3`] = `
 <div
   class="go1688149084 visual-builder__cursor visible"
   data-icon="file"
   data-testid="visual-builder__cursor"
 >
   <div
-    class="visual-builder__cursor-wrapper go4230334221"
+    class="visual-builder__cursor-wrapper"
   >
     <div
       class="visual-builder__cursor-pointer go3046085498"
@@ -242,16 +175,69 @@ exports[`When an element is hovered in visual builder mode > file field > should
 </div>
 `;
 
-exports[`When an element is hovered in visual builder mode > file field > should have outline 1`] = `
+exports[`When an element is hovered in visual builder mode > file field > should have outline and custom cursor 1`] = `
 <p
   data-cslp="all_fields.bltapikey.en-us.file"
 />
 `;
 
-exports[`When an element is hovered in visual builder mode > file field > should have outline 2`] = `
+exports[`When an element is hovered in visual builder mode > file field > should have outline and custom cursor 2`] = `
 <div
   class="visual-builder__hover-outline visual-builder__hover-outline--unclickable go3177626044 go1719569523"
   data-testid="visual-builder__hover-outline"
   style="top: 51px; left: 51px; width: 27.7734375px; height: 20.3984375px;"
 />
+`;
+
+exports[`When an element is hovered in visual builder mode > file field > should have outline and custom cursor 3`] = `
+<div
+  class="go1688149084 visual-builder__cursor visible"
+  data-icon="file"
+  data-testid="visual-builder__cursor"
+>
+  <div
+    class="visual-builder__cursor-wrapper"
+  >
+    <div
+      class="visual-builder__cursor-pointer go3046085498"
+    >
+      <svg
+        fill="none"
+        height="16"
+        viewBox="0 0 16 16"
+        width="16"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M0.0167948 0.602214C-0.0784404 0.246792 0.246794 -0.0784402 0.602216 0.0167948L15.6457 4.04767C16.0914 4.1671 16.1259 4.78625 15.6962 4.95447L8.17161 7.90048C8.04753 7.94906 7.94936 8.04723 7.90078 8.17131L4.95449 15.6962C4.78627 16.1259 4.16712 16.0914 4.04769 15.6457L0.0167948 0.602214Z"
+          fill="#5D50BE"
+        />
+      </svg>
+    </div>
+    <div
+      class="visual-builder__cursor-icon go4261356330"
+    >
+      <svg
+        fill="none"
+        height="24"
+        viewBox="0 0 24 24"
+        width="24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          clip-rule="evenodd"
+          d="M5.25 3.5625C5.20027 3.5625 5.15258 3.58225 5.11742 3.61742C5.08225 3.65258 5.0625 3.70027 5.0625 3.75V20.25C5.0625 20.2997 5.08225 20.3474 5.11742 20.3826C5.15258 20.4177 5.20027 20.4375 5.25 20.4375H18.75C18.7997 20.4375 18.8474 20.4177 18.8826 20.3826C18.9177 20.3474 18.9375 20.2997 18.9375 20.25V8.483L14.017 3.5625H5.25ZM4.32192 2.82192C4.56806 2.57578 4.9019 2.4375 5.25 2.4375H14.25C14.3992 2.4375 14.5423 2.49676 14.6477 2.60225L19.8977 7.85225C20.0032 7.95774 20.0625 8.10082 20.0625 8.25V20.25C20.0625 20.5981 19.9242 20.9319 19.6781 21.1781C19.4319 21.4242 19.0981 21.5625 18.75 21.5625H5.25C4.9019 21.5625 4.56806 21.4242 4.32192 21.1781C4.07578 20.9319 3.9375 20.5981 3.9375 20.25V3.75C3.9375 3.4019 4.07578 3.06806 4.32192 2.82192Z"
+          fill="white"
+          fill-rule="evenodd"
+        />
+        <path
+          clip-rule="evenodd"
+          d="M14.25 2.4375C14.5607 2.4375 14.8125 2.68934 14.8125 3V7.6875H19.5C19.8107 7.6875 20.0625 7.93934 20.0625 8.25C20.0625 8.56066 19.8107 8.8125 19.5 8.8125H14.25C13.9393 8.8125 13.6875 8.56066 13.6875 8.25V3C13.6875 2.68934 13.9393 2.4375 14.25 2.4375Z"
+          fill="white"
+          fill-rule="evenodd"
+        />
+      </svg>
+    </div>
+  </div>
+</div>
 `;

@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render } from "@testing-library/preact";
+import { act, cleanup, fireEvent, render, waitFor, screen } from "@testing-library/preact";
 import { CslpData } from "../../../cslp/types/cslp.types";
 import { FieldSchemaMap } from "../../utils/fieldSchemaMap";
 import {
@@ -8,6 +8,7 @@ import {
 import { ISchemaFieldMap } from "../../utils/types/index.types";
 import FieldToolbarComponent from "../FieldToolbar";
 import { mockMultipleLinkFieldSchema } from "../../../__test__/data/fields";
+import { asyncRender } from "../../../__test__/utils";
 
 vi.mock("../../utils/instanceHandlers", () => ({
     handleMoveInstance: vi.fn(),
@@ -57,6 +58,7 @@ describe("MultipleFieldToolbarComponent", () => {
     let targetElement: HTMLDivElement;
 
     beforeEach(() => {
+        document.body.innerHTML = "";
         targetElement = document.createElement("div");
         targetElement.setAttribute("data-testid", "mock-target-element");
         document.body.appendChild(targetElement);
@@ -73,7 +75,7 @@ describe("MultipleFieldToolbarComponent", () => {
     });
 
     test("renders toolbar buttons correctly", async () => {
-        const { findByTestId } = render(
+        const { findByTestId } = await asyncRender(
             <FieldToolbarComponent
                 fieldMetadata={mockMultipleFieldMetadata}
                 editableElement={targetElement}
@@ -96,7 +98,7 @@ describe("MultipleFieldToolbarComponent", () => {
     });
 
     test("calls handleMoveInstance with 'previous' when move left button is clicked", async () => {
-        const { findByTestId } = render(
+        const { findByTestId } = await asyncRender(
             <FieldToolbarComponent
                 fieldMetadata={mockMultipleFieldMetadata}
                 editableElement={targetElement}
@@ -117,7 +119,7 @@ describe("MultipleFieldToolbarComponent", () => {
     });
 
     test("calls handleMoveInstance with 'next' when move right button is clicked", async () => {
-        const { findByTestId } = render(
+        const { findByTestId } = await asyncRender(
             <FieldToolbarComponent
                 fieldMetadata={mockMultipleFieldMetadata}
                 editableElement={targetElement}
@@ -138,7 +140,7 @@ describe("MultipleFieldToolbarComponent", () => {
     });
 
     test("calls handleDeleteInstance when delete button is clicked", async () => {
-        const { findByTestId } = render(
+        const { findByTestId } = await asyncRender(
             <FieldToolbarComponent
                 fieldMetadata={mockMultipleFieldMetadata}
                 editableElement={targetElement}
@@ -149,11 +151,14 @@ describe("MultipleFieldToolbarComponent", () => {
             "visual-builder__focused-toolbar__multiple-field-toolbar__delete-button"
         );
         expect(deleteButton).toBeInTheDocument();
+        await act(() => {
+            fireEvent.click(deleteButton);
+        });
 
-        fireEvent.click(deleteButton);
-
-        expect(handleDeleteInstance).toHaveBeenCalledWith(
-            mockMultipleFieldMetadata
-        );
+        await waitFor(() => {
+            expect(handleDeleteInstance).toHaveBeenCalledWith(
+                mockMultipleFieldMetadata
+            );
+        })
     });
 });

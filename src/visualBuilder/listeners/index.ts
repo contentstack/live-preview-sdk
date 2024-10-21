@@ -16,47 +16,8 @@ type RemoveEventListenersParams = Omit<
     EventListenerHandlerParams,
     "event" | "eventDetails"
 >;
-
-export function addEventListeners(params: AddEventListenersParams): void {
-    // capture any click event during the capture phase
-    window.addEventListener(
-        "click",
-        (event) => {
-            handleBuilderInteraction({
-                event: event,
-                overlayWrapper: params.overlayWrapper,
-                visualBuilderContainer: params.visualBuilderContainer,
-                previousSelectedEditableDOM:
-                    VisualBuilder.VisualBuilderGlobalState.value
-                        .previousSelectedEditableDOM,
-                focusedToolbar: params.focusedToolbar,
-                resizeObserver: params.resizeObserver,
-            });
-        },
-        { capture: true }
-    );
-
-    window.addEventListener("mousemove", (event) => {
-        handleMouseHover({
-            event: event as MouseEvent,
-            overlayWrapper: params.overlayWrapper,
-            visualBuilderContainer: params.visualBuilderContainer,
-            customCursor: params.customCursor,
-        });
-    });
-
-    document.documentElement.addEventListener("mouseleave", () => {
-        hideCustomCursor(params.customCursor);
-        hideHoverOutline(params.visualBuilderContainer);
-    });
-
-    document.documentElement.addEventListener("mouseenter", () => {
-        showCustomCursor(params.customCursor);
-    });
-}
-
-export function removeEventListeners(params: RemoveEventListenersParams): void {
-    window.removeEventListener("click", (event) => {
+const eventHandlers = {
+    click: (params: AddEventListenersParams) => (event: MouseEvent) => {
         handleBuilderInteraction({
             event: event,
             overlayWrapper: params.overlayWrapper,
@@ -67,14 +28,59 @@ export function removeEventListeners(params: RemoveEventListenersParams): void {
             focusedToolbar: params.focusedToolbar,
             resizeObserver: params.resizeObserver,
         });
-    });
-
-    window.removeEventListener("mousemove", (event) => {
+    },
+    mousemove: (params: AddEventListenersParams) => (event: MouseEvent) => {
         handleMouseHover({
-            event: event as MouseEvent,
+            event: event,
             overlayWrapper: params.overlayWrapper,
             visualBuilderContainer: params.visualBuilderContainer,
             customCursor: params.customCursor,
         });
-    });
+    },
+    mouseleave: (params: AddEventListenersParams) => () => {
+        hideCustomCursor(params.customCursor);
+        hideHoverOutline(params.visualBuilderContainer);
+    },
+    mouseenter: (params: AddEventListenersParams) => () => {
+        showCustomCursor(params.customCursor);
+    },
+};
+const eventListenersMap = new Map<string, EventListener>();
+export function addEventListeners(params: AddEventListenersParams): void {
+    const clickHandler = eventHandlers.click(params);
+    const mousemoveHandler = eventHandlers.mousemove(params);
+    const mouseleaveHandler = eventHandlers.mouseleave(params);
+    const mouseenterHandler = eventHandlers.mouseenter(params);
+
+    eventListenersMap.set("click", clickHandler as EventListener);
+    eventListenersMap.set("mousemove", mousemoveHandler as EventListener);
+    eventListenersMap.set("mouseleave", mouseleaveHandler);
+    eventListenersMap.set("mouseenter", mouseenterHandler);
+
+    window.addEventListener("click", clickHandler, { capture: true });
+    window.addEventListener("mousemove", mousemoveHandler);
+    document.documentElement.addEventListener("mouseleave", mouseleaveHandler);
+    document.documentElement.addEventListener("mouseenter", mouseenterHandler);
+}
+
+export function removeEventListeners(params: RemoveEventListenersParams): void {
+    const clickHandler = eventListenersMap.get("click");
+    const mousemoveHandler = eventListenersMap.get("mousemove");
+    const mouseleaveHandler = eventListenersMap.get("mouseleave");
+    const mouseenterHandler = eventListenersMap.get("mouseenter");
+
+    if (clickHandler) {
+        window.removeEventListener("click", clickHandler, { capture: true });
+    }
+    if (mousemoveHandler) {
+        window.removeEventListener("mousemove", mousemoveHandler);
+    }
+    if (mouseleaveHandler) {
+        document.documentElement.removeEventListener("mouseleave", mouseleaveHandler);
+    }
+    if (mouseenterHandler) {
+        document.documentElement.removeEventListener("mouseenter", mouseenterHandler);
+    }
+
+    eventListenersMap.clear();
 }
