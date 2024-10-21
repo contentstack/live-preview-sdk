@@ -109,7 +109,10 @@ describe("Live Preview HOC init", () => {
 
         await sleep();
         expect(livePreviewPostMessageSpy).toHaveBeenCalledTimes(1);
-        expect(visualBuilderPostMessageSpy).toHaveBeenCalledTimes(1);
+        console.log(visualBuilderPostMessageSpy.mock.calls);
+        expect(visualBuilderPostMessageSpy).toHaveBeenCalledWith('init', { isSSR: true, href: 'http://localhost:3000/' });
+        expect(visualBuilderPostMessageSpy).toHaveBeenCalledWith('send-variant-and-locale');
+        expect(visualBuilderPostMessageSpy).toHaveBeenCalledTimes(2);
     });
 
     test("should return the existing live preview instance if it is already initialized", async () => {

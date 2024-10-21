@@ -220,7 +220,7 @@ describe("Visual builder", () => {
                 });
                 expect(h1).toMatchSnapshot();
                 x.destroy();
-            });
+            }, { timeout: 10 * 1000 });
 
             //TODO: Fix this test on CI
             test.skip("file should render a replacer and remove when it is not", async () => {

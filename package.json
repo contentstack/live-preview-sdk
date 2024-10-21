@@ -54,6 +54,7 @@
         "@types/react": "^18.2.57",
         "@types/react-dom": "^18.2.19",
         "@types/uuid": "^8.3.1",
+        "@vitest/coverage-v8": "^2.1.2",
         "@vitest/ui": "^2.1.2",
         "esbuild-plugin-file-path-extensions": "^2.1.0",
         "eslint": "^7.32.0",
