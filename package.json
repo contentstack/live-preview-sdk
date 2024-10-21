@@ -85,6 +85,9 @@
         "preact": "^10.19.5",
         "uuid": "^8.3.2"
     },
+    "optionalDependencies": {
+        "@rollup/rollup-linux-x64-gnu": "4.9.5"
+    },
     "lint-staged": {
         "src/**/*.{ts,css,md}": [
             "npm run prettier:fix",
