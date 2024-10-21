@@ -18,6 +18,8 @@ Object.defineProperty(globalThis, "crypto", {
 });
 
 const TITLE_CSLP_TAG = "content-type-1.entry-uid-1.en-us.field-title";
+const VARIANT_TITLE_CSLP_TAG =
+    "v2:content-type-1.entry-uid-1_variant-uid-1.en-us.field-title";
 const DESC_CSLP_TAG = "content-type-2.entry-uid-2.en-us.field-description";
 const LINK_CSLP_TAG = "content-type-3.entry-uid-3.en-us.field-link";
 
@@ -40,6 +42,10 @@ describe("cslp tooltip", () => {
         titlePara.setAttribute("data-cslp", TITLE_CSLP_TAG);
         titlePara.setAttribute("data-test-id", "title-para");
 
+        const variantTitlePara = document.createElement("h3");
+        variantTitlePara.setAttribute("data-cslp", VARIANT_TITLE_CSLP_TAG);
+        variantTitlePara.setAttribute("data-test-id", "title-variant-para");
+
         const descPara = document.createElement("p");
         descPara.setAttribute("data-cslp", DESC_CSLP_TAG);
         descPara.setAttribute("data-test-id", "desc-para");
@@ -50,6 +56,7 @@ describe("cslp tooltip", () => {
         linkPara.setAttribute("data-test-id", "link-para");
 
         document.body.appendChild(titlePara);
+        document.body.appendChild(variantTitlePara);
         document.body.appendChild(descPara);
         document.body.appendChild(linkPara);
 
@@ -200,16 +207,24 @@ describe("cslp tooltip", () => {
         singularEditButton?.click();
 
         const expectedRedirectUrl =
-            "https://app.contentstack.com/#!/stack/sample-api-key/content-type/content-type-1/en-us/entry/entry-uid-1/edit?preview-field=field-title&preview-locale=en-us&preview-environment=sample-environment";
+            "https://app.contentstack.com/#!/stack/sample-api-key/content-type/content-type-1/en-us/entry/entry-uid-1/edit?branch=main&preview-field=field-title&preview-locale=en-us&preview-environment=sample-environment";
 
         expect(window.open).toHaveBeenCalledWith(expectedRedirectUrl, "_blank");
 
         descPara?.dispatchEvent(hoverEvent);
     });
 
-    test.skip("should redirect to page when edit tag button is clicked with added branch", () => {
-        new LivePreview();
-
+    test("should redirect to page when edit tag button is clicked with added branch", () => {
+        Config.replace({
+            enable: true,
+            stackDetails: {
+                apiKey: "sample-api-key",
+                environment: "sample-environment",
+                branch: "dev",
+            },
+        });
+        new LivePreviewEditButton();
+        
         const singularEditButton = document.querySelector(
             "[data-test-id='cslp-singular-edit-button']"
         ) as HTMLDivElement;
@@ -233,6 +248,48 @@ describe("cslp tooltip", () => {
 
         const expectedRedirectUrl =
             "https://app.contentstack.com/#!/stack/sample-api-key/content-type/content-type-1/en-us/entry/entry-uid-1/edit?branch=dev&preview-field=field-title&preview-locale=en-us&preview-environment=sample-environment";
+
+        expect(window.open).toHaveBeenCalledWith(expectedRedirectUrl, "_blank");
+
+        descPara?.dispatchEvent(hoverEvent);
+    });
+
+    test("should redirect to page when edit tag button is clicked for variant field", () => {
+        Config.replace({
+            enable: true,
+            stackDetails: {
+                apiKey: "sample-api-key",
+                environment: "sample-environment",
+                branch: "dev",
+            },
+        });
+        new LivePreviewEditButton();
+
+        const singularEditButton = document.querySelector(
+            "[data-test-id='cslp-singular-edit-button']"
+        ) as HTMLDivElement;
+
+        const variantTitlePara = document.querySelector(
+            "[data-test-id='title-variant-para']"
+        );
+        const descPara = document.querySelector("[data-test-id='desc-para']");
+
+        vitest.spyOn(window, "open").mockImplementation(
+            (url?: string | URL, target?: string, features?: string) => {
+                return {} as Window;
+            }
+        );
+
+        const hoverEvent = new CustomEvent("mouseover", {
+            bubbles: true,
+        });
+
+        variantTitlePara?.dispatchEvent(hoverEvent);
+
+        singularEditButton?.click();
+
+        const expectedRedirectUrl =
+            "https://app.contentstack.com/#!/stack/sample-api-key/content-type/content-type-1/en-us/entry/entry-uid-1/variant/variant-uid-1/edit?branch=dev&preview-field=field-title&preview-locale=en-us&preview-environment=sample-environment";
 
         expect(window.open).toHaveBeenCalledWith(expectedRedirectUrl, "_blank");
 
