@@ -25,7 +25,7 @@
     "sideEffects": false,
     "scripts": {
         "build": "tsup",
-        "test": "vitest --no-file-parallelism",
+        "test": "vitest",
         "test:once": "vitest run",
         "test:coverage": "vitest --coverage",
         "dev": "tsup --watch",
@@ -43,7 +43,7 @@
     "author": "Contentstack",
     "license": "MIT",
     "devDependencies": {
-        "@contentstack/advanced-post-message": "github:contentstack/adv-post-message#main",
+        "@contentstack/advanced-post-message": "^0.0.2",
         "@eslint/js": "^9.10.0",
         "@testing-library/jest-dom": "^6.5.0",
         "@testing-library/preact": "^3.2.4",

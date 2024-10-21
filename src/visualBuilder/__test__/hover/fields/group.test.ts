@@ -1,5 +1,5 @@
 import { getFieldSchemaMap } from "../../../../__test__/data/fieldSchemaMap";
-import { sleep } from "../../../../__test__/utils";
+import { sleep, waitForHoverOutline } from "../../../../__test__/utils";
 import Config from "../../../../configManager/configManager";
 import { FieldSchemaMap } from "../../../utils/fieldSchemaMap";
 import { mockDomRect } from "./mockDomRect";
@@ -95,18 +95,15 @@ describe("When an element is hovered in visual builder mode", () => {
             visualBuilder.destroy();
         });
 
-        test("should have outline", async () => {
+        test("should have outline and custom cursor", async () => {
             groupField.dispatchEvent(mousemoveEvent);
-            await sleep(0);
+            await waitForHoverOutline();
             expect(groupField).toMatchSnapshot();
             const hoverOutline = document.querySelector(
                 "[data-testid='visual-builder__hover-outline']"
             );
             expect(hoverOutline).toMatchSnapshot();
-        });
-        test("should have custom cursor", async () => {
-            groupField.dispatchEvent(mousemoveEvent);
-            await sleep(0);
+
             const customCursor = document.querySelector(
                 `[data-testid="visual-builder__cursor"]`
             );
@@ -115,7 +112,7 @@ describe("When an element is hovered in visual builder mode", () => {
             expect(customCursor?.classList.contains("visible")).toBeTruthy();
         });
 
-        test("should have a outline on the nested single line", async () => {
+        test("should have a outline and custom cursor on the nested single line", async () => {
             const singleLine = document.createElement("p");
             singleLine.setAttribute(
                 "data-cslp",
@@ -129,29 +126,13 @@ describe("When an element is hovered in visual builder mode", () => {
             groupField.appendChild(singleLine);
 
             singleLine.dispatchEvent(mousemoveEvent);
-            await sleep(0);
+            await waitForHoverOutline();
             expect(singleLine).toMatchSnapshot();
             const hoverOutline = document.querySelector(
                 "[data-testid='visual-builder__hover-outline']"
             );
             expect(hoverOutline).toMatchSnapshot();
-        });
 
-        test("should have custom cursor on the nested single line", async () => {
-            const singleLine = document.createElement("p");
-            singleLine.setAttribute(
-                "data-cslp",
-                "all_fields.bltapikey.en-us.group.single_line"
-            );
-
-            singleLine.getBoundingClientRect = vi
-                .fn()
-                .mockReturnValue(mockDomRect.singleLeft());
-
-            groupField.appendChild(singleLine);
-
-            singleLine.dispatchEvent(mousemoveEvent);
-            await sleep(0);
             const customCursor = document.querySelector(
                 `[data-testid="visual-builder__cursor"]`
             );
@@ -223,18 +204,15 @@ describe("When an element is hovered in visual builder mode", () => {
             visualBuilder.destroy();
         });
 
-        test("should have outline", async () => {
+        test("should have outline and custom cursor", async () => {
             container.dispatchEvent(mousemoveEvent);
-            await sleep(0);
+            await waitForHoverOutline();
             expect(container).toMatchSnapshot();
             const hoverOutline = document.querySelector(
                 "[data-testid='visual-builder__hover-outline']"
             );
             expect(hoverOutline).toMatchSnapshot();
-        });
 
-        test("should have custom cursor", async () => {
-            container.dispatchEvent(mousemoveEvent);
             const customCursor = document.querySelector(
                 `[data-testid="visual-builder__cursor"]`
             );
@@ -245,7 +223,7 @@ describe("When an element is hovered in visual builder mode", () => {
 
         test.skip("should have outline on the nested field", async () => {
             firstNestedMultiLine.dispatchEvent(mousemoveEvent);
-            await sleep(0);
+            await waitForHoverOutline();
             expect(firstNestedMultiLine).toMatchSnapshot();
             const hoverOutline = document.querySelector(
                 "[data-testid='visual-builder__hover-outline']"

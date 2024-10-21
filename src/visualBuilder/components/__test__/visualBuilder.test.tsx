@@ -1,7 +1,8 @@
-import { render, fireEvent } from "@testing-library/preact";
+import { render, fireEvent, cleanup } from "@testing-library/preact";
 import { hideOverlay } from "../../generators/generateOverlay";
 import { VisualBuilder } from "../..";
 import VisualBuilderComponent from "../VisualBuilder";
+import { asyncRender } from "../../../__test__/utils";
 
 vi.mock("../../generators/generateOverlay", () => ({
     hideOverlay: vi.fn(),
@@ -14,8 +15,14 @@ const mockResizeObserver = {
 };
 
 describe("VisualBuilderComponent", () => {
-    test("renders VisualBuilderComponent correctly", () => {
-        const { getByTestId } = render(
+    beforeEach(() => {
+        document.body.innerHTML = "";
+    })
+    afterEach(() => {
+        cleanup();
+    })
+    test("renders VisualBuilderComponent correctly", async () => {
+        const { getByTestId } = await asyncRender(
             <VisualBuilderComponent
                 visualBuilderContainer={document.createElement("div")}
                 resizeObserver={mockResizeObserver}
@@ -31,9 +38,9 @@ describe("VisualBuilderComponent", () => {
         ).toBeInTheDocument();
     });
 
-    test("hides overlay and unobserves element on click", () => {
+    test("hides overlay and unobserves element on click", async () => {
         const visualBuilderContainer = document.createElement("div");
-        const { getByTestId } = render(
+        const { getByTestId } = await asyncRender(
             <VisualBuilderComponent
                 visualBuilderContainer={visualBuilderContainer}
                 resizeObserver={mockResizeObserver}
@@ -51,14 +58,14 @@ describe("VisualBuilderComponent", () => {
         });
     });
 
-    test("hides overlay without throwing error if VisualBuilderGlobalState is null", () => {
+    test("hides overlay without throwing error if VisualBuilderGlobalState is null", async () => {
         const visualBuilderContainer = document.createElement("div");
         VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
             null;
         VisualBuilder.VisualBuilderGlobalState.value.previousHoveredTargetDOM =
             null;
 
-        const { getByTestId } = render(
+        const { getByTestId } = await asyncRender(
             <VisualBuilderComponent
                 visualBuilderContainer={visualBuilderContainer}
                 resizeObserver={mockResizeObserver}
@@ -71,13 +78,13 @@ describe("VisualBuilderComponent", () => {
         expect(() => {}).not.toThrow();
     });
 
-    test("unobserves element if VisualBuilderGlobalState is null", () => {
+    test("unobserves element if VisualBuilderGlobalState is null", async () => {
         const visualBuilderContainer = document.createElement("div");
         const targetElement = document.createElement("div");
         VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
             targetElement;
 
-        const { getByTestId } = render(
+        const { getByTestId } = await asyncRender(
             <VisualBuilderComponent
                 visualBuilderContainer={visualBuilderContainer}
                 resizeObserver={mockResizeObserver}

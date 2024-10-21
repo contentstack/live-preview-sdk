@@ -1,4 +1,5 @@
 import { getFieldSchemaMap } from "../../../../__test__/data/fieldSchemaMap";
+import { waitForHoverOutline } from "../../../../__test__/utils";
 import Config from "../../../../configManager/configManager";
 import { VisualBuilder } from "../../../index";
 import { FieldSchemaMap } from "../../../utils/fieldSchemaMap";
@@ -80,17 +81,15 @@ describe("When an element is hovered in visual builder mode", () => {
             visualBuilder.destroy();
         });
 
-        test("should have outline", () => {
+        test("should have outline and custom cursor", async () => {
             titleField.dispatchEvent(mousemoveEvent);
+            await waitForHoverOutline();
             expect(titleField).toMatchSnapshot();
             const hoverOutline = screen.getByTestId(
                 "visual-builder__hover-outline"
             );
             expect(hoverOutline).toMatchSnapshot();
-        });
 
-        test("should have custom cursor", () => {
-            titleField.dispatchEvent(mousemoveEvent);
             const customCursor = document.querySelector(
                 `[data-testid="visual-builder__cursor"]`
             );
@@ -122,13 +121,12 @@ describe("When an element is hovered in visual builder mode", () => {
             visualBuilder.destroy();
         });
 
-        test("should have outline", () => {
+        test("should have outline and custom cursor", async () => {
             singleLineField.dispatchEvent(mousemoveEvent);
+            await waitForHoverOutline();
             expect(singleLineField).toMatchSnapshot();
             expect(singleLineField.classList.contains("cslp-edit-mode"));
-        });
-        test("should have custom cursor", () => {
-            singleLineField.dispatchEvent(mousemoveEvent);
+
             const customCursor = document.querySelector(
                 `[data-testid="visual-builder__cursor"]`
             );
@@ -183,18 +181,16 @@ describe("When an element is hovered in visual builder mode", () => {
             visualBuilder.destroy();
         });
 
-        test("should have outline", async () => {
+        test("should have outline and custom cursor", async () => {
             container.dispatchEvent(mousemoveEvent);
+            await waitForHoverOutline();
             expect(container).toMatchSnapshot();
 
             const hoverOutline = document.querySelector(
                 "[data-testid='visual-builder__hover-outline']"
             );
             expect(hoverOutline).toMatchSnapshot();
-        });
 
-        test("should have custom cursor", () => {
-            container.dispatchEvent(mousemoveEvent);
             const customCursor = document.querySelector(
                 `[data-testid="visual-builder__cursor"]`
             );
@@ -203,17 +199,15 @@ describe("When an element is hovered in visual builder mode", () => {
             expect(customCursor?.classList.contains("visible")).toBeTruthy();
         });
 
-        test("should have outline on individual instances", () => {
+        test("should have outline and custom cursor on individual instances", async () => {
             firstSingleLineField.dispatchEvent(mousemoveEvent);
+            await waitForHoverOutline();
             expect(firstSingleLineField).toMatchSnapshot();
             const hoverOutline = document.querySelector(
                 "[data-testid='visual-builder__hover-outline']"
             );
             expect(hoverOutline).toMatchSnapshot();
-        });
 
-        test("should have custom cursor on individual instances", () => {
-            firstSingleLineField.dispatchEvent(mousemoveEvent);
             const customCursor = document.querySelector(
                 `[data-testid="visual-builder__cursor"]`
             );

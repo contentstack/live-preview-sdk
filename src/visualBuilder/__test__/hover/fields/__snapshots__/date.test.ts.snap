@@ -1,6 +1,20 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`When an element is hovered in visual builder mode > date field > should have custom cursor 1`] = `
+exports[`When an element is hovered in visual builder mode > date field > should have outline and custom cursor 1`] = `
+<p
+  data-cslp="all_fields.bltapikey.en-us.date"
+/>
+`;
+
+exports[`When an element is hovered in visual builder mode > date field > should have outline and custom cursor 2`] = `
+<div
+  class="visual-builder__hover-outline visual-builder__hover-outline--unclickable go3177626044 go1719569523"
+  data-testid="visual-builder__hover-outline"
+  style="top: 51px; left: 51px; width: 27.7734375px; height: 20.3984375px;"
+/>
+`;
+
+exports[`When an element is hovered in visual builder mode > date field > should have outline and custom cursor 3`] = `
 <div
   class="go1688149084 visual-builder__cursor visible"
   data-icon="isodate"
@@ -69,18 +83,4 @@ exports[`When an element is hovered in visual builder mode > date field > should
     </div>
   </div>
 </div>
-`;
-
-exports[`When an element is hovered in visual builder mode > date field > should have outline 1`] = `
-<p
-  data-cslp="all_fields.bltapikey.en-us.date"
-/>
-`;
-
-exports[`When an element is hovered in visual builder mode > date field > should have outline 2`] = `
-<div
-  class="visual-builder__hover-outline visual-builder__hover-outline--unclickable go3177626044 go1719569523"
-  data-testid="visual-builder__hover-outline"
-  style="top: 51px; left: 51px; width: 27.7734375px; height: 20.3984375px;"
-/>
 `;

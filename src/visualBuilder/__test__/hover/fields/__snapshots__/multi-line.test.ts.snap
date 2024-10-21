@@ -1,84 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`When an element is hovered in visual builder mode > multi line field (multiple) > should have custom cursor 1`] = `
-<div
-  class="go1688149084 visual-builder__cursor visible"
-  data-testid="visual-builder__cursor"
-/>
-`;
-
-exports[`When an element is hovered in visual builder mode > multi line field (multiple) > should have custom cursor on individual instances 1`] = `
-<div
-  class="go1688149084 visual-builder__cursor visible"
-  data-icon="multiline"
-  data-testid="visual-builder__cursor"
->
-  <div
-    class="visual-builder__cursor-wrapper"
-  >
-    <div
-      class="visual-builder__cursor-pointer go3046085498"
-    >
-      <svg
-        fill="none"
-        height="16"
-        viewBox="0 0 16 16"
-        width="16"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <path
-          d="M0.0167948 0.602214C-0.0784404 0.246792 0.246794 -0.0784402 0.602216 0.0167948L15.6457 4.04767C16.0914 4.1671 16.1259 4.78625 15.6962 4.95447L8.17161 7.90048C8.04753 7.94906 7.94936 8.04723 7.90078 8.17131L4.95449 15.6962C4.78627 16.1259 4.16712 16.0914 4.04769 15.6457L0.0167948 0.602214Z"
-          fill="#5D50BE"
-        />
-      </svg>
-    </div>
-    <div
-      class="visual-builder__cursor-icon go4261356330"
-    >
-      <svg
-        fill="none"
-        height="24"
-        viewBox="0 0 24 24"
-        width="24"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <path
-          clip-rule="evenodd"
-          d="M20.8125 6.75C20.8125 7.06066 20.5607 7.3125 20.25 7.3125L12.75 7.3125C12.4393 7.3125 12.1875 7.06066 12.1875 6.75C12.1875 6.43934 12.4393 6.1875 12.75 6.1875L20.25 6.1875C20.5607 6.1875 20.8125 6.43934 20.8125 6.75Z"
-          fill="white"
-          fill-rule="evenodd"
-        />
-        <path
-          clip-rule="evenodd"
-          d="M20.8125 11.25C20.8125 11.5607 20.5607 11.8125 20.25 11.8125H12.75C12.4393 11.8125 12.1875 11.5607 12.1875 11.25C12.1875 10.9393 12.4393 10.6875 12.75 10.6875H20.25C20.5607 10.6875 20.8125 10.9393 20.8125 11.25Z"
-          fill="white"
-          fill-rule="evenodd"
-        />
-        <path
-          clip-rule="evenodd"
-          d="M20.8125 15.75C20.8125 16.0607 20.5607 16.3125 20.25 16.3125L3.75 16.3125C3.43934 16.3125 3.1875 16.0607 3.1875 15.75C3.1875 15.4393 3.43934 15.1875 3.75 15.1875L20.25 15.1875C20.5607 15.1875 20.8125 15.4393 20.8125 15.75Z"
-          fill="white"
-          fill-rule="evenodd"
-        />
-        <path
-          clip-rule="evenodd"
-          d="M20.8125 20.25C20.8125 20.5607 20.5607 20.8125 20.25 20.8125L3.75 20.8125C3.43934 20.8125 3.1875 20.5607 3.1875 20.25C3.1875 19.9393 3.43934 19.6875 3.75 19.6875L20.25 19.6875C20.5607 19.6875 20.8125 19.9393 20.8125 20.25Z"
-          fill="white"
-          fill-rule="evenodd"
-        />
-        <path
-          clip-rule="evenodd"
-          d="M6.69958 4.0794C6.60419 3.8699 6.39077 3.73967 6.16084 3.75064C5.9309 3.76162 5.73086 3.91158 5.65585 4.12921L3.94036 9.10658L3.0335 11.6217C2.92813 11.914 3.07962 12.2363 3.37186 12.3417C3.6641 12.447 3.98643 12.2955 4.09181 12.0033L4.70145 10.3125H8.28908L9.04768 12.0388C9.17266 12.3232 9.50454 12.4525 9.78895 12.3275C10.0734 12.2025 10.2026 11.8706 10.0776 11.5862L8.97074 9.06732L8.96769 9.06052L6.69958 4.0794ZM7.78938 9.1875L6.26002 5.8288L5.10242 9.1875H7.78938Z"
-          fill="white"
-          fill-rule="evenodd"
-        />
-      </svg>
-    </div>
-  </div>
-</div>
-`;
-
-exports[`When an element is hovered in visual builder mode > multi line field (multiple) > should have outline 1`] = `
+exports[`When an element is hovered in visual builder mode > multi line field (multiple) > should have outline and custom cursor 1`] = `
 <div
   data-cslp="all_fields.bltapikey.en-us.multi_line_textbox_multiple_"
 >
@@ -91,7 +13,7 @@ exports[`When an element is hovered in visual builder mode > multi line field (m
 </div>
 `;
 
-exports[`When an element is hovered in visual builder mode > multi line field (multiple) > should have outline 2`] = `
+exports[`When an element is hovered in visual builder mode > multi line field (multiple) > should have outline and custom cursor 2`] = `
 <div
   class="visual-builder__hover-outline visual-builder__hover-outline--unclickable go3177626044 go1719569523"
   data-testid="visual-builder__hover-outline"
@@ -99,21 +21,7 @@ exports[`When an element is hovered in visual builder mode > multi line field (m
 />
 `;
 
-exports[`When an element is hovered in visual builder mode > multi line field (multiple) > should have outline on individual instances 1`] = `
-<p
-  data-cslp="all_fields.bltapikey.en-us.multi_line_textbox_multiple_.0"
-/>
-`;
-
-exports[`When an element is hovered in visual builder mode > multi line field (multiple) > should have outline on individual instances 2`] = `
-<div
-  class="visual-builder__hover-outline visual-builder__hover-outline--unclickable go3177626044 go1719569523"
-  data-testid="visual-builder__hover-outline"
-  style="top: 51px; left: 51px; width: 27.7734375px; height: 20.3984375px;"
-/>
-`;
-
-exports[`When an element is hovered in visual builder mode > multi line field > should have custom cursor 1`] = `
+exports[`When an element is hovered in visual builder mode > multi line field (multiple) > should have outline and custom cursor 3`] = `
 <div
   class="go1688149084 visual-builder__cursor visible"
   data-icon="multiline"
@@ -184,16 +92,172 @@ exports[`When an element is hovered in visual builder mode > multi line field > 
 </div>
 `;
 
-exports[`When an element is hovered in visual builder mode > multi line field > should have outline 1`] = `
+exports[`When an element is hovered in visual builder mode > multi line field (multiple) > should have outline and custom cursor on individual instances 1`] = `
 <p
-  data-cslp="all_fields.bltapikey.en-us.multi_line"
+  data-cslp="all_fields.bltapikey.en-us.multi_line_textbox_multiple_.0"
 />
 `;
 
-exports[`When an element is hovered in visual builder mode > multi line field > should have outline 2`] = `
+exports[`When an element is hovered in visual builder mode > multi line field (multiple) > should have outline and custom cursor on individual instances 2`] = `
 <div
   class="visual-builder__hover-outline visual-builder__hover-outline--unclickable go3177626044 go1719569523"
   data-testid="visual-builder__hover-outline"
   style="top: 51px; left: 51px; width: 27.7734375px; height: 20.3984375px;"
 />
+`;
+
+exports[`When an element is hovered in visual builder mode > multi line field (multiple) > should have outline and custom cursor on individual instances 3`] = `
+<div
+  class="go1688149084 visual-builder__cursor visible"
+  data-icon="multiline"
+  data-testid="visual-builder__cursor"
+>
+  <div
+    class="visual-builder__cursor-wrapper"
+  >
+    <div
+      class="visual-builder__cursor-pointer go3046085498"
+    >
+      <svg
+        fill="none"
+        height="16"
+        viewBox="0 0 16 16"
+        width="16"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M0.0167948 0.602214C-0.0784404 0.246792 0.246794 -0.0784402 0.602216 0.0167948L15.6457 4.04767C16.0914 4.1671 16.1259 4.78625 15.6962 4.95447L8.17161 7.90048C8.04753 7.94906 7.94936 8.04723 7.90078 8.17131L4.95449 15.6962C4.78627 16.1259 4.16712 16.0914 4.04769 15.6457L0.0167948 0.602214Z"
+          fill="#5D50BE"
+        />
+      </svg>
+    </div>
+    <div
+      class="visual-builder__cursor-icon go4261356330"
+    >
+      <svg
+        fill="none"
+        height="24"
+        viewBox="0 0 24 24"
+        width="24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          clip-rule="evenodd"
+          d="M20.8125 6.75C20.8125 7.06066 20.5607 7.3125 20.25 7.3125L12.75 7.3125C12.4393 7.3125 12.1875 7.06066 12.1875 6.75C12.1875 6.43934 12.4393 6.1875 12.75 6.1875L20.25 6.1875C20.5607 6.1875 20.8125 6.43934 20.8125 6.75Z"
+          fill="white"
+          fill-rule="evenodd"
+        />
+        <path
+          clip-rule="evenodd"
+          d="M20.8125 11.25C20.8125 11.5607 20.5607 11.8125 20.25 11.8125H12.75C12.4393 11.8125 12.1875 11.5607 12.1875 11.25C12.1875 10.9393 12.4393 10.6875 12.75 10.6875H20.25C20.5607 10.6875 20.8125 10.9393 20.8125 11.25Z"
+          fill="white"
+          fill-rule="evenodd"
+        />
+        <path
+          clip-rule="evenodd"
+          d="M20.8125 15.75C20.8125 16.0607 20.5607 16.3125 20.25 16.3125L3.75 16.3125C3.43934 16.3125 3.1875 16.0607 3.1875 15.75C3.1875 15.4393 3.43934 15.1875 3.75 15.1875L20.25 15.1875C20.5607 15.1875 20.8125 15.4393 20.8125 15.75Z"
+          fill="white"
+          fill-rule="evenodd"
+        />
+        <path
+          clip-rule="evenodd"
+          d="M20.8125 20.25C20.8125 20.5607 20.5607 20.8125 20.25 20.8125L3.75 20.8125C3.43934 20.8125 3.1875 20.5607 3.1875 20.25C3.1875 19.9393 3.43934 19.6875 3.75 19.6875L20.25 19.6875C20.5607 19.6875 20.8125 19.9393 20.8125 20.25Z"
+          fill="white"
+          fill-rule="evenodd"
+        />
+        <path
+          clip-rule="evenodd"
+          d="M6.69958 4.0794C6.60419 3.8699 6.39077 3.73967 6.16084 3.75064C5.9309 3.76162 5.73086 3.91158 5.65585 4.12921L3.94036 9.10658L3.0335 11.6217C2.92813 11.914 3.07962 12.2363 3.37186 12.3417C3.6641 12.447 3.98643 12.2955 4.09181 12.0033L4.70145 10.3125H8.28908L9.04768 12.0388C9.17266 12.3232 9.50454 12.4525 9.78895 12.3275C10.0734 12.2025 10.2026 11.8706 10.0776 11.5862L8.97074 9.06732L8.96769 9.06052L6.69958 4.0794ZM7.78938 9.1875L6.26002 5.8288L5.10242 9.1875H7.78938Z"
+          fill="white"
+          fill-rule="evenodd"
+        />
+      </svg>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`When an element is hovered in visual builder mode > multi line field > should have outline and custom cursor 1`] = `
+<p
+  data-cslp="all_fields.bltapikey.en-us.multi_line"
+/>
+`;
+
+exports[`When an element is hovered in visual builder mode > multi line field > should have outline and custom cursor 2`] = `
+<div
+  class="visual-builder__hover-outline visual-builder__hover-outline--unclickable go3177626044 go1719569523"
+  data-testid="visual-builder__hover-outline"
+  style="top: 51px; left: 51px; width: 27.7734375px; height: 20.3984375px;"
+/>
+`;
+
+exports[`When an element is hovered in visual builder mode > multi line field > should have outline and custom cursor 3`] = `
+<div
+  class="go1688149084 visual-builder__cursor visible"
+  data-icon="multiline"
+  data-testid="visual-builder__cursor"
+>
+  <div
+    class="visual-builder__cursor-wrapper"
+  >
+    <div
+      class="visual-builder__cursor-pointer go3046085498"
+    >
+      <svg
+        fill="none"
+        height="16"
+        viewBox="0 0 16 16"
+        width="16"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M0.0167948 0.602214C-0.0784404 0.246792 0.246794 -0.0784402 0.602216 0.0167948L15.6457 4.04767C16.0914 4.1671 16.1259 4.78625 15.6962 4.95447L8.17161 7.90048C8.04753 7.94906 7.94936 8.04723 7.90078 8.17131L4.95449 15.6962C4.78627 16.1259 4.16712 16.0914 4.04769 15.6457L0.0167948 0.602214Z"
+          fill="#5D50BE"
+        />
+      </svg>
+    </div>
+    <div
+      class="visual-builder__cursor-icon go4261356330"
+    >
+      <svg
+        fill="none"
+        height="24"
+        viewBox="0 0 24 24"
+        width="24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          clip-rule="evenodd"
+          d="M20.8125 6.75C20.8125 7.06066 20.5607 7.3125 20.25 7.3125L12.75 7.3125C12.4393 7.3125 12.1875 7.06066 12.1875 6.75C12.1875 6.43934 12.4393 6.1875 12.75 6.1875L20.25 6.1875C20.5607 6.1875 20.8125 6.43934 20.8125 6.75Z"
+          fill="white"
+          fill-rule="evenodd"
+        />
+        <path
+          clip-rule="evenodd"
+          d="M20.8125 11.25C20.8125 11.5607 20.5607 11.8125 20.25 11.8125H12.75C12.4393 11.8125 12.1875 11.5607 12.1875 11.25C12.1875 10.9393 12.4393 10.6875 12.75 10.6875H20.25C20.5607 10.6875 20.8125 10.9393 20.8125 11.25Z"
+          fill="white"
+          fill-rule="evenodd"
+        />
+        <path
+          clip-rule="evenodd"
+          d="M20.8125 15.75C20.8125 16.0607 20.5607 16.3125 20.25 16.3125L3.75 16.3125C3.43934 16.3125 3.1875 16.0607 3.1875 15.75C3.1875 15.4393 3.43934 15.1875 3.75 15.1875L20.25 15.1875C20.5607 15.1875 20.8125 15.4393 20.8125 15.75Z"
+          fill="white"
+          fill-rule="evenodd"
+        />
+        <path
+          clip-rule="evenodd"
+          d="M20.8125 20.25C20.8125 20.5607 20.5607 20.8125 20.25 20.8125L3.75 20.8125C3.43934 20.8125 3.1875 20.5607 3.1875 20.25C3.1875 19.9393 3.43934 19.6875 3.75 19.6875L20.25 19.6875C20.5607 19.6875 20.8125 19.9393 20.8125 20.25Z"
+          fill="white"
+          fill-rule="evenodd"
+        />
+        <path
+          clip-rule="evenodd"
+          d="M6.69958 4.0794C6.60419 3.8699 6.39077 3.73967 6.16084 3.75064C5.9309 3.76162 5.73086 3.91158 5.65585 4.12921L3.94036 9.10658L3.0335 11.6217C2.92813 11.914 3.07962 12.2363 3.37186 12.3417C3.6641 12.447 3.98643 12.2955 4.09181 12.0033L4.70145 10.3125H8.28908L9.04768 12.0388C9.17266 12.3232 9.50454 12.4525 9.78895 12.3275C10.0734 12.2025 10.2026 11.8706 10.0776 11.5862L8.97074 9.06732L8.96769 9.06052L6.69958 4.0794ZM7.78938 9.1875L6.26002 5.8288L5.10242 9.1875H7.78938Z"
+          fill="white"
+          fill-rule="evenodd"
+        />
+      </svg>
+    </div>
+  </div>
+</div>
 `;
