@@ -127,6 +127,8 @@ describe("Visual builder", () => {
         });
 
         describe("inline elements must be contenteditable", () => {
+            let visualBuilder: VisualBuilder;
+            let h1: HTMLHeadingElement
             beforeAll(() => {
                 (visualBuilderPostMessage?.send as Mock).mockImplementation(
                     (eventName: string, args) => {
@@ -165,61 +167,42 @@ describe("Visual builder", () => {
                 );
             });
 
-            beforeEach(() => {
+            beforeEach(async () => {
                 document.getElementsByTagName("html")[0].innerHTML = "";
-            })
-            test("single line should be contenteditable", async () => {
-                const h1 = document.createElement("h1");
+                h1 = document.createElement("h1");
                 h1.textContent = INLINE_EDITABLE_FIELD_VALUE;
-                h1.getBoundingClientRect = vi.fn(() => ({
-                    left: 10,
-                    right: 20,
-                    top: 10,
-                    bottom: 20,
-                    width: 10,
-                    height: 5,
-                })) as any;
+                mockGetBoundingClientRect(h1);
                 h1.setAttribute(
                     "data-cslp",
                     "all_fields.blt58a50b4cebae75c5.en-us.single_line"
                 );
 
                 document.body.appendChild(h1);
-                const x = new VisualBuilder();
-
+                visualBuilder = new VisualBuilder();
+            })
+            afterEach(() => {
+                visualBuilder.destroy();
+            })
+            test("single line should be contenteditable", async () => {
                 await triggerAndWaitForClickAction(visualBuilderPostMessage, h1);
 
                 await waitFor(() => {
                     expect(h1.getAttribute("contenteditable")).toBe("true");
                 });
                 expect(h1).toMatchSnapshot();
-                x.destroy();
-            });
+            }, { timeout: 10 * 1000 });
 
             test("multi line should be contenteditable", async () => {
-                const h1 = document.createElement("h1");
                 h1.setAttribute(
                     "data-cslp",
                     "all_fields.blt58a50b4cebae75c5.en-us.multi_line"
                 );
-                h1.getBoundingClientRect = vi.fn(() => ({
-                    left: 10,
-                    right: 20,
-                    top: 10,
-                    bottom: 20,
-                    width: 10,
-                    height: 5,
-                })) as any;
-                h1.textContent = INLINE_EDITABLE_FIELD_VALUE;
-                document.body.appendChild(h1);
-                const x = new VisualBuilder();
                 await triggerAndWaitForClickAction(visualBuilderPostMessage, h1);
 
                 await waitFor(() => {
                     expect(h1.getAttribute("contenteditable")).toBe("true");
                 });
                 expect(h1).toMatchSnapshot();
-                x.destroy();
             }, { timeout: 10 * 1000 });
 
             //TODO: Fix this test on CI
