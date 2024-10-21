@@ -113,7 +113,7 @@ exports[`Visual builder > on click, the sdk > should do nothing if data-cslp not
       data-testid="visual-builder__hover-outline"
     />
     <div
-      class="visual-builder__focused-toolbar go635291819"
+      class="visual-builder__focused-toolbar go1658980850"
       data-testid="visual-builder__focused-toolbar"
     />
   </div>
@@ -178,7 +178,7 @@ exports[`Visual builder > should append a visual builder container to the DOM 1`
     data-testid="visual-builder__hover-outline"
   />
   <div
-    class="visual-builder__focused-toolbar go635291819"
+    class="visual-builder__focused-toolbar go1658980850"
     data-testid="visual-builder__focused-toolbar"
   />
 </div>
