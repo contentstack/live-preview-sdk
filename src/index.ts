@@ -1,5 +1,7 @@
 import ContentstackLivePreviewHOC from "./preview/contentstack-live-preview-HOC";
 
+import { IStackSdk as ExternalStackSdkType } from "./types/types";
+export type IStackSdk = ExternalStackSdkType;
 class LightLivePreviewHoC implements ContentstackLivePreviewHOC {
     static init() {}
 

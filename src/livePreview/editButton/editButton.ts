@@ -416,7 +416,7 @@ export class LivePreviewEditButton {
         const cslpTag = this.tooltip.getAttribute("current-data-cslp");
 
         if (cslpTag) {
-            const { content_type_uid, entry_uid, locale, fieldPathWithIndex } =
+            const { content_type_uid, entry_uid, locale, variant, fieldPathWithIndex } =
                 extractDetailsFromCslp(cslpTag);
 
             if (inIframe()) {
@@ -424,6 +424,7 @@ export class LivePreviewEditButton {
                     field: fieldPathWithIndex,
                     content_type_uid,
                     entry_uid,
+                    variant,
                     locale,
                 });
             } else {
@@ -433,6 +434,7 @@ export class LivePreviewEditButton {
                         content_type_uid,
                         locale,
                         entry_uid,
+                        variant,
                         fieldPathWithIndex
                     );
 
@@ -456,6 +458,7 @@ export class LivePreviewEditButton {
         content_type_uid: string,
         locale = "en-us",
         entry_uid: string,
+        variant: string | undefined,
         preview_field: string
     ): string {
         const config = Config.get();
@@ -488,16 +491,26 @@ export class LivePreviewEditButton {
         const host = String(config.clientUrlParams.host);
         const port = String(config.clientUrlParams.port);
         const environment = String(config.stackDetails.environment);
+        const branch = String(config.stackDetails.branch || "main");
 
-        const urlHash = `!/stack/${
+        let urlHash = `!/stack/${
             config.stackDetails.apiKey
         }/content-type/${content_type_uid}/${
             locale ?? "en-us"
-        }/entry/${entry_uid}/edit`;
+        }/entry/${entry_uid}`;
+
+        if (variant) {
+            urlHash += `/variant/${variant}/edit`;
+        } else {
+            urlHash += `/edit`;
+        }
 
         const url = new URL(`${protocol}://${host}`);
         url.port = port;
         url.hash = urlHash;
+        if (config.stackDetails.branch) {
+            url.searchParams.append("branch", branch);
+        }
         url.searchParams.append("preview-field", preview_field);
         url.searchParams.append("preview-locale", locale ?? "en-us");
         url.searchParams.append("preview-environment", environment);

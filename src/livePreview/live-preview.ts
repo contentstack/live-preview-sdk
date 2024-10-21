@@ -60,23 +60,6 @@ export default class LivePreview {
                     new LivePreviewEditButton();
             }
 
-            //NOTE - I think we are already handling the link click event here. Let's move it to a function.
-            if (config.ssr) {
-                // Setting the query params to all the click events related to current domain
-                window.addEventListener("click", (event: any) => {
-                    const target: any = event.target;
-                    const targetHref: string | any = target.href;
-                    const docOrigin: string = document.location.origin;
-                    if (
-                        targetHref &&
-                        targetHref.includes(docOrigin) &&
-                        !targetHref.includes("live_preview")
-                    ) {
-                        const newUrl = addLivePreviewQueryTags(target.href);
-                        event.target.href = newUrl || target.href;
-                    }
-                });
-            }
         } else if (config.cleanCslpOnProduction) {
             removeDataCslp();
         }

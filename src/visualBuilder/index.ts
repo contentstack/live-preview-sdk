@@ -35,7 +35,10 @@ import { addEventListeners, removeEventListeners } from "./listeners";
 import { addKeyboardShortcuts } from "./listeners/keyboardShortcuts";
 import { FieldSchemaMap } from "./utils/fieldSchemaMap";
 import { isFieldDisabled } from "./utils/isFieldDisabled";
-import { updateFocussedState, updateFocussedStateOnMutation } from "./utils/updateFocussedState";
+import {
+    updateFocussedState,
+    updateFocussedStateOnMutation,
+} from "./utils/updateFocussedState";
 import { useHighlightCommentIcon } from "./eventManager/useHighlightCommentIcon";
 import { updateHighlightedCommentIconPosition } from "./generators/generateHighlightedComment";
 import { useRecalculateVariantDataCSLPValues } from "./eventManager/useRecalculateVariantDataCSLPValues";
@@ -45,6 +48,8 @@ interface VisualBuilderGlobalStateImpl {
     previousHoveredTargetDOM: Element | null;
     previousEmptyBlockParents: Element[] | [];
     audienceMode: boolean;
+    locale: string;
+    variant: string | null;
 }
 
 export class VisualBuilder {
@@ -59,6 +64,8 @@ export class VisualBuilder {
             previousHoveredTargetDOM: null,
             previousEmptyBlockParents: [],
             audienceMode: false,
+            locale: Config.get().stackDetails.masterLocale || "en-us",
+            variant: null,
         });
 
     private handlePositionChange(editableElement: HTMLElement) {
@@ -168,9 +175,10 @@ export class VisualBuilder {
         debounce(
             async () => {
                 updateFocussedStateOnMutation(
-                    this.overlayWrapper, 
-                    this.focusedToolbar, 
-                    this.visualBuilderContainer);
+                    this.overlayWrapper,
+                    this.focusedToolbar,
+                    this.visualBuilderContainer
+                );
                 const emptyBlockParents = Array.from(
                     document.querySelectorAll(
                         ".visual-builder__empty-block-parent"
@@ -276,6 +284,9 @@ export class VisualBuilder {
                     VisualBuilderPostMessageEvents.GET_ALL_ENTRIES_IN_CURRENT_PAGE,
                     getEntryIdentifiersInCurrentPage
                 );
+                visualBuilderPostMessage?.send(
+                    VisualBuilderPostMessageEvents.SEND_VARIANT_AND_LOCALE
+                );
 
                 useHideFocusOverlayPostMessageEvent({
                     overlayWrapper: this.overlayWrapper,
@@ -300,8 +311,11 @@ export class VisualBuilder {
 
     // TODO: write test cases
     destroy = (): void => {
+        // Remove event listeners
         window.removeEventListener("resize", this.resizeEventHandler);
         window.removeEventListener("scroll", this.scrollEventHandler);
+    
+        // Remove custom event listeners
         removeEventListeners({
             overlayWrapper: this.overlayWrapper,
             visualBuilderContainer: this.visualBuilderContainer,
@@ -312,12 +326,39 @@ export class VisualBuilder {
             resizeObserver: this.resizeObserver,
             customCursor: this.customCursor,
         });
+    
+        // Disconnect observers
         this.resizeObserver.disconnect();
         this.mutationObserver.disconnect();
-
+    
+        // Clear global state
+        VisualBuilder.VisualBuilderGlobalState.value = {
+            previousSelectedEditableDOM: null,
+            previousHoveredTargetDOM: null,
+            previousEmptyBlockParents: [],
+            audienceMode: false,
+            locale: "en-us",
+            variant: null,
+        };
+    
+        // Remove DOM elements
         if (this.visualBuilderContainer) {
             window.document.body.removeChild(this.visualBuilderContainer);
         }
+        if (this.customCursor) {
+            this.customCursor.remove();
+        }
+        if (this.overlayWrapper) {
+            this.overlayWrapper.remove();
+        }
+        if (this.focusedToolbar) {
+            this.focusedToolbar.remove();
+        }
+    
+        // Nullify references
         this.customCursor = null;
+        this.overlayWrapper = null;
+        this.visualBuilderContainer = null;
+        this.focusedToolbar = null;
     };
 }

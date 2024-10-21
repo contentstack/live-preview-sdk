@@ -21,7 +21,6 @@ const voidElements = new Set([
 ]);
 
 const LEAF_CSLP_SELECTOR = "[data-cslp]:not(:has([data-cslp]))";
-
 const DIFF_WRAPPER = "cs-compare";
 
 function registerCompareElement() {
@@ -38,7 +37,14 @@ function registerCompareElement() {
     }
 }
 
+
+
 export function handleWebCompare() {
+    // Check if window and document are available
+    if (typeof window === "undefined" || typeof document === "undefined") {
+        // Server-side, don't execute client-specific logic
+        return;
+    }
     compareGlobalStyles();
     registerCompareElement();
 
@@ -74,7 +80,6 @@ export function handleWebCompare() {
             return map;
         }
     );
-
     const mergeColors = (className = ".cs-compare--added") => {
         const elements = Array.from(document.querySelectorAll(className));
         for (let i = 1; i < elements.length; i++) {
@@ -103,10 +108,11 @@ export function handleWebCompare() {
             } else {
                 element.innerHTML = diff[path];
             }
-        }
+        };
 
         mergeColors(`.cs-compare--${operation}`);
     });
+
 
     timelinePostMessage?.on(timelinePostMessageEvents.REMOVE_DIFF, async () => {
         // unwrap the cs-compare tags

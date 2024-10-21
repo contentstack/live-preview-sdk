@@ -1,4 +1,5 @@
 import {
+    act,
     cleanup,
     fireEvent,
     getByTestId,
@@ -10,15 +11,17 @@ import AddInstanceButtonComponent from "../addInstanceButton";
 describe("AddInstanceButtonComponent", () => {
     afterEach(cleanup);
 
-    test("renders button with proper class and icon", () => {
+    test("renders button with proper class and icon", async () => {
         const onClickCallback = vi.fn();
-        render(
-            <AddInstanceButtonComponent
-                value={[]}
-                fieldSchema={singleLineFieldSchema}
-                onClick={onClickCallback}
-            />
-        );
+        await act(() => {
+            render(
+                <AddInstanceButtonComponent
+                    value={[]}
+                    fieldSchema={singleLineFieldSchema}
+                    onClick={onClickCallback}
+                />
+            );
+        })
         const buttonElement = getByTestId(
             document.body,
             "visual-builder-add-instance-button"
@@ -30,15 +33,17 @@ describe("AddInstanceButtonComponent", () => {
         expect(buttonElement.querySelector("path")).toBeTruthy();
     });
 
-    test("calls onClickCallback when button is clicked", () => {
+    test("calls onClickCallback when button is clicked", async () => {
         const onClickCallback = vi.fn();
-        render(
-            <AddInstanceButtonComponent
-                value={[]}
-                fieldSchema={singleLineFieldSchema}
-                onClick={onClickCallback}
-            />
-        );
+        await act(() => {
+            render(
+                <AddInstanceButtonComponent
+                    value={[]}
+                    fieldSchema={singleLineFieldSchema}
+                    onClick={onClickCallback}
+                />
+            );
+        })
         const buttonElement = getByTestId(
             document.body,
             "visual-builder-add-instance-button"

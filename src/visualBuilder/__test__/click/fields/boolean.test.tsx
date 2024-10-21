@@ -1,4 +1,4 @@
-import { waitFor } from "@testing-library/preact";
+import { act, waitFor, fireEvent } from "@testing-library/preact";
 import "@testing-library/jest-dom";
 import { getFieldSchemaMap } from "../../../../__test__/data/fieldSchemaMap";
 import Config from "../../../../configManager/configManager";
@@ -9,6 +9,7 @@ import visualBuilderPostMessage from "../../../utils/visualBuilderPostMessage";
 import { vi } from "vitest";
 import { VisualBuilderPostMessageEvents } from "../../../utils/types/postMessage.types";
 import { VisualBuilder } from "../../../index";
+import { triggerAndWaitForClickAction } from "../../../../__test__/utils";
 
 global.ResizeObserver = vi.fn().mockImplementation(() => ({
     observe: vi.fn(),
@@ -78,9 +79,7 @@ describe("When an element is clicked in visual builder mode", () => {
             "get"
         ).mockReturnValue(100);
         vi.spyOn(document.body, "scrollHeight", "get").mockReturnValue(100);
-    });
 
-    beforeEach(() => {
         Config.reset();
         Config.set("mode", 2);
         mouseClickEvent = new Event("click", {
@@ -89,20 +88,17 @@ describe("When an element is clicked in visual builder mode", () => {
         });
     });
 
-    afterEach(() => {
-        vi.clearAllMocks();
-        document.body.innerHTML = "";
-    });
-
     afterAll(() => {
         Config.reset();
+        vi.clearAllMocks();
+        document.body.innerHTML = "";
     });
 
     describe("boolean field", () => {
         let booleanField: HTMLParagraphElement;
         let visualBuilder: VisualBuilder;
 
-        beforeEach(() => {
+        beforeAll(async () => {
             booleanField = document.createElement("p");
             booleanField.setAttribute(
                 "data-cslp",
@@ -111,25 +107,23 @@ describe("When an element is clicked in visual builder mode", () => {
             document.body.appendChild(booleanField);
 
             visualBuilder = new VisualBuilder();
+            await triggerAndWaitForClickAction(visualBuilderPostMessage, booleanField);
         });
 
-        afterEach(() => {
+        afterAll(() => {
             visualBuilder.destroy();
         });
 
         test("should have outline", () => {
-            booleanField.dispatchEvent(mouseClickEvent);
             expect(booleanField.classList.contains("cslp-edit-mode"));
         });
 
         test("should have an overlay", () => {
-            booleanField.dispatchEvent(mouseClickEvent);
             const overlay = document.querySelector(".visual-builder__overlay");
             expect(overlay!.classList.contains("visible"));
         });
 
         test.skip("should have a field path dropdown", () => {
-            booleanField.dispatchEvent(mouseClickEvent);
             const toolbar = document.querySelector(
                 ".visual-builder__focused-toolbar__field-label-wrapper__current-field"
             );
@@ -137,7 +131,6 @@ describe("When an element is clicked in visual builder mode", () => {
         });
 
         test("should contain a data-cslp-field-type attribute", async () => {
-            booleanField.dispatchEvent(mouseClickEvent);
             await waitFor(() => {
                 expect(booleanField).toHaveAttribute(
                     VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
@@ -146,14 +139,13 @@ describe("When an element is clicked in visual builder mode", () => {
         });
 
         test("should not contain a contenteditable attribute", async () => {
-            booleanField.dispatchEvent(mouseClickEvent);
             await waitFor(() => {
                 expect(booleanField).not.toHaveAttribute("contenteditable");
             });
         });
 
         test("should send a focus field message to parent", async () => {
-            booleanField.dispatchEvent(mouseClickEvent);
+
             await waitFor(() => {
                 expect(visualBuilderPostMessage?.send).toBeCalledWith(
                     VisualBuilderPostMessageEvents.FOCUS_FIELD,

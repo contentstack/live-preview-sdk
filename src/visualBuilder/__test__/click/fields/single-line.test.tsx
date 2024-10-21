@@ -9,23 +9,13 @@ import visualBuilderPostMessage from "../../../utils/visualBuilderPostMessage";
 import { Mock, vi } from "vitest";
 import { VisualBuilderPostMessageEvents } from "../../../utils/types/postMessage.types";
 import { VisualBuilder } from "../../../index";
-import { sleep } from "../../../../__test__/utils";
+import { triggerAndWaitForClickAction } from "../../../../__test__/utils";
+import { act } from "preact/test-utils";
 
 const VALUES = {
     singleLine: "Single line",
     number: "10.5",
 };
-
-global.ResizeObserver = vi.fn().mockImplementation(() => ({
-    observe: vi.fn(),
-    unobserve: vi.fn(),
-    disconnect: vi.fn(),
-}));
-
-global.MutationObserver = vi.fn().mockImplementation(() => ({
-    observe: vi.fn(),
-    disconnect: vi.fn(),
-}));
 
 vi.mock("../../../components/FieldToolbar", () => {
     return {
@@ -66,7 +56,6 @@ vi.mock("../../../utils/visualBuilderPostMessage", async () => {
 });
 
 describe("When an element is clicked in visual builder mode", () => {
-    let mouseClickEvent: Event;
 
     beforeAll(() => {
         FieldSchemaMap.setFieldSchema(
@@ -84,30 +73,22 @@ describe("When an element is clicked in visual builder mode", () => {
             "get"
         ).mockReturnValue(100);
         vi.spyOn(document.body, "scrollHeight", "get").mockReturnValue(100);
-    });
 
-    beforeEach(() => {
         Config.reset();
         Config.set("mode", 2);
-        mouseClickEvent = new Event("click", {
-            bubbles: true,
-            cancelable: true,
-        });
-    });
-
-    afterEach(() => {
-        vi.clearAllMocks();
-        document.body.innerHTML = "";
     });
 
     afterAll(() => {
+        vi.clearAllMocks();
+        document.body.innerHTML = "";
+
         Config.reset();
     });
 
     describe("single line field", () => {
         let singleLineField: HTMLParagraphElement;
-
-        beforeAll(() => {
+        let visualBuilder: VisualBuilder;
+        beforeAll(async () => {
             (visualBuilderPostMessage?.send as Mock).mockImplementation(
                 (eventName: string) => {
                     if (
@@ -129,9 +110,7 @@ describe("When an element is clicked in visual builder mode", () => {
                     return Promise.resolve({});
                 }
             );
-        });
 
-        beforeEach(() => {
             singleLineField = document.createElement("p");
             singleLineField.setAttribute(
                 "data-cslp",
@@ -154,70 +133,47 @@ describe("When an element is clicked in visual builder mode", () => {
                 previousEmptyBlockParents: [],
                 audienceMode: false,
             };
+            visualBuilder = new VisualBuilder();
+            await triggerAndWaitForClickAction(visualBuilderPostMessage, singleLineField);
         });
 
-        test("should have outline", () => {
-            const visualBuilder = new VisualBuilder();
-            singleLineField.dispatchEvent(mouseClickEvent);
-            expect(singleLineField.classList.contains("cslp-edit-mode"));
+        afterAll(() => {
             visualBuilder.destroy();
+        })
+
+        test("should have outline", () => {
+            expect(singleLineField.classList.contains("cslp-edit-mode"));
         });
 
         test("should have an overlay", () => {
-            const visualBuilder = new VisualBuilder();
-            singleLineField.dispatchEvent(mouseClickEvent);
             const overlay = document.querySelector(".visual-builder__overlay");
             expect(overlay!.classList.contains("visible"));
-            visualBuilder.destroy();
         });
 
         test.skip("should have a field path dropdown", async () => {
-            const visualBuilder = new VisualBuilder();
-            await sleep(0);
-
-            fireEvent.click(singleLineField);
-
             await waitFor(async () => {
                 const fieldLabel = screen.getByTestId(
                     "mock-field-label-wrapper"
                 );
                 expect(fieldLabel).toBeInTheDocument();
             });
-
-            visualBuilder.destroy();
         });
 
         test("should contain a data-cslp-field-type attribute", async () => {
-            const visualBuilder = new VisualBuilder();
-
-            fireEvent.click(singleLineField);
-
             await waitFor(() =>
                 expect(singleLineField).toHaveAttribute(
                     VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
                 )
             );
-
-            visualBuilder.destroy();
         });
 
         test("should contain a contenteditable attribute", async () => {
-            const visualBuilder = new VisualBuilder();
-
-            fireEvent.click(singleLineField);
-
             await waitFor(() => {
                 expect(singleLineField).toHaveAttribute("contenteditable");
             });
-
-            visualBuilder.destroy();
         });
 
         test("should send a focus field message to parent", async () => {
-            const visualBuilder = new VisualBuilder();
-
-            fireEvent.click(singleLineField);
-
             await waitFor(() => {
                 expect(visualBuilderPostMessage?.send).toBeCalledWith(
                     VisualBuilderPostMessageEvents.FOCUS_FIELD,
@@ -226,7 +182,6 @@ describe("When an element is clicked in visual builder mode", () => {
                     }
                 );
             });
-            visualBuilder.destroy();
         });
     });
 
@@ -234,8 +189,9 @@ describe("When an element is clicked in visual builder mode", () => {
         let container: HTMLDivElement;
         let firstSingleLineField: HTMLParagraphElement;
         let secondSingleLineField: HTMLParagraphElement;
+        let visualBuilder: VisualBuilder;
 
-        beforeAll(() => {
+        beforeAll(async () => {
             (visualBuilderPostMessage?.send as Mock).mockImplementation(
                 (eventName: string, args) => {
                     if (
@@ -254,9 +210,7 @@ describe("When an element is clicked in visual builder mode", () => {
                     return Promise.resolve({});
                 }
             );
-        });
-
-        beforeEach(() => {
+        
             container = document.createElement("div");
             container.setAttribute(
                 "data-cslp",
@@ -288,42 +242,34 @@ describe("When an element is clicked in visual builder mode", () => {
                 previousEmptyBlockParents: [],
                 audienceMode: false,
             };
+            visualBuilder = new VisualBuilder();
+            await triggerAndWaitForClickAction(visualBuilderPostMessage, container);
+        });
+
+        afterAll(() => {
+            visualBuilder.destroy();
         });
 
         test("should have outline", () => {
-            const visualBuilder = new VisualBuilder();
-            container.dispatchEvent(mouseClickEvent);
             expect(container.classList.contains("cslp-edit-mode"));
-            visualBuilder.destroy();
         });
 
         test("should have an overlay", () => {
-            const visualBuilder = new VisualBuilder();
-            container.dispatchEvent(mouseClickEvent);
             const overlay = document.querySelector(".visual-builder__overlay");
             expect(overlay!.classList.contains("visible"));
-            visualBuilder.destroy();
         });
 
         test.skip("should have a field path dropdown", async () => {
-            const visualBuilder = new VisualBuilder();
-
-            await sleep(0);
-            fireEvent.click(container);
-            await sleep(0);
-
             await waitFor(async () => {
                 const toolbar = await screen.findByTestId(
                     "mock-field-label-wrapper"
                 );
                 expect(toolbar).toBeInTheDocument();
             });
-            visualBuilder.destroy();
         });
 
         // TODO should be a test of FieldToolbar
         test.skip("should have a multi field toolbar with button group", async () => {
-            container.dispatchEvent(mouseClickEvent);
             const multiFieldToolbar = document.querySelector(
                 ".visual-builder__focused-toolbar__multiple-field-toolbar"
             );
@@ -337,21 +283,14 @@ describe("When an element is clicked in visual builder mode", () => {
         });
 
         test("should contain a data-cslp-field-type attribute", async () => {
-            const visualBuilder = new VisualBuilder();
-            container.dispatchEvent(mouseClickEvent);
-
             await waitFor(() => {
                 expect(container).toHaveAttribute(
                     VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
                 );
             });
-            visualBuilder.destroy();
         });
 
         test("container should not contain a contenteditable attribute but the children can", async () => {
-            const visualBuilder = new VisualBuilder();
-
-            fireEvent.click(container);
             await waitFor(() => {
                 expect(container).not.toHaveAttribute("contenteditable");
             });
@@ -369,14 +308,9 @@ describe("When an element is clicked in visual builder mode", () => {
                     "contenteditable"
                 );
             });
-
-            visualBuilder.destroy();
         });
 
         test.skip("should have 2 add instance buttons", async () => {
-            const visualBuilder = new VisualBuilder();
-
-            fireEvent.click(container.children[0]);
             await waitFor(() => {
                 expect(container.children[0]).toHaveAttribute(
                     VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
@@ -389,14 +323,9 @@ describe("When an element is clicked in visual builder mode", () => {
                 );
                 expect(addInstanceButtons.length).toBe(2);
             });
-
-            visualBuilder.destroy();
         });
 
         test("should send a focus field message to parent", async () => {
-            const visualBuilder = new VisualBuilder();
-
-            container.dispatchEvent(mouseClickEvent);
             await waitFor(() => {
                 expect(visualBuilderPostMessage?.send).toBeCalledWith(
                     VisualBuilderPostMessageEvents.FOCUS_FIELD,
@@ -405,8 +334,6 @@ describe("When an element is clicked in visual builder mode", () => {
                     }
                 );
             });
-
-            visualBuilder.destroy();
         });
     });
 });
