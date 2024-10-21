@@ -1,6 +1,7 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
-npx ts-node --esm mustache.ts
+npm run build
+npx tsx mustache.ts
 git add .
 npx lint-staged
