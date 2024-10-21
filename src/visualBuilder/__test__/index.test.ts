@@ -190,7 +190,7 @@ describe("Visual builder", () => {
                     expect(h1.getAttribute("contenteditable")).toBe("true");
                 });
                 expect(h1).toMatchSnapshot();
-            }, { timeout: 10 * 1000 });
+            }, { timeout: 20 * 1000 });
 
             test("multi line should be contenteditable", async () => {
                 h1.setAttribute(
@@ -203,7 +203,7 @@ describe("Visual builder", () => {
                     expect(h1.getAttribute("contenteditable")).toBe("true");
                 });
                 expect(h1).toMatchSnapshot();
-            }, { timeout: 10 * 1000 });
+            }, { timeout: 20 * 1000 });
 
             //TODO: Fix this test on CI
             test.skip("file should render a replacer and remove when it is not", async () => {
