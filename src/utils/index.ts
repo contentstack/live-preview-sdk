@@ -23,3 +23,19 @@ export function addLivePreviewQueryTags(link: string): string {
         return link;
     }
 }
+export function addParamsToUrl() {
+    // Setting the query params to all the click events related to current domain
+    window.addEventListener("click", (event: any) => {
+        const target: any = event.target;
+        const targetHref: string | any = target.href;
+        const docOrigin: string = document.location.origin;
+        if (
+            targetHref &&
+            targetHref.includes(docOrigin) &&
+            !targetHref.includes("live_preview")
+        ) {
+            const newUrl = addLivePreviewQueryTags(target.href);
+            event.target.href = newUrl || target.href;
+        }
+    });
+}
