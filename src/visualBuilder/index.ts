@@ -35,7 +35,10 @@ import { addEventListeners, removeEventListeners } from "./listeners";
 import { addKeyboardShortcuts } from "./listeners/keyboardShortcuts";
 import { FieldSchemaMap } from "./utils/fieldSchemaMap";
 import { isFieldDisabled } from "./utils/isFieldDisabled";
-import { updateFocussedState, updateFocussedStateOnMutation } from "./utils/updateFocussedState";
+import {
+    updateFocussedState,
+    updateFocussedStateOnMutation,
+} from "./utils/updateFocussedState";
 import { useHighlightCommentIcon } from "./eventManager/useHighlightCommentIcon";
 import { updateHighlightedCommentIconPosition } from "./generators/generateHighlightedComment";
 import { useRecalculateVariantDataCSLPValues } from "./eventManager/useRecalculateVariantDataCSLPValues";
@@ -45,6 +48,8 @@ interface VisualBuilderGlobalStateImpl {
     previousHoveredTargetDOM: Element | null;
     previousEmptyBlockParents: Element[] | [];
     audienceMode: boolean;
+    locale: string;
+    variant: string | null;
 }
 
 export class VisualBuilder {
@@ -59,6 +64,8 @@ export class VisualBuilder {
             previousHoveredTargetDOM: null,
             previousEmptyBlockParents: [],
             audienceMode: false,
+            locale: Config.get().stackDetails.masterLocale || "en-us",
+            variant: null,
         });
 
     private handlePositionChange(editableElement: HTMLElement) {
@@ -168,9 +175,10 @@ export class VisualBuilder {
         debounce(
             async () => {
                 updateFocussedStateOnMutation(
-                    this.overlayWrapper, 
-                    this.focusedToolbar, 
-                    this.visualBuilderContainer);
+                    this.overlayWrapper,
+                    this.focusedToolbar,
+                    this.visualBuilderContainer
+                );
                 const emptyBlockParents = Array.from(
                     document.querySelectorAll(
                         ".visual-builder__empty-block-parent"
@@ -275,6 +283,9 @@ export class VisualBuilder {
                 visualBuilderPostMessage?.on(
                     VisualBuilderPostMessageEvents.GET_ALL_ENTRIES_IN_CURRENT_PAGE,
                     getEntryIdentifiersInCurrentPage
+                );
+                visualBuilderPostMessage?.send(
+                    VisualBuilderPostMessageEvents.SEND_VARIANT_AND_LOCALE
                 );
 
                 useHideFocusOverlayPostMessageEvent({
