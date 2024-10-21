@@ -39,7 +39,7 @@ describe("IconComponents", () => {
             expect(svgElement).toBeInTheDocument();
             expect(svgElement).toHaveAttribute("width", "16");
             expect(svgElement).toHaveAttribute("height", "16");
-            expect(svgElement).toHaveAttribute("fill", "none");
+            expect(svgElement).toHaveAttribute("fill", "currentColor");
             expect(svgElement).toHaveAttribute(
                 "data-testid",
                 "visual-builder__delete-icon"
@@ -56,7 +56,7 @@ describe("IconComponents", () => {
             expect(svgElement).toBeInTheDocument();
             expect(svgElement).toHaveAttribute("width", "16");
             expect(svgElement).toHaveAttribute("height", "16");
-            expect(svgElement).toHaveAttribute("fill", "none");
+            expect(svgElement).toHaveAttribute("fill", "currentColor");
             expect(svgElement).toHaveAttribute(
                 "data-testid",
                 "visual-builder__move-left-icon"
@@ -73,7 +73,7 @@ describe("IconComponents", () => {
             expect(svgElement).toBeInTheDocument();
             expect(svgElement).toHaveAttribute("width", "16");
             expect(svgElement).toHaveAttribute("height", "16");
-            expect(svgElement).toHaveAttribute("fill", "none");
+            expect(svgElement).toHaveAttribute("fill", "currentColor");
             expect(svgElement).toHaveAttribute(
                 "data-testid",
                 "visual-builder__move-right-icon"
@@ -107,7 +107,7 @@ describe("IconComponents", () => {
             expect(svgElement).toBeInTheDocument();
             expect(svgElement).toHaveAttribute("width", "24");
             expect(svgElement).toHaveAttribute("height", "24");
-            expect(svgElement).toHaveAttribute("fill", "none");
+            expect(svgElement).toHaveAttribute("fill", "currentColor");
             expect(svgElement).toHaveAttribute(
                 "data-testid",
                 "visual-builder__edit-icon"
