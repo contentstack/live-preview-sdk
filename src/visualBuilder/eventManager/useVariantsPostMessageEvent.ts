@@ -2,6 +2,8 @@ import { VisualBuilder } from "..";
 import { visualBuilderStyles } from "../visualBuilder.style";
 import visualBuilderPostMessage from "../utils/visualBuilderPostMessage";
 import { VisualBuilderPostMessageEvents } from "../utils/types/postMessage.types";
+import { checkSync } from "recheck";
+
 
 interface VariantFieldsEvent {
     data: {
@@ -37,8 +39,11 @@ function addVariantFieldClass(
         const dataCslp = element.getAttribute("data-cslp");
         if (!dataCslp) return;
 
-        const escapedVariantUid = variant_uid.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-        if (new RegExp(escapedVariantUid).test(dataCslp)) {
+        const regexStatus = checkSync(variant_uid, "g");
+        if (regexStatus.status !== "safe") {
+            return;
+        }
+        if (new RegExp(variant_uid).test(dataCslp)) {
             highlightVariantFields &&
                 element.classList.add(
                     visualBuilderStyles()["visual-builder__variant-field"]
