@@ -4,6 +4,7 @@ import { CslpData } from "../../../cslp/types/cslp.types";
 import { VisualBuilderCslpEventDetails } from "../../types/visualBuilder.types";
 import { VisualBuilderPostMessageEvents } from "../../utils/types/postMessage.types";
 import { singleLineFieldSchema } from "../../../__test__/data/fields";
+import { asyncRender } from "../../../__test__/utils";
 
 const DISPLAY_NAMES = {
     mockFieldCslp: "Field 0",
@@ -120,7 +121,7 @@ describe("FieldLabelWrapperComponent", () => {
     const mockGetParentEditable = () => document.createElement("div");
 
     test("renders current field and parent fields correctly", async () => {
-        const { findByText } = render(
+        const { findByText } = await asyncRender(
             <FieldLabelWrapperComponent
                 fieldMetadata={mockFieldMetadata}
                 eventDetails={mockEventDetails}
@@ -141,7 +142,7 @@ describe("FieldLabelWrapperComponent", () => {
     });
 
     test("displays current field icon", async () => {
-        const { findByTestId } = render(
+        const { findByTestId } = await asyncRender(
             <FieldLabelWrapperComponent
                 fieldMetadata={mockFieldMetadata}
                 eventDetails={mockEventDetails}
@@ -155,7 +156,7 @@ describe("FieldLabelWrapperComponent", () => {
     });
 
     test("renders with correct class when field is disabled", async () => {
-        const { findByTestId } = render(
+        const { findByTestId } = await asyncRender(
             <FieldLabelWrapperComponent
                 fieldMetadata={mockFieldMetadata}
                 eventDetails={mockEventDetails}
@@ -167,9 +168,8 @@ describe("FieldLabelWrapperComponent", () => {
         const fieldLabel = await findByTestId(
             "visual-builder__focused-toolbar__field-label-wrapper"
         );
-       screen.debug(fieldLabel);
 
-        waitFor(() => {
+        await waitFor(() => {
             expect(fieldLabel).toHaveClass(
                 "visual-builder__focused-toolbar--field-disabled"
             );

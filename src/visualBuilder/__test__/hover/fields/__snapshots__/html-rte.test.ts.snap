@@ -1,13 +1,27 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`When an element is hovered in visual builder mode > HTML RTE field (multiple) > should have custom cursor 1`] = `
+exports[`When an element is hovered in visual builder mode > HTML RTE field (multiple) > should have outline and cursor on individual instances 1`] = `
+<p
+  data-cslp="all_fields.bltapikey.en-us.rich_text_editor_multiple_.0"
+/>
+`;
+
+exports[`When an element is hovered in visual builder mode > HTML RTE field (multiple) > should have outline and cursor on individual instances 2`] = `
+<div
+  class="visual-builder__hover-outline visual-builder__hover-outline--unclickable go3177626044 go1719569523"
+  data-testid="visual-builder__hover-outline"
+  style="top: 51px; left: 51px; width: 27.7734375px; height: 20.3984375px;"
+/>
+`;
+
+exports[`When an element is hovered in visual builder mode > HTML RTE field (multiple) > should have outline and cursor on individual instances 3`] = `
 <div
   class="go1688149084 visual-builder__cursor visible"
   data-icon="html_rte"
   data-testid="visual-builder__cursor"
 >
   <div
-    class="visual-builder__cursor-wrapper go4230334221"
+    class="visual-builder__cursor-wrapper"
   >
     <div
       class="visual-builder__cursor-pointer go3046085498"
@@ -75,7 +89,7 @@ exports[`When an element is hovered in visual builder mode > HTML RTE field (mul
 </div>
 `;
 
-exports[`When an element is hovered in visual builder mode > HTML RTE field (multiple) > should have outline 1`] = `
+exports[`When an element is hovered in visual builder mode > HTML RTE field (multiple) > should have outline and custom cursor 1`] = `
 <div
   data-cslp="all_fields.bltapikey.en-us.rich_text_editor_multiple_"
 >
@@ -88,7 +102,7 @@ exports[`When an element is hovered in visual builder mode > HTML RTE field (mul
 </div>
 `;
 
-exports[`When an element is hovered in visual builder mode > HTML RTE field (multiple) > should have outline 2`] = `
+exports[`When an element is hovered in visual builder mode > HTML RTE field (multiple) > should have outline and custom cursor 2`] = `
 <div
   class="visual-builder__hover-outline visual-builder__hover-outline--unclickable go3177626044 go1719569523"
   data-testid="visual-builder__hover-outline"
@@ -96,28 +110,14 @@ exports[`When an element is hovered in visual builder mode > HTML RTE field (mul
 />
 `;
 
-exports[`When an element is hovered in visual builder mode > HTML RTE field (multiple) > should have outline on individual instances 1`] = `
-<p
-  data-cslp="all_fields.bltapikey.en-us.rich_text_editor_multiple_.0"
-/>
-`;
-
-exports[`When an element is hovered in visual builder mode > HTML RTE field (multiple) > should have outline on individual instances 2`] = `
-<div
-  class="visual-builder__hover-outline visual-builder__hover-outline--unclickable go3177626044 go1719569523"
-  data-testid="visual-builder__hover-outline"
-  style="top: 51px; left: 51px; width: 27.7734375px; height: 20.3984375px;"
-/>
-`;
-
-exports[`When an element is hovered in visual builder mode > HTML RTE field > should have custom cursor 1`] = `
+exports[`When an element is hovered in visual builder mode > HTML RTE field (multiple) > should have outline and custom cursor 3`] = `
 <div
   class="go1688149084 visual-builder__cursor visible"
   data-icon="html_rte"
   data-testid="visual-builder__cursor"
 >
   <div
-    class="visual-builder__cursor-wrapper go4230334221"
+    class="visual-builder__cursor-wrapper"
   >
     <div
       class="visual-builder__cursor-pointer go3046085498"
@@ -185,16 +185,91 @@ exports[`When an element is hovered in visual builder mode > HTML RTE field > sh
 </div>
 `;
 
-exports[`When an element is hovered in visual builder mode > HTML RTE field > should have outline 1`] = `
+exports[`When an element is hovered in visual builder mode > HTML RTE field > should have outline and custom cursor 1`] = `
 <p
   data-cslp="all_fields.bltapikey.en-us.rich_text_editor"
 />
 `;
 
-exports[`When an element is hovered in visual builder mode > HTML RTE field > should have outline 2`] = `
+exports[`When an element is hovered in visual builder mode > HTML RTE field > should have outline and custom cursor 2`] = `
 <div
   class="visual-builder__hover-outline visual-builder__hover-outline--unclickable go3177626044 go1719569523"
   data-testid="visual-builder__hover-outline"
   style="top: 51px; left: 51px; width: 27.7734375px; height: 20.3984375px;"
 />
+`;
+
+exports[`When an element is hovered in visual builder mode > HTML RTE field > should have outline and custom cursor 3`] = `
+<div
+  class="go1688149084 visual-builder__cursor visible"
+  data-icon="html_rte"
+  data-testid="visual-builder__cursor"
+>
+  <div
+    class="visual-builder__cursor-wrapper"
+  >
+    <div
+      class="visual-builder__cursor-pointer go3046085498"
+    >
+      <svg
+        fill="none"
+        height="16"
+        viewBox="0 0 16 16"
+        width="16"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M0.0167948 0.602214C-0.0784404 0.246792 0.246794 -0.0784402 0.602216 0.0167948L15.6457 4.04767C16.0914 4.1671 16.1259 4.78625 15.6962 4.95447L8.17161 7.90048C8.04753 7.94906 7.94936 8.04723 7.90078 8.17131L4.95449 15.6962C4.78627 16.1259 4.16712 16.0914 4.04769 15.6457L0.0167948 0.602214Z"
+          fill="#5D50BE"
+        />
+      </svg>
+    </div>
+    <div
+      class="visual-builder__cursor-icon go4261356330"
+    >
+      <svg
+        fill="none"
+        height="24"
+        viewBox="0 0 24 24"
+        width="24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          clip-rule="evenodd"
+          d="M3.5625 11.4375V5.0625H11.4375V10.7422L10.1108 8.0888C9.82462 7.51646 9.06183 7.39267 8.60936 7.84515L5.017 11.4375H3.5625ZM6.608 11.4375H10.5274L9.2209 8.82459L6.608 11.4375ZM3.375 3.9375C2.85723 3.9375 2.4375 4.35723 2.4375 4.875V11.625C2.4375 12.1428 2.85723 12.5625 3.375 12.5625H11.625C12.1428 12.5625 12.5625 12.1428 12.5625 11.625V4.875C12.5625 4.35723 12.1428 3.9375 11.625 3.9375H3.375Z"
+          fill="white"
+          fill-rule="evenodd"
+        />
+        <path
+          d="M6.11566 7.73132C6.59375 7.73132 6.98132 7.34375 6.98132 6.86566C6.98132 6.38757 6.59375 6 6.11566 6C5.63757 6 5.25 6.38757 5.25 6.86566C5.25 7.34375 5.63757 7.73132 6.11566 7.73132Z"
+          fill="#475161"
+        />
+        <path
+          clip-rule="evenodd"
+          d="M21.5625 6C21.5625 6.31066 21.3107 6.5625 21 6.5625L15 6.5625C14.6893 6.5625 14.4375 6.31066 14.4375 6C14.4375 5.68934 14.6893 5.4375 15 5.4375L21 5.4375C21.3107 5.4375 21.5625 5.68934 21.5625 6Z"
+          fill="white"
+          fill-rule="evenodd"
+        />
+        <path
+          clip-rule="evenodd"
+          d="M21.5625 10.5C21.5625 10.8107 21.3107 11.0625 21 11.0625H15C14.6893 11.0625 14.4375 10.8107 14.4375 10.5C14.4375 10.1893 14.6893 9.9375 15 9.9375L21 9.9375C21.3107 9.9375 21.5625 10.1893 21.5625 10.5Z"
+          fill="white"
+          fill-rule="evenodd"
+        />
+        <path
+          clip-rule="evenodd"
+          d="M21.5625 15C21.5625 15.3107 21.3107 15.5625 21 15.5625L3.75 15.5625C3.43934 15.5625 3.1875 15.3107 3.1875 15C3.1875 14.6893 3.43934 14.4375 3.75 14.4375L21 14.4375C21.3107 14.4375 21.5625 14.6893 21.5625 15Z"
+          fill="white"
+          fill-rule="evenodd"
+        />
+        <path
+          clip-rule="evenodd"
+          d="M21.5625 19.5C21.5625 19.8107 21.3107 20.0625 21 20.0625L3.75 20.0625C3.43934 20.0625 3.1875 19.8107 3.1875 19.5C3.1875 19.1893 3.43934 18.9375 3.75 18.9375L21 18.9375C21.3107 18.9375 21.5625 19.1893 21.5625 19.5Z"
+          fill="white"
+          fill-rule="evenodd"
+        />
+      </svg>
+    </div>
+  </div>
+</div>
 `;

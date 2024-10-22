@@ -16,6 +16,7 @@ export type ISchemaFieldMap = (
     multiple?: boolean;
     field_metadata?: {
         updateRestrict?: boolean;
+        isUnlinkedVariant?: boolean;
     };
 };
 

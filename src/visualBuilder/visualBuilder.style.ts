@@ -9,7 +9,7 @@ const tooltipBaseStyle = `
         content: attr(data-tooltip);
         position: absolute;
         bottom: 20px;
-        margin-bottom: 16px;
+        margin-bottom: 24px;
         padding: 12px;
         border-radius: 4px;
         width: max-content;
@@ -26,7 +26,7 @@ const tooltipBaseStyle = `
     &:after {
         content: "";
         position: absolute;
-        bottom: 17px;
+        bottom: 25px;
         /* the arrow */
         border: 10px solid #000;
         border-color: #767676 transparent transparent transparent;
@@ -225,21 +225,22 @@ export function visualBuilderStyles() {
             position: absolute;
             transform: translateY(-100%);
             z-index: 200;
+            gap: 8px;
             width: 0;
             display: flex;
             align-items: end;
             transition: var(--outline-transition);
         `,
         "visual-builder__focused-toolbar__field-label-wrapper__current-field": css`
-            padding: 3px 8px;
+            padding: 4px 8px !important;
             background: #6c5ce7;
             color: #fff;
             z-index: 1;
+            border-radius: 2px !important;
             display: flex;
             align-items: center;
             justify-content: space-between;
             width: fit-content;
-            padding: 4px !important;
 
             &:disabled {
                 filter: contrast(0.7);
@@ -349,26 +350,31 @@ export function visualBuilderStyles() {
         `,
         "visual-builder__focused-toolbar__button-group": css`
             display: flex;
-            margin-left: 4px;
             background: #fff;
-            border-radius: 4px;
+            border-radius: 2px;
+            height: 100%;
+            padding: 4px !important;
 
             &:has(.visual-builder__button) {
                 padding: 2px;
-                gap: 1px;
+                gap: 8px;
             }
 
             .visual-builder__button:hover {
                 background-color: #f5f5f5;
+
+                svg {
+                    color: #5D50BE;
+                }
             }
 
             .visual-builder__button {
                 background-color: #fff;
                 border-color: transparent;
                 color: #475161;
-                padding: 1px;
-                min-width: 16px;
-                min-height: 16px;
+                padding: 4px;
+                min-width: 32px;
+                min-height: 32px;
             }
         `,
         "visual-builder__focused-toolbar__text": css`
@@ -385,10 +391,11 @@ export function visualBuilderStyles() {
         `,
         "visual-builder__focused-toolbar__multiple-field-toolbar": css`
             z-index: 200;
+            height: 40px;
 
             svg {
-                height: 15px;
-                width: 15px;
+                height: 100%;
+                width: 100%;
             }
         `,
         "visual-builder__rotate--90": css`

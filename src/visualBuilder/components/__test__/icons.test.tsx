@@ -1,4 +1,4 @@
-import { render } from "@testing-library/preact";
+import { cleanup, render } from "@testing-library/preact";
 import {
     CaretIcon,
     DeleteIcon,
@@ -8,11 +8,15 @@ import {
     EditIcon,
     PlusIcon,
 } from "../icons";
+import { asyncRender } from "../../../__test__/utils";
 
 describe("IconComponents", () => {
+    afterEach(() => {
+        cleanup();
+    })
     describe("CaretIcon", () => {
-        test("renders with correct dimensions, fill, and stroke colors", () => {
-            const { container } = render(<CaretIcon />);
+        test("renders with correct dimensions, fill, and stroke colors", async () => {
+            const { container } = await asyncRender(<CaretIcon />);
             const svgElement = container.querySelector("svg");
             const strokeAttribute = svgElement?.getAttribute("stroke");
             expect(svgElement).toBeInTheDocument();
@@ -28,14 +32,14 @@ describe("IconComponents", () => {
     });
 
     describe("DeleteIcon", () => {
-        test("renders with correct dimensions, fill, and stroke colors", () => {
-            const { container } = render(<DeleteIcon />);
+        test("renders with correct dimensions, fill, and stroke colors", async () => {
+            const { container } = await asyncRender(<DeleteIcon />);
             const svgElement = container.querySelector("svg");
             const strokeAttribute = svgElement?.getAttribute("stroke");
             expect(svgElement).toBeInTheDocument();
             expect(svgElement).toHaveAttribute("width", "16");
             expect(svgElement).toHaveAttribute("height", "16");
-            expect(svgElement).toHaveAttribute("fill", "none");
+            expect(svgElement).toHaveAttribute("fill", "currentColor");
             expect(svgElement).toHaveAttribute(
                 "data-testid",
                 "visual-builder__delete-icon"
@@ -45,14 +49,14 @@ describe("IconComponents", () => {
     });
 
     describe("MoveLeftIcon", () => {
-        test("renders with correct dimensions, fill, and stroke colors", () => {
-            const { container } = render(<MoveLeftIcon />);
+        test("renders with correct dimensions, fill, and stroke colors", async () => {
+            const { container } = await asyncRender(<MoveLeftIcon />);
             const svgElement = container.querySelector("svg");
             const strokeAttribute = svgElement?.getAttribute("stroke");
             expect(svgElement).toBeInTheDocument();
             expect(svgElement).toHaveAttribute("width", "16");
             expect(svgElement).toHaveAttribute("height", "16");
-            expect(svgElement).toHaveAttribute("fill", "none");
+            expect(svgElement).toHaveAttribute("fill", "currentColor");
             expect(svgElement).toHaveAttribute(
                 "data-testid",
                 "visual-builder__move-left-icon"
@@ -62,14 +66,14 @@ describe("IconComponents", () => {
     });
 
     describe("MoveRightIcon", () => {
-        test("renders with correct dimensions, fill, and stroke colors", () => {
-            const { container } = render(<MoveRightIcon />);
+        test("renders with correct dimensions, fill, and stroke colors", async() => {
+            const { container } = await asyncRender(<MoveRightIcon />);
             const svgElement = container.querySelector("svg");
             const strokeAttribute = svgElement?.getAttribute("stroke");
             expect(svgElement).toBeInTheDocument();
             expect(svgElement).toHaveAttribute("width", "16");
             expect(svgElement).toHaveAttribute("height", "16");
-            expect(svgElement).toHaveAttribute("fill", "none");
+            expect(svgElement).toHaveAttribute("fill", "currentColor");
             expect(svgElement).toHaveAttribute(
                 "data-testid",
                 "visual-builder__move-right-icon"
@@ -79,8 +83,8 @@ describe("IconComponents", () => {
     });
 
     describe("InfoIcon", () => {
-        test("renders with correct dimensions, fill, and stroke colors", () => {
-            const { container } = render(<InfoIcon />);
+        test("renders with correct dimensions, fill, and stroke colors", async () => {
+            const { container } = await asyncRender(<InfoIcon />);
             const svgElement = container.querySelector("svg");
             const strokeAttribute = svgElement?.getAttribute("stroke");
             expect(svgElement).toBeInTheDocument();
@@ -96,14 +100,14 @@ describe("IconComponents", () => {
     });
 
     describe("EditIcon", () => {
-        test("renders with correct dimensions, fill, and stroke colors", () => {
-            const { container } = render(<EditIcon />);
+        test("renders with correct dimensions, fill, and stroke colors", async () => {
+            const { container } = await asyncRender(<EditIcon />);
             const svgElement = container.querySelector("svg");
             const strokeAttribute = svgElement?.getAttribute("stroke");
             expect(svgElement).toBeInTheDocument();
             expect(svgElement).toHaveAttribute("width", "24");
             expect(svgElement).toHaveAttribute("height", "24");
-            expect(svgElement).toHaveAttribute("fill", "none");
+            expect(svgElement).toHaveAttribute("fill", "currentColor");
             expect(svgElement).toHaveAttribute(
                 "data-testid",
                 "visual-builder__edit-icon"
@@ -113,8 +117,8 @@ describe("IconComponents", () => {
     });
 
     describe("PlusIcon", () => {
-        test("renders with correct dimensions, fill, and stroke colors", () => {
-            const { container } = render(<PlusIcon />);
+        test("renders with correct dimensions, fill, and stroke colors", async () => {
+            const { container } = await asyncRender(<PlusIcon />);
             const svgElement = container.querySelector("svg");
             const strokeAttribute = svgElement?.getAttribute("stroke");
             expect(svgElement).toBeInTheDocument();

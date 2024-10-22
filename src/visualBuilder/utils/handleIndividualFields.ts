@@ -215,14 +215,6 @@ export async function handleIndividualFields(
             return;
         }
     }
-
-    visualBuilderPostMessage?.send(
-        VisualBuilderPostMessageEvents.OPEN_QUICK_FORM,
-        {
-            fieldMetadata: eventDetails.fieldMetadata,
-            cslpData: eventDetails.cslpData,
-        }
-    );
 }
 
 export function cleanIndividualFieldResidual(elements: {

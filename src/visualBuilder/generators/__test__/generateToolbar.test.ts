@@ -1,4 +1,4 @@
-import { findByTestId, fireEvent, waitFor } from "@testing-library/preact";
+import { act, findByTestId, fireEvent, waitFor } from "@testing-library/preact";
 import { getFieldSchemaMap } from "../../../__test__/data/fieldSchemaMap";
 import { CslpData } from "../../../cslp/types/cslp.types";
 import { VisualBuilderCslpEventDetails } from "../../types/visualBuilder.types";
@@ -89,10 +89,11 @@ describe("appendFieldPathDropdown", () => {
         };
     });
 
-    test("should not do anything if tooltip is already present", () => {
+    test("should not do anything if tooltip is already present", async () => {
         focusedToolbar.classList.add("visual-builder__tooltip--persistent");
-
-        appendFieldPathDropdown(mockEventDetails, focusedToolbar);
+        await act(() => {
+            appendFieldPathDropdown(mockEventDetails, focusedToolbar);
+        })
 
         const fieldLabelWrapper = focusedToolbar.querySelector(
             ".visual-builder__focused-toolbar__field-label-wrapper"
@@ -141,8 +142,9 @@ describe("appendFieldPathDropdown", () => {
     });
 
     test("should close the field label dropdown if open", async () => {
-        appendFieldPathDropdown(mockEventDetails, focusedToolbar);
-        await sleep(0);
+        await act(() => {
+            appendFieldPathDropdown(mockEventDetails, focusedToolbar);
+        })
 
         const fieldLabelWrapper = await findByTestId(
             focusedToolbar,
@@ -156,8 +158,10 @@ describe("appendFieldPathDropdown", () => {
         });
     });
 
-    test("should open the field label dropdown if closed", () => {
-        appendFieldPathDropdown(mockEventDetails, focusedToolbar);
+    test("should open the field label dropdown if closed", async () => {
+        await act(() => {
+            appendFieldPathDropdown(mockEventDetails, focusedToolbar);
+        })
 
         const fieldLabelWrapper = focusedToolbar.querySelector(
             ".visual-builder__focused-toolbar__field-label-wrapper"
