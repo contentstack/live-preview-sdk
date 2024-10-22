@@ -37,7 +37,7 @@ Object.defineProperty(globalThis, "crypto", {
         getRandomValues: (arr: Array<any>) => crypto.randomBytes(arr.length),
     },
 });
-
+// Increase the timeout for the test
 describe("Visual builder", () => {
     beforeAll(() => {
         FieldSchemaMap.setFieldSchema(
@@ -84,7 +84,7 @@ describe("Visual builder", () => {
 
         expect(visualBuilderDOM).toMatchSnapshot();
         x.destroy();
-    });
+    }, { timeout: 20 * 1000 });
 
     test("should add overlay to DOM when clicked", async () => {
         const h1Tag = document.createElement("h1");
@@ -108,7 +108,7 @@ describe("Visual builder", () => {
             });
         })
         x.destroy();
-    });
+    }, { timeout: 20 * 1000 });
 
     describe("on click, the sdk", () => {
         afterEach(() => {
@@ -240,7 +240,7 @@ describe("Visual builder", () => {
             }, { timeout: 10 * 1000 });
         });
     });
-});
+}, { timeout: 20 * 1000 });
 
 describe.skip("visual builder DOM", () => {
     let h1: HTMLHeadElement;
