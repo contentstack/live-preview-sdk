@@ -37,7 +37,8 @@ function addVariantFieldClass(
         const dataCslp = element.getAttribute("data-cslp");
         if (!dataCslp) return;
 
-        if (new RegExp(variant_uid).test(dataCslp)) {
+        const escapedVariantUid = variant_uid.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        if (new RegExp(escapedVariantUid).test(dataCslp)) {
             highlightVariantFields &&
                 element.classList.add(
                     visualBuilderStyles()["visual-builder__variant-field"]
