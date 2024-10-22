@@ -12,9 +12,6 @@ import { isFieldDisabled } from "../utils/isFieldDisabled";
 import FieldToolbarComponent from "../components/FieldToolbar";
 import { render } from "preact";
 import FieldLabelWrapperComponent from "../components/fieldLabelWrapper";
-import { getFieldType } from "../utils/getFieldType";
-import { FieldDataType } from "../utils/types/index.types";
-import { IReferenceContentTypeSchema } from "../../cms/types/contentTypeSchema.types";
 
 export function appendFocusedToolbar(
     eventDetails: VisualBuilderCslpEventDetails,
@@ -34,12 +31,10 @@ export function appendFieldToolbar(
         )
     )
         return;
-    const { editableElement, fieldMetadata } = eventDetails;
     const wrapper = document.createDocumentFragment();
     render(
         <FieldToolbarComponent
-            fieldMetadata={fieldMetadata}
-            editableElement={editableElement}
+            eventDetails={eventDetails}
         />,
         wrapper
     );

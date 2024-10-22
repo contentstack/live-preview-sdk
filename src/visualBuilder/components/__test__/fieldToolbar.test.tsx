@@ -9,6 +9,7 @@ import { ISchemaFieldMap } from "../../utils/types/index.types";
 import FieldToolbarComponent from "../FieldToolbar";
 import { mockMultipleLinkFieldSchema } from "../../../__test__/data/fields";
 import { asyncRender } from "../../../__test__/utils";
+import { VisualBuilderCslpEventDetails } from "../../types/visualBuilder.types";
 
 vi.mock("../../utils/instanceHandlers", () => ({
     handleMoveInstance: vi.fn(),
@@ -56,11 +57,17 @@ const mockMultipleFieldMetadata: CslpData = {
 
 describe("MultipleFieldToolbarComponent", () => {
     let targetElement: HTMLDivElement;
+    const mockEventDetails: VisualBuilderCslpEventDetails = {
+        fieldMetadata: mockMultipleFieldMetadata,
+        editableElement: {} as Element,
+        cslpData: ""
+    }
 
     beforeEach(() => {
         document.body.innerHTML = "";
         targetElement = document.createElement("div");
         targetElement.setAttribute("data-testid", "mock-target-element");
+        mockEventDetails['editableElement'] = targetElement;
         document.body.appendChild(targetElement);
 
         vi.spyOn(FieldSchemaMap, "getFieldSchema").mockResolvedValue(
@@ -77,8 +84,7 @@ describe("MultipleFieldToolbarComponent", () => {
     test("renders toolbar buttons correctly", async () => {
         const { findByTestId } = await asyncRender(
             <FieldToolbarComponent
-                fieldMetadata={mockMultipleFieldMetadata}
-                editableElement={targetElement}
+                eventDetails={mockEventDetails}
             />
         );
 
@@ -100,8 +106,7 @@ describe("MultipleFieldToolbarComponent", () => {
     test("calls handleMoveInstance with 'previous' when move left button is clicked", async () => {
         const { findByTestId } = await asyncRender(
             <FieldToolbarComponent
-                fieldMetadata={mockMultipleFieldMetadata}
-                editableElement={targetElement}
+                eventDetails={mockEventDetails}
             />
         );
 
@@ -121,8 +126,7 @@ describe("MultipleFieldToolbarComponent", () => {
     test("calls handleMoveInstance with 'next' when move right button is clicked", async () => {
         const { findByTestId } = await asyncRender(
             <FieldToolbarComponent
-                fieldMetadata={mockMultipleFieldMetadata}
-                editableElement={targetElement}
+                eventDetails={mockEventDetails}
             />
         );
 
@@ -142,8 +146,7 @@ describe("MultipleFieldToolbarComponent", () => {
     test("calls handleDeleteInstance when delete button is clicked", async () => {
         const { findByTestId } = await asyncRender(
             <FieldToolbarComponent
-                fieldMetadata={mockMultipleFieldMetadata}
-                editableElement={targetElement}
+                eventDetails={mockEventDetails}
             />
         );
 

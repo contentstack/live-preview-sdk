@@ -29,9 +29,13 @@ import { FieldSchemaMap } from "../utils/fieldSchemaMap";
 import { isFieldDisabled } from "../utils/isFieldDisabled";
 import { IReferenceContentTypeSchema } from "../../cms/types/contentTypeSchema.types";
 import { VisualBuilderCslpEventDetails } from "../types/visualBuilder.types";
+import { FormIcon } from "./icons";
+import { getDOMEditStack } from "../utils/getCsDataOfElement";
 
 export type FieldDetails = Pick<VisualBuilderCslpEventDetails, "editableElement" | "fieldMetadata">;
-interface MultipleFieldToolbarProps extends FieldDetails {};
+interface MultipleFieldToolbarProps {
+    eventDetails: VisualBuilderCslpEventDetails;
+};
 
 function handleReplaceAsset(fieldMetadata: CslpData) {
     // TODO avoid sending whole fieldMetadata
@@ -72,13 +76,26 @@ function handleEdit(fieldMetadata: CslpData) {
     );
 }
 
+function handleFormFieldFocus(eventDetails: VisualBuilderCslpEventDetails) {
+    const { editableElement, fieldMetadata, cslpData } = eventDetails;
+    visualBuilderPostMessage?.send(
+        VisualBuilderPostMessageEvents.OPEN_QUICK_FORM,
+        {
+            fieldMetadata,
+            cslpData,
+        }
+    ).then(() => {
+        visualBuilderPostMessage?.send(VisualBuilderPostMessageEvents.FOCUS_FIELD, {
+            DOMEditStack: getDOMEditStack(editableElement),
+        });
+    });
+}
+
 function FieldToolbarComponent(
     props: MultipleFieldToolbarProps
 ): JSX.Element | null {
-    const {
-        fieldMetadata,
-        editableElement: targetElement,
-    } = props;
+    const { eventDetails } = props;
+    const { fieldMetadata, editableElement: targetElement} = eventDetails;
     const direction = useSignal("");
     const parentPath =
         fieldMetadata?.multipleFieldMetadata?.parentDetails?.parentCslpValue ||
@@ -151,7 +168,7 @@ function FieldToolbarComponent(
                 // propagation to be stopped, should ideally only attach onClick to fieldpath dropdown
                 e.preventDefault();
                 e.stopPropagation();
-                handleEdit(props.fieldMetadata);
+                handleEdit(fieldMetadata);
             }}
         >
             <Icon />
@@ -172,10 +189,10 @@ function FieldToolbarComponent(
                 e.stopPropagation();
                 e.preventDefault();
                 if (fieldType === FieldDataType.REFERENCE) {
-                    handleReplaceReference(props.fieldMetadata);
+                    handleReplaceReference(fieldMetadata);
                     return;
                 } else if (fieldType === FieldDataType.FILE) {
-                    handleReplaceAsset(props.fieldMetadata);
+                    handleReplaceAsset(fieldMetadata);
                     return;
                 }
             }}
@@ -183,6 +200,20 @@ function FieldToolbarComponent(
             <ReplaceAssetIcon />
         </button>
     ) : null;
+
+    const formButton = <button 
+        className={classNames(
+            "visual-builder__replace-button visual-builder__button visual-builder__button--secondary",
+            visualBuilderStyles()["visual-builder__button"],
+            visualBuilderStyles()["visual-builder__button--secondary"],
+            visualBuilderStyles()["visual-builder__tooltip"]
+        )}
+        data-tooltip={"Form"}
+        data-testid={`visual-builder-form`}
+        onClick={(e) => {handleFormFieldFocus(eventDetails)}}
+    >
+        <FormIcon />
+    </button>
 
     const totalElementCount = targetElement?.parentNode?.childElementCount ?? 1;
     const indexOfElement = fieldMetadata?.multipleFieldMetadata?.index;
@@ -292,6 +323,7 @@ function FieldToolbarComponent(
                             </button>
 
                             {isModalEditable ? editButton : null}
+                            {formButton}
                             {isReplaceAllowed ? replaceButton : null}
 
                             <button
@@ -320,8 +352,8 @@ function FieldToolbarComponent(
                         <>
                             {isModalEditable ? editButton : null}
                             {isReplaceAllowed ? replaceButton : null}
-                            {fieldSchema ? <CommentIcon fieldMetadata={fieldMetadata} fieldSchema={fieldSchema}/> : null}
-                            
+                            {formButton}
+                            {fieldSchema ? <CommentIcon fieldMetadata={fieldMetadata} fieldSchema={fieldSchema}/> : null}  
                         </>
                     )}
                 </>
