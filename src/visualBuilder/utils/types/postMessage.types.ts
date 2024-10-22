@@ -5,6 +5,7 @@ export enum VisualBuilderPostMessageEvents {
     OPEN_ASSET_MODAL = "open-asset-modal",
     OPEN_REFERENCE_MODAL = "open-reference-modal",
     OPEN_QUICK_FORM = "open-quick-form",
+    TOGGLE_FORM = "toggle-quick-form",
     GET_FIELD_SCHEMA = "get-field-schema",
     GET_FIELD_DATA = "get-field-data",
     GET_FIELD_PATH_WITH_UID = "get-field-path-with-uid",

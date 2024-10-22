@@ -79,7 +79,7 @@ function handleEdit(fieldMetadata: CslpData) {
 function handleFormFieldFocus(eventDetails: VisualBuilderCslpEventDetails) {
     const { editableElement, fieldMetadata, cslpData } = eventDetails;
     visualBuilderPostMessage?.send(
-        VisualBuilderPostMessageEvents.OPEN_QUICK_FORM,
+        VisualBuilderPostMessageEvents.TOGGLE_FORM,
         {
             fieldMetadata,
             cslpData,
