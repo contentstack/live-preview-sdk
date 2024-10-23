@@ -23,7 +23,7 @@ interface FieldRevertComponentProps {
     fieldDataName: string;
     fieldMetadata: CslpData;
     isOpen: boolean;
-    setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
+    closeDropdown: () => void;
     variantStatus?: IVariantStatus;
 }
 
@@ -63,7 +63,7 @@ export const FieldRevertComponent = (props: FieldRevertComponentProps) => {
         fieldMetadata,
         variantStatus = BASE_VARIANT_STATUS,
         isOpen,
-        setIsOpen,
+        closeDropdown,
     } = props;
     const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -73,7 +73,7 @@ export const FieldRevertComponent = (props: FieldRevertComponentProps) => {
                 dropdownRef.current &&
                 !dropdownRef.current.contains(event.target as Node)
             ) {
-                setIsOpen(false);
+                closeDropdown();
             }
         };
 
@@ -189,7 +189,7 @@ export const FieldRevertComponent = (props: FieldRevertComponentProps) => {
                             onClick={(e) => {
                                 e.preventDefault();
                                 handleOnClick(item);
-                                setIsOpen(false);
+                                closeDropdown();
                             }}
                             key={item.id}
                             data-testid={item.testId}

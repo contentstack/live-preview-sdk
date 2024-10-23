@@ -234,6 +234,10 @@ function FieldToolbarComponent(
         setIsOpenVariantRevert(!isOpenVariantRevert);
     };
 
+    const closeVariantDropdown = () => {
+        setIsOpenVariantRevert(false);
+    };
+
     const variantButton = (
         <button
             className={classNames(
@@ -288,7 +292,7 @@ function FieldToolbarComponent(
                     fieldMetadata={fieldMetadata}
                     variantStatus={fieldVariantStatus}
                     isOpen={isOpenVariantRevert}
-                    setIsOpen={setIsOpenVariantRevert}
+                    closeDropdown={closeVariantDropdown}
                 />
             )}
             <div
