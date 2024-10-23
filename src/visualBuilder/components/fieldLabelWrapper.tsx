@@ -11,14 +11,7 @@ import { LoadingIcon } from "./icons/loading";
 import { getFieldIcon } from "../generators/generateCustomCursor";
 import { uniqBy } from "lodash-es";
 import { visualBuilderStyles } from "../visualBuilder.style";
-import { VariantIcon } from "./icons/variant";
 import { CslpError } from "./CslpError";
-import {
-    BASE_VARIANT_STATUS,
-    FieldRevertComponent,
-    getFieldVariantStatus,
-    IVariantStatus,
-} from "./FieldRevert/FieldRevertComponent";
 import { hasPostMessageError } from "../utils/errorHandling";
 import { VisualBuilderPostMessageEvents } from "../utils/types/postMessage.types";
 
@@ -42,8 +35,6 @@ interface ICurrentField {
     prefixIcon: any;
     disabled: boolean;
     isVariant: boolean;
-    fieldDataName: string;
-    fieldVariantStatus: IVariantStatus;
 }
 
 function FieldLabelWrapperComponent(
@@ -56,8 +47,6 @@ function FieldLabelWrapperComponent(
         prefixIcon: null,
         disabled: false,
         isVariant: false,
-        fieldDataName: "",
-        fieldVariantStatus: BASE_VARIANT_STATUS,
     });
     const [displayNames, setDisplayNames] = useState<Record<string, string>>(
         {}
@@ -97,10 +86,6 @@ function FieldLabelWrapperComponent(
                 return;
             }
 
-            const fieldVariantStatus = await getFieldVariantStatus(
-                props.fieldMetadata.fieldPathWithIndex
-            );
-
             const { isDisabled: fieldDisabled, reason } = isFieldDisabled(
                 fieldSchema,
                 eventDetails
@@ -134,8 +119,6 @@ function FieldLabelWrapperComponent(
                 prefixIcon: getFieldIcon(fieldSchema),
                 disabled: fieldDisabled,
                 isVariant: isVariant,
-                fieldDataName: props.fieldMetadata.fieldPathWithIndex,
-                fieldVariantStatus: fieldVariantStatus ?? BASE_VARIANT_STATUS,
             });
 
             if (displayNames) {
@@ -247,18 +230,6 @@ function FieldLabelWrapperComponent(
                     ) : null}
                     {getCurrentFieldIcon()}
                     {error ? <CslpError /> : null}
-                    {currentField.isVariant ? (
-                        <div
-                            className={classNames(
-                                "visual-builder__field-icon",
-                                visualBuilderStyles()[
-                                    "visual-builder__field-icon"
-                                ]
-                            )}
-                        >
-                            <VariantIcon />
-                        </div>
-                    ) : null}
                 </button>
                 {props.parentPaths.map((path, index) => (
                     <button
@@ -284,13 +255,6 @@ function FieldLabelWrapperComponent(
                     </button>
                 ))}
             </div>
-            {currentField.isVariant ? (
-                <FieldRevertComponent
-                    fieldDataName={currentField.fieldDataName}
-                    fieldMetadata={props.fieldMetadata}
-                    variantStatus={currentField.fieldVariantStatus}
-                />
-            ) : null}
         </div>
     );
 }

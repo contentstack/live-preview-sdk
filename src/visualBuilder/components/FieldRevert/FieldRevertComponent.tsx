@@ -1,8 +1,6 @@
 import classNames from "classnames";
-import React, { useState, useRef, useEffect } from "preact/compat";
+import React, { useRef, useEffect } from "preact/compat";
 import { visualBuilderStyles } from "../../visualBuilder.style";
-import { VariantIcon } from "../icons/variant";
-import { CaretIcon } from "../icons";
 import visualBuilderPostMessage from "../../utils/visualBuilderPostMessage";
 import { CslpData } from "../../../cslp/types/cslp.types";
 
@@ -24,6 +22,8 @@ export type TFieldRevertActionCallback =
 interface FieldRevertComponentProps {
     fieldDataName: string;
     fieldMetadata: CslpData;
+    isOpen: boolean;
+    setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
     variantStatus?: IVariantStatus;
 }
 
@@ -57,12 +57,14 @@ export async function getFieldVariantStatus(
     }
 }
 
-export const FieldRevertComponent = ({
-    fieldDataName,
-    fieldMetadata,
-    variantStatus = BASE_VARIANT_STATUS,
-}: FieldRevertComponentProps) => {
-    const [isOpen, setIsOpen] = useState(false);
+export const FieldRevertComponent = (props: FieldRevertComponentProps) => {
+    const {
+        fieldDataName,
+        fieldMetadata,
+        variantStatus = BASE_VARIANT_STATUS,
+        isOpen,
+        setIsOpen,
+    } = props;
     const dropdownRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -80,10 +82,6 @@ export const FieldRevertComponent = ({
             document.removeEventListener("mousedown", handleClickOutside);
         };
     }, []);
-
-    const toggleDropdown = () => {
-        setIsOpen(!isOpen);
-    };
 
     const getDropdownItems = () => {
         const {
@@ -171,20 +169,6 @@ export const FieldRevertComponent = ({
             ref={dropdownRef}
             onClick={(e) => e.stopPropagation()}
         >
-            <button
-                className={classNames(
-                    "variant-field-revert-component__dropdown-button",
-                    visualBuilderStyles()[
-                        "variant-field-revert-component__dropdown-button"
-                    ]
-                )}
-                onClick={toggleDropdown}
-                data-testid={`iframe-cs-variant-field-${fieldDataName}-revert-btn`}
-            >
-                <VariantIcon />
-                {"Variant field"}
-                <CaretIcon open={isOpen} />
-            </button>
             {isOpen && (
                 <div
                     className={classNames(
