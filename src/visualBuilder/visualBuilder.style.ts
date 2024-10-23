@@ -259,6 +259,7 @@ export function visualBuilderStyles() {
             display: none;
             width: fit-content;
             position: absolute;
+            z-index: 1000;
         `,
         "field-label-dropdown-open": css`
             .visual-builder__focused-toolbar__field-label-wrapper__parent-field {
