@@ -15,6 +15,7 @@ import visualBuilderPostMessage from "../utils/visualBuilderPostMessage";
 import { FieldDataType, ISchemaFieldMap } from "../utils/types/index.types";
 import { VisualBuilderPostMessageEvents } from "../utils/types/postMessage.types";
 import {
+    CaretIcon,
     DeleteIcon,
     MoveLeftIcon,
     MoveRightIcon,
@@ -31,6 +32,13 @@ import { IReferenceContentTypeSchema } from "../../cms/types/contentTypeSchema.t
 import { VisualBuilderCslpEventDetails } from "../types/visualBuilder.types";
 import { FormIcon } from "./icons";
 import { getDOMEditStack } from "../utils/getCsDataOfElement";
+import { VariantIcon } from "./icons/variant";
+import {
+    BASE_VARIANT_STATUS,
+    FieldRevertComponent,
+    getFieldVariantStatus,
+    IVariantStatus,
+} from "./FieldRevert/FieldRevertComponent";
 
 export type FieldDetails = Pick<VisualBuilderCslpEventDetails, "editableElement" | "fieldMetadata">;
 interface MultipleFieldToolbarProps {
@@ -100,7 +108,14 @@ function FieldToolbarComponent(
     const parentPath =
         fieldMetadata?.multipleFieldMetadata?.parentDetails?.parentCslpValue ||
         "";
-    const [fieldSchema, setFieldSchema] = useState<ISchemaFieldMap | null>(null);
+    const isVariant = !!fieldMetadata?.variant;
+    const [fieldSchema, setFieldSchema] = useState<ISchemaFieldMap | null>(
+        null
+    );
+    const [fieldVariantStatus, setFieldVariantStatus] =
+        useState<IVariantStatus>(BASE_VARIANT_STATUS);
+    const [isOpenVariantRevert, setIsOpenVariantRevert] =
+        useState<boolean>(false);
 
     let isModalEditable = false;
     let isReplaceAllowed = false;
@@ -215,6 +230,32 @@ function FieldToolbarComponent(
         <FormIcon />
     </button>
 
+    const toggleVariantDropdown = () => {
+        setIsOpenVariantRevert(!isOpenVariantRevert);
+    };
+
+    const closeVariantDropdown = () => {
+        setIsOpenVariantRevert(false);
+    };
+
+    const variantButton = (
+        <button
+            className={classNames(
+                "visual-builder__variant-button visual-builder__button visual-builder__button--secondary",
+                visualBuilderStyles()["visual-builder__button"],
+                visualBuilderStyles()["visual-builder__button--secondary"],
+                visualBuilderStyles()["visual-builder__tooltip"],
+                visualBuilderStyles()["visual-builder__variant-button"]
+            )}
+            data-tooltip={"Variant Revert"}
+            data-testid={`visual-builder-canvas-variant-revert`}
+            onClick={toggleVariantDropdown}
+        >
+            <VariantIcon />
+            <CaretIcon open={isOpenVariantRevert} />
+        </button>
+    );
+
     const totalElementCount = targetElement?.parentNode?.childElementCount ?? 1;
     const indexOfElement = fieldMetadata?.multipleFieldMetadata?.index;
 
@@ -227,9 +268,13 @@ function FieldToolbarComponent(
                 fieldMetadata.content_type_uid,
                 fieldMetadata.fieldPath
             );
-            if(fieldSchema){
+            if (fieldSchema) {
                 setFieldSchema(fieldSchema);
             }
+            const variantStatus = await getFieldVariantStatus(
+                fieldMetadata.fieldPathWithIndex
+            );
+            setFieldVariantStatus(variantStatus ?? BASE_VARIANT_STATUS);
         }
         fetchFieldSchema();
     }, [fieldMetadata]);
@@ -237,126 +282,165 @@ function FieldToolbarComponent(
     return (
         <div
             className={classNames(
-                "visual-builder__focused-toolbar__multiple-field-toolbar",
-                visualBuilderStyles()[
-                    "visual-builder__focused-toolbar__multiple-field-toolbar"
-                ]
+                "visual-builder__field-toolbar-container",
+                visualBuilderStyles()["visual-builder__field-toolbar-container"]
             )}
-            data-testid="visual-builder__focused-toolbar__multiple-field-toolbar"
         >
+            {isVariant && (
+                <FieldRevertComponent
+                    fieldDataName={fieldMetadata.fieldPathWithIndex}
+                    fieldMetadata={fieldMetadata}
+                    variantStatus={fieldVariantStatus}
+                    isOpen={isOpenVariantRevert}
+                    closeDropdown={closeVariantDropdown}
+                />
+            )}
             <div
                 className={classNames(
-                    "visual-builder__focused-toolbar__button-group",
+                    "visual-builder__focused-toolbar__multiple-field-toolbar",
                     visualBuilderStyles()[
-                        "visual-builder__focused-toolbar__button-group"
+                        "visual-builder__focused-toolbar__multiple-field-toolbar"
                     ]
                 )}
+                data-testid="visual-builder__focused-toolbar__multiple-field-toolbar"
             >
-                <>
-                    {isMultiple && !isWholeMultipleField ? (
-                        <>
-                            <button
-                                data-testid="visual-builder__focused-toolbar__multiple-field-toolbar__move-left-button"
-                                className={classNames(
-                                    `visual-builder__button visual-builder__button--secondary`,
-                                    visualBuilderStyles()[
-                                        "visual-builder__button"
-                                    ],
-                                    visualBuilderStyles()[
-                                        "visual-builder__button--secondary"
-                                    ],
-                                    visualBuilderStyles()["visual-builder__tooltip"]
-                                )}
-                                data-tooltip={direction.value === "vertical"?"Move up":"Move left"}
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                    e.stopPropagation();
-                                    handleMoveInstance(
-                                        fieldMetadata,
-                                        "previous"
-                                    );
-                                }}
-                                disabled={disableMoveLeft}
-                            >
-                                <MoveLeftIcon
-                                    className={classNames({
-                                        "visual-builder__rotate--90":
-                                            direction.value === "vertical",
-                                        [visualBuilderStyles()[
-                                            "visual-builder__rotate--90"
-                                        ]]: direction.value === "vertical",
-                                    })}
-                                    disabled={disableMoveLeft}
-                                />
-                            </button>
-
-                            <button
-                                data-testid="visual-builder__focused-toolbar__multiple-field-toolbar__move-right-button"
-                                className={classNames(
-                                    `visual-builder__button visual-builder__button--secondary`,
-                                    visualBuilderStyles()[
-                                        "visual-builder__button"
-                                    ],
-                                    visualBuilderStyles()[
-                                        "visual-builder__button--secondary"
-                                    ],
-                                    visualBuilderStyles()["visual-builder__tooltip"]
-                                )}
-                                data-tooltip={direction.value === "vertical"?"Move down":"Move right"}
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                    e.stopPropagation();
-                                    handleMoveInstance(fieldMetadata, "next");
-                                }}
-                                disabled={disableMoveRight}
-                            >
-                                <MoveRightIcon
-                                    className={classNames({
-                                        "visual-builder__rotate--90":
-                                            direction.value === "vertical",
-                                        [visualBuilderStyles()[
-                                            "visual-builder__rotate--90"
-                                        ]]: direction.value === "vertical",
-                                    })}
-                                    disabled={disableMoveRight}
-                                />
-                            </button>
-
-                            {isModalEditable ? editButton : null}
-                            {formButton}
-                            {isReplaceAllowed ? replaceButton : null}
-
-                            <button
-                                data-testid="visual-builder__focused-toolbar__multiple-field-toolbar__delete-button"
-                                className={classNames(
-                                    "visual-builder__button visual-builder__button--secondary",
-                                    visualBuilderStyles()[
-                                        "visual-builder__button"
-                                    ],
-                                    visualBuilderStyles()[
-                                        "visual-builder__button--secondary"
-                                    ],
-                                    visualBuilderStyles()["visual-builder__tooltip"]
-                                )}
-                                data-tooltip={"Delete"}
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                    e.stopPropagation();
-                                    handleDeleteInstance(fieldMetadata);
-                                }}
-                            >
-                                <DeleteIcon />
-                            </button>
-                        </>
-                    ) : (
-                        <>
-                            {isModalEditable ? editButton : null}
-                            {isReplaceAllowed ? replaceButton : null}
-                            {formButton}
-                            {fieldSchema ? <CommentIcon fieldMetadata={fieldMetadata} fieldSchema={fieldSchema}/> : null}  
-                        </>
+                <div
+                    className={classNames(
+                        "visual-builder__focused-toolbar__button-group",
+                        visualBuilderStyles()[
+                            "visual-builder__focused-toolbar__button-group"
+                        ]
                     )}
-                </>
+                >
+                    <>
+                        {isVariant ? variantButton : null}
+                        {isMultiple && !isWholeMultipleField ? (
+                            <>
+                                <button
+                                    data-testid="visual-builder__focused-toolbar__multiple-field-toolbar__move-left-button"
+                                    className={classNames(
+                                        `visual-builder__button visual-builder__button--secondary`,
+                                        visualBuilderStyles()[
+                                            "visual-builder__button"
+                                        ],
+                                        visualBuilderStyles()[
+                                            "visual-builder__button--secondary"
+                                        ],
+                                        visualBuilderStyles()[
+                                            "visual-builder__tooltip"
+                                        ]
+                                    )}
+                                    data-tooltip={
+                                        direction.value === "vertical"
+                                            ? "Move up"
+                                            : "Move left"
+                                    }
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        handleMoveInstance(
+                                            fieldMetadata,
+                                            "previous"
+                                        );
+                                    }}
+                                    disabled={disableMoveLeft}
+                                >
+                                    <MoveLeftIcon
+                                        className={classNames({
+                                            "visual-builder__rotate--90":
+                                                direction.value === "vertical",
+                                            [visualBuilderStyles()[
+                                                "visual-builder__rotate--90"
+                                            ]]: direction.value === "vertical",
+                                        })}
+                                        disabled={disableMoveLeft}
+                                    />
+                                </button>
+
+                                <button
+                                    data-testid="visual-builder__focused-toolbar__multiple-field-toolbar__move-right-button"
+                                    className={classNames(
+                                        `visual-builder__button visual-builder__button--secondary`,
+                                        visualBuilderStyles()[
+                                            "visual-builder__button"
+                                        ],
+                                        visualBuilderStyles()[
+                                            "visual-builder__button--secondary"
+                                        ],
+                                        visualBuilderStyles()[
+                                            "visual-builder__tooltip"
+                                        ]
+                                    )}
+                                    data-tooltip={
+                                        direction.value === "vertical"
+                                            ? "Move down"
+                                            : "Move right"
+                                    }
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        handleMoveInstance(
+                                            fieldMetadata,
+                                            "next"
+                                        );
+                                    }}
+                                    disabled={disableMoveRight}
+                                >
+                                    <MoveRightIcon
+                                        className={classNames({
+                                            "visual-builder__rotate--90":
+                                                direction.value === "vertical",
+                                            [visualBuilderStyles()[
+                                                "visual-builder__rotate--90"
+                                            ]]: direction.value === "vertical",
+                                        })}
+                                        disabled={disableMoveRight}
+                                    />
+                                </button>
+
+                                {isModalEditable ? editButton : null}
+                                {formButton}
+                                {isReplaceAllowed ? replaceButton : null}
+
+                                <button
+                                    data-testid="visual-builder__focused-toolbar__multiple-field-toolbar__delete-button"
+                                    className={classNames(
+                                        "visual-builder__button visual-builder__button--secondary",
+                                        visualBuilderStyles()[
+                                            "visual-builder__button"
+                                        ],
+                                        visualBuilderStyles()[
+                                            "visual-builder__button--secondary"
+                                        ],
+                                        visualBuilderStyles()[
+                                            "visual-builder__tooltip"
+                                        ]
+                                    )}
+                                    data-tooltip={"Delete"}
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        handleDeleteInstance(fieldMetadata);
+                                    }}
+                                >
+                                    <DeleteIcon />
+                                </button>
+                            </>
+                        ) : (
+                            <>
+                                {isModalEditable ? editButton : null}
+                                {isReplaceAllowed ? replaceButton : null}
+                                {formButton}
+                                {fieldSchema ? (
+                                    <CommentIcon
+                                        fieldMetadata={fieldMetadata}
+                                        fieldSchema={fieldSchema}
+                                    />
+                                ) : null}
+                            </>
+                        )}
+                    </>
+                </div>
             </div>
         </div>
     );

@@ -572,24 +572,6 @@ export function visualBuilderStyles() {
             position: relative;
             display: inline-block;
         `,
-        "variant-field-revert-component__dropdown-button": css`
-            background-color: #bd59fa;
-            color: white;
-            padding: 0.3125rem 8px;
-            font-size: 10px;
-            height: 27.2px;
-            margin-right: 3px;
-            min-width: max-content;
-            border: none;
-            cursor: pointer;
-            border-radius: 4px;
-            display: flex;
-            align-items: center;
-            column-gap: 4px;
-            &:focus {
-                outline: none;
-            }
-        `,
         "variant-field-revert-component__dropdown-content": css`
             position: absolute;
             background-color: #ffffff;
@@ -598,9 +580,10 @@ export function visualBuilderStyles() {
                 0 4px 15px 0 rgba(108, 92, 231, 0.2),
                 0 3px 14px 3px rgba(0, 0, 0, 0.12),
                 0 8px 10px 1px rgba(0, 0, 0, 0.14);
-            z-index: 9;
+            z-index: 9999999 !important;
             margin-top: 4px;
             padding: 4px 0px;
+            border-radius: 2px;
         `,
         "variant-field-revert-component__dropdown-content__list-item": css`
             color: black;
@@ -626,6 +609,22 @@ export function visualBuilderStyles() {
         `,
         "visual-builder__no-cursor-style": css`
             cursor: none !important;
+        `,
+        "visual-builder__field-toolbar-container": css`
+            display: flex;
+            flex-direction: column-reverse;
+            z-index: 9999999 !important;
+        `,
+        "visual-builder__variant-button": css`
+            display: flex;
+            min-width: 3rem !important;
+            gap: 0.25rem;
+            align-items: center;
+            justify-content: center;
+            display: flex;
+            & svg path {
+                fill: #475161;
+            }
         `,
     };
 }
