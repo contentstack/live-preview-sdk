@@ -7,11 +7,13 @@ beforeAll(() => {
         unobserve: vi.fn(),
         disconnect: vi.fn(),
     }));
-    
+
     global.MutationObserver = vi.fn().mockImplementation(() => ({
         observe: vi.fn(),
         disconnect: vi.fn(),
     }));
+
+  document.elementFromPoint = vi.fn();
 })
 
 afterAll(() => {
