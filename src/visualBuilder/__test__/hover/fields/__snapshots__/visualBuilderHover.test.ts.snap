@@ -1,0 +1,27 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`When an element is hovered in visual builder mode > number field > should have custom cursor 1`] = `
+<div
+  class="go1688149084 visual-builder__cursor"
+  data-testid="visual-builder__cursor"
+/>
+`;
+
+exports[`When an element is hovered in visual builder mode > number field > should have outline 1`] = `
+<p
+  data-cslp="all_fields.bltapikey.en-us.number"
+/>
+`;
+
+exports[`When an element is hovered in visual builder mode > title field > should have custom cursor 1`] = `
+<div
+  class="go1688149084 visual-builder__cursor visible"
+  data-testid="visual-builder__cursor"
+/>
+`;
+
+exports[`When an element is hovered in visual builder mode > title field > should have outline 1`] = `
+<p
+  data-cslp="all_fields.bltapikey.en-us.title"
+/>
+`;

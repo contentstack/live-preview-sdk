@@ -1,25 +1,33 @@
-import ContentstackLivePreviewHOC, {
-    ICSLivePreview,
-} from "./contentstack-live-preview-HOC";
+import ContentstackLivePreviewHOC from "./preview/contentstack-live-preview-HOC";
 
-import { IStackSdk as ExternalStackSdkType } from "./utils/types";
+import { IStackSdk as ExternalStackSdkType } from "./types/types";
 export type IStackSdk = ExternalStackSdkType;
+class LightLivePreviewHoC implements ContentstackLivePreviewHOC {
+    static init() {}
 
-const LightLivePreviewHoC = {
-    init() {},
-    onLiveEdit() {},
-    onEntryChange(callback: () => void) {
-        return callback();
-    },
-    get hash(): string {
+    get hash() {
         return "";
-    },
-    setConfigFromParams() {},
-};
+    }
 
-export const ContentstackLivePreview =
-    process.env.PURGE_PREVIEW_SDK || process.env.REACT_APP_PURGE_PREVIEW_SDK
-        ? (LightLivePreviewHoC as unknown as ICSLivePreview)
-        : ContentstackLivePreviewHOC;
+    static onEntryChange(callback: (...args: any[]) => void) {
+        return callback();
+    }
 
-export default ContentstackLivePreview;
+    static onLiveEdit() {
+        // intentionally empty
+    }
+
+    static unsubscribeOnEntryChange() {
+        // intentionally empty
+    }
+
+    static getSdkVersion(): string {
+        return process?.env?.PACKAGE_VERSION!;
+    }
+}
+
+// export const ContentstackLivePreview: ContentstackLivePreviewHOC =
+//     ContentstackLivePreviewHOC;
+
+export const VB_EmptyBlockParentClass = "visual-builder__empty-block-parent";
+export default ContentstackLivePreviewHOC;

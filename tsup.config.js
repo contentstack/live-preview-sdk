@@ -3,8 +3,12 @@ import { esbuildPluginFilePathExtensions } from 'esbuild-plugin-file-path-extens
 import packageJson from './package.json' assert { type: "json" };
 
 export default defineConfig([
-  modernConfig({ entry: [ 'src/*.ts', 'src/styles/*.ts', 'src/utils/*.ts' ]}),
-  legacyConfig({ entry: [ 'src/*.ts', 'src/styles/*.ts', 'src/utils/*.ts' ]}),
+  modernConfig({
+    entry: ["src/**/*.ts","src/**/*.tsx", "!src/**/__test__", "!**/*.test.ts"],
+}),
+legacyConfig({
+    entry: ["src/**/*.ts","src/**/*.tsx", "!src/**/__test__", "!**/*.test.ts"],
+}),
 ])
 
 function modernConfig(opts) {
@@ -13,13 +17,17 @@ function modernConfig(opts) {
     define: {
       'process.env.PACKAGE_VERSION': `"${packageJson.version}"`,
     },
+    esbuildOptions(options) {
+      options.jsxImportSource = 'preact';
+      options.jsx = 'automatic'
+    },      
     format: ['cjs', 'esm'],
     target: ['chrome91', 'firefox90', 'edge91', 'safari15', 'ios15', 'opera77'],
     outDir: 'dist/modern',
     dts: true,
     sourcemap: true,
     clean: true,
-    esbuildPlugins: [esbuildPluginFilePathExtensions({ esmExtension: 'js' })],
+    esbuildPlugins: [esbuildPluginFilePathExtensions({ esmExtension: 'js' })]
   }
 }
 
@@ -36,5 +44,9 @@ function legacyConfig(opts) {
     sourcemap: true,
     clean: true,
     esbuildPlugins: [esbuildPluginFilePathExtensions({ esmExtension: 'js' })],
+    esbuildOptions(options) {
+      options.jsxImportSource = 'preact';
+      options.jsx = 'automatic'
+    },
   }
 }
