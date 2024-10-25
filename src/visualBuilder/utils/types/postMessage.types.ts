@@ -2,6 +2,7 @@ export enum VisualBuilderPostMessageEvents {
     INIT = "init",
     ADD_INSTANCE = "add-instance",
     UPDATE_FIELD = "update-field",
+    SYNC_FIELD = 'sync-field',
     OPEN_ASSET_MODAL = "open-asset-modal",
     OPEN_REFERENCE_MODAL = "open-reference-modal",
     OPEN_QUICK_FORM = "open-quick-form",
