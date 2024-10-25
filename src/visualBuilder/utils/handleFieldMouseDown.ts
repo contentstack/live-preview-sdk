@@ -1,16 +1,37 @@
+import { throttle } from "lodash-es";
+import { sendFieldEvent } from "../generators/generateOverlay";
 import {
+    ALLOWED_INLINE_EDITABLE_FIELD,
     VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY,
     numericInputRegex,
 } from "./constants";
 import { FieldDataType } from "./types/index.types";
+import { VisualBuilderPostMessageEvents } from "./types/postMessage.types";
 
 export function handleFieldInput(e: Event): void {
     const event = e as InputEvent;
-
-    if (event.type === "input") {
-        // do something
+    const targetElement = event.target as HTMLElement;
+    const fieldType = targetElement.getAttribute(
+        VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
+    ) as FieldDataType | null;
+    if (event.type === "input" && ALLOWED_INLINE_EDITABLE_FIELD.includes(fieldType as FieldDataType)) {
+        throttledFieldSync();
     }
 }
+const throttledFieldSync = throttle(() => {
+    try {
+        const visualBuilderContainer = document.querySelector(
+            ".visual-builder__container"
+        ) as HTMLElement;
+        if(!visualBuilderContainer) return;
+        sendFieldEvent({
+            visualBuilderContainer,
+            eventType: VisualBuilderPostMessageEvents.SYNC_FIELD,
+        })  
+    } catch (error) {
+        console.error("Error in throttledFieldSync", error)
+    }
+}, 300);
 
 export function handleFieldKeyDown(e: Event): void {
     const event = e as KeyboardEvent;

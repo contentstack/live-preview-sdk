@@ -117,76 +117,83 @@ export function hideFocusOverlay(elements: HideOverlayParams): void {
                 childNode.removeAttribute("style");
             }
         });
+        sendFieldEvent({
+            visualBuilderContainer,
+            eventType: VisualBuilderPostMessageEvents.UPDATE_FIELD,
+        });
 
-        if (
-            VisualBuilder.VisualBuilderGlobalState.value
-                .previousSelectedEditableDOM
-        ) {
-            const pseudoEditableElement = visualBuilderContainer?.querySelector(
-                "div.visual-builder__pseudo-editable-element"
-            );
-
-            if (
-                VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM.hasAttribute(
-                    "contenteditable"
-                ) ||
-                pseudoEditableElement
-            ) {
-                const actualEditedElement =
-                    pseudoEditableElement ||
-                    (VisualBuilder.VisualBuilderGlobalState.value
-                        .previousSelectedEditableDOM as HTMLElement);
-
-                let data =
-                    "innerText" in actualEditedElement
-                        ? actualEditedElement.innerText
-                        : actualEditedElement.textContent;
-
-                const fieldMetadata = extractDetailsFromCslp(
-                    VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM.getAttribute(
-                        "data-cslp"
-                    ) as string
-                );
-
-                FieldSchemaMap.getFieldSchema(
-                    fieldMetadata.content_type_uid,
-                    fieldMetadata.fieldPath
-                )
-                    .then((fieldSchema) => {
-                        if (fieldSchema) {
-                            const fieldType = getFieldType(fieldSchema);
-                            if (
-                                fieldType &&
-                                fieldType === FieldDataType.MULTILINE
-                            ) {
-                                data =
-                                    getMultilinePlaintext(actualEditedElement);
-                                (actualEditedElement as HTMLElement).innerText =
-                                    data as string;
-                            }
-                        }
-                    })
-                    .finally(() => {
-                        visualBuilderPostMessage?.send(
-                            VisualBuilderPostMessageEvents.UPDATE_FIELD,
-                            {
-                                data,
-                                fieldMetadata,
-                            }
-                        );
-                    });
-            }
-
-            cleanIndividualFieldResidual({
-                overlayWrapper: visualBuilderOverlayWrapper,
-                visualBuilderContainer: visualBuilderContainer,
-                focusedToolbar: focusedToolbar,
-                resizeObserver: resizeObserver,
-            });
-        }
+        cleanIndividualFieldResidual({
+            overlayWrapper: visualBuilderOverlayWrapper,
+            visualBuilderContainer: visualBuilderContainer,
+            focusedToolbar: focusedToolbar,
+            resizeObserver: resizeObserver,
+        });
     }
 }
+interface ISendFieldEventParams {
+    visualBuilderContainer: HTMLElement | null;
+    eventType: VisualBuilderPostMessageEvents.UPDATE_FIELD | VisualBuilderPostMessageEvents.SYNC_FIELD
+}
+export function sendFieldEvent(options: ISendFieldEventParams): void {
+    const {
+        visualBuilderContainer,
+        eventType
+    } = options;
+    const previousSelectedEditableDOM = VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM;
+    const pseudoEditableElement = visualBuilderContainer?.querySelector(
+        "div.visual-builder__pseudo-editable-element"
+    );
+    if (
+        previousSelectedEditableDOM &&
+        (
+            previousSelectedEditableDOM.hasAttribute("contenteditable") ||
+            pseudoEditableElement
+        )
+    ) {
+        const actualEditedElement =
+            pseudoEditableElement ||
+            (previousSelectedEditableDOM as HTMLElement);
 
+        let data =
+            "innerText" in actualEditedElement
+                ? actualEditedElement.innerText
+                : actualEditedElement.textContent;
+
+        const fieldMetadata = extractDetailsFromCslp(
+            previousSelectedEditableDOM.getAttribute(
+                "data-cslp"
+            ) as string
+        );
+
+        FieldSchemaMap.getFieldSchema(
+            fieldMetadata.content_type_uid,
+            fieldMetadata.fieldPath
+        )
+            .then((fieldSchema) => {
+                if (fieldSchema && eventType === VisualBuilderPostMessageEvents.UPDATE_FIELD) {
+                    const fieldType = getFieldType(fieldSchema);
+                    if (
+                        fieldType &&
+                        fieldType === FieldDataType.MULTILINE
+                    ) {
+                        data =
+                            getMultilinePlaintext(actualEditedElement);
+                        (actualEditedElement as HTMLElement).innerText =
+                            data as string;
+                    }
+                }
+            })
+            .finally(() => {
+                visualBuilderPostMessage?.send(
+                    eventType,
+                    {
+                        data,
+                        fieldMetadata,
+                    }
+                );
+            });
+    }
+}
 interface HideOverlayParams
     extends Pick<
         EventListenerHandlerParams,
