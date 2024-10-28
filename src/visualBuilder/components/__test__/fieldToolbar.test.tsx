@@ -15,6 +15,7 @@ vi.mock("../../utils/instanceHandlers", () => ({
     handleDeleteInstance: vi.fn(),
 }));
 
+//CommentIcon testcases are covered seperatly
 vi.mock("../CommentIcon", () => ({
     default: vi.fn(() => <div>Comment Icon</div>)
   }));
@@ -127,7 +128,7 @@ describe("MultipleFieldToolbarComponent", () => {
         expect(moveLeftButton).toBeInTheDocument();
         expect(moveRightButton).toBeInTheDocument();
         expect(deleteButton).toBeInTheDocument();
-        expect(screen.queryByText('Comment Icon')).toBeNull();
+        expect(screen.queryByText('Comment Icon')).not.toBeInTheDocument();;
     });
 
     test("renders toolbar without move buttons for non multiple", async () => {
@@ -153,9 +154,9 @@ describe("MultipleFieldToolbarComponent", () => {
         );
 
         expect(screen.queryByText('Comment Icon')).toBeInTheDocument();
-        expect(moveLeftButton).toBeNull();
-        expect(moveRightButton).toBeNull();
-        expect(deleteButton).toBeNull();
+        expect(moveLeftButton).not.toBeInTheDocument();;
+        expect(moveRightButton).not.toBeInTheDocument();;
+        expect(deleteButton).not.toBeInTheDocument();;
     });
 
     test("renders all toolbar buttons for multiple and whole multiple field", async () => {
@@ -187,9 +188,9 @@ describe("MultipleFieldToolbarComponent", () => {
         );
 
 
-        expect(deleteButton).toBeNull();
-        expect(moveLeftButton).toBeNull();
-        expect(moveRightButton).toBeNull();
+        expect(deleteButton).not.toBeInTheDocument();;
+        expect(moveLeftButton).not.toBeInTheDocument();;
+        expect(moveRightButton).not.toBeInTheDocument();;
         expect(screen.queryByText('Comment Icon')).toBeInTheDocument();
     });
 
