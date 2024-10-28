@@ -39,3 +39,11 @@ export function addParamsToUrl() {
         }
     });
 }
+export function isOpeningInTimeline(): boolean {
+    if (hasWindow()) {
+        const urlParams = new URLSearchParams(window.location.search);
+        const previewTimestamp = urlParams.get("preview_timestamp");
+        return !!previewTimestamp;
+    }
+    return false;
+}

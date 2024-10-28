@@ -1,7 +1,7 @@
 import Config from "../configManager/configManager";
 import { PublicLogger } from "../logger/logger";
 import { ILivePreviewModeConfig } from "../types/types";
-import { addLivePreviewQueryTags } from "../utils";
+import { addLivePreviewQueryTags, isOpeningInTimeline } from "../utils";
 import { LivePreviewEditButton } from "./editButton/editButton";
 import { sendInitializeLivePreviewPostMessageEvent } from "./eventManager/postMessageEvent.hooks";
 import { removeDataCslp } from "./livePreviewProductionCleanup";
@@ -53,8 +53,9 @@ export default class LivePreview {
             // render the hover outline only when edit button enable
 
             if (
-                config.editButton.enable ||
-                config.mode >= ILivePreviewModeConfig.BUILDER
+                !isOpeningInTimeline() && 
+                (config.editButton.enable ||
+                config.mode >= ILivePreviewModeConfig.BUILDER)
             ) {
                 LivePreviewEditButton.livePreviewEditButton =
                     new LivePreviewEditButton();
