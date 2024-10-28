@@ -37,7 +37,7 @@ function addVariantFieldClass(
         const dataCslp = element.getAttribute("data-cslp");
         if (!dataCslp) return;
 
-        if (dataCslp.includes(variant_uid)) {
+        if (dataCslp?.includes(variant_uid)) {
             highlightVariantFields &&
                 element.classList.add(
                     visualBuilderStyles()["visual-builder__variant-field"]
