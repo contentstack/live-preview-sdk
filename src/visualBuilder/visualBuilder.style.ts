@@ -71,7 +71,7 @@ export function visualBuilderStyles() {
             width: 100%;
             height: 100vh;
             visibility: hidden;
-            z-index: 199;
+            z-index: 99999;
 
             pointer-events: none;
 
@@ -224,7 +224,7 @@ export function visualBuilderStyles() {
         "visual-builder__focused-toolbar": css`
             position: absolute;
             transform: translateY(-100%);
-            z-index: 200;
+            z-index: 100000;
             gap: 8px;
             width: 0;
             display: flex;
@@ -259,7 +259,7 @@ export function visualBuilderStyles() {
             display: none;
             width: fit-content;
             position: absolute;
-            z-index: 1000;
+            z-index: 100000;
         `,
         "field-label-dropdown-open": css`
             .visual-builder__focused-toolbar__field-label-wrapper__parent-field {
@@ -393,7 +393,6 @@ export function visualBuilderStyles() {
             text-wrap: nowrap;
         `,
         "visual-builder__focused-toolbar__multiple-field-toolbar": css`
-            z-index: 200;
             height: 40px;
             z-index: 2147483647 !important;
 
@@ -484,7 +483,7 @@ export function visualBuilderStyles() {
             position: absolute;
             outline: 2px dashed #6c5ce7;
             transition: var(--outline-transition);
-            z-index: 199 !important;
+            z-index: 2147483647 !important;
         `,
         "visual-builder__hover-outline--hidden": css`
             visibility: hidden;
@@ -505,7 +504,7 @@ export function visualBuilderStyles() {
             outline: 2px solid #bd59fa;
         `,
         "visual-builder__pseudo-editable-element": css`
-            z-index: 200 !important;
+            z-index: 2147483647 !important;
         `,
         // cslp error styles
         "visual-builder__button-error": css`

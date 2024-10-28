@@ -2,7 +2,7 @@
 
 exports[`addFocusOverlay > should set the top overlay to the correct dimensions 1`] = `
 <div
-  class="go842373233 visual-builder__overlay__wrapper"
+  class="go3860994383 visual-builder__overlay__wrapper"
   data-testid="visual-builder__overlay__wrapper"
 >
   <div
@@ -30,7 +30,7 @@ exports[`addFocusOverlay > should set the top overlay to the correct dimensions 
 
 exports[`addFocusOverlay > should set the top overlay to the correct dimensions 2`] = `
 <div
-  class="go842373233 visual-builder__overlay__wrapper visible"
+  class="go3860994383 visual-builder__overlay__wrapper visible"
   data-testid="visual-builder__overlay__wrapper"
 >
   <div
