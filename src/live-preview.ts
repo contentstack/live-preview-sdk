@@ -113,8 +113,11 @@ export default class LivePreview {
             }
             window.addEventListener("message", this.resolveIncomingMessage);
             window.addEventListener("scroll", this.updateTooltipPosition);
+            // extract search params and check if preview_timestamp set
+            const urlParams = new URLSearchParams(window.location.search);
+            const previewTimestamp = urlParams.get("preview_timestamp");
             // render the hover outline only when edit button enable
-            if (this.config.editButton.enable) {
+            if (this.config.editButton.enable && !previewTimestamp) {
                 window.addEventListener("mouseover", this.addEditStyleOnHover);
             }
 
