@@ -7,7 +7,6 @@ import { visualBuilderStyles } from "../visualBuilder.style";
 const VARIANT_UPDATE_DELAY_MS: Readonly<number> = 8000;
 
 type OnAudienceModeVariantPatchUpdate = {
-    expectedCSLPValues: Record<"variant" | "base", string>;
     highlightVariantFields: boolean;
 };
 
@@ -24,71 +23,93 @@ export function useRecalculateVariantDataCSLPValues(): void {
         }
     );
 }
-
 function updateVariantClasses({
-    expectedCSLPValues,
     highlightVariantFields,
 }: OnAudienceModeVariantPatchUpdate): void {
-    const variantElement = document.querySelector(
-        `[${DATA_CSLP_ATTR_SELECTOR}="${expectedCSLPValues.variant}"]`
+    const variant = VisualBuilder.VisualBuilderGlobalState.value.variant;
+    const observers: MutationObserver[] = [];
+
+    // Helper function to update element classes
+    const updateElementClasses = (
+        element: HTMLElement,
+        dataCslp: string,
+        observer: MutationObserver
+    ) => {
+        if (!dataCslp) return;
+
+        if (
+            dataCslp.startsWith("v2:") &&
+            element.classList.contains("visual-builder__base-field")
+        ) {
+            element.classList.remove("visual-builder__base-field");
+            if (highlightVariantFields) {
+                element.classList.add(
+                    visualBuilderStyles()["visual-builder__variant-field"],
+                    "visual-builder__variant-field"
+                );
+            } else {
+                element.classList.add("visual-builder__variant-field");
+            }
+        } else if (
+            !dataCslp.startsWith("v2:") &&
+            element.classList.contains("visual-builder__variant-field")
+        ) {
+            element.classList.remove(
+                visualBuilderStyles()["visual-builder__variant-field"],
+                "visual-builder__variant-field"
+            );
+            element.classList.add("visual-builder__base-field");
+        } else if (
+            dataCslp.startsWith("v2:") &&
+            variant &&
+            !dataCslp.includes(variant) &&
+            element.classList.contains("visual-builder__variant-field")
+        ) {
+            element.classList.remove(
+                visualBuilderStyles()["visual-builder__variant-field"],
+                "visual-builder__variant-field"
+            );
+            element.classList.add("visual-builder__disabled-variant-field");
+        }
+
+        // Disconnect this observer after processing
+        observer.disconnect();
+        const index = observers.indexOf(observer);
+        if (index > -1) {
+            observers.splice(index, 1);
+        }
+    };
+
+    // Create a separate observer for each element
+    const elementsWithCslp = document.querySelectorAll(
+        `[${DATA_CSLP_ATTR_SELECTOR}]`
     );
-    if (variantElement) {
-        // No need to recalculate classList for variant fields
-        return;
-    } else {
-        const baseElement = document.querySelector(
-            `[${DATA_CSLP_ATTR_SELECTOR}="${expectedCSLPValues.base}"]`
-        );
-        if (!baseElement) return;
 
-        let hasObserverDisconnected = false;
-        let timeoutId: ReturnType<typeof setTimeout> | null = null;
+    elementsWithCslp.forEach((elementNode) => {
+        const element = elementNode as HTMLElement;
 
-        const observer = new MutationObserver((mutations, obs) => {
+        const observer = new MutationObserver((mutations) => {
             mutations.forEach((mutation) => {
                 if (
                     mutation.type === "attributes" &&
                     mutation.attributeName === DATA_CSLP_ATTR_SELECTOR
                 ) {
-                    const element = mutation.target as HTMLElement;
                     const dataCslp = element.getAttribute(
                         DATA_CSLP_ATTR_SELECTOR
                     );
-                    if (!dataCslp) return;
-                    if (
-                        dataCslp.startsWith("v2:") &&
-                        element.classList.contains("visual-builder__base-field")
-                    ) {
-                        element.classList.remove("visual-builder__base-field");
-                        if (highlightVariantFields) {
-                            // Append class and styles
-                            element.classList.add(
-                                visualBuilderStyles()[
-                                    "visual-builder__variant-field"
-                                ],
-                                "visual-builder__variant-field"
-                            );
-                        } else {
-                            // Append only class
-                            element.classList.add(
-                                "visual-builder__variant-field"
-                            );
-                        }
-                    }
-                    obs.disconnect();
-                    hasObserverDisconnected = true;
-                    return;
+                    updateElementClasses(element, dataCslp || "", observer);
                 }
             });
-            if (!hasObserverDisconnected && !timeoutId) {
-                // disconnect the observer whether we found the new instance or not after timeout
-                timeoutId = setTimeout(() => {
-                    obs.disconnect();
-                    hasObserverDisconnected = false;
-                }, VARIANT_UPDATE_DELAY_MS);
-            }
         });
 
-        observer.observe(baseElement, { attributes: true });
-    }
+        observers.push(observer);
+        observer.observe(element, { attributes: true });
+    });
+
+    setTimeout(() => {
+        if (observers.length > 0) {
+            observers.forEach((observer) => observer.disconnect());
+            observers.length = 0;
+        }
+    }, VARIANT_UPDATE_DELAY_MS);
 }

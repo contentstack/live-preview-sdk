@@ -164,35 +164,6 @@ async function handleBuilderInteraction(
                 editableElement: editableElement,
                 isFieldDisabled: true,
             });
-            const observer = new MutationObserver((mutations) => {
-                mutations.forEach((mutation) => {
-                    if (
-                        mutation.type === "attributes" &&
-                        mutation.attributeName === "class"
-                    ) {
-                        if (
-                            editableElement.classList.contains(
-                                "visual-builder__variant-field"
-                            )
-                        ) {
-                            hideOverlay({
-                                visualBuilderContainer: params.visualBuilderContainer,
-                                resizeObserver: params.resizeObserver,
-                                focusedToolbar: params.focusedToolbar,
-                                visualBuilderOverlayWrapper: params.overlayWrapper
-                            })
-
-                            const clickEvent = new MouseEvent("click", {
-                                view: window,
-                                bubbles: true,
-                                cancelable: true,
-                            });
-                            editableElement.dispatchEvent(clickEvent);
-                        }
-                    }
-                });
-            });
-            observer.observe(editableElement, { attributes: true, attributeFilter: ['class'] })
         }
     }
 
