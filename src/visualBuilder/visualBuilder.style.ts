@@ -224,7 +224,7 @@ export function visualBuilderStyles() {
         "visual-builder__focused-toolbar": css`
             position: absolute;
             transform: translateY(-100%);
-            z-index: 200;
+            z-index: 2147483647;
             gap: 8px;
             width: 0;
             display: flex;
