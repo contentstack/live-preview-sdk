@@ -292,6 +292,7 @@ export function visualBuilderStyles() {
             line-height: 100%;
             padding: 8px 16px;
             text-align: center;
+            z-index: 2147483647 !important;
             transition:
                 color 0.15s ease-in-out,
                 background-color 0.15s ease-in-out,
@@ -355,6 +356,7 @@ export function visualBuilderStyles() {
             border-radius: 2px;
             height: 100%;
             padding: 4px !important;
+            z-index: 2147483647 !important;
 
             &:has(.visual-builder__button) {
                 padding: 2px;
@@ -365,7 +367,7 @@ export function visualBuilderStyles() {
                 background-color: #f5f5f5;
 
                 svg {
-                    color: #5D50BE;
+                    color: #5d50be;
                 }
             }
 
@@ -393,6 +395,7 @@ export function visualBuilderStyles() {
         "visual-builder__focused-toolbar__multiple-field-toolbar": css`
             z-index: 200;
             height: 40px;
+            z-index: 2147483647 !important;
 
             svg {
                 height: 100%;
@@ -571,6 +574,7 @@ export function visualBuilderStyles() {
         "variant-field-revert-component": css`
             position: relative;
             display: inline-block;
+            z-index: 2147483647 !important;
         `,
         "variant-field-revert-component__dropdown-content": css`
             position: absolute;
@@ -580,7 +584,7 @@ export function visualBuilderStyles() {
                 0 4px 15px 0 rgba(108, 92, 231, 0.2),
                 0 3px 14px 3px rgba(0, 0, 0, 0.12),
                 0 8px 10px 1px rgba(0, 0, 0, 0.14);
-            z-index: 9999999 !important;
+            z-index: 2147483647 !important;
             margin-top: 4px;
             padding: 4px 0px;
             border-radius: 2px;
@@ -595,6 +599,7 @@ export function visualBuilderStyles() {
             line-height: 2rem;
             display: flex;
             align-items: center;
+            z-index: 2147483647 !important;
             cursor: pointer;
             &:hover {
                 background-color: #f1f1f1;
@@ -613,7 +618,7 @@ export function visualBuilderStyles() {
         "visual-builder__field-toolbar-container": css`
             display: flex;
             flex-direction: column-reverse;
-            z-index: 9999999 !important;
+            z-index: 2147483647 !important;
         `,
         "visual-builder__variant-button": css`
             display: flex;
