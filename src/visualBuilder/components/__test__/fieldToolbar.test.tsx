@@ -1,4 +1,4 @@
-import { act, cleanup, fireEvent, render, waitFor, screen } from "@testing-library/preact";
+import { act, cleanup, fireEvent, render, waitFor, screen, queryByTestId } from "@testing-library/preact";
 import { CslpData } from "../../../cslp/types/cslp.types";
 import { FieldSchemaMap } from "../../utils/fieldSchemaMap";
 import {
@@ -7,13 +7,17 @@ import {
 } from "../../utils/instanceHandlers";
 import { ISchemaFieldMap } from "../../utils/types/index.types";
 import FieldToolbarComponent from "../FieldToolbar";
-import { mockMultipleLinkFieldSchema } from "../../../__test__/data/fields";
+import { mockMultipleLinkFieldSchema, singleLineFieldSchema } from "../../../__test__/data/fields";
 import { asyncRender } from "../../../__test__/utils";
 
 vi.mock("../../utils/instanceHandlers", () => ({
     handleMoveInstance: vi.fn(),
     handleDeleteInstance: vi.fn(),
 }));
+
+vi.mock("../CommentIcon", () => ({
+    default: vi.fn(() => <div>Comment Icon</div>)
+  }));
 
 vi.mock("../../utils/visualBuilderPostMessage", async () => {
     return {
@@ -95,6 +99,98 @@ describe("MultipleFieldToolbarComponent", () => {
         expect(moveLeftButton).toBeInTheDocument();
         expect(moveRightButton).toBeInTheDocument();
         expect(deleteButton).toBeInTheDocument();
+    });
+
+    test("renders toolbar buttons for multiple and not whole multiple field", async () => {
+        vi.spyOn(FieldSchemaMap, "getFieldSchema").mockResolvedValue({
+            ...mockMultipleLinkFieldSchema,
+            multiple: true,
+        });
+
+        const { findByTestId } = await asyncRender(
+            <FieldToolbarComponent
+                fieldMetadata={mockMultipleFieldMetadata}
+                editableElement={targetElement}
+            />
+        );
+
+        const moveLeftButton = await findByTestId(
+            "visual-builder__focused-toolbar__multiple-field-toolbar__move-left-button"
+        );
+        const moveRightButton = await findByTestId(
+            "visual-builder__focused-toolbar__multiple-field-toolbar__move-right-button"
+        );
+        const deleteButton = await findByTestId(
+            "visual-builder__focused-toolbar__multiple-field-toolbar__delete-button"
+        );
+
+        expect(moveLeftButton).toBeInTheDocument();
+        expect(moveRightButton).toBeInTheDocument();
+        expect(deleteButton).toBeInTheDocument();
+        expect(screen.queryByText('Comment Icon')).toBeNull();
+    });
+
+    test("renders toolbar without move buttons for non multiple", async () => {
+        vi.spyOn(FieldSchemaMap, "getFieldSchema").mockResolvedValue({
+            ...mockMultipleLinkFieldSchema,
+            multiple: false,
+        });
+
+        const { findByTestId, queryByTestId } = await asyncRender(
+            <FieldToolbarComponent
+                fieldMetadata={{...mockMultipleFieldMetadata,}}
+                editableElement={targetElement}
+            />
+        );
+        const moveLeftButton = await queryByTestId(
+            "visual-builder__focused-toolbar__multiple-field-toolbar__move-left-button"
+        );
+        const moveRightButton = await queryByTestId(
+            "visual-builder__focused-toolbar__multiple-field-toolbar__move-right-button"
+        );
+        const deleteButton = await queryByTestId(
+            "visual-builder__focused-toolbar__multiple-field-toolbar__delete-button"
+        );
+
+        expect(screen.queryByText('Comment Icon')).toBeInTheDocument();
+        expect(moveLeftButton).toBeNull();
+        expect(moveRightButton).toBeNull();
+        expect(deleteButton).toBeNull();
+    });
+
+    test("renders all toolbar buttons for multiple and whole multiple field", async () => {
+        vi.spyOn(FieldSchemaMap, "getFieldSchema").mockResolvedValue({
+            ...mockMultipleLinkFieldSchema,
+            multiple: true,
+        });
+
+        const { findByTestId ,queryByTestId } = await asyncRender(
+            <FieldToolbarComponent
+                fieldMetadata={{
+                    ...mockMultipleFieldMetadata,
+                    instance: {
+                        ...mockMultipleFieldMetadata.instance,
+                        fieldPathWithIndex: mockMultipleFieldMetadata.fieldPathWithIndex,
+                    },
+                }}
+                editableElement={targetElement}
+            />
+        );
+        const moveLeftButton = await queryByTestId(
+            "visual-builder__focused-toolbar__multiple-field-toolbar__move-left-button"
+        );
+        const moveRightButton = await queryByTestId(
+            "visual-builder__focused-toolbar__multiple-field-toolbar__move-right-button"
+        );
+        const deleteButton = await queryByTestId(
+            "visual-builder__focused-toolbar__multiple-field-toolbar__delete-button"
+        );
+
+
+        expect(deleteButton).toBeNull();
+        expect(moveLeftButton).toBeNull();
+        expect(moveRightButton).toBeNull();
+        expect(screen.queryByText('Comment Icon')).toBeInTheDocument();
     });
 
     test("calls handleMoveInstance with 'previous' when move left button is clicked", async () => {
