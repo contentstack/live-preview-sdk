@@ -64,7 +64,7 @@ describe("MultipleFieldToolbarComponent", () => {
     }
 
     beforeEach(() => {
-        document.body.innerHTML = "";
+        document.getElementsByTagName("html")[0].innerHTML = "";
         targetElement = document.createElement("div");
         targetElement.setAttribute("data-testid", "mock-target-element");
         mockEventDetails['editableElement'] = targetElement;
