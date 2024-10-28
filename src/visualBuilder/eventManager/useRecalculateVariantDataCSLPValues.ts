@@ -8,6 +8,7 @@ const VARIANT_UPDATE_DELAY_MS: Readonly<number> = 8000;
 
 type OnAudienceModeVariantPatchUpdate = {
     highlightVariantFields: boolean;
+    expectedCSLPValues: Record<"variant" | "base", string>;
 };
 
 /**
@@ -25,6 +26,7 @@ export function useRecalculateVariantDataCSLPValues(): void {
 }
 function updateVariantClasses({
     highlightVariantFields,
+    expectedCSLPValues,
 }: OnAudienceModeVariantPatchUpdate): void {
     const variant = VisualBuilder.VisualBuilderGlobalState.value.variant;
     const observers: MutationObserver[] = [];
