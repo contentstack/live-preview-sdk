@@ -169,10 +169,7 @@ describe("MultipleFieldToolbarComponent", () => {
             <FieldToolbarComponent
                 fieldMetadata={{
                     ...mockMultipleFieldMetadata,
-                    instance: {
-                        ...mockMultipleFieldMetadata.instance,
-                        fieldPathWithIndex: mockMultipleFieldMetadata.fieldPathWithIndex,
-                    },
+                    fieldPathWithIndex:mockMultipleFieldMetadata.instance.fieldPathWithIndex,
                 }}
                 editableElement={targetElement}
             />
