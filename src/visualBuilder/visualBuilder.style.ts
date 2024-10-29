@@ -26,7 +26,7 @@ const tooltipBaseStyle = `
     &:after {
         content: "";
         position: absolute;
-        bottom: 25px;
+        bottom: 28px;
         /* the arrow */
         border: 10px solid #000;
         border-color: #767676 transparent transparent transparent;
@@ -442,7 +442,7 @@ export function visualBuilderStyles() {
                 bottom: -66px;
             }
             &:after {
-                bottom: -4px;
+                bottom: -6px;
                 transform: rotate(180deg);
             }
         `,

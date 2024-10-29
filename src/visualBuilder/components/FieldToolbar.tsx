@@ -309,6 +309,18 @@ function FieldToolbarComponent(
         fetchFieldSchema();
     }, [fieldMetadata]);
 
+    const multipleFieldToolbarButtonClasses = classNames(
+        "visual-builder__button visual-builder__button--secondary",
+        visualBuilderStyles()["visual-builder__button"],
+        visualBuilderStyles()["visual-builder__button--secondary"],
+        visualBuilderStyles()["visual-builder__tooltip"],
+        {
+            "visual-builder__tooltip--bottom": invertTooltipPosition,
+            [visualBuilderStyles()["visual-builder__tooltip--bottom"]]:
+                invertTooltipPosition,
+        }
+    );
+
     return (
         <div
             className={classNames(
@@ -348,18 +360,9 @@ function FieldToolbarComponent(
                             <>
                                 <button
                                     data-testid="visual-builder__focused-toolbar__multiple-field-toolbar__move-left-button"
-                                    className={classNames(
-                                        `visual-builder__button visual-builder__button--secondary`,
-                                        visualBuilderStyles()[
-                                            "visual-builder__button"
-                                        ],
-                                        visualBuilderStyles()[
-                                            "visual-builder__button--secondary"
-                                        ],
-                                        visualBuilderStyles()[
-                                            "visual-builder__tooltip"
-                                        ]
-                                    )}
+                                    className={
+                                        multipleFieldToolbarButtonClasses
+                                    }
                                     data-tooltip={
                                         direction.value === "vertical"
                                             ? "Move up"
@@ -389,18 +392,9 @@ function FieldToolbarComponent(
 
                                 <button
                                     data-testid="visual-builder__focused-toolbar__multiple-field-toolbar__move-right-button"
-                                    className={classNames(
-                                        `visual-builder__button visual-builder__button--secondary`,
-                                        visualBuilderStyles()[
-                                            "visual-builder__button"
-                                        ],
-                                        visualBuilderStyles()[
-                                            "visual-builder__button--secondary"
-                                        ],
-                                        visualBuilderStyles()[
-                                            "visual-builder__tooltip"
-                                        ]
-                                    )}
+                                    className={
+                                        multipleFieldToolbarButtonClasses
+                                    }
                                     data-tooltip={
                                         direction.value === "vertical"
                                             ? "Move down"
@@ -434,18 +428,9 @@ function FieldToolbarComponent(
 
                                 <button
                                     data-testid="visual-builder__focused-toolbar__multiple-field-toolbar__delete-button"
-                                    className={classNames(
-                                        "visual-builder__button visual-builder__button--secondary",
-                                        visualBuilderStyles()[
-                                            "visual-builder__button"
-                                        ],
-                                        visualBuilderStyles()[
-                                            "visual-builder__button--secondary"
-                                        ],
-                                        visualBuilderStyles()[
-                                            "visual-builder__tooltip"
-                                        ]
-                                    )}
+                                    className={
+                                        multipleFieldToolbarButtonClasses
+                                    }
                                     data-tooltip={"Delete"}
                                     onClick={(e) => {
                                         e.preventDefault();
