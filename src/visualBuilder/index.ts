@@ -47,6 +47,7 @@ interface VisualBuilderGlobalStateImpl {
     previousSelectedEditableDOM: HTMLElement | Element | null;
     previousHoveredTargetDOM: Element | null;
     previousEmptyBlockParents: Element[] | [];
+    focusFieldValue: string | null;
     audienceMode: boolean;
     locale: string;
     variant: string | null;
@@ -63,6 +64,7 @@ export class VisualBuilder {
             previousSelectedEditableDOM: null,
             previousHoveredTargetDOM: null,
             previousEmptyBlockParents: [],
+            focusFieldValue: null,
             audienceMode: false,
             locale: Config.get().stackDetails.masterLocale || "en-us",
             variant: null,
@@ -336,6 +338,7 @@ export class VisualBuilder {
             previousSelectedEditableDOM: null,
             previousHoveredTargetDOM: null,
             previousEmptyBlockParents: [],
+            focusFieldValue: null,
             audienceMode: false,
             locale: "en-us",
             variant: null,

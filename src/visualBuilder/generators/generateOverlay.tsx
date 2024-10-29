@@ -106,7 +106,7 @@ export function hideFocusOverlay(elements: HideOverlayParams): void {
         visualBuilderOverlayWrapper,
         focusedToolbar,
         resizeObserver,
-        noTrigger
+        noTrigger,
     } = elements;
 
     if (visualBuilderOverlayWrapper) {
@@ -119,13 +119,23 @@ export function hideFocusOverlay(elements: HideOverlayParams): void {
             }
         });
 
-        if(!noTrigger){
+        if (!noTrigger) {
             sendFieldEvent({
                 visualBuilderContainer,
                 eventType: VisualBuilderPostMessageEvents.UPDATE_FIELD,
             });
+        } else {
+            const { previousSelectedEditableDOM, focusFieldValue } =
+                VisualBuilder.VisualBuilderGlobalState.value || {};
+            if (
+                previousSelectedEditableDOM &&
+                "innerText" in previousSelectedEditableDOM &&
+                focusFieldValue != null
+            ) {
+                previousSelectedEditableDOM.innerText = focusFieldValue;
+            }
         }
-
+        VisualBuilder.VisualBuilderGlobalState.value.focusFieldValue = null;
         cleanIndividualFieldResidual({
             overlayWrapper: visualBuilderOverlayWrapper,
             visualBuilderContainer: visualBuilderContainer,
@@ -136,23 +146,22 @@ export function hideFocusOverlay(elements: HideOverlayParams): void {
 }
 interface ISendFieldEventParams {
     visualBuilderContainer: HTMLElement | null;
-    eventType: VisualBuilderPostMessageEvents.UPDATE_FIELD | VisualBuilderPostMessageEvents.SYNC_FIELD
+    eventType:
+        | VisualBuilderPostMessageEvents.UPDATE_FIELD
+        | VisualBuilderPostMessageEvents.SYNC_FIELD;
 }
 export function sendFieldEvent(options: ISendFieldEventParams): void {
-    const {
-        visualBuilderContainer,
-        eventType
-    } = options;
-    const previousSelectedEditableDOM = VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM;
+    const { visualBuilderContainer, eventType } = options;
+    const previousSelectedEditableDOM =
+        VisualBuilder.VisualBuilderGlobalState.value
+            .previousSelectedEditableDOM;
     const pseudoEditableElement = visualBuilderContainer?.querySelector(
         "div.visual-builder__pseudo-editable-element"
     );
     if (
         previousSelectedEditableDOM &&
-        (
-            previousSelectedEditableDOM.hasAttribute("contenteditable") ||
-            pseudoEditableElement
-        )
+        (previousSelectedEditableDOM.hasAttribute("contenteditable") ||
+            pseudoEditableElement)
     ) {
         const actualEditedElement =
             pseudoEditableElement ||
@@ -164,9 +173,7 @@ export function sendFieldEvent(options: ISendFieldEventParams): void {
                 : actualEditedElement.textContent;
 
         const fieldMetadata = extractDetailsFromCslp(
-            previousSelectedEditableDOM.getAttribute(
-                "data-cslp"
-            ) as string
+            previousSelectedEditableDOM.getAttribute("data-cslp") as string
         );
 
         FieldSchemaMap.getFieldSchema(
@@ -174,27 +181,23 @@ export function sendFieldEvent(options: ISendFieldEventParams): void {
             fieldMetadata.fieldPath
         )
             .then((fieldSchema) => {
-                if (fieldSchema && eventType === VisualBuilderPostMessageEvents.UPDATE_FIELD) {
+                if (
+                    fieldSchema &&
+                    eventType === VisualBuilderPostMessageEvents.UPDATE_FIELD
+                ) {
                     const fieldType = getFieldType(fieldSchema);
-                    if (
-                        fieldType &&
-                        fieldType === FieldDataType.MULTILINE
-                    ) {
-                        data =
-                            getMultilinePlaintext(actualEditedElement);
+                    if (fieldType && fieldType === FieldDataType.MULTILINE) {
+                        data = getMultilinePlaintext(actualEditedElement);
                         (actualEditedElement as HTMLElement).innerText =
                             data as string;
                     }
                 }
             })
             .finally(() => {
-                visualBuilderPostMessage?.send(
-                    eventType,
-                    {
-                        data,
-                        fieldMetadata,
-                    }
-                );
+                visualBuilderPostMessage?.send(eventType, {
+                    data,
+                    fieldMetadata,
+                });
             });
     }
 }
