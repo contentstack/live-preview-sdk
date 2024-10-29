@@ -12,6 +12,7 @@ import { visualBuilderStyles } from "../visualBuilder.style";
 interface CommentIconProps {
     fieldMetadata: CslpData;
     fieldSchema: ISchemaFieldMap;
+    invertTooltipPosition: boolean;
 }
 
 interface RecieveDiscussionEventData {
@@ -38,8 +39,9 @@ export interface IActiveDiscussion {
 
 
 export default function CommentIcon(props: CommentIconProps) {
-    const { fieldMetadata, fieldSchema } = props;
-    const [activeDiscussion, setActiveDiscussion] = useState<IActiveDiscussion | null>(null);
+    const { fieldMetadata, fieldSchema, invertTooltipPosition = false } = props;
+    const [activeDiscussion, setActiveDiscussion] =
+        useState<IActiveDiscussion | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(false);
 
     // Fetch discussion data based on field metadata
@@ -131,7 +133,12 @@ export default function CommentIcon(props: CommentIconProps) {
                 "visual-builder__button visual-builder__button--secondary",
                 visualBuilderStyles()["visual-builder__button"],
                 visualBuilderStyles()["visual-builder__button--secondary"],
-                visualBuilderStyles()["visual-builder__tooltip"]
+                visualBuilderStyles()["visual-builder__tooltip"],
+                {
+                    "visual-builder__tooltip--bottom": invertTooltipPosition,
+                    [visualBuilderStyles()["visual-builder__tooltip--bottom"]]:
+                        invertTooltipPosition,
+                }
             )}
             data-tooltip={"Add comment"}
             onClick={(e) => {

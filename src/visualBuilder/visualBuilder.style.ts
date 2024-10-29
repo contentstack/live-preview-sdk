@@ -111,7 +111,7 @@ export function visualBuilderStyles() {
             color: #6c5ce7;
             overflow: hidden;
 
-            z-index: 200;
+            z-index: 2147483647 !important;
 
             display: grid;
             grid-template-columns: min-content 0fr;

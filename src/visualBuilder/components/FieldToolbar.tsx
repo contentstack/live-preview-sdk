@@ -465,6 +465,9 @@ function FieldToolbarComponent(
                                     <CommentIcon
                                         fieldMetadata={fieldMetadata}
                                         fieldSchema={fieldSchema}
+                                        invertTooltipPosition={
+                                            invertTooltipPosition
+                                        }
                                     />
                                 ) : null}
                             </>
