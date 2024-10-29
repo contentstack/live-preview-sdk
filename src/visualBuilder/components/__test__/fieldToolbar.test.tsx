@@ -1,4 +1,4 @@
-import { act, cleanup, fireEvent, render, waitFor, screen } from "@testing-library/preact";
+import { act, cleanup, fireEvent, render, waitFor, screen, queryByTestId } from "@testing-library/preact";
 import { CslpData } from "../../../cslp/types/cslp.types";
 import { FieldSchemaMap } from "../../utils/fieldSchemaMap";
 import {
@@ -7,7 +7,7 @@ import {
 } from "../../utils/instanceHandlers";
 import { ISchemaFieldMap } from "../../utils/types/index.types";
 import FieldToolbarComponent from "../FieldToolbar";
-import { mockMultipleLinkFieldSchema } from "../../../__test__/data/fields";
+import { mockMultipleLinkFieldSchema, singleLineFieldSchema } from "../../../__test__/data/fields";
 import { asyncRender } from "../../../__test__/utils";
 import { VisualBuilderCslpEventDetails } from "../../types/visualBuilder.types";
 
@@ -15,6 +15,11 @@ vi.mock("../../utils/instanceHandlers", () => ({
     handleMoveInstance: vi.fn(),
     handleDeleteInstance: vi.fn(),
 }));
+
+//CommentIcon testcases are covered seperatly
+vi.mock("../CommentIcon", () => ({
+    default: vi.fn(() => <div>Comment Icon</div>)
+  }));
 
 vi.mock("../../utils/visualBuilderPostMessage", async () => {
     return {
