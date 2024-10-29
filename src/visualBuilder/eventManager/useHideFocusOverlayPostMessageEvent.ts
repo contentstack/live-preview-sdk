@@ -16,12 +16,13 @@ export function useHideFocusOverlayPostMessageEvent({
 }: HideFocusOverlayEventHandlerParams): void {
     visualBuilderPostMessage?.on(
         VisualBuilderPostMessageEvents.HIDE_FOCUS_OVERLAY,
-        () => {
+        (args: { data: { noTrigger: boolean } }) => {
             hideOverlay({
                 visualBuilderOverlayWrapper: overlayWrapper,
                 visualBuilderContainer,
                 focusedToolbar,
                 resizeObserver,
+                noTrigger: Boolean(args?.data?.noTrigger)
             });
         }
     );

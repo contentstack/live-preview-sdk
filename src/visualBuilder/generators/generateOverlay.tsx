@@ -106,6 +106,7 @@ export function hideFocusOverlay(elements: HideOverlayParams): void {
         visualBuilderOverlayWrapper,
         focusedToolbar,
         resizeObserver,
+        noTrigger
     } = elements;
 
     if (visualBuilderOverlayWrapper) {
@@ -117,10 +118,13 @@ export function hideFocusOverlay(elements: HideOverlayParams): void {
                 childNode.removeAttribute("style");
             }
         });
-        sendFieldEvent({
-            visualBuilderContainer,
-            eventType: VisualBuilderPostMessageEvents.UPDATE_FIELD,
-        });
+
+        if(!noTrigger){
+            sendFieldEvent({
+                visualBuilderContainer,
+                eventType: VisualBuilderPostMessageEvents.UPDATE_FIELD,
+            });
+        }
 
         cleanIndividualFieldResidual({
             overlayWrapper: visualBuilderOverlayWrapper,
@@ -200,6 +204,7 @@ interface HideOverlayParams
         "visualBuilderContainer" | "focusedToolbar" | "resizeObserver"
     > {
     visualBuilderOverlayWrapper: HTMLDivElement | null;
+    noTrigger?: boolean;
 }
 
 export function hideOverlay(params: HideOverlayParams): void {
@@ -208,6 +213,7 @@ export function hideOverlay(params: HideOverlayParams): void {
         visualBuilderOverlayWrapper: params.visualBuilderOverlayWrapper,
         focusedToolbar: params.focusedToolbar,
         resizeObserver: params.resizeObserver,
+        noTrigger: Boolean(params.noTrigger),
     });
     showAllHiddenHighlightedCommentIcons();
     if (
