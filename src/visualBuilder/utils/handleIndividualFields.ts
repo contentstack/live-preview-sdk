@@ -141,6 +141,10 @@ export async function handleIndividualFields(
         // * title, single single_line, single multi_line, single number
         if (ALLOWED_INLINE_EDITABLE_FIELD.includes(fieldType)) {
             let actualEditableField = editableElement as HTMLElement;
+
+            VisualBuilder.VisualBuilderGlobalState.value.focusFieldValue =
+                actualEditableField?.innerText;
+
             const elementComputedDisplay =
                 window.getComputedStyle(actualEditableField).display;
 

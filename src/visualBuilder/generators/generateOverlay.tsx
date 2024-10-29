@@ -23,9 +23,6 @@ export function addFocusOverlay(
     focusOverlayWrapper: HTMLDivElement,
     disabled?: boolean
 ): void {
-    VisualBuilder.VisualBuilderGlobalState.value.focusFieldValue = (
-        targetElement as HTMLElement
-    )?.innerText;
     const targetElementDimension = targetElement.getBoundingClientRect();
     if (
         targetElementDimension.width === 0 ||
@@ -138,7 +135,7 @@ export function hideFocusOverlay(elements: HideOverlayParams): void {
                 previousSelectedEditableDOM.innerText = focusFieldValue;
             }
         }
-
+        VisualBuilder.VisualBuilderGlobalState.value.focusFieldValue = null;
         cleanIndividualFieldResidual({
             overlayWrapper: visualBuilderOverlayWrapper,
             visualBuilderContainer: visualBuilderContainer,
