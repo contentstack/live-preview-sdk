@@ -26,7 +26,7 @@ const tooltipBaseStyle = `
     &:after {
         content: "";
         position: absolute;
-        bottom: 25px;
+        bottom: 28px;
         /* the arrow */
         border: 10px solid #000;
         border-color: #767676 transparent transparent transparent;
@@ -111,7 +111,7 @@ export function visualBuilderStyles() {
             color: #6c5ce7;
             overflow: hidden;
 
-            z-index: 200;
+            z-index: 2147483647 !important;
 
             display: grid;
             grid-template-columns: min-content 0fr;
@@ -430,10 +430,20 @@ export function visualBuilderStyles() {
             &:hover:before,
             &:hover:after {
                 display: block;
+                z-index: 2147483647 !important;
             }
 
             &:after {
                 display: none;
+            }
+        `,
+        "visual-builder__tooltip--bottom": css`
+            &:before {
+                bottom: -66px;
+            }
+            &:after {
+                bottom: -6px;
+                transform: rotate(180deg);
             }
         `,
 
@@ -504,7 +514,7 @@ export function visualBuilderStyles() {
             outline: 2px solid #bd59fa;
         `,
         "visual-builder__pseudo-editable-element": css`
-            z-index: 2147483647 !important;
+            z-index: 99999 !important;
         `,
         // cslp error styles
         "visual-builder__button-error": css`

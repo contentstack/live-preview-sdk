@@ -41,6 +41,9 @@ import {
 } from "./FieldRevert/FieldRevertComponent";
 
 export type FieldDetails = Pick<VisualBuilderCslpEventDetails, "editableElement" | "fieldMetadata">;
+
+const TOOLTIP_TOP_EDGE_BUFFER = 96;
+
 interface MultipleFieldToolbarProps {
     eventDetails: VisualBuilderCslpEventDetails;
 };
@@ -103,7 +106,7 @@ function FieldToolbarComponent(
     props: MultipleFieldToolbarProps
 ): JSX.Element | null {
     const { eventDetails } = props;
-    const { fieldMetadata, editableElement: targetElement} = eventDetails;
+    const { fieldMetadata, editableElement: targetElement } = eventDetails;
     const direction = useSignal("");
     const parentPath =
         fieldMetadata?.multipleFieldMetadata?.parentDetails?.parentCslpValue ||
@@ -164,8 +167,11 @@ function FieldToolbarComponent(
             return null;
         }
     }
-    
+
     direction.value = getChildrenDirection(targetElement, parentPath);
+
+    const invertTooltipPosition =
+        targetElement.getBoundingClientRect().top <= TOOLTIP_TOP_EDGE_BUFFER;
 
     const editButton = Icon ? (
         <button
@@ -175,7 +181,12 @@ function FieldToolbarComponent(
                 visualBuilderStyles()["visual-builder__button"],
                 visualBuilderStyles()["visual-builder__button--secondary"],
                 visualBuilderStyles()["visual-builder__button--edit"],
-                visualBuilderStyles()["visual-builder__tooltip"]
+                visualBuilderStyles()["visual-builder__tooltip"],
+                {
+                    "visual-builder__tooltip--bottom": invertTooltipPosition,
+                    [visualBuilderStyles()["visual-builder__tooltip--bottom"]]:
+                        invertTooltipPosition,
+                }
             )}
             data-tooltip={"Edit"}
             onClick={(e) => {
@@ -196,7 +207,12 @@ function FieldToolbarComponent(
                 "visual-builder__replace-button visual-builder__button visual-builder__button--secondary",
                 visualBuilderStyles()["visual-builder__button"],
                 visualBuilderStyles()["visual-builder__button--secondary"],
-                visualBuilderStyles()["visual-builder__tooltip"]
+                visualBuilderStyles()["visual-builder__tooltip"],
+                {
+                    "visual-builder__tooltip--bottom": invertTooltipPosition,
+                    [visualBuilderStyles()["visual-builder__tooltip--bottom"]]:
+                        invertTooltipPosition,
+                }
             )}
             data-tooltip={"Replace"}
             data-testid={`visual-builder-replace-${fieldType}`}
@@ -216,19 +232,28 @@ function FieldToolbarComponent(
         </button>
     ) : null;
 
-    const formButton = <button 
-        className={classNames(
-            "visual-builder__replace-button visual-builder__button visual-builder__button--secondary",
-            visualBuilderStyles()["visual-builder__button"],
-            visualBuilderStyles()["visual-builder__button--secondary"],
-            visualBuilderStyles()["visual-builder__tooltip"]
-        )}
-        data-tooltip={"Form"}
-        data-testid={`visual-builder-form`}
-        onClick={(e) => {handleFormFieldFocus(eventDetails)}}
-    >
-        <FormIcon />
-    </button>
+    const formButton = (
+        <button
+            className={classNames(
+                "visual-builder__replace-button visual-builder__button visual-builder__button--secondary",
+                visualBuilderStyles()["visual-builder__button"],
+                visualBuilderStyles()["visual-builder__button--secondary"],
+                visualBuilderStyles()["visual-builder__tooltip"],
+                {
+                    "visual-builder__tooltip--bottom": invertTooltipPosition,
+                    [visualBuilderStyles()["visual-builder__tooltip--bottom"]]:
+                        invertTooltipPosition,
+                }
+            )}
+            data-tooltip={"Form"}
+            data-testid={`visual-builder-form`}
+            onClick={(e) => {
+                handleFormFieldFocus(eventDetails);
+            }}
+        >
+            <FormIcon />
+        </button>
+    );
 
     const toggleVariantDropdown = () => {
         setIsOpenVariantRevert(!isOpenVariantRevert);
@@ -245,7 +270,12 @@ function FieldToolbarComponent(
                 visualBuilderStyles()["visual-builder__button"],
                 visualBuilderStyles()["visual-builder__button--secondary"],
                 visualBuilderStyles()["visual-builder__tooltip"],
-                visualBuilderStyles()["visual-builder__variant-button"]
+                visualBuilderStyles()["visual-builder__variant-button"],
+                {
+                    "visual-builder__tooltip--bottom": invertTooltipPosition,
+                    [visualBuilderStyles()["visual-builder__tooltip--bottom"]]:
+                        invertTooltipPosition,
+                }
             )}
             data-tooltip={"Variant Revert"}
             data-testid={`visual-builder-canvas-variant-revert`}
@@ -278,6 +308,18 @@ function FieldToolbarComponent(
         }
         fetchFieldSchema();
     }, [fieldMetadata]);
+
+    const multipleFieldToolbarButtonClasses = classNames(
+        "visual-builder__button visual-builder__button--secondary",
+        visualBuilderStyles()["visual-builder__button"],
+        visualBuilderStyles()["visual-builder__button--secondary"],
+        visualBuilderStyles()["visual-builder__tooltip"],
+        {
+            "visual-builder__tooltip--bottom": invertTooltipPosition,
+            [visualBuilderStyles()["visual-builder__tooltip--bottom"]]:
+                invertTooltipPosition,
+        }
+    );
 
     return (
         <div
@@ -318,18 +360,9 @@ function FieldToolbarComponent(
                             <>
                                 <button
                                     data-testid="visual-builder__focused-toolbar__multiple-field-toolbar__move-left-button"
-                                    className={classNames(
-                                        `visual-builder__button visual-builder__button--secondary`,
-                                        visualBuilderStyles()[
-                                            "visual-builder__button"
-                                        ],
-                                        visualBuilderStyles()[
-                                            "visual-builder__button--secondary"
-                                        ],
-                                        visualBuilderStyles()[
-                                            "visual-builder__tooltip"
-                                        ]
-                                    )}
+                                    className={
+                                        multipleFieldToolbarButtonClasses
+                                    }
                                     data-tooltip={
                                         direction.value === "vertical"
                                             ? "Move up"
@@ -359,18 +392,9 @@ function FieldToolbarComponent(
 
                                 <button
                                     data-testid="visual-builder__focused-toolbar__multiple-field-toolbar__move-right-button"
-                                    className={classNames(
-                                        `visual-builder__button visual-builder__button--secondary`,
-                                        visualBuilderStyles()[
-                                            "visual-builder__button"
-                                        ],
-                                        visualBuilderStyles()[
-                                            "visual-builder__button--secondary"
-                                        ],
-                                        visualBuilderStyles()[
-                                            "visual-builder__tooltip"
-                                        ]
-                                    )}
+                                    className={
+                                        multipleFieldToolbarButtonClasses
+                                    }
                                     data-tooltip={
                                         direction.value === "vertical"
                                             ? "Move down"
@@ -404,18 +428,9 @@ function FieldToolbarComponent(
 
                                 <button
                                     data-testid="visual-builder__focused-toolbar__multiple-field-toolbar__delete-button"
-                                    className={classNames(
-                                        "visual-builder__button visual-builder__button--secondary",
-                                        visualBuilderStyles()[
-                                            "visual-builder__button"
-                                        ],
-                                        visualBuilderStyles()[
-                                            "visual-builder__button--secondary"
-                                        ],
-                                        visualBuilderStyles()[
-                                            "visual-builder__tooltip"
-                                        ]
-                                    )}
+                                    className={
+                                        multipleFieldToolbarButtonClasses
+                                    }
                                     data-tooltip={"Delete"}
                                     onClick={(e) => {
                                         e.preventDefault();
@@ -435,6 +450,9 @@ function FieldToolbarComponent(
                                     <CommentIcon
                                         fieldMetadata={fieldMetadata}
                                         fieldSchema={fieldSchema}
+                                        invertTooltipPosition={
+                                            invertTooltipPosition
+                                        }
                                     />
                                 ) : null}
                             </>
