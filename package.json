@@ -84,7 +84,7 @@
         "url": "https://github.com/contentstack/live-preview-sdk.git"
     },
     "dependencies": {
-        "goober": "^2.1.14",
+        "goober": "^2.1.15",
         "just-camel-case": "^4.0.2",
         "lodash-es": "^4.17.21",
         "morphdom": "^2.6.1",
