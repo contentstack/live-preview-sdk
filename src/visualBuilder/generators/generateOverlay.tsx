@@ -23,6 +23,9 @@ export function addFocusOverlay(
     focusOverlayWrapper: HTMLDivElement,
     disabled?: boolean
 ): void {
+    VisualBuilder.VisualBuilderGlobalState.value.focusFieldValue = (
+        targetElement as HTMLElement
+    )?.innerText;
     const targetElementDimension = targetElement.getBoundingClientRect();
     if (
         targetElementDimension.width === 0 ||
@@ -124,6 +127,19 @@ export function hideFocusOverlay(elements: HideOverlayParams): void {
                 visualBuilderContainer,
                 eventType: VisualBuilderPostMessageEvents.UPDATE_FIELD,
             });
+        } else {
+            const previousSelectedEditableDOM =
+                VisualBuilder.VisualBuilderGlobalState.value
+                    .previousSelectedEditableDOM;
+            const previousText =
+                VisualBuilder.VisualBuilderGlobalState.value.focusFieldValue;
+            if (
+                previousSelectedEditableDOM &&
+                "innerText" in previousSelectedEditableDOM &&
+                previousText != null
+            ) {
+                previousSelectedEditableDOM.innerText = previousText;
+            }
         }
 
         cleanIndividualFieldResidual({
