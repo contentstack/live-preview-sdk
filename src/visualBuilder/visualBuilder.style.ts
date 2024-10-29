@@ -514,7 +514,7 @@ export function visualBuilderStyles() {
             outline: 2px solid #bd59fa;
         `,
         "visual-builder__pseudo-editable-element": css`
-            z-index: 2147483647 !important;
+            z-index: 99999 !important;
         `,
         // cslp error styles
         "visual-builder__button-error": css`
