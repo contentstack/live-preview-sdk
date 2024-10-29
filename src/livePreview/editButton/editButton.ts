@@ -10,6 +10,7 @@ import {
 } from "../../types/types";
 import livePreviewPostMessage from "../eventManager/livePreviewEventManager";
 import { EDIT_BUTTON_TOOLTIP_ID } from "./editButton.constant";
+import { isOpeningInTimeline } from "../../utils";
 
 function calculateEditButtonPosition(
     currentHoveredElement: HTMLElement,
@@ -542,7 +543,7 @@ effect(function handleWindowTypeChange() {
     // here, we run it when the value of windowType changes
     if (typeof window === "undefined") return;
     Config.get().windowType;
-    if (LivePreviewEditButton) {
+    if (LivePreviewEditButton && !isOpeningInTimeline()) {
         toggleEditButtonElement();
     }
 });
