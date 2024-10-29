@@ -436,6 +436,15 @@ export function visualBuilderStyles() {
                 display: none;
             }
         `,
+        "visual-builder__tooltip--bottom": css`
+            &:before {
+                bottom: -66px;
+            }
+            &:after {
+                bottom: -4px;
+                transform: rotate(180deg);
+            }
+        `,
 
         "visual-builder__tooltip--persistent": css`
             ${tooltipBaseStyle}
