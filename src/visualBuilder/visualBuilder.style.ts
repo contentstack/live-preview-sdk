@@ -430,6 +430,7 @@ export function visualBuilderStyles() {
             &:hover:before,
             &:hover:after {
                 display: block;
+                z-index: 2147483647 !important;
             }
 
             &:after {
