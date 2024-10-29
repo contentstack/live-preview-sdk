@@ -128,11 +128,8 @@ export function hideFocusOverlay(elements: HideOverlayParams): void {
                 eventType: VisualBuilderPostMessageEvents.UPDATE_FIELD,
             });
         } else {
-            const previousSelectedEditableDOM =
-                VisualBuilder.VisualBuilderGlobalState.value
-                    .previousSelectedEditableDOM;
-            const previousText =
-                VisualBuilder.VisualBuilderGlobalState.value.focusFieldValue;
+            const { previousSelectedEditableDOM, focusFieldValue } =
+                VisualBuilder.VisualBuilderGlobalState.value || {};
             if (
                 previousSelectedEditableDOM &&
                 "innerText" in previousSelectedEditableDOM &&
