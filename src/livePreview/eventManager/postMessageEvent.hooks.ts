@@ -75,7 +75,7 @@ export function sendInitializeLivePreviewPostMessageEvent(): void {
                 contentTypeUid,
                 entryUid,
                 windowType = ILivePreviewWindowType.PREVIEW,
-            } = data;
+            } = data || {};
 
             if (contentTypeUid && entryUid) {
                 // TODO: we should not use this function. Instead we should have sideEffect run automatically when we set the config.
