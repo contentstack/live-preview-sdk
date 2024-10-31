@@ -77,6 +77,12 @@ export function sendInitializeLivePreviewPostMessageEvent(): void {
                 windowType = ILivePreviewWindowType.PREVIEW,
             } = data || {};
 
+            // TODO: This is a fix for the issue where we were calling sending init in the builder
+            // Let's remove this condition when we fix it.
+            if (Config?.get()?.windowType && Config.get().windowType === ILivePreviewWindowType.BUILDER) {
+                return;
+            }
+
             if (contentTypeUid && entryUid) {
                 // TODO: we should not use this function. Instead we should have sideEffect run automatically when we set the config.
                 setConfigFromParams({
