@@ -11,6 +11,11 @@ interface VariantFieldsEvent {
         };
     };
 }
+interface RemoveVariantFieldsEvent {
+    data: {
+        onlyHighlighted?: boolean;
+    };
+}
 
 interface AudienceEvent {
     data: {
@@ -51,18 +56,29 @@ function addVariantFieldClass(
     });
 }
 
-function removeVariantFieldClass(): void {
-    const variantAndBaseFieldElements = document.querySelectorAll(
-        ".visual-builder__disabled-variant-field, .visual-builder__variant-field, .visual-builder__base-field"
-    );
-    variantAndBaseFieldElements.forEach((element) => {
-        element.classList.remove(
-            "visual-builder__disabled-variant-field",
-            "visual-builder__variant-field",
-            visualBuilderStyles()["visual-builder__variant-field"],
-            "visual-builder__base-field"
+function removeVariantFieldClass(onlyHighlighted: boolean = false): void {
+    if (onlyHighlighted) {
+        const variantElements = document.querySelectorAll(
+            `.${visualBuilderStyles()["visual-builder__variant-field"]}`
         );
-    });
+        variantElements.forEach((element) => {
+            element.classList.remove(
+                visualBuilderStyles()["visual-builder__variant-field"]
+            );
+        });
+    } else {
+        const variantAndBaseFieldElements = document.querySelectorAll(
+            ".visual-builder__disabled-variant-field, .visual-builder__variant-field, .visual-builder__base-field"
+        );
+        variantAndBaseFieldElements.forEach((element) => {
+            element.classList.remove(
+                "visual-builder__disabled-variant-field",
+                "visual-builder__variant-field",
+                visualBuilderStyles()["visual-builder__variant-field"],
+                "visual-builder__base-field"
+            );
+        });
+    }
 }
 
 function setAudienceMode(mode: boolean): void {
@@ -106,8 +122,8 @@ export function useVariantFieldsPostMessageEvent(): void {
     );
     visualBuilderPostMessage?.on(
         VisualBuilderPostMessageEvents.REMOVE_VARIANT_FIELDS,
-        () => {
-            removeVariantFieldClass();
+        (event: RemoveVariantFieldsEvent) => {
+            removeVariantFieldClass(event?.data?.onlyHighlighted);
         }
     );
 }
