@@ -1,79 +1,12 @@
-import { DOMRect } from "../../__test__/utils";
-import {
-    createMultipleEditButton,
-    createSingularEditButton,
-    getEditButtonPosition,
-    hasWindow,
-} from "../index";
+import { PublicLogger } from "../../logger/logger";
+import { addLivePreviewQueryTags, hasWindow } from "../index";
+import { vi } from "vitest";
 
-let editCallback: jest.Mock<void, [e: MouseEvent]> | undefined;
-let linkCallback: jest.Mock<void, [e: MouseEvent]> | undefined;
-let editButtonForHyperlink: HTMLDivElement | undefined;
-let editButtonForNonHyperlink: HTMLDivElement | undefined;
-let tooltipChild: HTMLCollectionOf<HTMLDivElement> | undefined;
-
-describe("Edit button for Link", () => {
-    beforeEach(() => {
-        editCallback = jest.fn();
-        linkCallback = jest.fn();
-
-        editButtonForHyperlink = createMultipleEditButton(
-            editCallback,
-            linkCallback
-        );
-
-        document.body.appendChild(editButtonForHyperlink);
-
-        tooltipChild = document.getElementsByClassName(
-            "cslp-tooltip-child"
-        ) as HTMLCollectionOf<HTMLDivElement>;
-    });
-
-    afterEach(() => {
-        editCallback = undefined;
-        linkCallback = undefined;
-        editButtonForHyperlink = undefined;
-        tooltipChild = undefined;
-
-        document.body.innerHTML = "";
-    });
-
-    test("edit button must have 2 separate button", () => {
-        expect(tooltipChild).toHaveLength(2);
-    });
-
-    test("runs edit callback on button click", () => {
-        if (
-            !(
-                editCallback &&
-                linkCallback &&
-                editButtonForHyperlink &&
-                tooltipChild
-            )
-        )
-            fail("missing dependencies");
-
-        const editButton = tooltipChild[0];
-        editButton.click();
-        expect(editCallback).toBeCalled();
-    });
-
-    test("runs link callback on button click", () => {
-        if (
-            !(
-                editCallback &&
-                linkCallback &&
-                editButtonForHyperlink &&
-                tooltipChild
-            )
-        )
-            fail("missing dependencies");
-
-        const linkButton = tooltipChild[1];
-        linkButton.click();
-        expect(linkCallback).toBeCalled();
-    });
-});
+vi.mock("../../logger/logger", () => ({
+    PublicLogger: {
+        error: vi.fn(),
+    },
+}));
 
 describe("hasWindow() function", () => {
     test("must check if window is available", () => {
@@ -81,166 +14,39 @@ describe("hasWindow() function", () => {
     });
 });
 
-describe("Edit button", () => {
-    beforeEach(() => {
-        editCallback = jest.fn();
+describe("addLivePreviewQueryTags", () => {
+    test("should add live preview query tags to URL with all required query parameters", () => {
+        const originalUrl =
+            "http://example.com?live_preview=hash&content_type_uid=ctuid&entry_uid=entryuid";
+        const expectedUrl =
+            "http://example.com/?live_preview=hash&content_type_uid=ctuid&entry_uid=entryuid";
 
-        editButtonForNonHyperlink = createSingularEditButton(editCallback);
-
-        document.body.appendChild(editButtonForNonHyperlink);
-
-        tooltipChild = document.getElementsByClassName(
-            "cslp-tooltip-child"
-        ) as HTMLCollectionOf<HTMLDivElement>;
-    });
-
-    afterEach(() => {
-        editCallback = undefined;
-        linkCallback = undefined;
-        editButtonForNonHyperlink = undefined;
-        tooltipChild = undefined;
-
-        document.body.innerHTML = "";
-    });
-
-    test("runs edit callback when clicked", () => {
-        if (!(editCallback && editButtonForNonHyperlink && tooltipChild))
-            fail("missing dependencies");
-
-        const editButton = tooltipChild[0];
-        editButton.click();
-        expect(editCallback).toBeCalled();
-    });
-});
-
-describe("getEditButtonPosition: Edit button", () => {
-    beforeAll(() => {
-        const titlePara = document.createElement("h3");
-        titlePara.setAttribute("data-test-id", "title-para");
-        if (titlePara) {
-            titlePara.getBoundingClientRect = jest.fn(
-                () => new DOMRect(53, 75, 1529, 10)
-            );
-        }
-
-        document.body.appendChild(titlePara);
-    });
-
-    afterAll(() => {
-        document.getElementsByTagName("html")[0].innerHTML = "";
-        jest.clearAllMocks();
-    });
-
-    test("should be positioned on top of hovered element", async () => {
-        const titlePara = document.querySelector("[data-test-id='title-para']");
-        expect(
-            getEditButtonPosition(titlePara as HTMLElement, "top")
-        ).toStrictEqual({ upperBoundOfTooltip: 36.75, leftBoundOfTooltip: 53 });
-    });
-
-    test("should be positioned on top-left of hovered element", async () => {
-        const titlePara = document.querySelector("[data-test-id='title-para']");
-        expect(
-            getEditButtonPosition(titlePara as HTMLElement, "top-left")
-        ).toStrictEqual({ upperBoundOfTooltip: 36.75, leftBoundOfTooltip: 53 });
-    });
-
-    test("should be positioned on top-center of hovered element", async () => {
-        const titlePara = document.querySelector("[data-test-id='title-para']");
-        expect(
-            getEditButtonPosition(titlePara as HTMLElement, "top-center")
-        ).toStrictEqual({
-            upperBoundOfTooltip: 36.75,
-            leftBoundOfTooltip: 786.5,
+        global.window = Object.create(window);
+        Object.defineProperty(window, "location", {
+            value: {
+                href: originalUrl,
+            },
+            writable: true,
         });
+
+        const result = addLivePreviewQueryTags(originalUrl);
+
+        expect(result).toEqual(expectedUrl);
     });
 
-    test("should be positioned on top-right of hovered element", async () => {
-        const titlePara = document.querySelector("[data-test-id='title-para']");
-        expect(
-            getEditButtonPosition(titlePara as HTMLElement, "top-right")
-        ).toStrictEqual({
-            upperBoundOfTooltip: 36.75,
-            leftBoundOfTooltip: 1515,
+    test("should log error and return original link if an error occurs while adding live preview query tags", () => {
+        const originalUrl =
+            "http://example.com?live_preview=hash&content_type_uid=ctuid&entry_uid=entryuid";
+        const expectedLoggedError = "Error while adding live preview to URL";
+
+        vi.spyOn(global, "URL").mockImplementation(() => {
+            throw new Error("Mock error");
         });
-    });
 
-    test("should be positioned on right of hovered element", async () => {
-        const titlePara = document.querySelector("[data-test-id='title-para']");
-        expect(
-            getEditButtonPosition(titlePara as HTMLElement, "right")
-        ).toStrictEqual({
-            upperBoundOfTooltip: 71.75,
-            leftBoundOfTooltip: 1592,
-        });
-    });
+        const result = addLivePreviewQueryTags(originalUrl);
 
-    test("should be positioned on bottom-right of hovered element", async () => {
-        const titlePara = document.querySelector("[data-test-id='title-para']");
-        expect(
-            getEditButtonPosition(titlePara as HTMLElement, "bottom-right")
-        ).toStrictEqual({
-            upperBoundOfTooltip: 114.75,
-            leftBoundOfTooltip: 1515,
-        });
-    });
+        expect(PublicLogger.error).toHaveBeenCalledWith(expectedLoggedError);
 
-    test("should be positioned on bottom-center of hovered element", async () => {
-        const titlePara = document.querySelector("[data-test-id='title-para']");
-        expect(
-            getEditButtonPosition(titlePara as HTMLElement, "bottom-center")
-        ).toStrictEqual({
-            upperBoundOfTooltip: 114.75,
-            leftBoundOfTooltip: 786.5,
-        });
-    });
-
-    test("should be positioned on bottom-left of hovered element", async () => {
-        const titlePara = document.querySelector("[data-test-id='title-para']");
-        expect(
-            getEditButtonPosition(titlePara as HTMLElement, "bottom-left")
-        ).toStrictEqual({
-            upperBoundOfTooltip: 114.75,
-            leftBoundOfTooltip: 53,
-        });
-    });
-
-    test("should be positioned on bottom of hovered element", async () => {
-        const titlePara = document.querySelector("[data-test-id='title-para']");
-        expect(
-            getEditButtonPosition(titlePara as HTMLElement, "bottom")
-        ).toStrictEqual({
-            upperBoundOfTooltip: 114.75,
-            leftBoundOfTooltip: 53,
-        });
-    });
-
-    test("should be positioned on left of hovered element", async () => {
-        const titlePara = document.querySelector("[data-test-id='title-para']");
-        expect(
-            getEditButtonPosition(titlePara as HTMLElement, "left")
-        ).toStrictEqual({
-            upperBoundOfTooltip: 71.75,
-            leftBoundOfTooltip: -19,
-        });
-    });
-
-    test("should override the default position if position attribute is present", async () => {
-        const titlePara = document.querySelector("[data-test-id='title-para']");
-        titlePara?.setAttribute("data-cslp-button-position", "top-center");
-        expect(
-            getEditButtonPosition(titlePara as HTMLElement, "top-left")
-        ).toStrictEqual({
-            upperBoundOfTooltip: 36.75,
-            leftBoundOfTooltip: 786.5,
-        });
-    });
-
-    test("should positioned on top-left if the passed position is not valid ", async () => {
-        const titlePara = document.querySelector("[data-test-id='title-para']");
-        titlePara?.setAttribute("data-cslp-button-position", "random-string");
-        expect(
-            getEditButtonPosition(titlePara as HTMLElement, "top-left")
-        ).toStrictEqual({ upperBoundOfTooltip: 36.75, leftBoundOfTooltip: 53 });
+        expect(result).toEqual(originalUrl);
     });
 });

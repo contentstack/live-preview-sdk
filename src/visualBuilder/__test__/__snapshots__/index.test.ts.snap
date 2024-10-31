@@ -1,0 +1,246 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Visual builder > on click, the sdk > inline elements must be contenteditable > file should render a replacer and remove when it is not 1`] = `
+<h1
+  data-cslp="all_fields.blt58a50b4cebae75c5.en-us.file"
+  data-cslp-field-type="file"
+/>
+`;
+
+exports[`Visual builder > on click, the sdk > inline elements must be contenteditable > file should render a replacer and remove when it is not 2`] = `
+<button
+  class="visual-builder__replace-button visual-builder__button visual-builder__button--secondary go2828613387 go2545267607 go3805905658"
+  data-testid="visual-builder-replace-file"
+  data-tooltip="Replace"
+>
+  <svg
+    data-testid="visual-builder__replace-asset-icon"
+    fill="none"
+    height="16"
+    viewBox="0 0 16 16"
+    width="16"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path
+      d="M13.8903 3.99632L11.5039 1.60984C11.3574 1.46339 11.12 1.46339 10.9735 1.60984C10.8271 1.75628 10.8271 1.99372 10.9735 2.14017L12.7198 3.88649H2.87506C2.39181 3.88649 2.00006 4.27824 2.00006 4.76149V6.13114C2.00006 6.33825 2.16795 6.50614 2.37506 6.50614C2.58217 6.50614 2.75006 6.33825 2.75006 6.13114V4.76149C2.75006 4.69245 2.80603 4.63649 2.87506 4.63649H12.7198L10.9735 6.38281C10.8271 6.52925 10.8271 6.76669 10.9735 6.91314C11.12 7.05958 11.3574 7.05958 11.5039 6.91314L13.8903 4.52665C14.0368 4.3802 14.0368 4.14277 13.8903 3.99632Z"
+      fill="#475161"
+    />
+    <path
+      d="M2.10983 12.0054L4.49632 14.3919C4.64277 14.5383 4.8802 14.5383 5.02665 14.3919C5.1731 14.2455 5.1731 14.008 5.02665 13.8616L3.28033 12.1152H13.1251C13.6084 12.1152 14.0001 11.7235 14.0001 11.2402V9.87059C14.0001 9.66348 13.8322 9.49559 13.6251 9.49559C13.418 9.49559 13.2501 9.66348 13.2501 9.87059V11.2402C13.2501 11.3093 13.1942 11.3652 13.1251 11.3652H3.28033L5.02665 9.61893C5.1731 9.47248 5.1731 9.23504 5.02665 9.0886C4.8802 8.94215 4.64277 8.94215 4.49632 9.0886L2.10983 11.4751C1.96339 11.6215 1.96339 11.859 2.10983 12.0054Z"
+      fill="#475161"
+    />
+  </svg>
+</button>
+`;
+
+exports[`Visual builder > on click, the sdk > inline elements must be contenteditable > multi line should be contenteditable 1`] = `
+<h1
+  contenteditable="true"
+  data-cslp="all_fields.blt58a50b4cebae75c5.en-us.multi_line"
+  data-cslp-field-type="multiline"
+>
+  Hello World
+</h1>
+`;
+
+exports[`Visual builder > on click, the sdk > inline elements must be contenteditable > single line should be contenteditable 1`] = `
+<h1
+  contenteditable="true"
+  data-cslp="all_fields.blt58a50b4cebae75c5.en-us.single_line"
+  data-cslp-field-type="singleline"
+>
+  Hello World
+</h1>
+`;
+
+exports[`Visual builder > on click, the sdk > should do nothing if data-cslp not available 1`] = `
+<body>
+  <h1 />
+  <div
+    class="go263407482 visual-builder__container"
+    data-testid="visual-builder__container"
+  >
+    <style>
+      
+       @import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
+
+       [data-cslp] [contenteditable="true"] {
+            outline: none;
+        }
+        
+        @keyframes visual-builder__spinner {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+
+    </style>
+    <div
+      class="go1688149084 visual-builder__cursor"
+      data-testid="visual-builder__cursor"
+    />
+    <div
+      class="go3860994383 visual-builder__overlay__wrapper"
+      data-testid="visual-builder__overlay__wrapper"
+    >
+      <div
+        class="visual-builder__overlay visual-builder__overlay--top go2262268276"
+        data-testid="visual-builder__overlay--top"
+      />
+      <div
+        class="visual-builder__overlay visual-builder__overlay--left go2262268276"
+        data-testid="visual-builder__overlay--left"
+      />
+      <div
+        class="visual-builder__overlay visual-builder__overlay--right go2262268276"
+        data-testid="visual-builder__overlay--right"
+      />
+      <div
+        class="visual-builder__overlay visual-builder__overlay--bottom go2262268276"
+        data-testid="visual-builder__overlay--bottom"
+      />
+      <div
+        class="visual-builder__overlay--outline go3391008271"
+        data-testid="visual-builder__overlay--outline"
+      />
+    </div>
+    <div
+      class="visual-builder__hover-outline visual-builder__hover-outline--unclickable go217287799 go1719569523"
+      data-testid="visual-builder__hover-outline"
+    />
+    <div
+      class="visual-builder__focused-toolbar go104737281"
+      data-testid="visual-builder__focused-toolbar"
+    />
+  </div>
+</body>
+`;
+
+exports[`Visual builder > should append a visual builder container to the DOM 1`] = `
+<div
+  class="go263407482 visual-builder__container"
+  data-testid="visual-builder__container"
+>
+  <style>
+    
+       @import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
+
+       [data-cslp] [contenteditable="true"] {
+            outline: none;
+        }
+        
+        @keyframes visual-builder__spinner {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+
+  </style>
+  <div
+    class="go1688149084 visual-builder__cursor"
+    data-testid="visual-builder__cursor"
+  />
+  <div
+    class="go3860994383 visual-builder__overlay__wrapper"
+    data-testid="visual-builder__overlay__wrapper"
+  >
+    <div
+      class="visual-builder__overlay visual-builder__overlay--top go2262268276"
+      data-testid="visual-builder__overlay--top"
+    />
+    <div
+      class="visual-builder__overlay visual-builder__overlay--left go2262268276"
+      data-testid="visual-builder__overlay--left"
+    />
+    <div
+      class="visual-builder__overlay visual-builder__overlay--right go2262268276"
+      data-testid="visual-builder__overlay--right"
+    />
+    <div
+      class="visual-builder__overlay visual-builder__overlay--bottom go2262268276"
+      data-testid="visual-builder__overlay--bottom"
+    />
+    <div
+      class="visual-builder__overlay--outline go3391008271"
+      data-testid="visual-builder__overlay--outline"
+    />
+  </div>
+  <div
+    class="visual-builder__hover-outline visual-builder__hover-outline--unclickable go217287799 go1719569523"
+    data-testid="visual-builder__hover-outline"
+  />
+  <div
+    class="visual-builder__focused-toolbar go104737281"
+    data-testid="visual-builder__focused-toolbar"
+  />
+</div>
+`;
+
+exports[`visual builder DOM > should have an overlay over the element 1`] = `
+<div
+  class="go842373233 visual-builder__overlay__wrapper"
+  data-testid="visual-builder__overlay__wrapper"
+>
+  <div
+    class="visual-builder__overlay visual-builder__overlay--top go2262268276"
+    data-testid="visual-builder__overlay--top"
+  />
+  <div
+    class="visual-builder__overlay visual-builder__overlay--left go2262268276"
+    data-testid="visual-builder__overlay--left"
+  />
+  <div
+    class="visual-builder__overlay visual-builder__overlay--right go2262268276"
+    data-testid="visual-builder__overlay--right"
+  />
+  <div
+    class="visual-builder__overlay visual-builder__overlay--bottom go2262268276"
+    data-testid="visual-builder__overlay--bottom"
+  />
+  <div
+    class="visual-builder__overlay--outline go3391008271"
+    data-testid="visual-builder__overlay--outline"
+  />
+</div>
+`;
+
+exports[`visual builder DOM > should have an overlay over the element 2`] = `
+<div
+  class="go842373233 visual-builder__overlay__wrapper visible"
+  data-testid="visual-builder__overlay__wrapper"
+>
+  <div
+    class="visual-builder__overlay visual-builder__overlay--top go2262268276"
+    data-testid="visual-builder__overlay--top"
+    style="top: 0px; left: 0px; width: 100%; height: calc(10px);"
+  />
+  <div
+    class="visual-builder__overlay visual-builder__overlay--left go2262268276"
+    data-testid="visual-builder__overlay--left"
+    style="left: 0px; top: 10px; height: 5px; width: 10px;"
+  />
+  <div
+    class="visual-builder__overlay visual-builder__overlay--right go2262268276"
+    data-testid="visual-builder__overlay--right"
+    style="left: 20px; top: 10px; height: 5px; width: 80px;"
+  />
+  <div
+    class="visual-builder__overlay visual-builder__overlay--bottom go2262268276"
+    data-testid="visual-builder__overlay--bottom"
+    style="top: 20px; height: 80px; left: 0px; width: 100%;"
+  />
+  <div
+    class="visual-builder__overlay--outline go3391008271"
+    data-testid="visual-builder__overlay--outline"
+    style="top: 10px; height: 5px; width: 10px; left: 10px; outline-color: rgb(113, 92, 221);"
+  />
+</div>
+`;

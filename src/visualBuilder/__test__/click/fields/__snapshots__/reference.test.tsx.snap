@@ -1,0 +1,15 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`When an element is clicked in visual builder mode > reference field (multiple) > should have outline 1`] = `
+<div
+  class="visual-builder__hover-outline visual-builder__hover-outline--unclickable go217287799 go1719569523"
+  data-testid="visual-builder__hover-outline"
+/>
+`;
+
+exports[`When an element is clicked in visual builder mode > reference field > should have outline 1`] = `
+<div
+  class="visual-builder__hover-outline visual-builder__hover-outline--unclickable go217287799 go1719569523"
+  data-testid="visual-builder__hover-outline"
+/>
+`;
