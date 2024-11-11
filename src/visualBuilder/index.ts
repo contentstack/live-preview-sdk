@@ -76,7 +76,6 @@ export class VisualBuilder {
             visualBuilderContainer: this.visualBuilderContainer,
             overlayWrapper: this.overlayWrapper,
             focusedToolbar: this.focusedToolbar,
-            resizeObserver: this.resizeObserver,
         });
     }
 

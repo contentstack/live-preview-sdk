@@ -200,7 +200,6 @@ export async function handleIndividualFields(
                         editableElement: actualEditableField,
                         visualBuilderContainer,
                         overlayWrapper,
-                        resizeObserver,
                         focusedToolbar,
                     });
                 }, 200);

@@ -17,6 +17,8 @@ export default function getStyleOfAnElement(element: HTMLElement): {
         "right",
         "bottom",
         "text-overflow",
+        // allows seeing the text from CMS field as-is
+        "text-transform",
         "margin",
         "margin-block-end",
         "margin-block-start",
