@@ -15,15 +15,17 @@ import FieldLabelWrapperComponent from "../components/fieldLabelWrapper";
 
 export function appendFocusedToolbar(
     eventDetails: VisualBuilderCslpEventDetails,
-    focusedToolbarElement: HTMLDivElement
+    focusedToolbarElement: HTMLDivElement,
+    hideOverlay: () => void
 ): void {
     appendFieldPathDropdown(eventDetails, focusedToolbarElement);
-    appendFieldToolbar(eventDetails, focusedToolbarElement);
+    appendFieldToolbar(eventDetails, focusedToolbarElement, hideOverlay);
 }
 
 export function appendFieldToolbar(
     eventDetails: VisualBuilderCslpEventDetails,
-    focusedToolbarElement: HTMLDivElement
+    focusedToolbarElement: HTMLDivElement,
+    hideOverlay: () => void
 ): void {
     if (
         focusedToolbarElement.querySelector(
@@ -35,6 +37,7 @@ export function appendFieldToolbar(
     render(
         <FieldToolbarComponent
             eventDetails={eventDetails}
+            hideOverlay={hideOverlay}
         />,
         wrapper
     );

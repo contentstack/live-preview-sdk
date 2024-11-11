@@ -46,6 +46,7 @@ const TOOLTIP_TOP_EDGE_BUFFER = 96;
 
 interface MultipleFieldToolbarProps {
     eventDetails: VisualBuilderCslpEventDetails;
+    hideOverlay: () => void;
 };
 
 function handleReplaceAsset(fieldMetadata: CslpData) {
@@ -308,6 +309,14 @@ function FieldToolbarComponent(
         }
         fetchFieldSchema();
     }, [fieldMetadata]);
+
+    useEffect(() => {
+        visualBuilderPostMessage?.on(VisualBuilderPostMessageEvents.DELETE_INSTANCE, (args: { data: { path: string } }) => {
+            if(args.data?.path === fieldMetadata.instance.fieldPathWithIndex){
+                props.hideOverlay()
+            }
+        })
+    }, [])
 
     const multipleFieldToolbarButtonClasses = classNames(
         "visual-builder__button visual-builder__button--secondary",
