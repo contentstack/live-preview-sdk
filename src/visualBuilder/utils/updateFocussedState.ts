@@ -1,7 +1,10 @@
 import { VisualBuilder } from "..";
 import { extractDetailsFromCslp } from "../../cslp";
 import { getAddInstanceButtons } from "../generators/generateAddInstanceButtons";
-import { addFocusOverlay } from "../generators/generateOverlay";
+import {
+    addFocusOverlay,
+    hideFocusOverlay,
+} from "../generators/generateOverlay";
 import { hideHoverOutline } from "../listeners/mouseHover";
 import {
     LIVE_PREVIEW_OUTLINE_WIDTH_IN_PX,
@@ -82,13 +85,15 @@ export function updateFocussedState({
     visualBuilderContainer,
     overlayWrapper,
     focusedToolbar,
+    resizeObserver,
 }: {
     editableElement: HTMLElement | null;
     visualBuilderContainer: HTMLDivElement | null;
     overlayWrapper: HTMLDivElement | null;
     focusedToolbar: HTMLDivElement | null;
+    resizeObserver: ResizeObserver | null;
 }): void {
-    const previousSelectedEditableDOM =
+    let previousSelectedEditableDOM =
         VisualBuilder.VisualBuilderGlobalState.value
             .previousSelectedEditableDOM;
     if (
@@ -99,6 +104,28 @@ export function updateFocussedState({
     ) {
         return;
     }
+
+    const previousSelectedElementCslp =
+        previousSelectedEditableDOM?.getAttribute("data-cslp");
+    const newPreviousSelectedElement = document.querySelector(
+        `[data-cslp="${previousSelectedElementCslp}"]`
+    );
+    if (!newPreviousSelectedElement && resizeObserver) {
+        hideFocusOverlay({
+            visualBuilderOverlayWrapper: overlayWrapper,
+            focusedToolbar,
+            visualBuilderContainer,
+            resizeObserver,
+            noTrigger: true,
+        });
+        return;
+    }
+    if (newPreviousSelectedElement !== previousSelectedEditableDOM) {
+        previousSelectedEditableDOM = newPreviousSelectedElement as HTMLElement;
+        VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
+            previousSelectedEditableDOM;
+    }
+
     hideHoverOutline(visualBuilderContainer);
     addFocusOverlay(previousSelectedEditableDOM, overlayWrapper);
 
@@ -190,15 +217,36 @@ export function updateFocussedState({
 export function updateFocussedStateOnMutation(
     focusOverlayWrapper: HTMLDivElement | null,
     focusedToolbar: HTMLDivElement | null,
-    visualBuilderContainer: HTMLDivElement | null
+    visualBuilderContainer: HTMLDivElement | null,
+    resizeObserver: ResizeObserver | null
 ) {
     if (!focusOverlayWrapper) return;
 
-    const selectedElement =
+    let selectedElement =
         VisualBuilder.VisualBuilderGlobalState.value
             .previousSelectedEditableDOM;
-
     if (!selectedElement) return;
+
+    const selectedElementCslp = selectedElement?.getAttribute("data-cslp");
+    const newSelectedElement = document.querySelector(
+        `[data-cslp="${selectedElementCslp}"]`
+    );
+    if (!newSelectedElement && resizeObserver) {
+        hideFocusOverlay({
+            visualBuilderOverlayWrapper: focusOverlayWrapper,
+            focusedToolbar,
+            visualBuilderContainer,
+            resizeObserver,
+            noTrigger: true,
+        });
+        return;
+    }
+
+    if (newSelectedElement !== selectedElement) {
+        selectedElement = newSelectedElement as HTMLElement;
+        VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
+            selectedElement;
+    }
 
     const selectedElementDimension = selectedElement.getBoundingClientRect();
 

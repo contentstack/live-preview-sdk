@@ -201,6 +201,7 @@ export async function handleIndividualFields(
                         visualBuilderContainer,
                         overlayWrapper,
                         focusedToolbar,
+                        resizeObserver,
                     });
                 }, 200);
                 actualEditableField.addEventListener(
