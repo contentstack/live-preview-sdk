@@ -76,6 +76,7 @@ export class VisualBuilder {
             visualBuilderContainer: this.visualBuilderContainer,
             overlayWrapper: this.overlayWrapper,
             focusedToolbar: this.focusedToolbar,
+            resizeObserver: this.resizeObserver,
         });
     }
 
@@ -178,7 +179,8 @@ export class VisualBuilder {
                 updateFocussedStateOnMutation(
                     this.overlayWrapper,
                     this.focusedToolbar,
-                    this.visualBuilderContainer
+                    this.visualBuilderContainer,
+                    this.resizeObserver
                 );
                 const emptyBlockParents = Array.from(
                     document.querySelectorAll(
