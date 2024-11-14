@@ -139,7 +139,12 @@ export async function handleIndividualFields(
         }
 
         // * title, single single_line, single multi_line, single number
-        if (ALLOWED_INLINE_EDITABLE_FIELD.includes(fieldType) && !fieldSchema.multiple) {
+        if (ALLOWED_INLINE_EDITABLE_FIELD.includes(fieldType)) {
+            if(fieldSchema.multiple){
+                const isFieldContainer = Number(fieldMetadata.instance.fieldPathWithIndex.split('.').at(-1))
+                if(Number.isNaN(isFieldContainer)) return;
+            }
+
             let actualEditableField = editableElement as HTMLElement;
 
             VisualBuilder.VisualBuilderGlobalState.value.focusFieldValue =
