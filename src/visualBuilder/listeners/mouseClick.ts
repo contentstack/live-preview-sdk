@@ -35,7 +35,7 @@ type AddFocusOverlayParams = Pick<
 type AddFocusedToolbarParams = Pick<
     EventListenerHandlerParams,
     "eventDetails" | "focusedToolbar"
->;
+> & { hideOverlay: () => void };
 
 function addOverlay(params: AddFocusOverlayParams) {
     if (!params.overlayWrapper || !params.editableElement) return;
@@ -53,7 +53,7 @@ export function addFocusedToolbar(params: AddFocusedToolbarParams): void {
 
     if (!editableElement || !params.focusedToolbar) return;
 
-    appendFocusedToolbar(params.eventDetails, params.focusedToolbar);
+    appendFocusedToolbar(params.eventDetails, params.focusedToolbar, params.hideOverlay);
 }
 
 async function handleBuilderInteraction(
@@ -143,6 +143,14 @@ async function handleBuilderInteraction(
     addFocusedToolbar({
         eventDetails: eventDetails,
         focusedToolbar: params.focusedToolbar,
+        hideOverlay: () => {
+            hideOverlay({
+                visualBuilderContainer: params.visualBuilderContainer,
+                visualBuilderOverlayWrapper: params.overlayWrapper,
+                focusedToolbar: params.focusedToolbar,
+                resizeObserver: params.resizeObserver,
+            });
+        }
     });
 
     const { content_type_uid, fieldPath, cslpValue } = fieldMetadata;

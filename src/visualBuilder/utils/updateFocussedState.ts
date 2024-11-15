@@ -1,10 +1,19 @@
 import { VisualBuilder } from "..";
 import { extractDetailsFromCslp } from "../../cslp";
 import { getAddInstanceButtons } from "../generators/generateAddInstanceButtons";
-import { addFocusOverlay } from "../generators/generateOverlay";
+import {
+    addFocusOverlay,
+    hideFocusOverlay,
+} from "../generators/generateOverlay";
 import { hideHoverOutline } from "../listeners/mouseHover";
-import { LIVE_PREVIEW_OUTLINE_WIDTH_IN_PX, RIGHT_EDGE_BUFFER, TOOLBAR_EDGE_BUFFER, TOP_EDGE_BUFFER } from "./constants";
+import {
+    LIVE_PREVIEW_OUTLINE_WIDTH_IN_PX,
+    RIGHT_EDGE_BUFFER,
+    TOOLBAR_EDGE_BUFFER,
+    TOP_EDGE_BUFFER,
+} from "./constants";
 import getChildrenDirection from "./getChildrenDirection";
+import { getPsuedoEditableElementStyles } from "./getPsuedoEditableStylesElement";
 import getStyleOfAnElement from "./getStyleOfAnElement";
 
 interface ToolbarPositionParams {
@@ -14,29 +23,38 @@ interface ToolbarPositionParams {
 /**
  * Adjust the position of the field toolbar instead of clearing the innerhtml fo the focused toolbar.
  * By doing this, can avoid the re-rendering of the focus field toolbar.
-*/
+ */
 function positionToolbar({
     focusedToolbar,
     selectedElementDimension,
 }: ToolbarPositionParams): void {
     if (focusedToolbar) {
-        const targetElementRightEdgeOffset = window.scrollX + window.innerWidth - selectedElementDimension.left;
-        const distanceFromTop = selectedElementDimension.top + window.scrollY - TOOLBAR_EDGE_BUFFER;
+        const targetElementRightEdgeOffset =
+            window.scrollX + window.innerWidth - selectedElementDimension.left;
+        const distanceFromTop =
+            selectedElementDimension.top + window.scrollY - TOOLBAR_EDGE_BUFFER;
 
         // Adjust top position based on the available space
-        const adjustedDistanceFromTop = 
+        const adjustedDistanceFromTop =
             selectedElementDimension.top + window.scrollY < TOP_EDGE_BUFFER
-                ? distanceFromTop + selectedElementDimension.height + TOP_EDGE_BUFFER
+                ? distanceFromTop +
+                  selectedElementDimension.height +
+                  TOP_EDGE_BUFFER
                 : distanceFromTop;
 
-        const distanceFromLeft = selectedElementDimension.left - LIVE_PREVIEW_OUTLINE_WIDTH_IN_PX;
-        const adjustedDistanceFromLeft = Math.max(distanceFromLeft, TOOLBAR_EDGE_BUFFER);
+        const distanceFromLeft =
+            selectedElementDimension.left - LIVE_PREVIEW_OUTLINE_WIDTH_IN_PX;
+        const adjustedDistanceFromLeft = Math.max(
+            distanceFromLeft,
+            TOOLBAR_EDGE_BUFFER
+        );
 
         // Handle right-edge overflow
         if (
             targetElementRightEdgeOffset < RIGHT_EDGE_BUFFER &&
             (focusedToolbar.style.justifyContent !== "flex-end" ||
-                focusedToolbar.style.left !== `${selectedElementDimension.right + LIVE_PREVIEW_OUTLINE_WIDTH_IN_PX}px`)
+                focusedToolbar.style.left !==
+                    `${selectedElementDimension.right + LIVE_PREVIEW_OUTLINE_WIDTH_IN_PX}px`)
         ) {
             focusedToolbar.style.justifyContent = "flex-end";
             focusedToolbar.style.left = `${selectedElementDimension.right + LIVE_PREVIEW_OUTLINE_WIDTH_IN_PX}px`;
@@ -73,9 +91,9 @@ export function updateFocussedState({
     visualBuilderContainer: HTMLDivElement | null;
     overlayWrapper: HTMLDivElement | null;
     focusedToolbar: HTMLDivElement | null;
-    resizeObserver: ResizeObserver;
+    resizeObserver: ResizeObserver | null;
 }): void {
-    const previousSelectedEditableDOM =
+    let previousSelectedEditableDOM =
         VisualBuilder.VisualBuilderGlobalState.value
             .previousSelectedEditableDOM;
     if (
@@ -86,6 +104,28 @@ export function updateFocussedState({
     ) {
         return;
     }
+
+    const previousSelectedElementCslp =
+        previousSelectedEditableDOM?.getAttribute("data-cslp");
+    const newPreviousSelectedElement = document.querySelector(
+        `[data-cslp="${previousSelectedElementCslp}"]`
+    );
+    if (!newPreviousSelectedElement && resizeObserver) {
+        hideFocusOverlay({
+            visualBuilderOverlayWrapper: overlayWrapper,
+            focusedToolbar,
+            visualBuilderContainer,
+            resizeObserver,
+            noTrigger: true,
+        });
+        return;
+    }
+    if (newPreviousSelectedElement !== previousSelectedEditableDOM) {
+        previousSelectedEditableDOM = newPreviousSelectedElement as HTMLElement;
+        VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
+            previousSelectedEditableDOM;
+    }
+
     hideHoverOutline(visualBuilderContainer);
     addFocusOverlay(previousSelectedEditableDOM, overlayWrapper);
 
@@ -94,7 +134,7 @@ export function updateFocussedState({
         ".visual-builder__pseudo-editable-element"
     ) as HTMLElement;
     if (psuedoEditableElement) {
-        const styles = getStyleOfAnElement(editableElement);
+        const styles = getPsuedoEditableElementStyles(editableElement);
         const styleString = Object.entries(styles).reduce(
             (acc, [key, value]) => {
                 return `${acc}${key}:${value};`;
@@ -102,10 +142,10 @@ export function updateFocussedState({
             ""
         );
         psuedoEditableElement.style.cssText = styleString;
+        // since we are copying styles from the editableEl
+        // it will now have a visibility of hidden, which we added
+        // when creating the pseudo editable element, so make the psuedo visible
         psuedoEditableElement.style.visibility = "visible";
-        psuedoEditableElement.style.position = "absolute";
-        psuedoEditableElement.style.top = `${editableElement.offsetTop}px`;
-        psuedoEditableElement.style.left = `${editableElement.offsetLeft}px`;
     }
 
     const cslp = editableElement?.getAttribute("data-cslp") || "";
@@ -113,10 +153,11 @@ export function updateFocussedState({
 
     const targetElementDimension = editableElement.getBoundingClientRect();
     if (targetElementDimension.width && targetElementDimension.height) {
-        const selectedElement = VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM;
+        const selectedElement =
+            VisualBuilder.VisualBuilderGlobalState.value
+                .previousSelectedEditableDOM;
 
-        if(!selectedElement)
-            return;
+        if (!selectedElement) return;
         // position the focused tool bar
         positionToolbar({
             focusedToolbar: focusedToolbar,
@@ -177,14 +218,35 @@ export function updateFocussedStateOnMutation(
     focusOverlayWrapper: HTMLDivElement | null,
     focusedToolbar: HTMLDivElement | null,
     visualBuilderContainer: HTMLDivElement | null,
+    resizeObserver: ResizeObserver | null
 ) {
-    
     if (!focusOverlayWrapper) return;
 
-    const selectedElement = VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM;
+    let selectedElement =
+        VisualBuilder.VisualBuilderGlobalState.value
+            .previousSelectedEditableDOM;
+    if (!selectedElement) return;
 
-    if(!selectedElement)
+    const selectedElementCslp = selectedElement?.getAttribute("data-cslp");
+    const newSelectedElement = document.querySelector(
+        `[data-cslp="${selectedElementCslp}"]`
+    );
+    if (!newSelectedElement && resizeObserver) {
+        hideFocusOverlay({
+            visualBuilderOverlayWrapper: focusOverlayWrapper,
+            focusedToolbar,
+            visualBuilderContainer,
+            resizeObserver,
+            noTrigger: true,
+        });
         return;
+    }
+
+    if (newSelectedElement !== selectedElement) {
+        selectedElement = newSelectedElement as HTMLElement;
+        VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
+            selectedElement;
+    }
 
     const selectedElementDimension = selectedElement.getBoundingClientRect();
 
@@ -197,7 +259,7 @@ export function updateFocussedStateOnMutation(
 
     if (focusOutline) {
         const focusOutlineDimension = focusOutline.getBoundingClientRect();
-        if(!isSameRect(selectedElementDimension, focusOutlineDimension)){
+        if (!isSameRect(selectedElementDimension, focusOutlineDimension)) {
             focusOutline.style.top = `${selectedElementDimension.top + window.scrollY}px`;
             focusOutline.style.left = `${selectedElementDimension.left}px`;
             focusOutline.style.width = `${selectedElementDimension.width}px`;
@@ -212,29 +274,37 @@ export function updateFocussedStateOnMutation(
     const focusedOverlayTop = focusOverlayWrapper.querySelector<HTMLDivElement>(
         ".visual-builder__overlay--top"
     );
-    const focusedOverlayBottom = focusOverlayWrapper.querySelector<HTMLDivElement>(
-        ".visual-builder__overlay--bottom"
-    );
-    const focusedOverlayLeft = focusOverlayWrapper.querySelector<HTMLDivElement>(
-        ".visual-builder__overlay--left"
-    );
-    const focusedOverlayRight = focusOverlayWrapper.querySelector<HTMLDivElement>(
-        ".visual-builder__overlay--right"
-    );
+    const focusedOverlayBottom =
+        focusOverlayWrapper.querySelector<HTMLDivElement>(
+            ".visual-builder__overlay--bottom"
+        );
+    const focusedOverlayLeft =
+        focusOverlayWrapper.querySelector<HTMLDivElement>(
+            ".visual-builder__overlay--left"
+        );
+    const focusedOverlayRight =
+        focusOverlayWrapper.querySelector<HTMLDivElement>(
+            ".visual-builder__overlay--right"
+        );
 
     const distanceFromTop = selectedElementDimension.top + window.scrollY;
 
     if (focusedOverlayTop) {
         const dimension = focusedOverlayTop.getBoundingClientRect();
-        if(dimension.height !== distanceFromTop) {
+        if (dimension.height !== distanceFromTop) {
             focusedOverlayTop.style.height = `calc(${distanceFromTop}px)`;
         }
     }
 
     if (focusedOverlayBottom) {
         const dimension = focusedOverlayBottom.getBoundingClientRect();
-        if(dimension.top !== selectedElementDimension.bottom ||
-            dimension.height !== window.document.body.scrollHeight - selectedElementDimension.bottom - window.scrollY) {
+        if (
+            dimension.top !== selectedElementDimension.bottom ||
+            dimension.height !==
+                window.document.body.scrollHeight -
+                    selectedElementDimension.bottom -
+                    window.scrollY
+        ) {
             focusedOverlayBottom.style.top = `${
                 selectedElementDimension.bottom + window.scrollY
             }px`;
@@ -248,9 +318,11 @@ export function updateFocussedStateOnMutation(
 
     if (focusedOverlayLeft) {
         const dimension = focusedOverlayLeft.getBoundingClientRect();
-        if(dimension.top + window.scrollY !== distanceFromTop ||
+        if (
+            dimension.top + window.scrollY !== distanceFromTop ||
             dimension.height !== selectedElementDimension.height ||
-            dimension.width !== selectedElementDimension.left) {
+            dimension.width !== selectedElementDimension.left
+        ) {
             focusedOverlayLeft.style.top = `${distanceFromTop}px`;
             focusedOverlayLeft.style.height = `${selectedElementDimension.height}px`;
             focusedOverlayLeft.style.width = `${selectedElementDimension.left}px`;
@@ -259,16 +331,21 @@ export function updateFocussedStateOnMutation(
 
     if (focusedOverlayRight) {
         const dimension = focusedOverlayRight.getBoundingClientRect();
-        if(dimension.left !== selectedElementDimension.right ||
+        if (
+            dimension.left !== selectedElementDimension.right ||
             dimension.top + window.scrollY !== distanceFromTop ||
             dimension.height !== selectedElementDimension.height ||
-            dimension.width !== document.documentElement.clientWidth - selectedElementDimension.right) {
-                focusedOverlayRight.style.left = `${selectedElementDimension.right}px`;
-                focusedOverlayRight.style.top = `${distanceFromTop}px`;
-                focusedOverlayRight.style.height = `${selectedElementDimension.height}px`;
-                focusedOverlayRight.style.width = `${
-                    document.documentElement.clientWidth - selectedElementDimension.right
-                }px`;
+            dimension.width !==
+                document.documentElement.clientWidth -
+                    selectedElementDimension.right
+        ) {
+            focusedOverlayRight.style.left = `${selectedElementDimension.right}px`;
+            focusedOverlayRight.style.top = `${distanceFromTop}px`;
+            focusedOverlayRight.style.height = `${selectedElementDimension.height}px`;
+            focusedOverlayRight.style.width = `${
+                document.documentElement.clientWidth -
+                selectedElementDimension.right
+            }px`;
         }
     }
 
@@ -277,13 +354,16 @@ export function updateFocussedStateOnMutation(
      */
 
     if (focusedToolbar) {
-        const targetElementRightEdgeOffset = window.scrollX + window.innerWidth - selectedElementDimension.left;
+        const targetElementRightEdgeOffset =
+            window.scrollX + window.innerWidth - selectedElementDimension.left;
         const distanceFromTop =
             selectedElementDimension.top + window.scrollY - TOOLBAR_EDGE_BUFFER;
         // Position the toolbar at the top unless there's insufficient space or scrolling up is not possible (topmost element targetted).
         const adjustedDistanceFromTop =
             selectedElementDimension.top + window.scrollY < TOP_EDGE_BUFFER
-                ? distanceFromTop + selectedElementDimension.height + TOP_EDGE_BUFFER
+                ? distanceFromTop +
+                  selectedElementDimension.height +
+                  TOP_EDGE_BUFFER
                 : distanceFromTop;
 
         const distanceFromLeft =
@@ -293,25 +373,30 @@ export function updateFocussedStateOnMutation(
             TOOLBAR_EDGE_BUFFER
         );
 
-        if (targetElementRightEdgeOffset < RIGHT_EDGE_BUFFER &&
-            ( focusedToolbar.style.justifyContent !== "flex-end" ||
-            focusedToolbar.style.left !== `${
-                selectedElementDimension.right + LIVE_PREVIEW_OUTLINE_WIDTH_IN_PX
-            }px` )
+        if (
+            targetElementRightEdgeOffset < RIGHT_EDGE_BUFFER &&
+            (focusedToolbar.style.justifyContent !== "flex-end" ||
+                focusedToolbar.style.left !==
+                    `${
+                        selectedElementDimension.right +
+                        LIVE_PREVIEW_OUTLINE_WIDTH_IN_PX
+                    }px`)
         ) {
             // Overflow / Cutoff on right edge
             focusedToolbar.style.justifyContent = "flex-end";
             focusedToolbar.style.left = `${
-                selectedElementDimension.right + LIVE_PREVIEW_OUTLINE_WIDTH_IN_PX
+                selectedElementDimension.right +
+                LIVE_PREVIEW_OUTLINE_WIDTH_IN_PX
             }px`;
-        } else if (focusedToolbar.style.justifyContent !== "flex-start" ||
+        } else if (
+            focusedToolbar.style.justifyContent !== "flex-start" ||
             focusedToolbar.style.left !== `${adjustedDistanceFromLeft}px`
         ) {
             focusedToolbar.style.justifyContent = "flex-start"; // default
             focusedToolbar.style.left = `${adjustedDistanceFromLeft}px`;
         }
 
-        if(focusedToolbar.style.top !== `${adjustedDistanceFromTop}px`){
+        if (focusedToolbar.style.top !== `${adjustedDistanceFromTop}px`) {
             focusedToolbar.style.top = `${adjustedDistanceFromTop}px`;
         }
     }
@@ -325,27 +410,23 @@ export function updateFocussedStateOnMutation(
             ".visual-builder__pseudo-editable-element"
         ) as HTMLElement;
         const editableElement = selectedElement as HTMLElement;
-        const styles = getStyleOfAnElement(editableElement);
+        const styles = getPsuedoEditableElementStyles(editableElement);
         const styleString = Object.entries(styles).reduce(
             (acc, [key, value]) => {
                 return `${acc}${key}:${value};`;
             },
             ""
         );
-        if (psuedoEditableElement &&
-            (
-                psuedoEditableElement.style.cssText !== styleString ||
-                psuedoEditableElement.style.visibility !== "visible" ||
-                psuedoEditableElement.style.position !== "absolute" ||
-                psuedoEditableElement.style.top !== `${editableElement.offsetTop}px` ||
-                psuedoEditableElement.style.left !== `${editableElement.offsetLeft}px`
-            )
+        if (
+            psuedoEditableElement &&
+            (psuedoEditableElement.style.cssText !== styleString ||
+                psuedoEditableElement.style.visibility !== "visible")
         ) {
             psuedoEditableElement.style.cssText = styleString;
+            // since we are copying styles from the editableEl
+            // it will now have a visibility of hidden, which we added
+            // when creating the pseudo editable element, so make the psuedo visible
             psuedoEditableElement.style.visibility = "visible";
-            psuedoEditableElement.style.position = "absolute";
-            psuedoEditableElement.style.top = `${editableElement.offsetTop}px`;
-            psuedoEditableElement.style.left = `${editableElement.offsetLeft}px`;
         }
     }
 }
