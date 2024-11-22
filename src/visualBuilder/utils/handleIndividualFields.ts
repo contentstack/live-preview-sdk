@@ -14,14 +14,12 @@ import { getFieldData } from "./getFieldData";
 import { getFieldType } from "./getFieldType";
 import { handleFieldInput, handleFieldKeyDown } from "./handleFieldMouseDown";
 import { isFieldDisabled } from "./isFieldDisabled";
-import visualBuilderPostMessage from "./visualBuilderPostMessage";
 import {
     handleAddButtonsForMultiple,
     removeAddInstanceButtons,
 } from "./multipleElementAddButton";
-import { VisualBuilderPostMessageEvents } from "./types/postMessage.types";
 import { updateFocussedState } from "./updateFocussedState";
-import { FieldDataType } from "./types/index.types";
+import { FieldDataType, ISchemaFieldMap } from "./types/index.types";
 import { getMultilinePlaintext } from "./getMultilinePlaintext";
 
 /**
@@ -55,10 +53,6 @@ export async function handleIndividualFields(
             fieldPathWithIndex
         ),
     ]);
-    // if value is an array, get the value for the instance
-    const expectedFieldInstanceData = Array.isArray(expectedFieldData)
-        ? expectedFieldData.at(fieldMetadata.multipleFieldMetadata.index)
-        : undefined;
 
     const fieldType = getFieldType(fieldSchema);
 
@@ -69,13 +63,7 @@ export async function handleIndividualFields(
         fieldType
     );
 
-    if (
-        fieldSchema &&
-        (fieldSchema?.multiple ||
-            (fieldSchema?.data_type === "reference" &&
-                // @ts-ignore
-                fieldSchema?.field_metadata.ref_multiple))
-    ) {
+    if (isFieldMultiple(fieldSchema)) {
         if (lastEditedField !== editableElement) {
             const addButtonLabel =
                 fieldSchema.data_type === "blocks"
@@ -98,52 +86,63 @@ export async function handleIndividualFields(
                 }
             );
         }
+    } 
 
-        // * fields could be handled as they are in a single instance
-        if (eventDetails.fieldMetadata.multipleFieldMetadata.index > -1) {
-            handleSingleField(
-                {
-                    editableElement,
-                    visualBuilderContainer,
-                    resizeObserver: elements.resizeObserver,
-                },
-                { expectedFieldData: expectedFieldInstanceData, disabled }
-            );
-        }
-    } else {
-        handleSingleField(
-            {
-                editableElement,
-                visualBuilderContainer,
-                resizeObserver: elements.resizeObserver,
-            },
-            { expectedFieldData, disabled }
-        );
-    }
+    !disabled && handleInlineEditing();
 
     /**
-     * Handles all the fields based on their data type.
+     * Handles inline editing for supported fields.
      */
-    function handleSingleField(
-        elements: {
-            editableElement: Element;
-            visualBuilderContainer: HTMLDivElement;
-            resizeObserver: ResizeObserver;
-        },
-        config: { expectedFieldData: string; disabled?: boolean }
-    ) {
-        const { editableElement, visualBuilderContainer } = elements;
+    function handleInlineEditing() {
 
-        if (config.disabled) {
-            return;
+        if (!ALLOWED_INLINE_EDITABLE_FIELD.includes(fieldType)) return;
+
+        // Instances of ALLOWED_INLINE_EDITABLE_FIELD will always have index at last
+        const index = Number(fieldMetadata.instance.fieldPathWithIndex.split('.').at(-1));
+        const isInstance = Number.isFinite(index);
+
+        // CASE 1: Handle inline editing for multiple field
+        if(isFieldMultiple(fieldSchema)) {
+            let expectedFieldInstanceData = null;
+            if(Array.isArray(expectedFieldData)) {
+                // CASE: Selected element is the multiple field itself.
+                // Inline Editing not allowed on field, only allowed on instance.
+                // (We recieve unreliable `multipleFieldMetadata` in this case)
+                if(!isInstance) {
+                    return;
+                }
+
+                // CASE: Value does not exist for the provided instance's index
+                if(index >= expectedFieldData.length) {
+                    // TODO: What should be the behavior here?
+                }
+                else {
+                    expectedFieldInstanceData = expectedFieldData.at(index);
+                }
+            }
+            // CASE: ContentType's Field changed from single to multiple, while Entry's Field still single.
+            else {
+                expectedFieldInstanceData = expectedFieldData;
+            }
+
+            enableInlineEditing(expectedFieldInstanceData);     
+        }
+        // CASE 2: Handle inline editing for a single field
+        else {
+            let expectedFieldInstanceData = null;
+            // CASE: ContentType's Field changed from multiple to single, while Entry's Field still multiple.
+            if(isInstance) {
+                if(index !== 0) {
+                    // TODO: Handle this with UX
+                    // Let user know, CSLP is invalid due to change in Content Type
+                    return;
+                }
+                expectedFieldInstanceData = Array.isArray(expectedFieldData) ? expectedFieldData.at(0) : expectedFieldData;
+            }
+            enableInlineEditing(expectedFieldInstanceData ?? expectedFieldData);
         }
 
-        // * title, single single_line, single multi_line, single number
-        if (ALLOWED_INLINE_EDITABLE_FIELD.includes(fieldType)) {
-            if(fieldSchema.multiple){
-                const isFieldContainer = Number(fieldMetadata.instance.fieldPathWithIndex.split('.').at(-1))
-                if(Number.isNaN(isFieldContainer)) return;
-            }
+        function enableInlineEditing(expectedFieldData: any) {
 
             let actualEditableField = editableElement as HTMLElement;
 
@@ -162,15 +161,16 @@ export async function handleIndividualFields(
                 textContent = getMultilinePlaintext(actualEditableField);
                 actualEditableField.addEventListener("paste", pasteAsPlainText);
             }
-            const expectedTextContent = config.expectedFieldData;
+            const expectedTextContent = expectedFieldData;
             if (
-                textContent !== expectedTextContent ||
+                (expectedTextContent && textContent !== expectedTextContent) ||
                 isEllipsisActive(editableElement as HTMLElement)
             ) {
-                // TODO: Testing will be don in the E2E.
+                
+                // TODO: Testing will be done in the E2E.
                 const pseudoEditableField = generatePseudoEditableElement(
                     { editableElement: editableElement as HTMLElement },
-                    { textContent: config.expectedFieldData }
+                    { textContent: expectedFieldData }
                 );
 
                 (editableElement as HTMLElement).style.visibility = "hidden";
@@ -224,6 +224,14 @@ export async function handleIndividualFields(
             return;
         }
     }
+}
+
+function isFieldMultiple(fieldSchema: ISchemaFieldMap): boolean {
+    return fieldSchema &&
+    (fieldSchema.multiple ||
+        (fieldSchema.data_type === "reference" &&
+            // @ts-ignore
+            fieldSchema.field_metadata.ref_multiple));
 }
 
 export function cleanIndividualFieldResidual(elements: {
