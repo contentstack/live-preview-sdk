@@ -44,12 +44,12 @@ export const BASE_VARIANT_STATUS: IVariantStatus = {
 };
 
 export async function getFieldVariantStatus(
-    fieldPathWithIndex: string
+    fieldMetadata: CslpData
 ): Promise<IVariantStatus | undefined> {
     try {
         const result = await visualBuilderPostMessage?.send<IVariantStatus>(
             "get-field-variant-status",
-            fieldPathWithIndex
+            fieldMetadata
         );
         return result;
     } catch (error) {
