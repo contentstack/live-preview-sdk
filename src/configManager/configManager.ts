@@ -2,7 +2,8 @@ import { DeepSignal, deepSignal } from "deepsignal";
 import type { IConfig, IInitData } from "../types/types";
 import { getDefaultConfig, getUserInitData } from "./config.default";
 import { handleInitData } from "./handleUserConfig";
-import { has as lodashHas, set as lodashSet } from "lodash-es";
+import lodashHas from "lodash.has";
+import lodashSet from "lodash.set";
 
 class Config {
     static config: {

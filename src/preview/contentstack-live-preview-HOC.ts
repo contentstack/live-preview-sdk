@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from "uuid";
 
-import { isEmpty } from "lodash-es";
+import isEmpty from "lodash.isempty";
 import { getUserInitData } from "../configManager/config.default";
 import Config, { updateConfigFromUrl } from "../configManager/configManager";
 import { VisualBuilder } from "../visualBuilder";

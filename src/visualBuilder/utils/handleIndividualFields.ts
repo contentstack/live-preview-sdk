@@ -1,4 +1,5 @@
-import { debounce, throttle } from "lodash-es";
+import debounce from "lodash.debounce";
+import throttle from "lodash.throttle";
 import { VisualBuilder } from "..";
 import {
     generatePseudoEditableElement,

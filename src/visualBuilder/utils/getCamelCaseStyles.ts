@@ -1,4 +1,4 @@
-import { camelCase } from "lodash-es";
+import camelCase from "lodash.camelcase";
 
 export default function getCamelCaseStyles(styles: { [key: string]: string }): {
     [key: string]: string;

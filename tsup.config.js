@@ -21,13 +21,16 @@ function modernConfig(opts) {
       options.jsxImportSource = 'preact';
       options.jsx = 'automatic'
     },      
-    format: ['cjs', 'esm'],
+    format: ['esm'],
     target: ['chrome91', 'firefox90', 'edge91', 'safari15', 'ios15', 'opera77'],
     outDir: 'dist/modern',
     dts: true,
     sourcemap: true,
     clean: true,
-    esbuildPlugins: [esbuildPluginFilePathExtensions({ esmExtension: 'js' })]
+    esbuildPlugins: [esbuildPluginFilePathExtensions({ esmExtension: 'js' })],
+    outExtension({ format }) {
+      return format === 'esm' ? { js: '.js' } : {};
+    },
   }
 }
 
@@ -38,7 +41,7 @@ function legacyConfig(opts) {
       'process.env.PACKAGE_VERSION': `"${packageJson.version}"`,
     },
     format: ['cjs', 'esm'],
-    target: ['es2020', 'node16'],
+    target:['es2020', 'node12'],
     outDir: 'dist/legacy',
     dts: true,
     sourcemap: true,
@@ -47,6 +50,9 @@ function legacyConfig(opts) {
     esbuildOptions(options) {
       options.jsxImportSource = 'preact';
       options.jsx = 'automatic'
+    },
+    outExtension({ format }) {
+      return format === 'cjs' ? { js: '.cjs' } : {};
     },
   }
 }

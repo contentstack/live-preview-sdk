@@ -19,7 +19,8 @@ import visualBuilderPostMessage from "./utils/visualBuilderPostMessage";
 import { VisualBuilderPostMessageEvents } from "./utils/types/postMessage.types";
 
 import { setup } from "goober";
-import { debounce, isEqual } from "lodash-es";
+import debounce from "lodash.debounce";
+import isEqual from "lodash.isequal";
 import { h } from "preact";
 import { extractDetailsFromCslp } from "../cslp";
 import initUI from "./components";

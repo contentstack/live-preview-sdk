@@ -1,4 +1,7 @@
-import { isNil, isFinite, findLastIndex, findLast } from "lodash-es";
+import isNil from "lodash.isnil";
+import findLastIndex from "lodash.findlastindex";
+import findLast from "lodash.findlast";
+import isFinite from "lodash.isfinite";
 import {
     CslpData,
     CslpDataMultipleFieldMetadata,

@@ -9,7 +9,7 @@ import visualBuilderPostMessage from "../utils/visualBuilderPostMessage";
 import { CaretIcon, InfoIcon } from "./icons";
 import { LoadingIcon } from "./icons/loading";
 import { getFieldIcon } from "../generators/generateCustomCursor";
-import { uniqBy } from "lodash-es";
+import uniqBy from "lodash.uniqby";
 import { visualBuilderStyles } from "../visualBuilder.style";
 import { CslpError } from "./CslpError";
 import { hasPostMessageError } from "../utils/errorHandling";

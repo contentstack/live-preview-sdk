@@ -1,4 +1,4 @@
-import { throttle } from "lodash-es";
+import throttle from "lodash.throttle";
 import { sendFieldEvent } from "../generators/generateOverlay";
 import {
     ALLOWED_INLINE_EDITABLE_FIELD,

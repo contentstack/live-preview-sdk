@@ -1,4 +1,4 @@
-import { throttle } from "lodash-es";
+import throttle from "lodash.throttle";
 import { getCsDataOfElement } from "../utils/getCsDataOfElement";
 import { removeAddInstanceButtons } from "../utils/multipleElementAddButton";
 import { generateCustomCursor } from "../generators/generateCustomCursor";

@@ -1,4 +1,5 @@
-import { has, isEqual } from "lodash-es";
+import has from "lodash.has";
+import isEqual from "lodash.isequal";
 import {
     ISchemaFieldMap,
     ISchemaIndividualFieldMap,
