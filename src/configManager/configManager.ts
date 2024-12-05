@@ -4,11 +4,19 @@ import { getDefaultConfig, getUserInitData } from "./config.default";
 import { handleInitData } from "./handleUserConfig";
 import { has as lodashHas, set as lodashSet } from "lodash-es";
 
+const deepWrapper = (obj: any) => {
+    if (new Set([Object, Array]).has(obj.constructor)) {
+        return deepSignal(obj);
+    } else {
+        return obj;
+    }
+}
+
 class Config {
     static config: {
         state: DeepSignal<IConfig>;
     } = {
-        state: deepSignal(getDefaultConfig()),
+        state: deepWrapper(getDefaultConfig()),
     };
 
     static replace(userInput: Partial<IInitData> = getUserInitData()): void {
