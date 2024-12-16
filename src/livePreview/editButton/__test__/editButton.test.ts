@@ -1,10 +1,14 @@
-import { Mock } from "vitest";
+import { Mock, vitest } from "vitest";
 import { DOMRect } from "../../../__test__/utils";
 import {
     createMultipleEditButton,
     createSingularEditButton,
     getEditButtonPosition,
+    shouldRenderEditButton
 } from "../editButton";
+import Config from "../../../configManager/configManager";
+import * as inIframe from "../../../common/inIframe";
+import { PublicLogger } from "../../../logger/logger";
 
 let editCallback: Mock<(e: MouseEvent) => void> | undefined;
 let linkCallback: Mock<(e: MouseEvent) => void> | undefined;
@@ -241,3 +245,75 @@ describe("Edit button for Link", () => {
         expect(linkCallback).toBeCalled();
     });
 });
+
+describe("shouldRenderEditButton", () => {
+    test("should return true if the config has enabled as true", () => {
+        vitest.spyOn(Config, "get").mockReturnValue({ editButton: { enable: true } });
+        expect(shouldRenderEditButton()).toBe(true);
+    });
+    test("should return false if the config has enabled as false", () => {
+        vitest.spyOn(Config, "get").mockReturnValue({ editButton: { enable: false } });
+        expect(shouldRenderEditButton()).toBe(false);
+    });
+
+    describe("includeByQueryParameter", () => {
+        test("should log error and return false if enable key is undefined", () => {
+            const loggerSpy = vitest.spyOn(PublicLogger, "error");
+            vitest.spyOn(Config, "get").mockReturnValue({ editButton: {} });
+            expect(shouldRenderEditButton()).toBe(false);
+            expect(loggerSpy).toHaveBeenCalledWith("enable key is required inside editButton object");
+        });
+
+        test("should return true if cslp-buttons query parameter is true", () => {
+            vitest.spyOn(Config, "get").mockReturnValue({ editButton: { enable: true } });
+            vitest.spyOn(window, "location", "get").mockReturnValue({
+                href: "http://example.com?cslp-buttons=true",
+            } as Location);
+            expect(shouldRenderEditButton()).toBe(true);
+        });
+
+        test("should return false if cslp-buttons query parameter is false", () => {
+            vitest.spyOn(Config, "get").mockReturnValue({ editButton: { enable: true } });
+            vitest.spyOn(window, "location", "get").mockReturnValue({
+                href: "http://example.com?cslp-buttons=false",
+            } as Location);
+            expect(shouldRenderEditButton()).toBe(false);
+        });
+
+        test("should return true if cslp-buttons query parameter is not present", () => {
+            vitest.spyOn(Config, "get").mockReturnValue({ editButton: { enable: true } });
+            vitest.spyOn(window, "location", "get").mockReturnValue({
+                href: "http://example.com",
+            } as Location);
+            expect(shouldRenderEditButton()).toBe(true);
+        });
+    })
+    describe("exclude", () => {
+        test("should return false if the config has exclude as `insideLivePreviewPortal` and the element is inside live preview portal", () => {
+            vitest.spyOn(inIframe, "inIframe").mockReturnValue(true);
+            vitest.spyOn(Config, "get").mockReturnValue({ editButton: { enable: true, exclude: ["insideLivePreviewPortal"] } });
+            expect(shouldRenderEditButton()).toBe(false);
+        });
+        test("should return true if the config has exclude as `insideLivePreviewPortal` and the element is not inside live preview portal", () => {
+            vitest.spyOn(inIframe, "inIframe").mockReturnValue(false);
+            vitest.spyOn(Config, "get").mockReturnValue({ editButton: { enable: true, exclude: ["insideLivePreviewPortal"] } });
+            expect(shouldRenderEditButton()).toBe(true);
+        });
+        test("should return false if the config has exclude as `outsideLivePreviewPortal` and the element is not inside live preview portal", () => {
+            vitest.spyOn(inIframe, "inIframe").mockReturnValue(false);
+            vitest.spyOn(Config, "get").mockReturnValue({ editButton: { enable: true, exclude: ["outsideLivePreviewPortal"] } });
+            expect(shouldRenderEditButton()).toBe(false);
+        });
+        test("should return true if the config has exclude as `outsideLivePreviewPortal` and the element is inside live preview portal", () => {
+            vitest.spyOn(inIframe, "inIframe").mockReturnValue(true);
+            vitest.spyOn(Config, "get").mockReturnValue({ editButton: { enable: true, exclude: ["outsideLivePreviewPortal"] } });
+            expect(shouldRenderEditButton()).toBe(true);
+        });
+    })
+
+    test("should return false if the website is rendered in Builder", () => {
+        vitest.spyOn(Config, "get").mockReturnValue({ editButton: { enable: true }, windowType: "builder" });
+        vitest.spyOn(inIframe, "inIframe").mockReturnValue(true);
+        expect(shouldRenderEditButton()).toBe(false);
+    })
+})
