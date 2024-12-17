@@ -49,7 +49,7 @@ export function appendFieldPathDropdown(
     eventDetails: VisualBuilderCslpEventDetails,
     focusedToolbarElement: HTMLDivElement
 ): void {
-    if(document.querySelector("visual-builder__focused-toolbar__field-label-wrapper"))
+    if(document.querySelector(".visual-builder__focused-toolbar__field-label-wrapper"))
         return;
     const { editableElement: targetElement, fieldMetadata } = eventDetails;
     const targetElementDimension = targetElement.getBoundingClientRect();
