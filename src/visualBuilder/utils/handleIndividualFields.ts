@@ -21,6 +21,8 @@ import {
 import { updateFocussedState } from "./updateFocussedState";
 import { FieldDataType, ISchemaFieldMap } from "./types/index.types";
 import { getMultilinePlaintext } from "./getMultilinePlaintext";
+import { VisualBuilderPostMessageEvents } from "./types/postMessage.types";
+import visualBuilderPostMessage from "./visualBuilderPostMessage";
 
 /**
  * It handles all the fields based on their data type and its "multiple" property.
@@ -293,6 +295,11 @@ export function cleanIndividualFieldResidual(elements: {
 
     if (focusedToolbar) {
         focusedToolbar.innerHTML = "";
+        const toolbarEvents = [VisualBuilderPostMessageEvents.DELETE_INSTANCE, VisualBuilderPostMessageEvents.UPDATE_DISCUSSION_ID]
+        toolbarEvents.forEach((event) => {
+            //@ts-expect-error - We are accessing private method here, but it is necessary to clean up the event listeners.
+            visualBuilderPostMessage?.unregisterEvent?.(event);
+        });
     }
 }
 
