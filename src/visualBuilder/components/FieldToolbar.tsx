@@ -316,7 +316,7 @@ function FieldToolbarComponent(
     }, [fieldMetadata]);
 
     useEffect(() => {
-        visualBuilderPostMessage?.on(
+        const event = visualBuilderPostMessage?.on(
             VisualBuilderPostMessageEvents.DELETE_INSTANCE,
             (args: { data: { path: string } }) => {
                 if (
@@ -327,6 +327,9 @@ function FieldToolbarComponent(
                 }
             }
         );
+        return () => {
+            event?.unregister();
+        }
     }, []);
 
     const multipleFieldToolbarButtonClasses = classNames(
