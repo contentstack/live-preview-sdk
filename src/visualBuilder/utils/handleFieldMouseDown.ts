@@ -7,6 +7,7 @@ import {
 } from "./constants";
 import { FieldDataType } from "./types/index.types";
 import { VisualBuilderPostMessageEvents } from "./types/postMessage.types";
+import { insertSpaceAtCursor } from "./insertSpaceAtCursor";
 
 export function handleFieldInput(e: Event): void {
     const event = e as InputEvent;
@@ -14,7 +15,10 @@ export function handleFieldInput(e: Event): void {
     const fieldType = targetElement.getAttribute(
         VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
     ) as FieldDataType | null;
-    if (event.type === "input" && ALLOWED_INLINE_EDITABLE_FIELD.includes(fieldType as FieldDataType)) {
+    if (
+        event.type === "input" &&
+        ALLOWED_INLINE_EDITABLE_FIELD.includes(fieldType as FieldDataType)
+    ) {
         throttledFieldSync();
     }
 }
@@ -23,13 +27,13 @@ const throttledFieldSync = throttle(() => {
         const visualBuilderContainer = document.querySelector(
             ".visual-builder__container"
         ) as HTMLElement;
-        if(!visualBuilderContainer) return;
+        if (!visualBuilderContainer) return;
         sendFieldEvent({
             visualBuilderContainer,
             eventType: VisualBuilderPostMessageEvents.SYNC_FIELD,
-        })  
+        });
     } catch (error) {
-        console.error("Error in throttledFieldSync", error)
+        console.error("Error in throttledFieldSync", error);
     }
 }, 300);
 
@@ -40,10 +44,23 @@ export function handleFieldKeyDown(e: Event): void {
         VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
     ) as FieldDataType | null;
 
+    if (targetElement.tagName === "BUTTON") {
+        handleKeyDownOnButton(event);
+    }
     if (fieldType === FieldDataType.NUMBER) {
         handleNumericFieldKeyDown(event);
     } else if (fieldType === FieldDataType.SINGLELINE) {
         handleSingleLineFieldKeyDown(event);
+    }
+}
+
+// spaces do not work inside a button content-editable
+// this adds a space and moves the cursor ahead, the
+// button press event is also prevented
+function handleKeyDownOnButton(e: KeyboardEvent) {
+    if (e.code === "Space" && e.target) {
+        e.preventDefault();
+        insertSpaceAtCursor(e.target as HTMLElement);
     }
 }
 
