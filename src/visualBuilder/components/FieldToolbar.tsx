@@ -1,4 +1,3 @@
-import { useSignal } from "@preact/signals";
 import { CslpData } from "../../cslp/types/cslp.types";
 import getChildrenDirection from "../utils/getChildrenDirection";
 import {
@@ -113,10 +112,11 @@ function FieldToolbarComponent(
 ): JSX.Element | null {
     const { eventDetails } = props;
     const { fieldMetadata, editableElement: targetElement } = eventDetails;
-    const direction = useSignal("");
+
     const parentPath =
         fieldMetadata?.multipleFieldMetadata?.parentDetails?.parentCslpValue ||
         "";
+    const direction = getChildrenDirection(targetElement, parentPath);
     const isVariant = !!fieldMetadata?.variant;
     const [fieldSchema, setFieldSchema] = useState<ISchemaFieldMap | null>(
         null
@@ -175,8 +175,6 @@ function FieldToolbarComponent(
             return null;
         }
     }
-
-    direction.value = getChildrenDirection(targetElement, parentPath);
 
     const invertTooltipPosition =
         targetElement.getBoundingClientRect().top <= TOOLTIP_TOP_EDGE_BUFFER;
@@ -329,7 +327,7 @@ function FieldToolbarComponent(
         );
         return () => {
             event?.unregister();
-        }
+        };
     }, []);
 
     const multipleFieldToolbarButtonClasses = classNames(
@@ -387,7 +385,7 @@ function FieldToolbarComponent(
                                         multipleFieldToolbarButtonClasses
                                     }
                                     data-tooltip={
-                                        direction.value === "vertical"
+                                        direction === "vertical"
                                             ? "Move up"
                                             : "Move left"
                                     }
@@ -404,10 +402,10 @@ function FieldToolbarComponent(
                                     <MoveLeftIcon
                                         className={classNames({
                                             "visual-builder__rotate--90":
-                                                direction.value === "vertical",
+                                                direction === "vertical",
                                             [visualBuilderStyles()[
                                                 "visual-builder__rotate--90"
-                                            ]]: direction.value === "vertical",
+                                            ]]: direction === "vertical",
                                         })}
                                         disabled={disableMoveLeft}
                                     />
@@ -419,7 +417,7 @@ function FieldToolbarComponent(
                                         multipleFieldToolbarButtonClasses
                                     }
                                     data-tooltip={
-                                        direction.value === "vertical"
+                                        direction === "vertical"
                                             ? "Move down"
                                             : "Move right"
                                     }
@@ -436,10 +434,10 @@ function FieldToolbarComponent(
                                     <MoveRightIcon
                                         className={classNames({
                                             "visual-builder__rotate--90":
-                                                direction.value === "vertical",
+                                                direction === "vertical",
                                             [visualBuilderStyles()[
                                                 "visual-builder__rotate--90"
-                                            ]]: direction.value === "vertical",
+                                            ]]: direction === "vertical",
                                         })}
                                         disabled={disableMoveRight}
                                     />
