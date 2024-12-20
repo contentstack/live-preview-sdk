@@ -190,6 +190,8 @@ describe("Live Preview HOC config", () => {
         expect(Config.get().hash).toBe("test");
         expect(Config.get().stackDetails.contentTypeUid).toBe("test");
         expect(Config.get().stackDetails.entryUid).toBe("test");
+        expect(ContentstackLivePreview.config.stackDetails.contentTypeUid).toBe("test");
+        expect(ContentstackLivePreview.config.stackDetails.entryUid).toBe("test");
 
         Object.defineProperty(window, "location", {
             writable: true,
