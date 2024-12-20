@@ -191,3 +191,5 @@ export interface IVisualBuilderInitEvent {
         masterLocale: string;
     };
 }
+
+export type IExportedConfig = Pick<IConfig, "ssr" | "enable" | "cleanCslpOnProduction" | "stackDetails" | "clientUrlParams" | "windowType" | "hash" | "editButton" | "mode">
