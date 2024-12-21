@@ -1,6 +1,7 @@
 import { MockInstance } from "vitest";
 import { VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY } from "../constants";
 import { handleFieldKeyDown } from "../handleFieldMouseDown";
+import * as insertSpaceAtCursor from "../insertSpaceAtCursor";
 
 describe("handle numeric field key down", () => {
     let h1: HTMLHeadingElement;
@@ -104,5 +105,50 @@ describe("handle numeric field key down", () => {
 
         h1.dispatchEvent(keyDownEvent);
         expect(spiedPreventDefault).toHaveBeenCalledTimes(1);
+    });
+});
+
+describe("handle keydown in button contenteditable", () => {
+    let button: HTMLButtonElement | undefined;
+    let spiedPreventDefault: MockInstance<(e: []) => void> | undefined;
+    let spiedInsertSpaceAtCursor:
+        | MockInstance<(typeof insertSpaceAtCursor)["insertSpaceAtCursor"]>
+        | undefined;
+
+    test("should insert space in button content-editable", () => {
+        vi.spyOn(window, "getSelection").mockReturnValue({
+            // @ts-ignore
+            getRangeAt: (n: number) => ({
+                startOffset: 0,
+                endOffset: 0,
+            }),
+        });
+        spiedInsertSpaceAtCursor = vi.spyOn(
+            insertSpaceAtCursor,
+            "insertSpaceAtCursor"
+        );
+
+        button = document.createElement("button");
+        button.innerHTML = "Test";
+        button.setAttribute("contenteditable", "true");
+        button.setAttribute(
+            VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY,
+            "single_line"
+        );
+
+        button.addEventListener("keydown", (e) => {
+            spiedPreventDefault = vi.spyOn(e, "preventDefault");
+            handleFieldKeyDown(e);
+        });
+
+        const keyDownEvent = new KeyboardEvent("keydown", {
+            bubbles: true,
+            key: "Space",
+            code: "Space",
+        });
+        button.dispatchEvent(keyDownEvent);
+
+        expect(spiedPreventDefault).toHaveBeenCalledTimes(1);
+        expect(spiedInsertSpaceAtCursor).toHaveBeenCalledWith(button);
     });
 });

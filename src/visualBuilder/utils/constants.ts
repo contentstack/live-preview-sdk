@@ -46,3 +46,5 @@ export const DEFAULT_MULTIPLE_FIELDS: FieldDataType[] = [
     FieldDataType.GROUP,
     FieldDataType.BLOCK,
 ];
+
+export const unicodeNonBreakingSpace = "\u00A0";

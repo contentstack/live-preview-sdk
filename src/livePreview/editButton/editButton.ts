@@ -225,6 +225,7 @@ export function shouldRenderEditButton(): boolean {
 
     // case outside live preview
     if (
+        !iFrameCheck &&
         config.editButton.exclude?.find(
             (exclude) => exclude === "outsideLivePreviewPortal"
         )

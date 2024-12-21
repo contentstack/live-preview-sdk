@@ -109,6 +109,8 @@ function getParentPathDetails(
 
 /**
  * Returns metadata for a multiple field in a content entry.
+ * @summary ONLY USE THESE RETURNED VALUES WHEN FIELD IS MULTIPLE
+ * @summary IT GIVES WRONG DATA IF FIELD IS NOT MULTIPLE
  * @param content_type_uid - The UID of the content type.
  * @param entry_uid - The UID of the content entry.
  * @param locale - The locale of the content entry.

@@ -18,6 +18,7 @@ const voidElements = new Set([
     "source",
     "track",
     "wbr",
+    "video"
 ]);
 
 const LEAF_CSLP_SELECTOR = "[data-cslp]:not(:has([data-cslp]))";

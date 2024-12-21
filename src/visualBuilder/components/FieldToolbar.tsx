@@ -1,4 +1,3 @@
-import { useSignal } from "@preact/signals";
 import { CslpData } from "../../cslp/types/cslp.types";
 import getChildrenDirection from "../utils/getChildrenDirection";
 import {
@@ -40,14 +39,17 @@ import {
     IVariantStatus,
 } from "./FieldRevert/FieldRevertComponent";
 
-export type FieldDetails = Pick<VisualBuilderCslpEventDetails, "editableElement" | "fieldMetadata">;
+export type FieldDetails = Pick<
+    VisualBuilderCslpEventDetails,
+    "editableElement" | "fieldMetadata"
+>;
 
 const TOOLTIP_TOP_EDGE_BUFFER = 96;
 
 interface MultipleFieldToolbarProps {
     eventDetails: VisualBuilderCslpEventDetails;
     hideOverlay: () => void;
-};
+}
 
 function handleReplaceAsset(fieldMetadata: CslpData) {
     // TODO avoid sending whole fieldMetadata
@@ -90,17 +92,19 @@ function handleEdit(fieldMetadata: CslpData) {
 
 function handleFormFieldFocus(eventDetails: VisualBuilderCslpEventDetails) {
     const { editableElement, fieldMetadata, cslpData } = eventDetails;
-    visualBuilderPostMessage?.send(
-        VisualBuilderPostMessageEvents.TOGGLE_FORM,
-        {
+    visualBuilderPostMessage
+        ?.send(VisualBuilderPostMessageEvents.TOGGLE_FORM, {
             fieldMetadata,
             cslpData,
-        }
-    ).then(() => {
-        visualBuilderPostMessage?.send(VisualBuilderPostMessageEvents.FOCUS_FIELD, {
-            DOMEditStack: getDOMEditStack(editableElement),
+        })
+        .then(() => {
+            visualBuilderPostMessage?.send(
+                VisualBuilderPostMessageEvents.FOCUS_FIELD,
+                {
+                    DOMEditStack: getDOMEditStack(editableElement),
+                }
+            );
         });
-    });
 }
 
 function FieldToolbarComponent(
@@ -108,10 +112,11 @@ function FieldToolbarComponent(
 ): JSX.Element | null {
     const { eventDetails } = props;
     const { fieldMetadata, editableElement: targetElement } = eventDetails;
-    const direction = useSignal("");
+
     const parentPath =
         fieldMetadata?.multipleFieldMetadata?.parentDetails?.parentCslpValue ||
         "";
+    const direction = getChildrenDirection(targetElement, parentPath);
     const isVariant = !!fieldMetadata?.variant;
     const [fieldSchema, setFieldSchema] = useState<ISchemaFieldMap | null>(
         null
@@ -128,14 +133,11 @@ function FieldToolbarComponent(
     let fieldType = null;
     let isWholeMultipleField = false;
 
-    if(fieldSchema) {
-        const { isDisabled } = isFieldDisabled(
-            fieldSchema,
-            {
-                editableElement: targetElement,
-                fieldMetadata
-            }
-        );
+    if (fieldSchema) {
+        const { isDisabled } = isFieldDisabled(fieldSchema, {
+            editableElement: targetElement,
+            fieldMetadata,
+        });
 
         // field is disabled, no actions needed
         if (isDisabled) {
@@ -149,8 +151,9 @@ function FieldToolbarComponent(
         Icon = fieldIcons[fieldType];
 
         isMultiple = fieldSchema.multiple || false;
-        if(fieldType === FieldDataType.REFERENCE)
-            isMultiple = (fieldSchema as IReferenceContentTypeSchema).field_metadata.ref_multiple;
+        if (fieldType === FieldDataType.REFERENCE)
+            isMultiple = (fieldSchema as IReferenceContentTypeSchema)
+                .field_metadata.ref_multiple;
 
         // field is multiple but an instance is not selected
         // instead the whole field (all instances) is selected.
@@ -159,17 +162,19 @@ function FieldToolbarComponent(
         // cannot rely on -1 index, as the non-negative index then refers to the index of
         // the featured_blogs block in page_components
         // It is not needed except taxanomy.
-        isWholeMultipleField = isMultiple &&
-        (fieldMetadata.fieldPathWithIndex ===
-            fieldMetadata.instance.fieldPathWithIndex ||
-            fieldMetadata.multipleFieldMetadata?.index === -1);
+        isWholeMultipleField =
+            isMultiple &&
+            (fieldMetadata.fieldPathWithIndex ===
+                fieldMetadata.instance.fieldPathWithIndex ||
+                fieldMetadata.multipleFieldMetadata?.index === -1);
 
-        if (DEFAULT_MULTIPLE_FIELDS.includes(fieldType) && isWholeMultipleField) {
+        if (
+            DEFAULT_MULTIPLE_FIELDS.includes(fieldType) &&
+            isWholeMultipleField
+        ) {
             return null;
         }
     }
-
-    direction.value = getChildrenDirection(targetElement, parentPath);
 
     const invertTooltipPosition =
         targetElement.getBoundingClientRect().top <= TOOLTIP_TOP_EDGE_BUFFER;
@@ -302,21 +307,28 @@ function FieldToolbarComponent(
             if (fieldSchema) {
                 setFieldSchema(fieldSchema);
             }
-            const variantStatus = await getFieldVariantStatus(
-                fieldMetadata.fieldPathWithIndex
-            );
+            const variantStatus = await getFieldVariantStatus(fieldMetadata);
             setFieldVariantStatus(variantStatus ?? BASE_VARIANT_STATUS);
         }
         fetchFieldSchema();
     }, [fieldMetadata]);
 
     useEffect(() => {
-        visualBuilderPostMessage?.on(VisualBuilderPostMessageEvents.DELETE_INSTANCE, (args: { data: { path: string } }) => {
-            if(args.data?.path === fieldMetadata.instance.fieldPathWithIndex){
-                props.hideOverlay()
+        const event = visualBuilderPostMessage?.on(
+            VisualBuilderPostMessageEvents.DELETE_INSTANCE,
+            (args: { data: { path: string } }) => {
+                if (
+                    args.data?.path ===
+                    fieldMetadata.instance.fieldPathWithIndex
+                ) {
+                    props.hideOverlay();
+                }
             }
-        })
-    }, [])
+        );
+        return () => {
+            event?.unregister();
+        };
+    }, []);
 
     const multipleFieldToolbarButtonClasses = classNames(
         "visual-builder__button visual-builder__button--secondary",
@@ -373,7 +385,7 @@ function FieldToolbarComponent(
                                         multipleFieldToolbarButtonClasses
                                     }
                                     data-tooltip={
-                                        direction.value === "vertical"
+                                        direction === "vertical"
                                             ? "Move up"
                                             : "Move left"
                                     }
@@ -390,10 +402,10 @@ function FieldToolbarComponent(
                                     <MoveLeftIcon
                                         className={classNames({
                                             "visual-builder__rotate--90":
-                                                direction.value === "vertical",
+                                                direction === "vertical",
                                             [visualBuilderStyles()[
                                                 "visual-builder__rotate--90"
-                                            ]]: direction.value === "vertical",
+                                            ]]: direction === "vertical",
                                         })}
                                         disabled={disableMoveLeft}
                                     />
@@ -405,7 +417,7 @@ function FieldToolbarComponent(
                                         multipleFieldToolbarButtonClasses
                                     }
                                     data-tooltip={
-                                        direction.value === "vertical"
+                                        direction === "vertical"
                                             ? "Move down"
                                             : "Move right"
                                     }
@@ -422,10 +434,10 @@ function FieldToolbarComponent(
                                     <MoveRightIcon
                                         className={classNames({
                                             "visual-builder__rotate--90":
-                                                direction.value === "vertical",
+                                                direction === "vertical",
                                             [visualBuilderStyles()[
                                                 "visual-builder__rotate--90"
-                                            ]]: direction.value === "vertical",
+                                            ]]: direction === "vertical",
                                         })}
                                         disabled={disableMoveRight}
                                     />

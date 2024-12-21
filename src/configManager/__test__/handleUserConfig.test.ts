@@ -370,6 +370,63 @@ describe("handleInitData()", () => {
             expect(config.stackDetails.locale).toBe("en-us");
         });
     });
+
+    describe("handleInitData() - editButton configuration", () => {
+        let config: DeepSignal<IConfig>;
+
+        beforeEach(() => {
+            Config.reset();
+            config = Config.get();
+        });
+
+        afterAll(() => {
+            Config.reset();
+        });
+
+        test("should set editButton enable from initData", () => {
+            const initData: Partial<IInitData> = {
+                editButton: {
+                    enable: false,
+                },
+            };
+
+            handleInitData(initData);
+            expect(config.editButton.enable).toBe(false);
+        });
+
+        test("should set editButton exclude from initData if it is an array", () => {
+            const initData: Partial<IInitData> = {
+                editButton: {
+                    exclude: ["insideLivePreviewPortal"],
+                },
+            };
+
+            handleInitData(initData);
+            expect(config.editButton.exclude).toEqual(["insideLivePreviewPortal"]);
+        });
+
+        test("should set editButton position from initData", () => {
+            const initData: Partial<IInitData> = {
+                editButton: {
+                    position: "bottom",
+                },
+            };
+
+            handleInitData(initData);
+            expect(config.editButton.position).toBe("bottom");
+        });
+
+        test("should set editButton includeByQueryParameter from initData", () => {
+            const initData: Partial<IInitData> = {
+                editButton: {
+                    includeByQueryParameter: false,
+                },
+            };
+
+            handleInitData(initData);
+            expect(config.editButton.includeByQueryParameter).toBe(false);
+        });
+    });
 });
 
 describe("handleClientUrlParams()", () => {
