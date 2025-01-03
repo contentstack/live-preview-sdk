@@ -260,7 +260,7 @@ export function observeParentAndFocusNewInstance({
                     // TODO - temp fix. We remove our empty block div once the new block arrives
                     // but we focus the element before that and then the block shifts.
                     // For some reason, the window resize event also does not trigger
-                    setTimeout(() => newInstance.click(), 150);
+                    setTimeout(() => newInstance.click(), 350);
                     observer.disconnect();
                     hasObserverDisconnected = true;
                     return;

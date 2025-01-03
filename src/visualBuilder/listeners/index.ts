@@ -1,4 +1,3 @@
-import EventListenerHandlerParams from "./types";
 import { VisualBuilder } from "..";
 import handleBuilderInteraction from "./mouseClick";
 import handleMouseHover, {
@@ -6,6 +5,7 @@ import handleMouseHover, {
     hideHoverOutline,
     showCustomCursor,
 } from "./mouseHover";
+import EventListenerHandlerParams from "./types";
 
 type AddEventListenersParams = Omit<
     EventListenerHandlerParams,
@@ -76,10 +76,16 @@ export function removeEventListeners(params: RemoveEventListenersParams): void {
         window.removeEventListener("mousemove", mousemoveHandler);
     }
     if (mouseleaveHandler) {
-        document.documentElement.removeEventListener("mouseleave", mouseleaveHandler);
+        document.documentElement.removeEventListener(
+            "mouseleave",
+            mouseleaveHandler
+        );
     }
     if (mouseenterHandler) {
-        document.documentElement.removeEventListener("mouseenter", mouseenterHandler);
+        document.documentElement.removeEventListener(
+            "mouseenter",
+            mouseenterHandler
+        );
     }
 
     eventListenersMap.clear();
