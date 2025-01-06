@@ -169,4 +169,15 @@ describe("MultipleFieldToolbarComponent", () => {
             );
         })
     });
+    test("display variant icon instead of dropdown", async () => {
+        mockEventDetails.fieldMetadata.variant = "variant";
+        const { findByTestId } = await asyncRender(
+            <FieldToolbarComponent eventDetails={mockEventDetails} />
+        );
+
+        const variantIcon = await findByTestId(
+            "visual-builder-canvas-variant-icon"
+        );
+        expect(variantIcon).toBeInTheDocument();
+    });
 });

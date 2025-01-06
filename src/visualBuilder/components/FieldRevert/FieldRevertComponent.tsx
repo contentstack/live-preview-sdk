@@ -3,6 +3,8 @@ import React, { useRef, useEffect } from "preact/compat";
 import { visualBuilderStyles } from "../../visualBuilder.style";
 import visualBuilderPostMessage from "../../utils/visualBuilderPostMessage";
 import { CslpData } from "../../../cslp/types/cslp.types";
+import { VariantIcon } from "../icons/variant";
+import { CaretIcon } from "../icons";
 
 export interface IVariantStatus {
     fieldLevelCustomizations: boolean;
@@ -65,23 +67,6 @@ export const FieldRevertComponent = (props: FieldRevertComponentProps) => {
         isOpen,
         closeDropdown,
     } = props;
-    const dropdownRef = useRef<HTMLDivElement>(null);
-
-    useEffect(() => {
-        const handleClickOutside = (event: MouseEvent) => {
-            if (
-                dropdownRef.current &&
-                !dropdownRef.current.contains(event.target as Node)
-            ) {
-                closeDropdown();
-            }
-        };
-
-        document.addEventListener("mousedown", handleClickOutside);
-        return () => {
-            document.removeEventListener("mousedown", handleClickOutside);
-        };
-    }, []);
 
     const getDropdownItems = () => {
         const {
@@ -166,7 +151,6 @@ export const FieldRevertComponent = (props: FieldRevertComponentProps) => {
                 "variant-field-revert-component",
                 visualBuilderStyles()["variant-field-revert-component"]
             )}
-            ref={dropdownRef}
             onClick={(e) => e.stopPropagation()}
         >
             {isOpen && (
@@ -199,6 +183,87 @@ export const FieldRevertComponent = (props: FieldRevertComponentProps) => {
                     ))}
                 </div>
             )}
+        </div>
+    );
+};
+
+export const VariantRevertDropdown = (props: any) => {
+    const {
+        closeDropdown,
+        invertTooltipPosition,
+        toggleVariantDropdown,
+        variantStatus = BASE_VARIANT_STATUS,
+    } = props;
+    const dropdownRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (
+                dropdownRef.current &&
+                !dropdownRef.current.contains(event.target as Node)
+            ) {
+                console.log("click outside");
+                closeDropdown();
+            }
+        };
+
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, []);
+    const hasDropdownItems = Object.values(variantStatus).some(
+        (value) => value
+    );
+    if (!hasDropdownItems) {
+        return (
+            <button
+                className={classNames(
+                    "visual-builder__button visual-builder__button--secondary",
+                    visualBuilderStyles()["visual-builder__button"],
+                    visualBuilderStyles()["visual-builder__button--secondary"],
+                    visualBuilderStyles()["visual-builder__tooltip"],
+                    {
+                        "visual-builder__tooltip--bottom":
+                            invertTooltipPosition,
+                        [visualBuilderStyles()[
+                            "visual-builder__tooltip--bottom"
+                        ]]: invertTooltipPosition,
+                    }
+                )}
+                style={{ padding: "6px" }}
+                data-tooltip={"Variant"}
+                data-testid={`visual-builder-canvas-variant-icon`}
+            >
+                <VariantIcon />
+            </button>
+        );
+    }
+    return (
+        <div ref={dropdownRef}>
+            <button
+                className={classNames(
+                    "visual-builder__variant-button visual-builder__button visual-builder__button--secondary",
+                    visualBuilderStyles()["visual-builder__button"],
+                    visualBuilderStyles()["visual-builder__button--secondary"],
+                    visualBuilderStyles()["visual-builder__tooltip"],
+                    visualBuilderStyles()["visual-builder__variant-button"],
+                    {
+                        "visual-builder__tooltip--bottom":
+                            invertTooltipPosition,
+                        [visualBuilderStyles()[
+                            "visual-builder__tooltip--bottom"
+                        ]]: invertTooltipPosition,
+                    }
+                )}
+                data-tooltip={"Variant Revert"}
+                data-testid={`visual-builder-canvas-variant-revert`}
+                onClick={toggleVariantDropdown}
+            >
+                <VariantIcon />
+                <CaretIcon open={props.isOpen} />
+            </button>
+            <FieldRevertComponent {...props} />
         </div>
     );
 };
