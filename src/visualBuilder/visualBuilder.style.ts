@@ -640,6 +640,23 @@ export function visualBuilderStyles() {
                 fill: #475161;
             }
         `,
+        "visual-builder__collab-indicator": css`
+            background: #6c5ce7;
+            height: 1.75rem;
+            width: 1.75rem;
+            gap: 0px;
+            opacity: 0px;
+            border-width: 0px, 0px, 0px, 0px;
+            border-style: solid;
+            border-color: #ffffff;
+            color: white;
+            border-radius: 50%;
+            align-items: center;
+            justify-content: center;
+            font-family: Inter;
+            font-size: 16px;
+            font-weight: 600;
+        `,
     };
 }
 

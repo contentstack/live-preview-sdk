@@ -59,6 +59,7 @@ export enum ILivePreviewModeConfig {
 
 export enum ILivePreviewWindowType {
     PREVIEW = "preview",
+    PREVIEW_SHARE = "preview-share",
     BUILDER = "builder",
     INDEPENDENT = "independent",
 }

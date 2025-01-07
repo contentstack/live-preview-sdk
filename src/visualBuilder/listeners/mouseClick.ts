@@ -21,6 +21,10 @@ import { FieldSchemaMap } from "../utils/fieldSchemaMap";
 import { isFieldDisabled } from "../utils/isFieldDisabled";
 import EventListenerHandlerParams from "./types";
 import { toggleHighlightedCommentIconDisplay } from "../generators/generateHighlightedComment";
+import getXPath from "get-xpath";
+import Config from "../../configManager/configManager";
+import { generateThread } from "../generators/generateThread";
+import { ILivePreviewWindowType } from "../../types/types";
 
 type HandleBuilderInteractionParams = Omit<
     EventListenerHandlerParams,
@@ -53,7 +57,11 @@ export function addFocusedToolbar(params: AddFocusedToolbarParams): void {
 
     if (!editableElement || !params.focusedToolbar) return;
 
-    appendFocusedToolbar(params.eventDetails, params.focusedToolbar, params.hideOverlay);
+    appendFocusedToolbar(
+        params.eventDetails,
+        params.focusedToolbar,
+        params.hideOverlay
+    );
 }
 
 async function handleBuilderInteraction(
@@ -73,6 +81,25 @@ async function handleBuilderInteraction(
     ) {
         params.event.preventDefault();
         params.event.stopPropagation();
+    }
+
+    const config = Config.get();
+    if (config?.windowType === ILivePreviewWindowType.PREVIEW_SHARE) {
+        const xpath = getXPath(eventTarget);
+        if (!eventTarget) return;
+        const rect = eventTarget.getBoundingClientRect();
+        const relativeX = (params.event.clientX - rect.left) / rect.width;
+        const relativeY = (params.event.clientY - rect.top) / rect.height;
+        generateThread({ xpath, relativeX, relativeY });
+        visualBuilderPostMessage?.send(
+            VisualBuilderPostMessageEvents.COLLAB_XPATH,
+            {
+                xpath: xpath,
+                x: relativeX,
+                y: relativeY,
+            }
+        );
+        return;
     }
 
     const eventDetails = getCsDataOfElement(params.event);
@@ -150,7 +177,7 @@ async function handleBuilderInteraction(
                 focusedToolbar: params.focusedToolbar,
                 resizeObserver: params.resizeObserver,
             });
-        }
+        },
     });
 
     const { content_type_uid, fieldPath, cslpValue } = fieldMetadata;
