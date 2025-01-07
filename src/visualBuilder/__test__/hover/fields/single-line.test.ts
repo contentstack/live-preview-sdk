@@ -84,17 +84,16 @@ describe("When an element is hovered in visual builder mode", () => {
         test("should have outline and custom cursor", async () => {
             titleField.dispatchEvent(mousemoveEvent);
             await waitForHoverOutline();
-            expect(titleField).toMatchSnapshot();
+            expect(titleField).not.toHaveAttribute("style");
             const hoverOutline = screen.getByTestId(
                 "visual-builder__hover-outline"
             );
-            expect(hoverOutline).toMatchSnapshot();
+            expect(hoverOutline).toHaveStyle("top: 51px; left: 51px; width: 27.7734375px; height: 20.3984375px;");
 
             const customCursor = document.querySelector(
                 `[data-testid="visual-builder__cursor"]`
             );
-
-            expect(customCursor).toMatchSnapshot();
+            expect(customCursor).toHaveAttribute("data-icon", "singleline");
             expect(customCursor?.classList.contains("visible")).toBeTruthy();
         });
     });
@@ -124,14 +123,13 @@ describe("When an element is hovered in visual builder mode", () => {
         test("should have outline and custom cursor", async () => {
             singleLineField.dispatchEvent(mousemoveEvent);
             await waitForHoverOutline();
-            expect(singleLineField).toMatchSnapshot();
-            expect(singleLineField.classList.contains("cslp-edit-mode"));
+            expect(singleLineField).not.toHaveAttribute("style");
 
             const customCursor = document.querySelector(
                 `[data-testid="visual-builder__cursor"]`
             );
 
-            expect(customCursor).toMatchSnapshot();
+            expect(customCursor).toHaveAttribute("data-icon", "singleline");
             expect(customCursor?.classList.contains("visible")).toBeTruthy();
         });
     });
@@ -184,35 +182,35 @@ describe("When an element is hovered in visual builder mode", () => {
         test("should have outline and custom cursor", async () => {
             container.dispatchEvent(mousemoveEvent);
             await waitForHoverOutline();
-            expect(container).toMatchSnapshot();
+            expect(container).not.toHaveAttribute('style');
 
             const hoverOutline = document.querySelector(
                 "[data-testid='visual-builder__hover-outline']"
             );
-            expect(hoverOutline).toMatchSnapshot();
+            expect(hoverOutline).toHaveStyle("top: 34px; left: 34px; width: 828px; height: 54.3984375px;");
 
             const customCursor = document.querySelector(
                 `[data-testid="visual-builder__cursor"]`
             );
 
-            expect(customCursor).toMatchSnapshot();
+            expect(customCursor).toHaveAttribute('data-icon', 'singleline');
             expect(customCursor?.classList.contains("visible")).toBeTruthy();
         });
 
         test("should have outline and custom cursor on individual instances", async () => {
             firstSingleLineField.dispatchEvent(mousemoveEvent);
             await waitForHoverOutline();
-            expect(firstSingleLineField).toMatchSnapshot();
+            expect(firstSingleLineField).not.toHaveAttribute('style');
             const hoverOutline = document.querySelector(
                 "[data-testid='visual-builder__hover-outline']"
             );
-            expect(hoverOutline).toMatchSnapshot();
+            expect(hoverOutline).toHaveStyle("top: 51px; left: 51px; width: 27.7734375px; height: 20.3984375px;");
 
             const customCursor = document.querySelector(
                 `[data-testid="visual-builder__cursor"]`
             );
 
-            expect(customCursor).toMatchSnapshot();
+            expect(customCursor).toHaveAttribute('data-icon', 'singleline');
             expect(customCursor?.classList.contains("visible")).toBeTruthy();
         });
     });

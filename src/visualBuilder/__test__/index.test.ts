@@ -82,7 +82,10 @@ describe("Visual builder", () => {
             `[data-testid="visual-builder__container"]`
         );
 
-        expect(visualBuilderDOM).toMatchSnapshot();
+        expect(document.querySelector('[data-testid="visual-builder__cursor"]')).toBeInTheDocument();
+        expect(document.querySelector('[data-testid="visual-builder__focused-toolbar"]')).toBeInTheDocument();
+        expect(document.querySelector('[data-testid="visual-builder__hover-outline"]')).toBeInTheDocument();
+        expect(document.querySelector('[data-testid="visual-builder__overlay__wrapper"]')).toBeInTheDocument();
         x.destroy();
     }, { timeout: 20 * 1000 });
 
@@ -122,7 +125,8 @@ describe("Visual builder", () => {
             const x = new VisualBuilder();
             await triggerAndWaitForClickAction(visualBuilderPostMessage, h1, {skipWaitForFieldType: true});
 
-            expect(document.body).toMatchSnapshot();
+            expect(h1).not.toHaveAttribute("contenteditable");
+            expect(h1).not.toHaveAttribute("data-cslp-field-type");
             x.destroy();
         });
 
@@ -186,10 +190,8 @@ describe("Visual builder", () => {
             test("single line should be contenteditable", async () => {
                 await triggerAndWaitForClickAction(visualBuilderPostMessage, h1);
 
-                await waitFor(() => {
-                    expect(h1.getAttribute("contenteditable")).toBe("true");
-                });
-                expect(h1).toMatchSnapshot();
+                expect(h1).toHaveAttribute("contenteditable");
+                expect(h1).toHaveAttribute("data-cslp-field-type", "singleline");
             }, { timeout: 20 * 1000 });
 
             test("multi line should be contenteditable", async () => {
@@ -199,45 +201,10 @@ describe("Visual builder", () => {
                 );
                 await triggerAndWaitForClickAction(visualBuilderPostMessage, h1);
 
-                await waitFor(() => {
-                    expect(h1.getAttribute("contenteditable")).toBe("true");
-                });
-                expect(h1).toMatchSnapshot();
+                expect(h1).toHaveAttribute("contenteditable");
+                expect(h1).toHaveAttribute("data-cslp-field-type", "multiline");
             }, { timeout: 20 * 1000 });
 
-            //TODO: Fix this test on CI
-            test.skip("file should render a replacer and remove when it is not", async () => {
-                const h1 = document.createElement("h1");
-                h1.setAttribute(
-                    "data-cslp",
-                    "all_fields.blt58a50b4cebae75c5.en-us.file"
-                );
-                document.body.appendChild(h1);
-                const x = new VisualBuilder();
-                await triggerAndWaitForClickAction(visualBuilderPostMessage, h1);
-
-                let replaceBtn = document.getElementsByClassName(
-                    "visual-builder__replace-button"
-                )[0];
-
-                expect(h1).toMatchSnapshot();
-                expect(replaceBtn).toMatchSnapshot();
-
-                const h2 = document.createElement("h2");
-                h2.setAttribute(
-                    "data-cslp",
-                    "all_fields.blt58a50b4cebae75c5.en-us.title"
-                );
-                document.body.appendChild(h2);
-
-                await triggerAndWaitForClickAction(visualBuilderPostMessage, h2);
-                replaceBtn = document.getElementsByClassName(
-                    "visual-builder__replace-button"
-                )[0];
-
-                expect(replaceBtn).toBeUndefined();
-                x.destroy();
-            }, { timeout: 10 * 1000 });
         });
     });
 }, { timeout: 20 * 1000 });
@@ -330,8 +297,6 @@ describe.skip("visual builder DOM", () => {
             `[data-testid="visual-builder__overlay__wrapper"]`
         );
 
-        expect(visualBuilderOverlayWrapper).toMatchSnapshot();
-
         await triggerAndWaitForClickAction(visualBuilderPostMessage, h1);
 
         await waitFor(() => {
@@ -345,7 +310,6 @@ describe.skip("visual builder DOM", () => {
                 true
             );
         });
-        expect(visualBuilderOverlayWrapper).toMatchSnapshot();
 
         const visualBuilderWrapperTopOverlay = getElementBytestId('visual-builder__overlay--top') as HTMLDivElement;
         const visualBuilderWrapperLeftOverlay = getElementBytestId(

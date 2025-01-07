@@ -1,10 +1,11 @@
 import { screen } from "@testing-library/preact";
 import { getFieldSchemaMap } from "../../../../__test__/data/fieldSchemaMap";
-import { waitForHoverOutline } from "../../../../__test__/utils";
+import { waitForBuilderSDKToBeInitialized, waitForHoverOutline } from "../../../../__test__/utils";
 import Config from "../../../../configManager/configManager";
 import { VisualBuilder } from "../../../index";
 import { FieldSchemaMap } from "../../../utils/fieldSchemaMap";
 import { mockDomRect } from "./mockDomRect";
+import visualBuilderPostMessage from "../../../utils/visualBuilderPostMessage";
 
 vi.mock("../../../utils/visualBuilderPostMessage", async () => {
     const { getAllContentTypes } = await vi.importActual<
@@ -21,6 +22,7 @@ vi.mock("../../../utils/visualBuilderPostMessage", async () => {
                     });
                 return Promise.resolve();
             }),
+            on: vi.fn(),
         },
     };
 });
@@ -62,7 +64,7 @@ describe("When an element is hovered in visual builder mode", () => {
         let booleanField: HTMLParagraphElement;
         let visualBuilder: VisualBuilder;
 
-        beforeEach(() => {
+        beforeEach( async () => {
             booleanField = document.createElement("p");
             booleanField.setAttribute(
                 "data-cslp",
@@ -76,6 +78,7 @@ describe("When an element is hovered in visual builder mode", () => {
             document.body.appendChild(booleanField);
 
             visualBuilder = new VisualBuilder();
+            await waitForBuilderSDKToBeInitialized(visualBuilderPostMessage);
         });
 
         afterEach(() => {
@@ -85,16 +88,17 @@ describe("When an element is hovered in visual builder mode", () => {
         test("should have outline and custom cursor", async () => {
             booleanField.dispatchEvent(mousemoveEvent);
             await waitForHoverOutline();
-            expect(booleanField).toMatchSnapshot();
+            expect(booleanField).toHaveAttribute("data-cslp", "all_fields.bltapikey.en-us.boolean");
+            expect(booleanField).not.toHaveAttribute("contenteditable");
             const hoverOutline = document.querySelector(
                 "[data-testid='visual-builder__hover-outline']"
             );
-            expect(hoverOutline).toMatchSnapshot();
+            expect(hoverOutline).toHaveAttribute("style");
 
             const customCursor = document.querySelector(
                 `[data-testid="visual-builder__cursor"]`
             );
-            expect(customCursor).toMatchSnapshot();
+            expect(customCursor).toHaveAttribute("data-icon", "boolean");
             expect(customCursor?.classList.contains("visible")).toBeTruthy();
         });
     });

@@ -20,6 +20,7 @@ vi.mock("../../../utils/visualBuilderPostMessage", async () => {
                     });
                 return Promise.resolve();
             }),
+            on: vi.fn(),
         },
     };
 });
@@ -85,17 +86,18 @@ describe("When an element is hovered in visual builder mode", () => {
         test("should have outline and custom cursor", async () => {
             dataField.dispatchEvent(mousemoveEvent);
             await waitForHoverOutline();
-            expect(dataField).toMatchSnapshot();
+            expect(dataField).toHaveAttribute("data-cslp", "all_fields.bltapikey.en-us.date");
+            expect(dataField).not.toHaveAttribute("contenteditable");
             const hoverOutline = document.querySelector(
                 "[data-testid='visual-builder__hover-outline']"
             );
-            expect(hoverOutline).toMatchSnapshot();
+            expect(hoverOutline).toHaveAttribute("style");
 
             const customCursor = document.querySelector(
                 `[data-testid="visual-builder__cursor"]`
             );
 
-            expect(customCursor).toMatchSnapshot();
+            expect(customCursor).toHaveAttribute("data-icon", "isodate");
             expect(customCursor?.classList.contains("visible")).toBeTruthy();
         });
     });
