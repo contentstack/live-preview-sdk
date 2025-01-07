@@ -155,6 +155,7 @@ export const FieldRevertComponent = (props: FieldRevertComponentProps) => {
         >
             {isOpen && (
                 <div
+                    data-testid="variant-field-revert-component__dropdown-content"
                     className={classNames(
                         "variant-field-revert-component__dropdown-content",
                         visualBuilderStyles()[
