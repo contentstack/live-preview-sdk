@@ -5,6 +5,7 @@ import visualBuilderPostMessage from "../../utils/visualBuilderPostMessage";
 import { CslpData } from "../../../cslp/types/cslp.types";
 import { VariantIcon } from "../icons/variant";
 import { CaretIcon } from "../icons";
+import useHandleOutsideClick from "./useHandleOutsideClick";
 
 export interface IVariantStatus {
     fieldLevelCustomizations: boolean;
@@ -196,42 +197,27 @@ export const VariantRevertDropdown = (props: any) => {
         variantStatus = BASE_VARIANT_STATUS,
     } = props;
     const dropdownRef = useRef<HTMLDivElement>(null);
-
-    useEffect(() => {
-        const handleClickOutside = (event: MouseEvent) => {
-            if (
-                dropdownRef.current &&
-                !dropdownRef.current.contains(event.target as Node)
-            ) {
-                console.log("click outside");
-                closeDropdown();
-            }
-        };
-
-        document.addEventListener("mousedown", handleClickOutside);
-        return () => {
-            document.removeEventListener("mousedown", handleClickOutside);
-        };
-    }, []);
+    useHandleOutsideClick(dropdownRef, closeDropdown);
     const hasDropdownItems = Object.values(variantStatus).some(
         (value) => value
     );
+
+    const buttonClassNames = classNames(
+        "visual-builder__button visual-builder__button--secondary",
+        visualBuilderStyles()["visual-builder__button"],
+        visualBuilderStyles()["visual-builder__button--secondary"],
+        visualBuilderStyles()["visual-builder__tooltip"],
+        {
+            "visual-builder__tooltip--bottom": invertTooltipPosition,
+            [visualBuilderStyles()["visual-builder__tooltip--bottom"]]:
+                invertTooltipPosition,
+        }
+    );
+
     if (!hasDropdownItems) {
         return (
             <button
-                className={classNames(
-                    "visual-builder__button visual-builder__button--secondary",
-                    visualBuilderStyles()["visual-builder__button"],
-                    visualBuilderStyles()["visual-builder__button--secondary"],
-                    visualBuilderStyles()["visual-builder__tooltip"],
-                    {
-                        "visual-builder__tooltip--bottom":
-                            invertTooltipPosition,
-                        [visualBuilderStyles()[
-                            "visual-builder__tooltip--bottom"
-                        ]]: invertTooltipPosition,
-                    }
-                )}
+                className={classNames(buttonClassNames)}
                 style={{ padding: "6px" }}
                 data-tooltip={"Variant"}
                 data-testid={`visual-builder-canvas-variant-icon`}
@@ -244,18 +230,8 @@ export const VariantRevertDropdown = (props: any) => {
         <div ref={dropdownRef}>
             <button
                 className={classNames(
-                    "visual-builder__variant-button visual-builder__button visual-builder__button--secondary",
-                    visualBuilderStyles()["visual-builder__button"],
-                    visualBuilderStyles()["visual-builder__button--secondary"],
-                    visualBuilderStyles()["visual-builder__tooltip"],
-                    visualBuilderStyles()["visual-builder__variant-button"],
-                    {
-                        "visual-builder__tooltip--bottom":
-                            invertTooltipPosition,
-                        [visualBuilderStyles()[
-                            "visual-builder__tooltip--bottom"
-                        ]]: invertTooltipPosition,
-                    }
+                    buttonClassNames,
+                    visualBuilderStyles()["visual-builder__variant-button"]
                 )}
                 data-tooltip={"Variant Revert"}
                 data-testid={`visual-builder-canvas-variant-revert`}
