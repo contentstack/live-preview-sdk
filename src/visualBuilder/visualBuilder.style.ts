@@ -587,6 +587,8 @@ export function visualBuilderStyles() {
         `,
         "variant-field-revert-component__dropdown-content": css`
             position: absolute;
+            top: -12px;
+            left: -4px;
             background-color: #ffffff;
             min-width: max-content;
             box-shadow:
@@ -600,6 +602,7 @@ export function visualBuilderStyles() {
         `,
         "variant-field-revert-component__dropdown-content__list-item": css`
             color: black;
+            font-weight: 400;
             padding: 9.6px 16px;
             text-decoration: none;
             display: block;

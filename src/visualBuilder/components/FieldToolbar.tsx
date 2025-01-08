@@ -37,6 +37,7 @@ import {
     FieldRevertComponent,
     getFieldVariantStatus,
     IVariantStatus,
+    VariantRevertDropdown,
 } from "./FieldRevert/FieldRevertComponent";
 
 export type FieldDetails = Pick<
@@ -349,15 +350,6 @@ function FieldToolbarComponent(
                 visualBuilderStyles()["visual-builder__field-toolbar-container"]
             )}
         >
-            {isVariant && (
-                <FieldRevertComponent
-                    fieldDataName={fieldMetadata.fieldPathWithIndex}
-                    fieldMetadata={fieldMetadata}
-                    variantStatus={fieldVariantStatus}
-                    isOpen={isOpenVariantRevert}
-                    closeDropdown={closeVariantDropdown}
-                />
-            )}
             <div
                 className={classNames(
                     "visual-builder__focused-toolbar__multiple-field-toolbar",
@@ -376,7 +368,17 @@ function FieldToolbarComponent(
                     )}
                 >
                     <>
-                        {isVariant ? variantButton : null}
+                        {isVariant ? (
+                            <VariantRevertDropdown
+                                fieldDataName={fieldMetadata.fieldPathWithIndex}
+                                fieldMetadata={fieldMetadata}
+                                variantStatus={fieldVariantStatus}
+                                isOpen={isOpenVariantRevert}
+                                closeDropdown={closeVariantDropdown}
+                                invertTooltipPosition={invertTooltipPosition}
+                                toggleVariantDropdown={toggleVariantDropdown}
+                            />
+                        ) : null}
                         {isMultiple && !isWholeMultipleField ? (
                             <>
                                 <button
