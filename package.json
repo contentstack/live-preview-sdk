@@ -29,13 +29,14 @@
         "test:once": "vitest run",
         "test:coverage": "vitest --coverage",
         "dev": "tsup --watch",
-        "prepare": "husky install",
+        "prepare": "husky",
         "lint": "eslint src",
         "lint:fix": "eslint --fix",
         "prettier": "prettier src --check",
         "prettier:fix": "prettier src --write",
         "format": "npm run prettier:fix && npm run lint:fix",
-        "docs": "typedoc --out docs --entryPointStrategy expand ./src"
+        "docs": "typedoc --out docs --entryPointStrategy expand ./src",
+        "version": "auto-changelog -p && git add CHANGELOG.md"
     },
     "keywords": [
         "live-preview"
@@ -43,6 +44,8 @@
     "author": "Contentstack",
     "license": "MIT",
     "devDependencies": {
+        "@commitlint/cli": "^16.3.0",
+        "@commitlint/config-conventional": "^16.2.4",
         "@contentstack/advanced-post-message": "^0.0.2",
         "@eslint/js": "^9.10.0",
         "@testing-library/jest-dom": "^6.5.0",
@@ -57,13 +60,14 @@
         "@types/uuid": "^8.3.1",
         "@vitest/coverage-v8": "^2.1.2",
         "@vitest/ui": "^2.1.2",
+        "auto-changelog": "^2.5.0",
         "esbuild-plugin-file-path-extensions": "^2.1.0",
         "eslint": "^7.32.0",
         "eslint-config-prettier": "^9.1.0",
         "eslint-plugin-only-warn": "^1.1.0",
         "eslint-plugin-react": "^7.36.0",
         "globals": "^15.9.0",
-        "husky": "^8.0.0",
+        "husky": "^8.0.3",
         "jsdom": "^25.0.0",
         "prettier": "^3.3.3",
         "prettier-eslint": "^15.0.1",
@@ -99,6 +103,15 @@
         "src/**/*.{ts,css,md}": [
             "npm run prettier:fix",
             "npm run lint:fix"
+        ]
+    },
+    "auto-changelog": {
+        "commitLimit": false,
+        "template": "changelog-template.hbs"
+    },
+    "commitlint": {
+        "extends": [
+            "@commitlint/config-conventional"
         ]
     }
 }
