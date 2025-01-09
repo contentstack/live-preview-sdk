@@ -661,7 +661,7 @@ describe("When an inline element is edited in visual builder mode", () => {
             });
         });
     });
-    describe.skip("number field", () => {
+    describe.only("number field", () => {
         let numberField: HTMLParagraphElement;
         let visualBuilder: VisualBuilder;
         let overlayWrapper: HTMLDivElement;

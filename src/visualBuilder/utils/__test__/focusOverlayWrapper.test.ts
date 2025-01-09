@@ -37,7 +37,7 @@ const mockResizeObserver = {
     disconnect: vi.fn(),
 };
 
-describe.only("addFocusOverlay", () => {
+describe("addFocusOverlay", () => {
     let visualBuilderContainer: HTMLDivElement;
     let targetElement: HTMLElement;
     let focusOverlayWrapper: HTMLDivElement;

@@ -199,7 +199,8 @@ describe("Live Preview HOC config", () => {
         });
     });
 
-    test.skip("should save the config when window is not available", () => {
+    test("should throw error when window is not available", () => {
+        vi.spyOn(PublicLogger, "warn");
         const originalWindow = global.window;
 
         // mock window deletion using define property
@@ -216,11 +217,10 @@ describe("Live Preview HOC config", () => {
             },
         };
 
-        // expect(ContentstackLivePreview.userConfig).toBeNull();
-
         ContentstackLivePreview.init(userConfig);
 
-        // expect(ContentstackLivePreview.userConfig).toBe(userConfig);
+        expect(PublicLogger.warn).toHaveBeenCalledTimes(1);
+        expect(PublicLogger.warn).toHaveBeenCalledWith('The SDK is not initialized in the browser.');
 
         // restoring the window
         Object.defineProperty(global, "window", {
