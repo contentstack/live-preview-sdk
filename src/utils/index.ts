@@ -16,7 +16,6 @@ export function addParamsToUrl() {
             !targetHref.includes("live_preview")
         ) {
             const newUrl = addLivePreviewQueryTags(target.href);
-            console.log("🚀 ~ window.addEventListener ~ newUrl:", newUrl)
             event.target.href = newUrl || target.href;
         }
     });
