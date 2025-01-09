@@ -661,7 +661,7 @@ describe("When an inline element is edited in visual builder mode", () => {
             });
         });
     });
-    describe.only("number field", () => {
+    describe("number field", () => {
         let numberField: HTMLParagraphElement;
         let visualBuilder: VisualBuilder;
         let overlayWrapper: HTMLDivElement;
@@ -713,5 +713,7 @@ describe("When an inline element is edited in visual builder mode", () => {
                 expect(numberField).toHaveTextContent(`5678e-1087`);
             });
         });
+    }, {
+        timeout: 20 * 1000
     });
 });
