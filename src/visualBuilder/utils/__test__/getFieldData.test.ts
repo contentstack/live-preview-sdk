@@ -3,6 +3,7 @@ import { getFieldData } from "../getFieldData";
 import visualBuilderPostMessage from "../visualBuilderPostMessage";
 import { VisualBuilderPostMessageEvents } from "../types/postMessage.types";
 import { hasPostMessageError } from "../errorHandling";
+import { Mock } from "vitest";
 
 vi.mock("../../utils/visualBuilderPostMessage", async () => {
     return {
@@ -85,7 +86,7 @@ describe("getFieldData", () => {
     });
 
     test("should return an empty string if there is a post message error", async () => {
-        (hasPostMessageError as vi.Mock).mockReturnValueOnce(true);
+        (hasPostMessageError as Mock).mockReturnValueOnce(true);
 
         const fieldData = await getFieldData(mockFieldMetadata);
         expect(fieldData).toBe("");

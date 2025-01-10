@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, Mock } from "vitest";
 import { handleIndividualFields, cleanIndividualFieldResidual } from "../handleIndividualFields";
 import { VisualBuilderCslpEventDetails } from "../../types/visualBuilder.types";
 import { FieldSchemaMap } from "../fieldSchemaMap";
@@ -59,10 +59,10 @@ describe("handleIndividualFields", () => {
         const fieldType = "text";
         const isDisabled = { isDisabled: false };
 
-        (FieldSchemaMap.getFieldSchema as vi.Mock).mockResolvedValue(fieldSchema);
-        (getFieldData as vi.Mock).mockResolvedValue(expectedFieldData);
-        (getFieldType as vi.Mock).mockReturnValue(fieldType);
-        (isFieldDisabled as vi.Mock).mockReturnValue(isDisabled);
+        (FieldSchemaMap.getFieldSchema as Mock).mockResolvedValue(fieldSchema);
+        (getFieldData as Mock).mockResolvedValue(expectedFieldData);
+        (getFieldType as Mock).mockReturnValue(fieldType);
+        (isFieldDisabled as Mock).mockReturnValue(isDisabled);
 
         await act(async () => {
             await handleIndividualFields(eventDetails, elements);
@@ -81,10 +81,10 @@ describe("handleIndividualFields", () => {
         const fieldType = "blocks";
         const isDisabled = { isDisabled: false };
 
-        (FieldSchemaMap.getFieldSchema as vi.Mock).mockResolvedValue(fieldSchema);
-        (getFieldData as vi.Mock).mockResolvedValue(expectedFieldData);
-        (getFieldType as vi.Mock).mockReturnValue(fieldType);
-        (isFieldDisabled as vi.Mock).mockReturnValue(isDisabled);
+        (FieldSchemaMap.getFieldSchema as Mock).mockResolvedValue(fieldSchema);
+        (getFieldData as Mock).mockResolvedValue(expectedFieldData);
+        (getFieldType as Mock).mockReturnValue(fieldType);
+        (isFieldDisabled as Mock).mockReturnValue(isDisabled);
 
         await handleIndividualFields(eventDetails, elements);
 
@@ -98,16 +98,15 @@ describe("handleIndividualFields", () => {
         const fieldType = FieldDataType.SINGLELINE;
         const isDisabled = { isDisabled: false };
 
-        (FieldSchemaMap.getFieldSchema as vi.Mock).mockResolvedValue(fieldSchema);
-        (getFieldData as vi.Mock).mockResolvedValue(expectedFieldData);
-        (getFieldType as vi.Mock).mockReturnValue(fieldType);
-        (isFieldDisabled as vi.Mock).mockReturnValue(isDisabled);
+        (FieldSchemaMap.getFieldSchema as Mock).mockResolvedValue(fieldSchema);
+        (getFieldData as Mock).mockResolvedValue(expectedFieldData);
+        (getFieldType as Mock).mockReturnValue(fieldType);
+        (isFieldDisabled as Mock).mockReturnValue(isDisabled);
 
         await act(async () => {
             await handleIndividualFields(eventDetails, elements);
         })
 
-        screen.debug(eventDetails.editableElement);
         expect(eventDetails.editableElement.getAttribute(VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY)).toBe(fieldType);
         expect(eventDetails.editableElement.getAttribute("contenteditable")).toBe("true");
     });
@@ -159,7 +158,7 @@ describe("cleanIndividualFieldResidual", () => {
         cleanIndividualFieldResidual(elements);
 
         expect(elements.focusedToolbar?.innerHTML).toBe("");
-        expect(visualBuilderPostMessage.unregisterEvent).toHaveBeenCalledWith(VisualBuilderPostMessageEvents.DELETE_INSTANCE);
-        expect(visualBuilderPostMessage.unregisterEvent).toHaveBeenCalledWith(VisualBuilderPostMessageEvents.UPDATE_DISCUSSION_ID);
+        expect(visualBuilderPostMessage?.unregisterEvent).toHaveBeenCalledWith(VisualBuilderPostMessageEvents.DELETE_INSTANCE);
+        expect(visualBuilderPostMessage?.unregisterEvent).toHaveBeenCalledWith(VisualBuilderPostMessageEvents.UPDATE_DISCUSSION_ID);
     });
 });

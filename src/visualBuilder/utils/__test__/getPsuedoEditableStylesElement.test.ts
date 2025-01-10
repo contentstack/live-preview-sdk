@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, Mock } from "vitest";
 import { getPsuedoEditableElementStyles } from "../getPsuedoEditableStylesElement";
 import getCamelCaseStyles from "../getCamelCaseStyles";
 import getStyleOfAnElement from "../getStyleOfAnElement";
@@ -23,7 +23,7 @@ describe("getPsuedoEditableElementStyles", () => {
             fontSize: "16px",
         };
 
-        (getStyleOfAnElement as vi.Mock).mockReturnValue(mockStyles);
+        (getStyleOfAnElement as Mock).mockReturnValue(mockStyles);
 
         const result = getPsuedoEditableElementStyles(mockElement);
 
@@ -60,8 +60,8 @@ describe("getPsuedoEditableElementStyles", () => {
             fontSize: "16px",
         };
 
-        (getStyleOfAnElement as vi.Mock).mockReturnValue(mockStyles);
-        (getCamelCaseStyles as vi.Mock).mockReturnValue(mockCamelCaseStyles);
+        (getStyleOfAnElement as Mock).mockReturnValue(mockStyles);
+        (getCamelCaseStyles as Mock).mockReturnValue(mockCamelCaseStyles);
 
         const result = getPsuedoEditableElementStyles(mockElement, true);
 
