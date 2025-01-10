@@ -1,5 +1,51 @@
 # Changelog
 
+## [v3.1.0](https://github.com/contentstack/live-preview-sdk/compare/v3.0.2...v3.1.0)
+
+> 10 January 2025
+
+### New Features
+
+- feat: allow config object to be exported (Kirtesh Suthar - [#322](https://github.com/contentstack/live-preview-sdk/pull/322))
+
+### Fixes
+
+- fix(VE-4805): back button appears in quickform on clicking canvas (srinad007 - [#320](https://github.com/contentstack/live-preview-sdk/pull/320))
+- fix: issue with variant revert dropdown in canvas  (srinad007 - [#317](https://github.com/contentstack/live-preview-sdk/pull/317))
+
+### Chores And Housekeeping
+
+- chore: remove snapshot testing (Kirtesh Suthar - [#319](https://github.com/contentstack/live-preview-sdk/pull/319))
+
+### General Changes
+
+- Feat/auto changelog (Kirtesh Suthar - [#321](https://github.com/contentstack/live-preview-sdk/pull/321))
+
+### New Features
+
+- feat: add changelog (Kirtesh Suthar - [29ab05a](https://github.com/contentstack/live-preview-sdk/commit/29ab05a654c3c3bb1f69fcc3822c4b937efc1b31))
+- feat: add commitlint configuration and update husky pre-commit hook (Kirtesh Suthar - [9aa10a8](https://github.com/contentstack/live-preview-sdk/commit/9aa10a8b9ee9c8ef94f90a2bb1dd70ec748a14cf))
+
+### Fixes
+
+- fix: issue with variant revert dropdown in canvas and show variant icon for multiple fields (Srinadh Reddy - [8718c48](https://github.com/contentstack/live-preview-sdk/commit/8718c4832f30606437da1fd18513006f21e0fd34))
+
+### Chores And Housekeeping
+
+- chore: remove debug log from addParamsToUrl function (hiteshshetty-dev - [eedf15b](https://github.com/contentstack/live-preview-sdk/commit/eedf15bc62ba36b51a4e50b62dcc43281b3c5761))
+
+### Refactoring and Updates
+
+- refactor: extract outside click handling to custom hook (Srinadh Reddy - [11c9b8b](https://github.com/contentstack/live-preview-sdk/commit/11c9b8b6a2142def339eb8796273bec6209ebd4e))
+
+### Changes to Test Assests
+
+- test: refactor skipping test modules (hiteshshetty-dev - [28b28be](https://github.com/contentstack/live-preview-sdk/commit/28b28be6171c52d00778a2406c601df9499efd02))
+- test: rename related test files; add new tests for getMultilinePlaintext and getDiscussionIdByFieldMetaData (hiteshshetty-dev - [b110ddc](https://github.com/contentstack/live-preview-sdk/commit/b110ddcc448349ad85319361766072ce6fc1795c))
+- test: add test cases for variantRevertDropdown component (Srinadh Reddy - [ba5fe41](https://github.com/contentstack/live-preview-sdk/commit/ba5fe410114f42269eaf53bb8721902fd343a7f6))
+- test: update mock type casting in visual builder tests (hiteshshetty-dev - [a2d4397](https://github.com/contentstack/live-preview-sdk/commit/a2d4397f53f114e5c7d19e3c0ea2329581e1009f))
+- test: enable number field test suite in visual builder input tests (hiteshshetty-dev - [0f59956](https://github.com/contentstack/live-preview-sdk/commit/0f5995635cb1cf29ccdac1ec45b1288b6d494e2d))
+
 ## [v3.0.2](https://github.com/contentstack/live-preview-sdk/compare/v3.0.1...v3.0.2)
 
 > 3 January 2025
