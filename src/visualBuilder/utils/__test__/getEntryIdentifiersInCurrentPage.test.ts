@@ -22,7 +22,12 @@ const domWithNoCslp = new JSDOM(`
   </div>
 `);
 
-describe("getFieldType", () => {
+describe("getEntryIdentifiersInCurrentPage", () => {
+    test('should return an empty array if no elements with data-cslp attribute are found', () => {
+        document.body.innerHTML = '';
+        const result = getEntryIdentifiersInCurrentPage();
+        expect(result.entriesInCurrentPage).toEqual([]);
+    });
     test("should return all entries in current page", () => {
         document.body.innerHTML = dom.window.document.body.innerHTML;
         const { entriesInCurrentPage } = getEntryIdentifiersInCurrentPage();
