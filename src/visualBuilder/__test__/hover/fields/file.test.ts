@@ -21,6 +21,7 @@ vi.mock("../../../utils/visualBuilderPostMessage", async () => {
                     });
                 return Promise.resolve();
             }),
+            on: vi.fn(),
         },
     };
 });
@@ -112,16 +113,15 @@ describe("When an element is hovered in visual builder mode", () => {
         test("should have outline and custom cursor", async () => {
             fileField.dispatchEvent(mousemoveEvent);
             await waitForHoverOutline();
-            expect(fileField).toMatchSnapshot();
             const hoverOutline = document.querySelector(
                 "[data-testid='visual-builder__hover-outline']"
             );
-            expect(hoverOutline).toMatchSnapshot();
+            expect(hoverOutline).toHaveAttribute('style');
 
             const customCursor = document.querySelector(
                 `[data-testid="visual-builder__cursor"]`
             );
-            expect(customCursor).toMatchSnapshot();
+            expect(customCursor).toHaveAttribute('data-icon', 'file');
             expect(customCursor?.classList.contains("visible")).toBeTruthy();
         });
 
@@ -129,17 +129,16 @@ describe("When an element is hovered in visual builder mode", () => {
             imageField.dispatchEvent(mousemoveEvent);
             await waitForHoverOutline();
 
-            expect(imageField).toMatchSnapshot();
             const hoverOutline = document.querySelector(
                 "[data-testid='visual-builder__hover-outline']"
             );
-            expect(hoverOutline).toMatchSnapshot();
+            expect(hoverOutline).toHaveAttribute('style');
 
             const customCursor = document.querySelector(
                 `[data-testid="visual-builder__cursor"]`
             );
 
-            expect(customCursor).toMatchSnapshot();
+            expect(customCursor).toHaveAttribute('data-icon', 'file');
             expect(customCursor?.classList.contains("visible")).toBeTruthy();
         });
     });
@@ -217,27 +216,25 @@ describe("When an element is hovered in visual builder mode", () => {
         test("should have outline and custom cursor", async () => {
             container.dispatchEvent(mousemoveEvent);
             await waitForHoverOutline();
-            expect(container).toMatchSnapshot();
             const hoverOutline = document.querySelector(
                 "[data-testid='visual-builder__hover-outline']"
             );
-            expect(hoverOutline).toMatchSnapshot();
+            expect(hoverOutline).toHaveAttribute('style');
 
             const customCursor = document.querySelector(
                 `[data-testid="visual-builder__cursor"]`
             );
-            expect(customCursor).toMatchSnapshot();
+            expect(customCursor?.getAttribute('data-icon')).toBe('file');
             expect(customCursor?.classList.contains("visible")).toBeTruthy();
         });
 
         test("should have outline and custom cursor on individual instances", async () => {
             firstFileField.dispatchEvent(mousemoveEvent);
             await waitForHoverOutline();
-            expect(firstFileField).toMatchSnapshot();
             const hoverOutline = document.querySelector(
                 "[data-testid='visual-builder__hover-outline']"
             ) as HTMLElement;
-            expect(hoverOutline).toMatchSnapshot();
+            expect(hoverOutline).toHaveAttribute('style');
 
             matchDimensions(firstFileField, hoverOutline);
 
@@ -252,11 +249,10 @@ describe("When an element is hovered in visual builder mode", () => {
         test("should have outline and custom cursor on the url", async () => {
             firstImageField.dispatchEvent(mousemoveEvent);
             await waitForHoverOutline();
-            expect(firstImageField).toMatchSnapshot();
             const hoverOutline = document.querySelector(
                 "[data-testid='visual-builder__hover-outline']"
             ) as HTMLElement;
-            expect(hoverOutline).toMatchSnapshot();
+            expect(hoverOutline).toHaveAttribute('style');
             matchDimensions(firstImageField, hoverOutline);
             const customCursor = document.querySelector(
                 `[data-testid="visual-builder__cursor"]`

@@ -9,7 +9,7 @@ import visualBuilderPostMessage from "../../../utils/visualBuilderPostMessage";
 import { vi } from "vitest";
 import { VisualBuilderPostMessageEvents } from "../../../utils/types/postMessage.types";
 import { VisualBuilder } from "../../../index";
-import { triggerAndWaitForClickAction } from "../../../../__test__/utils";
+import { mockGetBoundingClientRect, sleep, triggerAndWaitForClickAction } from "../../../../__test__/utils";
 
 vi.mock("../../../components/FieldToolbar", () => {
     return {
@@ -89,6 +89,7 @@ describe("When an element is clicked in visual builder mode", () => {
                 "data-cslp",
                 "all_fields.bltapikey.en-us.reference"
             );
+            mockGetBoundingClientRect(referenceField);
             document.body.appendChild(referenceField);
 
             visualBuilder = new VisualBuilder();
@@ -99,11 +100,15 @@ describe("When an element is clicked in visual builder mode", () => {
             visualBuilder.destroy();
         });
 
-        test("should have outline", () => {
+        test("should have outline", async () => {
             const hoverOutline = document.querySelector(
-                "[data-testid='visual-builder__hover-outline']"
+                "[data-testid='visual-builder__overlay--outline']"
             );
-            expect(hoverOutline).toMatchSnapshot();
+            await waitFor(() => {
+                expect(hoverOutline).toHaveAttribute("style")
+            });
+            
+            expect(hoverOutline).toHaveAttribute("style", "top: 10px; height: 5px; width: 10px; left: 10px; outline-color: rgb(113, 92, 221);");
         });
 
         test("should have an overlay", () => {
@@ -111,9 +116,9 @@ describe("When an element is clicked in visual builder mode", () => {
             expect(overlay!.classList.contains("visible"));
         });
 
-        test.skip("should have a field path dropdown", () => {
+        test("should have a field path dropdown", () => {
             const toolbar = document.querySelector(
-                ".visual-builder__focused-toolbar__field-label-wrapper__current-field"
+                "[data-testid='mock-field-label-wrapper']"
             );
             expect(toolbar).toBeInTheDocument();
         });
@@ -169,6 +174,7 @@ describe("When an element is clicked in visual builder mode", () => {
                 "all_fields.bltapikey.en-us.reference_multiple_.1"
             );
 
+            mockGetBoundingClientRect(container);
             container.appendChild(firstReferenceField);
             container.appendChild(secondReferenceField);
             document.body.appendChild(container);
@@ -181,11 +187,14 @@ describe("When an element is clicked in visual builder mode", () => {
             visualBuilder.destroy();
         });
 
-        test("should have outline", () => {
+        test("should have outline", async () => {
             const hoverOutline = document.querySelector(
-                "[data-testid='visual-builder__hover-outline']"
+                "[data-testid='visual-builder__overlay--outline']"
             );
-            expect(hoverOutline).toMatchSnapshot();
+            await waitFor(() => {
+                expect(hoverOutline).toHaveAttribute("style")
+            });
+            expect(hoverOutline).toHaveAttribute("style", "top: 10px; height: 5px; width: 10px; left: 10px; outline-color: rgb(113, 92, 221);");
         });
 
         test("should have an overlay", () => {
@@ -193,41 +202,11 @@ describe("When an element is clicked in visual builder mode", () => {
             expect(overlay!.classList.contains("visible"));
         });
 
-        test.skip("should have a field path dropdown", () => {
+        test("should have a field path dropdown", () => {
             const toolbar = document.querySelector(
-                ".visual-builder__focused-toolbar__field-label-wrapper__current-field"
+                "[data-testid='mock-field-label-wrapper']"
             );
             expect(toolbar).toBeInTheDocument();
-        });
-
-        // TODO should be a test of FieldToolbar
-        test.skip("should have a multi field toolbar with button group", async () => {
-            const multiFieldToolbar = document.querySelector(
-                ".visual-builder__focused-toolbar__multiple-field-toolbar"
-            );
-
-            const buttonGroup = document.querySelector(
-                ".visual-builder__focused-toolbar__button-group"
-            );
-
-            expect(multiFieldToolbar).toBeInTheDocument();
-            expect(buttonGroup).toBeInTheDocument();
-        });
-
-        test.skip("should have 2 add instance buttons", async () => {
-            fireEvent.click(container.children[0]);
-            await waitFor(() => {
-                expect(container.children[0]).toHaveAttribute(
-                    VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
-                );
-            });
-
-            await waitFor(() => {
-                const addInstanceButtons = screen.getAllByTestId(
-                    "visual-builder-add-instance-button"
-                );
-                expect(addInstanceButtons.length).toBe(2);
-            });
         });
 
         test("should contain a data-cslp-field-type attribute", async () => {

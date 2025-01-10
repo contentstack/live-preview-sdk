@@ -9,7 +9,7 @@ import livePreviewPostMessage from "../../eventManager/livePreviewEventManager";
 import { LIVE_PREVIEW_POST_MESSAGE_EVENTS } from "../../eventManager/livePreviewEventManager.constant";
 import { LivePreviewEditButton } from "../editButton";
 import LivePreview from "../../live-preview";
-import { fireEvent, prettyDOM, waitFor } from "@testing-library/preact";
+import { act } from "@testing-library/preact";
 
 Object.defineProperty(globalThis, "crypto", {
     value: {
@@ -595,7 +595,7 @@ describe("cslp tooltip", () => {
         locationSpy.mockRestore();
     });
 
-    test.skip("should re-render the edit button tooltip if not already available even when edit button is enabled", async () => {
+    test("should re-render the edit button tooltip if not already available even when edit button is enabled", async () => {
         Config.replace({
             enable: true,
             editButton: {
@@ -622,12 +622,14 @@ describe("cslp tooltip", () => {
             bubbles: true,
         });
 
-        titlePara?.dispatchEvent(hoverEvent);
+        await act(async () => {
+            titlePara?.dispatchEvent(hoverEvent);
+        })
 
-        expect(tooltip?.getAttribute("current-data-cslp")).toBe(TITLE_CSLP_TAG);
+        expect(document.getElementById('cslp-tooltip')).toHaveAttribute('current-data-cslp', TITLE_CSLP_TAG);
 
         descPara?.dispatchEvent(hoverEvent);
 
-        expect(tooltip?.getAttribute("current-data-cslp")).toBe(DESC_CSLP_TAG);
+        expect(document.getElementById('cslp-tooltip')).toHaveAttribute('current-data-cslp', DESC_CSLP_TAG);
     });
 });

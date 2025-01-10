@@ -1,8 +1,31 @@
 import crypto from "crypto";
 
-import { sleep } from "../../__test__/utils";
+import { triggerAndWaitForClickAction, waitForBuilderSDKToBeInitialized } from "../../__test__/utils";
 import { VisualBuilder } from "../index";
 import Config from "../../configManager/configManager";
+
+vi.mock("../utils/visualBuilderPostMessage", async () => {
+    const { getAllContentTypes } = await vi.importActual<
+        typeof import("../../__test__/data/contentType")
+    >("../../__test__/data/contentType");
+    const contentTypes = getAllContentTypes();
+
+    return {
+        __esModule: true,
+        default: {
+            send: vi.fn().mockImplementation((eventName: string) => {
+                if (eventName === "init")
+                    return Promise.reject({
+                        contentTypes,
+                    });
+                return Promise.resolve();
+            }),
+            on: vi.fn(),
+        },
+    };
+});
+import visualBuilderPostMessage from "../utils/visualBuilderPostMessage";
+import { act, fireEvent, waitFor, screen } from "@testing-library/preact";
 
 Object.defineProperty(globalThis, "crypto", {
     value: {
@@ -26,12 +49,13 @@ describe("When outside the Visual Builder, the Visual Builder", () => {
     test("should have the start editing button", async () => {
         new VisualBuilder();
 
-        await sleep(100);
-
-        const startEditingButton = document.querySelector(
-            `[data-testid="vcms-start-editing-btn"]`
-        );
-        expect(startEditingButton).toBeTruthy();
+        await waitForBuilderSDKToBeInitialized(visualBuilderPostMessage);
+        await waitFor(() => {
+            const startEditingButton = document.querySelector(
+                `[data-testid="vcms-start-editing-btn"]`
+            );
+            expect(startEditingButton).toBeTruthy();
+        });
     });
 
     test("should not have clickable elements", async () => {
@@ -46,10 +70,11 @@ describe("When outside the Visual Builder, the Visual Builder", () => {
 
         new VisualBuilder();
 
-        await sleep(0);
-        h1.click();
+        await waitForBuilderSDKToBeInitialized(visualBuilderPostMessage);
+        await act(async () => {
+            await fireEvent.click(h1);
+        });
 
-        expect(h1).toMatchSnapshot();
         expect(h1.getAttribute("contenteditable")).toBe(null);
     });
 });

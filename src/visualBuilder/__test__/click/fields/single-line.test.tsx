@@ -150,7 +150,7 @@ describe("When an element is clicked in visual builder mode", () => {
             expect(overlay!.classList.contains("visible"));
         });
 
-        test.skip("should have a field path dropdown", async () => {
+        test("should have a field path dropdown", async () => {
             await waitFor(async () => {
                 const fieldLabel = screen.getByTestId(
                     "mock-field-label-wrapper"
@@ -259,27 +259,13 @@ describe("When an element is clicked in visual builder mode", () => {
             expect(overlay!.classList.contains("visible"));
         });
 
-        test.skip("should have a field path dropdown", async () => {
+        test("should have a field path dropdown", async () => {
             await waitFor(async () => {
                 const toolbar = await screen.findByTestId(
                     "mock-field-label-wrapper"
                 );
                 expect(toolbar).toBeInTheDocument();
             });
-        });
-
-        // TODO should be a test of FieldToolbar
-        test.skip("should have a multi field toolbar with button group", async () => {
-            const multiFieldToolbar = document.querySelector(
-                ".visual-builder__focused-toolbar__multiple-field-toolbar"
-            );
-
-            const buttonGroup = document.querySelector(
-                ".visual-builder__focused-toolbar__button-group"
-            );
-
-            expect(multiFieldToolbar).toBeInTheDocument();
-            expect(buttonGroup).toBeInTheDocument();
         });
 
         test("should contain a data-cslp-field-type attribute", async () => {
@@ -307,21 +293,6 @@ describe("When an element is clicked in visual builder mode", () => {
                 expect(container.children[1]).toHaveAttribute(
                     "contenteditable"
                 );
-            });
-        });
-
-        test.skip("should have 2 add instance buttons", async () => {
-            await waitFor(() => {
-                expect(container.children[0]).toHaveAttribute(
-                    VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
-                );
-            });
-
-            await waitFor(() => {
-                const addInstanceButtons = screen.getAllByTestId(
-                    "visual-builder-add-instance-button"
-                );
-                expect(addInstanceButtons.length).toBe(2);
             });
         });
 

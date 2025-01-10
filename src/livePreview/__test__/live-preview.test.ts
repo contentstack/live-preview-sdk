@@ -10,7 +10,7 @@ import { getDefaultConfig } from "../../configManager/config.default";
 import Config from "../../configManager/configManager";
 import { PublicLogger } from "../../logger/logger";
 import { ILivePreviewWindowType } from "../../types/types";
-import * as utils from "../../utils";
+import { addLivePreviewQueryTags } from '../../utils/addLivePreviewQueryTags';
 import livePreviewPostMessage from "../eventManager/livePreviewEventManager";
 import { LIVE_PREVIEW_POST_MESSAGE_EVENTS } from "../eventManager/livePreviewEventManager.constant";
 import {
@@ -20,6 +20,9 @@ import {
 import LivePreview from "../live-preview";
 import { mockLivePreviewInitEventListener } from "./mock";
 
+vi.mock("../../utils/addLivePreviewQueryTags", () => ({
+    addLivePreviewQueryTags: vi.fn(),
+}));
 vi.mock("../../visualBuilder/utils/visualBuilderPostMessage", async () => {
     const { getAllContentTypes } = await vi.importActual<
         typeof import("../../__test__/data/contentType")
@@ -429,7 +432,7 @@ describe("incoming postMessage", () => {
 
 describe("testing window event listeners", () => {
     let addEventListenerMock: any;
-    let sendInitEvent: any;
+    let sendInitEvent = vi.fn().mockImplementation(mockLivePreviewInitEventListener);
     let livePreviewInstance: LivePreview;
 
     beforeEach(() => {
@@ -437,7 +440,7 @@ describe("testing window event listeners", () => {
         livePreviewPostMessage?.destroy({ soft: true });
         livePreviewPostMessage?.on(
             LIVE_PREVIEW_POST_MESSAGE_EVENTS.INIT,
-            mockLivePreviewInitEventListener
+            sendInitEvent
         );
 
         const titlePara = document.createElement("h3");
@@ -457,13 +460,10 @@ describe("testing window event listeners", () => {
         document.body.appendChild(descPara);
         document.body.appendChild(linkPara);
 
-        Config.set("windowType", ILivePreviewWindowType.PREVIEW);
-
         addEventListenerMock = vi.spyOn(window, "addEventListener");
     });
 
     afterEach(() => {
-        vi.restoreAllMocks();
         document.getElementsByTagName("html")[0].innerHTML = "";
     });
 
@@ -473,11 +473,7 @@ describe("testing window event listeners", () => {
     });
 
     test("should attach a load event to call requestDataSync if document is not yet loaded", () => {
-        Object.defineProperty(document, "readyState", {
-            get() {
-                return "loading";
-            },
-        });
+        const readyState = vi.spyOn(document, 'readyState', 'get').mockReturnValue('loading');
 
         Config.replace({
             enable: true,
@@ -489,13 +485,14 @@ describe("testing window event listeners", () => {
             "load",
             expect.any(Function)
         );
+        readyState.mockRestore();
     });
-    //TODO: fix this test
-    test.skip("should handle link click event if ssr is set to true", async () => {
-        vi.spyOn(utils, "addLivePreviewQueryTags");
+    test("should handle link click event if ssr is set to true", async () => {
+
         Config.replace({
             enable: true,
             ssr: true,
+            debug: true,
         });
 
         const targetElement = document.createElement("a");
@@ -503,14 +500,17 @@ describe("testing window event listeners", () => {
 
         document.body.appendChild(targetElement);
         await act(async () => {
-            livePreviewInstance = new LivePreview();
+            livePreviewInstance = new LivePreview(); 
         });
+        await waitFor(() => {
+            expect(sendInitEvent).toBeCalled();
+        })
         await waitFor(() => {
             expect(Config.get().stackDetails.contentTypeUid).toBe('contentTypeUid');
         })
         await act(async () => {
             fireEvent.click(targetElement);
         });
-        expect(utils.addLivePreviewQueryTags).toBeCalled();
+        expect(addLivePreviewQueryTags).toBeCalled();
     });
 });

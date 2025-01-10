@@ -335,6 +335,9 @@ export class LivePreviewEditButton {
     }
 
     private updateTooltipPosition() {
+        if (!document.getElementById("cslp-tooltip")) {
+            this.createCslpTooltip();
+        }
         const editButton = Config.get().editButton;
         const elements = Config.get().elements;
 

@@ -105,42 +105,6 @@ describe("appendFieldPathDropdown", () => {
         );
     });
 
-    // TODO I don't think this test is relevant anymore,
-    // but I don't exactly know what it's testing
-    test.skip("should click the closest parent if focused toolbar is a parent field", async () => {
-        focusedToolbar.classList.add(
-            "visual-builder__focused-toolbar__field-label-wrapper__parent-field"
-        );
-        focusedToolbar.setAttribute("data-target-cslp", "test-cslp");
-
-        const parentElement = document.createElement("div");
-        parentElement.classList.add("test-parent");
-        parentElement.setAttribute("data-cslp", "test-cslp");
-
-        const targetElement = document.createElement("div");
-        parentElement.setAttribute("data-target-cslp", "test-cslp");
-        parentElement.appendChild(targetElement);
-
-        mockEventDetails.editableElement = parentElement;
-
-        const mockOnClick = vi.fn();
-        parentElement.click = mockOnClick;
-
-        appendFieldPathDropdown(mockEventDetails, focusedToolbar);
-
-        const fieldLabelWrapper = focusedToolbar.querySelector(
-            ".visual-builder__focused-toolbar__field-label-wrapper"
-        );
-
-        fireEvent.click(focusedToolbar);
-
-        expect(fieldLabelWrapper?.classList.toString()).toMatch(
-            "visual-builder__focused-toolbar__field-label-wrapper"
-        );
-
-        expect(mockOnClick).toBeCalled();
-    });
-
     test("should close the field label dropdown if open", async () => {
         await act(() => {
             appendFieldPathDropdown(mockEventDetails, focusedToolbar);
