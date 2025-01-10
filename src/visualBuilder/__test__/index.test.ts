@@ -190,8 +190,10 @@ describe("Visual builder", () => {
             test("single line should be contenteditable", async () => {
                 await triggerAndWaitForClickAction(visualBuilderPostMessage, h1);
 
-                expect(h1).toHaveAttribute("contenteditable");
-                expect(h1).toHaveAttribute("data-cslp-field-type", "singleline");
+                await waitFor(() => {
+                    expect(h1).toHaveAttribute("contenteditable");
+                    expect(h1).toHaveAttribute("data-cslp-field-type", "singleline");
+                })
             }, { timeout: 20 * 1000 });
 
             test("multi line should be contenteditable", async () => {
@@ -201,8 +203,10 @@ describe("Visual builder", () => {
                 );
                 await triggerAndWaitForClickAction(visualBuilderPostMessage, h1);
 
-                expect(h1).toHaveAttribute("contenteditable");
-                expect(h1).toHaveAttribute("data-cslp-field-type", "multiline");
+                await waitFor(() => {
+                    expect(h1).toHaveAttribute("contenteditable");
+                    expect(h1).toHaveAttribute("data-cslp-field-type", "multiline");
+                })
             }, { timeout: 20 * 1000 });
 
         });
