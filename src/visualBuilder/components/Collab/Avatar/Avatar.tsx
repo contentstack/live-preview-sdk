@@ -1,0 +1,86 @@
+/** @jsxImportSource preact */
+import React from "preact/compat";
+import Tooltip from "../Tooltip/Tooltip";
+import classNames from "classnames";
+import { collabStyles } from "../../../visualBuilder.style";
+
+const defaultProps = {
+    avatar: {},
+    type: "text",
+    testId: "cs-avatar",
+};
+
+type DefaultProps = Readonly<typeof defaultProps>;
+
+export type AvatarProps = {
+    avatar: AvatarData;
+    type?: "text" | "image";
+    testId?: string;
+} & Partial<DefaultProps>;
+
+export type AvatarData = {
+    id: number;
+    name: string;
+    image?: string;
+    email?: string;
+};
+
+interface DisplayAvatarContentProps {
+    type: "text" | "image";
+    avatar: AvatarData;
+}
+
+function displayAvatarContent({
+    type,
+    avatar,
+}: DisplayAvatarContentProps): JSX.Element | string {
+    let nameInitials = avatar && avatar.name && avatar.name.split(" ");
+    let firstInitial = (nameInitials && nameInitials[0]) || "";
+    let lastInitial =
+        (nameInitials && nameInitials[nameInitials?.length - 1]) || "";
+    let nameInitialsShort =
+        nameInitials && nameInitials.length === 1
+            ? nameInitials[0]
+            : firstInitial?.substring(0, 1) + lastInitial?.substring(0, 1);
+    if (type === "image") {
+        return (
+            <img
+                src={avatar.image}
+                alt={avatar.name}
+                className={collabStyles()["collab-avatar__image"]}
+            />
+        );
+    }
+    return nameInitialsShort;
+}
+
+function Avatar({ avatar, type, testId }: AvatarProps) {
+    return (
+        <Tooltip
+            content={avatar.name || avatar.email || ""}
+            position="bottom"
+            data-test-id={testId}
+        >
+            <div
+                className={classNames(
+                    collabStyles()["collab-avatar"],
+                    collabStyles()["collab-avatar--single"],
+                    collabStyles()["flex-v-center"]
+                )}
+            >
+                <span
+                    className={classNames(
+                        collabStyles()["collab-avatar__link"],
+                        collabStyles()["flex-v-center"]
+                    )}
+                >
+                    {displayAvatarContent({ type: type || "text", avatar })}
+                </span>
+            </div>
+        </Tooltip>
+    );
+}
+
+Avatar.defaultProps = defaultProps;
+
+export default Avatar;

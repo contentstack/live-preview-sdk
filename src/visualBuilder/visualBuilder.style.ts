@@ -677,3 +677,235 @@ export const VisualBuilderGlobalStyles = `
         }
 
 `;
+
+export function collabStyles() {
+    return {
+        "collab-avatar": css`
+            background-color: #edf1f7;
+            border: 1.5px solid #ffffff;
+            border-radius: 50%;
+            font-family: Inter;
+            font-weight: 600;
+            justify-content: center;
+            position: relative;
+        `,
+        "collab-avatar--single": css`
+            border: none;
+            font-size: 0.6875rem;
+            height: 2rem;
+            width: 2rem;
+            border-radius: 22.5rem;
+            border: 0.125rem solid #dde3ee;
+            background: #ffffff;
+        `,
+        "collab-avatar__link": css`
+            color: #475161;
+            cursor: pointer;
+            height: 100%;
+            justify-content: center;
+            overflow: hidden;
+            text-decoration: none;
+            text-transform: uppercase;
+            transition:
+                background-color 300ms ease,
+                color 300ms ease;
+            width: 100%;
+            font-weight: 600;
+            font-size: 0.75rem;
+        `,
+        "collab-avatar__image": css`
+            filter: grayscale(1);
+            transition: filter 300ms ease;
+            border-radius: 50%;
+            height: 0;
+            left: 50%;
+            min-width: 100%;
+            position: absolute;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 0;
+        `,
+        "collab-avatar--single:hover .collab-avatar__image": css`
+            filter: grayscale(0);
+        `,
+        "collab-discussion-body-comment--loader": css`
+            padding: 0.625rem;
+        `,
+        "collab-discussion--wrapper": css`
+            position: relative;
+            padding: 0 !important;
+            font-family: Inter;
+            color: #475161;
+            width: 20.75rem;
+
+            &:hover > .collab-discussion-icon {
+                opacity: 0.6;
+            }
+        `,
+        "collab-discussion-header--wrapper": css`
+            height: 2.5rem;
+            padding: 0 0 0 0.625rem;
+        `,
+        "collab-discussion-header--container": css`
+            justify-content: space-between;
+            width: 100%;
+        `,
+        "collab-discussion-header--title": css`
+            font-weight: 600;
+            font-size: 0.875rem;
+        `,
+        "collab-discussion-header--resolve": css`
+            border-radius: 6px !important;
+        `,
+        "collab-discussion-header--resolve--icon": css`
+            width: 1.25rem;
+            height: 1.25rem;
+            margin-right: 0.5rem !important;
+        `,
+        "collab-discussion-header--resolve--text": css`
+            font-size: 0.875rem;
+        `,
+        "collab-discussion-footer--wrapper": css`
+            height: 3.5rem;
+            width: 100%;
+            flex-direction: row-reverse;
+            padding: 0 0.9375rem;
+        `,
+        "collab-discussion-body--wrapper": css`
+            border: solid #edf1f7;
+            border-width: 0.0625rem 0;
+        `,
+        "collab-discussion-input-indicator--wrapper": css`
+            padding: 0 0.5rem;
+            font-weight: 400;
+            font-size: 0.875rem;
+            line-height: 150%;
+            letter-spacing: 0.01em;
+            min-height: 1.3125rem !important;
+        `,
+        "collab-discussion-input-indicator--error": css`
+            width: 100%;
+            margin-right: 0.5rem;
+            color: #d62400;
+        `,
+        "collab-discussion-input-indicator--count": css`
+            color: #475161;
+        `,
+        "collab-discussion-icon": css`
+            display: inline-flex;
+            position: absolute;
+            right: -0.5rem;
+            transform: translateX(0.75rem);
+            top: 0;
+            align-items: center;
+            justify-content: center;
+            transition: 0.2s all ease-in;
+            cursor: pointer;
+            opacity: 0;
+            margin-top: 0;
+            height: 1.5rem;
+
+            &:active,
+            &:focus {
+                opacity: 1;
+                cursor: grabbing;
+            }
+
+            &--view,
+            &:hover {
+                opacity: 1 !important;
+            }
+        `,
+        "collab-discussion-comment--user-details": css`
+            width: 100%;
+        `,
+        "collab-discussion-comment--user-details__text": css`
+            padding-left: 0.625rem;
+        `,
+        "collab-discussion-comment--user-name": css`
+            font-style: normal;
+            font-weight: 600;
+            font-size: 0.75rem;
+            line-height: 150%;
+            letter-spacing: 0.015rem;
+            color: #475161;
+        `,
+        "collab-discussion-comment--list": css`
+            max-height: 21.875rem;
+            display: flex;
+            overflow: auto;
+            flex-flow: column-reverse;
+        `,
+        "collab-comment-seperator": css`
+            width: 100%;
+            height: 1.5rem;
+            stroke-width: 0.0625rem;
+            stroke: #dde3ee;
+        `,
+        "collab-discussion-comment--time-details": css`
+            font-weight: 400;
+            font-size: 0.75rem;
+            line-height: 150%;
+            font-style: Inter;
+            letter-spacing: 0.015rem;
+            color: #6e6b86;
+        `,
+        "collab-discussion-comment--message": css`
+            font-weight: 400;
+            font-size: 1rem;
+            line-height: 1.5rem;
+            color: #475161;
+            word-break: break-all;
+            width: calc(100% - 10px);
+            min-height: 2.25rem;
+            white-space: pre-wrap;
+
+            b {
+                color: #6c5ce7;
+                font-weight: 400;
+            }
+        `,
+        "collab-discussion-comment--wrapper": css`
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.625rem;
+            padding: 0.625rem;
+        `,
+        "collab-discussion-comment-action--wrapper": css`
+            margin-left: auto;
+        `,
+        "collab-discussion-smooth-animation": css`
+            transition: top 0.7s ease;
+            -webkit-transition: top 0.7s ease;
+        `,
+        "collab-discussion-body--input": css`
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+            grid-gap: 0.25rem;
+        `,
+        "collab-discussion-body--mention__input__focus": css`
+            background-color: #ffffff !important;
+            border: 0.0625rem solid #5d50be !important;
+            box-shadow: 0 0 0 0.0625rem #5d50be !important;
+            border-radius: 4px !important;
+            outline: none;
+        `,
+        "collab-discussion-body--mention__input__hover": css`
+            background-color: #edf1f7;
+            border: 0.0625rem solid #5d50be !important;
+            box-shadow: 0 0 0 0.0625rem #5d50be !important;
+        `,
+        "flex-center": css`
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        `,
+        "flex-v-center": css`
+            display: flex;
+            align-items: center;
+        `,
+    };
+}

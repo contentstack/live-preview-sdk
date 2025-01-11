@@ -46,3 +46,6 @@ export const DEFAULT_MULTIPLE_FIELDS: FieldDataType[] = [
     FieldDataType.GROUP,
     FieldDataType.BLOCK,
 ];
+
+export const mentionLimit = 20;
+export const maxMessageLength = 500;
