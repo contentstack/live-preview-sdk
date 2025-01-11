@@ -64,6 +64,21 @@ export function addFocusedToolbar(params: AddFocusedToolbarParams): void {
     );
 }
 
+function isCollabThread(target: HTMLElement): boolean {
+    return target.classList.contains("collab-indicator");
+}
+
+function isThereActiveCollabPopup(): boolean {
+    return !!document.querySelector(".collab-popup");
+}
+
+function hideCollabPopup(): void {
+    if (isThereActiveCollabPopup()) {
+        const collabPopup = document.querySelector(".collab-popup");
+        collabPopup?.classList.add("hidden");
+    }
+}
+
 async function handleBuilderInteraction(
     params: HandleBuilderInteractionParams
 ): Promise<void> {
@@ -90,7 +105,14 @@ async function handleBuilderInteraction(
         const rect = eventTarget.getBoundingClientRect();
         const relativeX = (params.event.clientX - rect.left) / rect.width;
         const relativeY = (params.event.clientY - rect.top) / rect.height;
-        generateThread({ xpath, relativeX, relativeY });
+        if (config?.isCollabActive === true) {
+            if (isCollabThread(eventTarget)) {
+                Config.set("isCollabActive", false);
+                hideCollabPopup();
+                return;
+            }
+            generateThread({ xpath, relativeX, relativeY });
+        }
         visualBuilderPostMessage?.send(
             VisualBuilderPostMessageEvents.COLLAB_XPATH,
             {

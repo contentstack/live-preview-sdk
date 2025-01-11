@@ -21,6 +21,7 @@ import { getUserName } from "../../../utils/collabUtils";
 import { DiscussionProvider } from "./ContextProvider/DiscussionProvider";
 import useInfiniteScroll from "../../../hooks/use-infinite-scroll/useInfiniteScroll";
 import { collabStyles } from "../../../visualBuilder.style";
+import classNames from "classnames";
 
 interface IDiscussionPopup {
     onCreateComment: (payload: ICommentPayload) => Promise<ICommentResponse>;
@@ -189,7 +190,12 @@ const DiscussionPopup: React.FC<IDiscussionPopup> = React.memo(
 
         return (
             <DiscussionProvider.Provider value={contextValue}>
-                <div className={collabStyles()["collab-discussion--wrapper"]}>
+                <div
+                    className={classNames(
+                        "collab-discussion--wrapper",
+                        collabStyles()["collab-discussion--wrapper"]
+                    )}
+                >
                     <DiscussionHeader
                         onClose={onClose}
                         onResolve={onResolve}

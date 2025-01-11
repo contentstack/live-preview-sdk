@@ -114,7 +114,7 @@ function isOverlay(target: HTMLElement): boolean {
 }
 
 function isCollabThread(target: HTMLElement): boolean {
-    return target.classList.contains("collab-thread");
+    return target.classList.contains("collab-indicator");
 }
 
 function isContentEditable(target: HTMLElement): boolean {
@@ -181,6 +181,10 @@ async function handleMouseHover(params: HandleMouseHoverParams): Promise<void> {
             }
 
             if (config?.windowType === ILivePreviewWindowType.PREVIEW_SHARE) {
+                if (!config?.isCollabActive) {
+                    hideCustomCursor(params.customCursor);
+                    return;
+                }
                 collabCustomCursor(params.customCursor);
                 handleCursorPosition(params.event, params.customCursor);
                 showCustomCursor(params.customCursor);

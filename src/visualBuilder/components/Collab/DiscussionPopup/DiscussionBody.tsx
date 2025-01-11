@@ -25,20 +25,28 @@ const DiscussionBody: React.FC<IDiscussionBody> = React.memo(
         editComment,
     }) => {
         return (
-            <div className={collabStyles()["collab-discussion-body--wrapper"]}>
+            <div
+                className={classNames(
+                    "collab-discussion-body--wrapper",
+                    collabStyles()["collab-discussion-body--wrapper"]
+                )}
+            >
                 {isLoading ? (
                     <DiscussionBodyLoader key="collab-discussion-body--comment-loader" />
                 ) : (
                     <div
-                        className={
+                        className={classNames(
+                            "collab-discussion-comment--list",
                             collabStyles()["collab-discussion-comment--list"]
-                        }
+                        )}
                         id="collab-discussion-comment--list"
                     >
                         {comments?.map((comment: IMessageDTO) => (
                             <>
                                 <div
                                     className={classNames(
+                                        "collab-comment-seperator",
+                                        "flex-v-center",
                                         collabStyles()[
                                             "collab-comment-seperator"
                                         ],

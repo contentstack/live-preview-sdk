@@ -87,5 +87,7 @@ export function getDefaultConfig(): IConfig {
         elements: {
             highlightedElement: null,
         },
+
+        isCollabActive: true,
     };
 }

@@ -44,47 +44,56 @@ const DiscussionHeader: React.FC<IDiscussionHeader> = React.memo(
         return (
             <div
                 className={classNames(
+                    "collab-discussion-header--wrapper",
+                    "flex-v-center",
                     collabStyles()["collab-discussion-header--wrapper"],
                     collabStyles()["flex-v-center"]
                 )}
             >
                 <div
                     className={classNames(
+                        "collab-discussion-header--container",
+                        "flex-v-center",
                         collabStyles()["collab-discussion-header--container"],
                         collabStyles()["flex-v-center"]
                     )}
                 >
                     <div
-                        className={
+                        className={classNames(
+                            "collab-discussion-header--title",
                             collabStyles()["collab-discussion-header--title"]
-                        }
+                        )}
                     >
                         {getDiscussionTitle(commentCount)}
                     </div>
                     {displayResolve ? (
                         <Button
                             buttonType="tertiary"
-                            className={
+                            className={classNames(
+                                "collab-discussion-header--resolve",
                                 collabStyles()[
                                     "collab-discussion-header--resolve"
                                 ]
-                            }
+                            )}
                             icon="RightMarkActive"
                             iconProps={{
-                                className:
+                                className: classNames(
                                     collabStyles()[
                                         "collab-discussion-header--resolve--icon"
                                     ],
+                                    "collab-discussion-header--resolve--icon"
+                                ),
                             }}
                             onClick={handleResolve}
                             testId="discussion-resolve-btn"
                         >
                             <span
-                                className={
+                                className={classNames(
+                                    "collab-discussion-header--resolve--text",
                                     collabStyles()[
                                         "collab-discussion-header--resolve--text"
                                     ]
-                                }
+                                )}
                             >
                                 Resolve
                             </span>

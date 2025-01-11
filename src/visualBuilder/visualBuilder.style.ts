@@ -831,7 +831,7 @@ export function collabStyles() {
             color: #475161;
         `,
         "collab-discussion-comment--list": css`
-            max-height: 21.875rem;
+            max-height: 10.9rem;
             display: flex;
             overflow: auto;
             flex-flow: column-reverse;

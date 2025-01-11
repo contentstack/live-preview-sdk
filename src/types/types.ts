@@ -84,6 +84,7 @@ export declare interface IConfig {
     elements: {
         highlightedElement: HTMLElement | null;
     };
+    isCollabActive: boolean;
 }
 
 export declare interface IConfigEditButton {
