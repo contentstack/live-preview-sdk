@@ -138,7 +138,7 @@ async function handleMouseHover(params: HandleMouseHoverParams): Promise<void> {
                 hideCustomCursor(params.customCursor);
                 return;
             }
-            if (config?.windowType !== ILivePreviewWindowType.PREVIEW_SHARE) {
+            if (!config?.collab.enable) {
                 resetCustomCursor(params.customCursor);
             }
             removeAddInstanceButtons({
@@ -180,14 +180,13 @@ async function handleMouseHover(params: HandleMouseHoverParams): Promise<void> {
                 }
             }
 
-            if (config?.windowType === ILivePreviewWindowType.PREVIEW_SHARE) {
-                if (!config?.isCollabActive) {
-                    hideCustomCursor(params.customCursor);
-                    return;
-                }
+            if (config?.collab.enable && config?.collab.state) {
                 collabCustomCursor(params.customCursor);
                 handleCursorPosition(params.event, params.customCursor);
                 showCustomCursor(params.customCursor);
+                return;
+            } else if (config?.collab.enable && !config?.collab.state) {
+                hideCustomCursor(params.customCursor);
                 return;
             }
 

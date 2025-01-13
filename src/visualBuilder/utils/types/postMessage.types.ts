@@ -18,7 +18,9 @@ export enum VisualBuilderPostMessageEvents {
     MOVE_INSTANCE = "move-instance",
     GET_DISCUSSION_ID = "get-discussion-id-for-comment-modal",
     OPEN_FIELD_COMMENT_MODAL = "open-field-comment-modal",
-    COLLAB_XPATH = "collab-xpath",
+    COLLAB_ENABLE = "collab-enable",
+    COLLAB_DISABLE = "collab-disable",
+
     // FROM visual builder
     GET_ALL_ENTRIES_IN_CURRENT_PAGE = "get-entries-in-current-page",
     HIDE_FOCUS_OVERLAY = "hide-focus-overlay",

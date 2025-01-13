@@ -84,7 +84,10 @@ export declare interface IConfig {
     elements: {
         highlightedElement: HTMLElement | null;
     };
-    isCollabActive: boolean;
+    collab: {
+        enable: boolean;
+        state: boolean;
+    };
 }
 
 export declare interface IConfigEditButton {
@@ -191,5 +194,9 @@ export interface IVisualBuilderInitEvent {
     windowType: ILivePreviewWindowType;
     stackDetails: {
         masterLocale: string;
+    };
+    collab: {
+        enable: boolean;
+        state: boolean;
     };
 }

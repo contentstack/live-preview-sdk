@@ -1,7 +1,7 @@
 /** @jsxImportSource preact */
 import { visualBuilderStyles } from "../../visualBuilder.style";
 import classNames from "classnames";
-import { useState, useRef, useEffect } from "preact/compat";
+import React, { useState, useRef, useEffect } from "preact/compat";
 import { css } from "goober";
 import DiscussionPopup from "./DiscussionPopup";
 import Config from "../../../configManager/configManager";
@@ -122,11 +122,14 @@ const activeDiscussion = {
     },
 };
 
-const CollabIndicator = () => {
-    const [showPopup, setShowPopup] = useState(true);
-    const [popupPosition, setPopupPosition] = useState({ top: 0, left: 0 });
+export interface ICollabIndicator {
+    newThread?: boolean;
+}
+
+const CollabIndicator: React.FC<ICollabIndicator> = (props) => {
     const buttonRef = useRef<HTMLButtonElement>(null);
     const popupRef = useRef<HTMLDivElement>(null);
+    const [showPopup, setShowPopup] = useState(props.newThread || false);
     const config = Config.get();
 
     const calculatePopupPosition = () => {
@@ -136,6 +139,7 @@ const CollabIndicator = () => {
         const popupHeight = 422;
         const popupWidth = 334;
         const viewportHeight = window.innerHeight;
+        const viewportWidth = window.innerWidth;
 
         const spaceAbove = buttonRect.top;
         const spaceBelow = viewportHeight - buttonRect.bottom;
@@ -149,31 +153,38 @@ const CollabIndicator = () => {
         }
 
         left = buttonRect.left + buttonRect.width / 2 - popupWidth / 2;
-        setPopupPosition({
-            top: Math.max(top, 0),
-            left: Math.max(left, 0),
-        });
+
+        top = Math.max(top, 0);
+        left = Math.max(left, 0);
+        left = Math.min(left, viewportWidth - popupWidth);
+
+        popupRef.current.style.top = `${top}px`;
+        popupRef.current.style.left = `${left}px`;
+    };
+
+    const togglePopup = () => {
+        if (!showPopup) {
+            setShowPopup(true);
+        } else {
+            setShowPopup(false);
+            if (config?.collab?.state === false) {
+                Config.set("collab.state", true);
+            }
+        }
     };
 
     useEffect(() => {
-        if (showPopup) calculatePopupPosition();
-
-        const handleScroll = () => {
-            if (showPopup) calculatePopupPosition();
-        };
-
-        window.addEventListener("scroll", handleScroll);
-        window.addEventListener("resize", calculatePopupPosition);
-
-        return () => {
-            window.removeEventListener("scroll", handleScroll);
-            window.removeEventListener("resize", calculatePopupPosition);
-        };
+        if (showPopup) {
+            calculatePopupPosition();
+        }
     }, [showPopup]);
 
     const handleClose = () => {
         setShowPopup(false);
-        Config.set("isCollabActive", true);
+
+        if (config?.collab?.state === false) {
+            Config.set("collab.state", true);
+        }
     };
 
     const popupClass = css`
@@ -181,9 +192,7 @@ const CollabIndicator = () => {
         z-index: 50;
         background: white;
         border-radius: 8px;
-        box-shadow:
-            0 4px 6px -1px rgba(0, 0, 0, 0.1),
-            0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         border: 1px solid #e5e7eb;
         overflow: auto;
     `;
@@ -196,23 +205,17 @@ const CollabIndicator = () => {
                     "collab-indicator",
                     visualBuilderStyles()["visual-builder__collab-indicator"]
                 )}
-                onClick={() => setShowPopup((prev) => !prev)}
+                onClick={togglePopup}
             >
                 {!showPopup && "1"}
             </button>
-
             {showPopup && (
                 <div
                     ref={popupRef}
                     className={classNames("collab-popup", popupClass)}
-                    style={{
-                        top: popupPosition.top,
-                        left: popupPosition.left,
-                    }}
                 >
                     <DiscussionPopup
                         onCreateComment={async (payload) => {
-                            // Implement the function to return ICommentResponse
                             const response: any = {};
                             return response;
                         }}
@@ -239,6 +242,7 @@ const CollabIndicator = () => {
                             return response;
                         }}
                     />
+                    ;
                 </div>
             )}
         </>

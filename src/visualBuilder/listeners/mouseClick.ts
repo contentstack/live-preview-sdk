@@ -68,16 +68,16 @@ function isCollabThread(target: HTMLElement): boolean {
     return target.classList.contains("collab-indicator");
 }
 
-function isThereActiveCollabPopup(): boolean {
-    return !!document.querySelector(".collab-popup");
-}
+// function isThereActiveCollabPopup(): boolean {
+//     return !!document.querySelector(".collab-popup");
+// }
 
-function hideCollabPopup(): void {
-    if (isThereActiveCollabPopup()) {
-        const collabPopup = document.querySelector(".collab-popup");
-        collabPopup?.classList.add("hidden");
-    }
-}
+// function hideCollabPopup(): void {
+//     if (isThereActiveCollabPopup()) {
+//         const collabPopup = document.querySelector(".collab-popup");
+//         collabPopup?.classList.add("hidden");
+//     }
+// }
 
 async function handleBuilderInteraction(
     params: HandleBuilderInteractionParams
@@ -99,28 +99,21 @@ async function handleBuilderInteraction(
     }
 
     const config = Config.get();
-    if (config?.windowType === ILivePreviewWindowType.PREVIEW_SHARE) {
+
+    if (config?.collab.enable === true) {
         const xpath = getXPath(eventTarget);
         if (!eventTarget) return;
         const rect = eventTarget.getBoundingClientRect();
         const relativeX = (params.event.clientX - rect.left) / rect.width;
         const relativeY = (params.event.clientY - rect.top) / rect.height;
-        if (config?.isCollabActive === true) {
-            if (isCollabThread(eventTarget)) {
-                Config.set("isCollabActive", false);
-                hideCollabPopup();
-                return;
+
+        if (isCollabThread(eventTarget)) {
+            Config.set("collab.state", false);
+        } else {
+            if (config?.collab.state) {
+                generateThread({ xpath, relativeX, relativeY });
             }
-            generateThread({ xpath, relativeX, relativeY });
         }
-        visualBuilderPostMessage?.send(
-            VisualBuilderPostMessageEvents.COLLAB_XPATH,
-            {
-                xpath: xpath,
-                x: relativeX,
-                y: relativeY,
-            }
-        );
         return;
     }
 

@@ -42,7 +42,9 @@ import {
 import { useHighlightCommentIcon } from "./eventManager/useHighlightCommentIcon";
 import { updateHighlightedCommentIconPosition } from "./generators/generateHighlightedComment";
 import { updateCollabIconPosition } from "./generators/generateThread";
+import { updatePopupPositions } from "./generators/generateThread";
 import { useRecalculateVariantDataCSLPValues } from "./eventManager/useRecalculateVariantDataCSLPValues";
+import { useCollab } from "./eventManager/useCollab";
 
 interface VisualBuilderGlobalStateImpl {
     previousSelectedEditableDOM: HTMLElement | Element | null;
@@ -83,6 +85,7 @@ export class VisualBuilder {
 
     private scrollEventHandler = () => {
         updateCollabIconPosition();
+        updatePopupPositions();
         updateHighlightedCommentIconPosition(); // Update icons position
     };
 
@@ -92,6 +95,7 @@ export class VisualBuilder {
                 .previousSelectedEditableDOM;
         updateHighlightedCommentIconPosition();
         updateCollabIconPosition();
+        updatePopupPositions();
         if (previousSelectedEditableDOM) {
             this.handlePositionChange(
                 previousSelectedEditableDOM as HTMLElement
@@ -255,12 +259,18 @@ export class VisualBuilder {
                 const {
                     windowType = ILivePreviewWindowType.BUILDER,
                     stackDetails,
+                    collab,
                 } = data || {};
                 Config.set("windowType", windowType);
                 Config.set(
                     "stackDetails.masterLocale",
                     stackDetails?.masterLocale || "en-us"
                 );
+
+                if (collab) {
+                    Config.set("collab.enable", collab.enable);
+                    Config.set("collab.state", collab.state);
+                }
 
                 addEventListeners({
                     overlayWrapper: this.overlayWrapper,
@@ -282,6 +292,7 @@ export class VisualBuilder {
                         resizeObserver: this.resizeObserver,
                     });
                     useScrollToField();
+                    useCollab();
                     useHighlightCommentIcon();
                     this.mutationObserver.observe(document.body, {
                         childList: true,
