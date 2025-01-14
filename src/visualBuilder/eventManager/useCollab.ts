@@ -18,10 +18,9 @@ export const useCollab = () => {
                 console.error("Invalid collab data structure:", data);
                 return;
             }
-
             Config.set("collab.enable", data.data.collab.enable ?? false);
             Config.set("collab.state", data.data.collab.state ?? false);
-            generateThreadsFromData(data.data.payload);
+            generateThreadsFromData(data.data.payload, true);
         }
     );
 

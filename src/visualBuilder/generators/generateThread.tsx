@@ -11,52 +11,98 @@ const hiddenClass = css`
     display: none;
 `;
 
-export function generateThreadsFromData(payloads: any[]): void {
-    payloads.forEach((payload) => {
-        const { relativeX, relativeY, xpath } = payload;
+export function generateThreadsFromData(payloads: any[], fromVB = false) {
+    // Transform data function
+    function transformData(payload: any) {
+        return {
+            api_key: "blt05d58ee84d13fd72",
+            _content_type_uid: "page",
+            entry_uid: "blt1bbd1c10058a089d",
+            locale: payload.locale,
+            status: 1,
+            uid: payload._id,
+            title: `Description-${Date.now()}`,
+            field: {
+                uid: "description",
+                path: "sections.home.csdc2330a19d43171f.hero_section.description",
+                og_path: "sections.home.hero_section.description",
+            },
+            org_uid: "blt739e38d90d4fc4e6",
+            created_by: "blte26110c4ea641ed9",
+            created_at: payload.createdAt,
+        };
+    }
 
-        const element = getElementByXpath(xpath);
-        if (!element) {
-            console.error("Element not found for the given XPath:", xpath);
-            return;
-        }
-        const rect = element.getBoundingClientRect();
-        const top = rect.top + window.scrollY + relativeY * rect.height;
-        const left = rect.left + window.scrollX + relativeX * rect.width;
+    const renderThreads = () => {
+        payloads.forEach((payload) => {
+            const { position, elementXPath } = payload;
+            const { x: relativeX, y: relativeY } = position;
+            const element = getElementByXpath(elementXPath);
 
-        const popupContainer = document.createElement("div");
-        popupContainer.setAttribute("field-path", xpath);
-        popupContainer.setAttribute(
-            "relative",
-            `x: ${relativeX}, y: ${relativeY}`
-        );
-        popupContainer.style.position = "absolute";
-        popupContainer.style.top = `${top - highlighCommentOffset}px`;
-        popupContainer.style.left = `${left - highlighCommentOffset}px`;
-        popupContainer.style.zIndex = "1000";
-        popupContainer.style.cursor = "pointer";
-        popupContainer.className = "collab-thread";
-
-        render(<CollabIndicator />, popupContainer);
-
-        const visualBuilderContainer = document.querySelector(
-            ".visual-builder__container"
-        );
-        if (visualBuilderContainer) {
-            let highlightCommentWrapper = visualBuilderContainer.querySelector(
-                ".visual-builder__collab-wrapper"
-            );
-            if (!highlightCommentWrapper) {
-                highlightCommentWrapper = document.createElement("div");
-                highlightCommentWrapper.className =
-                    "visual-builder__collab-wrapper";
-                visualBuilderContainer.appendChild(highlightCommentWrapper);
+            if (!element) {
+                console.error(
+                    "Element not found for the given XPath:",
+                    elementXPath
+                );
+                return;
             }
-            highlightCommentWrapper.appendChild(popupContainer);
-        } else {
-            document.body.appendChild(popupContainer);
-        }
-    });
+
+            // Calculate the positioning
+            const rect = element.getBoundingClientRect();
+            const top = rect.top + window.scrollY + relativeY * rect.height;
+            const left = rect.left + window.scrollX + relativeX * rect.width;
+
+            // Create container for the popup
+            const popupContainer = document.createElement("div");
+            popupContainer.setAttribute("field-path", elementXPath);
+            popupContainer.setAttribute(
+                "relative",
+                `x: ${relativeX}, y: ${relativeY}`
+            );
+            popupContainer.style.position = "absolute";
+            popupContainer.style.top = `${top - highlighCommentOffset}px`;
+            popupContainer.style.left = `${left - highlighCommentOffset}px`;
+            popupContainer.style.zIndex = "1000";
+            popupContainer.style.cursor = "pointer";
+            popupContainer.className = "collab-thread";
+
+            // Transform the data and pass it as props
+            const transformedData = transformData(payload);
+            render(
+                <CollabIndicator
+                    activeDiscussion={transformedData}
+                    newThread={false}
+                />,
+                popupContainer
+            );
+
+            // Append the container to the correct parent
+            const visualBuilderContainer = document.querySelector(
+                ".visual-builder__container"
+            );
+            if (visualBuilderContainer) {
+                let highlightCommentWrapper =
+                    visualBuilderContainer.querySelector(
+                        ".visual-builder__collab-wrapper"
+                    );
+                if (!highlightCommentWrapper) {
+                    highlightCommentWrapper = document.createElement("div");
+                    highlightCommentWrapper.className =
+                        "visual-builder__collab-wrapper";
+                    visualBuilderContainer.appendChild(highlightCommentWrapper);
+                }
+                highlightCommentWrapper.appendChild(popupContainer);
+            } else {
+                document.body.appendChild(popupContainer);
+            }
+        });
+    };
+
+    if (fromVB) {
+        renderThreads();
+    } else {
+        setTimeout(renderThreads, 5000);
+    }
 }
 
 export function generateThread(payload: any): void {

@@ -45,6 +45,7 @@ import { updateCollabIconPosition } from "./generators/generateThread";
 import { updatePopupPositions } from "./generators/generateThread";
 import { useRecalculateVariantDataCSLPValues } from "./eventManager/useRecalculateVariantDataCSLPValues";
 import { useCollab } from "./eventManager/useCollab";
+import { generateThreadsFromData } from "./generators/generateThread";
 
 interface VisualBuilderGlobalStateImpl {
     previousSelectedEditableDOM: HTMLElement | Element | null;
@@ -270,6 +271,10 @@ export class VisualBuilder {
                 if (collab) {
                     Config.set("collab.enable", collab.enable);
                     Config.set("collab.state", collab.state);
+                }
+
+                if (collab?.payload) {
+                    generateThreadsFromData(collab?.payload);
                 }
 
                 addEventListeners({

@@ -29,6 +29,7 @@ export declare interface IStackMetadata {
     users: Array<IUserDTO>;
     roles: Array<IRoleDTO>;
     currentUser: IUserDTO;
+    invite: { id: string };
 }
 
 // Mention Related Types
@@ -107,7 +108,7 @@ export interface ICommentDTO {
     deleted_at: boolean;
     entry_uid: string;
     locale: string;
-    updated_at: string;
+    updated_at?: string;
 }
 
 export interface IDefaultAPIResponse {

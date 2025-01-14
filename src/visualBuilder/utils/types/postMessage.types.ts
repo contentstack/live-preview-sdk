@@ -18,8 +18,9 @@ export enum VisualBuilderPostMessageEvents {
     MOVE_INSTANCE = "move-instance",
     GET_DISCUSSION_ID = "get-discussion-id-for-comment-modal",
     OPEN_FIELD_COMMENT_MODAL = "open-field-comment-modal",
-    COLLAB_ENABLE = "collab-enable",
-    COLLAB_DISABLE = "collab-disable",
+    COLLAB_CREATE_THREAD = "collab-create-thread",
+    COLLAB_CREATE_COMMENT = "collab-create-comment",
+    COLLAB_FETCH_COMMENTS = "collab-fetch-comments",
 
     // FROM visual builder
     GET_ALL_ENTRIES_IN_CURRENT_PAGE = "get-entries-in-current-page",
@@ -36,4 +37,6 @@ export enum VisualBuilderPostMessageEvents {
     GET_VARIANT_ID = "get-variant-id",
     GET_LOCALE = "get-locale",
     SEND_VARIANT_AND_LOCALE = "send-variant-and-locale",
+    COLLAB_ENABLE = "collab-enable",
+    COLLAB_DISABLE = "collab-disable",
 }

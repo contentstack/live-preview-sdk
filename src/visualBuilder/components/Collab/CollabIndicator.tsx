@@ -5,102 +5,26 @@ import React, { useState, useRef, useEffect } from "preact/compat";
 import { css } from "goober";
 import DiscussionPopup from "./DiscussionPopup";
 import Config from "../../../configManager/configManager";
+import visualBuilderPostMessage from "../../utils/visualBuilderPostMessage";
+import { VisualBuilderPostMessageEvents } from "../../utils/types/postMessage.types";
 
-const generateRandomUID = (offset: number) =>
-    `${offset}-${Math.random().toString(36).substring(2, 10)}`;
-const mockLoadMoreMessages = (offset: number, limit: number) => {
-    return Promise.resolve({
-        count: 4,
-        conversations: [
-            {
-                discussion_uid: "discussion-1",
-                uid: `${offset}1`, // First comment fixed UID to perform update and delete
-                to_users: [],
-                to_roles: [],
-                message:
-                    "There are several images thats of higher dimensions. You might want to optimize the image.",
-                entry_uid: "entry-1",
-                locale: "en-US",
-                created_at: new Date().toISOString(),
-                created_by: "u3",
-            },
-            {
-                discussion_uid: "discussion-1",
-                uid: generateRandomUID(offset),
-                to_users: [],
-                to_roles: [],
-                message: "Second comment",
-                entry_uid: "entry-1",
-                locale: "en-US",
-                created_at: new Date().toISOString(),
-                created_by: "u2",
-            },
-            {
-                discussion_uid: "discussion-1",
-                uid: generateRandomUID(offset),
-                to_users: [],
-                to_roles: [],
-                message: "Third comment",
-                entry_uid: "entry-1",
-                locale: "en-US",
-                created_at: new Date().toISOString(),
-                created_by: "u2",
-            },
-            {
-                discussion_uid: "discussion-1",
-                uid: generateRandomUID(offset),
-                to_users: [],
-                to_roles: [],
-                message: "Fourth comment",
-                entry_uid: "entry-1",
-                locale: "en-US",
-                created_at: new Date().toISOString(),
-                created_by: "u2",
-            },
-        ],
-    });
-};
 const stackMetadata = {
     currentUser: {
-        uid: "u3",
-        first_name: "John",
-        last_name: "Doe",
-        email: "john.doe@example.com",
-        username: "johndoe3",
+        uid: "blte26110c4ea641ed9",
+        first_name: "Om",
+        last_name: "Prakash",
+        email: "om.prakash@contentstack.com",
+        username: "Om Prakash",
         active: true,
     },
     users: [
         {
-            uid: "u1",
+            uid: "blte26110c4ea641ed9",
             active: true,
-            username: "johndoe",
-            first_name: "John",
-            last_name: "Doe",
-            email: "john@example.com",
-        },
-        {
-            uid: "u2",
-            active: true,
-            username: "janedoe",
-            first_name: "Jane",
-            last_name: "Doe",
-            email: "jane@example.com",
-        },
-        {
-            uid: "u3",
-            first_name: "John",
-            last_name: "Doe",
-            email: "john.doe@example.com",
-            username: "johndoe3",
-            active: true,
-        },
-        {
-            uid: "u4",
-            active: false,
-            username: "janedoe",
-            first_name: "Jane",
-            last_name: "Doe",
-            email: "jane@example.com",
+            username: "Om Prakash",
+            first_name: "Om",
+            last_name: "Prakash",
+            email: "om.prakash@contentstack.com",
         },
     ],
     roles: [
@@ -109,27 +33,38 @@ const stackMetadata = {
             name: "Admin",
         },
     ],
-};
-
-// Mock Data
-const activeDiscussion = {
-    uid: "discussion-1",
-    title: "Test Discussion",
-    field: {
-        uid: "example",
-        path: "path",
-        og_path: "path",
+    invite: {
+        id: "123456789",
     },
 };
 
 export interface ICollabIndicator {
     newThread?: boolean;
+    activeDiscussion?: { uid: string; [key: string]: any }; // Add more fields as per your structure
 }
 
 const CollabIndicator: React.FC<ICollabIndicator> = (props) => {
     const buttonRef = useRef<HTMLButtonElement>(null);
     const popupRef = useRef<HTMLDivElement>(null);
+
     const [showPopup, setShowPopup] = useState(props.newThread || false);
+
+    // Set initial state based on props
+    const [activeDiscussion, setActiveDiscussion] = useState(
+        props.newThread
+            ? { uid: "new" }
+            : props.activeDiscussion || { uid: "new" }
+    );
+
+    // Update activeDiscussion when props.activeDiscussion changes
+    useEffect(() => {
+        if (props.activeDiscussion) {
+            setActiveDiscussion(props.activeDiscussion);
+        }
+    }, [props.activeDiscussion]);
+
+    console.log("CollabIndicator -> activeDiscussion", activeDiscussion);
+
     const config = Config.get();
 
     const calculatePopupPosition = () => {
@@ -216,7 +151,27 @@ const CollabIndicator: React.FC<ICollabIndicator> = (props) => {
                 >
                     <DiscussionPopup
                         onCreateComment={async (payload) => {
-                            const response: any = {};
+                            const data: any =
+                                await visualBuilderPostMessage?.send(
+                                    VisualBuilderPostMessageEvents.COLLAB_CREATE_COMMENT,
+                                    { payload }
+                                );
+
+                            const response = {
+                                notice: "conversation created successfully",
+                                conversation: {
+                                    uid: data._id,
+                                    discussion_uid: data.threadId,
+                                    entry_uid: "blt1bbd1c10058a089d",
+                                    locale: "en-us",
+                                    message: data.message,
+                                    to_users: [],
+                                    to_roles: [],
+                                    created_at: data.createdAt,
+                                    created_by: "blte26110c4ea641ed9",
+                                    deleted_at: false,
+                                },
+                            };
                             return response;
                         }}
                         onEditComment={async (payload) => {
@@ -234,11 +189,104 @@ const CollabIndicator: React.FC<ICollabIndicator> = (props) => {
                             return response;
                         }}
                         stackMetadata={stackMetadata}
-                        loadMoreMessages={mockLoadMoreMessages}
+                        loadMoreMessages={async (offset, limit) => {
+                            let payload = {
+                                threadID: activeDiscussion?.uid,
+                                offset,
+                                limit,
+                            };
+                            const data: any =
+                                await visualBuilderPostMessage?.send(
+                                    VisualBuilderPostMessageEvents.COLLAB_FETCH_COMMENTS,
+                                    { payload }
+                                );
+
+                            const response = {
+                                count: data.length,
+                                conversations: data.map((item: any) => ({
+                                    uid: item._id,
+                                    discussion_uid: item.threadId,
+                                    entry_uid: "blt1bbd1c10058a089d",
+                                    locale: "en-us",
+                                    message: item.message,
+                                    to_users: [],
+                                    to_roles: [],
+                                    created_at: item.createdAt,
+                                    created_by: "blte26110c4ea641ed9",
+                                    deleted_at: false,
+                                })),
+                            };
+                            return response;
+                        }}
                         activeDiscussion={activeDiscussion}
-                        setActiveDiscussion={() => {}}
+                        setActiveDiscussion={setActiveDiscussion}
                         createNewDiscussion={async () => {
-                            const response: any = {};
+                            let payload = {};
+                            let response: any = {};
+                            if (buttonRef.current) {
+                                const parentDiv =
+                                    buttonRef.current.closest(
+                                        "div[field-path]"
+                                    );
+                                if (parentDiv) {
+                                    const fieldPath =
+                                        parentDiv.getAttribute("field-path");
+                                    const relative =
+                                        parentDiv.getAttribute("relative");
+
+                                    const match = relative?.match(
+                                        /x: ([\d.]+), y: ([\d.]+)/
+                                    );
+                                    if (!match) {
+                                        return response;
+                                    }
+                                    const relativeX = parseFloat(match[1]);
+                                    const relativeY = parseFloat(match[2]);
+
+                                    if (fieldPath && relative) {
+                                        payload = {
+                                            elementXPath: fieldPath,
+                                            position: {
+                                                x: relativeX,
+                                                y: relativeY,
+                                            },
+                                            author: stackMetadata.currentUser
+                                                .email,
+                                            pageRoute: "/",
+                                            inviteId: stackMetadata.invite.id,
+                                        };
+                                    }
+                                }
+                            }
+
+                            const data: any =
+                                await visualBuilderPostMessage?.send(
+                                    VisualBuilderPostMessageEvents.COLLAB_CREATE_THREAD,
+                                    { payload }
+                                );
+
+                            response = {
+                                notice: "discussion created successfully",
+                                discussion: {
+                                    api_key: "blt05d58ee84d13fd72",
+                                    _content_type_uid: "page",
+                                    entry_uid: "blt1bbd1c10058a089d",
+                                    locale: "en-us",
+                                    status: 1,
+                                    uid: data?._id,
+                                    title: "Description-1736860796142",
+                                    field: {
+                                        uid: "description",
+                                        path: "sections.home.csdc2330a19d43171f.hero_section.description",
+                                        og_path:
+                                            "sections.home.hero_section.description",
+                                    },
+                                    org_uid: "blt739e38d90d4fc4e6",
+                                    created_by: "blte26110c4ea641ed9",
+                                    created_at: data?.createdAt,
+                                },
+                            };
+
                             return response;
                         }}
                     />

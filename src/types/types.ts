@@ -195,8 +195,9 @@ export interface IVisualBuilderInitEvent {
     stackDetails: {
         masterLocale: string;
     };
-    collab: {
+    collab?: {
         enable: boolean;
         state: boolean;
+        payload: any;
     };
 }
