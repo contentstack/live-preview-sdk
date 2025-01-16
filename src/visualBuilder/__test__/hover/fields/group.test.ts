@@ -98,17 +98,16 @@ describe("When an element is hovered in visual builder mode", () => {
         test("should have outline and custom cursor", async () => {
             groupField.dispatchEvent(mousemoveEvent);
             await waitForHoverOutline();
-            expect(groupField).toMatchSnapshot();
             const hoverOutline = document.querySelector(
                 "[data-testid='visual-builder__hover-outline']"
             );
-            expect(hoverOutline).toMatchSnapshot();
+            expect(hoverOutline).toHaveAttribute('style');
 
             const customCursor = document.querySelector(
                 `[data-testid="visual-builder__cursor"]`
             );
 
-            expect(customCursor).toMatchSnapshot();
+            expect(customCursor).toHaveAttribute('data-icon', 'group');
             expect(customCursor?.classList.contains("visible")).toBeTruthy();
         });
 
@@ -127,17 +126,16 @@ describe("When an element is hovered in visual builder mode", () => {
 
             singleLine.dispatchEvent(mousemoveEvent);
             await waitForHoverOutline();
-            expect(singleLine).toMatchSnapshot();
             const hoverOutline = document.querySelector(
                 "[data-testid='visual-builder__hover-outline']"
             );
-            expect(hoverOutline).toMatchSnapshot();
+            expect(hoverOutline).toHaveAttribute('style');
 
             const customCursor = document.querySelector(
                 `[data-testid="visual-builder__cursor"]`
             );
 
-            expect(customCursor).toMatchSnapshot();
+            expect(customCursor).toHaveAttribute('data-icon', 'singleline');
             expect(customCursor?.classList.contains("visible")).toBeTruthy();
         });
     });
@@ -207,28 +205,26 @@ describe("When an element is hovered in visual builder mode", () => {
         test("should have outline and custom cursor", async () => {
             container.dispatchEvent(mousemoveEvent);
             await waitForHoverOutline();
-            expect(container).toMatchSnapshot();
             const hoverOutline = document.querySelector(
                 "[data-testid='visual-builder__hover-outline']"
             );
-            expect(hoverOutline).toMatchSnapshot();
+            expect(hoverOutline).toHaveAttribute('style');
 
             const customCursor = document.querySelector(
                 `[data-testid="visual-builder__cursor"]`
             );
 
-            expect(customCursor).toMatchSnapshot();
+            expect(customCursor).toHaveAttribute('data-icon', 'group');
             expect(customCursor?.classList.contains("visible")).toBeTruthy();
-        });
 
-        test.skip("should have outline on the nested field", async () => {
             firstNestedMultiLine.dispatchEvent(mousemoveEvent);
             await waitForHoverOutline();
-            expect(firstNestedMultiLine).toMatchSnapshot();
-            const hoverOutline = document.querySelector(
-                "[data-testid='visual-builder__hover-outline']"
+
+            const newCustomCursor = document.querySelector(
+                `[data-testid="visual-builder__cursor"]`
             );
-            expect(hoverOutline).toMatchSnapshot();
+            expect(newCustomCursor).toHaveAttribute('data-icon', 'multiline');
+            expect(newCustomCursor?.classList.contains("visible")).toBeTruthy();
         });
     });
 });

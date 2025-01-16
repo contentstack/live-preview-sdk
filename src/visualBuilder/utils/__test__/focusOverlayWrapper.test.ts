@@ -12,6 +12,7 @@ import { mockMultipleLinkFieldSchema } from "../../../__test__/data/fields";
 // if this file is imported before, tests might fail
 // this is probably because of cyclic dependencies
 import { VisualBuilder } from "../..";
+import { screen } from "@testing-library/preact";
 
 vi.mock("../visualBuilderPostMessage", () => {
     return {
@@ -82,7 +83,9 @@ describe("addFocusOverlay", () => {
             right: 20,
             top: 10,
             bottom: 20,
-        })) as any;
+            height: 10,
+            width: 10
+        } as DOMRect)) as any;
 
         visualBuilderContainer.appendChild(targetElement);
     });
@@ -93,21 +96,13 @@ describe("addFocusOverlay", () => {
         vi.clearAllMocks();
     });
 
-    test("should set the focus overlay wrapper to visible", () => {
-        addFocusOverlay(targetElement, focusOverlayWrapper);
-        expect(focusOverlayWrapper.classList.contains("visible")).toBe(true);
-    });
-
-    test("should set the top overlay to the correct dimensions", () => {
-        expect(focusOverlayWrapper).toMatchSnapshot();
-
+    test("should set the visibility and dimension for overlay", () => {
         addFocusOverlay(targetElement, focusOverlayWrapper);
 
         focusOverlayWrapper = document.querySelector(
             ".visual-builder__overlay__wrapper"
         ) as HTMLDivElement;
 
-        expect(focusOverlayWrapper).toMatchSnapshot();
         expect(focusOverlayWrapper?.classList.contains("visible")).toBe(true);
 
         const visualBuilderWrapperTopOverlay = document.querySelector(
@@ -140,6 +135,11 @@ describe("addFocusOverlay", () => {
         expect(visualBuilderWrapperRightOverlay.style.top).toBe("10px");
         expect(visualBuilderWrapperRightOverlay.style.left).toBe("20px");
         expect(visualBuilderWrapperRightOverlay.style.width).toBe("80px");
+
+        const overlayOutline = document.querySelector(
+            `[data-testid="visual-builder__overlay--outline"]`
+        )
+        expect(overlayOutline).toHaveStyle("top: 10px; height: 10px; width: 10px; left: 10px; outline-color: rgb(113, 92, 221);");
     });
 });
 

@@ -1,4 +1,4 @@
-import { act, waitFor, fireEvent } from "@testing-library/preact";
+import { act, waitFor, screen } from "@testing-library/preact";
 import "@testing-library/jest-dom";
 import { getFieldSchemaMap } from "../../../../__test__/data/fieldSchemaMap";
 import Config from "../../../../configManager/configManager";
@@ -123,11 +123,13 @@ describe("When an element is clicked in visual builder mode", () => {
             expect(overlay!.classList.contains("visible"));
         });
 
-        test.skip("should have a field path dropdown", () => {
-            const toolbar = document.querySelector(
-                ".visual-builder__focused-toolbar__field-label-wrapper__current-field"
-            );
-            expect(toolbar).toBeInTheDocument();
+        test("should have a field path dropdown", async () => {
+            await waitFor(async () => {
+                const toolbar = await screen.findByTestId(
+                    "mock-field-label-wrapper"
+                );
+                expect(toolbar).toBeInTheDocument();
+            });
         });
 
         test("should contain a data-cslp-field-type attribute", async () => {

@@ -1,7 +1,0 @@
-// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
-
-exports[`When outside the Visual Builder, the Visual Builder > should not have clickable elements 1`] = `
-<h1
-  data-cslp="all_fields.blt58a50b4cebae75c5.en-us.single_line"
-/>
-`;

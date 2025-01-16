@@ -107,18 +107,13 @@ describe("When an element is clicked in visual builder mode", () => {
             expect(overlay!.classList.contains("visible"));
         });
 
-        test.skip("should have a field path dropdown", () => {
-            const toolbar = document.querySelector(
-                ".visual-builder__focused-toolbar__field-label-wrapper__current-field"
-            );
-            expect(toolbar).toBeInTheDocument();
-        });
-
-        test.skip("should have a field path dropdown", () => {
-            const toolbar = document.querySelector(
-                ".visual-builder__focused-toolbar__field-label-wrapper__current-field"
-            );
-            expect(toolbar).toBeInTheDocument();
+        test("should have a field path dropdown", async () => {
+            await waitFor(async () => {
+                const toolbar = await screen.findByTestId(
+                    "mock-field-label-wrapper"
+                );
+                expect(toolbar).toBeInTheDocument();
+            });
         });
 
         test("should contain a data-cslp-field-type attribute", async () => {
@@ -192,43 +187,6 @@ describe("When an element is clicked in visual builder mode", () => {
         test("should have an overlay", () => {
             const overlay = document.querySelector(".visual-builder__overlay");
             expect(overlay!.classList.contains("visible"));
-        });
-
-        test.skip("should have a field path dropdown", () => {
-            const toolbar = document.querySelector(
-                ".visual-builder__focused-toolbar__field-label-wrapper__current-field"
-            );
-            expect(toolbar).toBeInTheDocument();
-        });
-
-        // TODO should be a test of FieldToolbar
-        test.skip("should have a multi field toolbar with button group", async () => {
-            const multiFieldToolbar = document.querySelector(
-                ".visual-builder__focused-toolbar__multiple-field-toolbar"
-            );
-
-            const buttonGroup = document.querySelector(
-                ".visual-builder__focused-toolbar__button-group"
-            );
-
-            expect(multiFieldToolbar).toBeInTheDocument();
-            expect(buttonGroup).toBeInTheDocument();
-        });
-
-        test.skip("should have 2 add instance buttons", async () => {
-            fireEvent.click(container.children[0]);
-            await waitFor(() => {
-                expect(container.children[0]).toHaveAttribute(
-                    VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
-                );
-            });
-
-            await waitFor(() => {
-                const addInstanceButtons = screen.getAllByTestId(
-                    "visual-builder-add-instance-button"
-                );
-                expect(addInstanceButtons.length).toBe(2);
-            });
         });
 
         test("should contain a data-cslp-field-type attribute", async () => {
