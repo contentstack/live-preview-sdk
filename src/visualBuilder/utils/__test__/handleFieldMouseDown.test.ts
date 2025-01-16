@@ -5,6 +5,8 @@ import * as insertSpaceAtCursor from "../insertSpaceAtCursor";
 import * as generateOverlay from "../../generators/generateOverlay";
 import { VisualBuilderPostMessageEvents } from "../types/postMessage.types";
 import { FieldDataType } from "../types/index.types";
+import userEvent from "@testing-library/user-event";
+import { waitFor, screen } from "@testing-library/preact";
 
 vi.mock("lodash-es", async () => ({
     ...(await import("lodash-es")),
@@ -112,6 +114,16 @@ describe("handle numeric field key down", () => {
 
         h1.dispatchEvent(keyDownEvent);
         expect(spiedPreventDefault).toHaveBeenCalledTimes(1);
+    });
+
+    test("should only accept characters like a number input", async () => {
+        h1.innerHTML = '';
+        await userEvent.click(h1);
+        await userEvent.keyboard("ab56c78e-h10");
+
+        await waitFor(() => {
+            expect(h1).toHaveTextContent(`5678e-10`);
+        });
     });
 });
 
