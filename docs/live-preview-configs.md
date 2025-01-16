@@ -6,6 +6,7 @@ The init data has following structure
     -   [`init(config: IConfig)`](#initconfig-iconfig)
         -   [`enable`](#enable)
         -   [`ssr`](#ssr)
+        -   [`mode`](#mode)
         -   [`editButton`](#editbutton)
         -   [`cleanCslpOnProduction`](#cleancslponproduction)
         -   [`stackDetails`](#stackdetails)
@@ -49,6 +50,18 @@ If you set the property to `true`, then your app or website is rendered from the
 When you set the property to `false`, then app is rendered from the client side (CSR). Your framework, e.g. React, will fetch the data and reload the existing page.
 
 > **Note:** For CSR mode, [stackSDK](#stacksdk) is required. Hence, we automatically switch mode to CSR when you pass this object. This config is provided to override the default behavior.
+
+### `mode`
+
+| type    |  default  | optional |
+| ------- | --------- | -------- |
+| string  | `preview` | Yes      |
+
+The `mode` property specifies whether the site is editable in the Live Preview or Visual Builder environment.
+
+If set to `preview`, clicking the hovered edit button navigates to the Contentstack Live Preview panel.
+
+If set to `builder`, clicking the Start Editing button navigates to the Contentstack Visual Builder. Note that the site will still function in the Live Preview panel even when set to 'builder'.
 
 ### `editButton`
 The editButton object allows you to manage the "Edit" button both within and outside the Live Preview portal. It offers the following features:
@@ -274,55 +287,29 @@ The `hash` property returns the live preview hash of the entry. It returns an em
 console.log(ContentstackLivePreview.hash); // "hash"
 ```
 
-## setConfigFromParams(config: ConstructorParameters<typeof URLSearchParams>[0])
+## config
 
-The `setConfigFromParams` method allows you to set the configuration from the URL parameters. It accepts the URLSearchParams object as a parameter. This method is used in the SSR mode to set the live preview hash received from the URL.
+The `config` property returns the following properties and their values:
 
-**For example:**
+1. [`ssr`](#ssr)
+2. [`enable`](#enable)
+3. [`cleanCslpOnProduction`](#cleancslponproduction)
+4. `stackDetails`
+The stackDetails object provides information relevant to the live preview context, including:
 
-```js
-console.log(ContentstackLivePreview.hash); // ""
-ContentstackLivePreview.setConfigFromParams(window.location.search); // https://example.com?live_preview=hash
-console.log(ContentstackLivePreview.hash); // "hash"
-```
-
-## `getGatsbyDataFormat(sdkQuery: IStackSdk, prefix: string)`
-
-Gatsby primarily fetches data using the [`gatsby-source-contentstack` plugin](https://www.gatsbyjs.com/plugins/gatsby-source-contentstack/). But, Live Preview currently works only on the [contentstack SDK](https://www.npmjs.com/package/contentstack).
-
-Hence, for Gatsby, we fetch the data from the contentstack SDK and store it in React state. Post that, we re-render the page using the `onEntryChange()` method. As the data format is different for the gatsby-source-contentstack plugin, it returns a prefix and the entry name in Camel case. Hence, we use `getGatsbyDataFormat()` to change the entry's name.
-​
-The `getGatsbyDataFormat()` method accepts the Contentstack `Stack` object as the first parameter and the prefix as the second. The prefix is set inside the `gatsby-config.js` file. The default value set for the prefix is `contentstack`.
-
-**For example:**
-
-```js
-const query = Stack.ContentType("your-contentype").Entry("entry-uid");
-
-const formattedData = ContentstackLivePreview.getGatsbyDataFormat(
-    query,
-    "contentstack"
-);
-
-setData(formattedData);
-```
-
-**Difference in data:**
-
-```js
-// not passed to function
-{
-  "footer_lib": {
-    "title": "footer",
-    ...
-  }
-}
-
-// passed to function with prefix as 'contentstack'
-{
-  "contentstackFooterLib": {
-    "title": "footer",
-    ...
-  }
+```ts
+stackDetails {
+    apiKey: string;          // API key of the stack
+    environment: string;     // Environment in which the preview is running
+    contentTypeUid: string;  // UID of the content type
+    entryUid: string;        // UID of the specific entry
 }
 ```
+5. [`clientUrlParams`](#clienturlparams)
+6. `windowType`: The windowType property determines the context of the parent window. It can have one of the following values:
+    - `preview`: The site is loaded as an iframe within a Live Preview or Timeline preview environment.
+    - `builder`: The site is loaded as an iframe within the Visual Builder environment.
+    - `independent`: The site is loaded directly outside the Contentstack platform.
+7. [`hash`](#hash)
+8. [`editButton`](#editbutton)
+9. [`mode`](#mode)
