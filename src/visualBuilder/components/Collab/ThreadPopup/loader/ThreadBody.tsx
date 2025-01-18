@@ -3,12 +3,10 @@ import React from "preact/compat";
 import SkeletonTile from "../../SkeletonTile/SkeletonTile";
 import { collabStyles } from "../../../../visualBuilder.style";
 
-const DiscussionBodyLoader = () => {
+const ThreadBodyLoader = () => {
     return (
-        <div
-            className={collabStyles()["collab-discussion-body-comment--loader"]}
-        >
-            <div className="flex">
+        <div className={collabStyles()["collab-thread-body-comment--loader"]}>
+            <div style={{ display: "flex" }}>
                 <SkeletonTile
                     numberOfTiles={1}
                     tileHeight={32}
@@ -47,4 +45,4 @@ const DiscussionBodyLoader = () => {
     );
 };
 
-export default DiscussionBodyLoader;
+export default ThreadBodyLoader;

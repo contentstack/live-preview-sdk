@@ -5,6 +5,7 @@ import {
     sanitizeData,
 } from "../../../utils/collabUtils";
 import { collabStyles } from "../../../visualBuilder.style";
+
 interface ICommentResolvedText {
     comment: IMessageDTO;
     userState: IUserState;
@@ -13,13 +14,7 @@ interface ICommentResolvedText {
 const CommentResolvedText = ({ comment, userState }: ICommentResolvedText) => {
     const text = useMemo(() => {
         return getMessageWithDisplayName(comment, userState, "html");
-    }, [
-        comment.message,
-        userState.roleMap,
-        userState.userMap,
-        comment.to_roles,
-        comment.to_users,
-    ]);
+    }, [comment.message, userState.userMap, comment.toUsers]);
 
     const sanitizedText = useMemo(() => {
         return sanitizeData(text?.replace(/\n/g, "<br/>"));

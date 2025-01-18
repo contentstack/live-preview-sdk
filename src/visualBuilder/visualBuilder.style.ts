@@ -728,54 +728,50 @@ export function collabStyles() {
         "collab-avatar--single:hover .collab-avatar__image": css`
             filter: grayscale(0);
         `,
-        "collab-discussion-body-comment--loader": css`
+        "collab-thread-body-comment--loader": css`
             padding: 0.625rem;
         `,
-        "collab-discussion--wrapper": css`
+        "collab-thread--wrapper": css`
             position: relative;
             padding: 0 !important;
             font-family: Inter;
             color: #475161;
             width: 20.75rem;
-
-            &:hover > .collab-discussion-icon {
-                opacity: 0.6;
-            }
         `,
-        "collab-discussion-header--wrapper": css`
+        "collab-thread-header--wrapper": css`
             height: 2.5rem;
             padding: 0 0 0 0.625rem;
         `,
-        "collab-discussion-header--container": css`
+        "collab-thread-header--container": css`
             justify-content: space-between;
             width: 100%;
         `,
-        "collab-discussion-header--title": css`
+        "collab-thread-header--title": css`
             font-weight: 600;
             font-size: 0.875rem;
         `,
-        "collab-discussion-header--resolve": css`
+        "collab-thread-header--resolve": css`
             border-radius: 6px !important;
         `,
-        "collab-discussion-header--resolve--icon": css`
+        "collab-thread-header--resolve--icon": css`
             width: 1.25rem;
             height: 1.25rem;
             margin-right: 0.5rem !important;
         `,
-        "collab-discussion-header--resolve--text": css`
+        "collab-thread-header--resolve--text": css`
             font-size: 0.875rem;
         `,
-        "collab-discussion-footer--wrapper": css`
+        "collab-thread-footer--wrapper": css`
             height: 3.5rem;
             width: 100%;
             flex-direction: row-reverse;
             padding: 0 0.9375rem;
         `,
-        "collab-discussion-body--wrapper": css`
+        "collab-thread-body--wrapper": css`
             border: solid #edf1f7;
             border-width: 0.0625rem 0;
         `,
-        "collab-discussion-input-indicator--wrapper": css`
+        "collab-thread-input-indicator--wrapper": css`
             padding: 0 0.5rem;
             font-weight: 400;
             font-size: 0.875rem;
@@ -783,46 +779,21 @@ export function collabStyles() {
             letter-spacing: 0.01em;
             min-height: 1.3125rem !important;
         `,
-        "collab-discussion-input-indicator--error": css`
+        "collab-thread-input-indicator--error": css`
             width: 100%;
             margin-right: 0.5rem;
             color: #d62400;
         `,
-        "collab-discussion-input-indicator--count": css`
+        "collab-thread-input-indicator--count": css`
             color: #475161;
         `,
-        "collab-discussion-icon": css`
-            display: inline-flex;
-            position: absolute;
-            right: -0.5rem;
-            transform: translateX(0.75rem);
-            top: 0;
-            align-items: center;
-            justify-content: center;
-            transition: 0.2s all ease-in;
-            cursor: pointer;
-            opacity: 0;
-            margin-top: 0;
-            height: 1.5rem;
-
-            &:active,
-            &:focus {
-                opacity: 1;
-                cursor: grabbing;
-            }
-
-            &--view,
-            &:hover {
-                opacity: 1 !important;
-            }
-        `,
-        "collab-discussion-comment--user-details": css`
+        "collab-thread-comment--user-details": css`
             width: 100%;
         `,
-        "collab-discussion-comment--user-details__text": css`
+        "collab-thread-comment--user-details__text": css`
             padding-left: 0.625rem;
         `,
-        "collab-discussion-comment--user-name": css`
+        "collab-thread-comment--user-name": css`
             font-style: normal;
             font-weight: 600;
             font-size: 0.75rem;
@@ -830,7 +801,7 @@ export function collabStyles() {
             letter-spacing: 0.015rem;
             color: #475161;
         `,
-        "collab-discussion-comment--list": css`
+        "collab-thread-comment--list": css`
             max-height: 10.9rem;
             display: flex;
             overflow: auto;
@@ -842,7 +813,7 @@ export function collabStyles() {
             stroke-width: 0.0625rem;
             stroke: #dde3ee;
         `,
-        "collab-discussion-comment--time-details": css`
+        "collab-thread-comment--time-details": css`
             font-weight: 400;
             font-size: 0.75rem;
             line-height: 150%;
@@ -850,7 +821,7 @@ export function collabStyles() {
             letter-spacing: 0.015rem;
             color: #6e6b86;
         `,
-        "collab-discussion-comment--message": css`
+        "collab-thread-comment--message": css`
             font-weight: 400;
             font-size: 1rem;
             line-height: 1.5rem;
@@ -865,35 +836,35 @@ export function collabStyles() {
                 font-weight: 400;
             }
         `,
-        "collab-discussion-comment--wrapper": css`
+        "collab-thread-comment--wrapper": css`
             display: flex;
             flex-direction: column;
             align-items: flex-start;
             gap: 0.625rem;
             padding: 0.625rem;
         `,
-        "collab-discussion-comment-action--wrapper": css`
+        "collab-thread-comment-action--wrapper": css`
             margin-left: auto;
         `,
-        "collab-discussion-smooth-animation": css`
+        "collab-thread-smooth-animation": css`
             transition: top 0.7s ease;
             -webkit-transition: top 0.7s ease;
         `,
-        "collab-discussion-body--input": css`
+        "collab-thread-body--input": css`
             width: 100%;
             display: flex;
             flex-direction: column;
             gap: 0.25rem;
             grid-gap: 0.25rem;
         `,
-        "collab-discussion-body--mention__input__focus": css`
+        "collab-thread-body--mention__input__focus": css`
             background-color: #ffffff !important;
             border: 0.0625rem solid #5d50be !important;
             box-shadow: 0 0 0 0.0625rem #5d50be !important;
             border-radius: 4px !important;
             outline: none;
         `,
-        "collab-discussion-body--mention__input__hover": css`
+        "collab-thread-body--mention__input__hover": css`
             background-color: #edf1f7;
             border: 0.0625rem solid #5d50be !important;
             box-shadow: 0 0 0 0.0625rem #5d50be !important;

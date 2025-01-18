@@ -1,12 +1,12 @@
 /** @jsxImportSource preact */
 import React from "preact/compat";
 import { IMessageDTO, IUserState } from "../../../types/collab.types";
-import DiscussionBodyLoader from "./loader/DiscussionBody";
+import ThreadBodyLoader from "./loader/ThreadBody";
 import CommentCard from "./CommentCard";
 import classNames from "classnames";
 import { collabStyles } from "../../../visualBuilder.style";
 
-interface IDiscussionBody {
+interface IThreadBody {
     handleOnSaveRef: React.MutableRefObject<any>;
     userState: IUserState;
     isLoading: boolean;
@@ -15,7 +15,7 @@ interface IDiscussionBody {
     editComment: string;
 }
 
-const DiscussionBody: React.FC<IDiscussionBody> = React.memo(
+const ThreadBody: React.FC<IThreadBody> = React.memo(
     ({
         handleOnSaveRef,
         userState,
@@ -27,19 +27,19 @@ const DiscussionBody: React.FC<IDiscussionBody> = React.memo(
         return (
             <div
                 className={classNames(
-                    "collab-discussion-body--wrapper",
-                    collabStyles()["collab-discussion-body--wrapper"]
+                    "collab-thread-body--wrapper",
+                    collabStyles()["collab-thread-body--wrapper"]
                 )}
             >
                 {isLoading ? (
-                    <DiscussionBodyLoader key="collab-discussion-body--comment-loader" />
+                    <ThreadBodyLoader key="collab-thread-body--comment-loader" />
                 ) : (
                     <div
                         className={classNames(
-                            "collab-discussion-comment--list",
-                            collabStyles()["collab-discussion-comment--list"]
+                            "collab-thread-comment--list",
+                            collabStyles()["collab-thread-comment--list"]
                         )}
-                        id="collab-discussion-comment--list"
+                        id="collab-thread-comment--list"
                     >
                         {comments?.map((comment: IMessageDTO) => (
                             <>
@@ -73,14 +73,14 @@ const DiscussionBody: React.FC<IDiscussionBody> = React.memo(
                                     comment={comment}
                                     handleOnSaveRef={handleOnSaveRef}
                                     mode={
-                                        editComment === comment.uid
+                                        editComment === comment._id
                                             ? "edit"
                                             : "view"
                                     }
                                 />
                             </>
                         ))}
-                        {fetchingMore && <DiscussionBodyLoader />}
+                        {fetchingMore && <ThreadBodyLoader />}
                     </div>
                 )}
 
@@ -97,4 +97,4 @@ const DiscussionBody: React.FC<IDiscussionBody> = React.memo(
     }
 );
 
-export default DiscussionBody;
+export default ThreadBody;

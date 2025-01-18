@@ -1,35 +1,23 @@
 //User and Roles
 export declare interface IUserDTO {
     display?: string;
-    uid: string;
-    first_name: string;
-    last_name: string;
-    active: boolean;
     email: string;
-    username: string;
+    identityHash: string;
 }
 
 export declare interface IUserState {
     mentionsList: Array<IMentionList>;
     userMap: IUserMap;
-    roleMap: IRoleMap;
     currentUser: IUserDTO;
-}
-
-export declare interface IRoleDTO {
-    uid: string;
-    name: string;
 }
 
 export declare type IUserMap = { [key: string]: IUserDTO };
-export declare type IRoleMap = { [key: string]: IRoleDTO };
 
 // Stack Metadata and Context
-export declare interface IStackMetadata {
+export declare interface IInviteMetadata {
     users: Array<IUserDTO>;
-    roles: Array<IRoleDTO>;
     currentUser: IUserDTO;
-    invite: { id: string };
+    inviteID: string;
 }
 
 // Mention Related Types
@@ -37,12 +25,8 @@ export declare type IMentionItem = { id: string; display: string };
 
 export declare interface IMentionList {
     display: string;
-    id: string;
-    uid: string;
     email?: string;
-    first_name?: string;
-    last_name?: string;
-    username?: string;
+    identityHash?: string;
 }
 
 export declare type IMentionedList = Array<IMentionItem>;
@@ -50,46 +34,45 @@ export declare type IMentionedList = Array<IMentionItem>;
 // Comment State
 export declare interface ICommentState {
     message: string;
-    to_users: Array<IMentionItem>;
-    to_roles: Array<IMentionItem>;
+    toUsers?: Array<IMentionItem>;
+    images?: string[];
 }
 
 // Message DTO
 export declare interface IMessageDTO {
-    discussion_uid: string;
-    uid: string;
-    to_users?: Array<string>;
-    to_roles?: Array<string>;
+    _id: string;
+    threadUid: string;
     message: string;
-    entry_uid: string;
-    locale: string;
+    author: string;
+    toUsers?: string[];
+    images?: string[];
     created_at: string;
     created_by: string;
 }
 
 // Discussion Context
-export declare interface IDiscussionContext {
-    stackMetadata: IStackMetadata;
+export declare interface IThreadContext {
+    inviteMetadata: IInviteMetadata;
     commentCount: number;
     error: IErrorState;
     userState: IUserState;
     onCreateComment: (data: ICommentPayload) => Promise<ICommentResponse>;
     onEditComment: (data: IEditCommentArgs) => Promise<ICommentResponse>;
     onDeleteComment: (data: IDeleteCommentArgs) => Promise<IDefaultAPIResponse>;
-    setDiscussionState: (
+    setThreadState: (
         state:
-            | IDiscussionPopupState
-            | ((prevState: IDiscussionPopupState) => IDiscussionPopupState)
+            | IThreadPopupState
+            | ((prevState: IThreadPopupState) => IThreadPopupState)
     ) => void;
     onClose: () => void;
     setError: Function;
     editComment: string;
-    activeDiscussion: IActiveDiscussion;
-    setActiveDiscussion: (discussion: IActiveDiscussion) => void;
-    createNewDiscussion: () => Promise<any>;
+    activeThread: IActiveThread;
+    setActiveThread: (thread: IActiveThread) => void;
+    createNewThread: () => Promise<any>;
 }
 
-export interface IDiscussionPopupState {
+export interface IThreadPopupState {
     commentCount: number;
     userState: IUserState;
     isLoading: boolean;
@@ -98,16 +81,14 @@ export interface IDiscussionPopupState {
 }
 
 export interface ICommentDTO {
-    discussion_uid: string;
-    uid: string;
-    to_users: string[];
-    to_roles: string[];
+    _id: string;
+    threadUid: string;
     message: string;
+    author: string;
+    toUsers: string[];
+    images: string[];
     created_at: string;
     created_by: string;
-    deleted_at: boolean;
-    entry_uid: string;
-    locale: string;
     updated_at?: string;
 }
 
@@ -116,37 +97,31 @@ export interface IDefaultAPIResponse {
 }
 
 export interface ICommentResponse extends IDefaultAPIResponse {
-    conversation: ICommentDTO;
+    comment: ICommentDTO;
 }
 
 export interface ICommentPayload extends ICommentState {
-    discussion_uid: string;
+    threadUid: string;
 }
 
-interface Field {
-    uid: string;
-    path: string;
-    og_path: string;
-}
-
-export interface IDiscussionDTO {
-    title: string;
-    entry_uid: string;
-    uid: string;
-    api_key: string;
-    org_uid: string;
-    _content_type_uid: string;
-    locale: string;
-    status: number;
-    field: Field;
-    created_at: string;
+export interface IThreadDTO {
+    _id: string;
+    author: string;
+    inviteUid: number;
+    position: {
+        x: number;
+        y: number;
+    };
+    elementXPath: string;
+    isElementPresent: boolean;
+    pageRoute: string;
     created_by: string;
-    updated_at?: string;
-    updated_by?: string;
-    unread?: boolean;
+    sequenceNumber: number;
+    threadState: number;
+    created_at: string;
 }
-export interface IDiscussionResponseDTO extends IDefaultAPIResponse {
-    discussion: IDiscussionDTO;
+export interface IThreadResponseDTO extends IDefaultAPIResponse {
+    thread: IThreadDTO;
 }
 
 export interface IEditCommentArgs {
@@ -155,7 +130,7 @@ export interface IEditCommentArgs {
 }
 
 export interface IDeleteCommentArgs {
-    discussionUID: string;
+    threadUID: string;
     commentUID: string;
 }
 
@@ -164,7 +139,7 @@ export interface IErrorState {
     message: string;
 }
 
-export interface IActiveDiscussion
-    extends Partial<Pick<IDiscussionDTO, "title" | "field">> {
-    uid: string;
+export interface IActiveThread
+    extends Partial<Pick<IThreadDTO, "elementXPath" | "position" | "author">> {
+    _id: string;
 }

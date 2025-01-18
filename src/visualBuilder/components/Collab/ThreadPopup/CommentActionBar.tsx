@@ -1,8 +1,8 @@
 /** @jsxImportSource preact */
 import React, { useContext } from "preact/compat";
-import { IDiscussionPopupState, IUserDTO } from "../../../types/collab.types";
+import { IThreadPopupState, IUserDTO } from "../../../types/collab.types";
 import Icon from "../Icon/Icon";
-import { DiscussionProvider } from "./ContextProvider";
+import { ThreadProvider } from "./ContextProvider";
 import { collabStyles } from "../../../visualBuilder.style";
 
 interface ICommentActionBar {
@@ -19,11 +19,11 @@ const CommentActionBar: React.FC<ICommentActionBar> = ({
     currentUser,
     commentUID,
 }) => {
-    const { setDiscussionState, onDeleteComment, activeDiscussion } =
-        useContext(DiscussionProvider)!;
+    const { setThreadState, onDeleteComment, activeThread } =
+        useContext(ThreadProvider)!;
 
     const setEditComment = (uid: string | null) => {
-        setDiscussionState((prevState: IDiscussionPopupState) => ({
+        setThreadState((prevState: IThreadPopupState) => ({
             ...prevState,
             editComment: uid || "",
         }));
@@ -49,14 +49,14 @@ const CommentActionBar: React.FC<ICommentActionBar> = ({
         try {
             // Call the onDeleteComment function
             const deleteResponse = await onDeleteComment({
-                discussionUID: activeDiscussion?.uid,
+                threadUID: activeThread?._id,
                 commentUID: commentUID,
             });
             // successNotification(deleteResponse.notice);
             // Update the discussion state after successful deletion
-            setDiscussionState((prevState: IDiscussionPopupState) => {
+            setThreadState((prevState: IThreadPopupState) => {
                 const updatedComments = prevState.comments.filter(
-                    (comment) => comment.uid !== commentUID
+                    (comment) => comment._id !== commentUID
                 );
                 return {
                     ...prevState,
@@ -77,7 +77,7 @@ const CommentActionBar: React.FC<ICommentActionBar> = ({
         return (
             <div
                 className={
-                    collabStyles()["collab-discussion-comment-action--wrapper"]
+                    collabStyles()["collab-thread-comment-action--wrapper"]
                 }
             >
                 <Icon
@@ -90,16 +90,14 @@ const CommentActionBar: React.FC<ICommentActionBar> = ({
         );
     }
 
-    if (commentUser.uid !== currentUser.uid || !commentUID) {
+    if (commentUser.identityHash !== currentUser.identityHash || !commentUID) {
         return null;
     }
 
     return (
         <div
-            className={
-                collabStyles()["collab-discussion-comment-action--wrapper"]
-            }
-            data-testid="collab-discussion-action-wrapper"
+            className={collabStyles()["collab-thread-comment-action--wrapper"]}
+            data-testid="collab-thread-action-wrapper"
         >
             <Icon
                 icon="Edit"

@@ -11,11 +11,10 @@ import {
     ICommentPayload,
     ICommentResponse,
     ICommentState,
-    IDiscussionPopupState,
-    IDiscussionResponseDTO,
+    IThreadPopupState,
+    IThreadResponseDTO,
     IMentionItem,
     IMessageDTO,
-    IRoleDTO,
     IUserDTO,
     IUserState,
 } from "../../../types/collab.types";
@@ -27,7 +26,7 @@ import {
     getCommentBody,
 } from "../../../utils/collabUtils";
 import { maxMessageLength } from "../../../utils/constants";
-import { DiscussionProvider } from "./ContextProvider";
+import { ThreadProvider } from "./ContextProvider";
 import useDynamicTextareaRows from "../../../hooks/useDynamicTextareaRows";
 import { cloneDeep, findIndex } from "lodash-es";
 import classNames from "classnames";
@@ -40,8 +39,8 @@ interface ICommentTextArea {
 
 const initialState: ICommentState = {
     message: "",
-    to_roles: [],
-    to_users: [],
+    toUsers: [],
+    images: [],
 };
 
 const CommentTextArea: React.FC<ICommentTextArea> = React.memo(
@@ -59,23 +58,25 @@ const CommentTextArea: React.FC<ICommentTextArea> = React.memo(
                 return;
             }
 
-            const styles = collabStyles();
-
             const handleFocus = () =>
                 textarea.classList.add(
-                    styles["collab-discussion-body--mention__input__focus"]
+                    "collab-thread-body--mention__input__focus",
+                    collabStyles()["collab-thread-body--mention__input__focus"]
                 );
             const handleBlur = () =>
                 textarea.classList.remove(
-                    styles["collab-discussion-body--mention__input__focus"]
+                    "collab-thread-body--mention__input__focus",
+                    collabStyles()["collab-thread-body--mention__input__focus"]
                 );
             const handleMouseEnter = () =>
                 textarea.classList.add(
-                    styles["collab-discussion-body--mention__input__hover"]
+                    "collab-thread-body--mention__input__hover",
+                    collabStyles()["collab-thread-body--mention__input__hover"]
                 );
             const handleMouseLeave = () =>
                 textarea.classList.remove(
-                    styles["collab-discussion-body--mention__input__hover"]
+                    "collab-thread-body--mention__input__hover",
+                    collabStyles()["collab-thread-body--mention__input__hover"]
                 );
 
             // Attach event listeners
@@ -99,11 +100,11 @@ const CommentTextArea: React.FC<ICommentTextArea> = React.memo(
             onCreateComment,
             onEditComment,
             editComment,
-            setDiscussionState,
-            activeDiscussion,
-            setActiveDiscussion,
-            createNewDiscussion,
-        } = useContext(DiscussionProvider)!;
+            setThreadState,
+            activeThread,
+            setActiveThread,
+            createNewThread,
+        } = useContext(ThreadProvider)!;
 
         useDynamicTextareaRows(mentionsInputRef, state.message);
 
@@ -112,17 +113,17 @@ const CommentTextArea: React.FC<ICommentTextArea> = React.memo(
             if (error.hasError) return;
 
             try {
-                let discussionUID: string = activeDiscussion?.uid;
-                if (activeDiscussion?.uid == "new") {
-                    let currentDiscussion: IDiscussionResponseDTO =
-                        await createNewDiscussion();
-                    discussionUID = currentDiscussion?.discussion?.uid;
-                    setActiveDiscussion(currentDiscussion?.discussion);
+                let threadUID: string = activeThread?._id;
+                if (activeThread?._id == "new") {
+                    let currentThread: IThreadResponseDTO =
+                        await createNewThread();
+                    threadUID = currentThread?.thread?._id;
+                    setActiveThread(currentThread?.thread);
                 }
                 // Prepare the comment data by constructing the body with mentions replaced by UIDs.
                 const commentData: ICommentPayload = {
                     ...getCommentBody(state),
-                    discussion_uid: discussionUID,
+                    threadUid: threadUID,
                 };
 
                 if (editComment) {
@@ -134,18 +135,18 @@ const CommentTextArea: React.FC<ICommentTextArea> = React.memo(
                         }
                     );
                     // successNotification(commentResponse?.notice);
-                    setDiscussionState((prevState: IDiscussionPopupState) => {
+                    setThreadState((prevState: IThreadPopupState) => {
                         const updatedComments = cloneDeep(prevState.comments);
                         const commentIndex = findIndex(
                             updatedComments,
-                            (c) => c.uid === comment?.uid
+                            (c) => c._id === comment?._id
                         );
 
                         // Replace the existing comment with the updated one in the comments array.
                         updatedComments.splice(
                             commentIndex,
                             1,
-                            commentResponse?.conversation
+                            commentResponse?.comment
                         );
 
                         return {
@@ -159,11 +160,11 @@ const CommentTextArea: React.FC<ICommentTextArea> = React.memo(
                     let commentResponse: ICommentResponse =
                         await onCreateComment(commentData);
                     // successNotification(commentResponse.notice);
-                    setDiscussionState((prevState: IDiscussionPopupState) => ({
+                    setThreadState((prevState: IThreadPopupState) => ({
                         ...prevState,
                         comments: [
-                            commentResponse.conversation,
                             ...prevState.comments,
+                            commentResponse.comment,
                         ], // Prepend the new comment
                         commentCount: prevState.commentCount + 1, // Increment the comment count
                     }));
@@ -177,39 +178,30 @@ const CommentTextArea: React.FC<ICommentTextArea> = React.memo(
                 //     error?.data?.errors
                 // );
             }
-        }, [error.hasError, state, activeDiscussion]);
+        }, [error.hasError, state, activeThread]);
 
         useEffect(() => {
             if (state.message.length === 0) {
                 setError({ hasError: true, message: "" });
             }
             handleOnSaveRef.current = handleSubmit;
-        }, [state, activeDiscussion]);
+        }, [state, activeThread]);
 
         useEffect(() => {
-            const to_users: Array<IMentionItem> = [];
-            const to_roles: Array<IMentionItem> = [];
+            const toUsers: Array<IMentionItem> = [];
 
-            comment?.to_users?.forEach((userId) => {
+            comment?.toUsers?.forEach((userId) => {
                 const user: IUserDTO = userState.userMap[userId];
-                if (user?.active) {
-                    to_users.push({
-                        display: `@${user.display || getUserName(user)}`,
-                        id: userId,
-                    });
-                }
-            });
-
-            comment?.to_roles?.forEach((roleId) => {
-                const role: IRoleDTO = userState.roleMap[roleId];
-                to_roles.push({ display: `@${role.name}`, id: roleId });
+                toUsers.push({
+                    display: `@${user.display || getUserName(user)}`,
+                    id: userId,
+                });
             });
 
             setState({
                 message:
                     getMessageWithDisplayName(comment, userState, "text") ?? "",
-                to_roles,
-                to_users,
+                toUsers,
             });
         }, [comment]);
 
@@ -220,11 +212,26 @@ const CommentTextArea: React.FC<ICommentTextArea> = React.memo(
             if (!target) return;
             const newPlainTextValue = target.value;
 
+            // const to_users = [...state.to_users];
+            // // TODO need to find the logic of mentions here as not using react mentions
+            // mentions.forEach((mention) => {
+            //     if (userState.userMap[mention.id]) {
+            //         to_users.push({
+            //             id: mention.id,
+            //             display: mention.display,
+            //         });
+            //     }
+            // });
+
+            // const updatedMentions = filterOutInvalidMentions(
+            //     newPlainTextValue,
+            //     to_users
+            // );
+
             // Perform your custom logic here
             const errorMessage = validateCommentAndMentions(
                 newPlainTextValue,
-                state.to_roles,
-                state.to_users
+                state.toUsers ?? []
             );
             setError({
                 hasError: errorMessage !== "",
@@ -238,7 +245,12 @@ const CommentTextArea: React.FC<ICommentTextArea> = React.memo(
         };
 
         return (
-            <div className={collabStyles()["collab-discussion-body--input"]}>
+            <div
+                className={classNames(
+                    "collab-thread-body--input",
+                    collabStyles()["collab-thread-body--input"]
+                )}
+            >
                 <div style={{ position: "relative", overflowY: "visible" }}>
                     <div
                         style={{
@@ -256,7 +268,7 @@ const CommentTextArea: React.FC<ICommentTextArea> = React.memo(
                             value={state.message}
                             onChange={handleInputChange}
                             maxLength={maxMessageLength}
-                            placeholder="Enter a comment or tag others using '@'"
+                            placeholder="Enter a comment"
                             style={{
                                 display: "block",
                                 width: "100%",
@@ -284,28 +296,32 @@ const CommentTextArea: React.FC<ICommentTextArea> = React.memo(
                 </div>
 
                 <div
-                    className={
-                        (collabStyles()[
-                            "collab-discussion-input-indicator--wrapper"
+                    className={classNames(
+                        "collab-thread-input-indicator--wrapper",
+                        "flex-v-center",
+                        collabStyles()[
+                            "collab-thread-input-indicator--wrapper"
                         ],
-                        collabStyles()["flex-v-center"])
-                    }
+                        collabStyles()["flex-v-center"]
+                    )}
                 >
                     <div
-                        className={
+                        className={classNames(
+                            "collab-thread-input-indicator--error",
                             collabStyles()[
-                                "collab-discussion-input-indicator--error"
+                                "collab-thread-input-indicator--error"
                             ]
-                        }
+                        )}
                     >
                         {error.message}
                     </div>
                     <div
-                        className={
+                        className={classNames(
+                            "collab-thread-input-indicator--count",
                             collabStyles()[
-                                "collab-discussion-input-indicator--count"
+                                "collab-thread-input-indicator--count"
                             ]
-                        }
+                        )}
                     >
                         {state.message.length}/{maxMessageLength}
                     </div>

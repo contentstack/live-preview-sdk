@@ -5,19 +5,19 @@ import ButtonGroup from "../ButtonGroup/ButtonGroup";
 import classNames from "classnames";
 import { collabStyles } from "../../../visualBuilder.style";
 
-interface IDiscussionFooter {
+interface IThreadFooter {
     onClose: () => void;
     handleOnSaveRef: React.MutableRefObject<any>;
     isDisabled: boolean;
     editComment: string;
 }
 
-const DiscussionFooter = ({
+const ThreadFooter = ({
     onClose,
     handleOnSaveRef,
     isDisabled,
     editComment,
-}: IDiscussionFooter) => {
+}: IThreadFooter) => {
     const [loading, setLoading] = useState(false);
     const onSubmit = async (event: React.MouseEvent<HTMLButtonElement>) => {
         setLoading(true);
@@ -29,7 +29,9 @@ const DiscussionFooter = ({
     return (
         <div
             className={classNames(
-                collabStyles()["collab-discussion-footer--wrapper"],
+                "collab-thread-footer--wrapper",
+                "flex-v-center",
+                collabStyles()["collab-thread-footer--wrapper"],
                 collabStyles()["flex-v-center"]
             )}
         >
@@ -37,7 +39,7 @@ const DiscussionFooter = ({
                 <Button
                     type="button"
                     buttonType="tertiary"
-                    testId={"discussion-cancel-btn"}
+                    testId={"thread-cancel-btn"}
                     onClick={onClose}
                 >
                     Cancel
@@ -46,7 +48,7 @@ const DiscussionFooter = ({
                     type="button"
                     buttonType="primary"
                     onClick={onSubmit}
-                    testId={"discussion-save-btn"}
+                    testId={"thread-save-btn"}
                     disabled={isDisabled}
                 >
                     {editComment === "" ? "Post" : "Update"}
@@ -55,4 +57,4 @@ const DiscussionFooter = ({
         </div>
     );
 };
-export default DiscussionFooter;
+export default ThreadFooter;

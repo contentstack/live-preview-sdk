@@ -3,34 +3,28 @@ import React, { useCallback } from "preact/compat";
 import classNames from "classnames";
 import Button from "../Button/Button";
 import { collabStyles } from "../../../visualBuilder.style";
-import { getDiscussionTitle } from "../../../utils/collabUtils";
+import { getThreadTitle } from "../../../utils/collabUtils";
 import {
-    IActiveDiscussion,
+    IActiveThread,
     IDefaultAPIResponse,
 } from "../../../types/collab.types";
 
-interface IDiscussionHeader {
+interface IThreadHeader {
     onClose: () => void;
     displayResolve: boolean;
-    onResolve: (discussion: IActiveDiscussion) => Promise<IDefaultAPIResponse>;
+    onResolve: (thread: IActiveThread) => Promise<IDefaultAPIResponse>;
     commentCount: number;
-    activeDiscussion: IActiveDiscussion;
+    activeThread: IActiveThread;
 }
 
-const DiscussionHeader: React.FC<IDiscussionHeader> = React.memo(
-    ({
-        onClose,
-        displayResolve,
-        onResolve,
-        commentCount,
-        activeDiscussion,
-    }) => {
+const ThreadHeader: React.FC<IThreadHeader> = React.memo(
+    ({ onClose, displayResolve, onResolve, commentCount, activeThread }) => {
         // Handler for deleting a comment
         const handleResolve = useCallback(async () => {
             try {
                 // Call the onDeleteComment function
                 const resolveResponse: IDefaultAPIResponse =
-                    await onResolve(activeDiscussion);
+                    await onResolve(activeThread);
                 // successNotification(resolveResponse.notice);
                 onClose();
             } catch (error: any) {
@@ -39,59 +33,57 @@ const DiscussionHeader: React.FC<IDiscussionHeader> = React.memo(
                 //     error?.data?.errors
                 // );
             }
-        }, [activeDiscussion]);
+        }, [activeThread]);
 
         return (
             <div
                 className={classNames(
-                    "collab-discussion-header--wrapper",
+                    "collab-thread-header--wrapper",
                     "flex-v-center",
-                    collabStyles()["collab-discussion-header--wrapper"],
+                    collabStyles()["collab-thread-header--wrapper"],
                     collabStyles()["flex-v-center"]
                 )}
             >
                 <div
                     className={classNames(
-                        "collab-discussion-header--container",
+                        "collab-thread-header--container",
                         "flex-v-center",
-                        collabStyles()["collab-discussion-header--container"],
+                        collabStyles()["collab-thread-header--container"],
                         collabStyles()["flex-v-center"]
                     )}
                 >
                     <div
                         className={classNames(
-                            "collab-discussion-header--title",
-                            collabStyles()["collab-discussion-header--title"]
+                            "collab-thread-header--title",
+                            collabStyles()["collab-thread-header--title"]
                         )}
                     >
-                        {getDiscussionTitle(commentCount)}
+                        {getThreadTitle(commentCount)}
                     </div>
                     {displayResolve ? (
                         <Button
                             buttonType="tertiary"
                             className={classNames(
-                                "collab-discussion-header--resolve",
-                                collabStyles()[
-                                    "collab-discussion-header--resolve"
-                                ]
+                                "collab-thread-header--resolve",
+                                collabStyles()["collab-thread-header--resolve"]
                             )}
                             icon="RightMarkActive"
                             iconProps={{
                                 className: classNames(
                                     collabStyles()[
-                                        "collab-discussion-header--resolve--icon"
+                                        "collab-thread-header--resolve--icon"
                                     ],
-                                    "collab-discussion-header--resolve--icon"
+                                    "collab-thread-header--resolve--icon"
                                 ),
                             }}
                             onClick={handleResolve}
-                            testId="discussion-resolve-btn"
+                            testId="thread-resolve-btn"
                         >
                             <span
                                 className={classNames(
-                                    "collab-discussion-header--resolve--text",
+                                    "collab-thread-header--resolve--text",
                                     collabStyles()[
-                                        "collab-discussion-header--resolve--text"
+                                        "collab-thread-header--resolve--text"
                                     ]
                                 )}
                             >
@@ -105,4 +97,4 @@ const DiscussionHeader: React.FC<IDiscussionHeader> = React.memo(
     }
 );
 
-export default DiscussionHeader;
+export default ThreadHeader;

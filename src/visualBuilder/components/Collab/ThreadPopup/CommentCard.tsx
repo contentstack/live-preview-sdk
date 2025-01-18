@@ -7,9 +7,10 @@ import { getUserName } from "../../../utils/collabUtils";
 import CommentActionBar from "./CommentActionBar";
 import CommentResolvedText from "./CommentResolvedText";
 import Avatar from "../Avatar/Avatar";
-import DiscussionBodyLoader from "./loader/DiscussionBody";
+import ThreadBodyLoader from "./loader/ThreadBody";
 import { collabStyles } from "../../../visualBuilder.style";
 import classNames from "classnames";
+
 interface ICommentCard {
     comment: IMessageDTO | null;
     userState: IUserState;
@@ -44,7 +45,7 @@ const CommentCard = ({
 
     if (!commentUser) {
         return (
-            <DiscussionBodyLoader key="collab-discussion-body--comment-loader" />
+            <ThreadBodyLoader key="collab-discussion-body--comment-loader" />
         );
     }
 
@@ -60,7 +61,7 @@ const CommentCard = ({
                     avatar={
                         {
                             name: getUserName(commentUser),
-                            id: commentUser.uid,
+                            id: commentUser.identityHash,
                         } as any
                     }
                 />
@@ -96,7 +97,7 @@ const CommentCard = ({
                     mode={mode}
                     commentUser={commentUser}
                     currentUser={userState.currentUser}
-                    commentUID={comment?.uid}
+                    commentUID={comment?._id}
                 />
             </div>
             {mode === "edit" ? (

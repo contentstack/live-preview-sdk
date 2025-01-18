@@ -3,44 +3,28 @@ import { visualBuilderStyles } from "../../visualBuilder.style";
 import classNames from "classnames";
 import React, { useState, useRef, useEffect } from "preact/compat";
 import { css } from "goober";
-import DiscussionPopup from "./DiscussionPopup";
+import CollabPopup from "./CollabPopup";
 import Config from "../../../configManager/configManager";
 import visualBuilderPostMessage from "../../utils/visualBuilderPostMessage";
 import { VisualBuilderPostMessageEvents } from "../../utils/types/postMessage.types";
 
-const stackMetadata = {
+const inviteMetadata = {
     currentUser: {
-        uid: "blte26110c4ea641ed9",
-        first_name: "Om",
-        last_name: "Prakash",
         email: "om.prakash@contentstack.com",
-        username: "Om Prakash",
-        active: true,
+        identityHash: "blte26110c4ea641ed9",
     },
     users: [
         {
-            uid: "blte26110c4ea641ed9",
-            active: true,
-            username: "Om Prakash",
-            first_name: "Om",
-            last_name: "Prakash",
             email: "om.prakash@contentstack.com",
+            identityHash: "blte26110c4ea641ed9",
         },
     ],
-    roles: [
-        {
-            uid: "r1",
-            name: "Admin",
-        },
-    ],
-    invite: {
-        id: "123456789",
-    },
+    inviteID: "123456789",
 };
 
 export interface ICollabIndicator {
     newThread?: boolean;
-    activeDiscussion?: { uid: string; [key: string]: any }; // Add more fields as per your structure
+    activeThread?: { _id: string; [key: string]: any }; // Add more fields as per your structure
 }
 
 const CollabIndicator: React.FC<ICollabIndicator> = (props) => {
@@ -51,19 +35,15 @@ const CollabIndicator: React.FC<ICollabIndicator> = (props) => {
 
     // Set initial state based on props
     const [activeDiscussion, setActiveDiscussion] = useState(
-        props.newThread
-            ? { uid: "new" }
-            : props.activeDiscussion || { uid: "new" }
+        props.newThread ? { _id: "new" } : props.activeThread || { _id: "new" }
     );
 
     // Update activeDiscussion when props.activeDiscussion changes
     useEffect(() => {
-        if (props.activeDiscussion) {
-            setActiveDiscussion(props.activeDiscussion);
+        if (props.activeThread) {
+            setActiveDiscussion(props.activeThread);
         }
-    }, [props.activeDiscussion]);
-
-    console.log("CollabIndicator -> activeDiscussion", activeDiscussion);
+    }, [props.activeThread]);
 
     const config = Config.get();
 
@@ -71,6 +51,7 @@ const CollabIndicator: React.FC<ICollabIndicator> = (props) => {
         if (!buttonRef.current || !popupRef.current) return;
 
         const buttonRect = buttonRef.current.getBoundingClientRect();
+        // NEED to Fix the hardcoded values
         const popupHeight = 422;
         const popupWidth = 334;
         const viewportHeight = window.innerHeight;
@@ -142,6 +123,7 @@ const CollabIndicator: React.FC<ICollabIndicator> = (props) => {
                 )}
                 onClick={togglePopup}
             >
+                {/* NEED TO USE THE SEQUENCE NUMBER HERE*/}
                 {!showPopup && "1"}
             </button>
             {showPopup && (
@@ -149,7 +131,7 @@ const CollabIndicator: React.FC<ICollabIndicator> = (props) => {
                     ref={popupRef}
                     className={classNames("collab-popup", popupClass)}
                 >
-                    <DiscussionPopup
+                    <CollabPopup
                         onCreateComment={async (payload) => {
                             const data: any =
                                 await visualBuilderPostMessage?.send(
@@ -188,10 +170,10 @@ const CollabIndicator: React.FC<ICollabIndicator> = (props) => {
                             handleClose();
                             return response;
                         }}
-                        stackMetadata={stackMetadata}
+                        inviteMetadata={inviteMetadata}
                         loadMoreMessages={async (offset, limit) => {
                             let payload = {
-                                threadID: activeDiscussion?.uid,
+                                threadID: activeDiscussion?._id,
                                 offset,
                                 limit,
                             };
@@ -218,9 +200,9 @@ const CollabIndicator: React.FC<ICollabIndicator> = (props) => {
                             };
                             return response;
                         }}
-                        activeDiscussion={activeDiscussion}
-                        setActiveDiscussion={setActiveDiscussion}
-                        createNewDiscussion={async () => {
+                        activeThread={activeDiscussion}
+                        setActiveThread={setActiveDiscussion}
+                        createNewThread={async () => {
                             let payload = {};
                             let response: any = {};
                             if (buttonRef.current) {
@@ -250,10 +232,10 @@ const CollabIndicator: React.FC<ICollabIndicator> = (props) => {
                                                 x: relativeX,
                                                 y: relativeY,
                                             },
-                                            author: stackMetadata.currentUser
+                                            author: inviteMetadata.currentUser
                                                 .email,
                                             pageRoute: "/",
-                                            inviteId: stackMetadata.invite.id,
+                                            inviteId: inviteMetadata.inviteID,
                                         };
                                     }
                                 }

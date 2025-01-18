@@ -1,39 +1,39 @@
 /** @jsxImportSource preact */
 import React, { useEffect, useMemo, useRef, useState } from "preact/compat";
-import DiscussionHeader from "./DiscussionHeader";
-import DiscussionFooter from "./DiscussionFooter";
-import DiscussionBody from "./DiscussionBody";
+import ThreadHeader from "./ThreadHeader";
+import ThreadFooter from "./ThreadFooter";
+import ThreadBody from "./ThreadBody";
 import {
-    IActiveDiscussion,
+    IActiveThread,
     ICommentPayload,
     ICommentResponse,
     IDefaultAPIResponse,
     IDeleteCommentArgs,
-    IDiscussionContext,
-    IDiscussionPopupState,
-    IDiscussionResponseDTO,
+    IThreadContext,
+    IThreadPopupState,
+    IThreadResponseDTO,
     IEditCommentArgs,
     IErrorState,
     IMentionList,
-    IStackMetadata,
+    IInviteMetadata,
 } from "../../../types/collab.types";
 import { getUserName } from "../../../utils/collabUtils";
-import { DiscussionProvider } from "./ContextProvider/DiscussionProvider";
+import { ThreadProvider } from "./ContextProvider/ThreadProvider";
 import useInfiniteScroll from "../../../hooks/use-infinite-scroll/useInfiniteScroll";
 import { collabStyles } from "../../../visualBuilder.style";
 import classNames from "classnames";
 
-interface IDiscussionPopup {
+interface IThreadPopup {
     onCreateComment: (payload: ICommentPayload) => Promise<ICommentResponse>;
     onEditComment: (data: IEditCommentArgs) => Promise<ICommentResponse>;
     onDeleteComment: (data: IDeleteCommentArgs) => Promise<IDefaultAPIResponse>;
     onClose: () => void;
-    onResolve: (discussion: IActiveDiscussion) => Promise<IDefaultAPIResponse>;
-    stackMetadata: IStackMetadata;
+    onResolve: (thread: IActiveThread) => Promise<IDefaultAPIResponse>;
+    inviteMetadata: IInviteMetadata;
     loadMoreMessages: (offset: number, limit: number) => Promise<any>;
-    activeDiscussion: IActiveDiscussion;
-    setActiveDiscussion: (discussion: IActiveDiscussion) => void;
-    createNewDiscussion: () => Promise<IDiscussionResponseDTO>;
+    activeThread: IActiveThread;
+    setActiveThread: (thread: IActiveThread) => void;
+    createNewThread: () => Promise<IThreadResponseDTO>;
 }
 
 const initialErrorState: IErrorState = {
@@ -41,38 +41,37 @@ const initialErrorState: IErrorState = {
     message: "",
 };
 
-const DiscussionPopup: React.FC<IDiscussionPopup> = React.memo(
+const ThreadPopup: React.FC<IThreadPopup> = React.memo(
     ({
         onCreateComment,
         onEditComment,
         onDeleteComment,
         onClose,
         onResolve,
-        stackMetadata,
+        inviteMetadata,
         loadMoreMessages,
-        activeDiscussion,
-        setActiveDiscussion,
-        createNewDiscussion,
+        activeThread,
+        setActiveThread,
+        createNewThread,
     }) => {
         const handleOnSaveRef = useRef(null);
 
-        const [state, setState] = useState<IDiscussionPopupState>({
+        const [state, setState] = useState<IThreadPopupState>({
             isLoading: false,
             commentCount: 0,
             comments: [],
             editComment: "",
             userState: {
                 mentionsList: [],
-                currentUser: stackMetadata?.currentUser,
+                currentUser: inviteMetadata?.currentUser,
                 userMap: {},
-                roleMap: {},
             },
         });
 
         const [error, setError] = useState<IErrorState>(initialErrorState);
 
         const isFetchingMore = useInfiniteScroll({
-            containerId: "collab-discussion-comment--list",
+            containerId: "collab-thread-comment--list",
             isFetching: false,
             canFetchMore: state.commentCount > state.comments.length,
             loadMore: async (offset, limit) => {
@@ -94,31 +93,17 @@ const DiscussionPopup: React.FC<IDiscussionPopup> = React.memo(
         useEffect(() => {
             const userList: Array<IMentionList> = [];
             const userMap: Record<string, any> = {};
-            const roleMap: Record<string, any> = {};
 
-            stackMetadata?.users?.forEach((user) => {
-                if (user?.active) {
+            inviteMetadata?.users?.forEach((user) => {
+                if (user) {
                     const userName = getUserName(user);
                     userList.push({
                         display: userName,
-                        id: user.uid,
-                        uid: user.uid,
                         email: user.email,
-                        first_name: user.first_name,
-                        last_name: user.last_name,
-                        username: user.username,
+                        identityHash: user.identityHash,
                     });
-                    userMap[user.uid] = { ...user, display: userName };
+                    userMap[user.identityHash] = { ...user, display: userName };
                 }
-            });
-
-            stackMetadata?.roles?.forEach((role) => {
-                userList.push({
-                    display: role.name,
-                    id: role.uid,
-                    uid: role.uid,
-                });
-                roleMap[role.uid] = role;
             });
 
             setState((prevState) => ({
@@ -126,18 +111,17 @@ const DiscussionPopup: React.FC<IDiscussionPopup> = React.memo(
                 userState: {
                     mentionsList: userList,
                     userMap,
-                    roleMap,
-                    currentUser: stackMetadata?.currentUser,
+                    currentUser: inviteMetadata?.currentUser,
                 },
             }));
-        }, [stackMetadata]);
+        }, [inviteMetadata]);
 
         useEffect(() => {
-            if (!activeDiscussion) {
+            if (!activeThread) {
                 setState((prevState) => ({ ...prevState, isLoading: true }));
                 return;
             }
-            if (activeDiscussion?.uid == "new") {
+            if (activeThread?._id == "new") {
                 return;
             }
             const fetchInitialMessages = async () => {
@@ -161,12 +145,12 @@ const DiscussionPopup: React.FC<IDiscussionPopup> = React.memo(
             fetchInitialMessages();
         }, []);
 
-        const contextValue = useMemo<IDiscussionContext>(
+        const contextValue = useMemo<IThreadContext>(
             () => ({
-                stackMetadata,
+                inviteMetadata,
                 userState: state.userState,
                 commentCount: state.commentCount,
-                setDiscussionState: setState,
+                setThreadState: setState,
                 error,
                 setError,
                 onCreateComment,
@@ -174,39 +158,38 @@ const DiscussionPopup: React.FC<IDiscussionPopup> = React.memo(
                 onDeleteComment,
                 onClose,
                 editComment: state.editComment,
-                activeDiscussion,
-                setActiveDiscussion,
-                createNewDiscussion,
+                activeThread,
+                setActiveThread,
+                createNewThread,
             }),
             [
-                stackMetadata,
+                inviteMetadata,
                 state.userState,
                 state.commentCount,
                 error,
                 state.editComment,
-                activeDiscussion,
+                activeThread,
             ]
         );
 
         return (
-            <DiscussionProvider.Provider value={contextValue}>
+            <ThreadProvider.Provider value={contextValue}>
                 <div
                     className={classNames(
-                        "collab-discussion--wrapper",
-                        collabStyles()["collab-discussion--wrapper"]
+                        "collab-thread--wrapper",
+                        collabStyles()["collab-thread--wrapper"]
                     )}
                 >
-                    <DiscussionHeader
+                    <ThreadHeader
                         onClose={onClose}
                         onResolve={onResolve}
                         displayResolve={
-                            !!activeDiscussion &&
-                            activeDiscussion?.uid !== "new"
+                            !!activeThread && activeThread?._id !== "new"
                         }
                         commentCount={state.commentCount}
-                        activeDiscussion={activeDiscussion}
+                        activeThread={activeThread}
                     />
-                    <DiscussionBody
+                    <ThreadBody
                         handleOnSaveRef={handleOnSaveRef}
                         userState={state.userState}
                         isLoading={state.isLoading}
@@ -214,16 +197,16 @@ const DiscussionPopup: React.FC<IDiscussionPopup> = React.memo(
                         fetchingMore={isFetchingMore}
                         editComment={state.editComment}
                     />
-                    <DiscussionFooter
+                    <ThreadFooter
                         onClose={onClose}
                         handleOnSaveRef={handleOnSaveRef}
                         isDisabled={error.hasError}
                         editComment={state.editComment}
                     />
                 </div>
-            </DiscussionProvider.Provider>
+            </ThreadProvider.Provider>
         );
     }
 );
 
-export default DiscussionPopup;
+export default ThreadPopup;

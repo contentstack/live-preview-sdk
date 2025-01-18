@@ -15,39 +15,35 @@ import DOMPurify from "dompurify";
  * @param {number} commentCount - The number of comments.
  * @returns {string} The title for the thread.
  */
-export const getDiscussionTitle = (commentCount: number): string => {
+export const getThreadTitle = (commentCount: number): string => {
     if (commentCount === 0) return "Add New Feedback";
     return commentCount === 1 ? "1 Feedback" : `${commentCount} Feedbacks`;
 };
 
 /**
- * Formats the full name of the user. If either first or last name is missing, returns the available name or email.
+ * returns the available email.
  * @param {IUserDTO} user - The user object.
  * @returns {string} The user's full name or available identifier.
  */
 export const getUserName = (user: IUserDTO): string => {
-    return user.first_name && user.last_name
-        ? `${user.first_name} ${user.last_name}`
-        : user.first_name || user.last_name || user.email;
+    return user.email;
 };
 
 /**
  * Validates the comment length and the number of mentions.
  * @param {string} comment - The comment message.
- * @param {IMentionedList} to_roles - The list of mentioned roles.
  * @param {IMentionedList} to_users - The list of mentioned users.
  * @returns {string} The error message if validation fails, otherwise an empty string.
  */
 export const validateCommentAndMentions = (
     comment: string,
-    to_roles: IMentionedList,
     to_users: IMentionedList
 ): string => {
     if (comment.length > maxMessageLength) {
         return `Limit exceeded. You can have a maximum length of ${maxMessageLength} characters.`;
     }
-    if (to_users.length > mentionLimit || to_roles.length > mentionLimit) {
-        return `Limit exceeded. You can tag a maximum of ${mentionLimit} users and ${mentionLimit} roles.`;
+    if (to_users.length > mentionLimit) {
+        return `Limit exceeded. You can tag a maximum of ${mentionLimit} users.`;
     }
     return "";
 };
@@ -55,25 +51,19 @@ export const validateCommentAndMentions = (
 /**
  * Removes mentions that no longer exist in the message.
  * @param {string} message - The comment message.
- * @param {IMentionedList} to_roles - The list of mentioned roles.
  * @param {IMentionedList} to_users - The list of mentioned users.
  * @returns {Object} The updated lists of mentioned users and roles.
  */
 export const filterOutInvalidMentions = (
     message: string,
-    to_roles: IMentionedList,
     to_users: IMentionedList
 ) => {
     const to_users_temp = to_users.filter((user) =>
         message.includes(user.display)
     );
-    const to_roles_temp = to_roles.filter((role) =>
-        message.includes(role.display)
-    );
 
     return {
         to_users: uniqBy(to_users_temp, "id"),
-        to_roles: uniqBy(to_roles_temp, "id"),
     };
 };
 
@@ -93,7 +83,7 @@ export const getMessageWithDisplayName = (
 
     let tempText = comment.message;
 
-    comment?.to_users?.forEach((user) => {
+    comment?.toUsers?.forEach((user) => {
         const userPattern = new RegExp(`{{${user}}}`, "g");
         const userData = userState.userMap[user];
         const replacement =
@@ -101,16 +91,6 @@ export const getMessageWithDisplayName = (
                 ? `<b>@${userData.display || getUserName(userData)}</b>`
                 : `@${userData.display || getUserName(userData)}`;
         tempText = tempText.replace(userPattern, replacement);
-    });
-
-    comment?.to_roles?.forEach((role) => {
-        const rolePattern = new RegExp(`{{${role}}}`, "g");
-        const roleData = userState.roleMap[role];
-        const replacement =
-            profile === "html"
-                ? `<b>@${roleData.name}</b>`
-                : `@${roleData.name}`;
-        tempText = tempText.replace(rolePattern, replacement);
     });
 
     return tempText;
@@ -148,11 +128,8 @@ export const getCommentBody = (state: ICommentState): ICommentState => {
         result.push(entity.id);
     };
 
-    state.to_users.forEach((user) =>
+    state.toUsers?.forEach((user) =>
         updateMentionToUID(user, comment.to_users)
-    );
-    state.to_roles.forEach((role) =>
-        updateMentionToUID(role, comment.to_roles)
     );
 
     comment.message = finalMessage;
