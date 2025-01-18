@@ -273,9 +273,9 @@ export class VisualBuilder {
                     Config.set("collab.state", collab.state);
                 }
 
-                if (collab?.payload) {
-                    generateThreadsFromData(collab?.payload);
-                }
+                // if (collab?.payload) {
+                //     generateThreadsFromData(collab?.payload);
+                // }
 
                 addEventListeners({
                     overlayWrapper: this.overlayWrapper,

@@ -20,7 +20,7 @@ interface ICommentCard {
 
 const formatCommentDate = (comment: IMessageDTO | null): string => {
     return comment
-        ? moment(comment.created_at).format("MMM DD, YYYY, hh:mm A")
+        ? moment(comment.createdAt).format("MMM DD, YYYY, hh:mm A")
         : "";
 };
 
@@ -34,7 +34,11 @@ const CommentCard = ({
 
     useEffect(() => {
         if (comment) {
-            setCommentUser(userState.userMap[comment.created_by]);
+            console.log(
+                "comment.createdBy",
+                userState.userMap[comment.createdBy]
+            );
+            setCommentUser(userState.userMap[comment.createdBy]);
         } else {
             setCommentUser(userState.currentUser);
         }
@@ -44,16 +48,21 @@ const CommentCard = ({
     const formattedDate = useMemo(() => formatCommentDate(comment), [comment]);
 
     if (!commentUser) {
-        return (
-            <ThreadBodyLoader key="collab-discussion-body--comment-loader" />
-        );
+        return <ThreadBodyLoader key="collab-thread-body--comment-loader" />;
     }
 
     return (
-        <div className={collabStyles()["collab-discussion-comment--wrapper"]}>
+        <div
+            className={classNames(
+                "collab-thread-comment--wrapper",
+                collabStyles()["collab-thread-comment--wrapper"]
+            )}
+        >
             <div
                 className={classNames(
-                    collabStyles()["collab-discussion-comment--user-details"],
+                    "collab-thread-comment--user-details",
+                    "flex-v-center",
+                    collabStyles()["collab-thread-comment--user-details"],
                     collabStyles()["flex-v-center"]
                 )}
             >
@@ -66,28 +75,29 @@ const CommentCard = ({
                     }
                 />
                 <div
-                    className={
+                    className={classNames(
+                        "collab-thread-comment--user-details__text",
                         collabStyles()[
-                            "collab-discussion-comment--user-details__text"
+                            "collab-thread-comment--user-details__text"
                         ]
-                    }
+                    )}
                 >
                     <div
-                        className={
-                            collabStyles()[
-                                "collab-discussion-comment--user-name"
-                            ]
-                        }
+                        className={classNames(
+                            "collab-thread-comment--user-name",
+                            collabStyles()["collab-thread-comment--user-name"]
+                        )}
                     >
                         {getUserName(commentUser)}
                     </div>
                     {comment && (
                         <div
-                            className={
+                            className={classNames(
+                                "collab-thread-comment--time-details",
                                 collabStyles()[
-                                    "collab-discussion-comment--time-details"
+                                    "collab-thread-comment--time-details"
                                 ]
-                            }
+                            )}
                         >
                             {formattedDate}
                         </div>

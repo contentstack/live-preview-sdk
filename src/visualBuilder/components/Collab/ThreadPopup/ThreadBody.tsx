@@ -45,10 +45,10 @@ const ThreadBody: React.FC<IThreadBody> = React.memo(
                             <>
                                 <div
                                     className={classNames(
-                                        "collab-comment-seperator",
+                                        "collab-thread-comment-seperator",
                                         "flex-v-center",
                                         collabStyles()[
-                                            "collab-comment-seperator"
+                                            "collab-thread-comment-seperator"
                                         ],
                                         collabStyles()["flex-v-center"]
                                     )}

@@ -80,7 +80,7 @@ const ThreadPopup: React.FC<IThreadPopup> = React.memo(
                     setState((prevState) => ({
                         ...prevState,
                         commentCount: res.count,
-                        comments: [...prevState.comments, ...res.conversations],
+                        comments: [...prevState.comments, ...res.comments],
                     }));
                 } catch (error) {
                     console.error(error);

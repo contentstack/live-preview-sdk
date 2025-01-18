@@ -46,53 +46,6 @@ const initialState: ICommentState = {
 const CommentTextArea: React.FC<ICommentTextArea> = React.memo(
     ({ userState, handleOnSaveRef, comment }) => {
         const [state, setState] = useState<ICommentState>(initialState);
-        const mentionsInputRef = useRef<HTMLTextAreaElement>(null);
-
-        useEffect(() => {
-            const textarea = mentionsInputRef.current;
-
-            if (!textarea) return;
-
-            // Ensure the element has the target class before applying event listeners
-            if (!textarea.classList.contains("collab")) {
-                return;
-            }
-
-            const handleFocus = () =>
-                textarea.classList.add(
-                    "collab-thread-body--mention__input__focus",
-                    collabStyles()["collab-thread-body--mention__input__focus"]
-                );
-            const handleBlur = () =>
-                textarea.classList.remove(
-                    "collab-thread-body--mention__input__focus",
-                    collabStyles()["collab-thread-body--mention__input__focus"]
-                );
-            const handleMouseEnter = () =>
-                textarea.classList.add(
-                    "collab-thread-body--mention__input__hover",
-                    collabStyles()["collab-thread-body--mention__input__hover"]
-                );
-            const handleMouseLeave = () =>
-                textarea.classList.remove(
-                    "collab-thread-body--mention__input__hover",
-                    collabStyles()["collab-thread-body--mention__input__hover"]
-                );
-
-            // Attach event listeners
-            textarea.addEventListener("focus", handleFocus);
-            textarea.addEventListener("blur", handleBlur);
-            textarea.addEventListener("mouseenter", handleMouseEnter);
-            textarea.addEventListener("mouseleave", handleMouseLeave);
-
-            // Cleanup on component unmount or dependency change
-            return () => {
-                textarea.removeEventListener("focus", handleFocus);
-                textarea.removeEventListener("blur", handleBlur);
-                textarea.removeEventListener("mouseenter", handleMouseEnter);
-                textarea.removeEventListener("mouseleave", handleMouseLeave);
-            };
-        }, [mentionsInputRef]);
 
         const {
             error,
@@ -106,7 +59,10 @@ const CommentTextArea: React.FC<ICommentTextArea> = React.memo(
             createNewThread,
         } = useContext(ThreadProvider)!;
 
-        useDynamicTextareaRows(mentionsInputRef, state.message);
+        useDynamicTextareaRows(
+            ".collab-thread-body--input--textarea",
+            state.message
+        );
 
         const handleSubmit = useCallback(async () => {
             // If there's a validation error, don't proceed with saving.
@@ -118,6 +74,10 @@ const CommentTextArea: React.FC<ICommentTextArea> = React.memo(
                     let currentThread: IThreadResponseDTO =
                         await createNewThread();
                     threadUID = currentThread?.thread?._id;
+                    console.log(
+                        "thread Creation Response",
+                        currentThread?.thread
+                    );
                     setActiveThread(currentThread?.thread);
                 }
                 // Prepare the comment data by constructing the body with mentions replaced by UIDs.
@@ -125,6 +85,8 @@ const CommentTextArea: React.FC<ICommentTextArea> = React.memo(
                     ...getCommentBody(state),
                     threadUid: threadUID,
                 };
+
+                console.log("commentData payload", commentData);
 
                 if (editComment) {
                     // If editing an existing comment, call the edit function and update the state accordingly.
@@ -159,6 +121,7 @@ const CommentTextArea: React.FC<ICommentTextArea> = React.memo(
                     // If creating a new comment, call the create function and add the new comment to the state.
                     let commentResponse: ICommentResponse =
                         await onCreateComment(commentData);
+                    console.log("commentResponse", commentResponse);
                     // successNotification(commentResponse.notice);
                     setThreadState((prevState: IThreadPopupState) => ({
                         ...prevState,
@@ -247,50 +210,38 @@ const CommentTextArea: React.FC<ICommentTextArea> = React.memo(
         return (
             <div
                 className={classNames(
-                    "collab-thread-body--input",
-                    collabStyles()["collab-thread-body--input"]
+                    "collab-thread-body--input--wrapper",
+                    collabStyles()["collab-thread-body--input--wrapper"]
                 )}
             >
-                <div style={{ position: "relative", overflowY: "visible" }}>
+                <div
+                    className={classNames(
+                        "collab-thread-body--input",
+                        collabStyles()["collab-thread-body--input"]
+                    )}
+                >
                     <div
-                        style={{
-                            width: "100%",
-                            transition: "height 0.2s ease-in 0s",
-                            overflowY: "visible",
-                        }}
+                        className={classNames(
+                            "collab-thread-body--input--textarea--wrapper",
+                            collabStyles()[
+                                "collab-thread-body--input--textarea--wrapper"
+                            ]
+                        )}
                     >
                         <textarea
-                            name="collab"
-                            id="collab"
+                            name="collab-thread-body--input--textarea"
+                            id="collab-thread-body--input--textarea"
                             rows={1}
-                            className="collab"
-                            ref={mentionsInputRef}
+                            className={classNames(
+                                "collab-thread-body--input--textarea",
+                                collabStyles()[
+                                    "collab-thread-body--input--textarea"
+                                ]
+                            )}
                             value={state.message}
                             onChange={handleInputChange}
                             maxLength={maxMessageLength}
                             placeholder="Enter a comment"
-                            style={{
-                                display: "block",
-                                width: "100%",
-                                position: "relative",
-                                top: "0px",
-                                left: "0px",
-                                boxSizing: "border-box",
-                                backgroundColor: "#ffffff",
-                                fontFamily: "inherit",
-                                fontSize: "1rem",
-                                letterSpacing: "inherit",
-                                height: "100%",
-                                bottom: "0px",
-                                overflow: "auto",
-                                resize: "vertical",
-                                borderRadius: "4px",
-                                border: "0.0625rem solid #dde3ee",
-                                color: "#222222",
-                                padding: "0.5rem 1rem",
-                                maxHeight: "6.25rem",
-                                minHeight: "4.125rem",
-                            }}
                         ></textarea>
                     </div>
                 </div>

@@ -1,4 +1,4 @@
-import { css } from "goober";
+import { css, keyframes } from "goober";
 
 const tooltipBaseStyle = `
     pointer-events: all;
@@ -697,6 +697,24 @@ export function collabStyles() {
             border-radius: 22.5rem;
             border: 0.125rem solid #dde3ee;
             background: #ffffff;
+            position: relative;
+            overflow: hidden;
+
+            &:hover .collab-avatar__image {
+                filter: grayscale(0);
+            }
+        `,
+        "collab-avatar__image": css`
+            filter: grayscale(1);
+            transition: filter 300ms ease;
+            border-radius: 50%;
+            height: 0;
+            left: 50%;
+            min-width: 100%;
+            position: absolute;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 0;
         `,
         "collab-avatar__link": css`
             color: #475161;
@@ -713,20 +731,47 @@ export function collabStyles() {
             font-weight: 600;
             font-size: 0.75rem;
         `,
-        "collab-avatar__image": css`
-            filter: grayscale(1);
-            transition: filter 300ms ease;
-            border-radius: 50%;
-            height: 0;
-            left: 50%;
-            min-width: 100%;
-            position: absolute;
-            top: 50%;
-            transform: translate(-50%, -50%);
-            width: 0;
+        "collab-tooltip--wrapper": css`
+            position: relative;
+            display: inline-block;
         `,
-        "collab-avatar--single:hover .collab-avatar__image": css`
-            filter: grayscale(0);
+        "collab-tooltip": css`
+            position: fixed;
+            z-index: 1000;
+            padding: 8px 12px;
+            font-size: 14px;
+            color: #f7f9fc;
+            background-color: #767676;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+            opacity: 0;
+            animation: simpleFade 0.15s ease-in forwards;
+
+            @keyframes simpleFade {
+                from {
+                    opacity: 0;
+                }
+                to {
+                    opacity: 1;
+                }
+            }
+        `,
+        "collab-icon-tooltip": css`
+            height: 1.25rem;
+            width: 1.25rem;
+        `,
+        "collab-icon-wrapper": css`
+            padding: 0 0.5rem;
+        `,
+        "collab-button-group": css`
+            display: flex;
+            & > button {
+                margin-right: 1rem;
+                &:last-child {
+                    margin-right: 0;
+                }
+            }
         `,
         "collab-thread-body-comment--loader": css`
             padding: 0.625rem;
@@ -807,7 +852,7 @@ export function collabStyles() {
             overflow: auto;
             flex-flow: column-reverse;
         `,
-        "collab-comment-seperator": css`
+        "collab-thread-comment-seperator": css`
             width: 100%;
             height: 1.5rem;
             stroke-width: 0.0625rem;
@@ -846,28 +891,60 @@ export function collabStyles() {
         "collab-thread-comment-action--wrapper": css`
             margin-left: auto;
         `,
-        "collab-thread-smooth-animation": css`
-            transition: top 0.7s ease;
-            -webkit-transition: top 0.7s ease;
-        `,
-        "collab-thread-body--input": css`
+        "collab-thread-body--input--wrapper": css`
             width: 100%;
             display: flex;
             flex-direction: column;
             gap: 0.25rem;
             grid-gap: 0.25rem;
         `,
-        "collab-thread-body--mention__input__focus": css`
-            background-color: #ffffff !important;
-            border: 0.0625rem solid #5d50be !important;
-            box-shadow: 0 0 0 0.0625rem #5d50be !important;
-            border-radius: 4px !important;
-            outline: none;
+        "collab-thread-body--input": css`
+            position: relative;
+            overflow-y: visible;
         `,
-        "collab-thread-body--mention__input__hover": css`
-            background-color: #edf1f7;
-            border: 0.0625rem solid #5d50be !important;
-            box-shadow: 0 0 0 0.0625rem #5d50be !important;
+        "collab-thread-body--input--textarea--wrapper": css`
+            width: 100%;
+            transition: height 0.2s ease-in 0s;
+        `,
+        "collab-thread-body--input--textarea": css`
+            display: block;
+            width: 100%;
+            position: relative;
+            top: 0;
+            left: 0;
+            box-sizing: border-box;
+            background-color: #ffffff;
+            font-family: inherit;
+            font-size: 1rem;
+            letter-spacing: inherit;
+            height: 100%;
+            bottom: 0;
+            overflow: auto;
+            resize: vertical;
+            border-radius: 4px;
+            border: 0.0625rem solid #dde3ee;
+            color: #222222;
+            padding: 0.5rem 1rem;
+            max-height: 6.25rem;
+            min-height: 4.125rem;
+            transition:
+                border 0.2s ease,
+                box-shadow 0.2s ease,
+                background-color 0.2s ease;
+
+            &:focus {
+                background-color: #ffffff !important;
+                border: 0.0625rem solid #5d50be !important;
+                box-shadow: 0 0 0 0.0625rem #5d50be !important;
+                border-radius: 4px !important;
+                outline: none;
+            }
+
+            &:hover {
+                background-color: #edf1f7;
+                border: 0.0625rem solid #5d50be !important;
+                box-shadow: 0 0 0 0.0625rem #5d50be !important;
+            }
         `,
         "flex-center": css`
             display: flex;

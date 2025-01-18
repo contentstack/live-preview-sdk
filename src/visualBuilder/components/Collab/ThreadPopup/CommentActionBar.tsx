@@ -4,6 +4,7 @@ import { IThreadPopupState, IUserDTO } from "../../../types/collab.types";
 import Icon from "../Icon/Icon";
 import { ThreadProvider } from "./ContextProvider";
 import { collabStyles } from "../../../visualBuilder.style";
+import classNames from "classnames";
 
 interface ICommentActionBar {
     mode: "edit" | "view";
@@ -53,7 +54,7 @@ const CommentActionBar: React.FC<ICommentActionBar> = ({
                 commentUID: commentUID,
             });
             // successNotification(deleteResponse.notice);
-            // Update the discussion state after successful deletion
+            // Update the thread state after successful deletion
             setThreadState((prevState: IThreadPopupState) => {
                 const updatedComments = prevState.comments.filter(
                     (comment) => comment._id !== commentUID
@@ -76,9 +77,10 @@ const CommentActionBar: React.FC<ICommentActionBar> = ({
     if (mode === "edit" && commentUID) {
         return (
             <div
-                className={
+                className={classNames(
+                    "collab-thread-comment-action--wrapper",
                     collabStyles()["collab-thread-comment-action--wrapper"]
-                }
+                )}
             >
                 <Icon
                     icon="Cancel"
@@ -96,8 +98,11 @@ const CommentActionBar: React.FC<ICommentActionBar> = ({
 
     return (
         <div
-            className={collabStyles()["collab-thread-comment-action--wrapper"]}
-            data-testid="collab-thread-action-wrapper"
+            className={classNames(
+                "collab-thread-comment-action--wrapper",
+                collabStyles()["collab-thread-comment-action--wrapper"]
+            )}
+            data-testid="collab-thread-comment-action--wrapper"
         >
             <Icon
                 icon="Edit"

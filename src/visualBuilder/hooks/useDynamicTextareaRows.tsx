@@ -1,13 +1,14 @@
 import React, { useEffect } from "preact/compat";
 
 const useDynamicTextareaRows = (
-    ref: React.RefObject<HTMLTextAreaElement>,
+    selector: string,
     dependency: string,
     defaultRows: number = 1,
     expandedRows: number = 3
 ) => {
     useEffect(() => {
-        const textAreaElement = ref.current;
+        const textAreaElement: HTMLTextAreaElement | null =
+            document.querySelector(selector);
 
         if (textAreaElement) {
             textAreaElement.setAttribute(
@@ -17,11 +18,9 @@ const useDynamicTextareaRows = (
         }
 
         return () => {
-            if (textAreaElement) {
-                textAreaElement.setAttribute("rows", `${defaultRows}`);
-            }
+            textAreaElement?.setAttribute("rows", `${defaultRows}`);
         };
-    }, [dependency, ref, defaultRows, expandedRows]);
+    }, [dependency, selector, defaultRows, expandedRows]);
 };
 
 export default useDynamicTextareaRows;

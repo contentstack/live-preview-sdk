@@ -1,7 +1,8 @@
 /** @jsxImportSource preact */
 import React from "preact/compat";
 import { useState, useRef, useEffect } from "preact/hooks";
-import { css } from "goober";
+import { collabStyles } from "../../../visualBuilder.style";
+import classNames from "classnames";
 
 interface TooltipProps {
     content: string;
@@ -72,39 +73,14 @@ export default function Tooltip({
         };
     }, [isVisible, position]);
 
-    const tooltipClass = css`
-        position: fixed;
-        z-index: 1000;
-        padding: 8px 12px;
-        font-size: 14px;
-        color: #f7f9fc;
-        background-color: #767676;
-        border-radius: 4px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-
-        /* Simple fade in */
-        opacity: 0;
-        animation: simpleFade 0.15s ease-in forwards;
-
-        @keyframes simpleFade {
-            from {
-                opacity: 0;
-            }
-            to {
-                opacity: 1;
-            }
-        }
-    `;
-
-    const wrapperClass = css`
-        position: relative;
-        display: inline-block;
-    `;
-
     return (
         <div
             ref={targetRef}
-            className={`${wrapperClass} ${className}`}
+            className={classNames(
+                "collab-tooltip--wrapper",
+                collabStyles()["collab-tooltip--wrapper"],
+                className
+            )}
             onMouseEnter={() => setIsVisible(true)}
             onMouseLeave={() => setIsVisible(false)}
         >
@@ -112,7 +88,10 @@ export default function Tooltip({
             {isVisible && (
                 <div
                     ref={tooltipRef}
-                    className={tooltipClass}
+                    className={classNames(
+                        "collab-tooltip",
+                        collabStyles()["collab-tooltip"]
+                    )}
                     role="tooltip"
                     aria-hidden={!isVisible}
                 >

@@ -17,7 +17,7 @@ export declare type IUserMap = { [key: string]: IUserDTO };
 export declare interface IInviteMetadata {
     users: Array<IUserDTO>;
     currentUser: IUserDTO;
-    inviteID: string;
+    inviteUid: string;
 }
 
 // Mention Related Types
@@ -46,11 +46,11 @@ export declare interface IMessageDTO {
     author: string;
     toUsers?: string[];
     images?: string[];
-    created_at: string;
-    created_by: string;
+    createdAt: string;
+    createdBy: string;
 }
 
-// Discussion Context
+// Thread Context
 export declare interface IThreadContext {
     inviteMetadata: IInviteMetadata;
     commentCount: number;

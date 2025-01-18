@@ -5,6 +5,7 @@ import {
     sanitizeData,
 } from "../../../utils/collabUtils";
 import { collabStyles } from "../../../visualBuilder.style";
+import classNames from "classnames";
 
 interface ICommentResolvedText {
     comment: IMessageDTO;
@@ -22,8 +23,11 @@ const CommentResolvedText = ({ comment, userState }: ICommentResolvedText) => {
 
     return (
         <div
-            data-testid={"collab-discussion-comment--message"}
-            className={collabStyles()["collab-discussion-comment--message"]}
+            data-testid={"collab-thread-comment--message"}
+            className={classNames(
+                "collab-thread-comment--message",
+                collabStyles()["collab-thread-comment--message"]
+            )}
             dangerouslySetInnerHTML={{ __html: sanitizedText }}
         ></div>
     );

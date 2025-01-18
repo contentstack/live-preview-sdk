@@ -1,7 +1,7 @@
 /** @jsxImportSource preact */
-import { css } from "goober";
 import React from "preact/compat";
 import cn from "classnames";
+import { collabStyles } from "../../../visualBuilder.style";
 
 export type ButtonGroupProps = {
     /**
@@ -22,18 +22,13 @@ export type ButtonGroupProps = {
     testId?: string;
 };
 
-const StyledButtonGroup = css`
-    display: flex;
-    & > button {
-        margin-right: 1rem;
-        &:last-child {
-            margin-right: 0;
-        }
-    }
-`;
 const ButtonGroup = (props: ButtonGroupProps) => {
     const { className, children, style, testId, ...otherProps } = props;
-    const classNames = cn(StyledButtonGroup, className);
+    const classNames = cn(
+        "collab-button-group",
+        collabStyles()["collab-button-group"],
+        className
+    );
 
     return (
         <div

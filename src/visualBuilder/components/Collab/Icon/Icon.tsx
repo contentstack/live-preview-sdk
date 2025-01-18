@@ -4,7 +4,8 @@ import React from "preact/compat";
 import { JSX } from "preact";
 import Tooltip from "../Tooltip/Tooltip";
 import { iconComponents } from "../../icons/index";
-import { css } from "goober";
+import classNames from "classnames";
+import { collabStyles } from "../../../visualBuilder.style";
 
 type IconName = keyof typeof iconComponents;
 
@@ -15,15 +16,6 @@ export interface IconProps {
     withTooltip?: boolean;
     onClick?: JSX.MouseEventHandler<HTMLDivElement>;
 }
-
-const tooltipClass = css`
-    height: 1.25rem;
-    width: 1.25rem;
-`;
-
-const wrapperClass = css`
-    padding: 0 0.5rem;
-`;
 
 const Icon = (props: IconProps) => {
     const {
@@ -39,20 +31,20 @@ const Icon = (props: IconProps) => {
 
     return withTooltip && tooltipContent ? (
     <Tooltip content={tooltipContent} position="bottom">
-        <div className={wrapperClass} onClick={onClick} {...otherProps}>
+        <div className={classNames("collab-icon-wrapper",collabStyles()["collab-icon-wrapper"])} onClick={onClick} {...otherProps}>
             {IconComponent ? (
                 <IconComponent
-                    className={`${tooltipClass} ${className || ""}`}
+                    className={classNames("collab-icon-tooltip",collabStyles()["collab-icon-tooltip"], className)}
                     {...otherProps}
                 />
             ) : null}
         </div>
     </Tooltip>
 ) : (
-    <div className={wrapperClass} onClick={onClick} {...otherProps}>
+    <div className={classNames("collab-icon-wrapper",collabStyles()["collab-icon-wrapper"])} onClick={onClick} {...otherProps}>
         {IconComponent ? (
             <IconComponent
-                className={`${tooltipClass} ${className || ""}`}
+                className={classNames("collab-icon-tooltip",collabStyles()["collab-icon-tooltip"], className)}
                 {...otherProps}
             />
         ) : null}

@@ -2,10 +2,16 @@
 import React from "preact/compat";
 import SkeletonTile from "../../SkeletonTile/SkeletonTile";
 import { collabStyles } from "../../../../visualBuilder.style";
+import classNames from "classnames";
 
 const ThreadBodyLoader = () => {
     return (
-        <div className={collabStyles()["collab-thread-body-comment--loader"]}>
+        <div
+            className={classNames(
+                "collab-thread-body-comment--loader",
+                collabStyles()["collab-thread-body-comment--loader"]
+            )}
+        >
             <div style={{ display: "flex" }}>
                 <SkeletonTile
                     numberOfTiles={1}

@@ -3,7 +3,7 @@ import { visualBuilderStyles } from "../../visualBuilder.style";
 import classNames from "classnames";
 import React, { useState, useRef, useEffect } from "preact/compat";
 import { css } from "goober";
-import CollabPopup from "./CollabPopup";
+import ThreadPopup from "./ThreadPopup";
 import Config from "../../../configManager/configManager";
 import visualBuilderPostMessage from "../../utils/visualBuilderPostMessage";
 import { VisualBuilderPostMessageEvents } from "../../utils/types/postMessage.types";
@@ -19,7 +19,7 @@ const inviteMetadata = {
             identityHash: "blte26110c4ea641ed9",
         },
     ],
-    inviteID: "123456789",
+    inviteUid: "123456789",
 };
 
 export interface ICollabIndicator {
@@ -34,14 +34,16 @@ const CollabIndicator: React.FC<ICollabIndicator> = (props) => {
     const [showPopup, setShowPopup] = useState(props.newThread || false);
 
     // Set initial state based on props
-    const [activeDiscussion, setActiveDiscussion] = useState(
+    const [activeThread, setActiveThread] = useState(
         props.newThread ? { _id: "new" } : props.activeThread || { _id: "new" }
     );
+
+    console.log("collab root -> activeThread", activeThread);
 
     // Update activeDiscussion when props.activeDiscussion changes
     useEffect(() => {
         if (props.activeThread) {
-            setActiveDiscussion(props.activeThread);
+            setActiveThread(props.activeThread);
         }
     }, [props.activeThread]);
 
@@ -131,30 +133,29 @@ const CollabIndicator: React.FC<ICollabIndicator> = (props) => {
                     ref={popupRef}
                     className={classNames("collab-popup", popupClass)}
                 >
-                    <CollabPopup
+                    <ThreadPopup
                         onCreateComment={async (payload) => {
                             const data: any =
                                 await visualBuilderPostMessage?.send(
                                     VisualBuilderPostMessageEvents.COLLAB_CREATE_COMMENT,
                                     { payload }
                                 );
-
-                            const response = {
-                                notice: "conversation created successfully",
-                                conversation: {
-                                    uid: data._id,
-                                    discussion_uid: data.threadId,
-                                    entry_uid: "blt1bbd1c10058a089d",
-                                    locale: "en-us",
-                                    message: data.message,
-                                    to_users: [],
-                                    to_roles: [],
-                                    created_at: data.createdAt,
-                                    created_by: "blte26110c4ea641ed9",
-                                    deleted_at: false,
-                                },
-                            };
-                            return response;
+                            console.log("onCreateComment payload", payload);
+                            console.log("onCreateComment result", data);
+                            // const response = {
+                            //     notice: "conversation created successfully",
+                            //     comment: {
+                            //         _id: data._id,
+                            //         threadUid: data.threadId,
+                            //         message: data.message,
+                            //         author: "om.prakash@contentstack.com",
+                            //         toUsers: [],
+                            //         images: [],
+                            //         created_at: data.createdAt,
+                            //         created_by: "blte26110c4ea641ed9",
+                            //     },
+                            // };
+                            return data;
                         }}
                         onEditComment={async (payload) => {
                             const response: any = {};
@@ -173,7 +174,7 @@ const CollabIndicator: React.FC<ICollabIndicator> = (props) => {
                         inviteMetadata={inviteMetadata}
                         loadMoreMessages={async (offset, limit) => {
                             let payload = {
-                                threadID: activeDiscussion?._id,
+                                threadID: activeThread?._id,
                                 offset,
                                 limit,
                             };
@@ -183,25 +184,28 @@ const CollabIndicator: React.FC<ICollabIndicator> = (props) => {
                                     { payload }
                                 );
 
-                            const response = {
-                                count: data.length,
-                                conversations: data.map((item: any) => ({
-                                    uid: item._id,
-                                    discussion_uid: item.threadId,
-                                    entry_uid: "blt1bbd1c10058a089d",
-                                    locale: "en-us",
-                                    message: item.message,
-                                    to_users: [],
-                                    to_roles: [],
-                                    created_at: item.createdAt,
-                                    created_by: "blte26110c4ea641ed9",
-                                    deleted_at: false,
-                                })),
-                            };
-                            return response;
+                            console.log("loadMoreMessages payload", payload);
+                            console.log("loadMoreMessages result", data);
+
+                            // const response = {
+                            //     count: data.length,
+                            //     comments: data.map((item: any) => ({
+                            //         uid: item._id,
+                            //         discussion_uid: item.threadId,
+                            //         entry_uid: "blt1bbd1c10058a089d",
+                            //         locale: "en-us",
+                            //         message: item.message,
+                            //         to_users: [],
+                            //         to_roles: [],
+                            //         created_at: item.createdAt,
+                            //         created_by: "blte26110c4ea641ed9",
+                            //         deleted_at: false,
+                            //     })),
+                            // };
+                            return data;
                         }}
-                        activeThread={activeDiscussion}
-                        setActiveThread={setActiveDiscussion}
+                        activeThread={activeThread}
+                        setActiveThread={setActiveThread}
                         createNewThread={async () => {
                             let payload = {};
                             let response: any = {};
@@ -235,7 +239,10 @@ const CollabIndicator: React.FC<ICollabIndicator> = (props) => {
                                             author: inviteMetadata.currentUser
                                                 .email,
                                             pageRoute: "/",
-                                            inviteId: inviteMetadata.inviteID,
+                                            inviteUid: inviteMetadata.inviteUid,
+                                            createdBy:
+                                                inviteMetadata.currentUser
+                                                    .identityHash,
                                         };
                                     }
                                 }
@@ -247,29 +254,29 @@ const CollabIndicator: React.FC<ICollabIndicator> = (props) => {
                                     { payload }
                                 );
 
-                            response = {
-                                notice: "discussion created successfully",
-                                discussion: {
-                                    api_key: "blt05d58ee84d13fd72",
-                                    _content_type_uid: "page",
-                                    entry_uid: "blt1bbd1c10058a089d",
-                                    locale: "en-us",
-                                    status: 1,
-                                    uid: data?._id,
-                                    title: "Description-1736860796142",
-                                    field: {
-                                        uid: "description",
-                                        path: "sections.home.csdc2330a19d43171f.hero_section.description",
-                                        og_path:
-                                            "sections.home.hero_section.description",
-                                    },
-                                    org_uid: "blt739e38d90d4fc4e6",
-                                    created_by: "blte26110c4ea641ed9",
-                                    created_at: data?.createdAt,
-                                },
-                            };
+                            // response = {
+                            //     notice: "discussion created successfully",
+                            //     discussion: {
+                            //         api_key: "blt05d58ee84d13fd72",
+                            //         _content_type_uid: "page",
+                            //         entry_uid: "blt1bbd1c10058a089d",
+                            //         locale: "en-us",
+                            //         status: 1,
+                            //         uid: data?._id,
+                            //         title: "Description-1736860796142",
+                            //         field: {
+                            //             uid: "description",
+                            //             path: "sections.home.csdc2330a19d43171f.hero_section.description",
+                            //             og_path:
+                            //                 "sections.home.hero_section.description",
+                            //         },
+                            //         org_uid: "blt739e38d90d4fc4e6",
+                            //         created_by: "blte26110c4ea641ed9",
+                            //         created_at: data?.createdAt,
+                            //     },
+                            // };
 
-                            return response;
+                            return data;
                         }}
                     />
                     ;

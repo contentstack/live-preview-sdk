@@ -67,12 +67,9 @@ export function generateThreadsFromData(payloads: any[], fromVB = false) {
             popupContainer.className = "collab-thread";
 
             // Transform the data and pass it as props
-            const transformedData = transformData(payload);
+            // const transformedData = transformData(payload);
             render(
-                <CollabIndicator
-                    activeDiscussion={transformedData}
-                    newThread={false}
-                />,
+                <CollabIndicator activeThread={payload} newThread={false} />,
                 popupContainer
             );
 

@@ -47,7 +47,10 @@ function displayAvatarContent({
             <img
                 src={avatar.image}
                 alt={avatar.name}
-                className={collabStyles()["collab-avatar__image"]}
+                className={classNames(
+                    "collab-avatar__image",
+                    collabStyles()["collab-avatar__image"]
+                )}
             />
         );
     }
@@ -63,6 +66,9 @@ function Avatar({ avatar, type, testId }: AvatarProps) {
         >
             <div
                 className={classNames(
+                    "collab-avatar",
+                    "collab-avatar--single",
+                    "flex-v-center",
                     collabStyles()["collab-avatar"],
                     collabStyles()["collab-avatar--single"],
                     collabStyles()["flex-v-center"]
@@ -70,6 +76,8 @@ function Avatar({ avatar, type, testId }: AvatarProps) {
             >
                 <span
                     className={classNames(
+                        "collab-avatar__link",
+                        "flex-v-center",
                         collabStyles()["collab-avatar__link"],
                         collabStyles()["flex-v-center"]
                     )}
