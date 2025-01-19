@@ -87,7 +87,7 @@
     },
     "dependencies": {
         "@preact/compat": "^17.1.2",
-        "@preact/signals": "^1.2.2",
+        "@preact/signals": "^2.0.0",
         "classnames": "^2.5.1",
         "deepsignal": "^1.5.0",
         "goober": "^2.1.14",
