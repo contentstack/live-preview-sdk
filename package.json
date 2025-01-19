@@ -86,7 +86,7 @@
         "url": "https://github.com/contentstack/live-preview-sdk.git"
     },
     "dependencies": {
-        "@preact/compat": "^17.1.2",
+        "@preact/compat": "^18.3.1",
         "@preact/signals": "^1.2.2",
         "classnames": "^2.5.1",
         "deepsignal": "^1.5.0",
