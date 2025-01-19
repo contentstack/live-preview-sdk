@@ -34,10 +34,6 @@ const CommentCard = ({
 
     useEffect(() => {
         if (comment) {
-            console.log(
-                "comment.createdBy",
-                userState.userMap[comment.createdBy]
-            );
             setCommentUser(userState.userMap[comment.createdBy]);
         } else {
             setCommentUser(userState.currentUser);

@@ -114,8 +114,10 @@ export const getCommentBody = (state: ICommentState): ICommentState => {
     let finalMessage = state.message;
     const comment = {
         message: finalMessage,
-        to_users: [],
-        to_roles: [],
+        toUsers: [],
+        images: [],
+        createdBy: state.createdBy,
+        author: state.author,
     };
 
     const updateMentionToUID = (
@@ -128,9 +130,7 @@ export const getCommentBody = (state: ICommentState): ICommentState => {
         result.push(entity.id);
     };
 
-    state.toUsers?.forEach((user) =>
-        updateMentionToUID(user, comment.to_users)
-    );
+    state.toUsers?.forEach((user) => updateMentionToUID(user, comment.toUsers));
 
     comment.message = finalMessage;
     return comment;

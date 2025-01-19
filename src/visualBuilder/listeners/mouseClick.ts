@@ -68,17 +68,6 @@ function isCollabThread(target: HTMLElement): boolean {
     return target.classList.contains("collab-indicator");
 }
 
-// function isThereActiveCollabPopup(): boolean {
-//     return !!document.querySelector(".collab-popup");
-// }
-
-// function hideCollabPopup(): void {
-//     if (isThereActiveCollabPopup()) {
-//         const collabPopup = document.querySelector(".collab-popup");
-//         collabPopup?.classList.add("hidden");
-//     }
-// }
-
 async function handleBuilderInteraction(
     params: HandleBuilderInteractionParams
 ): Promise<void> {

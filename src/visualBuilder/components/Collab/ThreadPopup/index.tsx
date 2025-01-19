@@ -16,6 +16,8 @@ import {
     IErrorState,
     IMentionList,
     IInviteMetadata,
+    IFetchComments,
+    IFetchCommentsResponse,
 } from "../../../types/collab.types";
 import { getUserName } from "../../../utils/collabUtils";
 import { ThreadProvider } from "./ContextProvider/ThreadProvider";
@@ -30,7 +32,7 @@ interface IThreadPopup {
     onClose: () => void;
     onResolve: (thread: IActiveThread) => Promise<IDefaultAPIResponse>;
     inviteMetadata: IInviteMetadata;
-    loadMoreMessages: (offset: number, limit: number) => Promise<any>;
+    loadMoreMessages: (data: IFetchComments) => Promise<IFetchCommentsResponse>;
     activeThread: IActiveThread;
     setActiveThread: (thread: IActiveThread) => void;
     createNewThread: () => Promise<IThreadResponseDTO>;
@@ -76,7 +78,12 @@ const ThreadPopup: React.FC<IThreadPopup> = React.memo(
             canFetchMore: state.commentCount > state.comments.length,
             loadMore: async (offset, limit) => {
                 try {
-                    const res = await loadMoreMessages(offset, limit);
+                    let payload: IFetchComments = {
+                        offset: offset,
+                        limit: limit,
+                        threadUid: activeThread?._id,
+                    };
+                    const res = await loadMoreMessages(payload);
                     setState((prevState) => ({
                         ...prevState,
                         commentCount: res.count,
@@ -127,12 +134,17 @@ const ThreadPopup: React.FC<IThreadPopup> = React.memo(
             const fetchInitialMessages = async () => {
                 setState((prevState) => ({ ...prevState, isLoading: true }));
                 try {
-                    const res = await loadMoreMessages(0, 10);
+                    let payload: IFetchComments = {
+                        offset: 0,
+                        limit: 10,
+                        threadUid: activeThread?._id,
+                    };
+                    const res = await loadMoreMessages(payload);
                     setState((prevState) => ({
                         ...prevState,
                         isLoading: false,
                         commentCount: res.count,
-                        comments: res.conversations,
+                        comments: res.comments,
                     }));
                 } catch (error) {
                     setState((prevState) => ({

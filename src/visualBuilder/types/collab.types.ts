@@ -36,6 +36,8 @@ export declare interface ICommentState {
     message: string;
     toUsers?: Array<IMentionItem>;
     images?: string[];
+    createdBy: string;
+    author: string;
 }
 
 // Message DTO
@@ -87,9 +89,9 @@ export interface ICommentDTO {
     author: string;
     toUsers: string[];
     images: string[];
-    created_at: string;
-    created_by: string;
-    updated_at?: string;
+    createdAt: string;
+    createdBy: string;
+    updatedAt?: string;
 }
 
 export interface IDefaultAPIResponse {
@@ -100,14 +102,31 @@ export interface ICommentResponse extends IDefaultAPIResponse {
     comment: ICommentDTO;
 }
 
-export interface ICommentPayload extends ICommentState {
+export interface IFetchCommentsResponse {
+    comments: Array<ICommentDTO>;
+    count: number;
+}
+
+export interface ICommentPayload {
     threadUid: string;
+    commentPayload: ICommentState;
+}
+export interface IThreadPayload {
+    elementXPath: string;
+    position: {
+        x: number;
+        y: number;
+    };
+    author: string;
+    pageRoute: string;
+    inviteUid: string;
+    createdBy: string;
 }
 
 export interface IThreadDTO {
     _id: string;
     author: string;
-    inviteUid: number;
+    inviteUid: string;
     position: {
         x: number;
         y: number;
@@ -115,10 +134,11 @@ export interface IThreadDTO {
     elementXPath: string;
     isElementPresent: boolean;
     pageRoute: string;
-    created_by: string;
+    createdBy: string;
     sequenceNumber: number;
     threadState: number;
-    created_at: string;
+    createdAt: string;
+    updatedAt?: string;
 }
 export interface IThreadResponseDTO extends IDefaultAPIResponse {
     thread: IThreadDTO;
@@ -139,7 +159,12 @@ export interface IErrorState {
     message: string;
 }
 
-export interface IActiveThread
-    extends Partial<Pick<IThreadDTO, "elementXPath" | "position" | "author">> {
+export interface IActiveThread extends Partial<IThreadDTO> {
     _id: string;
+}
+
+export interface IFetchComments {
+    threadUid: string;
+    offset: number;
+    limit: number;
 }

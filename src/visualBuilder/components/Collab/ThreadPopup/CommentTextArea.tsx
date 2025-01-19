@@ -41,6 +41,8 @@ const initialState: ICommentState = {
     message: "",
     toUsers: [],
     images: [],
+    createdBy: "",
+    author: "",
 };
 
 const CommentTextArea: React.FC<ICommentTextArea> = React.memo(
@@ -74,19 +76,26 @@ const CommentTextArea: React.FC<ICommentTextArea> = React.memo(
                     let currentThread: IThreadResponseDTO =
                         await createNewThread();
                     threadUID = currentThread?.thread?._id;
-                    console.log(
-                        "thread Creation Response",
-                        currentThread?.thread
-                    );
                     setActiveThread(currentThread?.thread);
                 }
                 // Prepare the comment data by constructing the body with mentions replaced by UIDs.
-                const commentData: ICommentPayload = {
-                    ...getCommentBody(state),
-                    threadUid: threadUID,
+                setState((prevState) => ({
+                    ...prevState,
+                    createdBy: userState.currentUser.identityHash,
+                }));
+
+                const commentPayload = {
+                    ...getCommentBody({
+                        ...state,
+                        createdBy: userState.currentUser.identityHash,
+                        author: userState.currentUser.email,
+                    }),
                 };
 
-                console.log("commentData payload", commentData);
+                const commentData: ICommentPayload = {
+                    threadUid: threadUID,
+                    commentPayload,
+                };
 
                 if (editComment) {
                     // If editing an existing comment, call the edit function and update the state accordingly.
@@ -121,7 +130,6 @@ const CommentTextArea: React.FC<ICommentTextArea> = React.memo(
                     // If creating a new comment, call the create function and add the new comment to the state.
                     let commentResponse: ICommentResponse =
                         await onCreateComment(commentData);
-                    console.log("commentResponse", commentResponse);
                     // successNotification(commentResponse.notice);
                     setThreadState((prevState: IThreadPopupState) => ({
                         ...prevState,
@@ -165,6 +173,9 @@ const CommentTextArea: React.FC<ICommentTextArea> = React.memo(
                 message:
                     getMessageWithDisplayName(comment, userState, "text") ?? "",
                 toUsers,
+                images: comment?.images ?? [],
+                createdBy: comment?.createdBy ?? "",
+                author: comment?.author ?? "",
             });
         }, [comment]);
 
