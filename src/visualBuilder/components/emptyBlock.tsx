@@ -57,6 +57,7 @@ export function EmptyBlock(props: EmptyBlockProps): JSX.Element {
                 )}
                 onClick={() => sendAddInstanceEvent()}
                 type="button"
+                data-testid="visual-builder__empty-block-add-button"
             >
                 <i className="fas fa-plus"></i> &nbsp;
                 {blockParentName}
