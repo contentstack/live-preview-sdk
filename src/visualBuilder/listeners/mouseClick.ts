@@ -21,6 +21,7 @@ import { FieldSchemaMap } from "../utils/fieldSchemaMap";
 import { isFieldDisabled } from "../utils/isFieldDisabled";
 import EventListenerHandlerParams from "./types";
 import { toggleHighlightedCommentIconDisplay } from "../generators/generateHighlightedComment";
+import { VB_EmptyBlockParentClass } from "../..";
 
 type HandleBuilderInteractionParams = Omit<
     EventListenerHandlerParams,
@@ -110,7 +111,7 @@ async function handleBuilderInteraction(
     // if the selected element is our empty block element, return
     if (
         editableElement.classList.contains(
-            "visual-builder__empty-block-parent"
+            VB_EmptyBlockParentClass
         ) ||
         editableElement.classList.contains("visual-builder__empty-block")
     ) {

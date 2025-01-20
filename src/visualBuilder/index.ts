@@ -42,6 +42,7 @@ import {
 import { useHighlightCommentIcon } from "./eventManager/useHighlightCommentIcon";
 import { updateHighlightedCommentIconPosition } from "./generators/generateHighlightedComment";
 import { useRecalculateVariantDataCSLPValues } from "./eventManager/useRecalculateVariantDataCSLPValues";
+import { VB_EmptyBlockParentClass } from "..";
 
 interface VisualBuilderGlobalStateImpl {
     previousSelectedEditableDOM: HTMLElement | Element | null;
@@ -184,7 +185,7 @@ export class VisualBuilder {
                 );
                 const emptyBlockParents = Array.from(
                     document.querySelectorAll(
-                        ".visual-builder__empty-block-parent"
+                        `.${VB_EmptyBlockParentClass}`
                     )
                 );
 
