@@ -20,6 +20,10 @@ export const useCollab = () => {
             }
             Config.set("collab.enable", data.data.collab.enable ?? false);
             Config.set("collab.state", data.data.collab.state ?? false);
+            Config.set(
+                "collab.inviteMetadata",
+                data.data.collab.inviteMetadata
+            );
             generateThreadsFromData(data.data.payload, true);
         }
     );

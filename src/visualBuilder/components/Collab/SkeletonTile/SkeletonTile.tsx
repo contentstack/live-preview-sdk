@@ -1,20 +1,6 @@
 import React from "preact/compat";
-import { css, keyframes } from "goober";
-
-const progressSlide = keyframes`
-  0%, 100% {
-    fill: var(--color-base-gray-5); /* Replace with an actual color or CSS variable */
-  }
-  60% {
-    opacity: 0.4;
-  }
-`;
-
-const skeletonTileSvgClass = css`
-    & > g rect {
-        animation: ${progressSlide} 1.8s infinite;
-    }
-`;
+import { collabStyles } from "../../../visualBuilder.style";
+import classNames from "classnames";
 
 export type SkeletonTileProps = {
     numberOfTiles: number;
@@ -52,7 +38,10 @@ const SkeletonTile: React.FC<SkeletonTileProps> = (props) => {
             data-test-id={testId}
             height={svgHeight}
             width={svgWidth}
-            className={skeletonTileSvgClass}
+            className={classNames(
+                "collab-skeletonTileSvgClass",
+                collabStyles()["collab-skeletonTileSvgClass"]
+            )}
             fill="#EDF1F7"
         >
             {Array.from({ length: numberOfTiles }).map((_, index) => (

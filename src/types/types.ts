@@ -1,3 +1,7 @@
+import {
+    IInviteMetadata,
+    IThreadDTO,
+} from "../visualBuilder/types/collab.types";
 export declare interface IEditEntrySearchParams {
     hash?: string;
     entry_uid?: string;
@@ -87,6 +91,7 @@ export declare interface IConfig {
     collab: {
         enable: boolean;
         state: boolean;
+        inviteMetadata: IInviteMetadata;
     };
 }
 
@@ -198,6 +203,7 @@ export interface IVisualBuilderInitEvent {
     collab?: {
         enable: boolean;
         state: boolean;
-        payload: any;
+        inviteMetadata: IInviteMetadata;
+        payload: IThreadDTO[];
     };
 }

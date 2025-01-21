@@ -50,8 +50,8 @@ const CommentActionBar: React.FC<ICommentActionBar> = ({
         try {
             // Call the onDeleteComment function
             const deleteResponse = await onDeleteComment({
-                threadUID: activeThread?._id,
-                commentUID: commentUID,
+                threadUid: activeThread?._id,
+                commentUid: commentUID,
             });
             // successNotification(deleteResponse.notice);
             // Update the thread state after successful deletion

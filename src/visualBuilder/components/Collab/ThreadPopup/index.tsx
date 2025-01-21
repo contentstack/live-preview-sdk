@@ -18,6 +18,7 @@ import {
     IInviteMetadata,
     IFetchComments,
     IFetchCommentsResponse,
+    IThreadResolveArgs,
 } from "../../../types/collab.types";
 import { getUserName } from "../../../utils/collabUtils";
 import { ThreadProvider } from "./ContextProvider/ThreadProvider";
@@ -26,11 +27,11 @@ import { collabStyles } from "../../../visualBuilder.style";
 import classNames from "classnames";
 
 interface IThreadPopup {
-    onCreateComment: (payload: ICommentPayload) => Promise<ICommentResponse>;
+    onCreateComment: (data: ICommentPayload) => Promise<ICommentResponse>;
     onEditComment: (data: IEditCommentArgs) => Promise<ICommentResponse>;
     onDeleteComment: (data: IDeleteCommentArgs) => Promise<IDefaultAPIResponse>;
-    onClose: () => void;
-    onResolve: (thread: IActiveThread) => Promise<IDefaultAPIResponse>;
+    onClose: (isResolved?: boolean) => void;
+    onResolve: (data: IThreadResolveArgs) => Promise<IThreadResponseDTO>;
     inviteMetadata: IInviteMetadata;
     loadMoreMessages: (data: IFetchComments) => Promise<IFetchCommentsResponse>;
     activeThread: IActiveThread;

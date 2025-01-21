@@ -34,14 +34,8 @@ function displayAvatarContent({
     type,
     avatar,
 }: DisplayAvatarContentProps): JSX.Element | string {
-    let nameInitials = avatar && avatar.name && avatar.name.split(" ");
-    let firstInitial = (nameInitials && nameInitials[0]) || "";
-    let lastInitial =
-        (nameInitials && nameInitials[nameInitials?.length - 1]) || "";
     let nameInitialsShort =
-        nameInitials && nameInitials.length === 1
-            ? nameInitials[0]
-            : firstInitial?.substring(0, 1) + lastInitial?.substring(0, 1);
+        avatar && avatar.name && avatar.name.substring(0, 2);
     if (type === "image") {
         return (
             <img

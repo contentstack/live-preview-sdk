@@ -3,6 +3,7 @@ import { render } from "preact";
 import CollabIndicator from "../components/Collab/CollabIndicator";
 import Config from "../../configManager/configManager";
 import { css } from "goober";
+import { IThreadDTO } from "../types/collab.types";
 
 const highlighCommentOffset = 30;
 
@@ -11,29 +12,15 @@ const hiddenClass = css`
     display: none;
 `;
 
-export function generateThreadsFromData(payloads: any[], fromVB = false) {
-    // Transform data function
-    function transformData(payload: any) {
-        return {
-            api_key: "blt05d58ee84d13fd72",
-            _content_type_uid: "page",
-            entry_uid: "blt1bbd1c10058a089d",
-            locale: payload.locale,
-            status: 1,
-            uid: payload._id,
-            title: `Description-${Date.now()}`,
-            field: {
-                uid: "description",
-                path: "sections.home.csdc2330a19d43171f.hero_section.description",
-                og_path: "sections.home.hero_section.description",
-            },
-            org_uid: "blt739e38d90d4fc4e6",
-            created_by: "blte26110c4ea641ed9",
-            created_at: payload.createdAt,
-        };
-    }
-
+export function generateThreadsFromData(
+    payloads: IThreadDTO[],
+    fromVB = false
+) {
     const renderThreads = () => {
+        if (!payloads || payloads.length === 0) {
+            return;
+        }
+
         payloads.forEach((payload) => {
             const { position, elementXPath } = payload;
             const { x: relativeX, y: relativeY } = position;
@@ -62,12 +49,11 @@ export function generateThreadsFromData(payloads: any[], fromVB = false) {
             popupContainer.style.position = "absolute";
             popupContainer.style.top = `${top - highlighCommentOffset}px`;
             popupContainer.style.left = `${left - highlighCommentOffset}px`;
-            popupContainer.style.zIndex = "1000";
+            popupContainer.style.zIndex = "999";
             popupContainer.style.cursor = "pointer";
             popupContainer.className = "collab-thread";
 
-            // Transform the data and pass it as props
-            // const transformedData = transformData(payload);
+            // Render the React component
             render(
                 <CollabIndicator activeThread={payload} newThread={false} />,
                 popupContainer
@@ -121,7 +107,7 @@ export function generateThread(payload: any): void {
     popupContainer.style.position = "absolute";
     popupContainer.style.top = `${top - highlighCommentOffset}px`;
     popupContainer.style.left = `${left - highlighCommentOffset}px`;
-    popupContainer.style.zIndex = "1000";
+    popupContainer.style.zIndex = "999";
     popupContainer.style.cursor = "pointer";
     popupContainer.className = "collab-thread";
 

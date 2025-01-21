@@ -4,7 +4,6 @@ import React, {
     useState,
     useContext,
     useCallback,
-    useRef,
 } from "preact/compat";
 import { collabStyles } from "../../../visualBuilder.style";
 import {
@@ -101,8 +100,9 @@ const CommentTextArea: React.FC<ICommentTextArea> = React.memo(
                     // If editing an existing comment, call the edit function and update the state accordingly.
                     let commentResponse: ICommentResponse = await onEditComment(
                         {
-                            commentUID: editComment,
-                            payload: commentData,
+                            threadUid: threadUID,
+                            commentUid: editComment,
+                            payload: commentPayload,
                         }
                     );
                     // successNotification(commentResponse?.notice);

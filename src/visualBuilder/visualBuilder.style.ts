@@ -678,6 +678,15 @@ export const VisualBuilderGlobalStyles = `
 
 `;
 
+const skeletonTileProgressSlide = keyframes`
+    0%, 100% {
+        fill: var(--color-base-gray-5);
+    }
+    60% {
+        opacity: 0.4;
+    }
+`;
+
 export function collabStyles() {
     return {
         "collab-avatar": css`
@@ -764,6 +773,132 @@ export function collabStyles() {
         "collab-icon-wrapper": css`
             padding: 0 0.5rem;
         `,
+        "collab-button--basestyle": css`
+            box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            -webkit-box-sizing: border-box;
+            background-color: transparent;
+            border: 1px solid transparent;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: Inter, sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            line-height: 1;
+            min-height: 2rem;
+            min-width: 2rem;
+            padding: 0.5rem 1rem;
+            position: relative;
+            text-align: center;
+            transition:
+                color 0.15s ease-in-out,
+                background-color 0.15s ease-in-out,
+                border-color 0.15s ease-in-out,
+                box-shadow 0.15s ease-in-out;
+            vertical-align: middle;
+            cursor: pointer;
+            opacity: 1;
+            pointer-events: auto;
+        `,
+        "collab-button--disabled": css`
+            cursor: not-allowed;
+            opacity: 0.4;
+            pointer-events: none;
+        `,
+        "collab-button--type": {
+            primary: css`
+                background-color: #6c5ce7 !important;
+                color: #ffffff;
+                &:hover {
+                    background-color: #5d50be !important;
+                }
+                &:focus {
+                    box-shadow: 0px 0px 0px 2px #ada4f4 !important;
+                }
+                &:active {
+                    background-color: #3e3871 !important;
+                }
+            `,
+            secondary: css`
+                background-color: #f9f8ff !important;
+                border: 1px solid #6c5ce7 !important;
+                color: #6c5ce7 !important;
+                &:hover {
+                    border-color: #5d50be !important;
+                    color: #5d50be !important;
+                }
+                &:focus {
+                    box-shadow: 0px 0px 0px 2px #ada4f4 !important;
+                }
+                &:active {
+                    border-color: #3e3871 !important;
+                    color: #3e3871 !important;
+                }
+            `,
+            tertiary: css`
+                color: #6c5ce7 !important;
+                &:hover {
+                    color: #5d50be !important;
+                }
+                &:focus {
+                    box-shadow: 0px 0px 0px 2px #ada4f4 !important;
+                }
+            `,
+            destructive: css`
+                background-color: #a31b00 !important;
+                color: #ffffff !important;
+                &:hover {
+                    background-color: #701300 !important;
+                }
+                &:focus {
+                    box-shadow: 0px 0px 0px 2px #ada4f4 !important;
+                }
+            `,
+        },
+        "collab-button--size": {
+            large: css`
+                font-size: 1rem;
+                min-height: 2.5rem;
+                max-height: 2.5rem;
+            `,
+            regular: css`
+                margin-top: -1px;
+            `,
+            small: css`
+                font-size: 0.875rem;
+                min-height: 2rem;
+                max-height: 2rem;
+                padding: 0.3125rem 1rem;
+            `,
+        },
+        "collab-button--icon-allignment": {
+            left: css`
+                svg:first-child {
+                    float: left;
+                    margin-left: 0;
+                    margin-right: 0.5rem;
+                }
+            `,
+            right: css`
+                svg:first-child {
+                    float: right;
+                    margin-left: 0.5rem;
+                    margin-right: 0;
+                }
+            `,
+            both: css`
+                svg:first-child {
+                    float: left;
+                    margin-right: 0.5rem;
+                    margin-left: 0;
+                }
+                svg:last-child {
+                    float: right;
+                    margin-left: 0.5rem;
+                    margin-right: 0;
+                }
+            `,
+        },
         "collab-button-group": css`
             display: flex;
             & > button {
@@ -771,6 +906,11 @@ export function collabStyles() {
                 &:last-child {
                     margin-right: 0;
                 }
+            }
+        `,
+        "collab-skeletonTileSvgClass": css`
+            & > g rect {
+                animation: ${skeletonTileProgressSlide} 1.8s infinite;
             }
         `,
         "collab-thread-body-comment--loader": css`

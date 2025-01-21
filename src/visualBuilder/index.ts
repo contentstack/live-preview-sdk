@@ -271,11 +271,12 @@ export class VisualBuilder {
                 if (collab) {
                     Config.set("collab.enable", collab.enable);
                     Config.set("collab.state", collab.state);
+                    Config.set("collab.inviteMetadata", collab.inviteMetadata);
                 }
 
-                // if (collab?.payload) {
-                //     generateThreadsFromData(collab?.payload);
-                // }
+                if (collab?.payload) {
+                    generateThreadsFromData(collab?.payload);
+                }
 
                 addEventListeners({
                     overlayWrapper: this.overlayWrapper,

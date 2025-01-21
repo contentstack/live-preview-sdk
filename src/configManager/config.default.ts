@@ -90,6 +90,15 @@ export function getDefaultConfig(): IConfig {
         collab: {
             enable: false,
             state: false,
+            inviteMetadata: {
+                currentUser: {
+                    email: "",
+                    display: "",
+                    identityHash: "",
+                },
+                users: [],
+                inviteUid: "",
+            },
         },
     };
 }

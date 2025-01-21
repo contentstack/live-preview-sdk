@@ -6,7 +6,7 @@ import classNames from "classnames";
 import { collabStyles } from "../../../visualBuilder.style";
 
 interface IThreadFooter {
-    onClose: () => void;
+    onClose: (isResolved?: boolean) => void;
     handleOnSaveRef: React.MutableRefObject<any>;
     isDisabled: boolean;
     editComment: string;
@@ -40,7 +40,7 @@ const ThreadFooter = ({
                     type="button"
                     buttonType="tertiary"
                     testId={"thread-cancel-btn"}
-                    onClick={onClose}
+                    onClick={() => onClose(false)}
                 >
                     Cancel
                 </Button>

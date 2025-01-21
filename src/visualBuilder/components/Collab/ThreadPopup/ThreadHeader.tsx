@@ -7,12 +7,13 @@ import { getThreadTitle } from "../../../utils/collabUtils";
 import {
     IActiveThread,
     IDefaultAPIResponse,
+    IThreadResolveArgs,
 } from "../../../types/collab.types";
 
 interface IThreadHeader {
-    onClose: () => void;
+    onClose: (isResolved?: boolean) => void;
     displayResolve: boolean;
-    onResolve: (thread: IActiveThread) => Promise<IDefaultAPIResponse>;
+    onResolve: (data: IThreadResolveArgs) => Promise<IDefaultAPIResponse>;
     commentCount: number;
     activeThread: IActiveThread;
 }
@@ -22,11 +23,17 @@ const ThreadHeader: React.FC<IThreadHeader> = React.memo(
         // Handler for deleting a comment
         const handleResolve = useCallback(async () => {
             try {
-                // Call the onDeleteComment function
+                // Call the onResolveComment function
+                const payload = {
+                    threadUid: activeThread._id,
+                    payload: {
+                        threadState: 2,
+                    },
+                };
                 const resolveResponse: IDefaultAPIResponse =
-                    await onResolve(activeThread);
+                    await onResolve(payload);
                 // successNotification(resolveResponse.notice);
-                onClose();
+                onClose(true);
             } catch (error: any) {
                 // failureNotification(
                 //     error?.data?.error_message || "An error occurred.",

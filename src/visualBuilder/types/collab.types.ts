@@ -66,7 +66,7 @@ export declare interface IThreadContext {
             | IThreadPopupState
             | ((prevState: IThreadPopupState) => IThreadPopupState)
     ) => void;
-    onClose: () => void;
+    onClose: (isResolved?: boolean) => void;
     setError: Function;
     editComment: string;
     activeThread: IActiveThread;
@@ -145,13 +145,21 @@ export interface IThreadResponseDTO extends IDefaultAPIResponse {
 }
 
 export interface IEditCommentArgs {
-    commentUID: string;
-    payload: ICommentPayload;
+    threadUid: string;
+    commentUid: string;
+    payload: ICommentState;
 }
 
 export interface IDeleteCommentArgs {
-    threadUID: string;
-    commentUID: string;
+    threadUid: string;
+    commentUid: string;
+}
+
+export interface IThreadResolveArgs {
+    threadUid: string;
+    payload: {
+        threadState: number;
+    };
 }
 
 export interface IErrorState {

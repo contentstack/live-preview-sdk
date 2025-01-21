@@ -1,6 +1,5 @@
 /** @jsxImportSource preact */
 import React from "preact/compat";
-import { css } from "goober";
 import classNames from "classnames";
 import Icon, { IconProps } from "../Icon/Icon";
 import { iconComponents } from "../../icons/index";
@@ -72,137 +71,20 @@ const Button: React.FC<ButtonProps> = ({
                 break;
         }
     }
-    const baseStyles = css`
-        box-sizing: border-box;
-        -moz-box-sizing: border-box;
-        -webkit-box-sizing: border-box;
-        background-color: transparent;
-        border: 1px solid transparent;
-        border-radius: 4px;
-        cursor: pointer;
-        font-family: Inter, sans-serif;
-        font-size: 1rem;
-        font-weight: 600;
-        line-height: 1;
-        min-height: 2rem;
-        min-width: 2rem;
-        padding: 0.5rem 1rem;
-        position: relative;
-        text-align: center;
-        transition:
-            color 0.15s ease-in-out,
-            background-color 0.15s ease-in-out,
-            border-color 0.15s ease-in-out,
-            box-shadow 0.15s ease-in-out;
-        vertical-align: middle;
-        cursor: ${disabled ? "not-allowed" : "pointer"};
-        opacity: ${disabled ? 0.4 : 1};
-        pointer-events: auto;
-    `;
-
-    const typeStyles = {
-        primary: css`
-            background-color: #6c5ce7 !important;
-            color: #ffffff;
-            &:hover {
-                background-color: #5d50be !important;
-            }
-            &:focus {
-                box-shadow: 0px 0px 0px 2px #ada4f4 !important;
-            }
-            &:active {
-                background-color: #3e3871 !important;
-            }
-        `,
-        secondary: css`
-            background-color: #f9f8ff !important;
-            border: 1px solid #6c5ce7 !important;
-            color: #6c5ce7 !important;
-            &:hover {
-                border-color: #5d50be !important;
-                color: #5d50be !important;
-            }
-            &:focus {
-                box-shadow: 0px 0px 0px 2px #ada4f4 !important;
-            }
-            &:active {
-                border-color: #3e3871 !important;
-                color: #3e3871 !important;
-            }
-        `,
-        tertiary: css`
-            color: #6c5ce7 !important;
-            &:hover {
-                color: #5d50be !important;
-            }
-            &:focus {
-                box-shadow: 0px 0px 0px 2px #ada4f4 !important;
-            }
-        `,
-        destructive: css`
-            background-color: #a31b00 !important;
-            color: #ffffff !important;
-            &:hover {
-                background-color: #701300 !important;
-            }
-            &:focus {
-                box-shadow: 0px 0px 0px 2px #ada4f4 !important;
-            }
-        `,
-    };
-
-    const sizeStyles = {
-        large: css`
-            font-size: 1rem;
-            min-height: 2.5rem;
-            max-height: 2.5rem;
-        `,
-        regular: css`
-            margin-top: -1px;
-        `,
-        small: css`
-            font-size: 0.875rem;
-            min-height: 2rem;
-            max-height: 2rem;
-            padding: 0.3125rem 1rem;
-        `,
-    };
-    const iconAlignmentStyles = {
-        left: css`
-            svg:first-child {
-                float: left;
-                margin-left: 0;
-                margin-right: 0.5rem;
-            }
-        `,
-        right: css`
-            svg:first-child {
-                float: right;
-                margin-left: 0.5rem;
-                margin-right: 0;
-            }
-        `,
-        both: css`
-            svg:first-child {
-                float: left;
-                margin-right: 0.5rem;
-                margin-left: 0;
-            }
-            svg:last-child {
-                float: right;
-                margin-left: 0.5rem;
-                margin-right: 0;
-            }
-        `,
-    };
 
     const combinedClassName = classNames(
-        baseStyles,
-        typeStyles[buttonType],
-        sizeStyles[size],
-        icon && iconAlignmentStyles[iconAlignment],
-        className
+        collabStyles()["collab-button--basestyle"],
+        collabStyles()["collab-button--type"][buttonType],
+        collabStyles()["collab-button--size"][size],
+        icon && collabStyles()["collab-button--icon-allignment"][iconAlignment],
+        disabled && collabStyles()["collab-button--disabled"],
+        className,
+
+        `collab-button collab-button--${buttonType} collab-button--${size} ${
+            icon ? `collab-button--icon-${iconAlignment}` : ""
+        } ${disabled ? "collab-button--disabled" : ""}`
     );
+
     // Ensure style is valid
     const validStyle = Object.fromEntries(
         Object.entries(style || {}).filter(([_, value]) => value != null)
@@ -219,11 +101,21 @@ const Button: React.FC<ButtonProps> = ({
             href={href}
             data-testid={testId}
         >
-            <div className={collabStyles()["flex-center"]}>
+            <div
+                className={classNames(
+                    "flex-center",
+                    collabStyles()["flex-center"]
+                )}
+            >
                 <div
-                    className={classNames(collabStyles()["flex-v-center"], {
-                        [sizeStyles.regular]: size !== "small",
-                    })}
+                    className={classNames(
+                        "flex-v-center",
+                        collabStyles()["flex-v-center"],
+                        {
+                            [`${collabStyles()["collab-button--size"]["regular"]} collab-button--regular`]:
+                                size !== "small",
+                        }
+                    )}
                 >
                     {nestedChildren}
                 </div>
