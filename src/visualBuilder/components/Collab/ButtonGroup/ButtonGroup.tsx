@@ -34,7 +34,7 @@ const ButtonGroup = (props: ButtonGroupProps) => {
         <div
             className={classNames}
             style={style}
-            data-test-id={testId}
+            data-testid={testId}
             {...otherProps}
         >
             {children}
@@ -43,7 +43,7 @@ const ButtonGroup = (props: ButtonGroupProps) => {
 };
 
 ButtonGroup.defaultProps = {
-    testId: "cs-button-group",
+    testId: "collab-button-group",
 } as Partial<ButtonGroupProps>;
 
 export default ButtonGroup;

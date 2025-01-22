@@ -289,6 +289,7 @@ export class VisualBuilder {
                     customCursor: this.customCursor,
                 });
                 useHistoryPostMessageEvent();
+                useCollab();
 
                 if (windowType === ILivePreviewWindowType.BUILDER) {
                     addKeyboardShortcuts({
@@ -298,7 +299,6 @@ export class VisualBuilder {
                         resizeObserver: this.resizeObserver,
                     });
                     useScrollToField();
-                    useCollab();
                     useHighlightCommentIcon();
                     this.mutationObserver.observe(document.body, {
                         childList: true,

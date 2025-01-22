@@ -134,8 +134,8 @@ const CommentTextArea: React.FC<ICommentTextArea> = React.memo(
                     setThreadState((prevState: IThreadPopupState) => ({
                         ...prevState,
                         comments: [
-                            ...prevState.comments,
                             commentResponse.comment,
+                            ...prevState.comments,
                         ], // Prepend the new comment
                         commentCount: prevState.commentCount + 1, // Increment the comment count
                     }));

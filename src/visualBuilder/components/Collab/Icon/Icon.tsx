@@ -30,6 +30,7 @@ const Icon = (props: IconProps) => {
     const IconComponent = iconComponents[icon];
 
     return withTooltip && tooltipContent ? (
+        <div data-testid="collab-icon-tooltip">
     <Tooltip content={tooltipContent} position="bottom">
         <div className={classNames("collab-icon-wrapper",collabStyles()["collab-icon-wrapper"])} onClick={onClick} {...otherProps}>
             {IconComponent ? (
@@ -40,13 +41,16 @@ const Icon = (props: IconProps) => {
             ) : null}
         </div>
     </Tooltip>
+    </div>
 ) : (
     <div className={classNames("collab-icon-wrapper",collabStyles()["collab-icon-wrapper"])} onClick={onClick} {...otherProps}>
         {IconComponent ? (
+            <div data-testid="collab-icon">
             <IconComponent
                 className={classNames("collab-icon-tooltip",collabStyles()["collab-icon-tooltip"], className)}
                 {...otherProps}
             />
+            </div>
         ) : null}
     </div>
 );

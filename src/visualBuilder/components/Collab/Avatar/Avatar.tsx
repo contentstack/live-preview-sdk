@@ -7,7 +7,7 @@ import { collabStyles } from "../../../visualBuilder.style";
 const defaultProps = {
     avatar: {},
     type: "text",
-    testId: "cs-avatar",
+    testId: "collab-avatar",
 };
 
 type DefaultProps = Readonly<typeof defaultProps>;
@@ -39,6 +39,7 @@ function displayAvatarContent({
     if (type === "image") {
         return (
             <img
+                data-testid={"collab-avatar-image"}
                 src={avatar.image}
                 alt={avatar.name}
                 className={classNames(
@@ -53,33 +54,35 @@ function displayAvatarContent({
 
 function Avatar({ avatar, type, testId }: AvatarProps) {
     return (
-        <Tooltip
-            content={avatar.name || avatar.email || ""}
-            position="bottom"
-            data-test-id={testId}
-        >
-            <div
-                className={classNames(
-                    "collab-avatar",
-                    "collab-avatar--single",
-                    "flex-v-center",
-                    collabStyles()["collab-avatar"],
-                    collabStyles()["collab-avatar--single"],
-                    collabStyles()["flex-v-center"]
-                )}
+        <div data-testid={"collab-avatar"}>
+            <Tooltip
+                content={avatar.name || avatar.email || ""}
+                position="bottom"
+                data-testid={testId}
             >
-                <span
+                <div
                     className={classNames(
-                        "collab-avatar__link",
+                        "collab-avatar",
+                        "collab-avatar--single",
                         "flex-v-center",
-                        collabStyles()["collab-avatar__link"],
+                        collabStyles()["collab-avatar"],
+                        collabStyles()["collab-avatar--single"],
                         collabStyles()["flex-v-center"]
                     )}
                 >
-                    {displayAvatarContent({ type: type || "text", avatar })}
-                </span>
-            </div>
-        </Tooltip>
+                    <span
+                        className={classNames(
+                            "collab-avatar__link",
+                            "flex-v-center",
+                            collabStyles()["collab-avatar__link"],
+                            collabStyles()["flex-v-center"]
+                        )}
+                    >
+                        {displayAvatarContent({ type: type || "text", avatar })}
+                    </span>
+                </div>
+            </Tooltip>
+        </div>
     );
 }
 

@@ -41,16 +41,16 @@ const CollabIndicator: React.FC<ICollabIndicator> = (props) => {
     const popupRef = useRef<HTMLDivElement>(null);
     const config = Config.get();
 
-    // const [showPopup, setShowPopup] = useState(props.newThread || false);
+    const [showPopup, setShowPopup] = useState(props.newThread || false);
 
-    // // Set initial state based on props
-    // const [activeThread, setActiveThread] = useState(
-    //     props.newThread ? { _id: "new" } : props.activeThread || { _id: "new" }
-    // );
+    // Set initial state based on props
+    const [activeThread, setActiveThread] = useState(
+        props.newThread ? { _id: "new" } : props.activeThread || { _id: "new" }
+    );
 
-    // const [inviteMetadata, setInviteMetadata] = useState<IInviteMetadata>(
-    //     config?.collab?.inviteMetadata
-    // );
+    const [inviteMetadata, setInviteMetadata] = useState<IInviteMetadata>(
+        config?.collab?.inviteMetadata
+    );
 
     // Update activeDiscussion when props.activeDiscussion changes
     useEffect(() => {
@@ -76,23 +76,21 @@ const CollabIndicator: React.FC<ICollabIndicator> = (props) => {
         };
     }, []);
 
-    const [showPopup, setShowPopup] = useState(false);
-
-    // Set initial state based on props
-    const [activeThread, setActiveThread] = useState<IActiveThread>({
-        _id: "678d11da0c8ec2f3250b5386",
-        author: inviteMetadata.currentUser.email,
-        inviteUid: inviteMetadata.inviteUid,
-        position: { x: 0, y: 0 },
-        elementXPath: "",
-        isElementPresent: true,
-        pageRoute: "/",
-        createdBy: inviteMetadata.currentUser.identityHash,
-        sequenceNumber: 1,
-        threadState: 1,
-        createdAt: "2025-01-19T14:53:14.809Z",
-        updatedAt: "2025-01-19T14:53:14.809Z",
-    });
+    // // Set initial state based on props
+    // const [activeThread, setActiveThread] = useState<IActiveThread>({
+    //     _id: "678d11da0c8ec2f3250b5386",
+    //     author: inviteMetadata.currentUser.email,
+    //     inviteUid: inviteMetadata.inviteUid,
+    //     position: { x: 0, y: 0 },
+    //     elementXPath: "",
+    //     isElementPresent: true,
+    //     pageRoute: "/",
+    //     createdBy: inviteMetadata.currentUser.identityHash,
+    //     sequenceNumber: 1,
+    //     threadState: 1,
+    //     createdAt: "2025-01-19T14:53:14.809Z",
+    //     updatedAt: "2025-01-19T14:53:14.809Z",
+    // });
 
     const calculatePopupPosition = () => {
         if (!buttonRef.current || !popupRef.current) return;
@@ -143,8 +141,7 @@ const CollabIndicator: React.FC<ICollabIndicator> = (props) => {
     }, [showPopup]);
 
     const handleClose = (isResolved: boolean = false) => {
-        if (isResolved) {
-            console.log("Thread resolved");
+        if (isResolved || activeThread._id === "new") {
             if (buttonRef.current) {
                 const parentDiv = buttonRef.current.closest("div[field-path]");
                 if (parentDiv) {
@@ -192,14 +189,14 @@ const CollabIndicator: React.FC<ICollabIndicator> = (props) => {
                 >
                     <ThreadPopup
                         onCreateComment={async (payload) => {
-                            // const data = (await visualBuilderPostMessage?.send(
-                            //     VisualBuilderPostMessageEvents.COLLAB_CREATE_COMMENT,
-                            //     { payload }
-                            // )) as ICommentResponse;
-                            // if (!data) {
-                            //     throw new Error("Failed to create comment");
-                            // }
-                            // return data;
+                            const data = (await visualBuilderPostMessage?.send(
+                                VisualBuilderPostMessageEvents.COLLAB_CREATE_COMMENT,
+                                { payload }
+                            )) as ICommentResponse;
+                            if (!data) {
+                                throw new Error("Failed to create comment");
+                            }
+                            return data;
                             const response = {
                                 notice: "Comment created succesfully",
                                 comment: {
@@ -218,16 +215,16 @@ const CollabIndicator: React.FC<ICollabIndicator> = (props) => {
                             return response;
                         }}
                         onEditComment={async (payload) => {
-                            // const data = (await visualBuilderPostMessage?.send(
-                            //     VisualBuilderPostMessageEvents.COLLAB_EDIT_COMMENT,
-                            //     { payload }
-                            // )) as ICommentResponse;
-                            // if (!data) {
-                            //     throw new Error("Failed to update comment");
-                            // }
-                            // return data;
+                            const data = (await visualBuilderPostMessage?.send(
+                                VisualBuilderPostMessageEvents.COLLAB_EDIT_COMMENT,
+                                { payload }
+                            )) as ICommentResponse;
+                            if (!data) {
+                                throw new Error("Failed to update comment");
+                            }
+                            return data;
                             const response = {
-                                notice: "Comment created succesfully",
+                                notice: "Comment Updated succesfully",
                                 comment: {
                                     _id: "678d12660c8ec2f3250b5387",
                                     threadUid: "678d11da0c8ec2f3250b5386",
@@ -244,14 +241,14 @@ const CollabIndicator: React.FC<ICollabIndicator> = (props) => {
                             return response;
                         }}
                         onDeleteComment={async (payload) => {
-                            // const data = (await visualBuilderPostMessage?.send(
-                            //     VisualBuilderPostMessageEvents.COLLAB_EDIT_COMMENT,
-                            //     { payload }
-                            // )) as IDefaultAPIResponse;
-                            // if (!data) {
-                            //     throw new Error("Failed to delete comment");
-                            // }
-                            // return data;
+                            const data = (await visualBuilderPostMessage?.send(
+                                VisualBuilderPostMessageEvents.COLLAB_DELETE_COMMENT,
+                                { payload }
+                            )) as IDefaultAPIResponse;
+                            if (!data) {
+                                throw new Error("Failed to delete comment");
+                            }
+                            return data;
                             const response = {
                                 notice: "Comment deleted succesfully",
                             };
@@ -259,54 +256,45 @@ const CollabIndicator: React.FC<ICollabIndicator> = (props) => {
                         }}
                         onClose={handleClose}
                         onResolve={async (payload) => {
-                            // const data = (await visualBuilderPostMessage?.send(
-                            //     VisualBuilderPostMessageEvents.COLLAB_RESOLVE_THREAD,
-                            //     { payload }
-                            // )) as IThreadResponseDTO;
-                            // if (!data) {
-                            //     throw new Error("Failed to resolve thread");
-                            // }
+                            const data = (await visualBuilderPostMessage?.send(
+                                VisualBuilderPostMessageEvents.COLLAB_RESOLVE_THREAD,
+                                { payload }
+                            )) as IThreadResponseDTO;
+                            if (!data) {
+                                throw new Error("Failed to resolve thread");
+                            }
 
-                            // if (buttonRef.current) {
-                            //     const parentDiv =
-                            //         buttonRef.current.closest(
-                            //             "div[field-path]"
-                            //         );
-                            //     if (parentDiv) {
-                            //         handleClose();
-                            //         parentDiv.remove();
-                            //     }
-                            // }
+                            return data;
 
-                            const response = {
-                                notice: "Thread created successfully",
-                                thread: {
-                                    _id: "678d11da0c8ec2f3250b5386",
-                                    author: inviteMetadata.currentUser.email,
-                                    inviteUid: inviteMetadata.inviteUid,
-                                    position: { x: 0, y: 0 },
-                                    elementXPath: "",
-                                    isElementPresent: true,
-                                    pageRoute: "/",
-                                    createdBy:
-                                        inviteMetadata.currentUser.identityHash,
-                                    sequenceNumber: 1,
-                                    threadState: 2,
-                                    createdAt: "2025-01-19T14:53:14.809Z",
-                                    updatedAt: "2025-01-19T14:53:14.809Z",
-                                },
-                            };
+                            // const response = {
+                            //     notice: "Thread updated successfully",
+                            //     thread: {
+                            //         _id: "678d11da0c8ec2f3250b5386",
+                            //         author: inviteMetadata.currentUser.email,
+                            //         inviteUid: inviteMetadata.inviteUid,
+                            //         position: { x: 0, y: 0 },
+                            //         elementXPath: "",
+                            //         isElementPresent: true,
+                            //         pageRoute: "/",
+                            //         createdBy:
+                            //             inviteMetadata.currentUser.identityHash,
+                            //         sequenceNumber: 1,
+                            //         threadState: 2,
+                            //         createdAt: "2025-01-19T14:53:14.809Z",
+                            //         updatedAt: "2025-01-19T14:53:14.809Z",
+                            //     },
+                            // };
 
-                            return response;
+                            // return response;
                         }}
                         inviteMetadata={inviteMetadata}
                         loadMoreMessages={async (payload) => {
-                            // const data = (await visualBuilderPostMessage?.send(
-                            //     VisualBuilderPostMessageEvents.COLLAB_FETCH_COMMENTS,
-                            //     { payload }
-                            // )) as IFetchCommentsResponse;
+                            const data = (await visualBuilderPostMessage?.send(
+                                VisualBuilderPostMessageEvents.COLLAB_FETCH_COMMENTS,
+                                { payload }
+                            )) as IFetchCommentsResponse;
 
-                            // return data;
+                            return data;
                             return {
                                 count: 3,
                                 comments: [
@@ -408,10 +396,44 @@ const CollabIndicator: React.FC<ICollabIndicator> = (props) => {
                                 }
                             }
 
-                            // const data = (await visualBuilderPostMessage?.send(
-                            //     VisualBuilderPostMessageEvents.COLLAB_CREATE_THREAD,
-                            //     { payload }
-                            // )) as IThreadResponseDTO;
+                            const data = (await visualBuilderPostMessage?.send(
+                                VisualBuilderPostMessageEvents.COLLAB_CREATE_THREAD,
+                                { payload }
+                            )) as IThreadResponseDTO;
+
+                            if (buttonRef.current) {
+                                const parentDiv =
+                                    buttonRef.current.closest(
+                                        "div[field-path]"
+                                    );
+                                if (parentDiv) {
+                                    parentDiv.setAttribute(
+                                        "threaduid",
+                                        data.thread._id
+                                    );
+                                }
+                            }
+
+                            return data;
+
+                            // const response = {
+                            //     notice: "Thread created successfully",
+                            //     thread: {
+                            //         _id: "678d11da0c8ec2f3250b5386",
+                            //         author: inviteMetadata.currentUser.email,
+                            //         inviteUid: inviteMetadata.inviteUid,
+                            //         position: payload.position,
+                            //         elementXPath: payload.elementXPath,
+                            //         isElementPresent: true,
+                            //         pageRoute: payload.pageRoute,
+                            //         createdBy:
+                            //             inviteMetadata.currentUser.identityHash,
+                            //         sequenceNumber: 1,
+                            //         threadState: 1,
+                            //         createdAt: "2025-01-19T14:53:14.809Z",
+                            //         updatedAt: "2025-01-19T14:53:14.809Z",
+                            //     },
+                            // };
 
                             // if (buttonRef.current) {
                             //     const parentDiv =
@@ -421,46 +443,12 @@ const CollabIndicator: React.FC<ICollabIndicator> = (props) => {
                             //     if (parentDiv) {
                             //         parentDiv.setAttribute(
                             //             "threadUid",
-                            //             data.thread._id
+                            //             response.thread._id
                             //         );
                             //     }
                             // }
 
-                            // return data;
-
-                            const response = {
-                                notice: "Thread created successfully",
-                                thread: {
-                                    _id: "678d11da0c8ec2f3250b5386",
-                                    author: inviteMetadata.currentUser.email,
-                                    inviteUid: inviteMetadata.inviteUid,
-                                    position: payload.position,
-                                    elementXPath: payload.elementXPath,
-                                    isElementPresent: true,
-                                    pageRoute: payload.pageRoute,
-                                    createdBy:
-                                        inviteMetadata.currentUser.identityHash,
-                                    sequenceNumber: 1,
-                                    threadState: 1,
-                                    createdAt: "2025-01-19T14:53:14.809Z",
-                                    updatedAt: "2025-01-19T14:53:14.809Z",
-                                },
-                            };
-
-                            if (buttonRef.current) {
-                                const parentDiv =
-                                    buttonRef.current.closest(
-                                        "div[field-path]"
-                                    );
-                                if (parentDiv) {
-                                    parentDiv.setAttribute(
-                                        "threadUid",
-                                        response.thread._id
-                                    );
-                                }
-                            }
-
-                            return response;
+                            // return response;
                         }}
                     />
                     ;

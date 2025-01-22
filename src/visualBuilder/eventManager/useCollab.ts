@@ -2,7 +2,10 @@ import visualBuilderPostMessage from "../utils/visualBuilderPostMessage";
 import { VisualBuilderPostMessageEvents } from "../utils/types/postMessage.types";
 import Config from "../../configManager/configManager";
 import { removeAllCollabIcons } from "../generators/generateThread";
-import { generateThreadsFromData } from "../generators/generateThread";
+import {
+    generateThreadsFromData,
+    generateThreadFromData,
+} from "../generators/generateThread";
 
 const handleRemoveCommentIcons = (): void => {
     removeAllCollabIcons();
@@ -35,6 +38,25 @@ export const useCollab = () => {
             Config.set("collab.state", false);
 
             handleRemoveCommentIcons();
+        }
+    );
+
+    visualBuilderPostMessage?.on(
+        VisualBuilderPostMessageEvents.COLLAB_THREAD_REMOVE,
+        (data: any) => {
+            const { threadUid } = data.data;
+            const thread = document.querySelector(
+                `div[threaduid='${threadUid}']`
+            );
+            thread?.remove();
+        }
+    );
+
+    visualBuilderPostMessage?.on(
+        VisualBuilderPostMessageEvents.COLLAB_THREAD_REOPEN,
+        (data: any) => {
+            const thread = data.data.thread;
+            generateThreadFromData(thread);
         }
     );
 };

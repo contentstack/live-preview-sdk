@@ -680,7 +680,7 @@ export const VisualBuilderGlobalStyles = `
 
 const skeletonTileProgressSlide = keyframes`
     0%, 100% {
-        fill: var(--color-base-gray-5);
+        fill: #edf1f7;
     }
     60% {
         opacity: 0.4;

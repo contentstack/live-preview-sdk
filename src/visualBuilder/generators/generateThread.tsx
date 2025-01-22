@@ -49,6 +49,7 @@ export function generateThreadsFromData(
             popupContainer.style.position = "absolute";
             popupContainer.style.top = `${top - highlighCommentOffset}px`;
             popupContainer.style.left = `${left - highlighCommentOffset}px`;
+            popupContainer.setAttribute("threaduid", payload._id);
             popupContainer.style.zIndex = "999";
             popupContainer.style.cursor = "pointer";
             popupContainer.className = "collab-thread";
@@ -85,6 +86,58 @@ export function generateThreadsFromData(
         renderThreads();
     } else {
         setTimeout(renderThreads, 5000);
+    }
+}
+
+export function generateThreadFromData(payload: IThreadDTO): void {
+    const config = Config.get();
+    const { position, elementXPath } = payload;
+    const { x: relativeX, y: relativeY } = position;
+
+    const element = getElementByXpath(elementXPath);
+    if (!element) {
+        console.error("Element not found for the given XPath:", elementXPath);
+        return;
+    }
+    const rect = element.getBoundingClientRect();
+    const top = rect.top + window.scrollY + relativeY * rect.height;
+    const left = rect.left + window.scrollX + relativeX * rect.width;
+
+    const popupContainer = document.createElement("div");
+    popupContainer.setAttribute("field-path", elementXPath);
+    popupContainer.setAttribute("relative", `x: ${relativeX}, y: ${relativeY}`);
+    popupContainer.setAttribute("threaduid", payload._id);
+    popupContainer.style.position = "absolute";
+    popupContainer.style.top = `${top - highlighCommentOffset}px`;
+    popupContainer.style.left = `${left - highlighCommentOffset}px`;
+    popupContainer.style.zIndex = "999";
+    popupContainer.style.cursor = "pointer";
+    popupContainer.className = "collab-thread";
+
+    if (config?.collab.enable) {
+        if (config?.collab.state) {
+            Config.set("collab.state", false);
+        }
+    }
+
+    render(<CollabIndicator activeThread={payload} />, popupContainer);
+
+    const visualBuilderContainer = document.querySelector(
+        ".visual-builder__container"
+    );
+    if (visualBuilderContainer) {
+        let highlightCommentWrapper = visualBuilderContainer.querySelector(
+            ".visual-builder__collab-wrapper"
+        );
+        if (!highlightCommentWrapper) {
+            highlightCommentWrapper = document.createElement("div");
+            highlightCommentWrapper.className =
+                "visual-builder__collab-wrapper";
+            visualBuilderContainer.appendChild(highlightCommentWrapper);
+        }
+        highlightCommentWrapper.appendChild(popupContainer);
+    } else {
+        document.body.appendChild(popupContainer);
     }
 }
 
