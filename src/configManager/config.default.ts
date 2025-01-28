@@ -18,7 +18,7 @@ export function getUserInitData(): IInitData {
         },
         editInVisualBuilderButton: {
             enable: true,
-            position: "bottom-right"
+            position: "bottom-right",
         },
 
         mode: "preview",
@@ -56,7 +56,7 @@ export function getDefaultConfig(): IConfig {
         },
         editInVisualBuilderButton: {
             enable: true,
-            position: "bottom-right"
+            position: "bottom-right",
         },
 
         hash: "",

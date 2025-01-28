@@ -98,16 +98,10 @@ export declare interface IConfig {
     };
 }
 
-
 export declare interface IConfigEditInVisualBuilderButton {
     enable: boolean;
-    position?:
-        | "top-left"
-        | "top-right"
-        | "bottom-left"
-        | "bottom-right"
+    position?: "top-left" | "top-right" | "bottom-left" | "bottom-right";
 }
-
 
 export declare interface IConfigEditButton {
     enable: boolean;

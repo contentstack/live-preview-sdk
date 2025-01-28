@@ -113,6 +113,10 @@ function isOverlay(target: HTMLElement): boolean {
     return target.classList.contains("visual-builder__overlay");
 }
 
+function isCollabThread(target: HTMLElement): boolean {
+    return target.classList.contains("collab-indicator");
+}
+
 function isContentEditable(target: HTMLElement): boolean {
     if (target.hasAttribute("contenteditable"))
         return target.getAttribute("contenteditable") === "true";

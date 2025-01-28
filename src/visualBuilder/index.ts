@@ -326,6 +326,8 @@ export class VisualBuilder {
                     resizeObserver: this.resizeObserver,
                     customCursor: this.customCursor,
                 });
+                useHistoryPostMessageEvent();
+                useCollab();
 
                 this.threadMutationObserver.observe(document.body, {
                     childList: true,
