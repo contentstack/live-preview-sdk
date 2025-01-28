@@ -2,7 +2,7 @@ export enum VisualBuilderPostMessageEvents {
     INIT = "init",
     ADD_INSTANCE = "add-instance",
     UPDATE_FIELD = "update-field",
-    SYNC_FIELD = 'sync-field',
+    SYNC_FIELD = "sync-field",
     OPEN_ASSET_MODAL = "open-asset-modal",
     OPEN_REFERENCE_MODAL = "open-reference-modal",
     OPEN_QUICK_FORM = "open-quick-form",
@@ -18,6 +18,13 @@ export enum VisualBuilderPostMessageEvents {
     MOVE_INSTANCE = "move-instance",
     GET_DISCUSSION_ID = "get-discussion-id-for-comment-modal",
     OPEN_FIELD_COMMENT_MODAL = "open-field-comment-modal",
+    COLLAB_CREATE_THREAD = "collab-create-thread",
+    COLLAB_CREATE_COMMENT = "collab-create-comment",
+    COLLAB_FETCH_COMMENTS = "collab-fetch-comments",
+    COLLAB_EDIT_COMMENT = "collab-edit-comment",
+    COLLAB_DELETE_COMMENT = "collab-delete-comment",
+    COLLAB_RESOLVE_THREAD = "collab-resolve-thread",
+
     // FROM visual builder
     GET_ALL_ENTRIES_IN_CURRENT_PAGE = "get-entries-in-current-page",
     HIDE_FOCUS_OVERLAY = "hide-focus-overlay",
@@ -33,4 +40,8 @@ export enum VisualBuilderPostMessageEvents {
     GET_VARIANT_ID = "get-variant-id",
     GET_LOCALE = "get-locale",
     SEND_VARIANT_AND_LOCALE = "send-variant-and-locale",
+    COLLAB_ENABLE = "collab-enable",
+    COLLAB_DISABLE = "collab-disable",
+    COLLAB_THREAD_REMOVE = "collab-thread-remove",
+    COLLAB_THREAD_REOPEN = "collab-thread-reopen",
 }
