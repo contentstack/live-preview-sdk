@@ -22,6 +22,10 @@ import { isFieldDisabled } from "../utils/isFieldDisabled";
 import EventListenerHandlerParams from "./types";
 import { toggleHighlightedCommentIconDisplay } from "../generators/generateHighlightedComment";
 import { VB_EmptyBlockParentClass } from "../..";
+import getXPath from "get-xpath";
+import Config from "../../configManager/configManager";
+import { generateThread } from "../generators/generateThread";
+import { ILivePreviewWindowType } from "../../types/types";
 
 type HandleBuilderInteractionParams = Omit<
     EventListenerHandlerParams,
@@ -54,7 +58,15 @@ export function addFocusedToolbar(params: AddFocusedToolbarParams): void {
 
     if (!editableElement || !params.focusedToolbar) return;
 
-    appendFocusedToolbar(params.eventDetails, params.focusedToolbar, params.hideOverlay);
+    appendFocusedToolbar(
+        params.eventDetails,
+        params.focusedToolbar,
+        params.hideOverlay
+    );
+}
+
+function isCollabThread(target: HTMLElement): boolean {
+    return target.classList.contains("collab-indicator");
 }
 
 async function handleBuilderInteraction(
@@ -74,6 +86,25 @@ async function handleBuilderInteraction(
     ) {
         params.event.preventDefault();
         params.event.stopPropagation();
+    }
+
+    const config = Config.get();
+
+    if (config?.collab.enable === true) {
+        const xpath = getXPath(eventTarget);
+        if (!eventTarget) return;
+        const rect = eventTarget.getBoundingClientRect();
+        const relativeX = (params.event.clientX - rect.left) / rect.width;
+        const relativeY = (params.event.clientY - rect.top) / rect.height;
+
+        if (isCollabThread(eventTarget)) {
+            Config.set("collab.state", false);
+        } else {
+            if (config?.collab.state) {
+                generateThread({ xpath, relativeX, relativeY });
+            }
+        }
+        return;
     }
 
     const eventDetails = getCsDataOfElement(params.event);
@@ -110,9 +141,7 @@ async function handleBuilderInteraction(
 
     // if the selected element is our empty block element, return
     if (
-        editableElement.classList.contains(
-            VB_EmptyBlockParentClass
-        ) ||
+        editableElement.classList.contains(VB_EmptyBlockParentClass) ||
         editableElement.classList.contains("visual-builder__empty-block")
     ) {
         return;
@@ -151,7 +180,7 @@ async function handleBuilderInteraction(
                 focusedToolbar: params.focusedToolbar,
                 resizeObserver: params.resizeObserver,
             });
-        }
+        },
     });
 
     const { content_type_uid, fieldPath, cslpValue } = fieldMetadata;
