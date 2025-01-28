@@ -1,4 +1,4 @@
-import { css } from "goober";
+import { css, keyframes } from "goober";
 
 const tooltipBaseStyle = `
     pointer-events: all;
@@ -685,3 +685,440 @@ export const VisualBuilderGlobalStyles = `
         }
 
 `;
+
+const skeletonTileProgressSlide = keyframes`
+    0%, 100% {
+        fill: #edf1f7;
+    }
+    60% {
+        opacity: 0.4;
+    }
+`;
+
+export function collabStyles() {
+    return {
+        "collab-indicator": css`
+            background: #6c5ce7;
+            height: 1.75rem;
+            width: 1.75rem;
+            gap: 0px;
+            opacity: 0px;
+            border-width: 0px, 0px, 0px, 0px;
+            border-style: solid;
+            border-color: #ffffff;
+            color: white;
+            border-radius: 50%;
+            align-items: center;
+            justify-content: center;
+            font-family: Inter;
+            font-size: 16px;
+            font-weight: 600;
+        `,
+        "collab-avatar": css`
+            background-color: #edf1f7;
+            border: 1.5px solid #ffffff;
+            border-radius: 50%;
+            font-family: Inter;
+            font-weight: 600;
+            justify-content: center;
+            position: relative;
+        `,
+        "collab-avatar--single": css`
+            border: none;
+            font-size: 0.6875rem;
+            height: 2rem;
+            width: 2rem;
+            border-radius: 22.5rem;
+            border: 0.125rem solid #dde3ee;
+            background: #ffffff;
+            position: relative;
+            overflow: hidden;
+
+            &:hover .collab-avatar__image {
+                filter: grayscale(0);
+            }
+        `,
+        "collab-avatar__image": css`
+            filter: grayscale(1);
+            transition: filter 300ms ease;
+            border-radius: 50%;
+            height: 0;
+            left: 50%;
+            min-width: 100%;
+            position: absolute;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 0;
+        `,
+        "collab-avatar__link": css`
+            color: #475161;
+            cursor: pointer;
+            height: 100%;
+            justify-content: center;
+            overflow: hidden;
+            text-decoration: none;
+            text-transform: uppercase;
+            transition:
+                background-color 300ms ease,
+                color 300ms ease;
+            width: 100%;
+            font-weight: 600;
+            font-size: 0.75rem;
+        `,
+        "collab-tooltip--wrapper": css`
+            position: relative;
+            display: inline-block;
+        `,
+        "collab-tooltip": css`
+            position: fixed;
+            z-index: 1000;
+            padding: 8px 12px;
+            font-size: 14px;
+            color: #f7f9fc;
+            background-color: #767676;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+            opacity: 0;
+            animation: simpleFade 0.15s ease-in forwards;
+
+            @keyframes simpleFade {
+                from {
+                    opacity: 0;
+                }
+                to {
+                    opacity: 1;
+                }
+            }
+        `,
+        "collab-icon": css`
+            height: 1.25rem;
+            width: 1.25rem;
+        `,
+        "collab-icon-wrapper": css`
+            padding: 0 0.5rem;
+        `,
+        "collab-button--basestyle": css`
+            box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            -webkit-box-sizing: border-box;
+            background-color: transparent;
+            border: 1px solid transparent;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: Inter, sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            line-height: 1;
+            min-height: 2rem;
+            min-width: 2rem;
+            padding: 0.5rem 1rem;
+            position: relative;
+            text-align: center;
+            transition:
+                color 0.15s ease-in-out,
+                background-color 0.15s ease-in-out,
+                border-color 0.15s ease-in-out,
+                box-shadow 0.15s ease-in-out;
+            vertical-align: middle;
+            cursor: pointer;
+            opacity: 1;
+            pointer-events: auto;
+        `,
+        "collab-button--disabled": css`
+            cursor: not-allowed;
+            opacity: 0.4;
+            pointer-events: none;
+        `,
+        "collab-button--type": {
+            primary: css`
+                background-color: #6c5ce7 !important;
+                color: #ffffff;
+                &:hover {
+                    background-color: #5d50be !important;
+                }
+                &:focus {
+                    box-shadow: 0px 0px 0px 2px #ada4f4 !important;
+                }
+                &:active {
+                    background-color: #3e3871 !important;
+                }
+            `,
+            secondary: css`
+                background-color: #f9f8ff !important;
+                border: 1px solid #6c5ce7 !important;
+                color: #6c5ce7 !important;
+                &:hover {
+                    border-color: #5d50be !important;
+                    color: #5d50be !important;
+                }
+                &:focus {
+                    box-shadow: 0px 0px 0px 2px #ada4f4 !important;
+                }
+                &:active {
+                    border-color: #3e3871 !important;
+                    color: #3e3871 !important;
+                }
+            `,
+            tertiary: css`
+                color: #6c5ce7 !important;
+                &:hover {
+                    color: #5d50be !important;
+                }
+                &:focus {
+                    box-shadow: 0px 0px 0px 2px #ada4f4 !important;
+                }
+            `,
+            destructive: css`
+                background-color: #a31b00 !important;
+                color: #ffffff !important;
+                &:hover {
+                    background-color: #701300 !important;
+                }
+                &:focus {
+                    box-shadow: 0px 0px 0px 2px #ada4f4 !important;
+                }
+            `,
+        },
+        "collab-button--size": {
+            large: css`
+                font-size: 1rem;
+                min-height: 2.5rem;
+                max-height: 2.5rem;
+            `,
+            regular: css`
+                margin-top: -1px;
+            `,
+            small: css`
+                font-size: 0.875rem;
+                min-height: 2rem;
+                max-height: 2rem;
+                padding: 0.3125rem 1rem;
+            `,
+        },
+        "collab-button--icon-allignment": {
+            left: css`
+                svg:first-child {
+                    float: left;
+                    margin-left: 0;
+                    margin-right: 0.5rem;
+                }
+            `,
+            right: css`
+                svg:first-child {
+                    float: right;
+                    margin-left: 0.5rem;
+                    margin-right: 0;
+                }
+            `,
+            both: css`
+                svg:first-child {
+                    float: left;
+                    margin-right: 0.5rem;
+                    margin-left: 0;
+                }
+                svg:last-child {
+                    float: right;
+                    margin-left: 0.5rem;
+                    margin-right: 0;
+                }
+            `,
+        },
+        "collab-button-group": css`
+            display: flex;
+            & > button {
+                margin-right: 1rem;
+                &:last-child {
+                    margin-right: 0;
+                }
+            }
+        `,
+        "collab-skeletonTileSvgClass": css`
+            & > g rect {
+                animation: ${skeletonTileProgressSlide} 1.8s infinite;
+            }
+        `,
+        "collab-thread-body-comment--loader": css`
+            padding: 0.625rem;
+        `,
+        "collab-thread--wrapper": css`
+            position: relative;
+            padding: 0 !important;
+            font-family: Inter;
+            color: #475161;
+            width: 20.75rem;
+        `,
+        "collab-thread-header--wrapper": css`
+            height: 2.5rem;
+            padding: 0 0 0 0.625rem;
+        `,
+        "collab-thread-header--container": css`
+            justify-content: space-between;
+            width: 100%;
+        `,
+        "collab-thread-header--title": css`
+            font-weight: 600;
+            font-size: 0.875rem;
+        `,
+        "collab-thread-header--resolve": css`
+            border-radius: 6px !important;
+        `,
+        "collab-thread-header--resolve--icon": css`
+            width: 1.25rem;
+            height: 1.25rem;
+            margin-right: 0.5rem !important;
+        `,
+        "collab-thread-header--resolve--text": css`
+            font-size: 0.875rem;
+        `,
+        "collab-thread-footer--wrapper": css`
+            height: 3.5rem;
+            width: 100%;
+            flex-direction: row-reverse;
+            padding: 0 0.9375rem;
+        `,
+        "collab-thread-body--wrapper": css`
+            border: solid #edf1f7;
+            border-width: 0.0625rem 0;
+        `,
+        "collab-thread-input-indicator--wrapper": css`
+            padding: 0 0.5rem;
+            font-weight: 400;
+            font-size: 0.875rem;
+            line-height: 150%;
+            letter-spacing: 0.01em;
+            min-height: 1.3125rem !important;
+        `,
+        "collab-thread-input-indicator--error": css`
+            width: 100%;
+            margin-right: 0.5rem;
+            color: #d62400;
+        `,
+        "collab-thread-input-indicator--count": css`
+            color: #475161;
+        `,
+        "collab-thread-comment--user-details": css`
+            width: 100%;
+        `,
+        "collab-thread-comment--user-details__text": css`
+            padding-left: 0.625rem;
+        `,
+        "collab-thread-comment--user-name": css`
+            font-style: normal;
+            font-weight: 600;
+            font-size: 0.75rem;
+            line-height: 150%;
+            letter-spacing: 0.015rem;
+            color: #475161;
+        `,
+        "collab-thread-comment--list": css`
+            max-height: 10.9rem;
+            display: flex;
+            overflow: auto;
+            flex-flow: column-reverse;
+        `,
+        "collab-thread-comment-seperator": css`
+            width: 100%;
+            height: 1.5rem;
+            stroke-width: 0.0625rem;
+            stroke: #dde3ee;
+        `,
+        "collab-thread-comment--time-details": css`
+            font-weight: 400;
+            font-size: 0.75rem;
+            line-height: 150%;
+            font-style: Inter;
+            letter-spacing: 0.015rem;
+            color: #6e6b86;
+        `,
+        "collab-thread-comment--message": css`
+            font-weight: 400;
+            font-size: 1rem;
+            line-height: 1.5rem;
+            color: #475161;
+            word-break: break-all;
+            width: calc(100% - 10px);
+            min-height: 2.25rem;
+            white-space: pre-wrap;
+
+            b {
+                color: #6c5ce7;
+                font-weight: 400;
+            }
+        `,
+        "collab-thread-comment--wrapper": css`
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.625rem;
+            padding: 0.625rem;
+        `,
+        "collab-thread-comment-action--wrapper": css`
+            margin-left: auto;
+        `,
+        "collab-thread-body--input--wrapper": css`
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+            grid-gap: 0.25rem;
+        `,
+        "collab-thread-body--input": css`
+            position: relative;
+            overflow-y: visible;
+        `,
+        "collab-thread-body--input--textarea--wrapper": css`
+            width: 100%;
+            transition: height 0.2s ease-in 0s;
+        `,
+        "collab-thread-body--input--textarea": css`
+            display: block;
+            width: 100%;
+            position: relative;
+            top: 0;
+            left: 0;
+            box-sizing: border-box;
+            background-color: #ffffff;
+            font-family: inherit;
+            font-size: 1rem;
+            letter-spacing: inherit;
+            height: 100%;
+            bottom: 0;
+            overflow: auto;
+            resize: vertical;
+            border-radius: 4px;
+            border: 0.0625rem solid #dde3ee;
+            color: #222222;
+            padding: 0.5rem 1rem;
+            max-height: 6.25rem;
+            min-height: 4.125rem;
+            transition:
+                border 0.2s ease,
+                box-shadow 0.2s ease,
+                background-color 0.2s ease;
+
+            &:focus {
+                background-color: #ffffff !important;
+                border: 0.0625rem solid #5d50be !important;
+                box-shadow: 0 0 0 0.0625rem #5d50be !important;
+                border-radius: 4px !important;
+                outline: none;
+            }
+
+            &:hover {
+                background-color: #edf1f7;
+                border: 0.0625rem solid #5d50be !important;
+                box-shadow: 0 0 0 0.0625rem #5d50be !important;
+            }
+        `,
+        "flex-center": css`
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        `,
+        "flex-v-center": css`
+            display: flex;
+            align-items: center;
+        `,
+    };
+}
