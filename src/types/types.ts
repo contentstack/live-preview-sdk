@@ -1,3 +1,7 @@
+import {
+    IInviteMetadata,
+    IThreadDTO,
+} from "../visualBuilder/types/collab.types";
 export declare interface IEditEntrySearchParams {
     hash?: string;
     entry_uid?: string;
@@ -59,6 +63,7 @@ export enum ILivePreviewModeConfig {
 
 export enum ILivePreviewWindowType {
     PREVIEW = "preview",
+    PREVIEW_SHARE = "preview-share",
     BUILDER = "builder",
     INDEPENDENT = "independent",
 }
@@ -82,6 +87,11 @@ export declare interface IConfig {
     mode: ILivePreviewModeConfig;
     elements: {
         highlightedElement: HTMLElement | null;
+    };
+    collab: {
+        enable: boolean;
+        state: boolean;
+        inviteMetadata: IInviteMetadata;
     };
 }
 
@@ -189,6 +199,12 @@ export interface IVisualBuilderInitEvent {
     windowType: ILivePreviewWindowType;
     stackDetails: {
         masterLocale: string;
+    };
+    collab?: {
+        enable: boolean;
+        state: boolean;
+        inviteMetadata: IInviteMetadata;
+        payload: IThreadDTO[];
     };
 }
 
