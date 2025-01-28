@@ -1071,7 +1071,7 @@ export function collabStyles() {
                 border 0.2s ease,
                 box-shadow 0.2s ease,
                 background-color 0.2s ease;
-
+            padding: 0.5rem 2.5rem 0.5rem 1rem;
             &:focus {
                 background-color: #ffffff !important;
                 border: 0.0625rem solid #5d50be !important;
@@ -1094,6 +1094,42 @@ export function collabStyles() {
         "flex-v-center": css`
             display: flex;
             align-items: center;
+        `,
+        "collab-thread-body--input--container": css`
+            position: relative;
+            width: 100%;
+        `,
+        "collab-thread-body--attachment-button": css`
+            position: absolute;
+            bottom: 0.5rem;
+            right: 0.5rem;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 0.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            transition: background-color 0.2s ease;
+
+            &:hover {
+                background-color: #edf1f7;
+            }
+
+            svg {
+                width: 1.25rem;
+                height: 1.25rem;
+                fill: #475161;
+            }
+        `,
+        "collab-thread-body--input--textarea--wrapper--icons": css`
+            position: relative;
+            bottom: 26px;
+            width: 100%;
+            display: flex;
+            justify-content: flex-end;
+            z-index: 10;
         `,
     };
 }

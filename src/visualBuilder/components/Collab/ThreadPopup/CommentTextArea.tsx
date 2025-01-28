@@ -29,6 +29,7 @@ import { ThreadProvider } from "./ContextProvider";
 import useDynamicTextareaRows from "../../../hooks/useDynamicTextareaRows";
 import { cloneDeep, findIndex } from "lodash-es";
 import classNames from "classnames";
+import Icon from "../Icon/Icon";
 
 interface ICommentTextArea {
     userState: IUserState;
@@ -218,6 +219,11 @@ const CommentTextArea: React.FC<ICommentTextArea> = React.memo(
             }));
         };
 
+        const attachImage = () => {
+            console.log(state);
+            console.log(activeThread);
+        };
+
         return (
             <div
                 className={classNames(
@@ -253,7 +259,23 @@ const CommentTextArea: React.FC<ICommentTextArea> = React.memo(
                             onChange={handleInputChange}
                             maxLength={maxMessageLength}
                             placeholder="Enter a comment"
-                        ></textarea>
+                        />
+
+                        <div
+                            class={classNames(
+                                "collab-thread-body--input--textarea--wrapper--icons",
+                                collabStyles()[
+                                    "collab-thread-body--input--textarea--wrapper--icons"
+                                ]
+                            )}
+                        >
+                            <Icon
+                                icon="ImageAttachmentIcon"
+                                tooltipContent="image"
+                                withTooltip
+                                onClick={() => attachImage()}
+                            />
+                        </div>
                     </div>
                 </div>
 
