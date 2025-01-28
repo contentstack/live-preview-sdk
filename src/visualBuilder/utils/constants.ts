@@ -48,3 +48,6 @@ export const DEFAULT_MULTIPLE_FIELDS: FieldDataType[] = [
 ];
 
 export const unicodeNonBreakingSpace = "\u00A0";
+
+export const mentionLimit = 20;
+export const maxMessageLength = 500;

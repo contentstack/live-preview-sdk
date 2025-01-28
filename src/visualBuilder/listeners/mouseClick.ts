@@ -23,6 +23,10 @@ import EventListenerHandlerParams from "./types";
 import { toggleHighlightedCommentIconDisplay } from "../generators/generateHighlightedComment";
 import { VB_EmptyBlockParentClass } from "../..";
 import { getFieldVariantStatus } from "../components/FieldRevert/FieldRevertComponent";
+import getXPath from "get-xpath";
+import Config from "../../configManager/configManager";
+import { generateThread } from "../generators/generateThread";
+import { ILivePreviewWindowType } from "../../types/types";
 
 type HandleBuilderInteractionParams = Omit<
     EventListenerHandlerParams,
@@ -63,6 +67,10 @@ export function addFocusedToolbar(params: AddFocusedToolbarParams): void {
     );
 }
 
+function isCollabThread(target: HTMLElement): boolean {
+    return target.classList.contains("collab-indicator");
+}
+
 async function handleBuilderInteraction(
     params: HandleBuilderInteractionParams
 ): Promise<void> {
@@ -85,6 +93,25 @@ async function handleBuilderInteraction(
     ) {
         params.event.preventDefault();
         params.event.stopPropagation();
+    }
+
+    const config = Config.get();
+
+    if (config?.collab.enable === true) {
+        const xpath = getXPath(eventTarget);
+        if (!eventTarget) return;
+        const rect = eventTarget.getBoundingClientRect();
+        const relativeX = (params.event.clientX - rect.left) / rect.width;
+        const relativeY = (params.event.clientY - rect.top) / rect.height;
+
+        if (isCollabThread(eventTarget)) {
+            Config.set("collab.state", false);
+        } else {
+            if (config?.collab.state) {
+                generateThread({ xpath, relativeX, relativeY });
+            }
+        }
+        return;
     }
 
     const eventDetails = getCsDataOfElement(params.event);
