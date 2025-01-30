@@ -17,6 +17,7 @@ import {
     IInviteMetadata,
     IDefaultAPIResponse,
 } from "../../types/collab.types";
+import { removeCollabIcon } from "../../generators/generateThread";
 
 export interface ICollabIndicator {
     newThread?: boolean;
@@ -277,6 +278,16 @@ const CollabIndicator: React.FC<ICollabIndicator> = (props) => {
                             }
 
                             return data;
+                        }}
+                        onDeleteThread={async (payload) => {
+                            const data = (await visualBuilderPostMessage?.send(
+                                VisualBuilderPostMessageEvents.COLLAB_DELETE_THREAD,
+                                { payload }
+                            )) as IDefaultAPIResponse;
+                            removeCollabIcon(payload.threadUid);
+                            if (config?.collab?.isFeedbackMode === false) {
+                                Config.set("collab.isFeedbackMode", true);
+                            }
                         }}
                     />
                     ;
