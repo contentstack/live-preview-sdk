@@ -985,10 +985,15 @@ export function collabStyles() {
             color: #475161;
         `,
         "collab-thread-comment--user-details": css`
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
             width: 100%;
         `,
         "collab-thread-comment--user-details__text": css`
             padding-left: 0.625rem;
+            flex-grow: 1;
+            min-width: 0;
         `,
         "collab-thread-comment--user-name": css`
             font-style: normal;
@@ -997,6 +1002,16 @@ export function collabStyles() {
             line-height: 150%;
             letter-spacing: 0.015rem;
             color: #475161;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        `,
+        ".collab-thread-comment--user-details:has(.collab-thread-comment-action--wrapper) .collab-thread-comment--user-details__text": css`
+            width: calc(100% - 6rem);
+        `,
+        ".collab-thread-comment--user-details:not(:has(.collab-thread-comment-action--wrapper)) .collab-thread-comment--user-details__text": css`
+            width: 100%;
+            white-space: normal;
         `,
         "collab-thread-comment--list": css`
             max-height: 10.9rem;
@@ -1042,6 +1057,7 @@ export function collabStyles() {
         `,
         "collab-thread-comment-action--wrapper": css`
             margin-left: auto;
+            display: flex;
         `,
         "collab-thread-body--input--wrapper": css`
             width: 100%;
