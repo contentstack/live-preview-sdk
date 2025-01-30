@@ -20,6 +20,7 @@ import {
     IFetchComments,
     IFetchCommentsResponse,
     IThreadResolveArgs,
+    IDeleteThreadArgs,
 } from "../../../types/collab.types";
 import { getUserName } from "../../../utils/collabUtils";
 import { ThreadProvider } from "./ContextProvider/ThreadProvider";
@@ -31,6 +32,7 @@ interface IThreadPopup {
     onCreateComment: (data: ICommentPayload) => Promise<ICommentResponse>;
     onEditComment: (data: IEditCommentArgs) => Promise<ICommentResponse>;
     onDeleteComment: (data: IDeleteCommentArgs) => Promise<IDefaultAPIResponse>;
+    onDeleteThread: (data: IDeleteThreadArgs) => void;
     onClose: (isResolved?: boolean) => void;
     onResolve: (data: IThreadResolveArgs) => Promise<IThreadResponseDTO>;
     inviteMetadata: IInviteMetadata;
@@ -50,6 +52,7 @@ const ThreadPopup: React.FC<IThreadPopup> = React.memo(
         onCreateComment,
         onEditComment,
         onDeleteComment,
+        onDeleteThread,
         onClose,
         onResolve,
         inviteMetadata,
@@ -170,6 +173,7 @@ const ThreadPopup: React.FC<IThreadPopup> = React.memo(
                 onCreateComment,
                 onEditComment,
                 onDeleteComment,
+                onDeleteThread,
                 onClose,
                 editComment: state.editComment,
                 activeThread,

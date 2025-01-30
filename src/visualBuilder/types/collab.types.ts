@@ -61,6 +61,7 @@ export declare interface IThreadContext {
     onCreateComment: (data: ICommentPayload) => Promise<ICommentResponse>;
     onEditComment: (data: IEditCommentArgs) => Promise<ICommentResponse>;
     onDeleteComment: (data: IDeleteCommentArgs) => Promise<IDefaultAPIResponse>;
+    onDeleteThread: (data: IDeleteThreadArgs) => void;
     setThreadState: (
         state:
             | IThreadPopupState
@@ -153,6 +154,10 @@ export interface IEditCommentArgs {
 export interface IDeleteCommentArgs {
     threadUid: string;
     commentUid: string;
+}
+
+export interface IDeleteThreadArgs {
+    threadUid: string;
 }
 
 export interface IThreadResolveArgs {
