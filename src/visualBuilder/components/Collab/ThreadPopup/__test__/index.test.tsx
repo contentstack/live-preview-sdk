@@ -314,7 +314,6 @@ describe("ThreadPopup Component", () => {
             )[0],
             addNewText: screen.getByText("Add New Feedback"),
         };
-
         expect(elements.threadWrapper).toBeInTheDocument();
         expect(elements.saveButton).toBeInTheDocument();
         expect(elements.cancelButton).toBeInTheDocument();
