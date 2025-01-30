@@ -180,12 +180,15 @@ async function handleMouseHover(params: HandleMouseHoverParams): Promise<void> {
                 }
             }
 
-            if (config?.collab.enable && config?.collab.state) {
+            if (config?.collab.enable && config?.collab.isFeedbackMode) {
                 collabCustomCursor(params.customCursor);
                 handleCursorPosition(params.event, params.customCursor);
                 showCustomCursor(params.customCursor);
                 return;
-            } else if (config?.collab.enable && !config?.collab.state) {
+            } else if (
+                config?.collab.enable &&
+                !config?.collab.isFeedbackMode
+            ) {
                 hideCustomCursor(params.customCursor);
                 return;
             }

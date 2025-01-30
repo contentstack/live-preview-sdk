@@ -99,8 +99,8 @@ const CollabIndicator: React.FC<ICollabIndicator> = (props) => {
             setShowPopup(true);
         } else {
             setShowPopup(false);
-            if (config?.collab?.state === false) {
-                Config.set("collab.state", true);
+            if (config?.collab?.isFeedbackMode === false) {
+                Config.set("collab.isFeedbackMode", true);
             }
         }
     };
@@ -122,20 +122,10 @@ const CollabIndicator: React.FC<ICollabIndicator> = (props) => {
         }
         setShowPopup(false);
 
-        if (config?.collab?.state === false) {
-            Config.set("collab.state", true);
+        if (config?.collab?.isFeedbackMode === false) {
+            Config.set("collab.isFeedbackMode", true);
         }
     };
-
-    const popupClass = css`
-        position: fixed;
-        z-index: 1000;
-        background: white;
-        border-radius: 8px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        border: 1px solid #e5e7eb;
-        overflow: auto;
-    `;
 
     return (
         <>
@@ -145,6 +135,7 @@ const CollabIndicator: React.FC<ICollabIndicator> = (props) => {
                     "collab-indicator",
                     collabStyles()["collab-indicator"]
                 )}
+                data-testid="collab-indicator"
                 onClick={togglePopup}
             >
                 {!showPopup && (
@@ -156,7 +147,11 @@ const CollabIndicator: React.FC<ICollabIndicator> = (props) => {
             {showPopup && (
                 <div
                     ref={popupRef}
-                    className={classNames("collab-popup", popupClass)}
+                    className={classNames(
+                        "collab-popup",
+                        collabStyles()["collab-popup"]
+                    )}
+                    data-testid="collab-popup"
                 >
                     <ThreadPopup
                         onCreateComment={async (payload) => {
