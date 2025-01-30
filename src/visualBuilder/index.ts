@@ -47,6 +47,7 @@ import { useRecalculateVariantDataCSLPValues } from "./eventManager/useRecalcula
 import { VB_EmptyBlockParentClass } from "..";
 import { useCollab } from "./eventManager/useCollab";
 import { generateThreadsFromData } from "./generators/generateThread";
+import { IThreadDTO } from "./types/collab.types";
 
 interface VisualBuilderGlobalStateImpl {
     previousSelectedEditableDOM: HTMLElement | Element | null;
@@ -59,6 +60,8 @@ interface VisualBuilderGlobalStateImpl {
     variant: string | null;
     focusElementObserver: MutationObserver | null;
 }
+
+let threadsPayload: IThreadDTO[] = [];
 
 export class VisualBuilder {
     private customCursor: HTMLDivElement | null = null;
@@ -195,6 +198,15 @@ export class VisualBuilder {
                     this.visualBuilderContainer,
                     this.resizeObserver
                 );
+
+                const container = document.querySelector(
+                    ".visual-builder__container"
+                );
+                if (container && threadsPayload) {
+                    generateThreadsFromData(threadsPayload);
+                    threadsPayload = [];
+                }
+
                 const emptyBlockParents = Array.from(
                     document.querySelectorAll(`.${VB_EmptyBlockParentClass}`)
                 );
@@ -273,12 +285,12 @@ export class VisualBuilder {
 
                 if (collab) {
                     Config.set("collab.enable", collab.enable);
-                    Config.set("collab.state", collab.state);
+                    Config.set("collab.isFeedbackMode", collab.isFeedbackMode);
                     Config.set("collab.inviteMetadata", collab.inviteMetadata);
                 }
 
                 if (collab?.payload) {
-                    generateThreadsFromData(collab?.payload);
+                    threadsPayload = collab?.payload;
                 }
 
                 addEventListeners({
@@ -291,6 +303,12 @@ export class VisualBuilder {
                     resizeObserver: this.resizeObserver,
                     customCursor: this.customCursor,
                 });
+
+                this.mutationObserver.observe(document.body, {
+                    childList: true,
+                    subtree: true,
+                });
+
                 useHistoryPostMessageEvent();
                 useCollab();
 
@@ -303,10 +321,6 @@ export class VisualBuilder {
                     });
                     useScrollToField();
                     useHighlightCommentIcon();
-                    this.mutationObserver.observe(document.body, {
-                        childList: true,
-                        subtree: true,
-                    });
 
                     visualBuilderPostMessage?.on(
                         VisualBuilderPostMessageEvents.GET_ALL_ENTRIES_IN_CURRENT_PAGE,
