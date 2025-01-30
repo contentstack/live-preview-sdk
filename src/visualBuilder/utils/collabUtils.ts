@@ -10,6 +10,10 @@ import { maxMessageLength, mentionLimit } from "./constants";
 import { uniqBy } from "lodash";
 import DOMPurify from "dompurify";
 
+const escapeRegExp = (string: string): string => {
+    return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+};
+
 /**
  * Generates the title for the thread based on the number of comments.
  * @param {number} commentCount - The number of comments.
@@ -125,7 +129,9 @@ export const getCommentBody = (state: ICommentState): ICommentState => {
         result: Array<string>
     ) => {
         const displayName = entity.display;
-        const regexUser = new RegExp(displayName.replace(/\+/g, "\\+"));
+
+        const escapedDisplayName = escapeRegExp(displayName);
+        const regexUser = new RegExp(escapedDisplayName, "g");
         finalMessage = finalMessage.replace(regexUser, `{{${entity.id}}}`);
         result.push(entity.id);
     };
