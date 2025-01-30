@@ -91,7 +91,7 @@ export declare interface IConfig {
     };
     collab: {
         enable: boolean;
-        state: boolean;
+        isFeedbackMode: boolean;
         inviteMetadata: IInviteMetadata;
     };
 }
@@ -214,7 +214,7 @@ export interface IVisualBuilderInitEvent {
     };
     collab?: {
         enable: boolean;
-        state: boolean;
+        isFeedbackMode: boolean;
         inviteMetadata: IInviteMetadata;
         payload: IThreadDTO[];
     };
