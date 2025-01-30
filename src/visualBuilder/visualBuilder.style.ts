@@ -706,6 +706,15 @@ export function collabStyles() {
             font-size: 16px;
             font-weight: 600;
         `,
+        "collab-popup": css`
+            position: fixed;
+            z-index: 1000;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e5e7eb;
+            overflow: auto;
+        `,
         "collab-avatar": css`
             background-color: #edf1f7;
             border: 1.5px solid #ffffff;

@@ -105,9 +105,9 @@ async function handleBuilderInteraction(
         const relativeY = (params.event.clientY - rect.top) / rect.height;
 
         if (isCollabThread(eventTarget)) {
-            Config.set("collab.state", false);
+            Config.set("collab.isFeedbackMode", false);
         } else {
-            if (config?.collab.state) {
+            if (config?.collab.isFeedbackMode) {
                 generateThread({ xpath, relativeX, relativeY });
             }
         }
