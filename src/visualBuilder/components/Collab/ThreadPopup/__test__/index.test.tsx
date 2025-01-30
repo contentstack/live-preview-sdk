@@ -16,6 +16,7 @@ import ThreadPopup from "..";
 const mockOnCreateComment = vi.fn();
 const mockOnEditComment = vi.fn();
 const mockOnDeleteComment = vi.fn();
+const mockOnDeleteThread = vi.fn();
 const mockOnClose = vi.fn();
 const mockOnResolve = vi.fn();
 
@@ -181,6 +182,7 @@ const renderComponent = (props = {}) =>
             onCreateComment={mockOnCreateComment}
             onEditComment={mockOnEditComment}
             onDeleteComment={mockOnDeleteComment}
+            onDeleteThread={mockOnDeleteThread}
             onClose={mockOnClose}
             onResolve={mockOnResolve}
             inviteMetadata={inviteMetadata}
@@ -402,6 +404,29 @@ describe.skip("ThreadPopup Component", () => {
         await waitFor(() => {
             expect(mockOnDeleteComment).toHaveBeenCalledWith(
                 deleteCommentPayload
+            );
+        });
+    });
+
+    it("calls onDeleteThread when deleting a thread", async () => {
+        const deleteCommentPayload = {
+            threadUid: "thread-1",
+        };
+        mockOnDeleteComment.mockResolvedValue({
+            success: true,
+            notice: "Thread Deleted Successfully",
+        });
+        renderComponent();
+        const deleteIcon = screen.getByTestId("collab-thread-comment-delete");
+        if (deleteIcon) {
+            fireEvent.click(deleteIcon);
+        } else {
+            throw new Error("Delete icon not found");
+        }
+        // Wait for the delete function to be called with the correct payload
+        await waitFor(() => {
+            expect(mockOnDeleteThread).toHaveBeenCalledWith(
+                deleteCommentPayload.threadUid
             );
         });
     });
