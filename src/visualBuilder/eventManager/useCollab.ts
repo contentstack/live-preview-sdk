@@ -23,12 +23,15 @@ export const useCollab = () => {
                 return;
             }
             Config.set("collab.enable", data.data.collab.enable ?? false);
-            Config.set("collab.state", data.data.collab.state ?? false);
+            Config.set(
+                "collab.isFeedbackMode",
+                data.data.collab.isFeedbackMode ?? false
+            );
             Config.set(
                 "collab.inviteMetadata",
                 data.data.collab.inviteMetadata
             );
-            generateThreadsFromData(data.data.payload, true);
+            generateThreadsFromData(data.data.payload);
         }
     );
 
@@ -36,7 +39,7 @@ export const useCollab = () => {
         VisualBuilderPostMessageEvents.COLLAB_DISABLE,
         (data: any) => {
             Config.set("collab.enable", false);
-            Config.set("collab.state", false);
+            Config.set("collab.isFeedbackMode", false);
 
             handleRemoveCommentIcons();
         }

@@ -28,7 +28,7 @@
         "test": "vitest",
         "test:once": "vitest run",
         "test:coverage": "vitest --coverage",
-        "dev": "tsup --watch",
+        "dev": "NODE_OPTIONS='--max-old-space-size=16384' tsup --watch",
         "prepare": "husky",
         "lint": "eslint src",
         "lint:fix": "eslint --fix",

@@ -97,11 +97,10 @@ export function getDefaultConfig(): IConfig {
         },
         collab: {
             enable: false,
-            state: false,
+            isFeedbackMode: false,
             inviteMetadata: {
                 currentUser: {
                     email: "",
-                    display: "",
                     identityHash: "",
                 },
                 users: [],
