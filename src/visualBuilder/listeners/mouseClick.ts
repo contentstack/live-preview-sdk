@@ -24,7 +24,7 @@ import { toggleHighlightedCommentIconDisplay } from "../generators/generateHighl
 import getXPath from "get-xpath";
 import Config from "../../configManager/configManager";
 import { generateThread } from "../generators/generateThread";
-import { ILivePreviewWindowType } from "../../types/types";
+import { isCollabThread } from "../generators/generateThread";
 
 type HandleBuilderInteractionParams = Omit<
     EventListenerHandlerParams,
@@ -62,10 +62,6 @@ export function addFocusedToolbar(params: AddFocusedToolbarParams): void {
         params.focusedToolbar,
         params.hideOverlay
     );
-}
-
-function isCollabThread(target: HTMLElement): boolean {
-    return target.classList.contains("collab-indicator");
 }
 
 async function handleBuilderInteraction(
