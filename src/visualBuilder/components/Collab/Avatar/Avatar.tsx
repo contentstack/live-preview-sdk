@@ -4,19 +4,11 @@ import Tooltip from "../Tooltip/Tooltip";
 import classNames from "classnames";
 import { collabStyles } from "../../../visualBuilder.style";
 
-const defaultProps = {
-    avatar: {},
-    type: "text",
-    testId: "collab-avatar",
-};
-
-type DefaultProps = Readonly<typeof defaultProps>;
-
 export type AvatarProps = {
     avatar: AvatarData;
     type?: "text" | "image";
     testId?: string;
-} & Partial<DefaultProps>;
+};
 
 export type AvatarData = {
     id: number;
@@ -28,15 +20,19 @@ export type AvatarData = {
 interface DisplayAvatarContentProps {
     type: "text" | "image";
     avatar: AvatarData;
+    initials: string;
 }
 
-function displayAvatarContent({
+function getInitials(name?: string): string {
+    return name ? name.substring(0, 2) : "";
+}
+
+function DisplayAvatarContent({
     type,
     avatar,
-}: DisplayAvatarContentProps): JSX.Element | string {
-    let nameInitialsShort =
-        avatar && avatar.name && avatar.name.substring(0, 2);
-    if (type === "image") {
+    initials,
+}: DisplayAvatarContentProps) {
+    if (type === "image" && avatar.image) {
         return (
             <img
                 data-testid={"collab-avatar-image"}
@@ -49,10 +45,15 @@ function displayAvatarContent({
             />
         );
     }
-    return nameInitialsShort;
+    return <span>{initials}</span>;
 }
 
-function Avatar({ avatar, type, testId }: AvatarProps) {
+function Avatar({
+    avatar,
+    type = "text",
+    testId = "collab-avatar",
+}: AvatarProps) {
+    const initials = getInitials(avatar.name);
     return (
         <div data-testid={testId}>
             <Tooltip
@@ -77,14 +78,16 @@ function Avatar({ avatar, type, testId }: AvatarProps) {
                             collabStyles()["flex-v-center"]
                         )}
                     >
-                        {displayAvatarContent({ type: type || "text", avatar })}
+                        <DisplayAvatarContent
+                            type={type}
+                            avatar={avatar}
+                            initials={initials}
+                        />
                     </span>
                 </div>
             </Tooltip>
         </div>
     );
 }
-
-Avatar.defaultProps = defaultProps;
 
 export default Avatar;
