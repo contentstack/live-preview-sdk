@@ -7,7 +7,7 @@ import {
     IUserState,
 } from "../types/collab.types";
 import { maxMessageLength, mentionLimit } from "./constants";
-import { uniqBy } from "lodash";
+import { uniqBy } from "lodash-es";
 import DOMPurify from "dompurify";
 
 const escapeRegExp = (string: string): string => {
