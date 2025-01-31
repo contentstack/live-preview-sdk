@@ -93,7 +93,6 @@
         "dompurify": "^3.2.3",
         "get-xpath": "^3.2.0",
         "goober": "^2.1.14",
-        "lodash": "^4.17.21",
         "lodash-es": "^4.17.21",
         "moment": "^2.30.1",
         "mustache": "^4.2.0",
