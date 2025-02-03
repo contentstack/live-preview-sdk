@@ -10,6 +10,7 @@ import EventListenerHandlerParams from "./types";
 import { VisualBuilder } from "..";
 import { addHoverOutline } from "../generators/generateHoverOutline";
 import { visualBuilderStyles } from "../visualBuilder.style";
+import { VB_EmptyBlockParentClass } from "../..";
 
 export interface HandleMouseHoverParams
     extends Pick<
@@ -202,7 +203,7 @@ async function handleMouseHover(params: HandleMouseHoverParams): Promise<void> {
 
         if (
             !editableElement.classList.contains(
-                "visual-builder__empty-block-parent"
+                VB_EmptyBlockParentClass
             ) &&
             !editableElement.classList.contains("visual-builder__empty-block")
         ) {
