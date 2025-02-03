@@ -133,7 +133,7 @@ export const getCommentBody = (state: ICommentState): ICommentState => {
         const escapedDisplayName = escapeRegExp(displayName);
         const regexUser = new RegExp(escapedDisplayName, "g");
         finalMessage = finalMessage.replace(regexUser, `{{${entity.id}}}`);
-        result.push(entity.id);
+        result.push(entity.display);
     };
 
     state.toUsers?.forEach((user) => updateMentionToUID(user, comment.toUsers));
