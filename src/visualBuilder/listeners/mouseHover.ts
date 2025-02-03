@@ -11,8 +11,7 @@ import { VisualBuilder } from "..";
 import { addHoverOutline } from "../generators/generateHoverOutline";
 import { visualBuilderStyles } from "../visualBuilder.style";
 import Config from "../../configManager/configManager";
-import { ILivePreviewWindowType } from "../../types/types";
-
+import { isCollabThread } from "../generators/generateThread";
 export interface HandleMouseHoverParams
     extends Pick<
         EventListenerHandlerParams,
@@ -31,12 +30,12 @@ function resetCustomCursor(customCursor: HTMLDivElement | null): void {
 }
 
 function collabCustomCursor(customCursor: HTMLDivElement | null): void {
-    if (customCursor) {
-        generateCustomCursor({
-            fieldType: "discussion",
-            customCursor: customCursor,
-        });
-    }
+    if (!customCursor) return;
+
+    generateCustomCursor({
+        fieldType: "discussion",
+        customCursor: customCursor,
+    });
 }
 
 function handleCursorPosition(
@@ -111,10 +110,6 @@ export function showCustomCursor(customCursor: HTMLDivElement | null): void {
 
 function isOverlay(target: HTMLElement): boolean {
     return target.classList.contains("visual-builder__overlay");
-}
-
-function isCollabThread(target: HTMLElement): boolean {
-    return target.classList.contains("collab-indicator");
 }
 
 function isContentEditable(target: HTMLElement): boolean {
