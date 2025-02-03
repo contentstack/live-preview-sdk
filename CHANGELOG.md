@@ -1,8 +1,42 @@
 # Changelog
 
+## [v3.1.1](https://github.com/contentstack/live-preview-sdk/compare/v3.1.0...v3.1.1)
+
+> 3 February 2025
+
+### Fixes
+
+- fix: remove ^ from preact versions in package json (Hitesh Shetty - [#337](https://github.com/contentstack/live-preview-sdk/pull/337))
+- fix(VE-5019): remove ^ from preact versions in package json (Hitesh Shetty - [#336](https://github.com/contentstack/live-preview-sdk/pull/336))
+
+### Refactoring and Updates
+
+- refactor: replace hardcoded class names with constants for empty block parent (Hitesh Shetty - [#331](https://github.com/contentstack/live-preview-sdk/pull/331))
+
+### Changes to Test Assests
+
+- test: add unit tests for error handling and field state validation in visual builder (Hitesh Shetty - [#329](https://github.com/contentstack/live-preview-sdk/pull/329))
+
+### Fixes
+
+- fix: live preview doc (Kirtesh Suthar - [8fcdcc5](https://github.com/contentstack/live-preview-sdk/commit/8fcdcc5127ea722bd9c01f74b1168d9f579e5f30))
+
+### Changes to Test Assests
+
+- test: remove skipped number field tests and add validation for numeric input (hiteshshetty-dev - [ba0062e](https://github.com/contentstack/live-preview-sdk/commit/ba0062e6c9a5769d124707d6f02e7956a083acb2))
+- test: wrap attribute checks in waitFor for visual builder tests (hiteshshetty-dev - [a7a0d53](https://github.com/contentstack/live-preview-sdk/commit/a7a0d5382eab40e84b94699a43a479277808f35c))
+
+### General Changes
+
+- Updated codeowners (Aravind Kumar - [fe41624](https://github.com/contentstack/live-preview-sdk/commit/fe41624a179035f8ed8a2f9ee88c65c958edd29b))
+- codeql-analysis.yml (Aravind Kumar - [45c63a2](https://github.com/contentstack/live-preview-sdk/commit/45c63a2e2fbd8fd162520b8e2208fa19e864b3e8))
+- sast-scan.yml (Aravind Kumar - [8971dfb](https://github.com/contentstack/live-preview-sdk/commit/8971dfbe798ae4e7d036b86ee30b4b120cf8a6ea))
+- jira.yml (Aravind Kumar - [30e4861](https://github.com/contentstack/live-preview-sdk/commit/30e4861e33d5f7c89cffef109e50aa811f6b346a))
+- sca-scan.yml (Aravind Kumar - [bcb5ca8](https://github.com/contentstack/live-preview-sdk/commit/bcb5ca8a3a820fab6199166882ae80e8438a074d))
+
 ## [v3.1.0](https://github.com/contentstack/live-preview-sdk/compare/v3.0.2...v3.1.0)
 
-> 10 January 2025
+> 16 January 2025
 
 ### New Features
 
@@ -19,6 +53,7 @@
 
 ### General Changes
 
+- 3.1.0 (Kirtesh Suthar - [#323](https://github.com/contentstack/live-preview-sdk/pull/323))
 - Feat/auto changelog (Kirtesh Suthar - [#321](https://github.com/contentstack/live-preview-sdk/pull/321))
 
 ### New Features
@@ -29,6 +64,7 @@
 ### Fixes
 
 - fix: issue with variant revert dropdown in canvas and show variant icon for multiple fields (Srinadh Reddy - [8718c48](https://github.com/contentstack/live-preview-sdk/commit/8718c4832f30606437da1fd18513006f21e0fd34))
+- fix: live preview doc (Kirtesh Suthar - [f81fdf5](https://github.com/contentstack/live-preview-sdk/commit/f81fdf55fd2ab2ce4cac3bf974b0a31566c24001))
 
 ### Chores And Housekeeping
 
