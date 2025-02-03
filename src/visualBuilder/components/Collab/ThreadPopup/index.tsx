@@ -38,6 +38,7 @@ interface IThreadPopup {
     activeThread: IActiveThread;
     setActiveThread: (thread: IActiveThread) => void;
     createNewThread: () => Promise<IThreadResponseDTO>;
+    createImage: (image: any) => Promise<any>
 }
 
 const initialErrorState: IErrorState = {
@@ -57,6 +58,7 @@ const ThreadPopup: React.FC<IThreadPopup> = React.memo(
         activeThread,
         setActiveThread,
         createNewThread,
+        createImage,
     }) => {
         const handleOnSaveRef = useRef(null);
 
@@ -175,6 +177,7 @@ const ThreadPopup: React.FC<IThreadPopup> = React.memo(
                 activeThread,
                 setActiveThread,
                 createNewThread,
+                createImage,
             }),
             [
                 inviteMetadata,

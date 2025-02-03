@@ -107,6 +107,14 @@ export const useCollabOperations = () => {
         return data;
     };
 
+    const createImage = async (image: any) => {
+        const data = (await visualBuilderPostMessage?.send(
+            VisualBuilderPostMessageEvents.COLLAB_CREATE_IMAGE,
+            { image }
+        )) as any;
+        return data.url;
+    };
+
     return {
         createComment,
         editComment,
@@ -114,5 +122,6 @@ export const useCollabOperations = () => {
         resolveThread,
         fetchComments,
         createNewThread,
+        createImage,
     };
 };

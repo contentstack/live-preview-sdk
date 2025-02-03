@@ -36,6 +36,7 @@ const CollabIndicator: React.FC<ICollabIndicator> = (props) => {
         resolveThread,
         fetchComments,
         createNewThread,
+        createImage
     } = useCollabOperations();
 
     const handleClose = (isResolved: boolean = false) => {
@@ -88,6 +89,7 @@ const CollabIndicator: React.FC<ICollabIndicator> = (props) => {
                         createNewThread={() =>
                             createNewThread(buttonRef, inviteMetadata)
                         }
+                        createImage={createImage}
                     />
                     ;
                 </div>

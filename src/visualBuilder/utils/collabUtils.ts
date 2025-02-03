@@ -119,7 +119,7 @@ export const getCommentBody = (state: ICommentState): ICommentState => {
     const comment = {
         message: finalMessage,
         toUsers: [],
-        images: [],
+        images: state.images || [],
         createdBy: state.createdBy,
         author: state.author,
     };

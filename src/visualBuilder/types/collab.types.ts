@@ -72,6 +72,7 @@ export declare interface IThreadContext {
     activeThread: IActiveThread;
     setActiveThread: (thread: IActiveThread) => void;
     createNewThread: () => Promise<any>;
+    createImage: (image: any) => Promise<any>;
 }
 
 export interface IThreadPopupState {

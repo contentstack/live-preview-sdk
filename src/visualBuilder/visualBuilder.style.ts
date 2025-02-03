@@ -1040,6 +1040,16 @@ export function collabStyles() {
             gap: 0.625rem;
             padding: 0.625rem;
         `,
+        "collab-thread-images-container": css`
+            display: flex;
+            gap: 0.5rem;
+            overflow: auto;
+            max-width: calc(100% - 0.625rem);
+        `,
+        "collab-thread-images": css`
+            height: 3.125rem;
+            width: 3.125rem;
+        `,
         "collab-thread-comment-action--wrapper": css`
             margin-left: auto;
         `,
@@ -1072,30 +1082,25 @@ export function collabStyles() {
             height: 100%;
             bottom: 0;
             overflow: auto;
-            resize: vertical;
             border-radius: 4px;
-            border: 0.0625rem solid #dde3ee;
+            border: none;
             color: #222222;
             padding: 0.5rem 1rem;
             max-height: 6.25rem;
             min-height: 4.125rem;
-            transition:
-                border 0.2s ease,
-                box-shadow 0.2s ease,
-                background-color 0.2s ease;
+            resize: none !important;
 
             &:focus {
                 background-color: #ffffff !important;
-                border: 0.0625rem solid #5d50be !important;
-                box-shadow: 0 0 0 0.0625rem #5d50be !important;
                 border-radius: 4px !important;
-                outline: none;
+                outline: none !important;
+                border: none !important;
             }
 
             &:hover {
-                background-color: #edf1f7;
-                border: 0.0625rem solid #5d50be !important;
-                box-shadow: 0 0 0 0.0625rem #5d50be !important;
+                background-color: #ffffff !important;
+                border: none !important;
+                box-shadow: none !important;
             }
         `,
         "flex-center": css`
@@ -1106,6 +1111,67 @@ export function collabStyles() {
         "flex-v-center": css`
             display: flex;
             align-items: center;
+        `,
+        "collab-thread-body--input--container": css`
+            position: relative;
+            width: 100%;
+        `,
+        "collab-thread-body--attachment-button": css`
+            position: absolute;
+            bottom: 0.5rem;
+            right: 0.5rem;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 0.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            transition: background-color 0.2s ease;
+
+            &:hover {
+                background-color: #edf1f7;
+            }
+
+            svg {
+                width: 1.25rem;
+                height: 1.25rem;
+                fill: #475161;
+            }
+        `,
+        "collab-thread-body--input--textarea--wrapper--icons": css`
+            position: relative;
+            bottom: 1.625rem;
+            width: 100%;
+            display: flex;
+            justify-content: flex-end;
+            z-index: 10;
+        `,
+
+        "collab-text-area-container": css`
+            position: relative;
+            width: 100%;
+            min-height: 100px;
+            border: 1px solid #dde3ee;
+            border-radius: 0.25rem;
+
+            &:focus-within {
+                border: 0.0625rem solid #6c5ce7 !important;
+            }
+        `,
+        "collab-thread-body--input--textarea--wrapper--images": css`
+            padding: 0.5rem;
+            display: flex;
+            gap: 0.5rem;
+            overflow-x: auto;
+            white-space: nowrap;
+        `,
+        "collab-image": css`
+            height: 3.125rem;
+            width: 3.125rem;
+            object-fit: cover;
+            border-radius: 0.25rem;
         `,
     };
 }

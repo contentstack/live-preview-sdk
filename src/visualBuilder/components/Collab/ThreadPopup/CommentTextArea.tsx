@@ -25,11 +25,17 @@ import { ThreadProvider } from "./ContextProvider";
 import useDynamicTextareaRows from "../../../hooks/useDynamicTextareaRows";
 import { cloneDeep, findIndex } from "lodash-es";
 import classNames from "classnames";
+import Icon from "../Icon/Icon";
 
 interface ICommentTextArea {
     userState: IUserState;
     handleOnSaveRef: React.MutableRefObject<any>;
     comment?: IMessageDTO | null;
+}
+
+export interface AssetResponse {
+    url: string;
+    // asset: Asset;
 }
 
 const initialState: ICommentState = {
@@ -54,12 +60,24 @@ const CommentTextArea: React.FC<ICommentTextArea> = React.memo(
             activeThread,
             setActiveThread,
             createNewThread,
+            createImage,
         } = useContext(ThreadProvider)!;
 
         useDynamicTextareaRows(
             ".collab-thread-body--input--textarea",
             state.message
         );
+
+        const attachImage = async (e: any) => {
+            if (!e.target.files?.length) return;
+
+            const image = await createImage(e.target.files[0]);
+
+            setState((prevState) => ({
+                ...prevState,
+                images: [...(prevState.images || []), image],
+            }));
+        };
 
         const handleSubmit = useCallback(async () => {
             // If there's a validation error, don't proceed with saving.
@@ -84,9 +102,9 @@ const CommentTextArea: React.FC<ICommentTextArea> = React.memo(
                         ...state,
                         createdBy: userState.currentUser.identityHash,
                         author: userState.currentUser.email,
+                        images: state.images || [],
                     }),
                 };
-
                 const commentData: ICommentPayload = {
                     threadUid: threadUID,
                     commentPayload,
@@ -227,21 +245,74 @@ const CommentTextArea: React.FC<ICommentTextArea> = React.memo(
                             ]
                         )}
                     >
-                        <textarea
-                            name="collab-thread-body--input--textarea"
-                            id="collab-thread-body--input--textarea"
-                            rows={1}
+                        <div
                             className={classNames(
-                                "collab-thread-body--input--textarea",
+                                "collab-text-area-container",
+                                collabStyles()["collab-text-area-container"]
+                            )}
+                        >
+                            <textarea
+                                name="collab-thread-body--input--textarea"
+                                id="collab-thread-body--input--textarea"
+                                rows={1}
+                                className={classNames(
+                                    "collab-thread-body--input--textarea",
+                                    collabStyles()[
+                                        "collab-thread-body--input--textarea"
+                                    ]
+                                )}
+                                value={state.message}
+                                onChange={handleInputChange}
+                                maxLength={maxMessageLength}
+                                placeholder="Enter a comment"
+                            />
+
+                            {state.images && state.images.length > 0 && (
+                                <div
+                                    className={classNames(
+                                        "collab-thread-body--input--textarea--wrapper--images",
+                                        collabStyles()[
+                                            "collab-thread-body--input--textarea--wrapper--images"
+                                        ]
+                                    )}
+                                >
+                                    {state.images.map((image, index) => (
+                                        <img
+                                            key={index}
+                                            src={image}
+                                            className={
+                                                (classNames("collab-image"),
+                                                collabStyles()["collab-image"])
+                                            }
+                                        />
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+
+                        <div
+                            class={classNames(
+                                "collab-thread-body--input--textarea--wrapper--icons",
                                 collabStyles()[
-                                    "collab-thread-body--input--textarea"
+                                    "collab-thread-body--input--textarea--wrapper--icons"
                                 ]
                             )}
-                            value={state.message}
-                            onChange={handleInputChange}
-                            maxLength={maxMessageLength}
-                            placeholder="Enter a comment"
-                        ></textarea>
+                        >
+                            <input
+                                type="file"
+                                accept="image/*"
+                                onChange={attachImage}
+                                style={{ display: "none" }}
+                                id="image-upload"
+                            />
+                            <label htmlFor="image-upload">
+                                <Icon
+                                    icon="ImageAttachmentIcon"
+                                    tooltipContent="image"
+                                    withTooltip
+                                />
+                            </label>
+                        </div>
                     </div>
                 </div>
 

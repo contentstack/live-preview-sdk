@@ -115,10 +115,33 @@ const CommentCard = ({
                 />
             ) : (
                 comment && (
-                    <CommentResolvedText
-                        comment={comment}
-                        userState={userState}
-                    />
+                    <>
+                        <CommentResolvedText
+                            comment={comment}
+                            userState={userState}
+                        />
+                        <div
+                            className={classNames(
+                                "collab-thread-images-container",
+                                collabStyles()["collab-thread-images-container"]
+                            )}
+                        >
+                            {comment?.images?.map((imageUrl, index) => {
+                                return (
+                                    <img
+                                        src={imageUrl}
+                                        key={index}
+                                        className={classNames(
+                                            "collab-thread-images",
+                                            collabStyles()[
+                                                "collab-thread-images"
+                                            ]
+                                        )}
+                                    />
+                                );
+                            })}
+                        </div>
+                    </>
                 )
             )}
         </div>
