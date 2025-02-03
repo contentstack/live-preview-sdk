@@ -10,7 +10,8 @@ import EventListenerHandlerParams from "./types";
 import { VisualBuilder } from "..";
 import { addHoverOutline } from "../generators/generateHoverOutline";
 import { visualBuilderStyles } from "../visualBuilder.style";
-
+import Config from "../../configManager/configManager";
+import { isCollabThread } from "../generators/generateThread";
 export interface HandleMouseHoverParams
     extends Pick<
         EventListenerHandlerParams,
@@ -26,6 +27,15 @@ function resetCustomCursor(customCursor: HTMLDivElement | null): void {
             customCursor: customCursor,
         });
     }
+}
+
+function collabCustomCursor(customCursor: HTMLDivElement | null): void {
+    if (!customCursor) return;
+
+    generateCustomCursor({
+        fieldType: "discussion",
+        customCursor: customCursor,
+    });
 }
 
 function handleCursorPosition(
@@ -112,15 +122,20 @@ async function handleMouseHover(params: HandleMouseHoverParams): Promise<void> {
     throttle(async (params: HandleMouseHoverParams) => {
         const eventDetails = getCsDataOfElement(params.event);
         const eventTarget = params.event.target as HTMLElement | null;
+        const config = Config.get();
         if (!eventDetails) {
             if (
                 eventTarget &&
-                (isOverlay(eventTarget) || isContentEditable(eventTarget))
+                (isOverlay(eventTarget) ||
+                    isContentEditable(eventTarget) ||
+                    isCollabThread(eventTarget))
             ) {
                 hideCustomCursor(params.customCursor);
                 return;
             }
-            resetCustomCursor(params.customCursor);
+            if (!config?.collab.enable) {
+                resetCustomCursor(params.customCursor);
+            }
             removeAddInstanceButtons({
                 eventTarget: params.event.target,
                 visualBuilderContainer: params.visualBuilderContainer,
@@ -145,13 +160,32 @@ async function handleMouseHover(params: HandleMouseHoverParams): Promise<void> {
         }
 
         if (params.customCursor) {
-          const elementUnderCursor = document.elementFromPoint(params.event.clientX, params.event.clientY);
-            if(elementUnderCursor){
-              if(elementUnderCursor.nodeName === "A" || elementUnderCursor.nodeName === "BUTTON"){
-                elementUnderCursor.classList.add(
-                  visualBuilderStyles()['visual-builder__no-cursor-style']
-                )
-              }
+            const elementUnderCursor = document.elementFromPoint(
+                params.event.clientX,
+                params.event.clientY
+            );
+            if (elementUnderCursor) {
+                if (
+                    elementUnderCursor.nodeName === "A" ||
+                    elementUnderCursor.nodeName === "BUTTON"
+                ) {
+                    elementUnderCursor.classList.add(
+                        visualBuilderStyles()["visual-builder__no-cursor-style"]
+                    );
+                }
+            }
+
+            if (config?.collab.enable && config?.collab.isFeedbackMode) {
+                collabCustomCursor(params.customCursor);
+                handleCursorPosition(params.event, params.customCursor);
+                showCustomCursor(params.customCursor);
+                return;
+            } else if (
+                config?.collab.enable &&
+                !config?.collab.isFeedbackMode
+            ) {
+                hideCustomCursor(params.customCursor);
+                return;
             }
 
             if (
@@ -181,7 +215,7 @@ async function handleMouseHover(params: HandleMouseHoverParams): Promise<void> {
              */
             FieldSchemaMap.getFieldSchema(content_type_uid, fieldPath).then(
                 (fieldSchema) => {
-                    if(!fieldSchema) return;
+                    if (!fieldSchema) return;
                     if (!params.customCursor) return;
                     const { isDisabled: fieldDisabled } = isFieldDisabled(
                         fieldSchema,
@@ -209,7 +243,7 @@ async function handleMouseHover(params: HandleMouseHoverParams): Promise<void> {
             addOutline(editableElement);
             FieldSchemaMap.getFieldSchema(content_type_uid, fieldPath).then(
                 (fieldSchema) => {
-                    if(!fieldSchema) return;
+                    if (!fieldSchema) return;
                     const { isDisabled: fieldDisabled, reason } =
                         isFieldDisabled(fieldSchema, eventDetails);
                     addOutline(editableElement, fieldDisabled);

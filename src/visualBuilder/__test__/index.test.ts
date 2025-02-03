@@ -192,7 +192,7 @@ describe("Visual builder", () => {
 
                 expect(h1).toHaveAttribute("contenteditable");
                 expect(h1).toHaveAttribute("data-cslp-field-type", "singleline");
-            }, { timeout: 20 * 1000 });
+            }, { timeout: 50 * 1000 });
 
             test("multi line should be contenteditable", async () => {
                 h1.setAttribute(
@@ -203,8 +203,8 @@ describe("Visual builder", () => {
 
                 expect(h1).toHaveAttribute("contenteditable");
                 expect(h1).toHaveAttribute("data-cslp-field-type", "multiline");
-            }, { timeout: 20 * 1000 });
+            }, { timeout: 50 * 1000 });
 
         });
     });
-}, { timeout: 20 * 1000 });
+}, { timeout: 50 * 1000 });

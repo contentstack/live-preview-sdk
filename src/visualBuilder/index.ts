@@ -41,7 +41,12 @@ import {
 } from "./utils/updateFocussedState";
 import { useHighlightCommentIcon } from "./eventManager/useHighlightCommentIcon";
 import { updateHighlightedCommentIconPosition } from "./generators/generateHighlightedComment";
+import { updateCollabIconPosition } from "./generators/generateThread";
+import { updatePopupPositions } from "./generators/generateThread";
 import { useRecalculateVariantDataCSLPValues } from "./eventManager/useRecalculateVariantDataCSLPValues";
+import { useCollab } from "./eventManager/useCollab";
+import { generateThreadsFromData } from "./generators/generateThread";
+import { IThreadDTO } from "./types/collab.types";
 
 interface VisualBuilderGlobalStateImpl {
     previousSelectedEditableDOM: HTMLElement | Element | null;
@@ -52,6 +57,8 @@ interface VisualBuilderGlobalStateImpl {
     locale: string;
     variant: string | null;
 }
+
+let threadsPayload: IThreadDTO[] = [];
 
 export class VisualBuilder {
     private customCursor: HTMLDivElement | null = null;
@@ -81,6 +88,8 @@ export class VisualBuilder {
     }
 
     private scrollEventHandler = () => {
+        updateCollabIconPosition();
+        updatePopupPositions();
         updateHighlightedCommentIconPosition(); // Update icons position
     };
 
@@ -89,6 +98,8 @@ export class VisualBuilder {
             VisualBuilder.VisualBuilderGlobalState.value
                 .previousSelectedEditableDOM;
         updateHighlightedCommentIconPosition();
+        updateCollabIconPosition();
+        updatePopupPositions();
         if (previousSelectedEditableDOM) {
             this.handlePositionChange(
                 previousSelectedEditableDOM as HTMLElement
@@ -182,6 +193,15 @@ export class VisualBuilder {
                     this.visualBuilderContainer,
                     this.resizeObserver
                 );
+
+                const container = document.querySelector(
+                    ".visual-builder__container"
+                );
+                if (container && threadsPayload) {
+                    generateThreadsFromData(threadsPayload);
+                    threadsPayload = [];
+                }
+
                 const emptyBlockParents = Array.from(
                     document.querySelectorAll(
                         ".visual-builder__empty-block-parent"
@@ -252,12 +272,23 @@ export class VisualBuilder {
                 const {
                     windowType = ILivePreviewWindowType.BUILDER,
                     stackDetails,
+                    collab,
                 } = data || {};
                 Config.set("windowType", windowType);
                 Config.set(
                     "stackDetails.masterLocale",
                     stackDetails?.masterLocale || "en-us"
                 );
+
+                if (collab) {
+                    Config.set("collab.enable", collab.enable);
+                    Config.set("collab.isFeedbackMode", collab.isFeedbackMode);
+                    Config.set("collab.inviteMetadata", collab.inviteMetadata);
+                }
+
+                if (collab?.payload) {
+                    threadsPayload = collab?.payload;
+                }
 
                 addEventListeners({
                     overlayWrapper: this.overlayWrapper,
@@ -270,40 +301,45 @@ export class VisualBuilder {
                     customCursor: this.customCursor,
                 });
 
-                addKeyboardShortcuts({
-                    overlayWrapper: this.overlayWrapper,
-                    visualBuilderContainer: this.visualBuilderContainer,
-                    focusedToolbar: this.focusedToolbar,
-                    resizeObserver: this.resizeObserver,
-                });
-                useScrollToField();
-                useHighlightCommentIcon();
                 this.mutationObserver.observe(document.body, {
                     childList: true,
                     subtree: true,
                 });
 
-                visualBuilderPostMessage?.on(
-                    VisualBuilderPostMessageEvents.GET_ALL_ENTRIES_IN_CURRENT_PAGE,
-                    getEntryIdentifiersInCurrentPage
-                );
-                visualBuilderPostMessage?.send(
-                    VisualBuilderPostMessageEvents.SEND_VARIANT_AND_LOCALE
-                );
-
-                useHideFocusOverlayPostMessageEvent({
-                    overlayWrapper: this.overlayWrapper,
-                    visualBuilderContainer: this.visualBuilderContainer,
-                    focusedToolbar: this.focusedToolbar,
-                    resizeObserver: this.resizeObserver,
-                });
-
-                // These events are used to sync the data when we made some changes in the entry without invoking live preview module.
                 useHistoryPostMessageEvent();
-                useOnEntryUpdatePostMessageEvent();
-                useRecalculateVariantDataCSLPValues();
-                useDraftFieldsPostMessageEvent();
-                useVariantFieldsPostMessageEvent();
+                useCollab();
+
+                if (windowType === ILivePreviewWindowType.BUILDER) {
+                    addKeyboardShortcuts({
+                        overlayWrapper: this.overlayWrapper,
+                        visualBuilderContainer: this.visualBuilderContainer,
+                        focusedToolbar: this.focusedToolbar,
+                        resizeObserver: this.resizeObserver,
+                    });
+                    useScrollToField();
+                    useHighlightCommentIcon();
+
+                    visualBuilderPostMessage?.on(
+                        VisualBuilderPostMessageEvents.GET_ALL_ENTRIES_IN_CURRENT_PAGE,
+                        getEntryIdentifiersInCurrentPage
+                    );
+                    visualBuilderPostMessage?.send(
+                        VisualBuilderPostMessageEvents.SEND_VARIANT_AND_LOCALE
+                    );
+
+                    useHideFocusOverlayPostMessageEvent({
+                        overlayWrapper: this.overlayWrapper,
+                        visualBuilderContainer: this.visualBuilderContainer,
+                        focusedToolbar: this.focusedToolbar,
+                        resizeObserver: this.resizeObserver,
+                    });
+
+                    // These events are used to sync the data when we made some changes in the entry without invoking live preview module.
+                    useOnEntryUpdatePostMessageEvent();
+                    useRecalculateVariantDataCSLPValues();
+                    useDraftFieldsPostMessageEvent();
+                    useVariantFieldsPostMessageEvent();
+                }
             })
             .catch(() => {
                 if (!inIframe()) {
