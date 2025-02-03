@@ -1,6 +1,12 @@
 /** @jsxImportSource preact */
 import React from "preact/compat";
-import { useEffect, useState, useContext, useCallback } from "preact/hooks";
+import {
+    useEffect,
+    useState,
+    useContext,
+    useCallback,
+    useRef,
+} from "preact/hooks";
 import { collabStyles } from "../../../visualBuilder.style";
 import {
     ICommentPayload,
@@ -43,6 +49,10 @@ const initialState: ICommentState = {
 const CommentTextArea: React.FC<ICommentTextArea> = React.memo(
     ({ userState, handleOnSaveRef, comment }) => {
         const [state, setState] = useState<ICommentState>(initialState);
+        const [showSuggestions, setShowSuggestions] = useState(false);
+        const [cursorPosition, setCursorPosition] = useState(0);
+        const [searchTerm, setSearchTerm] = useState("");
+        const inputRef = useRef(null);
 
         const {
             error,
@@ -60,6 +70,61 @@ const CommentTextArea: React.FC<ICommentTextArea> = React.memo(
             ".collab-thread-body--input--textarea",
             state.message
         );
+
+        // Find the @ symbol position and extract search term
+        const findMentionSearchPosition = (text: string, cursorPos: any) => {
+            const textBeforeCursor = text.slice(0, cursorPos);
+            const atSymbolIndex = textBeforeCursor.lastIndexOf("@");
+
+            if (atSymbolIndex === -1) return null;
+
+            const textBetweenAtAndCursor = textBeforeCursor.slice(
+                atSymbolIndex + 1
+            );
+            if (textBetweenAtAndCursor.includes(" ")) return null;
+
+            return {
+                start: atSymbolIndex,
+                searchTerm: textBetweenAtAndCursor,
+            };
+        };
+
+        // Filter users based on search term
+        const filteredUsers = userState.mentionsList.filter((user) => {
+            if (!searchTerm) return false;
+            return (
+                user.display.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                user.email?.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+        });
+
+        const insertMention = (user: any) => {
+            const mention = findMentionSearchPosition(
+                state.message,
+                cursorPosition
+            );
+            if (!mention) return;
+
+            const beforeMention = state.message.slice(0, mention.start);
+            const afterMention = state.message.slice(cursorPosition);
+            const newValue = `${beforeMention}@${user.email} ${afterMention}`;
+
+            setState((prevState) => ({
+                ...prevState,
+                message: newValue,
+                toUsers: [
+                    ...(prevState.toUsers || []),
+                    { display: user.email, id: user.identityHash },
+                ],
+            }));
+            setShowSuggestions(false);
+
+            // Focus back on input after selection
+            const ele = inputRef.current as HTMLTextAreaElement | null;
+            if (ele) {
+                ele.focus();
+            }
+        };
 
         const handleSubmit = useCallback(async () => {
             // If there's a validation error, don't proceed with saving.
@@ -173,6 +238,19 @@ const CommentTextArea: React.FC<ICommentTextArea> = React.memo(
             const target = event.target as HTMLTextAreaElement | null;
             if (!target) return;
             const newPlainTextValue = target.value;
+            const newPosition = target.selectionStart;
+            setCursorPosition(newPosition);
+
+            const mention = findMentionSearchPosition(
+                newPlainTextValue,
+                newPosition
+            );
+            if (mention) {
+                setSearchTerm(mention.searchTerm);
+                setShowSuggestions(true);
+            } else {
+                setShowSuggestions(false);
+            }
 
             // TODO mentions will be handled in upcoming PRs this is a zombie code for now
             // const to_users = [...state.to_users];
@@ -241,9 +319,26 @@ const CommentTextArea: React.FC<ICommentTextArea> = React.memo(
                             onChange={handleInputChange}
                             maxLength={maxMessageLength}
                             placeholder="Enter a comment"
+                            ref={inputRef}
                         ></textarea>
                     </div>
                 </div>
+
+                {showSuggestions && filteredUsers.length > 0 && (
+                    <div className="absolute left-0 right-0 mt-1 bg-white border rounded-lg shadow-lg max-h-48 overflow-y-auto">
+                        {filteredUsers.map((user) => (
+                            <button
+                                key={user.email}
+                                onClick={() => insertMention(user)}
+                                className="w-full px-4 py-2 text-left hover:bg-gray-100 focus:outline-none focus:bg-gray-100"
+                            >
+                                <div className="font-medium">
+                                    @{user.display}
+                                </div>
+                            </button>
+                        ))}
+                    </div>
+                )}
 
                 <div
                     className={classNames(
