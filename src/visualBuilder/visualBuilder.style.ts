@@ -1006,13 +1006,6 @@ export function collabStyles() {
             overflow: hidden;
             text-overflow: ellipsis;
         `,
-        ".collab-thread-comment--user-details:has(.collab-thread-comment-action--wrapper) .collab-thread-comment--user-details__text": css`
-            width: calc(100% - 6rem);
-        `,
-        ".collab-thread-comment--user-details:not(:has(.collab-thread-comment-action--wrapper)) .collab-thread-comment--user-details__text": css`
-            width: 100%;
-            white-space: normal;
-        `,
         "collab-thread-comment--list": css`
             max-height: 10.9rem;
             display: flex;
