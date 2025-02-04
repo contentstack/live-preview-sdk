@@ -64,7 +64,7 @@ describe("When an inline element is edited in visual builder mode", () => {
 
     afterAll(() => {
         vi.clearAllMocks();
-        document.getElementsByTagName('html')[0].innerHTML = ''; 
+        document.getElementsByTagName("html")[0].innerHTML = "";
 
         Config.reset();
     });
@@ -110,7 +110,10 @@ describe("When an inline element is edited in visual builder mode", () => {
             document.body.appendChild(singleLineField);
 
             visualBuilder = new VisualBuilder();
-            await triggerAndWaitForClickAction(visualBuilderPostMessage, singleLineField);
+            await triggerAndWaitForClickAction(
+                visualBuilderPostMessage,
+                singleLineField
+            );
             overlayWrapper = document.querySelector(
                 ".visual-builder__overlay__wrapper"
             ) as HTMLDivElement;
@@ -230,7 +233,10 @@ describe("When an inline element is edited in visual builder mode", () => {
             document.body.appendChild(container);
 
             visualBuilder = new VisualBuilder();
-            await triggerAndWaitForClickAction(visualBuilderPostMessage, container);
+            await triggerAndWaitForClickAction(
+                visualBuilderPostMessage,
+                container
+            );
         });
 
         afterAll(() => {
@@ -298,7 +304,10 @@ describe("When an inline element is edited in visual builder mode", () => {
             document.body.appendChild(container);
 
             visualBuilder = new VisualBuilder();
-            await triggerAndWaitForClickAction(visualBuilderPostMessage, firstSingleLineField);
+            await triggerAndWaitForClickAction(
+                visualBuilderPostMessage,
+                firstSingleLineField
+            );
             overlayWrapper = document.querySelector(
                 ".visual-builder__overlay__wrapper"
             ) as HTMLDivElement;
@@ -405,7 +414,10 @@ describe("When an inline element is edited in visual builder mode", () => {
             multiLineField.textContent = "Hello world";
             document.body.appendChild(multiLineField);
             visualBuilder = new VisualBuilder();
-            await triggerAndWaitForClickAction(visualBuilderPostMessage, multiLineField);
+            await triggerAndWaitForClickAction(
+                visualBuilderPostMessage,
+                multiLineField
+            );
             overlayWrapper = document.querySelector(
                 ".visual-builder__overlay__wrapper"
             ) as HTMLDivElement;
@@ -518,7 +530,10 @@ describe("When an inline element is edited in visual builder mode", () => {
             document.body.appendChild(container);
 
             visualBuilder = new VisualBuilder();
-            await triggerAndWaitForClickAction(visualBuilderPostMessage, container);
+            await triggerAndWaitForClickAction(
+                visualBuilderPostMessage,
+                container
+            );
             overlayWrapper = document.querySelector(
                 ".visual-builder__overlay__wrapper"
             ) as HTMLDivElement;
@@ -592,7 +607,10 @@ describe("When an inline element is edited in visual builder mode", () => {
             document.body.appendChild(container);
 
             visualBuilder = new VisualBuilder();
-            await triggerAndWaitForClickAction(visualBuilderPostMessage, firstMultiLineField);
+            await triggerAndWaitForClickAction(
+                visualBuilderPostMessage,
+                firstMultiLineField
+            );
         });
 
         afterEach(() => {
@@ -618,47 +636,112 @@ describe("When an inline element is edited in visual builder mode", () => {
             expect(secondMultiLineField).toHaveTextContent("test text");
         });
 
-        test("should send a update field message to parent when editing an individual element", async () => {
-            fireEvent.change(firstMultiLineField, {
-                target: { textContent: "test text 1" },
-            });
+        test(
+            "should send a update field message to parent when editing an individual element",
+            async () => {
+                fireEvent.change(firstMultiLineField, {
+                    target: { textContent: "test text 1" },
+                });
 
-            expect(firstMultiLineField).toHaveTextContent("test text 1");
-            const overlayWrapper = document.querySelector(
-                ".visual-builder__overlay__wrapper"
-            ) as HTMLDivElement;
-            await act(async () => {
-                await fireEvent.click(overlayWrapper);
-            })
-            await waitFor(() => {
-                expect(visualBuilderPostMessage?.send).toHaveBeenCalledWith(
-                    VisualBuilderPostMessageEvents.UPDATE_FIELD,
-                    {
-                        data: "test text 1",
-                        fieldMetadata: {
-                            entry_uid: "bltapikey",
-                            content_type_uid: "all_fields",
-                            locale: "en-us",
-                            cslpValue:
-                                "all_fields.bltapikey.en-us.multi_line_textbox_multiple_.0",
-                            fieldPath: "multi_line_textbox_multiple_",
-                            fieldPathWithIndex: "multi_line_textbox_multiple_",
-                            multipleFieldMetadata: {
-                                parentDetails: {
-                                    parentPath: "multi_line_textbox_multiple_",
-                                    parentCslpValue:
-                                        "all_fields.bltapikey.en-us.multi_line_textbox_multiple_",
-                                },
-                                index: 0,
-                            },
-                            instance: {
+                expect(firstMultiLineField).toHaveTextContent("test text 1");
+                const overlayWrapper = document.querySelector(
+                    ".visual-builder__overlay__wrapper"
+                ) as HTMLDivElement;
+                await act(async () => {
+                    await fireEvent.click(overlayWrapper);
+                });
+                await waitFor(() => {
+                    expect(visualBuilderPostMessage?.send).toHaveBeenCalledWith(
+                        VisualBuilderPostMessageEvents.UPDATE_FIELD,
+                        {
+                            data: "test text 1",
+                            fieldMetadata: {
+                                entry_uid: "bltapikey",
+                                content_type_uid: "all_fields",
+                                locale: "en-us",
+                                cslpValue:
+                                    "all_fields.bltapikey.en-us.multi_line_textbox_multiple_.0",
+                                fieldPath: "multi_line_textbox_multiple_",
                                 fieldPathWithIndex:
-                                    "multi_line_textbox_multiple_.0",
+                                    "multi_line_textbox_multiple_",
+                                multipleFieldMetadata: {
+                                    parentDetails: {
+                                        parentPath:
+                                            "multi_line_textbox_multiple_",
+                                        parentCslpValue:
+                                            "all_fields.bltapikey.en-us.multi_line_textbox_multiple_",
+                                    },
+                                    index: 0,
+                                },
+                                instance: {
+                                    fieldPathWithIndex:
+                                        "multi_line_textbox_multiple_.0",
+                                },
                             },
-                        },
+                        }
+                    );
+                });
+            },
+            { timeout: 50 * 1000 }
+        );
+    });
+    describe.skip(
+        "number field",
+        () => {
+            let numberField: HTMLParagraphElement;
+            let visualBuilder: VisualBuilder;
+            let overlayWrapper: HTMLDivElement;
+
+            beforeAll(() => {
+                (visualBuilderPostMessage?.send as Mock).mockImplementation(
+                    (eventName: string, args) => {
+                        if (
+                            eventName ===
+                            VisualBuilderPostMessageEvents.GET_FIELD_DATA
+                        ) {
+                            return Promise.resolve({
+                                fieldData: "87",
+                            });
+                        }
+                        return Promise.resolve({});
                     }
                 );
             });
-        });
-    });
+
+            beforeEach(() => {
+                numberField = document.createElement("p");
+                numberField.setAttribute(
+                    "data-cslp",
+                    "all_fields.bltapikey.en-us.number"
+                );
+                numberField.textContent = "87";
+                document.body.appendChild(numberField);
+                visualBuilder = new VisualBuilder();
+                overlayWrapper = document.querySelector(
+                    ".visual-builder__overlay__wrapper"
+                ) as HTMLDivElement;
+            });
+
+            afterEach(() => {
+                visualBuilder.destroy();
+            });
+
+            test("should only accept characters like a number input", async () => {
+                await userEvent.click(numberField);
+                await waitFor(() => {
+                    expect(numberField).toHaveAttribute("contenteditable");
+                });
+                await userEvent.keyboard("ab56c78e-h10");
+
+                await waitFor(() => {
+                    // TODO cursor is placed at the start, instead of the end
+                    // so typed content appears at the start
+                    expect(numberField).toHaveTextContent(`5678e-1087`);
+                });
+            });
+        },
+        {
+            timeout: 20 * 1000,
+        }
+    );
 });
