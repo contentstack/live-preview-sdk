@@ -298,7 +298,10 @@ export function cleanIndividualFieldResidual(elements: {
         const toolbarEvents = [VisualBuilderPostMessageEvents.DELETE_INSTANCE, VisualBuilderPostMessageEvents.UPDATE_DISCUSSION_ID]
         toolbarEvents.forEach((event) => {
             //@ts-expect-error - We are accessing private method here, but it is necessary to clean up the event listeners.
-            visualBuilderPostMessage?.unregisterEvent?.(event);
+            if (visualBuilderPostMessage.requestMessageHandlers.has(event)) {
+                //@ts-expect-error - We are accessing private method here, but it is necessary to clean up the event listeners.
+                visualBuilderPostMessage?.unregisterEvent?.(event);
+            }
         });
     }
 }
