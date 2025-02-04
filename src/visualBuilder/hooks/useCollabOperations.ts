@@ -14,7 +14,10 @@ import {
     IFetchComments,
     IThreadPayload,
     IInviteMetadata,
+    IDeleteThreadArgs,
 } from "../types/collab.types";
+import { removeCollabIcon } from "../generators/generateThread";
+import Config from "../../configManager/configManager";
 
 export const useCollabOperations = () => {
     const createComment = async (payload: ICommentPayload) => {
@@ -107,6 +110,20 @@ export const useCollabOperations = () => {
         return data;
     };
 
+    const deleteThread = async (payload: IDeleteThreadArgs) => {
+        const data = (await visualBuilderPostMessage?.send(
+            VisualBuilderPostMessageEvents.COLLAB_DELETE_THREAD,
+            { payload }
+        )) as IDefaultAPIResponse;
+        if (!data) throw new Error("Failed to delete thread");
+        removeCollabIcon(payload.threadUid);
+        const config = Config.get();
+        if (config?.collab?.isFeedbackMode === false) {
+            Config.set("collab.isFeedbackMode", true);
+        }
+        return data;
+    };
+
     return {
         createComment,
         editComment,
@@ -114,5 +131,6 @@ export const useCollabOperations = () => {
         resolveThread,
         fetchComments,
         createNewThread,
+        deleteThread,
     };
 };
