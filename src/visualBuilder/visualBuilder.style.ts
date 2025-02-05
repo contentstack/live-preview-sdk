@@ -111,7 +111,7 @@ export function visualBuilderStyles() {
             color: #6c5ce7;
             overflow: hidden;
 
-            z-index: 2147483647 !important;
+            z-index: 2147483646 !important;
 
             display: grid;
             grid-template-columns: min-content 0fr;
@@ -493,7 +493,7 @@ export function visualBuilderStyles() {
             position: absolute;
             outline: 2px dashed #6c5ce7;
             transition: var(--outline-transition);
-            z-index: 2147483647 !important;
+            z-index: 2147483646 !important;
         `,
         "visual-builder__hover-outline--hidden": css`
             visibility: hidden;
