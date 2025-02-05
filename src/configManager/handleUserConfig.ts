@@ -108,6 +108,18 @@ export const handleInitData = (initData: Partial<IInitData>): void => {
             config.editButton.includeByQueryParameter ??
             true,
     });
+    
+    Config.set("editButtonBuilder", {
+        enable:
+            initData.editButtonBuilder?.enable ??
+            stackSdk.live_preview?.editButtonBuilder?.enable ??
+            config.editButtonBuilder.enable,
+        position:  
+            initData.editButtonBuilder?.position ??
+            stackSdk.live_preview?.position ??
+            config.editButtonBuilder.position ??
+            "bottom-right",
+    })
 
     // client URL params
     handleClientUrlParams(
