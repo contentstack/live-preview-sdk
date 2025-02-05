@@ -16,7 +16,7 @@ const positionStyles: Record<Position, string> = {
     "top-right": visualBuilderStyles()['visual-builder__start-editing-btn__top-right'],
 }
 
-function getEditButtonPosition(position: any): Position {
+export function getEditButtonPosition(position: any): Position {
     const validPositions: Position[] = ['bottom-left', 'bottom-right', 'top-left', 'top-right']
     if(validPositions.includes(position)){
         return position
