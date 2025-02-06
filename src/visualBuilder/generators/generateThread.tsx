@@ -277,7 +277,9 @@ export function removeCollabIcon(threadUid: string): void {
 }
 
 export function isCollabThread(target: HTMLElement): boolean {
-    return target.classList.contains("collab-indicator");
+    return Array.from(target.classList).some((className) =>
+        className.startsWith("collab")
+    );
 }
 
 function getElementByXpath(xpath: string): HTMLElement | null {

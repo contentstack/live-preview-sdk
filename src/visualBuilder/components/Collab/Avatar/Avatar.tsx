@@ -45,7 +45,7 @@ function DisplayAvatarContent({
             />
         );
     }
-    return <span>{initials}</span>;
+    return <span className={`collab-avatar-link__initials`}>{initials}</span>;
 }
 
 function Avatar({
