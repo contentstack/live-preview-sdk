@@ -115,7 +115,7 @@ export const sanitizeData = (dirty: any): string => {
  * @returns {Object} The comment body containing the sanitized message and mentioned users.
  */
 export const getCommentBody = (state: ICommentState): ICommentState => {
-    let finalMessage = state.message;
+    let finalMessage = state.message.trim().replace(/\s+/g, " ");
     const comment = {
         message: finalMessage,
         toUsers: [],

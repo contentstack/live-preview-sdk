@@ -238,6 +238,7 @@ const CommentTextArea: React.FC<ICommentTextArea> = React.memo(
             const target = event.target as HTMLTextAreaElement | null;
             if (!target) return;
             const newPlainTextValue = target.value;
+            const trimmedValue = newPlainTextValue.trim();
             const newPosition = target.selectionStart;
             setCursorPosition(newPosition);
 
@@ -274,7 +275,7 @@ const CommentTextArea: React.FC<ICommentTextArea> = React.memo(
                 state.toUsers ?? []
             );
             setError({
-                hasError: errorMessage !== "",
+                hasError: errorMessage !== "" || trimmedValue === "",
                 message: errorMessage,
             });
 
