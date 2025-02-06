@@ -77,6 +77,21 @@ describe("Utility Functions", () => {
             expect(result.message).toBe("Hello {{1}}");
             expect(result.toUsers).toEqual(["1"]);
         });
+
+        it("should trim the message and replace multiple spaces with a single space", () => {
+            const state = {
+                message: "   Hello   @JohnDoe   and   @JaneDoe    ",
+                toUsers: [
+                    { id: "1", display: "@JohnDoe" },
+                    { id: "2", display: "@JaneDoe" },
+                ],
+                createdBy: "1",
+                author: "john.doe@example.com",
+            };
+            const result = getCommentBody(state);
+            expect(result.message).toBe("Hello {{1}} and {{2}}");
+            expect(result.toUsers).toEqual(["1", "2"]);
+        });
     });
 
     describe("getThreadTitle", () => {

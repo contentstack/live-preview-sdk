@@ -251,6 +251,7 @@ const CommentTextArea: React.FC<ICommentTextArea> = React.memo(
             } else {
                 setShowSuggestions(false);
             }
+            const trimmedValue = newPlainTextValue.trim();
 
             // TODO mentions will be handled in upcoming PRs this is a zombie code for now
             // const to_users = [...state.to_users];
@@ -274,7 +275,7 @@ const CommentTextArea: React.FC<ICommentTextArea> = React.memo(
                 state.toUsers ?? []
             );
             setError({
-                hasError: errorMessage !== "",
+                hasError: errorMessage !== "" || trimmedValue === "",
                 message: errorMessage,
             });
 

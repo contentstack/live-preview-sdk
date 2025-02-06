@@ -21,7 +21,7 @@ const CommentActionBar: React.FC<ICommentActionBar> = ({
     currentUser,
     commentUID,
 }) => {
-    const { setThreadState, onDeleteComment, activeThread } =
+    const { setThreadState, onDeleteComment, activeThread, onDeleteThread } =
         useContext(ThreadProvider)!;
 
     const setEditComment = (uid: string | null) => {
@@ -60,6 +60,9 @@ const CommentActionBar: React.FC<ICommentActionBar> = ({
                 const updatedComments = prevState.comments.filter(
                     (comment) => comment._id !== commentUID
                 );
+                if (prevState.commentCount - 1 === 0) {
+                    onDeleteThread({ threadUid: activeThread?._id });
+                }
                 return {
                     ...prevState,
                     comments: updatedComments,
