@@ -45,8 +45,6 @@ const ThreadFooter = ({
                 >
                     Cancel
                 </Button>
-                {isDisabled}
-                {loading}
                 <Button
                     type="button"
                     buttonType="primary"
