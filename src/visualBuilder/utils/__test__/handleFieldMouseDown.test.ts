@@ -1,8 +1,17 @@
 import { MockInstance } from "vitest";
 import { VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY } from "../constants";
-import { handleFieldKeyDown } from "../handleFieldMouseDown";
+import { handleFieldInput, handleFieldKeyDown } from "../handleFieldMouseDown";
 import * as insertSpaceAtCursor from "../insertSpaceAtCursor";
+import * as generateOverlay from "../../generators/generateOverlay";
+import { VisualBuilderPostMessageEvents } from "../types/postMessage.types";
+import { FieldDataType } from "../types/index.types";
+import userEvent from "@testing-library/user-event";
+import { waitFor, screen } from "@testing-library/preact";
 
+vi.mock("lodash-es", async () => ({
+    ...(await import("lodash-es")),
+    throttle: vi.fn((fn) => fn),
+}))
 describe("handle numeric field key down", () => {
     let h1: HTMLHeadingElement;
     let spiedPreventDefault: MockInstance<(e: []) => void> | undefined;
@@ -106,6 +115,16 @@ describe("handle numeric field key down", () => {
         h1.dispatchEvent(keyDownEvent);
         expect(spiedPreventDefault).toHaveBeenCalledTimes(1);
     });
+
+    test("should only accept characters like a number input", async () => {
+        h1.innerHTML = '';
+        await userEvent.click(h1);
+        await userEvent.keyboard("ab56c78e-h10");
+
+        await waitFor(() => {
+            expect(h1).toHaveTextContent(`5678e-10`);
+        });
+    });
 });
 
 describe("handle keydown in button contenteditable", () => {
@@ -152,3 +171,85 @@ describe("handle keydown in button contenteditable", () => {
         expect(spiedInsertSpaceAtCursor).toHaveBeenCalledWith(button);
     });
 });
+
+describe("handle single line field key down", () => {
+    let h1: HTMLHeadingElement;
+    let spiedPreventDefault: MockInstance<(e: []) => void> | undefined;
+
+    beforeEach(() => {
+        h1 = document.createElement("h1");
+        h1.innerHTML = "2.2";
+        h1.setAttribute("contenteditable", "true");
+        h1.setAttribute(VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY, FieldDataType.SINGLELINE);
+
+        h1.addEventListener("keydown", (e) => {
+            spiedPreventDefault = vi.spyOn(e, "preventDefault");
+            handleFieldKeyDown(e);
+        });
+
+        document.body.appendChild(h1);
+    });
+
+    afterEach(() => {
+        document.body.innerHTML = "";
+        vi.clearAllMocks();
+    });
+
+    afterAll(() => {
+        vi.restoreAllMocks();
+    });
+
+    test("should prevent default on enter key", () => {
+        const keyDownEvent = new KeyboardEvent("keydown", {
+            bubbles: true,
+            key: "Enter",
+            code: "Enter",
+        });
+        h1.dispatchEvent(keyDownEvent);
+
+        expect(spiedPreventDefault).toHaveBeenCalledTimes(1);
+    });
+})
+
+describe("`handleFieldInput`", () => {
+    let h1: HTMLHeadingElement;
+    let visualBuilderContainer: HTMLElement;
+    beforeEach(() => {
+        h1 = document.createElement("h1");
+        h1.innerHTML = "2.2";
+        h1.setAttribute("contenteditable", "true");
+        h1.setAttribute(VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY, "number");
+
+        h1.addEventListener("input", handleFieldInput);
+
+        visualBuilderContainer = document.createElement("div");
+        visualBuilderContainer.classList.add("visual-builder__container");
+        document.body.appendChild(visualBuilderContainer);
+        document.body.appendChild(h1);
+    });
+
+    afterEach(() => {
+        document.body.innerHTML = "";
+        vi.clearAllMocks();
+    });
+
+    afterAll(() => {
+        vi.restoreAllMocks();
+    });
+
+    test("should call `sendFieldEvent` on input event", () => {
+        const spiedSendFieldEvent = vi.spyOn(generateOverlay, "sendFieldEvent")
+        const consoleError = vi.spyOn(console, "error");
+        spiedSendFieldEvent.mockImplementation(() => { 
+            throw new Error("sendFieldEvent not implemented")
+        });
+        const inputEvent = new InputEvent("input", {
+            bubbles: true,
+        });
+        h1.dispatchEvent(inputEvent);
+
+        expect(spiedSendFieldEvent).toHaveBeenCalledWith({ visualBuilderContainer, eventType: VisualBuilderPostMessageEvents.SYNC_FIELD });
+        expect(consoleError).toHaveBeenCalled();
+    });
+
+})
