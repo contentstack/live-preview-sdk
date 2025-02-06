@@ -18,4 +18,10 @@ describe("Avatar Component", () => {
         render(<Avatar avatar={personAvatar} type="image" />);
         expect(screen.getByTestId("collab-avatar-image")).toBeInTheDocument();
     });
+
+    it("renders initials with the correct class", () => {
+        render(<Avatar avatar={personAvatar} type="text" />);
+        const initialsElement = screen.getByText("us");
+        expect(initialsElement).toHaveClass("collab-avatar-link__initials");
+    });
 });
