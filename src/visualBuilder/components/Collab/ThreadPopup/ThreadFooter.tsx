@@ -4,7 +4,7 @@ import { useState } from "preact/hooks";
 import Button from "../Button/Button";
 import ButtonGroup from "../ButtonGroup/ButtonGroup";
 import classNames from "classnames";
-import { collabStyles } from "../../../visualBuilder.style";
+import { collabStyles } from "../../../collab.style";
 
 interface IThreadFooter {
     onClose: (isResolved?: boolean) => void;

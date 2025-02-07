@@ -1,7 +1,7 @@
 /** @jsxImportSource preact */
 import React from "preact/compat";
 import { useState, useRef, useEffect } from "preact/hooks";
-import { collabStyles } from "../../../visualBuilder.style";
+import { collabStyles } from "../../../collab.style";
 import classNames from "classnames";
 
 interface TooltipProps {
