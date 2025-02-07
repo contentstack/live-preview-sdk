@@ -5,7 +5,7 @@ import {
     getMessageWithDisplayName,
     sanitizeData,
 } from "../../../utils/collabUtils";
-import { collabStyles } from "../../../visualBuilder.style";
+import { collabStyles } from "../../../collab.style";
 import classNames from "classnames";
 
 interface ICommentResolvedText {

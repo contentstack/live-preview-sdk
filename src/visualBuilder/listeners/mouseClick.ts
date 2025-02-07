@@ -96,7 +96,16 @@ async function handleBuilderInteraction(
             Config.set("collab.isFeedbackMode", false);
         } else {
             if (config?.collab.isFeedbackMode) {
-                generateThread({ xpath, relativeX, relativeY });
+                generateThread(
+                    { xpath, relativeX, relativeY },
+                    {
+                        isNewThread: true,
+                        updateConfig: true,
+                    }
+                );
+            } else {
+                document.dispatchEvent(new CustomEvent("closeCollabPopup"));
+                Config.set("collab.isFeedbackMode", true);
             }
         }
         return;

@@ -4,10 +4,11 @@ import { IMessageDTO, IUserState } from "../../../types/collab.types";
 import ThreadBodyLoader from "./loader/ThreadBody";
 import CommentCard from "./CommentCard";
 import classNames from "classnames";
-import { collabStyles } from "../../../visualBuilder.style";
+import { collabStyles } from "../../../collab.style";
 
 interface IThreadBody {
     handleOnSaveRef: React.MutableRefObject<any>;
+    onClose: (isResolved?: boolean) => void;
     userState: IUserState;
     isLoading: boolean;
     comments: IMessageDTO[];
@@ -18,6 +19,7 @@ interface IThreadBody {
 const ThreadBody: React.FC<IThreadBody> = React.memo(
     ({
         handleOnSaveRef,
+        onClose,
         userState,
         isLoading,
         comments,
@@ -71,6 +73,7 @@ const ThreadBody: React.FC<IThreadBody> = React.memo(
                                 <CommentCard
                                     userState={userState}
                                     comment={comment}
+                                    onClose={onClose}
                                     handleOnSaveRef={handleOnSaveRef}
                                     mode={
                                         editComment === comment._id
@@ -88,6 +91,7 @@ const ThreadBody: React.FC<IThreadBody> = React.memo(
                     <CommentCard
                         userState={userState}
                         comment={null}
+                        onClose={onClose}
                         handleOnSaveRef={handleOnSaveRef}
                         mode="edit"
                     />

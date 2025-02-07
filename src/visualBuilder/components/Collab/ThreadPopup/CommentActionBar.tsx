@@ -4,7 +4,7 @@ import { useContext } from "preact/hooks";
 import { IThreadPopupState, IUserDTO } from "../../../types/collab.types";
 import Icon from "../Icon/Icon";
 import { ThreadProvider } from "./ContextProvider";
-import { collabStyles } from "../../../visualBuilder.style";
+import { collabStyles } from "../../../collab.style";
 import classNames from "classnames";
 
 interface ICommentActionBar {
