@@ -167,6 +167,13 @@ export interface IThreadResolveArgs {
     };
 }
 
+export interface MissingThreadsInfo {
+    payload: {
+        isElementPresent: boolean;
+    };
+    threadUids: string[];
+}
+
 export interface IErrorState {
     hasError: boolean;
     message: string;
