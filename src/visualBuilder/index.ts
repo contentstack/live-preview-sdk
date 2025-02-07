@@ -208,10 +208,7 @@ export class VisualBuilder {
                         ?.map((payload: IThreadDTO) =>
                             generateThread(payload, { isNewThread: false })
                         )
-                        .filter(
-                            (threadId): threadId is string =>
-                                threadId !== undefined
-                        );
+                        .filter(Boolean) as string[];
                     threadsPayload = [];
                     if (missingThreadIds.length > 0) {
                         handleMissingThreads({
