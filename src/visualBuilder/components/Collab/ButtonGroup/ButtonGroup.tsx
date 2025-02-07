@@ -1,7 +1,7 @@
 /** @jsxImportSource preact */
 import React from "preact/compat";
 import cn from "classnames";
-import { collabStyles } from "../../../visualBuilder.style";
+import { collabStyles } from "../../../collab.style";
 
 export type ButtonGroupProps = {
     /**

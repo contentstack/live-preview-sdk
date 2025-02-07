@@ -6,16 +6,17 @@ import {
     removeCollabIcon,
 } from "../generators/generateThread";
 import {
-    generateThreadsFromData,
-    generateThreadFromData,
+    generateThread,
+    handleMissingThreads,
 } from "../generators/generateThread";
+import { IThreadDTO } from "../types/collab.types";
 
 const handleRemoveCommentIcons = (): void => {
     removeAllCollabIcons();
 };
 
 export const useCollab = () => {
-    visualBuilderPostMessage?.on(
+    const collabEnable = visualBuilderPostMessage?.on(
         VisualBuilderPostMessageEvents.COLLAB_ENABLE,
         (data: any) => {
             if (!data?.data?.collab) {
@@ -31,11 +32,25 @@ export const useCollab = () => {
                 "collab.inviteMetadata",
                 data.data.collab.inviteMetadata
             );
-            generateThreadsFromData(data.data.payload);
+
+            const missingThreadIds = data.data?.payload
+                ?.map((payload: IThreadDTO) =>
+                    generateThread(payload, { isNewThread: false })
+                )
+                .filter(
+                    (threadId: string | undefined): threadId is string =>
+                        threadId !== undefined
+                );
+            if (missingThreadIds.length > 0) {
+                handleMissingThreads({
+                    payload: { isElementPresent: false },
+                    threadUids: missingThreadIds,
+                });
+            }
         }
     );
 
-    visualBuilderPostMessage?.on(
+    const collabDisable = visualBuilderPostMessage?.on(
         VisualBuilderPostMessageEvents.COLLAB_DISABLE,
         (data: any) => {
             Config.set("collab.enable", false);
@@ -45,7 +60,7 @@ export const useCollab = () => {
         }
     );
 
-    visualBuilderPostMessage?.on(
+    const collabThreadRemove = visualBuilderPostMessage?.on(
         VisualBuilderPostMessageEvents.COLLAB_THREAD_REMOVE,
         (data: any) => {
             const { threadUid } = data.data;
@@ -53,11 +68,24 @@ export const useCollab = () => {
         }
     );
 
-    visualBuilderPostMessage?.on(
+    const collabThreadReopen = visualBuilderPostMessage?.on(
         VisualBuilderPostMessageEvents.COLLAB_THREAD_REOPEN,
         (data: any) => {
             const thread = data.data.thread;
-            generateThreadFromData(thread);
+            const result = generateThread(thread, { isNewThread: false });
+            if (result !== undefined) {
+                handleMissingThreads({
+                    payload: { isElementPresent: false },
+                    threadUids: [result],
+                });
+            }
         }
     );
+
+    return () => {
+        collabEnable?.unregister();
+        collabDisable?.unregister();
+        collabThreadRemove?.unregister();
+        collabThreadReopen?.unregister();
+    };
 };
