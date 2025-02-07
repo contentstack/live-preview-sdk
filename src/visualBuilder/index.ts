@@ -45,7 +45,10 @@ import { updateCollabIconPosition } from "./generators/generateThread";
 import { updatePopupPositions } from "./generators/generateThread";
 import { useRecalculateVariantDataCSLPValues } from "./eventManager/useRecalculateVariantDataCSLPValues";
 import { useCollab } from "./eventManager/useCollab";
-import { generateThreadsFromData } from "./generators/generateThread";
+import {
+    generateThread,
+    handleMissingThreads,
+} from "./generators/generateThread";
 import { IThreadDTO } from "./types/collab.types";
 
 interface VisualBuilderGlobalStateImpl {
@@ -198,8 +201,21 @@ export class VisualBuilder {
                     ".visual-builder__container"
                 );
                 if (container && threadsPayload) {
-                    generateThreadsFromData(threadsPayload);
+                    const missingThreadIds = threadsPayload
+                        ?.map((payload: IThreadDTO) =>
+                            generateThread(payload, { isNewThread: false })
+                        )
+                        .filter(
+                            (threadId): threadId is string =>
+                                threadId !== undefined
+                        );
                     threadsPayload = [];
+                    if (missingThreadIds.length > 0) {
+                        handleMissingThreads({
+                            payload: { isElementPresent: false },
+                            threadUids: missingThreadIds,
+                        });
+                    }
                 }
 
                 const emptyBlockParents = Array.from(

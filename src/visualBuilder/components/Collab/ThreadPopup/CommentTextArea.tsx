@@ -1,7 +1,7 @@
 /** @jsxImportSource preact */
 import React from "preact/compat";
 import { useEffect, useState, useContext, useCallback } from "preact/hooks";
-import { collabStyles } from "../../../visualBuilder.style";
+import { collabStyles } from "../../../collab.style";
 import {
     ICommentPayload,
     ICommentResponse,
@@ -28,6 +28,7 @@ import classNames from "classnames";
 
 interface ICommentTextArea {
     userState: IUserState;
+    onClose: (isResolved?: boolean) => void;
     handleOnSaveRef: React.MutableRefObject<any>;
     comment?: IMessageDTO | null;
 }
@@ -41,7 +42,7 @@ const initialState: ICommentState = {
 };
 
 const CommentTextArea: React.FC<ICommentTextArea> = React.memo(
-    ({ userState, handleOnSaveRef, comment }) => {
+    ({ userState, handleOnSaveRef, comment, onClose }) => {
         const [state, setState] = useState<ICommentState>(initialState);
 
         const {
@@ -60,6 +61,68 @@ const CommentTextArea: React.FC<ICommentTextArea> = React.memo(
             ".collab-thread-body--input--textarea",
             state.message
         );
+
+        useEffect(() => {
+            const textArea = document.getElementById(
+                "collab-thread-body--input--textarea"
+            );
+            if (!textArea) return;
+
+            const baseClasses = {
+                focus: {
+                    base: "collab-thread-body--input--textarea--focus",
+                    goober: collabStyles()[
+                        "collab-thread-body--input--textarea--focus"
+                    ],
+                },
+                hover: {
+                    base: "collab-thread-body--input--textarea--hover",
+                    goober: collabStyles()[
+                        "collab-thread-body--input--textarea--hover"
+                    ],
+                },
+            };
+
+            const handleFocus = () => {
+                textArea.classList.add(
+                    baseClasses.focus.base,
+                    baseClasses.focus.goober
+                );
+            };
+
+            const handleBlur = () => {
+                textArea.classList.remove(
+                    baseClasses.focus.base,
+                    baseClasses.focus.goober
+                );
+            };
+
+            const handleMouseEnter = () => {
+                textArea.classList.add(
+                    baseClasses.hover.base,
+                    baseClasses.hover.goober
+                );
+            };
+
+            const handleMouseLeave = () => {
+                textArea.classList.remove(
+                    baseClasses.hover.base,
+                    baseClasses.hover.goober
+                );
+            };
+
+            textArea.addEventListener("focus", handleFocus);
+            textArea.addEventListener("blur", handleBlur);
+            textArea.addEventListener("mouseenter", handleMouseEnter);
+            textArea.addEventListener("mouseleave", handleMouseLeave);
+
+            return () => {
+                textArea.removeEventListener("focus", handleFocus);
+                textArea.removeEventListener("blur", handleBlur);
+                textArea.removeEventListener("mouseenter", handleMouseEnter);
+                textArea.removeEventListener("mouseleave", handleMouseLeave);
+            };
+        }, []);
 
         const handleSubmit = useCallback(async () => {
             // If there's a validation error, don't proceed with saving.
@@ -121,6 +184,7 @@ const CommentTextArea: React.FC<ICommentTextArea> = React.memo(
                             comments: updatedComments, // Update the comments list in the state
                         };
                     });
+                    onClose(false);
                 } else {
                     // If creating a new comment, call the create function and add the new comment to the state.
                     let commentResponse: ICommentResponse =
@@ -135,6 +199,7 @@ const CommentTextArea: React.FC<ICommentTextArea> = React.memo(
                     }));
                     // Reset the state to its initial form after a successful comment creation.
                     setState(initialState);
+                    onClose(false);
                 }
             } catch (error: any) {}
         }, [error.hasError, state, activeThread]);
