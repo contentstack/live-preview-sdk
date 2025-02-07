@@ -1,5 +1,5 @@
 /** @jsxImportSource preact */
-import { collabStyles } from "../../visualBuilder.style";
+import { collabStyles } from "../../collab.style";
 import classNames from "classnames";
 import React from "preact/compat";
 import ThreadPopup from "./ThreadPopup";
@@ -7,6 +7,7 @@ import Config from "../../../configManager/configManager";
 import { IActiveThread, IInviteMetadata } from "../../types/collab.types";
 import { useCollabIndicator } from "../../hooks/useCollabIndicator";
 import { useCollabOperations } from "../../hooks/useCollabOperations";
+import { handleEmptyThreads } from "../../generators/generateThread";
 export interface ICollabIndicator {
     newThread?: boolean;
     activeThread?: IActiveThread;
@@ -39,9 +40,10 @@ const CollabIndicator: React.FC<ICollabIndicator> = (props) => {
     } = useCollabOperations();
 
     const handleClose = (isResolved: boolean = false) => {
-        if (isResolved || activeThread._id === "new") {
+        if (isResolved) {
             buttonRef.current?.closest("div[field-path]")?.remove();
         }
+        handleEmptyThreads();
         setShowPopup(false);
 
         if (config?.collab?.isFeedbackMode === false) {
@@ -55,13 +57,17 @@ const CollabIndicator: React.FC<ICollabIndicator> = (props) => {
                 ref={buttonRef}
                 className={classNames(
                     "collab-indicator",
-                    collabStyles()["collab-indicator"]
+                    collabStyles()[
+                        showPopup
+                            ? "collab-indicator-active"
+                            : "collab-indicator"
+                    ]
                 )}
                 data-testid="collab-indicator"
                 onClick={togglePopup}
             >
                 {!showPopup && (
-                    <span className={"collab-indicator"}>
+                    <span className={"collab-indicator__number"}>
                         {activeThread.sequenceNumber}
                     </span>
                 )}
@@ -89,7 +95,6 @@ const CollabIndicator: React.FC<ICollabIndicator> = (props) => {
                             createNewThread(buttonRef, inviteMetadata)
                         }
                     />
-                    ;
                 </div>
             )}
         </>
