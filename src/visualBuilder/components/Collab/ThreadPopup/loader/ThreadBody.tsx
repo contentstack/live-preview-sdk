@@ -1,6 +1,6 @@
 /** @jsxImportSource preact */
 import SkeletonTile from "../../SkeletonTile/SkeletonTile";
-import { collabStyles } from "../../../../visualBuilder.style";
+import { collabStyles } from "../../../../collab.style";
 import classNames from "classnames";
 
 const ThreadBodyLoader = () => {
