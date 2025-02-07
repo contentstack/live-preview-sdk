@@ -3,7 +3,7 @@ import React from "preact/compat";
 import { useCallback } from "preact/hooks";
 import classNames from "classnames";
 import Button from "../Button/Button";
-import { collabStyles } from "../../../visualBuilder.style";
+import { collabStyles } from "../../../collab.style";
 import { getThreadTitle } from "../../../utils/collabUtils";
 import {
     IActiveThread,

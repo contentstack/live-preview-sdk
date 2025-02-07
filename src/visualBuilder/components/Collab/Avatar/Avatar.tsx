@@ -2,7 +2,7 @@
 import React from "preact/compat";
 import Tooltip from "../Tooltip/Tooltip";
 import classNames from "classnames";
-import { collabStyles } from "../../../visualBuilder.style";
+import { collabStyles } from "../../../collab.style";
 
 export type AvatarProps = {
     avatar: AvatarData;
