@@ -9,11 +9,12 @@ import CommentActionBar from "./CommentActionBar";
 import CommentResolvedText from "./CommentResolvedText";
 import Avatar from "../Avatar/Avatar";
 import ThreadBodyLoader from "./loader/ThreadBody";
-import { collabStyles } from "../../../visualBuilder.style";
+import { collabStyles } from "../../../collab.style";
 import classNames from "classnames";
 
 interface ICommentCard {
     comment: IMessageDTO | null;
+    onClose: (isResolved?: boolean) => void;
     userState: IUserState;
     mode: "edit" | "view";
     handleOnSaveRef: React.MutableRefObject<any>;
@@ -28,6 +29,7 @@ const formatCommentDate = (comment: IMessageDTO | null): string => {
 const CommentCard = ({
     userState,
     comment,
+    onClose,
     handleOnSaveRef,
     mode,
 }: ICommentCard) => {
@@ -109,6 +111,7 @@ const CommentCard = ({
             </div>
             {mode === "edit" ? (
                 <CommentTextArea
+                    onClose={onClose}
                     userState={userState}
                     handleOnSaveRef={handleOnSaveRef}
                     comment={comment}

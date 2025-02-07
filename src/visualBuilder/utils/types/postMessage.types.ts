@@ -25,6 +25,7 @@ export enum VisualBuilderPostMessageEvents {
     COLLAB_DELETE_COMMENT = "collab-delete-comment",
     COLLAB_RESOLVE_THREAD = "collab-resolve-thread",
     COLLAB_DELETE_THREAD = "collab-delete-thread",
+    COLLAB_MISSING_THREADS = "collab-missing-threads",
 
     // FROM visual builder
     GET_ALL_ENTRIES_IN_CURRENT_PAGE = "get-entries-in-current-page",
