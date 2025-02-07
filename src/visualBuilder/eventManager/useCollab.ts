@@ -33,14 +33,11 @@ export const useCollab = () => {
                 data.data.collab.inviteMetadata
             );
 
-            const missingThreadIds = data.data?.payload
+            const missingThreadIds = data?.data?.payload
                 ?.map((payload: IThreadDTO) =>
                     generateThread(payload, { isNewThread: false })
                 )
-                .filter(
-                    (threadId: string | undefined): threadId is string =>
-                        threadId !== undefined
-                );
+                .filter(Boolean);
             if (missingThreadIds.length > 0) {
                 handleMissingThreads({
                     payload: { isElementPresent: false },
@@ -73,7 +70,7 @@ export const useCollab = () => {
         (data: any) => {
             const thread = data.data.thread;
             const result = generateThread(thread, { isNewThread: false });
-            if (result !== undefined) {
+            if (result) {
                 handleMissingThreads({
                     payload: { isElementPresent: false },
                     threadUids: [result],
