@@ -50,7 +50,7 @@ import {
     generateThread,
     handleMissingThreads,
 } from "./generators/generateThread";
-import { IThreadDTO } from "./types/collab.types";
+import { IThreadDTO, IThreadRenderStatus } from "./types/collab.types";
 
 interface VisualBuilderGlobalStateImpl {
     previousSelectedEditableDOM: HTMLElement | Element | null;
@@ -70,6 +70,79 @@ export class VisualBuilder {
     private overlayWrapper: HTMLDivElement | null = null;
     private visualBuilderContainer: HTMLDivElement | null = null;
     private focusedToolbar: HTMLDivElement | null = null;
+
+    private retryConfig = {
+        maxRetries: 3,
+        retryDelay: 1000,
+    };
+
+    private threadRenderStatus: Map<string, IThreadRenderStatus> = new Map();
+
+    private delay(ms: number): Promise<void> {
+        return new Promise((resolve) => setTimeout(resolve, ms));
+    }
+
+    private getRenderStatus(threadId: string): IThreadRenderStatus {
+        if (!this.threadRenderStatus.has(threadId)) {
+            this.threadRenderStatus.set(threadId, {
+                threadId,
+                attempts: 0,
+                isRendered: false,
+            });
+        }
+        return this.threadRenderStatus.get(threadId)!;
+    }
+
+    private updateRenderStatus(threadId: string, isRendered: boolean): void {
+        const status = this.getRenderStatus(threadId);
+        status.isRendered = isRendered;
+        this.threadRenderStatus.set(threadId, status);
+    }
+
+    private async processThread(
+        thread: IThreadDTO
+    ): Promise<string | undefined> {
+        let status = this.getRenderStatus(thread._id);
+
+        while (status.attempts < this.retryConfig.maxRetries) {
+            try {
+                const result = generateThread(thread, { isNewThread: false });
+                if (result === undefined) {
+                    this.updateRenderStatus(thread._id, true);
+                    return undefined;
+                }
+
+                status.attempts++;
+                this.updateRenderStatus(thread._id, false);
+
+                if (status.attempts < this.retryConfig.maxRetries) {
+                    await this.delay(this.retryConfig.retryDelay);
+                }
+            } catch (error) {
+                console.error(`Error rendering thread ${thread._id}:`, error);
+                status.attempts++;
+                if (status.attempts >= this.retryConfig.maxRetries) {
+                    break;
+                }
+                await this.delay(this.retryConfig.retryDelay);
+            }
+        }
+
+        return thread._id;
+    }
+
+    private filterUnrenderedThreads(threads: IThreadDTO[]): IThreadDTO[] {
+        return threads.filter((thread) => {
+            const existingThread = document.querySelector(
+                `[threaduid="${thread._id}"]`
+            );
+            if (existingThread) {
+                this.updateRenderStatus(thread._id, true);
+                return false;
+            }
+            return true;
+        });
+    }
 
     static VisualBuilderGlobalState: Signal<VisualBuilderGlobalStateImpl> =
         signal({
@@ -204,18 +277,31 @@ export class VisualBuilder {
                     ".visual-builder__container"
                 );
                 if (container && threadsPayload) {
-                    const missingThreadIds = threadsPayload
-                        ?.map((payload: IThreadDTO) =>
-                            generateThread(payload, { isNewThread: false })
-                        )
-                        .filter(Boolean) as string[];
-                    threadsPayload = [];
-                    if (missingThreadIds.length > 0) {
-                        handleMissingThreads({
-                            payload: { isElementPresent: false },
-                            threadUids: missingThreadIds,
-                        });
+                    const unrenderedThreads =
+                        this.filterUnrenderedThreads(threadsPayload);
+
+                    if (unrenderedThreads.length > 0) {
+                        const missingThreadIds = (
+                            await Promise.all(
+                                unrenderedThreads.map((thread) =>
+                                    this.processThread(thread)
+                                )
+                            )
+                        ).filter(Boolean) as string[];
+
+                        missingThreadIds.forEach((threadId) =>
+                            this.threadRenderStatus.delete(threadId)
+                        );
+
+                        if (missingThreadIds.length > 0) {
+                            handleMissingThreads({
+                                payload: { isElementPresent: false },
+                                threadUids: missingThreadIds,
+                            });
+                        }
                     }
+
+                    threadsPayload = [];
                 }
 
                 const emptyBlockParents = Array.from(
