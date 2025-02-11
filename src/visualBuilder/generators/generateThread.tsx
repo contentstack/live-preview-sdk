@@ -3,7 +3,7 @@ import { render } from "preact";
 import { css } from "goober";
 import CollabIndicator from "../components/Collab/CollabIndicator";
 import Config from "../../configManager/configManager";
-import { IThreadDTO } from "../types/collab.types";
+import { IThreadDTO, IThreadRenderStatus } from "../types/collab.types";
 import { MissingThreadsInfo } from "../types/collab.types";
 import visualBuilderPostMessage from "../utils/visualBuilderPostMessage";
 import { VisualBuilderPostMessageEvents } from "../utils/types/postMessage.types";
@@ -242,6 +242,111 @@ export function handleEmptyThreads() {
         if (!icon.hasAttribute("threaduid")) {
             icon.remove();
         }
+    });
+}
+
+const retryConfig = {
+    maxRetries: 3,
+    retryDelay: 500,
+};
+
+let isProcessingThreads = false;
+
+export const threadRenderStatus = new Map<string, IThreadRenderStatus>();
+
+function delay(ms: number): Promise<void> {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function getRenderStatus(threadId: string): IThreadRenderStatus {
+    if (!threadRenderStatus.has(threadId)) {
+        threadRenderStatus.set(threadId, {
+            threadId,
+            attempts: 0,
+            isRendered: false,
+        });
+    }
+    return threadRenderStatus.get(threadId)!;
+}
+
+function updateRenderStatus(threadId: string, isRendered: boolean): void {
+    const status = getRenderStatus(threadId);
+    status.isRendered = isRendered;
+    threadRenderStatus.set(threadId, status);
+}
+
+export function clearThreadStatus(threadId: string): void {
+    threadRenderStatus.delete(threadId);
+}
+
+export function clearAllThreadStatus(): void {
+    threadRenderStatus.clear();
+    isProcessingThreads = false;
+}
+
+async function processThread(thread: IThreadDTO): Promise<string | undefined> {
+    let status = getRenderStatus(thread._id);
+
+    while (status.attempts < retryConfig.maxRetries) {
+        try {
+            const result = generateThread(thread, { isNewThread: false });
+            if (result === undefined) {
+                updateRenderStatus(thread._id, true);
+                return undefined;
+            }
+
+            status.attempts++;
+            updateRenderStatus(thread._id, false);
+
+            if (status.attempts < retryConfig.maxRetries) {
+                await delay(retryConfig.retryDelay);
+            }
+        } catch (error) {
+            console.error(`Error rendering thread ${thread._id}:`, error);
+            status.attempts++;
+            if (status.attempts >= retryConfig.maxRetries) {
+                break;
+            }
+            await delay(retryConfig.retryDelay);
+        }
+    }
+
+    return thread._id;
+}
+
+export async function processThreadsBatch(
+    threads: IThreadDTO[]
+): Promise<string[]> {
+    if (isProcessingThreads) return [];
+
+    try {
+        isProcessingThreads = true;
+        const unrenderedThreads = filterUnrenderedThreads(threads);
+        if (unrenderedThreads.length === 0) return [];
+
+        const missingThreadIds = (
+            await Promise.all(
+                unrenderedThreads.map((thread) => processThread(thread))
+            )
+        ).filter(Boolean) as string[];
+
+        missingThreadIds.forEach(clearThreadStatus);
+        return missingThreadIds;
+    } finally {
+        isProcessingThreads = false;
+    }
+}
+
+export function filterUnrenderedThreads(threads: IThreadDTO[]): IThreadDTO[] {
+    return threads.filter((thread) => {
+        const existingThread = document.querySelector(
+            `[threaduid="${thread._id}"]`
+        );
+        if (existingThread) {
+            updateRenderStatus(thread._id, true);
+            return false;
+        }
+        return true;
     });
 }
 
