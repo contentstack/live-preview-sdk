@@ -33,7 +33,6 @@ export function generateThread(
 
     const element = getElementByXpath(resolvedXPath);
     if (!element) {
-        console.error("Element not found for the given XPath:", resolvedXPath);
         return payload._id;
     }
 
