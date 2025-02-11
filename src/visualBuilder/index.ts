@@ -47,10 +47,12 @@ import { useRecalculateVariantDataCSLPValues } from "./eventManager/useRecalcula
 import { VB_EmptyBlockParentClass } from "..";
 import { useCollab } from "./eventManager/useCollab";
 import {
-    generateThread,
     handleMissingThreads,
+    processThreadsBatch,
+    filterUnrenderedThreads,
+    clearThreadStatus,
 } from "./generators/generateThread";
-import { IThreadDTO, IThreadRenderStatus } from "./types/collab.types";
+import { IThreadDTO } from "./types/collab.types";
 
 interface VisualBuilderGlobalStateImpl {
     previousSelectedEditableDOM: HTMLElement | Element | null;
@@ -71,79 +73,6 @@ export class VisualBuilder {
     private overlayWrapper: HTMLDivElement | null = null;
     private visualBuilderContainer: HTMLDivElement | null = null;
     private focusedToolbar: HTMLDivElement | null = null;
-
-    private retryConfig = {
-        maxRetries: 3,
-        retryDelay: 1000,
-    };
-
-    private threadRenderStatus: Map<string, IThreadRenderStatus> = new Map();
-
-    private delay(ms: number): Promise<void> {
-        return new Promise((resolve) => setTimeout(resolve, ms));
-    }
-
-    private getRenderStatus(threadId: string): IThreadRenderStatus {
-        if (!this.threadRenderStatus.has(threadId)) {
-            this.threadRenderStatus.set(threadId, {
-                threadId,
-                attempts: 0,
-                isRendered: false,
-            });
-        }
-        return this.threadRenderStatus.get(threadId)!;
-    }
-
-    private updateRenderStatus(threadId: string, isRendered: boolean): void {
-        const status = this.getRenderStatus(threadId);
-        status.isRendered = isRendered;
-        this.threadRenderStatus.set(threadId, status);
-    }
-
-    private async processThread(
-        thread: IThreadDTO
-    ): Promise<string | undefined> {
-        let status = this.getRenderStatus(thread._id);
-
-        while (status.attempts < this.retryConfig.maxRetries) {
-            try {
-                const result = generateThread(thread, { isNewThread: false });
-                if (result === undefined) {
-                    this.updateRenderStatus(thread._id, true);
-                    return undefined;
-                }
-
-                status.attempts++;
-                this.updateRenderStatus(thread._id, false);
-
-                if (status.attempts < this.retryConfig.maxRetries) {
-                    await this.delay(this.retryConfig.retryDelay);
-                }
-            } catch (error) {
-                console.error(`Error rendering thread ${thread._id}:`, error);
-                status.attempts++;
-                if (status.attempts >= this.retryConfig.maxRetries) {
-                    break;
-                }
-                await this.delay(this.retryConfig.retryDelay);
-            }
-        }
-
-        return thread._id;
-    }
-
-    private filterUnrenderedThreads(threads: IThreadDTO[]): IThreadDTO[] {
-        return threads.filter((thread) => {
-            const existingThread = document.querySelector(
-                `[threaduid="${thread._id}"]`
-            );
-            if (existingThread) {
-                this.updateRenderStatus(thread._id, true);
-                return false;
-            }
-            return true;
-        });
-    }
 
     static VisualBuilderGlobalState: Signal<VisualBuilderGlobalStateImpl> =
         signal({
@@ -275,37 +204,6 @@ export class VisualBuilder {
                     this.resizeObserver
                 );
 
-                const container = document.querySelector(
-                    ".visual-builder__container"
-                );
-                if (container && threadsPayload) {
-                    const unrenderedThreads =
-                        this.filterUnrenderedThreads(threadsPayload);
-
-                    if (unrenderedThreads.length > 0) {
-                        const missingThreadIds = (
-                            await Promise.all(
-                                unrenderedThreads.map((thread) =>
-                                    this.processThread(thread)
-                                )
-                            )
-                        ).filter(Boolean) as string[];
-
-                        missingThreadIds.forEach((threadId) =>
-                            this.threadRenderStatus.delete(threadId)
-                        );
-
-                        if (missingThreadIds.length > 0) {
-                            handleMissingThreads({
-                                payload: { isElementPresent: false },
-                                threadUids: missingThreadIds,
-                            });
-                        }
-                    }
-
-                    threadsPayload = [];
-                }
-
                 const emptyBlockParents = Array.from(
                     document.querySelectorAll(`.${VB_EmptyBlockParentClass}`)
                 );
@@ -335,6 +233,34 @@ export class VisualBuilder {
             100,
             { trailing: true }
         )
+    );
+
+    private threadMutationObserver = new MutationObserver(
+        debounce(() => {
+            const container = document.querySelector(
+                ".visual-builder__container"
+            );
+            if (container && threadsPayload) {
+                const unrenderedThreads =
+                    filterUnrenderedThreads(threadsPayload);
+
+                if (unrenderedThreads.length > 0) {
+                    processThreadsBatch(threadsPayload).then(
+                        (missingThreadIds) => {
+                            missingThreadIds.forEach(clearThreadStatus);
+                            if (missingThreadIds.length > 0) {
+                                handleMissingThreads({
+                                    payload: { isElementPresent: false },
+                                    threadUids: missingThreadIds,
+                                });
+                            }
+                        }
+                    );
+                }
+
+                threadsPayload = [];
+            }
+        }, 500)
     );
 
     constructor() {
@@ -403,9 +329,10 @@ export class VisualBuilder {
                     customCursor: this.customCursor,
                 });
 
-                this.mutationObserver.observe(document.body, {
+                this.threadMutationObserver.observe(document.body, {
                     childList: true,
                     subtree: true,
+                    attributes: false,
                 });
 
                 useHistoryPostMessageEvent();
@@ -420,6 +347,11 @@ export class VisualBuilder {
                     });
                     useScrollToField();
                     useHighlightCommentIcon();
+
+                    this.mutationObserver.observe(document.body, {
+                        childList: true,
+                        subtree: true,
+                    });
 
                     visualBuilderPostMessage?.on(
                         VisualBuilderPostMessageEvents.GET_ALL_ENTRIES_IN_CURRENT_PAGE,
@@ -471,6 +403,7 @@ export class VisualBuilder {
         // Disconnect observers
         this.resizeObserver.disconnect();
         this.mutationObserver.disconnect();
+        this.threadMutationObserver.disconnect();
 
         // Clear global state
         VisualBuilder.VisualBuilderGlobalState.value = {
