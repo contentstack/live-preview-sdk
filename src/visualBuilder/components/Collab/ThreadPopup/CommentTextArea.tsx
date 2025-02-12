@@ -1,6 +1,12 @@
 /** @jsxImportSource preact */
 import React from "preact/compat";
-import { useEffect, useState, useContext, useCallback } from "preact/hooks";
+import {
+    useEffect,
+    useState,
+    useContext,
+    useCallback,
+    useRef,
+} from "preact/hooks";
 import { collabStyles } from "../../../collab.style";
 import {
     ICommentPayload,
@@ -44,6 +50,13 @@ const initialState: ICommentState = {
 const CommentTextArea: React.FC<ICommentTextArea> = React.memo(
     ({ userState, handleOnSaveRef, comment, onClose }) => {
         const [state, setState] = useState<ICommentState>(initialState);
+        const [showSuggestions, setShowSuggestions] = useState(false);
+        const [cursorPosition, setCursorPosition] = useState({
+            top: 0,
+            left: 0,
+        });
+        const [searchTerm, setSearchTerm] = useState("");
+        const inputRef = useRef<HTMLTextAreaElement>(null);
 
         const {
             error,
@@ -123,6 +136,154 @@ const CommentTextArea: React.FC<ICommentTextArea> = React.memo(
                 textArea.removeEventListener("mouseleave", handleMouseLeave);
             };
         }, []);
+
+        // Find the @ symbol position and extract search term
+        const findMentionSearchPosition = (text: string, cursorPos: any) => {
+            const textBeforeCursor = text.slice(0, cursorPos);
+            const atSymbolIndex = textBeforeCursor.lastIndexOf("@");
+
+            if (atSymbolIndex === -1) return null;
+
+            const textBetweenAtAndCursor = textBeforeCursor.slice(
+                atSymbolIndex + 1
+            );
+            if (textBetweenAtAndCursor.includes(" ")) return null;
+
+            return {
+                start: atSymbolIndex,
+                searchTerm: textBetweenAtAndCursor,
+            };
+        };
+
+        // Filter users based on search term
+        const filteredUsers = userState.mentionsList.filter((user) => {
+            if (!searchTerm) return true;
+            return (
+                user.display.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                user.email?.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+        });
+
+        const insertMention = (user: any) => {
+            const mention = findMentionSearchPosition(
+                state.message,
+                inputRef.current?.selectionStart || 0
+            );
+            if (!mention) return;
+
+            const beforeMention = state.message.slice(0, mention.start);
+            const afterMention = state.message.slice(
+                inputRef.current?.selectionStart || 0
+            );
+            const newValue = `${beforeMention}@${user.email} ${afterMention}`;
+
+            setState((prevState) => ({
+                ...prevState,
+                message: newValue,
+                toUsers: [
+                    ...(prevState.toUsers || []),
+                    { display: user.email, id: user.identityHash },
+                ],
+            }));
+            setShowSuggestions(false);
+
+            // Focus back on input after selection
+            const ele = inputRef.current as HTMLTextAreaElement | null;
+            if (ele) {
+                ele.focus();
+            }
+        };
+
+        // Get cursor coordinates
+        const getCursorCoordinates = () => {
+            if (!inputRef.current) return { x: 0, y: 0 };
+
+            const input = inputRef.current as HTMLTextAreaElement;
+            const cursorPosition = input.selectionStart;
+
+            // Create a temporary div to measure text
+            const div = document.createElement("div");
+            div.style.position = "absolute";
+            div.style.visibility = "hidden";
+            div.style.whiteSpace = "pre-wrap";
+            div.style.wordWrap = "break-word";
+            div.style.font = window.getComputedStyle(input).font;
+            div.style.padding = window.getComputedStyle(input).padding;
+
+            // Get text before cursor
+            const textBeforeCursor = input.value.substring(0, cursorPosition);
+            div.textContent = textBeforeCursor;
+            document.body.appendChild(div);
+
+            // Calculate coordinates
+            const inputRect = input.getBoundingClientRect();
+            const divRect = div.getBoundingClientRect();
+
+            document.body.removeChild(div);
+
+            return {
+                x: inputRect.left + (divRect.width % inputRect.width),
+                y:
+                    inputRect.top +
+                    Math.floor(divRect.width / inputRect.width) *
+                        parseInt(window.getComputedStyle(input).lineHeight),
+            };
+        };
+
+        const calculatePosition = (textarea: any, cursorPosition: any) => {
+            const text = inputRef.current?.value;
+            const textBeforeCursor = text?.slice(0, cursorPosition);
+            const lines = textBeforeCursor?.split("\n");
+            const currentLineNumber = (lines?.length || 0) - 1;
+            const currentLine = lines?.[currentLineNumber];
+
+            // Get textarea properties
+            const style = window.getComputedStyle(textarea);
+            const lineHeight = parseInt(style.lineHeight);
+            const paddingLeft = parseInt(style.paddingLeft);
+            const paddingTop = parseInt(style.paddingTop);
+
+            // Create temporary span to measure text width up to cursor
+            const span = document.createElement("span");
+            span.style.font = style.font;
+            span.style.visibility = "hidden";
+            span.style.position = "absolute";
+            span.style.whiteSpace = "pre";
+            span.textContent = currentLine ? currentLine : "";
+            document.body.appendChild(span);
+
+            // Calculate horizontal position based on current line text width
+            const left = Math.min(
+                span.offsetWidth + paddingLeft,
+                textarea.offsetWidth - 200 // Keep list inside textarea
+            );
+            document.body.removeChild(span);
+
+            // Calculate vertical position based on current line
+            const currentLineY = currentLineNumber * lineHeight + paddingTop;
+            const nextLineY = currentLineY + lineHeight;
+
+            // Check if suggestion list would go below textarea
+            const textareaBottom = textarea.getBoundingClientRect().bottom;
+            const viewportHeight = window.innerHeight;
+            const suggestionsHeight = 160; // Fixed height for suggestions
+
+            // Adjust position to show above the current line if there's not enough space below
+            const spaceBelow =
+                viewportHeight -
+                (textarea.getBoundingClientRect().top + nextLineY);
+            const showAbove = spaceBelow < suggestionsHeight;
+
+            const top = showAbove
+                ? currentLineY - suggestionsHeight
+                : nextLineY;
+
+            return {
+                top,
+                left,
+                showAbove,
+            };
+        };
 
         const handleSubmit = useCallback(async () => {
             // If there's a validation error, don't proceed with saving.
@@ -238,6 +399,21 @@ const CommentTextArea: React.FC<ICommentTextArea> = React.memo(
             const target = event.target as HTMLTextAreaElement | null;
             if (!target) return;
             const newPlainTextValue = target.value;
+            const newPosition = target.selectionStart;
+
+            const mention = findMentionSearchPosition(
+                newPlainTextValue,
+                newPosition
+            );
+            if (mention) {
+                setSearchTerm(mention.searchTerm);
+                setShowSuggestions(true);
+                setCursorPosition(
+                    calculatePosition(inputRef.current, newPosition)
+                );
+            } else {
+                setShowSuggestions(false);
+            }
             const trimmedValue = newPlainTextValue.trim();
 
             // TODO mentions will be handled in upcoming PRs this is a zombie code for now
@@ -270,6 +446,16 @@ const CommentTextArea: React.FC<ICommentTextArea> = React.memo(
                 ...prevState,
                 message: newPlainTextValue,
             }));
+        };
+
+        const handleKeyDown = (e: any) => {
+            if (e.key === "@") {
+                const position = calculatePosition(
+                    inputRef.current,
+                    e.target.selectionStart
+                );
+                setCursorPosition(position);
+            }
         };
 
         return (
@@ -305,11 +491,43 @@ const CommentTextArea: React.FC<ICommentTextArea> = React.memo(
                             )}
                             value={state.message}
                             onChange={handleInputChange}
+                            onKeyDown={handleKeyDown}
                             maxLength={maxMessageLength}
                             placeholder="Enter a comment"
+                            ref={inputRef}
                         ></textarea>
                     </div>
                 </div>
+
+                {showSuggestions && filteredUsers.length > 0 && (
+                    <div
+                        className={classNames(
+                            "collab-thread-body--input--textarea--suggestionsList",
+                            collabStyles()[
+                                "collab-thread-body--input--textarea--suggestionsList"
+                            ]
+                        )}
+                        style={{
+                            left: `${cursorPosition.left}px`,
+                            top: `${cursorPosition.top}px`,
+                        }}
+                    >
+                        {filteredUsers.map((user) => (
+                            <button
+                                key={user.email}
+                                onClick={() => insertMention(user)}
+                                className={classNames(
+                                    "collab-thread-body--input--textarea--suggestionsList--button",
+                                    collabStyles()[
+                                        "collab-thread-body--input--textarea--suggestionsList--button"
+                                    ]
+                                )}
+                            >
+                                {user.display}
+                            </button>
+                        ))}
+                    </div>
+                )}
 
                 <div
                     className={classNames(
