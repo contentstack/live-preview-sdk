@@ -132,6 +132,7 @@ export function collabStyles() {
         "collab-icon": css`
             height: 1.25rem;
             width: 1.25rem;
+            cursor: pointer;
         `,
         "collab-icon-wrapper": css`
             padding: 0 0.5rem;
@@ -166,7 +167,7 @@ export function collabStyles() {
         "collab-button--disabled": css`
             cursor: not-allowed;
             opacity: 0.4;
-            pointer-events: none;
+            pointer-events: auto;
         `,
         "collab-button--type": {
             primary: css`
@@ -280,6 +281,7 @@ export function collabStyles() {
             padding: 0.625rem;
         `,
         "collab-thread--wrapper": css`
+            cursor: default;
             position: relative;
             padding: 0 !important;
             font-family: Inter;
