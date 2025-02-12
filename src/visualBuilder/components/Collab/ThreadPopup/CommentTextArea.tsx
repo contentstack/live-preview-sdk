@@ -523,9 +523,7 @@ const CommentTextArea: React.FC<ICommentTextArea> = React.memo(
                                     ]
                                 )}
                             >
-                                <div className="font-medium">
-                                    {user.display}
-                                </div>
+                                {user.display}
                             </button>
                         ))}
                     </div>
