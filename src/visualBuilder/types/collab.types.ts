@@ -83,6 +83,12 @@ export interface IThreadPopupState {
     editComment: string;
 }
 
+export interface IThreadRenderStatus {
+    threadId: string;
+    attempts: number;
+    isRendered: boolean;
+}
+
 export interface ICommentDTO {
     _id: string;
     threadUid: string;
@@ -165,6 +171,13 @@ export interface IThreadResolveArgs {
     payload: {
         threadState: number;
     };
+}
+
+export interface MissingThreadsInfo {
+    payload: {
+        isElementPresent: boolean;
+    };
+    threadUids: string[];
 }
 
 export interface IErrorState {

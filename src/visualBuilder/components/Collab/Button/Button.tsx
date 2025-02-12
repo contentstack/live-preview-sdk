@@ -3,7 +3,7 @@ import React from "preact/compat";
 import classNames from "classnames";
 import Icon, { IconProps } from "../Icon/Icon";
 import { iconComponents } from "../../icons/CollabIcons";
-import { collabStyles } from "../../../visualBuilder.style";
+import { collabStyles } from "../../../collab.style";
 
 type IconName = keyof typeof iconComponents;
 

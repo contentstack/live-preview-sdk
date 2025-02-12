@@ -25,7 +25,7 @@ import {
 import { getUserName } from "../../../utils/collabUtils";
 import { ThreadProvider } from "./ContextProvider/ThreadProvider";
 import useInfiniteScroll from "../../../hooks/use-infinite-scroll/useInfiniteScroll";
-import { collabStyles } from "../../../visualBuilder.style";
+import { collabStyles } from "../../../collab.style";
 import classNames from "classnames";
 
 interface IThreadPopup {
@@ -209,6 +209,7 @@ const ThreadPopup: React.FC<IThreadPopup> = React.memo(
                     />
                     <ThreadBody
                         handleOnSaveRef={handleOnSaveRef}
+                        onClose={onClose}
                         userState={state.userState}
                         isLoading={state.isLoading}
                         comments={state.comments}

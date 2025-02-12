@@ -4,7 +4,7 @@ import { JSX } from "preact";
 import Tooltip from "../Tooltip/Tooltip";
 import { iconComponents } from "../../icons/CollabIcons";
 import classNames from "classnames";
-import { collabStyles } from "../../../visualBuilder.style";
+import { collabStyles } from "../../../collab.style";
 
 type IconName = keyof typeof iconComponents;
 

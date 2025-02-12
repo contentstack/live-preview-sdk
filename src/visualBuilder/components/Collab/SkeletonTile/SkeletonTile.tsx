@@ -1,6 +1,6 @@
 /** @jsxImportSource preact */
 import React from "preact/compat";
-import { collabStyles } from "../../../visualBuilder.style";
+import { collabStyles } from "../../../collab.style";
 import classNames from "classnames";
 
 export type SkeletonTileProps = {
