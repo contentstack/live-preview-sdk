@@ -46,8 +46,10 @@ import { updatePopupPositions } from "./generators/generateThread";
 import { useRecalculateVariantDataCSLPValues } from "./eventManager/useRecalculateVariantDataCSLPValues";
 import { useCollab } from "./eventManager/useCollab";
 import {
-    generateThread,
     handleMissingThreads,
+    processThreadsBatch,
+    filterUnrenderedThreads,
+    clearThreadStatus,
 } from "./generators/generateThread";
 import { IThreadDTO } from "./types/collab.types";
 
@@ -197,24 +199,6 @@ export class VisualBuilder {
                     this.resizeObserver
                 );
 
-                const container = document.querySelector(
-                    ".visual-builder__container"
-                );
-                if (container && threadsPayload) {
-                    const missingThreadIds = threadsPayload
-                        ?.map((payload: IThreadDTO) =>
-                            generateThread(payload, { isNewThread: false })
-                        )
-                        .filter(Boolean) as string[];
-                    threadsPayload = [];
-                    if (missingThreadIds.length > 0) {
-                        handleMissingThreads({
-                            payload: { isElementPresent: false },
-                            threadUids: missingThreadIds,
-                        });
-                    }
-                }
-
                 const emptyBlockParents = Array.from(
                     document.querySelectorAll(
                         ".visual-builder__empty-block-parent"
@@ -246,6 +230,34 @@ export class VisualBuilder {
             100,
             { trailing: true }
         )
+    );
+
+    private threadMutationObserver = new MutationObserver(
+        debounce(() => {
+            const container = document.querySelector(
+                ".visual-builder__container"
+            );
+            if (container && threadsPayload) {
+                const unrenderedThreads =
+                    filterUnrenderedThreads(threadsPayload);
+
+                if (unrenderedThreads.length > 0) {
+                    processThreadsBatch(threadsPayload).then(
+                        (missingThreadIds) => {
+                            missingThreadIds.forEach(clearThreadStatus);
+                            if (missingThreadIds.length > 0) {
+                                handleMissingThreads({
+                                    payload: { isElementPresent: false },
+                                    threadUids: missingThreadIds,
+                                });
+                            }
+                        }
+                    );
+                }
+
+                threadsPayload = [];
+            }
+        }, 500)
     );
 
     constructor() {
@@ -314,9 +326,10 @@ export class VisualBuilder {
                     customCursor: this.customCursor,
                 });
 
-                this.mutationObserver.observe(document.body, {
+                this.threadMutationObserver.observe(document.body, {
                     childList: true,
                     subtree: true,
+                    attributes: false,
                 });
 
                 useHistoryPostMessageEvent();
@@ -331,6 +344,11 @@ export class VisualBuilder {
                     });
                     useScrollToField();
                     useHighlightCommentIcon();
+
+                    this.mutationObserver.observe(document.body, {
+                        childList: true,
+                        subtree: true,
+                    });
 
                     visualBuilderPostMessage?.on(
                         VisualBuilderPostMessageEvents.GET_ALL_ENTRIES_IN_CURRENT_PAGE,
@@ -382,6 +400,7 @@ export class VisualBuilder {
         // Disconnect observers
         this.resizeObserver.disconnect();
         this.mutationObserver.disconnect();
+        this.threadMutationObserver.disconnect();
 
         // Clear global state
         VisualBuilder.VisualBuilderGlobalState.value = {
