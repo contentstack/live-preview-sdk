@@ -1072,6 +1072,7 @@ export function collabStyles() {
             flex-direction: column;
             gap: 0.25rem;
             grid-gap: 0.25rem;
+            position: relative;
         `,
         "collab-thread-body--input": css`
             position: relative;
@@ -1121,6 +1122,54 @@ export function collabStyles() {
                 box-shadow: 0 0 0 0.0625rem #5d50be !important;
             }
         `,
+
+        "collab-thread-body--input--textarea--suggestionsList": css`
+            position: absolute;
+            background-color: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            box-shadow:
+                0 4px 6px -1px rgba(0, 0, 0, 0.1),
+                0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            max-height: 192px;
+            overflow-y: auto;
+            width: 256px;
+            max-height: 160px;
+            z-index: 50;
+            animation: fadeIn 0.2s ease-in-out;
+
+            @keyframes fadeIn {
+                from {
+                    opacity: 0;
+                    transform: translateY(-4px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+        `,
+
+        "collab-thread-body--input--textarea--suggestionsList--button": css`
+            width: 100%;
+            padding: 8px 16px;
+            text-align: left;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.2s;
+
+            &:hover {
+                background-color: #f3f4f6;
+            }
+
+            &:focus {
+                outline: none;
+                background-color: #f3f4f6;
+            }
+        `,
+
         "flex-center": css`
             display: flex;
             align-items: center;
