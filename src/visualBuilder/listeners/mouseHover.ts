@@ -131,6 +131,7 @@ async function handleMouseHover(params: HandleMouseHoverParams): Promise<void> {
                     isContentEditable(eventTarget) ||
                     isCollabThread(eventTarget))
             ) {
+                handleCursorPosition(params.event, params.customCursor);
                 hideCustomCursor(params.customCursor);
                 return;
             }
@@ -143,6 +144,10 @@ async function handleMouseHover(params: HandleMouseHoverParams): Promise<void> {
                 overlayWrapper: params.overlayWrapper,
             });
             handleCursorPosition(params.event, params.customCursor);
+            if (config?.collab.enable && config?.collab.isFeedbackMode) {
+                showCustomCursor(params.customCursor);
+                collabCustomCursor(params.customCursor);
+            }
             return;
         }
 

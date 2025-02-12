@@ -65,6 +65,9 @@ export const useCollabIndicator = ({
             }
         } else {
             setShowPopup(false);
+            const closestDiv = buttonRef.current?.closest("div[field-path]");
+            if (!closestDiv?.hasAttribute("threaduid")) closestDiv?.remove();
+
             if (config?.collab?.isFeedbackMode === false) {
                 Config.set("collab.isFeedbackMode", true);
             }
