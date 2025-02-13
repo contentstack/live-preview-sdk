@@ -92,6 +92,22 @@ describe("Utility Functions", () => {
             expect(result.message).toBe("Hello {{1}} and {{2}}");
             expect(result.toUsers).toEqual(["1", "2"]);
         });
+
+        it("should preserve new lines while trimming spaces and replacing mentions", () => {
+            const state = {
+                message:
+                    "   Hello   @JohnDoe  \n   This  is   a test  \n   @JaneDoe  ",
+                toUsers: [
+                    { id: "1", display: "@JohnDoe" },
+                    { id: "2", display: "@JaneDoe" },
+                ],
+                createdBy: "1",
+                author: "john.doe@example.com",
+            };
+            const result = getCommentBody(state);
+            expect(result.message).toBe("Hello {{1}}\nThis is a test\n{{2}}");
+            expect(result.toUsers).toEqual(["1", "2"]);
+        });
     });
 
     describe("getThreadTitle", () => {
