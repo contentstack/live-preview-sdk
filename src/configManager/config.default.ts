@@ -16,6 +16,10 @@ export function getUserInitData(): IInitData {
             position: "top",
             includeByQueryParameter: true,
         },
+        editButtonBuilder: {
+            enable: true,
+            position: "bottom-right"
+        },
 
         mode: "preview",
 
@@ -49,6 +53,10 @@ export function getDefaultConfig(): IConfig {
             exclude: [],
             position: "top",
             includeByQueryParameter: true,
+        },
+        editButtonBuilder: {
+            enable: true,
+            position: "bottom-right"
         },
 
         hash: "",
