@@ -54,7 +54,11 @@ export function addFocusedToolbar(params: AddFocusedToolbarParams): void {
 
     if (!editableElement || !params.focusedToolbar) return;
 
-    appendFocusedToolbar(params.eventDetails, params.focusedToolbar, params.hideOverlay);
+    appendFocusedToolbar(
+        params.eventDetails,
+        params.focusedToolbar,
+        params.hideOverlay
+    );
 }
 
 async function handleBuilderInteraction(
@@ -67,6 +71,11 @@ async function handleBuilderInteraction(
         (eventTarget.hasAttribute("data-cslp") ||
             eventTarget.closest("[data-cslp]"));
 
+    // if the target element is a studio-ui element, return
+    // this is currently used for the "Edit in Studio" button
+    if (eventTarget?.dataset["studio-ui"] === "true") {
+        return;
+    }
     // prevent default behavior for anchor elements and elements with cslp attribute
     if (
         isAnchorElement ||
@@ -110,9 +119,7 @@ async function handleBuilderInteraction(
 
     // if the selected element is our empty block element, return
     if (
-        editableElement.classList.contains(
-            VB_EmptyBlockParentClass
-        ) ||
+        editableElement.classList.contains(VB_EmptyBlockParentClass) ||
         editableElement.classList.contains("visual-builder__empty-block")
     ) {
         return;
@@ -151,7 +158,7 @@ async function handleBuilderInteraction(
                 focusedToolbar: params.focusedToolbar,
                 resizeObserver: params.resizeObserver,
             });
-        }
+        },
     });
 
     const { content_type_uid, fieldPath, cslpValue } = fieldMetadata;
