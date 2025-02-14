@@ -26,7 +26,7 @@ import { VB_EmptyBlockParentClass } from "../..";
 type HandleBuilderInteractionParams = Omit<
     EventListenerHandlerParams,
     "eventDetails" | "customCursor"
->;
+> & { reEvaluate?: boolean };
 
 type AddFocusOverlayParams = Pick<
     EventListenerHandlerParams,
@@ -54,7 +54,11 @@ export function addFocusedToolbar(params: AddFocusedToolbarParams): void {
 
     if (!editableElement || !params.focusedToolbar) return;
 
-    appendFocusedToolbar(params.eventDetails, params.focusedToolbar, params.hideOverlay);
+    appendFocusedToolbar(
+        params.eventDetails,
+        params.focusedToolbar,
+        params.hideOverlay
+    );
 }
 
 async function handleBuilderInteraction(
@@ -95,10 +99,11 @@ async function handleBuilderInteraction(
     const { editableElement, fieldMetadata } = eventDetails;
 
     if (
-        VisualBuilder.VisualBuilderGlobalState.value
+        (VisualBuilder.VisualBuilderGlobalState.value
             .previousSelectedEditableDOM &&
-        VisualBuilder.VisualBuilderGlobalState.value
-            .previousSelectedEditableDOM !== editableElement
+            VisualBuilder.VisualBuilderGlobalState.value
+                .previousSelectedEditableDOM !== editableElement) ||
+        params.reEvaluate
     ) {
         cleanIndividualFieldResidual({
             overlayWrapper: params.overlayWrapper,
@@ -110,9 +115,7 @@ async function handleBuilderInteraction(
 
     // if the selected element is our empty block element, return
     if (
-        editableElement.classList.contains(
-            VB_EmptyBlockParentClass
-        ) ||
+        editableElement.classList.contains(VB_EmptyBlockParentClass) ||
         editableElement.classList.contains("visual-builder__empty-block")
     ) {
         return;
@@ -127,14 +130,14 @@ async function handleBuilderInteraction(
             .previousSelectedEditableDOM;
     if (
         previousSelectedElement &&
-        previousSelectedElement === editableElement
+        previousSelectedElement === editableElement &&
+        !params.reEvaluate
     ) {
         return;
     }
 
     VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
         editableElement;
-
     addOverlay({
         overlayWrapper: params.overlayWrapper,
         resizeObserver: params.resizeObserver,
@@ -151,7 +154,7 @@ async function handleBuilderInteraction(
                 focusedToolbar: params.focusedToolbar,
                 resizeObserver: params.resizeObserver,
             });
-        }
+        },
     });
 
     const { content_type_uid, fieldPath, cslpValue } = fieldMetadata;
@@ -207,6 +210,24 @@ async function handleBuilderInteraction(
         resizeObserver: params.resizeObserver,
         lastEditedField: previousSelectedElement,
     });
+
+    const focusElementObserver = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+            if (
+                mutation.type === "attributes" &&
+                mutation.attributeName === "data-cslp"
+            ) {
+                focusElementObserver?.disconnect();
+                VisualBuilder.VisualBuilderGlobalState.value.focusElementObserver =
+                    null;
+                handleBuilderInteraction({ ...params, reEvaluate: true });
+            }
+        });
+    });
+    //store it in global state
+    VisualBuilder.VisualBuilderGlobalState.value.focusElementObserver =
+        focusElementObserver;
+    focusElementObserver.observe(editableElement, { attributes: true });
 }
 
 export default handleBuilderInteraction;
