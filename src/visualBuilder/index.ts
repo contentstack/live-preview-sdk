@@ -257,7 +257,7 @@ export class VisualBuilder {
 
                 threadsPayload = [];
             }
-        }, 500)
+        }, 1000)
     );
 
     constructor() {

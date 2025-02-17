@@ -97,7 +97,7 @@ export const useCollabOperations = () => {
             author: inviteMetadata.currentUser.email,
             pageRoute: window.location.pathname,
             inviteUid: inviteMetadata.inviteUid,
-            createdBy: inviteMetadata.currentUser.identityHash,
+            createdBy: inviteMetadata.currentUser.uid,
         };
 
         const data = (await visualBuilderPostMessage?.send(

@@ -34,12 +34,12 @@ vi.mock("moment", () => {
 const mockUserState = {
     userMap: {
         user1: {
-            identityHash: "user1",
+            uid: "user1",
             email: "john.doe@example.com",
         },
     },
     currentUser: {
-        identityHash: "user1",
+        uid: "user1",
         email: "jane.doe@example.com",
     },
     mentionsList: [],
@@ -73,6 +73,7 @@ describe("CommentCard", () => {
             <CommentCard
                 comment={mockCommentForLoading}
                 userState={mockUserState}
+                onClose={vi.fn()}
                 mode="view"
                 handleOnSaveRef={{ current: vi.fn() }}
             />

@@ -93,7 +93,7 @@ export function getDefaultConfig(): IConfig {
             inviteMetadata: {
                 currentUser: {
                     email: "",
-                    identityHash: "",
+                    uid: "",
                 },
                 users: [],
                 inviteUid: "",
