@@ -18,12 +18,12 @@ vi.mock("../../../../utils/collabUtils", () => ({
 const mockUserState: IUserState = {
     userMap: {
         user3: {
-            identityHash: "user3",
+            uid: "user3",
             email: "john.doe@example.com",
         },
     },
     currentUser: {
-        identityHash: "user3",
+        uid: "user3",
         email: "jane.doe@example.com",
     },
     mentionsList: [],

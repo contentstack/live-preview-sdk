@@ -8,6 +8,7 @@ import { IActiveThread, IInviteMetadata } from "../../types/collab.types";
 import { useCollabIndicator } from "../../hooks/useCollabIndicator";
 import { useCollabOperations } from "../../hooks/useCollabOperations";
 import { handleEmptyThreads } from "../../generators/generateThread";
+import { iconComponents } from "../icons/CollabIcons";
 export interface ICollabIndicator {
     newThread?: boolean;
     activeThread?: IActiveThread;
@@ -50,27 +51,20 @@ const CollabIndicator: React.FC<ICollabIndicator> = (props) => {
             Config.set("collab.isFeedbackMode", true);
         }
     };
+    const IconComponent = iconComponents["Indicator"];
 
     return (
         <>
             <button
                 ref={buttonRef}
+                data-testid="collab-indicator"
                 className={classNames(
                     "collab-indicator",
-                    collabStyles()[
-                        showPopup
-                            ? "collab-indicator-active"
-                            : "collab-indicator"
-                    ]
+                    collabStyles()["collab-indicator"]
                 )}
-                data-testid="collab-indicator"
                 onClick={togglePopup}
             >
-                {!showPopup && (
-                    <span className={"collab-indicator__number"}>
-                        {activeThread.sequenceNumber}
-                    </span>
-                )}
+                <IconComponent active={!showPopup} />
             </button>
             {showPopup && (
                 <div
