@@ -300,13 +300,13 @@ const CommentTextArea: React.FC<ICommentTextArea> = React.memo(
                 // Prepare the comment data by constructing the body with mentions replaced by UIDs.
                 setState((prevState) => ({
                     ...prevState,
-                    createdBy: userState.currentUser.identityHash,
+                    createdBy: userState.currentUser.uid,
                 }));
 
                 const commentPayload = {
                     ...getCommentBody({
                         ...state,
-                        createdBy: userState.currentUser.identityHash,
+                        createdBy: userState.currentUser.uid,
                         author: userState.currentUser.email,
                     }),
                 };
