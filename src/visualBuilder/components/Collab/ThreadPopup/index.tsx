@@ -112,9 +112,9 @@ const ThreadPopup: React.FC<IThreadPopup> = React.memo(
                     userList.push({
                         display: userName,
                         email: user.email,
-                        identityHash: user.identityHash,
+                        uid: user.uid,
                     });
-                    userMap[user.identityHash] = { ...user, display: userName };
+                    userMap[user.uid] = { ...user, display: userName };
                 }
             });
 

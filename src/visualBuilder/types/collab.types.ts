@@ -1,8 +1,10 @@
 //User
-export declare interface IUserDTO {
+export interface IUserDTO {
     display?: string;
     email: string;
-    identityHash: string;
+    uid: string;
+    firstName?: string | null;
+    lastName?: string | null;
 }
 
 export declare interface IUserState {
@@ -26,7 +28,7 @@ export declare type IMentionItem = { id: string; display: string };
 export declare interface IMentionList {
     display: string;
     email?: string;
-    identityHash?: string;
+    uid?: string;
 }
 
 export declare type IMentionedList = Array<IMentionItem>;
