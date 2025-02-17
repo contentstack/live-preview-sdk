@@ -81,14 +81,10 @@ async function handleBuilderInteraction(
     }
 
     const eventDetails = getCsDataOfElement(params.event);
-    visualBuilderPostMessage
-        ?.send(VisualBuilderPostMessageEvents.MOUSE_CLICK, {
-            cslpData: eventDetails?.cslpData,
-            fieldMetadata: eventDetails?.fieldMetadata,
-        })
-        .catch((err) => {
-            console.warn("Error while sending post message", err);
-        });
+
+    // Send mouse click post message
+    sendMouseClickPostMessage(eventDetails);
+
     if (
         !eventDetails ||
         !params.overlayWrapper ||
@@ -96,28 +92,13 @@ async function handleBuilderInteraction(
     ) {
         return;
     }
+
     const { editableElement, fieldMetadata } = eventDetails;
+    // Clean residuals if necessary
+    cleanResidualsIfNeeded(params, editableElement);
 
-    if (
-        (VisualBuilder.VisualBuilderGlobalState.value
-            .previousSelectedEditableDOM &&
-            VisualBuilder.VisualBuilderGlobalState.value
-                .previousSelectedEditableDOM !== editableElement) ||
-        params.reEvaluate
-    ) {
-        cleanIndividualFieldResidual({
-            overlayWrapper: params.overlayWrapper,
-            visualBuilderContainer: params.visualBuilderContainer,
-            focusedToolbar: params.focusedToolbar,
-            resizeObserver: params.resizeObserver,
-        });
-    }
-
-    // if the selected element is our empty block element, return
-    if (
-        editableElement.classList.contains(VB_EmptyBlockParentClass) ||
-        editableElement.classList.contains("visual-builder__empty-block")
-    ) {
+    // Return if the selected element is an empty block
+    if (isEmptyBlockElement(editableElement)) {
         return;
     }
 
@@ -129,15 +110,87 @@ async function handleBuilderInteraction(
         VisualBuilder.VisualBuilderGlobalState.value
             .previousSelectedEditableDOM;
     if (
-        previousSelectedElement &&
-        previousSelectedElement === editableElement &&
-        !params.reEvaluate
+        isSameSelectedElement(previousSelectedElement, editableElement, params)
     ) {
         return;
     }
 
     VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
         editableElement;
+
+    // Add overlay and focused toolbar
+    addOverlayAndToolbar(params, eventDetails, editableElement);
+
+    const { cslpValue } = fieldMetadata;
+
+    toggleHighlightedCommentIconDisplay(cslpValue, false);
+
+    // Handle field schema and individual fields
+    await handleFieldSchemaAndIndividualFields(
+        params,
+        eventDetails,
+        fieldMetadata,
+        editableElement
+    );
+
+    // Observe changes to the editable element
+    observeEditableElementChanges(params, editableElement);
+}
+
+function sendMouseClickPostMessage(eventDetails: any) {
+    visualBuilderPostMessage
+        ?.send(VisualBuilderPostMessageEvents.MOUSE_CLICK, {
+            cslpData: eventDetails?.cslpData,
+            fieldMetadata: eventDetails?.fieldMetadata,
+        })
+        .catch((err) => {
+            console.warn("Error while sending post message", err);
+        });
+}
+function cleanResidualsIfNeeded(
+    params: HandleBuilderInteractionParams,
+    editableElement: Element
+) {
+    const previousSelectedElement =
+        VisualBuilder.VisualBuilderGlobalState.value
+            .previousSelectedEditableDOM;
+    if (
+        (previousSelectedElement &&
+            previousSelectedElement !== editableElement) ||
+        params.reEvaluate
+    ) {
+        cleanIndividualFieldResidual({
+            overlayWrapper: params.overlayWrapper!,
+            visualBuilderContainer: params.visualBuilderContainer,
+            focusedToolbar: params.focusedToolbar,
+            resizeObserver: params.resizeObserver,
+        });
+    }
+}
+function isEmptyBlockElement(editableElement: Element): boolean {
+    return (
+        editableElement.classList.contains(VB_EmptyBlockParentClass) ||
+        editableElement.classList.contains("visual-builder__empty-block")
+    );
+}
+
+function isSameSelectedElement(
+    previousSelectedElement: Element | null,
+    editableElement: Element,
+    params: HandleBuilderInteractionParams
+): boolean {
+    return !!(
+        previousSelectedElement &&
+        previousSelectedElement === editableElement &&
+        !params.reEvaluate
+    );
+}
+
+function addOverlayAndToolbar(
+    params: HandleBuilderInteractionParams,
+    eventDetails: any,
+    editableElement: Element
+) {
     addOverlay({
         overlayWrapper: params.overlayWrapper,
         resizeObserver: params.resizeObserver,
@@ -156,18 +209,20 @@ async function handleBuilderInteraction(
             });
         },
     });
-
-    const { content_type_uid, fieldPath, cslpValue } = fieldMetadata;
-
-    toggleHighlightedCommentIconDisplay(cslpValue, false);
-
+}
+async function handleFieldSchemaAndIndividualFields(
+    params: HandleBuilderInteractionParams,
+    eventDetails: any,
+    fieldMetadata: any,
+    editableElement: Element
+) {
+    const { content_type_uid, fieldPath } = fieldMetadata;
     const fieldSchema = await FieldSchemaMap.getFieldSchema(
         content_type_uid,
         fieldPath
     );
 
     if (fieldSchema) {
-        // after field schema is available re-add disabled overlay
         const { isDisabled } = isFieldDisabled(fieldSchema, eventDetails);
         if (isDisabled) {
             addOverlay({
@@ -179,38 +234,22 @@ async function handleBuilderInteraction(
         }
     }
 
-    // This is most probably redundant code, as the handleIndividualFields function
-    // takes care of this
-    // TODO: Remove this
-    // if (
-    //     fieldSchema.data_type === "block" ||
-    //     fieldSchema.multiple ||
-    //     (fieldSchema.data_type === "reference" &&
-    //         // @ts-ignore
-    //         fieldSchema.field_metadata.ref_multiple)
-    // ) {
-    //     handleAddButtonsForMultiple(eventDetails, {
-    //         editableElement: editableElement,
-    //         visualBuilderContainer: params.visualBuilderContainer,
-    //         resizeObserver: params.resizeObserver,
-    //     });
-    // } else {
-    //     removeAddInstanceButtons({
-    //         eventTarget: params.event.target,
-    //         visualBuilderContainer: params.visualBuilderContainer,
-    //         overlayWrapper: params.overlayWrapper,
-    //     });
-    // }
     visualBuilderPostMessage?.send(VisualBuilderPostMessageEvents.FOCUS_FIELD, {
         DOMEditStack: getDOMEditStack(editableElement),
     });
 
     await handleIndividualFields(eventDetails, {
-        visualBuilderContainer: params.visualBuilderContainer,
+        visualBuilderContainer: params.visualBuilderContainer!,
         resizeObserver: params.resizeObserver,
-        lastEditedField: previousSelectedElement,
+        lastEditedField:
+            VisualBuilder.VisualBuilderGlobalState.value
+                .previousSelectedEditableDOM,
     });
-
+}
+function observeEditableElementChanges(
+    params: HandleBuilderInteractionParams,
+    editableElement: Element
+) {
     const focusElementObserver = new MutationObserver((mutations) => {
         mutations.forEach((mutation) => {
             if (
@@ -224,7 +263,7 @@ async function handleBuilderInteraction(
             }
         });
     });
-    //store it in global state
+
     VisualBuilder.VisualBuilderGlobalState.value.focusElementObserver =
         focusElementObserver;
     focusElementObserver.observe(editableElement, { attributes: true });
