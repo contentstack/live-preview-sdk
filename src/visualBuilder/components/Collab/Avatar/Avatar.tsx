@@ -24,7 +24,15 @@ interface DisplayAvatarContentProps {
 }
 
 function getInitials(name?: string): string {
-    return name ? name.substring(0, 2) : "";
+    if (!name) return "";
+
+    const nameParts = name.trim().split(" ");
+
+    if (nameParts.length === 1) {
+        return name.substring(0, 2);
+    }
+
+    return nameParts[0][0] + nameParts[nameParts.length - 1][0];
 }
 
 function DisplayAvatarContent({

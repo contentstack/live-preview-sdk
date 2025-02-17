@@ -16,7 +16,7 @@ describe("Utility Functions", () => {
     describe("getUserName", () => {
         it("should return email of the user", () => {
             const user: IUserDTO = {
-                identityHash: "1",
+                uid: "1",
                 email: "john.doe@example.com",
             };
             expect(getUserName(user)).toBe("john.doe@example.com");
@@ -111,24 +111,24 @@ describe("Utility Functions", () => {
     });
 
     describe("getThreadTitle", () => {
-        it('should return "Add New Feedback" when the comment count is 0', () => {
+        it('should return "Add New Comment" when the comment count is 0', () => {
             const result = getThreadTitle(0);
-            expect(result).toBe("Add New Feedback");
+            expect(result).toBe("Add New Comment");
         });
 
-        it('should return "1 Feedback" when the comment count is 1', () => {
+        it('should return "1 Comment" when the comment count is 1', () => {
             const result = getThreadTitle(1);
-            expect(result).toBe("1 Feedback");
+            expect(result).toBe("1 Comment");
         });
 
         it('should return "{commentCount} Comments" when the comment count is greater than 1', () => {
             const result = getThreadTitle(5);
-            expect(result).toBe("5 Feedbacks");
+            expect(result).toBe("5 Comments");
         });
 
         it("should handle edge cases with large numbers", () => {
             const result = getThreadTitle(1000);
-            expect(result).toBe("1000 Feedbacks");
+            expect(result).toBe("1000 Comments");
         });
     });
 });

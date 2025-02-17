@@ -137,20 +137,20 @@ const mockCreateNewThread = vi.fn().mockResolvedValue({});
 
 const inviteMetadata: IInviteMetadata = {
     currentUser: {
-        identityHash: "u3",
+        uid: "u3",
         email: "john.doe@example.com",
     },
     users: [
         {
-            identityHash: "u1",
+            uid: "u1",
             email: "john@example.com",
         },
         {
-            identityHash: "u2",
+            uid: "u2",
             email: "jane@example.com",
         },
         {
-            identityHash: "u3",
+            uid: "u3",
             email: "john.doe@example.com",
         },
     ],

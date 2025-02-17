@@ -20,8 +20,8 @@ const escapeRegExp = (string: string): string => {
  * @returns {string} The title for the thread.
  */
 export const getThreadTitle = (commentCount: number): string => {
-    if (commentCount === 0) return "Add New Feedback";
-    return commentCount === 1 ? "1 Feedback" : `${commentCount} Feedbacks`;
+    if (commentCount === 0) return "Add New Comment";
+    return commentCount === 1 ? "1 Comment" : `${commentCount} Comments`;
 };
 
 /**
@@ -30,7 +30,9 @@ export const getThreadTitle = (commentCount: number): string => {
  * @returns {string} The user's email.
  */
 export const getUserName = (user: IUserDTO): string => {
-    return user.email;
+    return user.firstName && user.lastName
+        ? `${user.firstName} ${user.lastName}`
+        : user.firstName || user.lastName || user.email;
 };
 
 /**

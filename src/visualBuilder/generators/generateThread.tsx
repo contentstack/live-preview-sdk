@@ -8,7 +8,8 @@ import { MissingThreadsInfo } from "../types/collab.types";
 import visualBuilderPostMessage from "../utils/visualBuilderPostMessage";
 import { VisualBuilderPostMessageEvents } from "../utils/types/postMessage.types";
 
-const highlighCommentOffset = 20;
+const popupTopOffset = 43;
+const popupLeftOffset = 9;
 
 const hiddenClass = css`
     display: none;
@@ -44,8 +45,8 @@ export function generateThread(
     popupContainer.setAttribute("field-path", resolvedXPath);
     popupContainer.setAttribute("relative", `x: ${relativeX}, y: ${relativeY}`);
     popupContainer.style.position = "absolute";
-    popupContainer.style.top = `${top - highlighCommentOffset}px`;
-    popupContainer.style.left = `${left - highlighCommentOffset}px`;
+    popupContainer.style.top = `${top - popupTopOffset}px`;
+    popupContainer.style.left = `${left - popupLeftOffset}px`;
     if (updateConfig) {
         popupContainer.style.zIndex = "1000";
     } else {
@@ -126,8 +127,8 @@ export function updateCollabIconPosition() {
         const x = rect.left + rect.width * relativeX + window.scrollX;
         const y = rect.top + rect.height * relativeY + window.scrollY;
 
-        icon.style.top = `${y - highlighCommentOffset}px`;
-        icon.style.left = `${x - highlighCommentOffset}px`;
+        icon.style.top = `${y - popupTopOffset}px`;
+        icon.style.left = `${x - popupLeftOffset}px`;
         icon.classList.remove(hiddenClass);
     });
 }
@@ -247,7 +248,7 @@ export function handleEmptyThreads() {
 
 const retryConfig = {
     maxRetries: 3,
-    retryDelay: 500,
+    retryDelay: 1000,
 };
 
 let isProcessingThreads = false;

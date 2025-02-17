@@ -91,7 +91,7 @@ const CommentActionBar: React.FC<ICommentActionBar> = ({
         );
     }
 
-    if (commentUser.identityHash !== currentUser.identityHash || !commentUID) {
+    if (commentUser.uid !== currentUser.uid || !commentUID) {
         return null;
     }
 
