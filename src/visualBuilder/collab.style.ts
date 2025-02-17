@@ -12,8 +12,8 @@ const skeletonTileProgressSlide = keyframes`
 export function collabStyles() {
     return {
         "collab-indicator": css`
-            width: 36px;
-            height: 36px;
+            width: 2.25rem;
+            height: 2.25rem;
             background-color: gray;
             border-radius: 50% 50% 50% 0%;
             border: 2px solid white;
@@ -23,22 +23,6 @@ export function collabStyles() {
             cursor: pointer;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         `,
-        // "collab-indicator-active": css`
-        //     background: #6c5ce7;
-        //     height: 1.75rem;
-        //     width: 1.75rem;
-        //     display: flex;
-        //     align-items: center;
-        //     justify-content: center;
-        //     border: 2px solid white;
-        //     color: white;
-        //     border-radius: 50%;
-        //     font-family: Inter;
-        //     font-size: 16px;
-        //     font-weight: 600;
-        //     text-align: center;
-        //     position: relative;
-        // `,
         "collab-popup": css`
             position: fixed;
             z-index: 1000;
