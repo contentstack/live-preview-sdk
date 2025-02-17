@@ -34,6 +34,7 @@ const CommentCard = ({
     mode,
 }: ICommentCard) => {
     const [commentUser, setCommentUser] = useState<IUserDTO | null>(null);
+    const [isHovered, setIsHovered] = useState(false);
 
     useEffect(() => {
         if (comment) {
@@ -43,7 +44,6 @@ const CommentCard = ({
         }
     }, [comment, userState]);
 
-    // Memoize formattedDate to avoid recalculating on every render
     const formattedDate = useMemo(() => formatCommentDate(comment), [comment]);
 
     if (!commentUser) {
@@ -56,6 +56,8 @@ const CommentCard = ({
                 "collab-thread-comment--wrapper",
                 collabStyles()["collab-thread-comment--wrapper"]
             )}
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
         >
             <div
                 className={classNames(
@@ -69,7 +71,7 @@ const CommentCard = ({
                     avatar={
                         {
                             name: getUserName(commentUser),
-                            id: commentUser.identityHash,
+                            id: commentUser.uid,
                         } as any
                     }
                 />
@@ -102,12 +104,14 @@ const CommentCard = ({
                         </div>
                     )}
                 </div>
-                <CommentActionBar
-                    mode={mode}
-                    commentUser={commentUser}
-                    currentUser={userState.currentUser}
-                    commentUID={comment?._id}
-                />
+                {isHovered && (
+                    <CommentActionBar
+                        mode={mode}
+                        commentUser={commentUser}
+                        currentUser={userState.currentUser}
+                        commentUID={comment?._id}
+                    />
+                )}
             </div>
             {mode === "edit" ? (
                 <CommentTextArea
