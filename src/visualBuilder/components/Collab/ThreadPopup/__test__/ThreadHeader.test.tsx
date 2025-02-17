@@ -46,7 +46,7 @@ describe("ThreadHeader Component", () => {
     it("renders the component with the correct title", () => {
         render(<ThreadHeader {...defaultProps} displayResolve={false} />);
         expect(
-            screen.getByText(`${defaultProps.commentCount} Feedbacks`)
+            screen.getByText(`${defaultProps.commentCount} Comments`)
         ).toBeInTheDocument();
     });
 
