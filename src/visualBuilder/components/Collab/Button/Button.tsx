@@ -1,5 +1,6 @@
 /** @jsxImportSource preact */
 import React from "preact/compat";
+import { JSX } from "preact";
 import classNames from "classnames";
 import Icon, { IconProps } from "../Icon/Icon";
 import { iconComponents } from "../../icons/CollabIcons";
@@ -12,7 +13,7 @@ interface ButtonProps {
     children?: React.ReactNode;
     className?: string;
     testId?: string;
-    onClick?: React.MouseEventHandler<HTMLButtonElement | HTMLAnchorElement>;
+    onClick?: JSX.MouseEventHandler<HTMLButtonElement | HTMLAnchorElement>;
     disabled?: boolean;
     type?: "button" | "submit" | "reset";
     style?: React.CSSProperties;

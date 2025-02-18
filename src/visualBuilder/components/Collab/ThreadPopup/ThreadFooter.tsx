@@ -1,5 +1,6 @@
 /** @jsxImportSource preact */
 import React from "preact/compat";
+import { JSX } from "preact";
 import { useState } from "preact/hooks";
 import Button from "../Button/Button";
 import ButtonGroup from "../ButtonGroup/ButtonGroup";
@@ -20,7 +21,9 @@ const ThreadFooter = ({
     editComment,
 }: IThreadFooter) => {
     const [loading, setLoading] = useState(false);
-    const onSubmit = async (event: React.MouseEvent<HTMLButtonElement>) => {
+    const onSubmit: JSX.MouseEventHandler<HTMLButtonElement> = async (
+        event
+    ) => {
         setLoading(true);
         event.preventDefault();
         await handleOnSaveRef.current?.();
