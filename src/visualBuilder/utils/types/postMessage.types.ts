@@ -46,4 +46,5 @@ export enum VisualBuilderPostMessageEvents {
     COLLAB_DISABLE = "collab-disable",
     COLLAB_THREAD_REMOVE = "collab-thread-remove",
     COLLAB_THREAD_REOPEN = "collab-thread-reopen",
+    COLLAB_THREAD_HIGHLIGHT = "collab-thread-highlight",
 }

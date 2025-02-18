@@ -38,6 +38,7 @@ const CollabIndicator: React.FC<ICollabIndicator> = (props) => {
         resolveThread,
         fetchComments,
         createNewThread,
+        deleteThread,
     } = useCollabOperations();
 
     const handleClose = (isResolved: boolean = false) => {
@@ -85,6 +86,7 @@ const CollabIndicator: React.FC<ICollabIndicator> = (props) => {
                         loadMoreMessages={fetchComments}
                         activeThread={activeThread}
                         setActiveThread={setActiveThread}
+                        onDeleteThread={deleteThread}
                         createNewThread={() =>
                             createNewThread(buttonRef, inviteMetadata)
                         }
