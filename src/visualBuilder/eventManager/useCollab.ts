@@ -4,6 +4,7 @@ import Config from "../../configManager/configManager";
 import {
     removeAllCollabIcons,
     removeCollabIcon,
+    HighlightThread,
 } from "../generators/generateThread";
 import {
     generateThread,
@@ -79,10 +80,19 @@ export const useCollab = () => {
         }
     );
 
+    const collabThreadHighlight = visualBuilderPostMessage?.on(
+        VisualBuilderPostMessageEvents.COLLAB_THREAD_HIGHLIGHT,
+        (data: any) => {
+            const { threadUid } = data.data;
+            HighlightThread(threadUid);
+        }
+    );
+
     return () => {
         collabEnable?.unregister();
         collabDisable?.unregister();
         collabThreadRemove?.unregister();
         collabThreadReopen?.unregister();
+        collabThreadHighlight?.unregister();
     };
 };

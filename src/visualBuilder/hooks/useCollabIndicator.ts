@@ -37,27 +37,59 @@ export const useCollabIndicator = ({
     }, [showPopup]);
 
     useEffect(() => {
-        const handleExternalClose = () => {
+        const handleTogglePopup = (event: Event) => {
+            const { threadUid, action } = (event as CustomEvent).detail;
+
+            const thread = document.querySelector(
+                `div[threaduid='${threadUid}']`
+            );
+
             handleEmptyThreads();
             const closestDiv = buttonRef.current?.closest("div[field-path]");
             if (closestDiv) {
                 (closestDiv as HTMLElement).style.zIndex = "999";
             }
             setShowPopup(false);
+
+            if (
+                action === "open" &&
+                thread &&
+                thread.contains(buttonRef.current)
+            ) {
+                setShowPopup(true);
+                const closestDiv =
+                    buttonRef.current?.closest("div[field-path]");
+                thread.scrollIntoView({
+                    behavior: "smooth",
+                    block: "center",
+                });
+                if (closestDiv) {
+                    (closestDiv as HTMLElement).style.zIndex = "1000";
+                }
+
+                if (config?.collab?.isFeedbackMode === true) {
+                    Config.set("collab.isFeedbackMode", false);
+                }
+            }
         };
 
-        document.addEventListener("closeCollabPopup", handleExternalClose);
+        document.addEventListener("toggleCollabPopup", handleTogglePopup);
+
         return () => {
             document.removeEventListener(
-                "closeCollabPopup",
-                handleExternalClose
+                "toggleCollabPopup",
+                handleTogglePopup
             );
         };
     }, []);
 
     const togglePopup = () => {
         if (!showPopup) {
-            document.dispatchEvent(new CustomEvent("closeCollabPopup"));
+            document.dispatchEvent(
+                new CustomEvent("toggleCollabPopup", {
+                    detail: { action: "close" },
+                })
+            );
             setShowPopup(true);
             const closestDiv = buttonRef.current?.closest("div[field-path]");
             if (closestDiv) {

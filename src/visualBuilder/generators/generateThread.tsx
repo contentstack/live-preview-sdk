@@ -222,6 +222,14 @@ export function removeCollabIcon(threadUid: string): void {
     thread?.remove();
 }
 
+export function HighlightThread(threadUid: string): void {
+    document.dispatchEvent(
+        new CustomEvent("toggleCollabPopup", {
+            detail: { threadUid, action: "open" },
+        })
+    );
+}
+
 export function isCollabThread(target: HTMLElement): boolean {
     return Array.from(target.classList).some((className) =>
         className.startsWith("collab")
