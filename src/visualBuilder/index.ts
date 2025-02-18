@@ -52,6 +52,7 @@ interface VisualBuilderGlobalStateImpl {
     audienceMode: boolean;
     locale: string;
     variant: string | null;
+    focusElementObserver: MutationObserver | null;
 }
 
 export class VisualBuilder {
@@ -69,6 +70,7 @@ export class VisualBuilder {
             audienceMode: false,
             locale: Config.get().stackDetails.masterLocale || "en-us",
             variant: null,
+            focusElementObserver: null,
         });
 
     private handlePositionChange(editableElement: HTMLElement) {
@@ -344,6 +346,7 @@ export class VisualBuilder {
             audienceMode: false,
             locale: "en-us",
             variant: null,
+            focusElementObserver: null,
         };
 
         // Remove DOM elements
