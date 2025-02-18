@@ -1,9 +1,13 @@
 import getChildElements from "./getChildElements";
 
+
+const validPositions = ["vertical", "horizontal", "none"] as const;
+type ValidPositions = typeof validPositions[number];
+
 export default function getChildrenDirection(
     editableElement: Element,
     parentCslpValue: string
-): "none" | "horizontal" | "vertical" {
+): ValidPositions {
     if (!editableElement) {
         return "none";
     }
@@ -16,6 +20,17 @@ export default function getChildrenDirection(
         return "none";
     }
 
+    const directionFromParentElement =
+        parentElement.getAttribute("data-add-direction");
+
+    const isValidParentDirection = validPositions.includes(
+        directionFromParentElement as ValidPositions
+    );
+
+
+    if (directionFromParentElement && isValidParentDirection) {
+        return directionFromParentElement as ValidPositions;
+    }
     const [firstChildElement, secondChildElement, removeClone] =
         getChildElements(parentElement, parentCslpValue);
 
