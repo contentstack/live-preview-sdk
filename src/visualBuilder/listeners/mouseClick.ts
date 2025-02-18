@@ -112,7 +112,11 @@ async function handleBuilderInteraction(
                     }
                 );
             } else {
-                document.dispatchEvent(new CustomEvent("closeCollabPopup"));
+                document.dispatchEvent(
+                    new CustomEvent("toggleCollabPopup", {
+                        detail: { action: "close" },
+                    })
+                );
                 Config.set("collab.isFeedbackMode", true);
             }
         }
