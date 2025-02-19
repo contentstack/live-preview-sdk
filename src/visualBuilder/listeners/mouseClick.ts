@@ -135,7 +135,8 @@ async function handleBuilderInteraction(
         params,
         eventDetails,
         fieldMetadata,
-        editableElement
+        editableElement,
+        previousSelectedElement
     );
 
     // Observe changes to the editable element
@@ -219,7 +220,8 @@ async function handleFieldSchemaAndIndividualFields(
     params: HandleBuilderInteractionParams,
     eventDetails: any,
     fieldMetadata: any,
-    editableElement: Element
+    editableElement: Element,
+    previousSelectedElement: Element | null
 ) {
     const { content_type_uid, fieldPath } = fieldMetadata;
     const fieldSchema = await FieldSchemaMap.getFieldSchema(
@@ -246,9 +248,7 @@ async function handleFieldSchemaAndIndividualFields(
     await handleIndividualFields(eventDetails, {
         visualBuilderContainer: params.visualBuilderContainer!,
         resizeObserver: params.resizeObserver,
-        lastEditedField:
-            VisualBuilder.VisualBuilderGlobalState.value
-                .previousSelectedEditableDOM,
+        lastEditedField: previousSelectedElement,
     });
 }
 function observeEditableElementChanges(
