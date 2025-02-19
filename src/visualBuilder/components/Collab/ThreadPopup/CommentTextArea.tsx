@@ -187,7 +187,7 @@ const CommentTextArea: React.FC<ICommentTextArea> = React.memo(
             };
         };
 
-        const insertMention = (user: IMentionList) => {
+        const insertMention = (user: any) => {
             const mention = findMentionSearchPosition(
                 state.message,
                 inputRef.current?.selectionStart || 0

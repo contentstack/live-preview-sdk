@@ -475,7 +475,6 @@ export function collabStyles() {
             background: none;
             cursor: pointer;
             font-size: 14px;
-            position: relative;
             transition: background-color 0.2s;
 
             &:hover {
