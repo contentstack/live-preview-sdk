@@ -1,5 +1,5 @@
 /** @jsxImportSource preact */
-import React, { forwardRef, Ref } from "preact/compat";
+import React from "preact/compat";
 import {
     useEffect,
     useState,
@@ -39,13 +39,6 @@ interface ICommentTextArea {
     onClose: (isResolved?: boolean) => void;
     handleOnSaveRef: React.MutableRefObject<any>;
     comment?: IMessageDTO | null;
-}
-
-interface TooltipProps {
-    text: string;
-    onClick: () => void;
-    onKeyDown: (e: any) => void;
-    ariaSelected: boolean;
 }
 
 const initialState: ICommentState = {
