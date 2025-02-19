@@ -1,5 +1,5 @@
 /** @jsxImportSource preact */
-import React from "preact/compat";
+import React, { forwardRef, Ref } from "preact/compat";
 import {
     useEffect,
     useState,
@@ -18,6 +18,7 @@ import {
     IMessageDTO,
     IUserDTO,
     IUserState,
+    IMentionList,
 } from "../../../types/collab.types";
 import {
     validateCommentAndMentions,
@@ -31,12 +32,20 @@ import { ThreadProvider } from "./ContextProvider";
 import useDynamicTextareaRows from "../../../hooks/useDynamicTextareaRows";
 import { cloneDeep, findIndex } from "lodash-es";
 import classNames from "classnames";
+import Tooltip from "../Tooltip/Tooltip";
 
 interface ICommentTextArea {
     userState: IUserState;
     onClose: (isResolved?: boolean) => void;
     handleOnSaveRef: React.MutableRefObject<any>;
     comment?: IMessageDTO | null;
+}
+
+interface TooltipProps {
+    text: string;
+    onClick: () => void;
+    onKeyDown: (e: any) => void;
+    ariaSelected: boolean;
 }
 
 const initialState: ICommentState = {
@@ -56,7 +65,11 @@ const CommentTextArea: React.FC<ICommentTextArea> = React.memo(
             left: 0,
         });
         const [searchTerm, setSearchTerm] = useState("");
+        const [selectedIndex, setSelectedIndex] = useState(0);
+        const [filteredUsers, setFilteredUsers] = useState<IMentionList[]>([]);
         const inputRef = useRef<HTMLTextAreaElement>(null);
+        const listRef = useRef<HTMLUListElement>(null);
+        const itemRefs = useRef<Array<HTMLLIElement | null>>([]);
 
         const {
             error,
@@ -74,6 +87,28 @@ const CommentTextArea: React.FC<ICommentTextArea> = React.memo(
             ".collab-thread-body--input--textarea",
             state.message
         );
+
+        // Update refs array when users change
+        useEffect(() => {
+            itemRefs.current = itemRefs.current.slice(
+                0,
+                userState.mentionsList.length
+            );
+        }, [userState.mentionsList]);
+
+        useEffect(() => {
+            // Filter users based on search term
+            const filteredUsersList = userState.mentionsList.filter((user) => {
+                if (!searchTerm) return true;
+                return (
+                    user.display
+                        .toLowerCase()
+                        .includes(searchTerm.toLowerCase()) ||
+                    user.email?.toLowerCase().includes(searchTerm.toLowerCase())
+                );
+            });
+            setFilteredUsers(filteredUsersList);
+        }, [searchTerm]);
 
         useEffect(() => {
             const textArea = document.getElementById(
@@ -155,15 +190,6 @@ const CommentTextArea: React.FC<ICommentTextArea> = React.memo(
             };
         };
 
-        // Filter users based on search term
-        const filteredUsers = userState.mentionsList.filter((user) => {
-            if (!searchTerm) return true;
-            return (
-                user.display.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                user.email?.toLowerCase().includes(searchTerm.toLowerCase())
-            );
-        });
-
         const insertMention = (user: any) => {
             const mention = findMentionSearchPosition(
                 state.message,
@@ -192,42 +218,6 @@ const CommentTextArea: React.FC<ICommentTextArea> = React.memo(
             if (ele) {
                 ele.focus();
             }
-        };
-
-        // Get cursor coordinates
-        const getCursorCoordinates = () => {
-            if (!inputRef.current) return { x: 0, y: 0 };
-
-            const input = inputRef.current as HTMLTextAreaElement;
-            const cursorPosition = input.selectionStart;
-
-            // Create a temporary div to measure text
-            const div = document.createElement("div");
-            div.style.position = "absolute";
-            div.style.visibility = "hidden";
-            div.style.whiteSpace = "pre-wrap";
-            div.style.wordWrap = "break-word";
-            div.style.font = window.getComputedStyle(input).font;
-            div.style.padding = window.getComputedStyle(input).padding;
-
-            // Get text before cursor
-            const textBeforeCursor = input.value.substring(0, cursorPosition);
-            div.textContent = textBeforeCursor;
-            document.body.appendChild(div);
-
-            // Calculate coordinates
-            const inputRect = input.getBoundingClientRect();
-            const divRect = div.getBoundingClientRect();
-
-            document.body.removeChild(div);
-
-            return {
-                x: inputRect.left + (divRect.width % inputRect.width),
-                y:
-                    inputRect.top +
-                    Math.floor(divRect.width / inputRect.width) *
-                        parseInt(window.getComputedStyle(input).lineHeight),
-            };
         };
 
         const calculatePosition = (textarea: any, cursorPosition: any) => {
@@ -412,6 +402,7 @@ const CommentTextArea: React.FC<ICommentTextArea> = React.memo(
                 setCursorPosition(
                     calculatePosition(inputRef.current, newPosition)
                 );
+                setSelectedIndex(0);
             } else {
                 setShowSuggestions(false);
             }
@@ -455,6 +446,32 @@ const CommentTextArea: React.FC<ICommentTextArea> = React.memo(
                     e.target.selectionStart
                 );
                 setCursorPosition(position);
+                setSelectedIndex(0);
+            }
+
+            if (!showSuggestions) return;
+
+            switch (e.key) {
+                case "ArrowDown":
+                    e.preventDefault();
+                    setSelectedIndex((prev) =>
+                        prev < filteredUsers.length - 1 ? prev + 1 : prev
+                    );
+                    break;
+                case "ArrowUp":
+                    e.preventDefault();
+                    setSelectedIndex((prev) => (prev > 0 ? prev - 1 : prev));
+                    break;
+                case "Enter":
+                    e.preventDefault();
+                    if (showSuggestions) {
+                        insertMention(filteredUsers[selectedIndex]);
+                    }
+                    break;
+                case "Escape":
+                    setShowSuggestions(false);
+                    inputRef.current?.focus();
+                    break;
             }
         };
 
@@ -496,38 +513,88 @@ const CommentTextArea: React.FC<ICommentTextArea> = React.memo(
                             placeholder="Enter a comment"
                             ref={inputRef}
                         ></textarea>
-                    </div>
-                </div>
-
-                {showSuggestions && filteredUsers.length > 0 && (
-                    <div
-                        className={classNames(
-                            "collab-thread-body--input--textarea--suggestionsList",
-                            collabStyles()[
-                                "collab-thread-body--input--textarea--suggestionsList"
-                            ]
-                        )}
-                        style={{
-                            left: `${cursorPosition.left}px`,
-                            top: `${cursorPosition.top}px`,
-                        }}
-                    >
-                        {filteredUsers.map((user) => (
-                            <button
-                                key={user.email}
-                                onClick={() => insertMention(user)}
+                        {showSuggestions && filteredUsers.length > 0 && (
+                            <ul
                                 className={classNames(
-                                    "collab-thread-body--input--textarea--suggestionsList--button",
+                                    "collab-thread-body--input--textarea--suggestionsList",
                                     collabStyles()[
-                                        "collab-thread-body--input--textarea--suggestionsList--button"
+                                        "collab-thread-body--input--textarea--suggestionsList"
                                     ]
                                 )}
+                                // style={{
+                                //     left: `${cursorPosition.left}px`,
+                                //     top: `${cursorPosition.top}px`,
+                                // }}
+                                ref={listRef}
                             >
-                                {user.display}
-                            </button>
-                        ))}
+                                {filteredUsers.map((user, index) => (
+                                    <>
+                                        {/* <TruncatedItemWithTooltip
+                                            key={user.email}
+                                            text={user.display}
+                                            onClick={() => insertMention(user)}
+                                            onKeyDown={(e) => {
+                                                if (e.key === "Enter") {
+                                                    insertMention(user);
+                                                } else {
+                                                    handleKeyDown(e);
+                                                }
+                                            }}
+                                            ariaSelected={
+                                                index === selectedIndex
+                                            }
+                                            ref={(el: any) =>
+                                                (itemRefs.current[index] = el)
+                                            }
+                                        /> */}
+
+                                        <li
+                                            onClick={() => insertMention(user)}
+                                            className={classNames(
+                                                "collab-thread-body--input--textarea--suggestionsList--item",
+
+                                                collabStyles()[
+                                                    "collab-thread-body--input--textarea--suggestionsList--item"
+                                                ],
+                                                "collab-thread-body--input--textarea--suggestionsList--item-selected",
+
+                                                index === selectedIndex
+                                                    ? collabStyles()[
+                                                          "collab-thread-body--input--textarea--suggestionsList--item-selected"
+                                                      ]
+                                                    : ""
+                                            )}
+                                            ref={(el: any) =>
+                                                (itemRefs.current[index] = el)
+                                            }
+                                            onKeyDown={(e) => {
+                                                if (e.key === "Enter") {
+                                                    insertMention(user);
+                                                } else {
+                                                    handleKeyDown(e);
+                                                }
+                                            }}
+                                            tabIndex={-1}
+                                            aria-selected={
+                                                index === selectedIndex
+                                            }
+                                        >
+                                            <Tooltip
+                                                content={user.display}
+                                            ></Tooltip>
+                                            {user.display.length > 20
+                                                ? user.display.substring(
+                                                      0,
+                                                      18
+                                                  ) + "..."
+                                                : user.display}
+                                        </li>
+                                    </>
+                                ))}
+                            </ul>
+                        )}
                     </div>
-                )}
+                </div>
 
                 <div
                     className={classNames(
@@ -566,3 +633,52 @@ const CommentTextArea: React.FC<ICommentTextArea> = React.memo(
 );
 
 export default CommentTextArea;
+
+const TruncatedItemWithTooltip = forwardRef(
+    (
+        { text, onClick, onKeyDown, ariaSelected }: TooltipProps,
+        ref: Ref<HTMLLIElement>
+    ) => {
+        const maxLength = 20;
+        const [showTooltip, setShowTooltip] = useState(false);
+        const isTextTruncated = text.length > maxLength;
+        const displayText = isTextTruncated
+            ? `${text.substring(0, maxLength)}...`
+            : text;
+
+        return (
+            <li
+                onClick={onClick}
+                className={classNames(
+                    "collab-thread-body--input--textarea--suggestionsList--item",
+
+                    collabStyles()[
+                        "collab-thread-body--input--textarea--suggestionsList--item"
+                    ],
+                    "collab-thread-body--input--textarea--suggestionsList--item-selected",
+
+                    ariaSelected
+                        ? collabStyles()[
+                              "collab-thread-body--input--textarea--suggestionsList--item-selected"
+                          ]
+                        : ""
+                )}
+                ref={ref}
+                onKeyDown={onKeyDown}
+                tabIndex={-1}
+                aria-selected={ariaSelected}
+                onMouseEnter={() => isTextTruncated && setShowTooltip(true)}
+                onMouseLeave={() => isTextTruncated && setShowTooltip(false)}
+            >
+                {isTextTruncated ? (
+                    <div>
+                        {displayText}
+                        {showTooltip && <span>{text}</span>}
+                    </div>
+                ) : (
+                    text
+                )}
+            </li>
+        );
+    }
+);

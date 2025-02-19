@@ -399,6 +399,7 @@ export function collabStyles() {
         "collab-thread-body--input--textarea--wrapper": css`
             width: 100%;
             transition: height 0.2s ease-in 0s;
+            position: relative;
         `,
         "collab-thread-body--input--textarea": css`
             display: block;
@@ -440,6 +441,8 @@ export function collabStyles() {
             box-shadow: 0 0 0 0.0625rem #5d50be !important;
         `,
         "collab-thread-body--input--textarea--suggestionsList": css`
+            list-style: none;
+            padding-inline: unset;
             position: absolute;
             background-color: #ffffff;
             border: 1px solid #e2e8f0;
@@ -465,7 +468,7 @@ export function collabStyles() {
                 }
             }
         `,
-        "collab-thread-body--input--textarea--suggestionsList--button": css`
+        "collab-thread-body--input--textarea--suggestionsList--item": css`
             width: 100%;
             padding: 8px 16px;
             text-align: left;
@@ -473,17 +476,34 @@ export function collabStyles() {
             background: none;
             cursor: pointer;
             font-size: 14px;
+            position: relative;
             transition: background-color 0.2s;
 
             &:hover {
                 background-color: #f3f4f6;
+                color: #5d50be;
             }
 
-            &:focus {
-                outline: none;
-                background-color: #f3f4f6;
+            span {
+                position: absolute;
+                top: 100%;
+                left: 0;
+                z-index: 999;
+                background-color: #5d50be;
+                color: white;
+                padding: 8px;
+                border-radius: 4px;
+                margin-top: 5px;
+                max-width: 300px;
+                word-wrap: break-word;
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
             }
         `,
+        "collab-thread-body--input--textarea--suggestionsList--item-selected": css`
+            background-color: #f3f4f6;
+            color: #5d50be;
+        `,
+
         "flex-center": css`
             display: flex;
             align-items: center;
