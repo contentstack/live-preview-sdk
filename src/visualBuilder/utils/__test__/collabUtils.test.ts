@@ -69,7 +69,7 @@ describe("Utility Functions", () => {
         it("should replace mentions with their unique identifiers", () => {
             const state = {
                 message: "Hello @JohnDoe",
-                toUsers: [{ id: "1", display: "@JohnDoe" }],
+                toUsers: [{ id: "1", display: "JohnDoe" }],
                 createdBy: "1",
                 author: "john.doe@example.com",
             };
@@ -82,8 +82,8 @@ describe("Utility Functions", () => {
             const state = {
                 message: "   Hello   @JohnDoe   and   @JaneDoe    ",
                 toUsers: [
-                    { id: "1", display: "@JohnDoe" },
-                    { id: "2", display: "@JaneDoe" },
+                    { id: "1", display: "JohnDoe" },
+                    { id: "2", display: "JaneDoe" },
                 ],
                 createdBy: "1",
                 author: "john.doe@example.com",
@@ -98,8 +98,8 @@ describe("Utility Functions", () => {
                 message:
                     "   Hello   @JohnDoe  \n   This  is   a test  \n   @JaneDoe  ",
                 toUsers: [
-                    { id: "1", display: "@JohnDoe" },
-                    { id: "2", display: "@JaneDoe" },
+                    { id: "1", display: "JohnDoe" },
+                    { id: "2", display: "JaneDoe" },
                 ],
                 createdBy: "1",
                 author: "john.doe@example.com",

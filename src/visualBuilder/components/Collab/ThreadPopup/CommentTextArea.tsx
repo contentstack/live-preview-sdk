@@ -100,12 +100,9 @@ const CommentTextArea: React.FC<ICommentTextArea> = React.memo(
             // Filter users based on search term
             const filteredUsersList = userState.mentionsList.filter((user) => {
                 if (!searchTerm) return true;
-                return (
-                    user.display
-                        .toLowerCase()
-                        .includes(searchTerm.toLowerCase()) ||
-                    user.email?.toLowerCase().includes(searchTerm.toLowerCase())
-                );
+                return user.display
+                    .toLowerCase()
+                    .includes(searchTerm.toLowerCase());
             });
             setFilteredUsers(filteredUsersList);
         }, [searchTerm]);
@@ -190,7 +187,7 @@ const CommentTextArea: React.FC<ICommentTextArea> = React.memo(
             };
         };
 
-        const insertMention = (user: any) => {
+        const insertMention = (user: IMentionList) => {
             const mention = findMentionSearchPosition(
                 state.message,
                 inputRef.current?.selectionStart || 0
@@ -201,15 +198,17 @@ const CommentTextArea: React.FC<ICommentTextArea> = React.memo(
             const afterMention = state.message.slice(
                 inputRef.current?.selectionStart || 0
             );
-            const newValue = `${beforeMention}@${user.email} ${afterMention}`;
+            const newValue = `${beforeMention}@${user.display} ${afterMention}`;
+
+            const updatedMentions = filterOutInvalidMentions(newValue, [
+                ...(state.toUsers || []),
+                { display: user.display, id: user.uid || "" },
+            ]);
 
             setState((prevState) => ({
                 ...prevState,
                 message: newValue,
-                toUsers: [
-                    ...(prevState.toUsers || []),
-                    { display: user.email, id: user.identityHash },
-                ],
+                toUsers: updatedMentions.toUsers,
             }));
             setShowSuggestions(false);
 
@@ -368,7 +367,7 @@ const CommentTextArea: React.FC<ICommentTextArea> = React.memo(
             comment?.toUsers?.forEach((userId) => {
                 const user: IUserDTO = userState.userMap[userId];
                 toUsers.push({
-                    display: `@${user.display || getUserName(user)}`,
+                    display: `${user.display || getUserName(user)}`,
                     id: userId,
                 });
             });
@@ -407,23 +406,6 @@ const CommentTextArea: React.FC<ICommentTextArea> = React.memo(
                 setShowSuggestions(false);
             }
 
-            // TODO mentions will be handled in upcoming PRs this is a zombie code for now
-            // const to_users = [...state.to_users];
-            // mentions.forEach((mention) => {
-            //     if (userState.userMap[mention.id]) {
-            //         to_users.push({
-            //             id: mention.id,
-            //             display: mention.display,
-            //         });
-            //     }
-            // });
-
-            // const updatedMentions = filterOutInvalidMentions(
-            //     newPlainTextValue,
-            //     to_users
-            // );
-
-            // Perform your custom logic here
             const errorMessage = validateCommentAndMentions(
                 newPlainTextValue,
                 state.toUsers ?? []
@@ -528,68 +510,44 @@ const CommentTextArea: React.FC<ICommentTextArea> = React.memo(
                                 ref={listRef}
                             >
                                 {filteredUsers.map((user, index) => (
-                                    <>
-                                        {/* <TruncatedItemWithTooltip
-                                            key={user.email}
-                                            text={user.display}
-                                            onClick={() => insertMention(user)}
-                                            onKeyDown={(e) => {
-                                                if (e.key === "Enter") {
-                                                    insertMention(user);
-                                                } else {
-                                                    handleKeyDown(e);
-                                                }
-                                            }}
-                                            ariaSelected={
-                                                index === selectedIndex
-                                            }
-                                            ref={(el: any) =>
-                                                (itemRefs.current[index] = el)
-                                            }
-                                        /> */}
+                                    <li
+                                        key={user.uid}
+                                        onClick={() => insertMention(user)}
+                                        className={classNames(
+                                            "collab-thread-body--input--textarea--suggestionsList--item",
 
-                                        <li
-                                            onClick={() => insertMention(user)}
-                                            className={classNames(
-                                                "collab-thread-body--input--textarea--suggestionsList--item",
+                                            collabStyles()[
+                                                "collab-thread-body--input--textarea--suggestionsList--item"
+                                            ],
+                                            "collab-thread-body--input--textarea--suggestionsList--item-selected",
 
-                                                collabStyles()[
-                                                    "collab-thread-body--input--textarea--suggestionsList--item"
-                                                ],
-                                                "collab-thread-body--input--textarea--suggestionsList--item-selected",
-
-                                                index === selectedIndex
-                                                    ? collabStyles()[
-                                                          "collab-thread-body--input--textarea--suggestionsList--item-selected"
-                                                      ]
-                                                    : ""
-                                            )}
-                                            ref={(el: any) =>
-                                                (itemRefs.current[index] = el)
+                                            index === selectedIndex
+                                                ? collabStyles()[
+                                                      "collab-thread-body--input--textarea--suggestionsList--item-selected"
+                                                  ]
+                                                : ""
+                                        )}
+                                        ref={(el: any) =>
+                                            (itemRefs.current[index] = el)
+                                        }
+                                        onKeyDown={(e) => {
+                                            if (e.key === "Enter") {
+                                                insertMention(user);
+                                            } else {
+                                                handleKeyDown(e);
                                             }
-                                            onKeyDown={(e) => {
-                                                if (e.key === "Enter") {
-                                                    insertMention(user);
-                                                } else {
-                                                    handleKeyDown(e);
-                                                }
-                                            }}
-                                            tabIndex={-1}
-                                            aria-selected={
-                                                index === selectedIndex
-                                            }
-                                        >
-                                            <Tooltip
-                                                content={user.display}
-                                            ></Tooltip>
-                                            {user.display.length > 20
-                                                ? user.display.substring(
-                                                      0,
-                                                      18
-                                                  ) + "..."
-                                                : user.display}
-                                        </li>
-                                    </>
+                                        }}
+                                        tabIndex={-1}
+                                        aria-selected={index === selectedIndex}
+                                    >
+                                        <Tooltip
+                                            content={user.display}
+                                        ></Tooltip>
+                                        {user.display.length > 20
+                                            ? user.display.substring(0, 18) +
+                                              "..."
+                                            : user.display}
+                                    </li>
                                 ))}
                             </ul>
                         )}
@@ -633,52 +591,3 @@ const CommentTextArea: React.FC<ICommentTextArea> = React.memo(
 );
 
 export default CommentTextArea;
-
-const TruncatedItemWithTooltip = forwardRef(
-    (
-        { text, onClick, onKeyDown, ariaSelected }: TooltipProps,
-        ref: Ref<HTMLLIElement>
-    ) => {
-        const maxLength = 20;
-        const [showTooltip, setShowTooltip] = useState(false);
-        const isTextTruncated = text.length > maxLength;
-        const displayText = isTextTruncated
-            ? `${text.substring(0, maxLength)}...`
-            : text;
-
-        return (
-            <li
-                onClick={onClick}
-                className={classNames(
-                    "collab-thread-body--input--textarea--suggestionsList--item",
-
-                    collabStyles()[
-                        "collab-thread-body--input--textarea--suggestionsList--item"
-                    ],
-                    "collab-thread-body--input--textarea--suggestionsList--item-selected",
-
-                    ariaSelected
-                        ? collabStyles()[
-                              "collab-thread-body--input--textarea--suggestionsList--item-selected"
-                          ]
-                        : ""
-                )}
-                ref={ref}
-                onKeyDown={onKeyDown}
-                tabIndex={-1}
-                aria-selected={ariaSelected}
-                onMouseEnter={() => isTextTruncated && setShowTooltip(true)}
-                onMouseLeave={() => isTextTruncated && setShowTooltip(false)}
-            >
-                {isTextTruncated ? (
-                    <div>
-                        {displayText}
-                        {showTooltip && <span>{text}</span>}
-                    </div>
-                ) : (
-                    text
-                )}
-            </li>
-        );
-    }
-);

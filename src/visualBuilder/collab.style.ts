@@ -399,7 +399,6 @@ export function collabStyles() {
         "collab-thread-body--input--textarea--wrapper": css`
             width: 100%;
             transition: height 0.2s ease-in 0s;
-            position: relative;
         `,
         "collab-thread-body--input--textarea": css`
             display: block;
@@ -443,7 +442,7 @@ export function collabStyles() {
         "collab-thread-body--input--textarea--suggestionsList": css`
             list-style: none;
             padding-inline: unset;
-            position: absolute;
+            position: fixed;
             background-color: #ffffff;
             border: 1px solid #e2e8f0;
             border-radius: 8px;
@@ -482,21 +481,6 @@ export function collabStyles() {
             &:hover {
                 background-color: #f3f4f6;
                 color: #5d50be;
-            }
-
-            span {
-                position: absolute;
-                top: 100%;
-                left: 0;
-                z-index: 999;
-                background-color: #5d50be;
-                color: white;
-                padding: 8px;
-                border-radius: 4px;
-                margin-top: 5px;
-                max-width: 300px;
-                word-wrap: break-word;
-                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
             }
         `,
         "collab-thread-body--input--textarea--suggestionsList--item-selected": css`
