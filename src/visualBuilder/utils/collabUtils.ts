@@ -94,7 +94,7 @@ export const getMessageWithDisplayName = (
         const userData = userState.userMap[user];
         const replacement =
             profile === "html"
-                ? `<b>${userData.display || getUserName(userData)}</b>`
+                ? `<b class="collab-thread-comment--message">@${userData.display || getUserName(userData)}</b>`
                 : `@${userData.display || getUserName(userData)}`;
         tempText = tempText.replace(userPattern, replacement);
     });
@@ -136,7 +136,7 @@ export const getCommentBody = (state: ICommentState): ICommentState => {
     ) => {
         const displayName = entity.display;
 
-        const escapedDisplayName = escapeRegExp(displayName);
+        const escapedDisplayName = escapeRegExp(`@${displayName}`);
         const regexUser = new RegExp(escapedDisplayName, "g");
         finalMessage = finalMessage.replace(regexUser, `{{${entity.id}}}`);
         result.push(entity.id);
