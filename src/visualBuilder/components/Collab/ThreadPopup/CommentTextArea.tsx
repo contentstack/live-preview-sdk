@@ -18,6 +18,7 @@ import {
     IMessageDTO,
     IUserDTO,
     IUserState,
+    IMentionList,
 } from "../../../types/collab.types";
 import {
     validateCommentAndMentions,
@@ -158,13 +159,12 @@ const CommentTextArea: React.FC<ICommentTextArea> = React.memo(
         // Filter users based on search term
         const filteredUsers = userState.mentionsList.filter((user) => {
             if (!searchTerm) return true;
-            return (
-                user.display.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                user.email?.toLowerCase().includes(searchTerm.toLowerCase())
-            );
+            return user.display
+                .toLowerCase()
+                .includes(searchTerm.toLowerCase());
         });
 
-        const insertMention = (user: any) => {
+        const insertMention = (user: IMentionList) => {
             const mention = findMentionSearchPosition(
                 state.message,
                 inputRef.current?.selectionStart || 0
@@ -175,15 +175,17 @@ const CommentTextArea: React.FC<ICommentTextArea> = React.memo(
             const afterMention = state.message.slice(
                 inputRef.current?.selectionStart || 0
             );
-            const newValue = `${beforeMention}@${user.email} ${afterMention}`;
+            const newValue = `${beforeMention}@${user.display} ${afterMention}`;
+
+            const updatedMentions = filterOutInvalidMentions(newValue, [
+                ...(state.toUsers || []),
+                { display: user.display, id: user.uid || "" },
+            ]);
 
             setState((prevState) => ({
                 ...prevState,
                 message: newValue,
-                toUsers: [
-                    ...(prevState.toUsers || []),
-                    { display: user.email, id: user.identityHash },
-                ],
+                toUsers: updatedMentions.toUsers,
             }));
             setShowSuggestions(false);
 
@@ -378,7 +380,7 @@ const CommentTextArea: React.FC<ICommentTextArea> = React.memo(
             comment?.toUsers?.forEach((userId) => {
                 const user: IUserDTO = userState.userMap[userId];
                 toUsers.push({
-                    display: `@${user.display || getUserName(user)}`,
+                    display: `${user.display || getUserName(user)}`,
                     id: userId,
                 });
             });
@@ -416,23 +418,6 @@ const CommentTextArea: React.FC<ICommentTextArea> = React.memo(
                 setShowSuggestions(false);
             }
 
-            // TODO mentions will be handled in upcoming PRs this is a zombie code for now
-            // const to_users = [...state.to_users];
-            // mentions.forEach((mention) => {
-            //     if (userState.userMap[mention.id]) {
-            //         to_users.push({
-            //             id: mention.id,
-            //             display: mention.display,
-            //         });
-            //     }
-            // });
-
-            // const updatedMentions = filterOutInvalidMentions(
-            //     newPlainTextValue,
-            //     to_users
-            // );
-
-            // Perform your custom logic here
             const errorMessage = validateCommentAndMentions(
                 newPlainTextValue,
                 state.toUsers ?? []
@@ -495,7 +480,7 @@ const CommentTextArea: React.FC<ICommentTextArea> = React.memo(
                             maxLength={maxMessageLength}
                             placeholder="Enter a comment"
                             ref={inputRef}
-                        ></textarea>
+                        />
                     </div>
                 </div>
 
@@ -514,7 +499,7 @@ const CommentTextArea: React.FC<ICommentTextArea> = React.memo(
                     >
                         {filteredUsers.map((user) => (
                             <button
-                                key={user.email}
+                                key={user.uid}
                                 onClick={() => insertMention(user)}
                                 className={classNames(
                                     "collab-thread-body--input--textarea--suggestionsList--button",
