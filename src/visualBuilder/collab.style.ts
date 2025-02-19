@@ -440,7 +440,9 @@ export function collabStyles() {
             box-shadow: 0 0 0 0.0625rem #5d50be !important;
         `,
         "collab-thread-body--input--textarea--suggestionsList": css`
-            position: absolute;
+            list-style: none;
+            padding-inline: unset;
+            position: fixed;
             background-color: #ffffff;
             border: 1px solid #e2e8f0;
             border-radius: 8px;
@@ -465,7 +467,7 @@ export function collabStyles() {
                 }
             }
         `,
-        "collab-thread-body--input--textarea--suggestionsList--button": css`
+        "collab-thread-body--input--textarea--suggestionsList--item": css`
             width: 100%;
             padding: 8px 16px;
             text-align: left;
@@ -477,13 +479,14 @@ export function collabStyles() {
 
             &:hover {
                 background-color: #f3f4f6;
-            }
-
-            &:focus {
-                outline: none;
-                background-color: #f3f4f6;
+                color: #5d50be;
             }
         `,
+        "collab-thread-body--input--textarea--suggestionsList--item-selected": css`
+            background-color: #f3f4f6;
+            color: #5d50be;
+        `,
+
         "flex-center": css`
             display: flex;
             align-items: center;
