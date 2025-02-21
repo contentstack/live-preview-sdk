@@ -26,6 +26,7 @@ import getXPath from "get-xpath";
 import Config from "../../configManager/configManager";
 import { generateThread } from "../generators/generateThread";
 import { isCollabThread } from "../generators/generateThread";
+import { toggleCollabPopup } from "../generators/generateThread";
 
 type HandleBuilderInteractionParams = Omit<
     EventListenerHandlerParams,
@@ -96,23 +97,17 @@ async function handleBuilderInteraction(
 
         if (isCollabThread(eventTarget)) {
             Config.set("collab.isFeedbackMode", false);
+        } else if (config?.collab.isFeedbackMode) {
+            generateThread(
+                { xpath, relativeX, relativeY },
+                {
+                    isNewThread: true,
+                    updateConfig: true,
+                }
+            );
         } else {
-            if (config?.collab.isFeedbackMode) {
-                generateThread(
-                    { xpath, relativeX, relativeY },
-                    {
-                        isNewThread: true,
-                        updateConfig: true,
-                    }
-                );
-            } else {
-                document.dispatchEvent(
-                    new CustomEvent("toggleCollabPopup", {
-                        detail: { action: "close" },
-                    })
-                );
-                Config.set("collab.isFeedbackMode", true);
-            }
+            toggleCollabPopup({ threadUid: "", action: "close" });
+            Config.set("collab.isFeedbackMode", true);
         }
         return;
     }

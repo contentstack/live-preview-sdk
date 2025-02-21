@@ -4,7 +4,10 @@ import { css } from "goober";
 import CollabIndicator from "../components/Collab/CollabIndicator";
 import Config from "../../configManager/configManager";
 import { IThreadDTO, IThreadRenderStatus } from "../types/collab.types";
-import { MissingThreadsInfo } from "../types/collab.types";
+import {
+    MissingThreadsInfo,
+    toggleCollabPopupEvent,
+} from "../types/collab.types";
 import visualBuilderPostMessage from "../utils/visualBuilderPostMessage";
 import { VisualBuilderPostMessageEvents } from "../utils/types/postMessage.types";
 
@@ -241,15 +244,22 @@ export function removeCollabIcon(threadUid: string): void {
     thread?.remove();
 }
 
+export function toggleCollabPopup({
+    threadUid = "",
+    action,
+}: toggleCollabPopupEvent): void {
+    document.dispatchEvent(
+        new CustomEvent("toggleCollabPopup", {
+            detail: { threadUid, action },
+        })
+    );
+}
+
 export function HighlightThread(threadUid: string): void {
     const config = Config.get?.();
     if (config?.collab?.pauseFeedback) return;
 
-    document.dispatchEvent(
-        new CustomEvent("toggleCollabPopup", {
-            detail: { threadUid, action: "open" },
-        })
-    );
+    toggleCollabPopup({ threadUid, action: "open" });
 }
 
 export function isCollabThread(target: HTMLElement): boolean {
