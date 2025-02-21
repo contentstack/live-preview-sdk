@@ -32,6 +32,15 @@ class ContentstackLivePreview {
         {};
 
     /**
+     * Tracks whether the first onChange has been called.
+     */
+    static firstOnChangeCalled: boolean = false;
+    /**
+     * Tracks whether the first client-data-send has been received.
+     */
+    static hasReceivedFirstClientDataSend: boolean = false;
+
+    /**
      * Initializes the Live Preview SDK with the provided user configuration.
      * If the SDK is already initialized, subsequent calls to this method will return the existing SDK instance.
      * @param userConfig - The user configuration to initialize the SDK with. See {@link https://github.com/contentstack/live-preview-sdk/blob/main/docs/live-preview-configs.md#initconfig-iconfig|Live preview User config} for more details.
@@ -77,15 +86,15 @@ class ContentstackLivePreview {
         const config = Config.get();
         const clonedConfig = cloneDeep(config);
         const configToShare = pick(clonedConfig, [
-            'ssr',
-            'enable',
-            'cleanCslpOnProduction',
-            'stackDetails',
-            'clientUrlParams',
-            'windowType',
-            'hash',
-            'editButton',
-            'mode',
+            "ssr",
+            "enable",
+            "cleanCslpOnProduction",
+            "stackDetails",
+            "clientUrlParams",
+            "windowType",
+            "hash",
+            "editButton",
+            "mode",
         ]);
         return configToShare;
     }
@@ -153,14 +162,21 @@ class ContentstackLivePreview {
         }
 
         const isWindowDefined = typeof window !== "undefined";
+        const searchParams =
+            isWindowDefined && new URLSearchParams(window.location.search);
         const isLivePreviewSearchParamPresent =
-            isWindowDefined &&
-            new URLSearchParams(window.location.search).has("live_preview");
+            searchParams && searchParams.has("live_preview");
+        const shouldCallCallback =
+            skipInitialRender && isLivePreviewSearchParamPresent;
         // calling onChangeCallback when live_preview search parameter
         // is present because we don't send the initial client-data-send
         //  message in visual builder
-        if (!skipInitialRender || isLivePreviewSearchParamPresent) {
+        if (
+            !skipInitialRender ||
+            (shouldCallCallback && !this.firstOnChangeCalled)
+        ) {
             onChangeCallback();
+            ContentstackLivePreview.firstOnChangeCalled = true;
         }
 
         return callbackUid;
@@ -185,6 +201,7 @@ class ContentstackLivePreview {
     static onLiveEdit(
         onChangeCallback: OnEntryChangeCallback
     ): OnEntryChangeCallbackUID {
+        console.log("Requesting onLiveEdit");
         return ContentstackLivePreview.onEntryChange(onChangeCallback, {
             skipInitialRender: true,
         });
