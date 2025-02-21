@@ -533,13 +533,14 @@ const CommentTextArea: React.FC<ICommentTextArea> = React.memo(
                                         tabIndex={-1}
                                         aria-selected={index === selectedIndex}
                                     >
-                                        <Tooltip
-                                            content={user.display}
-                                        ></Tooltip>
-                                        {user.display.length > 20
-                                            ? user.display.substring(0, 18) +
-                                              "..."
-                                            : user.display}
+                                        {user.display.length > 20 ? (
+                                            <Tooltip content={user.display}>
+                                                {user.display.substring(0, 18) +
+                                                    "..."}
+                                            </Tooltip>
+                                        ) : (
+                                            user.display
+                                        )}
                                     </li>
                                 ))}
                             </ul>
