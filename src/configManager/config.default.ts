@@ -97,6 +97,8 @@ export function getDefaultConfig(): IConfig {
         },
         collab: {
             enable: false,
+            fromShare: false,
+            pauseFeedback: false,
             isFeedbackMode: false,
             inviteMetadata: {
                 currentUser: {

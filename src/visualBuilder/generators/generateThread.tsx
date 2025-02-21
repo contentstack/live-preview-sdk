@@ -95,6 +95,8 @@ export function updateCollabIconPosition() {
     const icons = document.querySelectorAll(
         ".visual-builder__collab-wrapper .collab-thread"
     );
+    const config = Config.get?.();
+    if (config?.collab?.pauseFeedback) return;
 
     icons.forEach((icon) => {
         if (!(icon instanceof HTMLElement)) return;
@@ -136,6 +138,9 @@ export function updatePopupPositions() {
     const popups = document.querySelectorAll(
         ".visual-builder__collab-wrapper .collab-thread .collab-popup"
     );
+
+    const config = Config.get?.();
+    if (config?.collab?.pauseFeedback) return;
 
     popups.forEach((popup) => {
         if (popup && popup instanceof HTMLElement) {
@@ -217,12 +222,29 @@ export function removeAllCollabIcons(): void {
     icons?.forEach((icon) => icon?.remove());
 }
 
+export function hideAllCollabIcons(): void {
+    const icons = document.querySelectorAll(
+        ".visual-builder__collab-wrapper .collab-thread"
+    );
+    icons?.forEach((icon) => icon?.classList.add(hiddenClass));
+}
+
+export function showAllCollabIcons(): void {
+    const icons = document.querySelectorAll(
+        ".visual-builder__collab-wrapper .collab-thread"
+    );
+    icons?.forEach((icon) => icon?.classList.remove(hiddenClass));
+}
+
 export function removeCollabIcon(threadUid: string): void {
     const thread = document.querySelector(`div[threaduid='${threadUid}']`);
     thread?.remove();
 }
 
 export function HighlightThread(threadUid: string): void {
+    const config = Config.get?.();
+    if (config?.collab?.pauseFeedback) return;
+
     document.dispatchEvent(
         new CustomEvent("toggleCollabPopup", {
             detail: { threadUid, action: "open" },
