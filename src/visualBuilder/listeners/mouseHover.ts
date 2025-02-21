@@ -124,6 +124,11 @@ async function handleMouseHover(params: HandleMouseHoverParams): Promise<void> {
         const eventDetails = getCsDataOfElement(params.event);
         const eventTarget = params.event.target as HTMLElement | null;
         const config = Config.get();
+
+        if (config?.collab.enable && config?.collab.pauseFeedback) {
+            hideCustomCursor(params.customCursor);
+            return;
+        }
         if (!eventDetails) {
             if (
                 eventTarget &&
