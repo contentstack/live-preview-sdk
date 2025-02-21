@@ -3,8 +3,10 @@ import { VisualBuilderPostMessageEvents } from "../utils/types/postMessage.types
 import Config from "../../configManager/configManager";
 import {
     removeAllCollabIcons,
+    hideAllCollabIcons,
     removeCollabIcon,
     HighlightThread,
+    showAllCollabIcons,
 } from "../generators/generateThread";
 import {
     generateThread,
@@ -12,7 +14,11 @@ import {
 } from "../generators/generateThread";
 import { IThreadDTO } from "../types/collab.types";
 
-const handleRemoveCommentIcons = (): void => {
+const handleRemoveCommentIcons = (fromShare: boolean = false): void => {
+    if (fromShare) {
+        hideAllCollabIcons();
+        return;
+    }
     removeAllCollabIcons();
 };
 
@@ -20,6 +26,15 @@ export const useCollab = () => {
     const collabEnable = visualBuilderPostMessage?.on(
         VisualBuilderPostMessageEvents.COLLAB_ENABLE,
         (data: any) => {
+            if (data?.data?.collab?.fromShare) {
+                Config.set(
+                    "collab.pauseFeedback",
+                    data?.data?.collab?.pauseFeedback
+                );
+                showAllCollabIcons();
+                return;
+            }
+
             if (!data?.data?.collab) {
                 console.error("Invalid collab data structure:", data);
                 return;
@@ -51,6 +66,15 @@ export const useCollab = () => {
     const collabDisable = visualBuilderPostMessage?.on(
         VisualBuilderPostMessageEvents.COLLAB_DISABLE,
         (data: any) => {
+            if (data?.data?.collab?.fromShare) {
+                Config.set(
+                    "collab.pauseFeedback",
+                    data?.data?.collab?.pauseFeedback
+                );
+                handleRemoveCommentIcons(true);
+                return;
+            }
+
             Config.set("collab.enable", false);
             Config.set("collab.isFeedbackMode", false);
 
