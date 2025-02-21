@@ -102,6 +102,7 @@ async function handleBuilderInteraction(
     const config = Config.get();
 
     if (config?.collab.enable === true) {
+        if (config?.collab.pauseFeedback) return;
         const xpath = getXPath(eventTarget);
         if (!eventTarget) return;
         const rect = eventTarget.getBoundingClientRect();

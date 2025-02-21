@@ -91,6 +91,8 @@ export declare interface IConfig {
     };
     collab: {
         enable: boolean;
+        fromShare: boolean;
+        pauseFeedback: boolean;
         isFeedbackMode: boolean;
         inviteMetadata: IInviteMetadata;
     };
