@@ -19,7 +19,7 @@ const CommentResolvedText = ({ comment, userState }: ICommentResolvedText) => {
     }, [comment.message, userState.userMap, comment.toUsers]);
 
     const sanitizedText = useMemo(() => {
-        return sanitizeData(text?.replace(/\n/g, "<br/>"));
+        return sanitizeData(text);
     }, [text]);
 
     return (

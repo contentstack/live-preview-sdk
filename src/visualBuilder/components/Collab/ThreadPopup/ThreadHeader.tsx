@@ -3,7 +3,7 @@ import React from "preact/compat";
 import { useCallback } from "preact/hooks";
 import classNames from "classnames";
 import Button from "../Button/Button";
-import { collabStyles } from "../../../collab.style";
+import { collabStyles, flexAlignCenter } from "../../../collab.style";
 import { getThreadTitle } from "../../../utils/collabUtils";
 import {
     IActiveThread,
@@ -43,7 +43,7 @@ const ThreadHeader: React.FC<IThreadHeader> = React.memo(
                     "collab-thread-header--wrapper",
                     "flex-v-center",
                     collabStyles()["collab-thread-header--wrapper"],
-                    collabStyles()["flex-v-center"]
+                    flexAlignCenter
                 )}
             >
                 <div
@@ -51,7 +51,7 @@ const ThreadHeader: React.FC<IThreadHeader> = React.memo(
                         "collab-thread-header--container",
                         "flex-v-center",
                         collabStyles()["collab-thread-header--container"],
-                        collabStyles()["flex-v-center"]
+                        flexAlignCenter
                     )}
                 >
                     <div

@@ -9,7 +9,7 @@ import CommentActionBar from "./CommentActionBar";
 import CommentResolvedText from "./CommentResolvedText";
 import Avatar from "../Avatar/Avatar";
 import ThreadBodyLoader from "./loader/ThreadBody";
-import { collabStyles } from "../../../collab.style";
+import { collabStyles, flexAlignCenter } from "../../../collab.style";
 import classNames from "classnames";
 
 interface ICommentCard {
@@ -37,11 +37,11 @@ const CommentCard = ({
     const [isHovered, setIsHovered] = useState(false);
 
     useEffect(() => {
-        if (comment) {
-            setCommentUser(userState.userMap[comment.createdBy]);
-        } else {
-            setCommentUser(userState.currentUser);
-        }
+        setCommentUser(
+            comment
+                ? userState.userMap[comment.createdBy]
+                : userState.currentUser
+        );
     }, [comment, userState]);
 
     const formattedDate = useMemo(() => formatCommentDate(comment), [comment]);
@@ -64,7 +64,7 @@ const CommentCard = ({
                     "collab-thread-comment--user-details",
                     "flex-v-center",
                     collabStyles()["collab-thread-comment--user-details"],
-                    collabStyles()["flex-v-center"]
+                    flexAlignCenter
                 )}
             >
                 <Avatar
