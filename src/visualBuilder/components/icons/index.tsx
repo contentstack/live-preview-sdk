@@ -206,25 +206,25 @@ export function ReplaceAssetIcon(): JSX.Element {
 
 export function HighlightCommentIcon(): JSX.Element {
     return (
-        <svg width="50" height="50" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <g filter="url(#filter0_d_13652_461491)">
-            <circle cx="25" cy="21" r="21" fill="#777777" fill-opacity="0.84" shape-rendering="crispEdges"/>
+        <svg className="collab-icon__svg" width="50" height="50" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <g className="collab-icon__svg" filter="url(#filter0_d_13652_461491)">
+            <circle className="collab-icon__svg" cx="25" cy="21" r="21" fill="#777777" fill-opacity="0.84" shape-rendering="crispEdges"/>
             </g>
-            <path d="M21.4375 20C21.4375 19.6893 21.6893 19.4375 22 19.4375H28C28.3107 19.4375 28.5625 19.6893 28.5625 20C28.5625 20.3107 28.3107 20.5625 28 20.5625H22C21.6893 20.5625 21.4375 20.3107 21.4375 20Z" fill="white"/>
-            <path d="M21.4375 23C21.4375 22.6893 21.6893 22.4375 22 22.4375H28C28.3107 22.4375 28.5625 22.6893 28.5625 23C28.5625 23.3107 28.3107 23.5625 28 23.5625H22C21.6893 23.5625 21.4375 23.3107 21.4375 23Z" fill="white"/>
-            <path fill-rule="evenodd" clip-rule="evenodd" d="M16 16.25C16 15.8358 16.3358 15.5 16.75 15.5H33.25C33.6642 15.5 34 15.8358 34 16.25V27.4423C34 27.8565 33.6642 28.1923 33.25 28.1923H27.9804C27.853 28.1923 27.7343 28.257 27.6652 28.3641L25.9633 31.0042C25.6651 31.4669 24.9866 31.4613 24.696 30.9938L23.1746 28.5464C23.0378 28.3262 22.7969 28.1923 22.5377 28.1923H16.75C16.3358 28.1923 16 27.8565 16 27.4423V16.25ZM17.125 27.0673V16.625H32.875V27.0673H27.9804C27.4707 27.0673 26.9958 27.3262 26.7197 27.7546L25.3387 29.8968L24.1301 27.9524C23.7879 27.402 23.1858 27.0673 22.5377 27.0673H17.125Z" fill="white"/>
-            <circle cx="34" cy="15" r="4" fill="#EB5646"/>
-            <circle cx="34" cy="15" r="4.5" stroke="white" stroke-opacity="0.6"/>
-            <defs>
-            <filter id="filter0_d_13652_461491" x="0" y="0" width="50" height="50" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
-            <feFlood flood-opacity="0" result="BackgroundImageFix"/>
-            <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
-            <feOffset dy="4"/>
-            <feGaussianBlur stdDeviation="2"/>
-            <feComposite in2="hardAlpha" operator="out"/>
-            <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0"/>
-            <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_13652_461491"/>
-            <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_13652_461491" result="shape"/>
+            <path className="collab-icon__svg" d="M21.4375 20C21.4375 19.6893 21.6893 19.4375 22 19.4375H28C28.3107 19.4375 28.5625 19.6893 28.5625 20C28.5625 20.3107 28.3107 20.5625 28 20.5625H22C21.6893 20.5625 21.4375 20.3107 21.4375 20Z" fill="white"/>
+            <path className="collab-icon__svg" d="M21.4375 23C21.4375 22.6893 21.6893 22.4375 22 22.4375H28C28.3107 22.4375 28.5625 22.6893 28.5625 23C28.5625 23.3107 28.3107 23.5625 28 23.5625H22C21.6893 23.5625 21.4375 23.3107 21.4375 23Z" fill="white"/>
+            <path className="collab-icon__svg" fill-rule="evenodd" clip-rule="evenodd" d="M16 16.25C16 15.8358 16.3358 15.5 16.75 15.5H33.25C33.6642 15.5 34 15.8358 34 16.25V27.4423C34 27.8565 33.6642 28.1923 33.25 28.1923H27.9804C27.853 28.1923 27.7343 28.257 27.6652 28.3641L25.9633 31.0042C25.6651 31.4669 24.9866 31.4613 24.696 30.9938L23.1746 28.5464C23.0378 28.3262 22.7969 28.1923 22.5377 28.1923H16.75C16.3358 28.1923 16 27.8565 16 27.4423V16.25ZM17.125 27.0673V16.625H32.875V27.0673H27.9804C27.4707 27.0673 26.9958 27.3262 26.7197 27.7546L25.3387 29.8968L24.1301 27.9524C23.7879 27.402 23.1858 27.0673 22.5377 27.0673H17.125Z" fill="white"/>
+            <circle className="collab-icon__svg" cx="34" cy="15" r="4" fill="#EB5646"/>
+            <circle className="collab-icon__svg" cx="34" cy="15" r="4.5" stroke="white" stroke-opacity="0.6"/>
+            <defs className="collab-icon__svg" >
+            <filter className="collab-icon__svg" id="filter0_d_13652_461491" x="0" y="0" width="50" height="50" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+            <feFlood className="collab-icon__svg" flood-opacity="0" result="BackgroundImageFix"/>
+            <feColorMatrix className="collab-icon__svg" in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+            <feOffset className="collab-icon__svg" dy="4"/>
+            <feGaussianBlur className="collab-icon__svg" stdDeviation="2"/>
+            <feComposite className="collab-icon__svg" in2="hardAlpha" operator="out"/>
+            <feColorMatrix className="collab-icon__svg" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0"/>
+            <feBlend className="collab-icon__svg" mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_13652_461491"/>
+            <feBlend className="collab-icon__svg" mode="normal" in="SourceGraphic" in2="effect1_dropShadow_13652_461491" result="shape"/>
             </filter>
             </defs>
         </svg>  
