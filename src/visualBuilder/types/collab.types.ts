@@ -196,3 +196,8 @@ export interface IFetchComments {
     offset: number;
     limit: number;
 }
+
+export interface toggleCollabPopupEvent {
+    threadUid: string;
+    action: string;
+}
