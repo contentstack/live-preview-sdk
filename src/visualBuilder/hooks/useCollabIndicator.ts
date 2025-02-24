@@ -5,6 +5,7 @@ import { IActiveThread } from "../types/collab.types";
 import Config from "../../configManager/configManager";
 import { calculatePopupPosition } from "../generators/generateThread";
 import { handleEmptyThreads } from "../generators/generateThread";
+import { toggleCollabPopup } from "../generators/generateThread";
 
 interface UseCollabPopupProps {
     newThread?: boolean;
@@ -85,11 +86,7 @@ export const useCollabIndicator = ({
 
     const togglePopup = () => {
         if (!showPopup) {
-            document.dispatchEvent(
-                new CustomEvent("toggleCollabPopup", {
-                    detail: { action: "close" },
-                })
-            );
+            toggleCollabPopup({ threadUid: "", action: "close" });
             setShowPopup(true);
             const closestDiv = buttonRef.current?.closest("div[field-path]");
             if (closestDiv) {
