@@ -1,6 +1,6 @@
 /** @jsxImportSource preact */
 import { useMemo } from "preact/hooks";
-import { IMessageDTO, IUserState } from "../../../types/collab.types";
+import { ICommentResolvedText } from "../../../types/collab.types";
 import {
     getMessageWithDisplayName,
     sanitizeData,
@@ -8,18 +8,13 @@ import {
 import { collabStyles } from "../../../collab.style";
 import classNames from "classnames";
 
-interface ICommentResolvedText {
-    comment: IMessageDTO;
-    userState: IUserState;
-}
-
 const CommentResolvedText = ({ comment, userState }: ICommentResolvedText) => {
     const text = useMemo(() => {
         return getMessageWithDisplayName(comment, userState, "html");
     }, [comment.message, userState.userMap, comment.toUsers]);
 
     const sanitizedText = useMemo(() => {
-        return sanitizeData(text?.replace(/\n/g, "<br/>"));
+        return sanitizeData(text);
     }, [text]);
 
     return (

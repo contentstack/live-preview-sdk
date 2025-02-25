@@ -2,7 +2,7 @@
 import React from "preact/compat";
 import Tooltip from "../Tooltip/Tooltip";
 import classNames from "classnames";
-import { collabStyles } from "../../../collab.style";
+import { collabStyles, flexAlignCenter } from "../../../collab.style";
 
 export type AvatarProps = {
     avatar: AvatarData;
@@ -75,7 +75,7 @@ function Avatar({
                         "flex-v-center",
                         collabStyles()["collab-avatar"],
                         collabStyles()["collab-avatar--single"],
-                        collabStyles()["flex-v-center"]
+                        flexAlignCenter
                     )}
                 >
                     <span
@@ -83,7 +83,7 @@ function Avatar({
                             "collab-avatar__link",
                             "flex-v-center",
                             collabStyles()["collab-avatar__link"],
-                            collabStyles()["flex-v-center"]
+                            flexAlignCenter
                         )}
                     >
                         <DisplayAvatarContent
