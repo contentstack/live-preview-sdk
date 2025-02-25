@@ -5,42 +5,18 @@ import ThreadHeader from "./ThreadHeader";
 import ThreadFooter from "./ThreadFooter";
 import ThreadBody from "./ThreadBody";
 import {
-    IActiveThread,
-    ICommentPayload,
-    ICommentResponse,
-    IDefaultAPIResponse,
-    IDeleteCommentArgs,
+    IThreadPopup,
     IThreadContext,
     IThreadPopupState,
-    IThreadResponseDTO,
-    IEditCommentArgs,
     IErrorState,
     IMentionList,
-    IInviteMetadata,
     IFetchComments,
-    IFetchCommentsResponse,
-    IThreadResolveArgs,
-    IDeleteThreadArgs,
 } from "../../../types/collab.types";
 import { getUserName } from "../../../utils/collabUtils";
 import { ThreadProvider } from "./ContextProvider/ThreadProvider";
 import useInfiniteScroll from "../../../hooks/use-infinite-scroll/useInfiniteScroll";
 import { collabStyles } from "../../../collab.style";
 import classNames from "classnames";
-
-interface IThreadPopup {
-    onCreateComment: (data: ICommentPayload) => Promise<ICommentResponse>;
-    onEditComment: (data: IEditCommentArgs) => Promise<ICommentResponse>;
-    onDeleteComment: (data: IDeleteCommentArgs) => Promise<IDefaultAPIResponse>;
-    onDeleteThread: (data: IDeleteThreadArgs) => void;
-    onClose: (isResolved?: boolean) => void;
-    onResolve: (data: IThreadResolveArgs) => Promise<IThreadResponseDTO>;
-    inviteMetadata: IInviteMetadata;
-    loadMoreMessages: (data: IFetchComments) => Promise<IFetchCommentsResponse>;
-    activeThread: IActiveThread;
-    setActiveThread: (thread: IActiveThread) => void;
-    createNewThread: () => Promise<IThreadResponseDTO>;
-}
 
 const initialErrorState: IErrorState = {
     hasError: false,

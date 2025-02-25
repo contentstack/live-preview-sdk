@@ -3,21 +3,12 @@ import React from "preact/compat";
 import { useCallback } from "preact/hooks";
 import classNames from "classnames";
 import Button from "../Button/Button";
-import { collabStyles } from "../../../collab.style";
+import { collabStyles, flexAlignCenter } from "../../../collab.style";
 import { getThreadTitle } from "../../../utils/collabUtils";
 import {
-    IActiveThread,
     IDefaultAPIResponse,
-    IThreadResolveArgs,
+    IThreadHeader,
 } from "../../../types/collab.types";
-
-interface IThreadHeader {
-    onClose: (isResolved?: boolean) => void;
-    displayResolve: boolean;
-    onResolve: (data: IThreadResolveArgs) => Promise<IDefaultAPIResponse>;
-    commentCount: number;
-    activeThread: IActiveThread;
-}
 
 const ThreadHeader: React.FC<IThreadHeader> = React.memo(
     ({ onClose, displayResolve, onResolve, commentCount, activeThread }) => {
@@ -43,7 +34,7 @@ const ThreadHeader: React.FC<IThreadHeader> = React.memo(
                     "collab-thread-header--wrapper",
                     "flex-v-center",
                     collabStyles()["collab-thread-header--wrapper"],
-                    collabStyles()["flex-v-center"]
+                    flexAlignCenter
                 )}
             >
                 <div
@@ -51,7 +42,7 @@ const ThreadHeader: React.FC<IThreadHeader> = React.memo(
                         "collab-thread-header--container",
                         "flex-v-center",
                         collabStyles()["collab-thread-header--container"],
-                        collabStyles()["flex-v-center"]
+                        flexAlignCenter
                     )}
                 >
                     <div

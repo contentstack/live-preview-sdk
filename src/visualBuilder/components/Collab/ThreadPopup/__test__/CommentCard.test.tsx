@@ -30,6 +30,9 @@ vi.mock("moment", () => {
     };
 });
 
+const onClose: () => void = vi.fn();
+const handleOnSaveRef = { current: vi.fn() };
+
 // Dummy props for testing
 const mockUserState = {
     userMap: {
@@ -73,77 +76,79 @@ describe("CommentCard", () => {
             <CommentCard
                 comment={mockCommentForLoading}
                 userState={mockUserState}
-                onClose={vi.fn()}
+                onClose={onClose}
                 mode="view"
-                handleOnSaveRef={{ current: vi.fn() }}
+                handleOnSaveRef={handleOnSaveRef}
             />
         );
-        screen.debug();
 
         // Verify that the loader is shown
         expect(screen.getByText("Loading...")).toBeInTheDocument();
     });
 
-    // it("should render comment details in view mode", async () => {
-    //     // Mock getUserName to return a name
-    //     (getUserName as Mock).mockReturnValue("John Doe");
+    it("should render comment details in view mode", async () => {
+        // Mock getUserName to return a name
+        (getUserName as Mock).mockReturnValue("John Doe");
 
-    //     // Render the component
-    //     render(
-    //         <CommentCard
-    //             comment={mockComment}
-    //             userState={mockUserState}
-    //             mode="view"
-    //             handleOnSaveRef={{ current: vi.fn() }}
-    //         />
-    //     );
+        // Render the component
+        render(
+            <CommentCard
+                comment={mockComment}
+                userState={mockUserState}
+                onClose={onClose}
+                mode="view"
+                handleOnSaveRef={handleOnSaveRef}
+            />
+        );
 
-    //     // Verify that user name and formatted date are displayed
-    //     expect(screen.getByText("John Doe")).toBeInTheDocument();
-    //     expect(screen.getByText("Jan 01, 2025, 12:00 PM")).toBeInTheDocument();
+        // Verify that user name and formatted date are displayed
+        expect(screen.getByText("John Doe")).toBeInTheDocument();
+        expect(screen.getByText("Jan 01, 2025, 12:00 PM")).toBeInTheDocument();
 
-    //     // Verify that CommentResolvedText is rendered
-    //     expect(screen.getByText("Comment Resolved Text")).toBeInTheDocument();
-    // });
+        // Verify that CommentResolvedText is rendered
+        expect(screen.getByText("Comment Resolved Text")).toBeInTheDocument();
+    });
 
-    // it("should render comment details in edit mode", async () => {
-    //     // Mock getUserName to return a name
-    //     (getUserName as Mock).mockReturnValue("John Doe");
+    it("should render comment details in edit mode", async () => {
+        // Mock getUserName to return a name
+        (getUserName as Mock).mockReturnValue("John Doe");
 
-    //     // Render the component in edit mode
-    //     render(
-    //         <CommentCard
-    //             comment={mockComment}
-    //             userState={mockUserState}
-    //             mode="edit"
-    //             handleOnSaveRef={{ current: vi.fn() }}
-    //         />
-    //     );
+        // Render the component in edit mode
+        render(
+            <CommentCard
+                comment={mockComment}
+                userState={mockUserState}
+                onClose={onClose}
+                mode="edit"
+                handleOnSaveRef={handleOnSaveRef}
+            />
+        );
 
-    //     // Verify that user name is displayed
-    //     expect(screen.getByText("John Doe")).toBeInTheDocument();
+        // Verify that user name is displayed
+        expect(screen.getByText("John Doe")).toBeInTheDocument();
 
-    //     // Verify that CommentTextArea is rendered
-    //     expect(screen.getByText("Comment Text Area")).toBeInTheDocument();
-    // });
+        // Verify that CommentTextArea is rendered
+        expect(screen.getByText("Comment Text Area")).toBeInTheDocument();
+    });
 
-    // it("should set the comment user correctly", async () => {
-    //     // Mock getUserName to return a name
-    //     (getUserName as Mock).mockReturnValue("John Doe");
+    it("should set the comment user correctly", async () => {
+        // Mock getUserName to return a name
+        (getUserName as Mock).mockReturnValue("John Doe");
 
-    //     // Render the component with the mock comment
-    //     render(
-    //         <CommentCard
-    //             comment={mockComment}
-    //             userState={mockUserState}
-    //             mode="view"
-    //             handleOnSaveRef={{ current: vi.fn() }}
-    //         />
-    //     );
+        // Render the component with the mock comment
+        render(
+            <CommentCard
+                comment={mockComment}
+                userState={mockUserState}
+                onClose={onClose}
+                mode="view"
+                handleOnSaveRef={handleOnSaveRef}
+            />
+        );
 
-    //     // Wait for state update
-    //     await waitFor(() => {
-    //         expect(screen.getByText("John Doe")).toBeInTheDocument();
-    //     });
-    // });
+        // Wait for state update
+        await waitFor(() => {
+            expect(screen.getByText("John Doe")).toBeInTheDocument();
+        });
+    });
 });

@@ -17,47 +17,16 @@ export interface IconProps {
     testId?: string;
 }
 
-const Icon = (props: IconProps) => {
-    const {
-        icon,
-        tooltipContent,
-        className,
-        withTooltip,
-        onClick,
-        testId,
-        ...otherProps
-    } = props;
-
+const IconWrapper = ({
+    icon,
+    className,
+    onClick,
+    testId, 
+    ...otherProps
+}: Omit<IconProps, "withTooltip" | "tooltipContent">) => {
     const IconComponent = iconComponents[icon];
 
-    return withTooltip && tooltipContent ? (
-        <div data-testid={testId}>
-            <Tooltip
-                content={tooltipContent}
-                position="bottom"
-                testId="collab-icon-tooltip"
-            >
-                <div
-                    className={classNames(
-                        "collab-icon-wrapper",
-                        collabStyles()["collab-icon-wrapper"]
-                    )}
-                    onClick={onClick}
-                    {...otherProps}
-                >
-                    {IconComponent ? (
-                        <IconComponent
-                            className={classNames(
-                                "collab-icon",
-                                collabStyles()["collab-icon"],
-                                className
-                            )}
-                        />
-                    ) : null}
-                </div>
-            </Tooltip>
-        </div>
-    ) : (
+    return (
         <div
             className={classNames(
                 "collab-icon-wrapper",
@@ -68,22 +37,36 @@ const Icon = (props: IconProps) => {
             {...otherProps}
         >
             {IconComponent ? (
-                <div>
-                    <IconComponent
-                        className={classNames(
-                            "collab-icon",
-                            collabStyles()["collab-icon"],
-                            className
-                        )}
-                    />
-                </div>
+                <IconComponent
+                    className={classNames(
+                        "collab-icon",
+                        collabStyles()["collab-icon"],
+                        className
+                    )}
+                />
             ) : null}
         </div>
     );
 };
 
-Icon.defaultProps = {
-    testId: "collab-icon",
-} as Partial<IconProps>;
+const withTooltip = (Component: typeof IconWrapper) => ({
+    withTooltip = false,
+    tooltipContent = "",
+    testId = "collab-icon",
+    ...props
+}: IconProps) => {
+    return withTooltip && tooltipContent ? (
+        <div data-testid={testId}>
+            <Tooltip content={tooltipContent} position="bottom" testId="collab-icon-tooltip">
+                <Component {...props}  />
+            </Tooltip>
+        </div>
+    ) : (
+        
+        <Component {...props} testId={testId} />
+    );
+};
+
+const Icon = withTooltip(IconWrapper);
 
 export default Icon;

@@ -486,15 +486,16 @@ export function collabStyles() {
             background-color: #f3f4f6;
             color: #5d50be;
         `,
-
-        "flex-center": css`
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        `,
-        "flex-v-center": css`
-            display: flex;
-            align-items: center;
-        `,
     };
 }
+
+export const flexCentered = css`
+    display: flex;
+    align-items: center;
+    justify-content: center;
+`;
+
+export const flexAlignCenter = css`
+    display: flex;
+    align-items: center;
+`;

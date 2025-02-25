@@ -1,18 +1,14 @@
 /** @jsxImportSource preact */
 import React from "preact/compat";
 import { useContext } from "preact/hooks";
-import { IThreadPopupState, IUserDTO } from "../../../types/collab.types";
+import {
+    IThreadPopupState,
+    ICommentActionBar,
+} from "../../../types/collab.types";
 import Icon from "../Icon/Icon";
 import { ThreadProvider } from "./ContextProvider";
 import { collabStyles } from "../../../collab.style";
 import classNames from "classnames";
-
-interface ICommentActionBar {
-    mode: "edit" | "view";
-    commentUser: IUserDTO;
-    currentUser: IUserDTO;
-    commentUID?: string | undefined;
-}
 
 // Define the CommentActionBar component
 const CommentActionBar: React.FC<ICommentActionBar> = ({

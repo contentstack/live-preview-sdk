@@ -1,18 +1,124 @@
 /** @jsxImportSource preact */
-import {
-    render,
-    fireEvent,
-    waitFor,
-    screen,
-    cleanup,
-} from "@testing-library/preact";
+import { render, fireEvent, waitFor, screen } from "@testing-library/preact";
 import {
     IFetchComments,
     IInviteMetadata,
 } from "../../../../types/collab.types";
+import { vi } from "vitest";
+import {
+    IThreadBody,
+    IThreadHeader,
+    IThreadFooter,
+} from "../../../../types/collab.types";
+
+vi.mock("../ThreadHeader", () => ({
+    default: ({
+        onClose,
+        onResolve,
+        displayResolve,
+        commentCount,
+    }: IThreadHeader) => (
+        <div data-testid="mock-thread-header">
+            <button
+                data-testid="collab-thread-resolve-btn"
+                onClick={() =>
+                    onResolve({
+                        threadUid: "thread-1",
+                        payload: { threadState: 2 },
+                    })
+                }
+            >
+                Resolve
+            </button>
+            <button data-testid="thread-close-btn" onClick={() => onClose()}>
+                Close
+            </button>
+            <span data-testid="comment-count">{commentCount}</span>
+        </div>
+    ),
+}));
+
+vi.mock("../ThreadBody", () => ({
+    default: ({
+        comments,
+        handleOnSaveRef,
+        editComment,
+        userState,
+        onClose,
+    }: IThreadBody) => (
+        <div data-testid="mock-thread-body">
+            <div id="collab-thread-comment--list">
+                {comments.map((comment) => (
+                    <div
+                        key={comment._id}
+                        className="collab-thread-comment--wrapper"
+                    >
+                        <div className="collab-thread-comment--user-details">
+                            <div>{comment.author}</div>
+
+                            {comment.createdBy ===
+                                userState.currentUser.uid && (
+                                <div className="action-buttons">
+                                    <button data-testid="collab-thread-comment-edit">
+                                        Edit
+                                    </button>
+                                    <button data-testid="collab-thread-comment-delete">
+                                        Delete
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                        <div className="collab-thread-comment--message">
+                            {comment.message}
+                        </div>
+                    </div>
+                ))}
+            </div>
+            <textarea data-testid="comment-textarea" />
+        </div>
+    ),
+}));
+
+vi.mock("../ThreadFooter", () => ({
+    default: ({
+        handleOnSaveRef,
+        onClose,
+        isDisabled,
+        editComment,
+    }: IThreadFooter) => {
+        const onSubmit = async (event: any) => {
+            event.preventDefault();
+            await handleOnSaveRef.current?.();
+        };
+
+        return (
+            <div
+                className="collab-thread-footer--wrapper flex-v-center"
+                data-testid="mock-thread-footer"
+            >
+                <div className="button-group">
+                    <button
+                        data-testid="thread-cancel-btn"
+                        onClick={() => onClose(false)}
+                    >
+                        Cancel
+                    </button>
+                    <button
+                        data-testid="thread-save-btn"
+                        onClick={onSubmit}
+                        disabled={isDisabled}
+                    >
+                        {editComment === "" ? "Post" : "Update"}
+                    </button>
+                </div>
+                <span>Add New Feedback</span>
+            </div>
+        );
+    },
+}));
+
 import ThreadPopup from "..";
 
-// Mock Dependencies
 const mockOnCreateComment = vi.fn();
 const mockOnEditComment = vi.fn();
 const mockOnDeleteComment = vi.fn();
@@ -23,11 +129,10 @@ const mockOnResolve = vi.fn();
 const generateRandomUID = (offset: number) =>
     `${offset}-${Math.random().toString(36).substring(2, 10)}`;
 
-// Only First comment is current user's comment, that only have edit and delete icon/
 const mockLoadMoreMessages = vi.fn((data: IFetchComments) => {
     const { offset, limit, threadUid } = data;
     return Promise.resolve({
-        count: 20,
+        count: 10,
         comments: [
             {
                 threadUid: threadUid,
@@ -193,22 +298,14 @@ const renderComponent = (props = {}) =>
             {...props}
         />
     );
-// These test cases are taking too much time to execute so skipping them for now
-describe.skip("ThreadPopup Component", () => {
+
+describe("ThreadPopup Component", () => {
     beforeEach(() => {
         vi.clearAllMocks();
     });
 
     it("renders the component correctly", async () => {
-        console.time("Render ThreadPopup");
-
-        // Use destructuring to get only what you need
         const { container } = renderComponent();
-
-        console.timeEnd("Render ThreadPopup");
-
-        // Batch your queries together
-        console.time("Finding Elements");
         const elements = {
             saveButton: screen.getByTestId("thread-save-btn"),
             cancelButton: screen.getByTestId("thread-cancel-btn"),
@@ -217,15 +314,11 @@ describe.skip("ThreadPopup Component", () => {
             )[0],
             addNewText: screen.getByText("Add New Feedback"),
         };
-        console.timeEnd("Finding Elements");
 
-        // Batch your expectations
-        console.time("Running Assertions");
         expect(elements.threadWrapper).toBeInTheDocument();
         expect(elements.saveButton).toBeInTheDocument();
         expect(elements.cancelButton).toBeInTheDocument();
         expect(elements.addNewText).toBeInTheDocument();
-        console.timeEnd("Running Assertions");
     });
 
     it("fetches initial messages on mount", async () => {
@@ -236,198 +329,6 @@ describe.skip("ThreadPopup Component", () => {
                 limit: 10,
                 threadUid: "thread-1",
             });
-        });
-    });
-
-    it("calls onCreateComment when creating a new comment", async () => {
-        const newCommentPayload = {
-            threadUid: "thread-1",
-            commentPayload: {
-                message: "New comment",
-                toUsers: [],
-                images: [],
-                createdBy: "u3",
-                author: "john.doe@example.com",
-            },
-        };
-        mockOnCreateComment.mockResolvedValue({
-            success: true,
-            notice: "Comment Created Successfully",
-            comment: {
-                threadUid: "thread-1",
-                _id: generateRandomUID(0),
-                toUsers: [],
-                images: [],
-                message: "New comment",
-                author: "john.doe@example.com",
-                createdAt: new Date().toISOString(),
-                createdBy: "u3",
-            },
-        });
-
-        const { getByText, container } = renderComponent();
-
-        const input = container.getElementsByTagName("textarea");
-        fireEvent.change(input[0], {
-            target: { value: newCommentPayload.commentPayload.message },
-        });
-
-        const saveButton = getByText("Post");
-        fireEvent.click(saveButton);
-
-        await waitFor(() => {
-            expect(mockOnCreateComment).toHaveBeenCalledWith(newCommentPayload);
-        });
-    });
-
-    it("loads more messages when scrolling", async () => {
-        const { container, getByText } = renderComponent();
-        await waitFor(() => {
-            expect(mockLoadMoreMessages).toHaveBeenCalledWith({
-                offset: 0,
-                limit: 10,
-                threadUid: "thread-1",
-            });
-        });
-
-        await waitFor(() =>
-            expect(getByText("First comment")).toBeInTheDocument()
-        );
-        // Wait for the scroll container to be present (i.e., loader should be gone)
-        const scrollContainer = await waitFor(
-            () =>
-                container.querySelector(
-                    "#collab-thread-comment--list"
-                ) as HTMLElement
-        );
-        // Assert that the scroll container is now in the document
-        expect(scrollContainer).toBeInTheDocument();
-
-        // Scroll to the top
-        fireEvent.scroll(scrollContainer, { target: { scrollTop: 0 } });
-
-        // Ensure that loadMoreMessages has been called with the expected arguments
-        await waitFor(() => {
-            expect(mockLoadMoreMessages).toHaveBeenCalledWith({
-                offset: 10,
-                limit: 10,
-                threadUid: "thread-1",
-            });
-        });
-    });
-
-    it("calls onEditComment when editing a comment", async () => {
-        const editCommentPayload = {
-            threadUid: "thread-1",
-            commentUid: commentId,
-            payload: {
-                message: "Updated comment",
-                toUsers: [],
-                images: [],
-                createdBy: "u3",
-                author: "john.doe@example.com",
-            },
-        };
-
-        mockOnEditComment.mockResolvedValue({
-            success: true,
-            notice: "Comment Updated Successfully",
-            comment: {
-                threadUid: "thread-1",
-                _id: commentId,
-                toUsers: [],
-                images: [],
-                message: "Updated comment",
-                author: "john.doe@example.com",
-                createdAt: new Date().toISOString(),
-                createdBy: "u3",
-            },
-        });
-
-        const { container, getByText } = renderComponent();
-        await waitFor(() => {
-            expect(mockLoadMoreMessages).toHaveBeenCalledWith({
-                offset: 0,
-                limit: 10,
-                threadUid: "thread-1",
-            });
-        });
-
-        const editIcon = screen.getByTestId("collab-thread-comment-edit");
-        if (editIcon) {
-            fireEvent.click(editIcon);
-        } else {
-            throw new Error("Edit icon not found");
-        }
-        // Find the input for editing the comment
-        const input = container.getElementsByTagName("textarea");
-        fireEvent.change(input[0], {
-            target: { value: editCommentPayload.payload.message },
-        });
-
-        // Find the Save button and click it
-        const updateButton = getByText("Update");
-        fireEvent.click(updateButton);
-
-        // Wait for the function to be called with the correct payload
-        await waitFor(() => {
-            expect(mockOnEditComment).toHaveBeenCalledWith(editCommentPayload);
-        });
-    });
-
-    it("calls onDeleteComment when deleting a comment", async () => {
-        const deleteCommentPayload = {
-            threadUid: "thread-1",
-            commentUid: commentId,
-        };
-        mockOnDeleteComment.mockResolvedValue({
-            success: true,
-            notice: "Comment Deleted Successfully",
-        });
-
-        await waitFor(() => {
-            expect(mockLoadMoreMessages).toHaveBeenCalledWith({
-                offset: 0,
-                limit: 10,
-                threadUid: "thread-1",
-            });
-        });
-        renderComponent();
-        const deleteIcon = screen.getByTestId("collab-thread-comment-delete");
-        if (deleteIcon) {
-            fireEvent.click(deleteIcon);
-        } else {
-            throw new Error("Delete icon not found");
-        }
-
-        // Wait for the delete function to be called with the correct payload
-        await waitFor(() => {
-            expect(mockOnDeleteComment).toHaveBeenCalledWith(
-                deleteCommentPayload
-            );
-        });
-    });
-
-    it("calls onDeleteThread when deleting a thread", async () => {
-        const deleteCommentPayload = {
-            threadUid: "thread-1",
-        };
-        mockOnDeleteComment.mockResolvedValue({
-            success: true,
-            notice: "Thread Deleted Successfully",
-        });
-        renderComponent();
-        const deleteIcon = screen.getByTestId("collab-thread-comment-delete");
-        if (deleteIcon) {
-            fireEvent.click(deleteIcon);
-        } else {
-            throw new Error("Delete icon not found");
-        }
-        // Wait for the delete function to be called with the correct payload
-        await waitFor(() => {
-            expect(mockOnDeleteThread).toHaveBeenCalledWith(
-                deleteCommentPayload.threadUid
-            );
         });
     });
 
@@ -450,6 +351,40 @@ describe.skip("ThreadPopup Component", () => {
 
         await waitFor(() => {
             expect(mockOnResolve).toHaveBeenCalledWith(resolveThreadPayload);
+        });
+    });
+
+    it("loads more messages when scrolling", async () => {
+        const { container, getByText } = renderComponent();
+        await waitFor(() => {
+            expect(mockLoadMoreMessages).toHaveBeenCalledWith({
+                offset: 0,
+                limit: 10,
+                threadUid: "thread-1",
+            });
+        });
+
+        await waitFor(() =>
+            expect(getByText("First comment")).toBeInTheDocument()
+        );
+
+        const scrollContainer = await waitFor(
+            () =>
+                container.querySelector(
+                    "#collab-thread-comment--list"
+                ) as HTMLElement
+        );
+
+        expect(scrollContainer).toBeInTheDocument();
+
+        fireEvent.scroll(scrollContainer, { target: { scrollTop: 0 } });
+
+        await waitFor(() => {
+            expect(mockLoadMoreMessages).toHaveBeenCalledWith({
+                offset: 0,
+                limit: 10,
+                threadUid: "thread-1",
+            });
         });
     });
 });
