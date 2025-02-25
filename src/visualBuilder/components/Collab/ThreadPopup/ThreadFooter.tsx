@@ -5,14 +5,8 @@ import { useState } from "preact/hooks";
 import Button from "../Button/Button";
 import ButtonGroup from "../ButtonGroup/ButtonGroup";
 import classNames from "classnames";
-import { collabStyles } from "../../../collab.style";
-
-interface IThreadFooter {
-    onClose: (isResolved?: boolean) => void;
-    handleOnSaveRef: React.MutableRefObject<any>;
-    isDisabled: boolean;
-    editComment: string;
-}
+import { collabStyles, flexAlignCenter } from "../../../collab.style";
+import { IThreadFooter } from "../../../types/collab.types";
 
 const ThreadFooter = ({
     onClose,
@@ -36,7 +30,7 @@ const ThreadFooter = ({
                 "collab-thread-footer--wrapper",
                 "flex-v-center",
                 collabStyles()["collab-thread-footer--wrapper"],
-                collabStyles()["flex-v-center"]
+                flexAlignCenter
             )}
         >
             <ButtonGroup>
