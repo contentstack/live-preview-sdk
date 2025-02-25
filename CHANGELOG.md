@@ -1,8 +1,64 @@
 # Changelog
 
+## [v3.2.0-alpha.1](https://github.com/contentstack/live-preview-sdk/compare/v3.1.1...v3.2.0-alpha.1)
+
+> 25 February 2025
+
+### Fixes
+
+- fix(collab): user tagging enhancements (diwakarmk7 - [#362](https://github.com/contentstack/live-preview-sdk/pull/362))
+
+### New Features
+
+- feat(collab): add ui-components and collab feature handling (MohammedZuhairAhmed - [23a4234](https://github.com/contentstack/live-preview-sdk/commit/23a42344117f81d957dd36710b9627223ec57e4d))
+- feat(collab): open popup from rhs panel (MohammedZuhairAhmed - [f312a7d](https://github.com/contentstack/live-preview-sdk/commit/f312a7db48718914aed52932accb7463c50a5c20))
+- feat(collab): add retry mechanism for thread rendering (MohammedZuhairAhmed - [45275e8](https://github.com/contentstack/live-preview-sdk/commit/45275e86bb4db1bafd16855b57531153d32e1e01))
+- feat(collab): pause collab mode in preview share (MohammedZuhairAhmed - [fd6bd12](https://github.com/contentstack/live-preview-sdk/commit/fd6bd122a3fc76d468c5c8532d42c98c0f4194b3))
+- feat(collab): delete thread when no comments present (Pratyush Biswas - [a28b246](https://github.com/contentstack/live-preview-sdk/commit/a28b246223e9fbd07c33e8e44dce643a3c80539f))
+
+### Fixes
+
+- fix(collab): addressed pr comments (MohammedZuhairAhmed - [a894896](https://github.com/contentstack/live-preview-sdk/commit/a894896314ec317d867cde4cb6308d3b9ee481c6))
+- fix(collab): re-design of indicator and api changes (MohammedZuhairAhmed - [f94da2e](https://github.com/contentstack/live-preview-sdk/commit/f94da2ef078f5c0909c83679a7629004324fa735))
+- fix(collab): highlight comment icon fix and code optimization (MohammedZuhairAhmed - [25c7da2](https://github.com/contentstack/live-preview-sdk/commit/25c7da20dbf6d31c9a9dbe250507adf051802ae1))
+- fix(collab): user tagging fix (MohammedZuhairAhmed - [dd41948](https://github.com/contentstack/live-preview-sdk/commit/dd41948c96bb53aee8b6827986d2f4c836a2cb3f))
+- fix(chore): add validations in textarea (Pratyush Biswas - [21e30b1](https://github.com/contentstack/live-preview-sdk/commit/21e30b16fc5d8616909cd2fa2f9d40e843f408ff))
+- fix(collab): fix bugs (MohammedZuhairAhmed - [b3f040c](https://github.com/contentstack/live-preview-sdk/commit/b3f040c533236a57ec426293ded2414f6a6c559c))
+- fix(collab): address pr reviews (MohammedZuhairAhmed - [108a093](https://github.com/contentstack/live-preview-sdk/commit/108a0937f24b98f965ed57e9e332103fe3f05d4e))
+- fix(collab): remove unused styles (Pratyush Biswas - [24d2b32](https://github.com/contentstack/live-preview-sdk/commit/24d2b3288b8a3fa7a8788c4313ae5de4ee294a61))
+- fix(collab): fix cursor when hovering on popup (Pratyush Biswas - [c6e3e9d](https://github.com/contentstack/live-preview-sdk/commit/c6e3e9db4b8bf1792bc8737c8b8baabfec6747cc))
+- fix(collab): remove debugging elements (Pratyush Biswas - [946a9b6](https://github.com/contentstack/live-preview-sdk/commit/946a9b6fe366a2d9e7fefc43f35d320cf516ed71))
+
+### Chores And Housekeeping
+
+- chore(collab): addressed pr comments (MohammedZuhairAhmed - [5c20fc1](https://github.com/contentstack/live-preview-sdk/commit/5c20fc1c0cea2278857723d1a81398c6076cd445))
+- chore(collab): fix email styles (Pratyush Biswas - [fb65c93](https://github.com/contentstack/live-preview-sdk/commit/fb65c939b60c540381147158bf596a99b7412987))
+
+### Refactoring and Updates
+
+- refactor(collab): addressed pr comments (MohammedZuhairAhmed - [fd21ffa](https://github.com/contentstack/live-preview-sdk/commit/fd21ffa0ae8bb33140070a787e596e06b01fc881))
+- refactor(collab): code optimisation and bug fixes (MohammedZuhairAhmed - [42bbd6a](https://github.com/contentstack/live-preview-sdk/commit/42bbd6a2453f2c53eae904e4e9905f570a580b19))
+- refactor(collab): addressed pr feedbacks (MohammedZuhairAhmed - [a712bff](https://github.com/contentstack/live-preview-sdk/commit/a712bff2b9f6bc4d01d0483083c7bc77b11bb9e5))
+
+### Changes to Test Assests
+
+- test(collab): test cases addition and config updates (MohammedZuhairAhmed - [fc3605b](https://github.com/contentstack/live-preview-sdk/commit/fc3605baa48fb8d8b22d0c316d03564e243731f9))
+- test(collab): add ui-components test cases (MohammedZuhairAhmed - [cb59d82](https://github.com/contentstack/live-preview-sdk/commit/cb59d822881f77b86deabe73dad4319ef1f1b1d1))
+- test(collab): fix failing test cases (Pratyush Biswas - [73fb31f](https://github.com/contentstack/live-preview-sdk/commit/73fb31ff192917e5ce9f7c9ca9c471f56262c065))
+- test(collab): add test cases for deleting thread when no comments (Pratyush Biswas - [30dc765](https://github.com/contentstack/live-preview-sdk/commit/30dc76507fafa06e74058eee9602871bc835f522))
+- test(collab): added test cases (MohammedZuhairAhmed - [6eaf90d](https://github.com/contentstack/live-preview-sdk/commit/6eaf90d560c70df87fee18a24b18d12dc822b159))
+- test(collab): add corresponding test cases (Pratyush Biswas - [a5c6473](https://github.com/contentstack/live-preview-sdk/commit/a5c6473bdeb82b6da25a220af43776235d4b4e9e))
+
+### General Changes
+
+- tagging changes (diwakarmk7 - [ea45adf](https://github.com/contentstack/live-preview-sdk/commit/ea45adffc1efe828bec346ab8f35ea50cf60a093))
+- tagging users (diwakarmk7 - [2d64027](https://github.com/contentstack/live-preview-sdk/commit/2d640270ebd8522014e07b9ba7becbfa1689eeb2))
+- tagging changes (diwakarmk7 - [bce01ee](https://github.com/contentstack/live-preview-sdk/commit/bce01ee2eacb978b7a4f90a37032fc8460cc9537))
+- added id to tousers list (diwakarmk7 - [afac6ef](https://github.com/contentstack/live-preview-sdk/commit/afac6ef13725e85c882bc2cf142b846ec3a87688))
+
 ## [v3.1.1](https://github.com/contentstack/live-preview-sdk/compare/v3.1.0...v3.1.1)
 
-> 3 February 2025
+> 6 February 2025
 
 ### Fixes
 
@@ -17,9 +73,17 @@
 
 - test: add unit tests for error handling and field state validation in visual builder (Hitesh Shetty - [#329](https://github.com/contentstack/live-preview-sdk/pull/329))
 
+### General Changes
+
+- sync main for upcoming release (Hitesh Shetty - [#338](https://github.com/contentstack/live-preview-sdk/pull/338))
+
 ### Fixes
 
 - fix: live preview doc (Kirtesh Suthar - [8fcdcc5](https://github.com/contentstack/live-preview-sdk/commit/8fcdcc5127ea722bd9c01f74b1168d9f579e5f30))
+
+### Chores And Housekeeping
+
+- chore: update ContentstackLivePreview version to 3.1.1 in README (hiteshshetty-dev - [d885fa5](https://github.com/contentstack/live-preview-sdk/commit/d885fa5f65ef32e22bfb86fa3871238bdec02d61))
 
 ### Changes to Test Assests
 
