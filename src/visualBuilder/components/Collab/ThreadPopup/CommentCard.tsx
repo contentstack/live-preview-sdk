@@ -2,23 +2,19 @@
 import React from "preact/compat";
 import { useEffect, useState, useMemo } from "preact/hooks";
 import CommentTextArea from "./CommentTextArea";
-import { IUserState, IMessageDTO, IUserDTO } from "../../../types/collab.types";
+import {
+    ICommentCard,
+    IMessageDTO,
+    IUserDTO,
+} from "../../../types/collab.types";
 import moment from "moment";
 import { getUserName } from "../../../utils/collabUtils";
 import CommentActionBar from "./CommentActionBar";
 import CommentResolvedText from "./CommentResolvedText";
 import Avatar from "../Avatar/Avatar";
 import ThreadBodyLoader from "./loader/ThreadBody";
-import { collabStyles } from "../../../collab.style";
+import { collabStyles, flexAlignCenter } from "../../../collab.style";
 import classNames from "classnames";
-
-interface ICommentCard {
-    comment: IMessageDTO | null;
-    onClose: (isResolved?: boolean) => void;
-    userState: IUserState;
-    mode: "edit" | "view";
-    handleOnSaveRef: React.MutableRefObject<any>;
-}
 
 const formatCommentDate = (comment: IMessageDTO | null): string => {
     return comment
@@ -37,11 +33,11 @@ const CommentCard = ({
     const [isHovered, setIsHovered] = useState(false);
 
     useEffect(() => {
-        if (comment) {
-            setCommentUser(userState.userMap[comment.createdBy]);
-        } else {
-            setCommentUser(userState.currentUser);
-        }
+        setCommentUser(
+            comment
+                ? userState.userMap[comment.createdBy]
+                : userState.currentUser
+        );
     }, [comment, userState]);
 
     const formattedDate = useMemo(() => formatCommentDate(comment), [comment]);
@@ -64,7 +60,7 @@ const CommentCard = ({
                     "collab-thread-comment--user-details",
                     "flex-v-center",
                     collabStyles()["collab-thread-comment--user-details"],
-                    collabStyles()["flex-v-center"]
+                    flexAlignCenter
                 )}
             >
                 <Avatar

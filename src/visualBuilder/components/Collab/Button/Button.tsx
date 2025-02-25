@@ -4,7 +4,11 @@ import { JSX } from "preact";
 import classNames from "classnames";
 import Icon, { IconProps } from "../Icon/Icon";
 import { iconComponents } from "../../icons/CollabIcons";
-import { collabStyles } from "../../../collab.style";
+import {
+    collabStyles,
+    flexAlignCenter,
+    flexCentered,
+} from "../../../collab.style";
 
 type IconName = keyof typeof iconComponents;
 
@@ -102,21 +106,12 @@ const Button: React.FC<ButtonProps> = ({
             href={href}
             data-testid={testId}
         >
-            <div
-                className={classNames(
-                    "flex-center",
-                    collabStyles()["flex-center"]
-                )}
-            >
+            <div className={classNames("flex-center", flexCentered)}>
                 <div
-                    className={classNames(
-                        "flex-v-center",
-                        collabStyles()["flex-v-center"],
-                        {
-                            [`${collabStyles()["collab-button--size"]["regular"]} collab-button--regular`]:
-                                size !== "small",
-                        }
-                    )}
+                    className={classNames("flex-v-center", flexAlignCenter, {
+                        [`${collabStyles()["collab-button--size"]["regular"]} collab-button--regular`]:
+                            size !== "small",
+                    })}
                 >
                     {nestedChildren}
                 </div>

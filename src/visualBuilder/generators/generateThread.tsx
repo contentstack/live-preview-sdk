@@ -18,6 +18,48 @@ const hiddenClass = css`
     display: none;
 `;
 
+function createPopupContainer(
+    resolvedXPath: string,
+    relativeX: number,
+    relativeY: number,
+    top: number,
+    left: number,
+    updateConfig: boolean,
+    payload: IThreadDTO | any
+): HTMLDivElement {
+    const popupContainer = document.createElement("div");
+    popupContainer.setAttribute("field-path", resolvedXPath);
+    popupContainer.setAttribute("relative", `x: ${relativeX}, y: ${relativeY}`);
+    popupContainer.style.position = "absolute";
+    popupContainer.style.top = `${top - popupTopOffset}px`;
+    popupContainer.style.left = `${left - popupLeftOffset}px`;
+    popupContainer.style.zIndex = updateConfig ? "1000" : "999";
+    popupContainer.style.cursor = "pointer";
+    popupContainer.className = "collab-thread";
+    if (payload?._id) popupContainer.setAttribute("threaduid", payload._id);
+    return popupContainer;
+}
+
+function appendPopupContainer(popupContainer: HTMLDivElement): void {
+    const visualBuilderContainer = document.querySelector(
+        ".visual-builder__container"
+    );
+    if (visualBuilderContainer) {
+        let highlightCommentWrapper = visualBuilderContainer.querySelector(
+            ".visual-builder__collab-wrapper"
+        );
+        if (!highlightCommentWrapper) {
+            highlightCommentWrapper = document.createElement("div");
+            highlightCommentWrapper.className =
+                "visual-builder__collab-wrapper";
+            visualBuilderContainer.appendChild(highlightCommentWrapper);
+        }
+        highlightCommentWrapper.appendChild(popupContainer);
+    } else {
+        document.body.appendChild(popupContainer);
+    }
+}
+
 export function generateThread(
     payload: IThreadDTO | any,
     options: { isNewThread?: boolean; updateConfig?: boolean } = {}
@@ -44,20 +86,15 @@ export function generateThread(
     const top = rect.top + window.scrollY + relativeY * rect.height;
     const left = rect.left + window.scrollX + relativeX * rect.width;
 
-    const popupContainer = document.createElement("div");
-    popupContainer.setAttribute("field-path", resolvedXPath);
-    popupContainer.setAttribute("relative", `x: ${relativeX}, y: ${relativeY}`);
-    popupContainer.style.position = "absolute";
-    popupContainer.style.top = `${top - popupTopOffset}px`;
-    popupContainer.style.left = `${left - popupLeftOffset}px`;
-    if (updateConfig) {
-        popupContainer.style.zIndex = "1000";
-    } else {
-        popupContainer.style.zIndex = "999";
-    }
-    popupContainer.style.cursor = "pointer";
-    popupContainer.className = "collab-thread";
-    if (payload?._id) popupContainer.setAttribute("threaduid", payload._id);
+    const popupContainer = createPopupContainer(
+        resolvedXPath,
+        relativeX,
+        relativeY,
+        top,
+        left,
+        updateConfig,
+        payload
+    );
 
     if (updateConfig && config?.collab.enable) {
         if (config?.collab.isFeedbackMode) {
@@ -73,23 +110,7 @@ export function generateThread(
         popupContainer
     );
 
-    const visualBuilderContainer = document.querySelector(
-        ".visual-builder__container"
-    );
-    if (visualBuilderContainer) {
-        let highlightCommentWrapper = visualBuilderContainer.querySelector(
-            ".visual-builder__collab-wrapper"
-        );
-        if (!highlightCommentWrapper) {
-            highlightCommentWrapper = document.createElement("div");
-            highlightCommentWrapper.className =
-                "visual-builder__collab-wrapper";
-            visualBuilderContainer.appendChild(highlightCommentWrapper);
-        }
-        highlightCommentWrapper.appendChild(popupContainer);
-    } else {
-        document.body.appendChild(popupContainer);
-    }
+    appendPopupContainer(popupContainer);
 
     return undefined;
 }
