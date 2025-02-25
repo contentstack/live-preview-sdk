@@ -201,3 +201,69 @@ export interface toggleCollabPopupEvent {
     threadUid: string;
     action: string;
 }
+
+export interface ICommentActionBar {
+    mode: "edit" | "view";
+    commentUser: IUserDTO;
+    currentUser: IUserDTO;
+    commentUID?: string | undefined;
+}
+
+export interface ICommentCard {
+    comment: IMessageDTO | null;
+    onClose: (isResolved?: boolean) => void;
+    userState: IUserState;
+    mode: "edit" | "view";
+    handleOnSaveRef: React.MutableRefObject<any>;
+}
+
+export interface ICommentResolvedText {
+    comment: IMessageDTO;
+    userState: IUserState;
+}
+
+export interface ICommentTextAreaProps {
+    userState: IUserState;
+    onClose: (isResolved?: boolean) => void;
+    handleOnSaveRef: React.MutableRefObject<any>;
+    comment?: IMessageDTO | null;
+}
+
+export interface IThreadPopup {
+    onCreateComment: (data: ICommentPayload) => Promise<ICommentResponse>;
+    onEditComment: (data: IEditCommentArgs) => Promise<ICommentResponse>;
+    onDeleteComment: (data: IDeleteCommentArgs) => Promise<IDefaultAPIResponse>;
+    onDeleteThread: (data: IDeleteThreadArgs) => void;
+    onClose: (isResolved?: boolean) => void;
+    onResolve: (data: IThreadResolveArgs) => Promise<IThreadResponseDTO>;
+    inviteMetadata: IInviteMetadata;
+    loadMoreMessages: (data: IFetchComments) => Promise<IFetchCommentsResponse>;
+    activeThread: IActiveThread;
+    setActiveThread: (thread: IActiveThread) => void;
+    createNewThread: () => Promise<IThreadResponseDTO>;
+}
+
+export interface IThreadBody {
+    handleOnSaveRef: React.MutableRefObject<any>;
+    onClose: (isResolved?: boolean) => void;
+    userState: IUserState;
+    isLoading: boolean;
+    comments: IMessageDTO[];
+    fetchingMore: boolean;
+    editComment: string;
+}
+
+export interface IThreadFooter {
+    onClose: (isResolved?: boolean) => void;
+    handleOnSaveRef: React.MutableRefObject<any>;
+    isDisabled: boolean;
+    editComment: string;
+}
+
+export interface IThreadHeader {
+    onClose: (isResolved?: boolean) => void;
+    displayResolve: boolean;
+    onResolve: (data: IThreadResolveArgs) => Promise<IDefaultAPIResponse>;
+    commentCount: number;
+    activeThread: IActiveThread;
+}
