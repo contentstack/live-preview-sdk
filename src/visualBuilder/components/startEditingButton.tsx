@@ -29,6 +29,14 @@ function StartEditingButtonComponent(): JSX.Element | null {
     const config = Config.get()
     const enable = config.editButtonBuilder.enable;
     const position = config.editButtonBuilder.position || "bottom-right";
+    
+    function updateTargetUrl(e: any){
+        const targetElement = e.target as HTMLAnchorElement;
+        targetElement.setAttribute(
+            "href",
+            getVisualBuilderRedirectionUrl().toString()
+        );
+    }
 
     return enable ? (
         <a
@@ -39,13 +47,9 @@ function StartEditingButtonComponent(): JSX.Element | null {
                 positionStyles[getEditButtonPosition(position)]
             )}
             data-testid="vcms-start-editing-btn"
-            onClick={(e) => {
-                const targetElement = e.target as HTMLAnchorElement;
-                targetElement.setAttribute(
-                    "href",
-                    getVisualBuilderRedirectionUrl().toString()
-                );
-            }}
+            onMouseEnter={(e) => updateTargetUrl(e)}
+            onFocus={(e) => updateTargetUrl(e)}
+            onClick={(e) => updateTargetUrl(e)}
         >
             <EditIcon />
             <span>Start Editing</span>

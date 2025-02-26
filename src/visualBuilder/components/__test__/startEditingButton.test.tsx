@@ -93,4 +93,48 @@ describe("StartEditingButtonComponent", () => {
         expect(Config.get().editButtonBuilder.position).toBe("bottom-right")
         expect(button).toBeInTheDocument();
     });
+
+    test("should update href with current URL when mouse enters button", async () => {
+        Object.defineProperty(window, 'location', {
+            value: new URL('http://localhost:3000'),
+        });
+        
+        const { getByTestId } = await asyncRender(<StartEditingButtonComponent />);
+        const button = getByTestId("vcms-start-editing-btn");
+        const initialHref = button.getAttribute("href");
+        
+        Object.defineProperty(window, 'location', {
+            value: new URL('http://localhost:3000/about'),
+            writable: true
+        });
+
+        fireEvent.mouseEnter(button);
+        
+        const updatedHref = button.getAttribute("href");
+        expect(updatedHref).not.toBe(initialHref);
+        expect(updatedHref).toContain(encodeURIComponent("http://localhost:3000/about"));
+    });
+
+    test("should update href with current URL when button is focused", async () => {
+        Object.defineProperty(window, 'location', {
+            value: new URL('http://localhost:3000'),
+        });
+        
+        const { getByTestId } = await asyncRender(<StartEditingButtonComponent />);
+        const button = getByTestId("vcms-start-editing-btn");
+        const initialHref = button.getAttribute("href");
+        
+        Object.defineProperty(window, 'location', {
+            value: new URL('http://localhost:3000/contact'),
+            writable: true
+        });
+
+        fireEvent.focus(button);
+        
+        const updatedHref = button.getAttribute("href");
+        expect(updatedHref).not.toBe(initialHref);
+        expect(updatedHref).toContain(encodeURIComponent("http://localhost:3000/contact"));
+    });
+
+   
 });
