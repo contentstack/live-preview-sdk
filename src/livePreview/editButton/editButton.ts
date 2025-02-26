@@ -390,6 +390,15 @@ export class LivePreviewEditButton {
     }
 
     private addEditStyleOnHover(e: MouseEvent) {
+        const updateStyles = this.shouldUpdateStyles(e);
+        // Checks whether the mouse pointer is within the safe zone of the
+        // element which was hovered on, since it also returns undefined when the
+        // above can't be determined we can still add styles
+        const shouldRedraw =
+            typeof updateStyles === "undefined" ? true : updateStyles;
+        if (!shouldRedraw) {
+            return;
+        }
         const updateTooltipPosition: Parameters<typeof addCslpOutline>["1"] = ({
             cslpTag,
             highlightedElement,
@@ -415,14 +424,101 @@ export class LivePreviewEditButton {
         }
     }
 
+    /**
+     * Find first element with cslp on the event composed path,
+     * do safe zone calculation for an element based on its
+     * width and height, and return true if mouse pointer is
+     * within the safe zone. Returns undefined when this cannot
+     * be determined.
+     */
+    private shouldUpdateStyles(e: MouseEvent) {
+        const SAFE_ZONE_RATIO = 0.1;
+        const MAX_SAFE_ZONE_DISTANCE = 30;
+        const tooltipPos = this.tooltip?.getBoundingClientRect();
+        if (!tooltipPos) {
+            return undefined;
+        }
+        if (!(tooltipPos.x > 0) || !(tooltipPos.y > 0)) {
+            return undefined;
+        }
+        const editButton = Config.get().editButton;
+        const isTop = editButton.position?.includes("top");
+        const isLeft = editButton.position?.includes("left");
+        const isBottom = editButton.position?.includes("bottom");
+        const isVertical = isTop || isBottom;
+        const cslpElement = e.composedPath().find((target) => {
+            const element = target as HTMLElement;
+            if (element.nodeName === "BODY") {
+                return false;
+            }
+            if (typeof element?.hasAttribute !== "function") {
+                return false;
+            }
+            return element.hasAttribute("data-cslp");
+        });
+        if (!cslpElement) {
+            return undefined;
+        }
+        const element = cslpElement as HTMLElement;
+        const elementRect = element.getBoundingClientRect();
+        let safeZoneDistance = isVertical
+            ? // if vertical positioning ("top"/"bottom")
+              // button is rendered along the width
+              elementRect.width * SAFE_ZONE_RATIO
+            : // button is rendered along the height
+              elementRect.height * SAFE_ZONE_RATIO;
+        safeZoneDistance =
+            safeZoneDistance > MAX_SAFE_ZONE_DISTANCE
+                ? MAX_SAFE_ZONE_DISTANCE
+                : safeZoneDistance;
+
+        const tooltipX2 = tooltipPos.x + tooltipPos.width;
+        const tooltipY2 = tooltipPos.y + tooltipPos.height;
+        const safeX1 = tooltipPos.x - safeZoneDistance;
+        const safeX2 = tooltipX2 + safeZoneDistance;
+        const safeY1 = tooltipPos.y - safeZoneDistance;
+        const safeY2 = tooltipY2 + safeZoneDistance;
+
+        if (isTop || isBottom) {
+            const verticalSafeDistance = isTop
+                ? Math.abs(tooltipY2 - e.clientY)
+                : Math.abs(tooltipPos.y - e.clientY);
+            const isInSafeZone =
+                e.clientX > safeX1 &&
+                e.clientX < safeX2 &&
+                verticalSafeDistance < safeZoneDistance;
+            if (isInSafeZone) {
+                return false;
+            }
+        } else {
+            const horizontalSafeDistance = isLeft
+                ? Math.abs(tooltipX2 - e.clientX)
+                : Math.abs(tooltipPos.x - e.clientX);
+
+            const isInSafeZone =
+                e.clientY > safeY1 &&
+                e.clientY < safeY2 &&
+                horizontalSafeDistance < safeZoneDistance;
+            if (isInSafeZone) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     private scrollHandler() {
         if (!this.tooltip) return;
 
         const cslpTag = this.tooltip.getAttribute("current-data-cslp");
 
         if (cslpTag) {
-            const { content_type_uid, entry_uid, locale, variant, fieldPathWithIndex } =
-                extractDetailsFromCslp(cslpTag);
+            const {
+                content_type_uid,
+                entry_uid,
+                locale,
+                variant,
+                fieldPathWithIndex,
+            } = extractDetailsFromCslp(cslpTag);
 
             if (inIframe()) {
                 livePreviewPostMessage?.send("scroll", {
