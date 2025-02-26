@@ -276,7 +276,7 @@ export function collabStyles() {
         `,
         "collab-thread-header--wrapper": css`
             height: 2.5rem;
-            padding: 0 0 0 0.625rem;
+            padding: 0.2rem 0.1rem 0rem 0.625rem;
         `,
         "collab-thread-header--container": css`
             justify-content: space-between;
