@@ -303,8 +303,6 @@ export function collabStyles() {
             flex-direction: row-reverse;
             padding: 0 0.9375rem;
             flex-shrink: 0;
-            background: #ffffff;
-            border-top: 1px solid #edf1f7;
         `,
         "collab-thread-body--wrapper": css`
             border: solid #edf1f7;
