@@ -183,21 +183,28 @@ const ThreadPopup: React.FC<IThreadPopup> = React.memo(
                         commentCount={state.commentCount}
                         activeThread={activeThread}
                     />
-                    <ThreadBody
-                        handleOnSaveRef={handleOnSaveRef}
-                        onClose={onClose}
-                        userState={state.userState}
-                        isLoading={state.isLoading}
-                        comments={state.comments}
-                        fetchingMore={isFetchingMore}
-                        editComment={state.editComment}
-                    />
-                    <ThreadFooter
-                        onClose={onClose}
-                        handleOnSaveRef={handleOnSaveRef}
-                        isDisabled={error.hasError}
-                        editComment={state.editComment}
-                    />
+                    <div
+                        class={classNames(
+                            "collab-thread--container",
+                            collabStyles()["collab-thread--container"]
+                        )}
+                    >
+                        <ThreadBody
+                            handleOnSaveRef={handleOnSaveRef}
+                            onClose={onClose}
+                            userState={state.userState}
+                            isLoading={state.isLoading}
+                            comments={state.comments}
+                            fetchingMore={isFetchingMore}
+                            editComment={state.editComment}
+                        />
+                        <ThreadFooter
+                            onClose={onClose}
+                            handleOnSaveRef={handleOnSaveRef}
+                            isDisabled={error.hasError}
+                            editComment={state.editComment}
+                        />
+                    </div>
                 </div>
             </ThreadProvider.Provider>
         );
