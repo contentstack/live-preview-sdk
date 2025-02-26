@@ -3,8 +3,10 @@ import getVisualBuilderRedirectionUrl from "../utils/getVisualBuilderRedirection
 import { EditIcon } from "./icons";
 import { visualBuilderStyles } from "../visualBuilder.style";
 import React from "preact/compat";
+import { useState, useEffect } from "preact/hooks";
 import Config from "../../configManager/configManager";
 import { IConfigEditButtonBuilder } from "../../types/types";
+import { initUrlChangeListener } from "../utils/initUrlChangeListner";
 
 
 type Position = NonNullable<IConfigEditButtonBuilder['position']>;
@@ -29,10 +31,22 @@ function StartEditingButtonComponent(): JSX.Element | null {
     const config = Config.get()
     const enable = config.editButtonBuilder.enable;
     const position = config.editButtonBuilder.position || "bottom-right";
+    const [href, setHref] = useState(
+        getVisualBuilderRedirectionUrl().toString()
+    );
+
+    useEffect(() => {
+        if(typeof window === "undefined") return;
+        const removeUrlChangeListener = initUrlChangeListener(() => {
+            setHref(getVisualBuilderRedirectionUrl().toString());
+        });
+
+        return () => removeUrlChangeListener();
+    }, []);
 
     return enable ? (
         <a
-            href={getVisualBuilderRedirectionUrl().toString()}
+            href={href}
             className={classNames(
                 "visual-builder__start-editing-btn",
                 visualBuilderStyles()["visual-builder__start-editing-btn"],
