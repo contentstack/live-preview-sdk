@@ -268,9 +268,15 @@ export function collabStyles() {
             color: #475161;
             width: 20.75rem;
         `,
+        "collab-thread--container": css`
+            max-height: 23.125rem;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        `,
         "collab-thread-header--wrapper": css`
             height: 2.5rem;
-            padding: 0 0 0 0.625rem;
+            padding: 0.2rem 0.1rem 0rem 0.625rem;
         `,
         "collab-thread-header--container": css`
             justify-content: space-between;
@@ -296,10 +302,15 @@ export function collabStyles() {
             width: 100%;
             flex-direction: row-reverse;
             padding: 0 0.9375rem;
+            flex-shrink: 0;
         `,
         "collab-thread-body--wrapper": css`
             border: solid #edf1f7;
             border-width: 0.0625rem 0;
+            flex: 1;
+            overflow: auto;
+            display: flex;
+            flex-direction: column;
         `,
         "collab-thread-input-indicator--wrapper": css`
             padding: 0 0.5rem;
