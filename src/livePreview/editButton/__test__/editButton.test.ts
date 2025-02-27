@@ -354,7 +354,7 @@ describe("shouldRenderEditButton", () => {
     });
 });
 
-describe.only("isPointerWithinEditButtonSafeZone", () => {
+describe("isPointerWithinEditButtonSafeZone", () => {
     let mockEvent: MouseEvent;
     let mockElement: HTMLElement;
 
