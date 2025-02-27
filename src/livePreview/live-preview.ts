@@ -1,3 +1,4 @@
+import { aC } from "vitest/dist/chunks/reporters.D7Jzd9GS.js";
 import Config from "../configManager/configManager";
 import { PublicLogger } from "../logger/logger";
 import { ILivePreviewModeConfig } from "../types/types";
@@ -12,6 +13,7 @@ import {
     OnEntryChangeCallbackUID,
     OnEntryChangeUnsubscribeParameters,
 } from "./types/onEntryChangeCallback.type";
+import ContentstackLivePreview from "../preview/contentstack-live-preview-HOC";
 
 export default class LivePreview {
     /**
@@ -53,14 +55,13 @@ export default class LivePreview {
             // render the hover outline only when edit button enable
 
             if (
-                !isOpeningInTimeline() && 
+                !isOpeningInTimeline() &&
                 (config.editButton.enable ||
-                config.mode >= ILivePreviewModeConfig.BUILDER)
+                    config.mode >= ILivePreviewModeConfig.BUILDER)
             ) {
                 LivePreviewEditButton.livePreviewEditButton =
                     new LivePreviewEditButton();
             }
-
         } else if (config.cleanCslpOnProduction) {
             removeDataCslp();
         }
@@ -74,7 +75,10 @@ export default class LivePreview {
 
         //! TODO: we replaced the handleOnChange() with this.
         //! I don't think we need this. Confirm and remove it.
-        config.onChange();
+        if (!ContentstackLivePreview.firstOnChangeCalled) {
+            console.log("Requesting data sync");
+            config.onChange();
+        }
 
         sendInitializeLivePreviewPostMessageEvent();
     }
@@ -88,8 +92,10 @@ export default class LivePreview {
     }
 
     private publish(): void {
+        console.log("Calling callbacks", this.subscribers);
         Object.values<OnEntryChangeCallback>(this.subscribers).forEach(
             (func) => {
+                console.log("Calling subscriber", func);
                 func();
             }
         );
