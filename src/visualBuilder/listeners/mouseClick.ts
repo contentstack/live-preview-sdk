@@ -73,7 +73,7 @@ async function handleBuilderInteraction(
 
     // if the target element is a studio-ui element, return
     // this is currently used for the "Edit in Studio" button
-    if (eventTarget?.dataset["studio-ui"] === "true") {
+    if (eventTarget?.getAttribute("data-studio-ui") === "true") {
         return;
     }
     // prevent default behavior for anchor elements and elements with cslp attribute

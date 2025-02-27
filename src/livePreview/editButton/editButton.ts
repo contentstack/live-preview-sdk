@@ -390,7 +390,7 @@ export class LivePreviewEditButton {
     }
 
     private addEditStyleOnHover(e: MouseEvent) {
-        const updateStyles = this.shouldUpdateStyles(e);
+        const updateStyles = this.shouldUpdateStyle(e);
         // Checks whether the mouse pointer is within the safe zone of the
         // element which was hovered on, since it also returns undefined when the
         // above can't be determined we can still add styles
@@ -424,86 +424,14 @@ export class LivePreviewEditButton {
         }
     }
 
-    /**
-     * Find first element with cslp on the event composed path,
-     * do safe zone calculation for an element based on its
-     * width and height, and return true if mouse pointer is
-     * within the safe zone. Returns undefined when this cannot
-     * be determined.
-     */
-    private shouldUpdateStyles(e: MouseEvent) {
-        const SAFE_ZONE_RATIO = 0.1;
-        const MAX_SAFE_ZONE_DISTANCE = 30;
-        const tooltipPos = this.tooltip?.getBoundingClientRect();
-        if (!tooltipPos) {
-            return undefined;
-        }
-        if (!(tooltipPos.x > 0) || !(tooltipPos.y > 0)) {
-            return undefined;
-        }
-        const editButton = Config.get().editButton;
-        const isTop = editButton.position?.includes("top");
-        const isLeft = editButton.position?.includes("left");
-        const isBottom = editButton.position?.includes("bottom");
-        const isVertical = isTop || isBottom;
-        const cslpElement = e.composedPath().find((target) => {
-            const element = target as HTMLElement;
-            if (element.nodeName === "BODY") {
-                return false;
-            }
-            if (typeof element?.hasAttribute !== "function") {
-                return false;
-            }
-            return element.hasAttribute("data-cslp");
+    private shouldUpdateStyle(event: MouseEvent) {
+        const editButtonPos = Config.get().editButton.position;
+        const editButtonDomRect = this.tooltip?.getBoundingClientRect();
+        return isPointerWithinEditButtonSafeZone({
+            event,
+            editButtonPos,
+            editButtonDomRect,
         });
-        if (!cslpElement) {
-            return undefined;
-        }
-        const element = cslpElement as HTMLElement;
-        const elementRect = element.getBoundingClientRect();
-        let safeZoneDistance = isVertical
-            ? // if vertical positioning ("top"/"bottom")
-              // button is rendered along the width
-              elementRect.width * SAFE_ZONE_RATIO
-            : // button is rendered along the height
-              elementRect.height * SAFE_ZONE_RATIO;
-        safeZoneDistance =
-            safeZoneDistance > MAX_SAFE_ZONE_DISTANCE
-                ? MAX_SAFE_ZONE_DISTANCE
-                : safeZoneDistance;
-
-        const tooltipX2 = tooltipPos.x + tooltipPos.width;
-        const tooltipY2 = tooltipPos.y + tooltipPos.height;
-        const safeX1 = tooltipPos.x - safeZoneDistance;
-        const safeX2 = tooltipX2 + safeZoneDistance;
-        const safeY1 = tooltipPos.y - safeZoneDistance;
-        const safeY2 = tooltipY2 + safeZoneDistance;
-
-        if (isTop || isBottom) {
-            const verticalSafeDistance = isTop
-                ? Math.abs(tooltipY2 - e.clientY)
-                : Math.abs(tooltipPos.y - e.clientY);
-            const isInSafeZone =
-                e.clientX > safeX1 &&
-                e.clientX < safeX2 &&
-                verticalSafeDistance < safeZoneDistance;
-            if (isInSafeZone) {
-                return false;
-            }
-        } else {
-            const horizontalSafeDistance = isLeft
-                ? Math.abs(tooltipX2 - e.clientX)
-                : Math.abs(tooltipPos.x - e.clientX);
-
-            const isInSafeZone =
-                e.clientY > safeY1 &&
-                e.clientY < safeY2 &&
-                horizontalSafeDistance < safeZoneDistance;
-            if (isInSafeZone) {
-                return false;
-            }
-        }
-        return true;
     }
 
     private scrollHandler() {
@@ -647,3 +575,91 @@ effect(function handleWindowTypeChange() {
         toggleEditButtonElement();
     }
 });
+
+/**
+ * Find first element with cslp on the event composed path,
+ * do safe zone calculation for the element based on its
+ * width and height, and return true if mouse pointer is
+ * within the safe zone. Returns undefined when this cannot
+ * be determined.
+ */
+export function isPointerWithinEditButtonSafeZone({
+    event,
+    editButtonDomRect,
+    editButtonPos,
+}: {
+    event: MouseEvent;
+    editButtonDomRect: DOMRect | undefined;
+    editButtonPos: string | undefined;
+}) {
+    const SAFE_ZONE_RATIO = 0.1;
+    const MAX_SAFE_ZONE_DISTANCE = 30;
+    if (!editButtonDomRect || !editButtonPos) {
+        return undefined;
+    }
+    if (!(editButtonDomRect.x > 0) || !(editButtonDomRect.y > 0)) {
+        return undefined;
+    }
+    const isTop = editButtonPos.includes("top");
+    const isLeft = editButtonPos.includes("left");
+    const isBottom = editButtonPos.includes("bottom");
+    const isVertical = isTop || isBottom;
+    const cslpElement = event.composedPath().find((target) => {
+        const element = target as HTMLElement;
+        if (element.nodeName === "BODY") {
+            return false;
+        }
+        if (typeof element?.hasAttribute !== "function") {
+            return false;
+        }
+        return element.hasAttribute("data-cslp");
+    });
+    if (!cslpElement) {
+        return undefined;
+    }
+    const element = cslpElement as HTMLElement;
+    const elementRect = element.getBoundingClientRect();
+    let safeZoneDistance = isVertical
+        ? // if vertical positioning ("top"/"bottom")
+          // button is rendered along the width
+          elementRect.width * SAFE_ZONE_RATIO
+        : // button is rendered along the height
+          elementRect.height * SAFE_ZONE_RATIO;
+    safeZoneDistance =
+        safeZoneDistance > MAX_SAFE_ZONE_DISTANCE
+            ? MAX_SAFE_ZONE_DISTANCE
+            : safeZoneDistance;
+
+    const tooltipX2 = editButtonDomRect.x + editButtonDomRect.width;
+    const tooltipY2 = editButtonDomRect.y + editButtonDomRect.height;
+    const safeX1 = editButtonDomRect.x - safeZoneDistance;
+    const safeX2 = tooltipX2 + safeZoneDistance;
+    const safeY1 = editButtonDomRect.y - safeZoneDistance;
+    const safeY2 = tooltipY2 + safeZoneDistance;
+
+    if (isTop || isBottom) {
+        const verticalSafeDistance = isTop
+            ? Math.abs(tooltipY2 - event.clientY)
+            : Math.abs(editButtonDomRect.y - event.clientY);
+        const isInSafeZone =
+            event.clientX > safeX1 &&
+            event.clientX < safeX2 &&
+            verticalSafeDistance < safeZoneDistance;
+        if (isInSafeZone) {
+            return false;
+        }
+    } else {
+        const horizontalSafeDistance = isLeft
+            ? Math.abs(tooltipX2 - event.clientX)
+            : Math.abs(editButtonDomRect.x - event.clientX);
+
+        const isInSafeZone =
+            event.clientY > safeY1 &&
+            event.clientY < safeY2 &&
+            horizontalSafeDistance < safeZoneDistance;
+        if (isInSafeZone) {
+            return false;
+        }
+    }
+    return true;
+}
