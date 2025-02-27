@@ -27,6 +27,7 @@ import Config from "../../configManager/configManager";
 import { generateThread } from "../generators/generateThread";
 import { isCollabThread } from "../generators/generateThread";
 import { toggleCollabPopup } from "../generators/generateThread";
+import { hasEnoughSpaceForPopup } from "../generators/preventMouseClickOnEdges";
 
 type HandleBuilderInteractionParams = Omit<
     EventListenerHandlerParams,
@@ -87,6 +88,7 @@ async function handleBuilderInteraction(
 
     const config = Config.get();
 
+    // collab code
     if (config?.collab.enable === true) {
         if (config?.collab.pauseFeedback) return;
         const xpath = getXPath(eventTarget);
@@ -98,13 +100,19 @@ async function handleBuilderInteraction(
         if (isCollabThread(eventTarget)) {
             Config.set("collab.isFeedbackMode", false);
         } else if (config?.collab.isFeedbackMode) {
-            generateThread(
-                { xpath, relativeX, relativeY },
-                {
-                    isNewThread: true,
-                    updateConfig: true,
-                }
-            );
+            // if (hasEnoughSpaceForPopup(params.event, eventTarget)) {
+                generateThread(
+                    { xpath, relativeX, relativeY },
+                    {
+                        isNewThread: true,
+                        updateConfig: true,
+                    }
+                );
+            // } else {
+            //     // Optional: Show a tooltip or visual indicator that the thread can't be created here
+            //     console.log("Can't create thread: not enough space for popup");
+            //     // You could add a brief toast notification here
+            // }
         } else {
             toggleCollabPopup({ threadUid: "", action: "close" });
             Config.set("collab.isFeedbackMode", true);

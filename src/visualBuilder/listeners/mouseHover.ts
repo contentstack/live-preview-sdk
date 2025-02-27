@@ -13,6 +13,7 @@ import { visualBuilderStyles } from "../visualBuilder.style";
 import { VB_EmptyBlockParentClass } from "../..";
 import Config from "../../configManager/configManager";
 import { isCollabThread } from "../generators/generateThread";
+import { hasEnoughSpaceForPopup, isNearPageBottom } from "../generators/preventMouseClickOnEdges";
 export interface HandleMouseHoverParams
     extends Pick<
         EventListenerHandlerParams,
@@ -186,10 +187,30 @@ async function handleMouseHover(params: HandleMouseHoverParams): Promise<void> {
                 }
             }
 
+            // collab code
             if (config?.collab.enable && config?.collab.isFeedbackMode) {
                 collabCustomCursor(params.customCursor);
                 handleCursorPosition(params.event, params.customCursor);
+
+                console.log(!isNearPageBottom(params.event));
+
+                // if (hasEnoughSpaceForPopup(params.event, eventTarget)) {
                 showCustomCursor(params.customCursor);
+                // } else {
+                // Change cursor to indicate action not available
+                // if (params.customCursor) {
+                //     // Option 1: Hide the custom cursor
+                //     hideCustomCursor(params.customCursor);
+                //     // Option 2: Or you could modify your custom cursor to indicate "not allowed"
+                //     // generateCustomCursor({
+                //     //     fieldType: "disabled-discussion", // You'd need to create this type
+                //     //     customCursor: params.customCursor,
+                //     // });
+                //     // showCustomCursor(params.customCursor);
+                //     // And add a CSS class to the body for a not-allowed cursor
+                // document.body.style.cursor = "not-allowed";
+                // }
+                // }
                 return;
             } else if (
                 config?.collab.enable &&
