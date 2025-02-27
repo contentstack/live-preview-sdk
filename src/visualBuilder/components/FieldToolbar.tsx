@@ -112,12 +112,13 @@ function handleFormFieldFocus(eventDetails: VisualBuilderCslpEventDetails) {
 function FieldToolbarComponent(
     props: MultipleFieldToolbarProps
 ): JSX.Element | null {
-    const { eventDetails, isVariant } = props;
+    const { eventDetails, isVariant: isVariantOrParentOfVariant } = props;
     const { fieldMetadata, editableElement: targetElement } = eventDetails;
 
     const parentPath =
         fieldMetadata?.multipleFieldMetadata?.parentDetails?.parentCslpValue ||
         "";
+    const isVariant = !!fieldMetadata?.variant || isVariantOrParentOfVariant;
     const direction = getChildrenDirection(targetElement, parentPath);
     const [fieldSchema, setFieldSchema] = useState<ISchemaFieldMap | null>(
         null
