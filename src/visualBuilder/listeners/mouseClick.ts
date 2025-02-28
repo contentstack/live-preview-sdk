@@ -22,6 +22,7 @@ import { isFieldDisabled } from "../utils/isFieldDisabled";
 import EventListenerHandlerParams from "./types";
 import { toggleHighlightedCommentIconDisplay } from "../generators/generateHighlightedComment";
 import { VB_EmptyBlockParentClass } from "../..";
+import { getFieldVariantStatus } from "../components/FieldRevert/FieldRevertComponent";
 
 type HandleBuilderInteractionParams = Omit<
     EventListenerHandlerParams,
@@ -36,7 +37,7 @@ type AddFocusOverlayParams = Pick<
 type AddFocusedToolbarParams = Pick<
     EventListenerHandlerParams,
     "eventDetails" | "focusedToolbar"
-> & { hideOverlay: () => void };
+> & { hideOverlay: () => void; isVariant: boolean };
 
 function addOverlay(params: AddFocusOverlayParams) {
     if (!params.overlayWrapper || !params.editableElement) return;
@@ -57,7 +58,8 @@ export function addFocusedToolbar(params: AddFocusedToolbarParams): void {
     appendFocusedToolbar(
         params.eventDetails,
         params.focusedToolbar,
-        params.hideOverlay
+        params.hideOverlay,
+        params.isVariant
     );
 }
 
@@ -99,6 +101,11 @@ async function handleBuilderInteraction(
     }
 
     const { editableElement, fieldMetadata } = eventDetails;
+    const variantStatus = await getFieldVariantStatus(fieldMetadata);
+    const isVariant = variantStatus
+        ? Object.values(variantStatus).some((value) => value === true)
+        : false;
+
     // Clean residuals if necessary
     cleanResidualsIfNeeded(params, editableElement);
 
@@ -124,7 +131,7 @@ async function handleBuilderInteraction(
         editableElement;
 
     // Add overlay and focused toolbar
-    addOverlayAndToolbar(params, eventDetails, editableElement);
+    addOverlayAndToolbar(params, eventDetails, editableElement, isVariant);
 
     const { cslpValue } = fieldMetadata;
 
@@ -195,7 +202,8 @@ function isSameSelectedElement(
 function addOverlayAndToolbar(
     params: HandleBuilderInteractionParams,
     eventDetails: any,
-    editableElement: Element
+    editableElement: Element,
+    isVariant: boolean
 ) {
     addOverlay({
         overlayWrapper: params.overlayWrapper,
@@ -214,6 +222,7 @@ function addOverlayAndToolbar(
                 resizeObserver: params.resizeObserver,
             });
         },
+        isVariant,
     });
 }
 async function handleFieldSchemaAndIndividualFields(

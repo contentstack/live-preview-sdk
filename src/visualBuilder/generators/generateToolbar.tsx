@@ -16,16 +16,23 @@ import FieldLabelWrapperComponent from "../components/fieldLabelWrapper";
 export function appendFocusedToolbar(
     eventDetails: VisualBuilderCslpEventDetails,
     focusedToolbarElement: HTMLDivElement,
-    hideOverlay: () => void
+    hideOverlay: () => void,
+    isVariant: boolean = false
 ): void {
     appendFieldPathDropdown(eventDetails, focusedToolbarElement);
-    appendFieldToolbar(eventDetails, focusedToolbarElement, hideOverlay);
+    appendFieldToolbar(
+        eventDetails,
+        focusedToolbarElement,
+        hideOverlay,
+        isVariant
+    );
 }
 
 export function appendFieldToolbar(
     eventDetails: VisualBuilderCslpEventDetails,
     focusedToolbarElement: HTMLDivElement,
-    hideOverlay: () => void
+    hideOverlay: () => void,
+    isVariant: boolean = false
 ): void {
     if (
         focusedToolbarElement.querySelector(
@@ -38,10 +45,10 @@ export function appendFieldToolbar(
         <FieldToolbarComponent
             eventDetails={eventDetails}
             hideOverlay={hideOverlay}
+            isVariant={isVariant}
         />,
         wrapper
     );
-
     focusedToolbarElement.append(wrapper);
 }
 
@@ -49,7 +56,11 @@ export function appendFieldPathDropdown(
     eventDetails: VisualBuilderCslpEventDetails,
     focusedToolbarElement: HTMLDivElement
 ): void {
-    if(document.querySelector(".visual-builder__focused-toolbar__field-label-wrapper"))
+    if (
+        document.querySelector(
+            ".visual-builder__focused-toolbar__field-label-wrapper"
+        )
+    )
         return;
     const { editableElement: targetElement, fieldMetadata } = eventDetails;
     const targetElementDimension = targetElement.getBoundingClientRect();
