@@ -109,15 +109,15 @@ export const handleInitData = (initData: Partial<IInitData>): void => {
             true,
     });
     
-    Config.set("editButtonBuilder", {
+    Config.set("editInVisualBuilderButton", {
         enable:
-            initData.editButtonBuilder?.enable ??
-            stackSdk.live_preview?.editButtonBuilder?.enable ??
-            config.editButtonBuilder.enable,
+            initData.editInVisualBuilderButton?.enable ??
+            stackSdk.live_preview?.editInVisualBuilderButton?.enable ??
+            config.editInVisualBuilderButton.enable,
         position:  
-            initData.editButtonBuilder?.position ??
+            initData.editInVisualBuilderButton?.position ??
             stackSdk.live_preview?.position ??
-            config.editButtonBuilder.position ??
+            config.editInVisualBuilderButton.position ??
             "bottom-right",
     })
 

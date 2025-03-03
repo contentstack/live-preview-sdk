@@ -124,12 +124,12 @@ ContentstackLivePreview.init({
 });
 ```
 
-### `editButtonBuilder`
-the editButtonBuilder object allows you to manage the "Start Editing" button outside Visual Builder. It offers the following features:
+### `editInVisualBuilderButton`
+the editInVisualBuilderButton object allows you to manage the "Start Editing" button outside Visual Builder. It offers the following features:
 - Enable/disable the "Start Editing" button
 - Adjust the position of the "Start Editing" button using four predefined positions
 
-The editButtonBuilder object contains two keys:
+The editInVisualBuilderButton object contains two keys:
 
 1. #### `enable`
     | type    | default | optional |
