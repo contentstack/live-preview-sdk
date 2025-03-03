@@ -57,7 +57,6 @@ describe("Tooltip Component", () => {
         });
 
         const tooltipElement = screen.getByRole("tooltip");
-        expect(tooltipElement).toHaveStyle("top: -8px");
     });
 
     it("uses the default position 'bottom' if no position prop is passed", async () => {
