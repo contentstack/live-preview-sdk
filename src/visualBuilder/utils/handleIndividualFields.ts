@@ -23,7 +23,7 @@ import { FieldDataType, ISchemaFieldMap } from "./types/index.types";
 import { getMultilinePlaintext } from "./getMultilinePlaintext";
 import { VisualBuilderPostMessageEvents } from "./types/postMessage.types";
 import visualBuilderPostMessage from "./visualBuilderPostMessage";
-
+import Config from "../../configManager/configManager";
 /**
  * It handles all the fields based on their data type and its "multiple" property.
  * @param eventDetails The event details object that contain cslp and field metadata.
@@ -296,6 +296,8 @@ export function cleanIndividualFieldResidual(elements: {
     if (focusedToolbar) {
         focusedToolbar.innerHTML = "";
         const toolbarEvents = [VisualBuilderPostMessageEvents.DELETE_INSTANCE, VisualBuilderPostMessageEvents.UPDATE_DISCUSSION_ID]
+        const config = Config.get();
+        if (config?.collab?.enable) return;
         toolbarEvents.forEach((event) => {
             //@ts-expect-error - We are accessing private method here, but it is necessary to clean up the event listeners.
             if (visualBuilderPostMessage?.requestMessageHandlers?.has(event)) {
