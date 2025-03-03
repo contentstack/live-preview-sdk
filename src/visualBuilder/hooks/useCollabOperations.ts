@@ -18,12 +18,13 @@ import {
 } from "../types/collab.types";
 import { removeCollabIcon } from "../generators/generateThread";
 import Config from "../../configManager/configManager";
+import { normalizePath } from "../utils/collabUtils";
 
 export const useCollabOperations = () => {
     const createComment = async (payload: ICommentPayload) => {
         const data = (await visualBuilderPostMessage?.send(
             VisualBuilderPostMessageEvents.COLLAB_CREATE_COMMENT,
-            { payload }
+            payload
         )) as ICommentResponse;
         if (!data) throw new Error("Failed to create comment");
         return data;
@@ -32,7 +33,7 @@ export const useCollabOperations = () => {
     const editComment = async (payload: IEditCommentArgs) => {
         const data = (await visualBuilderPostMessage?.send(
             VisualBuilderPostMessageEvents.COLLAB_EDIT_COMMENT,
-            { payload }
+            payload
         )) as ICommentResponse;
         if (!data) throw new Error("Failed to update comment");
         return data;
@@ -41,7 +42,7 @@ export const useCollabOperations = () => {
     const deleteComment = async (payload: IDeleteCommentArgs) => {
         const data = (await visualBuilderPostMessage?.send(
             VisualBuilderPostMessageEvents.COLLAB_DELETE_COMMENT,
-            { payload }
+            payload
         )) as IDefaultAPIResponse;
         if (!data) throw new Error("Failed to delete comment");
         return data;
@@ -50,7 +51,7 @@ export const useCollabOperations = () => {
     const resolveThread = async (payload: IThreadResolveArgs) => {
         const data = (await visualBuilderPostMessage?.send(
             VisualBuilderPostMessageEvents.COLLAB_RESOLVE_THREAD,
-            { payload }
+            payload
         )) as IThreadResponseDTO;
         if (!data) throw new Error("Failed to resolve thread");
         return data;
@@ -59,7 +60,7 @@ export const useCollabOperations = () => {
     const fetchComments = async (payload: IFetchComments) => {
         return (await visualBuilderPostMessage?.send(
             VisualBuilderPostMessageEvents.COLLAB_FETCH_COMMENTS,
-            { payload }
+            payload
         )) as IFetchCommentsResponse;
     };
 
@@ -95,14 +96,14 @@ export const useCollabOperations = () => {
             elementXPath: fieldPath,
             position: { x: relativeX, y: relativeY },
             author: inviteMetadata.currentUser.email,
-            pageRoute: window.location.pathname,
+            pageRoute: normalizePath(window.location.pathname),
             inviteUid: inviteMetadata.inviteUid,
             createdBy: inviteMetadata.currentUser.uid,
         };
 
         const data = (await visualBuilderPostMessage?.send(
             VisualBuilderPostMessageEvents.COLLAB_CREATE_THREAD,
-            { payload }
+            payload
         )) as IThreadResponseDTO;
 
         parentDiv.setAttribute("threaduid", data.thread._id);
@@ -113,7 +114,7 @@ export const useCollabOperations = () => {
     const deleteThread = async (payload: IDeleteThreadArgs) => {
         const data = (await visualBuilderPostMessage?.send(
             VisualBuilderPostMessageEvents.COLLAB_DELETE_THREAD,
-            { payload }
+            payload
         )) as IDefaultAPIResponse;
         if (!data) throw new Error("Failed to delete thread");
         removeCollabIcon(payload.threadUid);

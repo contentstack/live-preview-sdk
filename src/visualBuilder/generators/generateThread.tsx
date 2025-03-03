@@ -77,6 +77,16 @@ export function generateThread(
         resolvedXPath = elementXPath;
     }
 
+    // Filter to remove already rendered threads
+    if (payload?._id) {
+        const existingThread = document.querySelector(
+            `div[threaduid='${payload._id}']`
+        );
+        if (existingThread) {
+            return undefined;
+        }
+    }
+
     const element = getElementByXpath(resolvedXPath);
     if (!element) {
         return payload._id;
@@ -96,7 +106,7 @@ export function generateThread(
         payload
     );
 
-    if (updateConfig && config?.collab.enable) {
+    if (updateConfig && config?.collab?.enable) {
         if (config?.collab.isFeedbackMode) {
             Config.set("collab.isFeedbackMode", false);
         }
@@ -292,7 +302,7 @@ export function isCollabThread(target: HTMLElement): boolean {
 export function handleMissingThreads(payload: MissingThreadsInfo) {
     visualBuilderPostMessage?.send(
         VisualBuilderPostMessageEvents.COLLAB_MISSING_THREADS,
-        { payload }
+        payload
     );
 }
 
@@ -308,7 +318,7 @@ export function handleEmptyThreads() {
 }
 
 const retryConfig = {
-    maxRetries: 3,
+    maxRetries: 5,
     retryDelay: 1000,
 };
 
