@@ -2,6 +2,7 @@ import { hideOverlay } from "../generators/generateOverlay";
 import EventListenerHandlerParams from "../listeners/types";
 import visualBuilderPostMessage from "../utils/visualBuilderPostMessage";
 import { VisualBuilderPostMessageEvents } from "../utils/types/postMessage.types";
+import Config from "../../configManager/configManager";
 
 type HideFocusOverlayEventHandlerParams = Omit<
     EventListenerHandlerParams,
@@ -16,13 +17,18 @@ export function useHideFocusOverlayPostMessageEvent({
 }: HideFocusOverlayEventHandlerParams): void {
     visualBuilderPostMessage?.on(
         VisualBuilderPostMessageEvents.HIDE_FOCUS_OVERLAY,
-        (args: { data: { noTrigger: boolean } }) => {
+        (args: { data: { noTrigger: boolean; fromCollab: boolean } }) => {
+            if (Boolean(args?.data?.fromCollab)) {
+                Config.set("collab.enable", true);
+                Config.set("collab.pauseFeedback", true);
+            }
+
             hideOverlay({
                 visualBuilderOverlayWrapper: overlayWrapper,
                 visualBuilderContainer,
                 focusedToolbar,
                 resizeObserver,
-                noTrigger: Boolean(args?.data?.noTrigger)
+                noTrigger: Boolean(args?.data?.noTrigger),
             });
         }
     );

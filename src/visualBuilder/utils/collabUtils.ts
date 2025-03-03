@@ -147,3 +147,8 @@ export const getCommentBody = (state: ICommentState): ICommentState => {
     comment.message = finalMessage;
     return comment;
 };
+
+export function normalizePath(path: string): string {
+    if (path === "/") return path;
+    return path.endsWith("/") ? path.slice(0, -1) : path;
+}

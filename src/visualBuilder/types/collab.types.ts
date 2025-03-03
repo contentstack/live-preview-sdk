@@ -267,3 +267,23 @@ export interface IThreadHeader {
     commentCount: number;
     activeThread: IActiveThread;
 }
+
+export interface ICollabConfig {
+    collab: {
+        fromShare: boolean;
+        pauseFeedback: boolean;
+        enable: boolean;
+        isFeedbackMode: boolean;
+        inviteMetadata: IInviteMetadata;
+        payload: IThreadDTO[];
+    };
+}
+
+export interface IThreadIdentifier {
+    threadUid: string;
+    updateConfig?: boolean;
+}
+
+export interface IThreadReopen {
+    thread: IThreadDTO;
+}
