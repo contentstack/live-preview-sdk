@@ -68,7 +68,7 @@ const CommentTextArea: React.FC<ICommentTextAreaProps> = React.memo(
                             }
                             onKeyDown={(event) => handleKeyDown(event as any)}
                             maxLength={maxMessageLength}
-                            placeholder="Enter a comment"
+                            placeholder="Enter a comment or tag others using “@”"
                             ref={inputRef}
                         ></textarea>
                         {showSuggestions && filteredUsers.length > 0 && (
