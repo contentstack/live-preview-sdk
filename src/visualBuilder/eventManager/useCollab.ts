@@ -12,7 +12,13 @@ import {
     generateThread,
     handleMissingThreads,
 } from "../generators/generateThread";
-import { IThreadDTO } from "../types/collab.types";
+import {
+    IThreadDTO,
+    ICollabConfig,
+    IThreadIdentifier,
+    IThreadReopen,
+} from "../types/collab.types";
+import { OnEvent } from "@contentstack/advanced-post-message";
 
 const handleRemoveCommentIcons = (fromShare: boolean = false): void => {
     if (fromShare) {
@@ -25,7 +31,7 @@ const handleRemoveCommentIcons = (fromShare: boolean = false): void => {
 export const useCollab = () => {
     const collabEnable = visualBuilderPostMessage?.on(
         VisualBuilderPostMessageEvents.COLLAB_ENABLE,
-        (data: any) => {
+        (data: OnEvent<ICollabConfig>) => {
             if (data?.data?.collab?.fromShare) {
                 Config.set(
                     "collab.pauseFeedback",
@@ -45,15 +51,20 @@ export const useCollab = () => {
                 data.data.collab.isFeedbackMode ?? false
             );
             Config.set(
+                "collab.pauseFeedback",
+                data?.data?.collab?.pauseFeedback
+            );
+            Config.set(
                 "collab.inviteMetadata",
                 data.data.collab.inviteMetadata
             );
 
-            const missingThreadIds = data?.data?.payload
-                ?.map((payload: IThreadDTO) =>
-                    generateThread(payload, { isNewThread: false })
-                )
-                .filter(Boolean);
+            const missingThreadIds =
+                data?.data?.collab?.payload
+                    ?.map((payload: IThreadDTO) =>
+                        generateThread(payload, { isNewThread: false })
+                    )
+                    .filter((id): id is string => id !== undefined) || [];
             if (missingThreadIds.length > 0) {
                 handleMissingThreads({
                     payload: { isElementPresent: false },
@@ -65,7 +76,7 @@ export const useCollab = () => {
 
     const collabDisable = visualBuilderPostMessage?.on(
         VisualBuilderPostMessageEvents.COLLAB_DISABLE,
-        (data: any) => {
+        (data: OnEvent<ICollabConfig>) => {
             if (data?.data?.collab?.fromShare) {
                 Config.set(
                     "collab.pauseFeedback",
@@ -84,15 +95,20 @@ export const useCollab = () => {
 
     const collabThreadRemove = visualBuilderPostMessage?.on(
         VisualBuilderPostMessageEvents.COLLAB_THREAD_REMOVE,
-        (data: any) => {
-            const { threadUid } = data.data;
-            removeCollabIcon(threadUid);
+        (data: OnEvent<IThreadIdentifier>) => {
+            const threadUid = data?.data?.threadUid;
+            if (Boolean(data?.data?.updateConfig)) {
+                Config.set("collab.isFeedbackMode", true);
+            }
+            if (threadUid) {
+                removeCollabIcon(threadUid);
+            }
         }
     );
 
     const collabThreadReopen = visualBuilderPostMessage?.on(
         VisualBuilderPostMessageEvents.COLLAB_THREAD_REOPEN,
-        (data: any) => {
+        (data: OnEvent<IThreadReopen>) => {
             const thread = data.data.thread;
             const result = generateThread(thread, { isNewThread: false });
             if (result) {
@@ -106,7 +122,7 @@ export const useCollab = () => {
 
     const collabThreadHighlight = visualBuilderPostMessage?.on(
         VisualBuilderPostMessageEvents.COLLAB_THREAD_HIGHLIGHT,
-        (data: any) => {
+        (data: OnEvent<IThreadIdentifier>) => {
             const { threadUid } = data.data;
             HighlightThread(threadUid);
         }

@@ -100,6 +100,7 @@ export function getDefaultConfig(): IConfig {
                 users: [],
                 inviteUid: "",
             },
+            payload: [],
         },
     };
 }
