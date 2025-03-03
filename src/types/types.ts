@@ -1,7 +1,4 @@
-import {
-    IInviteMetadata,
-    IThreadDTO,
-} from "../visualBuilder/types/collab.types";
+import { ICollabConfig } from "../visualBuilder/types/collab.types";
 export declare interface IEditEntrySearchParams {
     hash?: string;
     entry_uid?: string;
@@ -88,13 +85,7 @@ export declare interface IConfig {
     elements: {
         highlightedElement: HTMLElement | null;
     };
-    collab: {
-        enable: boolean;
-        fromShare: boolean;
-        pauseFeedback: boolean;
-        isFeedbackMode: boolean;
-        inviteMetadata: IInviteMetadata;
-    };
+    collab: ICollabConfig["collab"];
 }
 
 export declare interface IConfigEditButton {
@@ -202,12 +193,7 @@ export interface IVisualBuilderInitEvent {
     stackDetails: {
         masterLocale: string;
     };
-    collab?: {
-        enable: boolean;
-        isFeedbackMode: boolean;
-        inviteMetadata: IInviteMetadata;
-        payload: IThreadDTO[];
-    };
+    collab?: ICollabConfig["collab"];
 }
 
 export type IExportedConfig = Pick<
