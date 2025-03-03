@@ -34,8 +34,20 @@ const Tooltip = (props: TooltipProps): JSX.Element => {
         ...otherProps
     } = props;
     const [isVisible, setIsVisible] = useState<boolean>(false);
+    const [actualPosition, setActualPosition] = useState<
+        "top" | "bottom" | "left" | "right"
+    >(position);
     const tooltipRef = useRef<HTMLDivElement>(null);
     const targetRef = useRef<HTMLDivElement>(null);
+
+    const prevChildrenRef = useRef(children);
+
+    useEffect(() => {
+        if (prevChildrenRef.current !== children) {
+            setIsVisible(false);
+            prevChildrenRef.current = children;
+        }
+    }, [children]);
 
     useEffect(() => {
         const positionTooltip = (): void => {
@@ -74,7 +86,66 @@ const Tooltip = (props: TooltipProps): JSX.Element => {
                 },
             };
 
-            const coords: PositionCoords = positions[position];
+            let bestPosition = position;
+            let coords = positions[position];
+
+            const viewportWidth = window.innerWidth;
+            const viewportHeight = window.innerHeight;
+
+            const wouldBeOutsideViewport = {
+                bottom: coords.top + tooltipRect.height > viewportHeight,
+                top: coords.top < 0,
+                left: coords.left < 0,
+                right: coords.left + tooltipRect.width > viewportWidth,
+            };
+
+            const horizontalOutOfBounds =
+                coords.left < 0 ||
+                coords.left + tooltipRect.width > viewportWidth;
+
+            if (wouldBeOutsideViewport[position] || horizontalOutOfBounds) {
+                const positionPriority = ["bottom", "top", "right", "left"];
+
+                positionPriority.splice(positionPriority.indexOf(position), 1);
+                positionPriority.push(position);
+
+                for (const pos of positionPriority) {
+                    const testCoords = positions[pos as keyof Positions];
+
+                    const isVisible =
+                        testCoords.top >= 0 &&
+                        testCoords.top + tooltipRect.height <= viewportHeight &&
+                        testCoords.left >= 0 &&
+                        testCoords.left + tooltipRect.width <= viewportWidth;
+
+                    if (isVisible) {
+                        bestPosition = pos as
+                            | "top"
+                            | "bottom"
+                            | "left"
+                            | "right";
+                        coords = testCoords;
+                        break;
+                    }
+                }
+            }
+
+            if (coords.left < 0) {
+                coords.left = margin;
+            } else if (coords.left + tooltipRect.width > viewportWidth) {
+                coords.left = viewportWidth - tooltipRect.width - margin;
+            }
+
+            if (coords.top < 0) {
+                coords.top = margin;
+            } else if (coords.top + tooltipRect.height > viewportHeight) {
+                coords.top = viewportHeight - tooltipRect.height - margin;
+            }
+
+            setActualPosition(
+                bestPosition as "top" | "bottom" | "left" | "right"
+            );
+
             Object.assign(tooltipRef.current.style, {
                 top: `${coords.top}px`,
                 left: `${coords.left}px`,
@@ -110,10 +181,13 @@ const Tooltip = (props: TooltipProps): JSX.Element => {
                     ref={tooltipRef}
                     className={classNames(
                         "collab-tooltip",
-                        collabStyles()["collab-tooltip"]
+                        `collab-tooltip--${actualPosition}`,
+                        collabStyles()["collab-tooltip"],
+                        collabStyles()[`collab-tooltip--${actualPosition}`]
                     )}
                     role="tooltip"
                     aria-hidden={!isVisible}
+                    data-position={actualPosition}
                 >
                     {content}
                 </div>

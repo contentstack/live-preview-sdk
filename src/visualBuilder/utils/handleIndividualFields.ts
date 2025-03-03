@@ -16,7 +16,6 @@ import { isFieldMultiple } from "./isFieldMultiple";
 import { handleInlineEditableField } from "./handleInlineEditableField";
 import { VisualBuilderEditContext } from "./types/index.types";
 import { pasteAsPlainText } from "./pasteAsPlainText";
-
 /**
  * It handles all the fields based on their data type and its "multiple" property.
  * @param eventDetails The event details object that contain cslp and field metadata.

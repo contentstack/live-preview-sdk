@@ -109,6 +109,54 @@ export function collabStyles() {
                 }
             }
         `,
+        "collab-tooltip--top": css`
+            &::before {
+                content: "";
+                position: absolute;
+                bottom: -5px;
+                left: 50%;
+                transform: translateX(-50%);
+                border-width: 5px 5px 0;
+                border-style: solid;
+                border-color: #767676 transparent transparent;
+            }
+        `,
+        "collab-tooltip--bottom": css`
+            &::before {
+                content: "";
+                position: absolute;
+                top: -5px;
+                left: 50%;
+                transform: translateX(-50%);
+                border-width: 0 5px 5px;
+                border-style: solid;
+                border-color: transparent transparent #767676;
+            }
+        `,
+        "collab-tooltip--left": css`
+            &::before {
+                content: "";
+                position: absolute;
+                right: -5px;
+                top: 50%;
+                transform: translateY(-50%);
+                border-width: 5px 0 5px 5px;
+                border-style: solid;
+                border-color: transparent transparent transparent #767676;
+            }
+        `,
+        "collab-tooltip--right": css`
+            &::before {
+                content: "";
+                position: absolute;
+                left: -5px;
+                top: 50%;
+                transform: translateY(-50%);
+                border-width: 5px 5px 5px 0;
+                border-style: solid;
+                border-color: transparent #767676 transparent transparent;
+            }
+        `,
         "collab-icon": css`
             height: 1.25rem;
             width: 1.25rem;
