@@ -1,5 +1,63 @@
 # Changelog
 
+## [v3.1.2](https://github.com/contentstack/live-preview-sdk/compare/v3.1.1...v3.1.2)
+
+> 3 March 2025
+
+### New Features
+
+- feat: improve edit button rendering (Faraaz Biyabani - [#371](https://github.com/contentstack/live-preview-sdk/pull/371))
+- feat(VE-5170): add plus button configuration  (Sairaj - [#349](https://github.com/contentstack/live-preview-sdk/pull/349))
+- feat: allow click on elements with studio-ui attribute (Faraaz Biyabani - [#355](https://github.com/contentstack/live-preview-sdk/pull/355))
+- feat(VE-4043): add start editing button configuration for builder mode (Sairaj - [#346](https://github.com/contentstack/live-preview-sdk/pull/346))
+
+### Fixes
+
+- fix(VE-5118): add variant revert actions for blocks and groups (srinad007 - [#372](https://github.com/contentstack/live-preview-sdk/pull/372))
+- fix(VE-5370): start edit url updates on navigation (Sairaj - [#370](https://github.com/contentstack/live-preview-sdk/pull/370))
+- fix: add buttons fix for multiple fields (Sairaj - [#359](https://github.com/contentstack/live-preview-sdk/pull/359))
+- fix(VE-5061): add observer to observe cslp of selected element (srinad007 - [#356](https://github.com/contentstack/live-preview-sdk/pull/356))
+- fix(VE-5012): add variant classes in case of adding multiple instances (srinad007 - [#351](https://github.com/contentstack/live-preview-sdk/pull/351))
+- fix(VE-5080): fix z-index for hover outline and add button (srinad007 - [#341](https://github.com/contentstack/live-preview-sdk/pull/341))
+
+### Documentation Changes
+
+- docs: add docs for start edit button configuration (Sairaj - [#376](https://github.com/contentstack/live-preview-sdk/pull/376))
+
+### General Changes
+
+- Ve 5139 (srinad007 - [#343](https://github.com/contentstack/live-preview-sdk/pull/343))
+- sync main for upcoming release (Hitesh Shetty - [#338](https://github.com/contentstack/live-preview-sdk/pull/338))
+
+### New Features
+
+- feat(VE-5170): customize add button position (Sairaj Chouhan - [4c026eb](https://github.com/contentstack/live-preview-sdk/commit/4c026eb5b6db4aa2a79d1a0e34922619c79fb3f1))
+- feat(VE-4043): add basic start editing button configuration (Sairaj Chouhan - [c006c68](https://github.com/contentstack/live-preview-sdk/commit/c006c684a349e958208bdd0ea6e14fb05cbabc7b))
+- feat: allow clicks on elements with data-studio-ui attribute set to true (Faraaz Biyabani - [957bae1](https://github.com/contentstack/live-preview-sdk/commit/957bae138622e63dfcdd849746e0327884d07747))
+
+### Fixes
+
+- fix(VE-5061): refactor handleBuilderInteraction (Srinadh Reddy - [bd71fb4](https://github.com/contentstack/live-preview-sdk/commit/bd71fb42970f6320330626b92dbd918cf80ea5d5))
+- fix(VE-5139): fix test cases (Srinadh Reddy - [2a29a81](https://github.com/contentstack/live-preview-sdk/commit/2a29a81d187117e9f86b1e2c2348414159c45afb))
+- fix(VE-5139): fix event doesnt exist logs in console (Srinadh Reddy - [89ca3d8](https://github.com/contentstack/live-preview-sdk/commit/89ca3d8e4522dd7644769968efdb17b28d4f39b5))
+- fix(VE-5118): fix unit test cases (Srinadh Reddy - [9d5b24a](https://github.com/contentstack/live-preview-sdk/commit/9d5b24a6e406bf49c8126a3fae111af7eb17b0ab))
+
+### Chores And Housekeeping
+
+- chore: remove else block (Sairaj Chouhan - [834c3e7](https://github.com/contentstack/live-preview-sdk/commit/834c3e78250f36b32e21c948bda313818f0db7bc))
+- chore: remove `describe.only` (Faraaz Biyabani - [5aa5958](https://github.com/contentstack/live-preview-sdk/commit/5aa59587217ff7f64d495240f9e252bcf5b60a9c))
+- chore: update ContentstackLivePreview version to 3.1.1 in README (hiteshshetty-dev - [d885fa5](https://github.com/contentstack/live-preview-sdk/commit/d885fa5f65ef32e22bfb86fa3871238bdec02d61))
+
+### Changes to Test Assests
+
+- test: isPointerWithinEditButtonSafeZone (Faraaz Biyabani - [3c340e8](https://github.com/contentstack/live-preview-sdk/commit/3c340e8ce52d768f06fbb6b2050ab541a6ac47cb))
+- test: add tests for start editing button in builder (Sairaj Chouhan - [f9988a7](https://github.com/contentstack/live-preview-sdk/commit/f9988a74ed9416cc99ce30ed9f3d25314f7eef5c))
+- test: increase timeout for contenteditable tests (Sairaj Chouhan - [66fee50](https://github.com/contentstack/live-preview-sdk/commit/66fee50387f0a8a9b0ec61b945bec00418dc34f9))
+
+### General Changes
+
+- Update README.md (Hitesh Shetty - [66ef1f1](https://github.com/contentstack/live-preview-sdk/commit/66ef1f1d863d5f252172a427c1851a08372433f8))
+
 ## [v3.1.1](https://github.com/contentstack/live-preview-sdk/compare/v3.1.0...v3.1.1)
 
 > 3 February 2025

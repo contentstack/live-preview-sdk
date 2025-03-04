@@ -111,7 +111,7 @@ export function visualBuilderStyles() {
             color: #6c5ce7;
             overflow: hidden;
 
-            z-index: 2147483647 !important;
+            z-index: 2147483646 !important;
 
             display: grid;
             grid-template-columns: min-content 0fr;
@@ -152,8 +152,6 @@ export function visualBuilderStyles() {
             z-index: 1000;
             text-decoration: none;
             position: fixed;
-            bottom: 30px;
-            right: 30px;
             box-shadow:
                 0px 4px 15px 0px rgba(108, 92, 231, 0.2),
                 0px 3px 14px 3px rgba(0, 0, 0, 0.12),
@@ -200,6 +198,22 @@ export function visualBuilderStyles() {
                 letter-spacing: 0.01rem;
                 text-transform: capitalize;
             }
+        `,
+        "visual-builder__start-editing-btn__bottom-right": css`
+            bottom: 30px;
+            right: 30px;
+        `,
+        "visual-builder__start-editing-btn__bottom-left": css`
+            bottom: 30px;
+            left: 30px;
+        `,
+        "visual-builder__start-editing-btn__top-right": css`
+            top: 30px;
+            right: 30px;
+        `,
+        "visual-builder__start-editing-btn__top-left": css`
+            top: 30px;
+            left: 30px;
         `,
         "visual-builder__cursor-icon": css`
             height: 40px;
@@ -493,7 +507,7 @@ export function visualBuilderStyles() {
             position: absolute;
             outline: 2px dashed #6c5ce7;
             transition: var(--outline-transition);
-            z-index: 2147483647 !important;
+            z-index: 2147483646 !important;
         `,
         "visual-builder__hover-outline--hidden": css`
             visibility: hidden;
