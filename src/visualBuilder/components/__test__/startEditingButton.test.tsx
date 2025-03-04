@@ -47,13 +47,13 @@ describe("StartEditingButtonComponent", () => {
     });
 
     test("should not render when enable is false", async () => {
-        Config.set("editButtonBuilder.enable", false);
+        Config.set("editInVisualBuilderButton.enable", false);
         const { container } = await asyncRender(<StartEditingButtonComponent />);
         expect(container).toBeEmptyDOMElement();
     });
 
     test("should render when enable is true", async () => {
-        Config.set("editButtonBuilder.enable", true);
+        Config.set("editInVisualBuilderButton.enable", true);
         const { getByTestId } = await asyncRender(<StartEditingButtonComponent />);
         const button = getByTestId("vcms-start-editing-btn");
         expect(button).toBeInTheDocument();
@@ -82,7 +82,7 @@ describe("StartEditingButtonComponent", () => {
         expect(getEditButtonPosition(invalidPosition)).toBe('bottom-right');
     });
     
-    test("should render with default values when editButtonBuilder config is missing", async () => {
+    test("should render with default values when editInVisualBuilderButton config is missing", async () => {
         Config.reset();
         Config.set("stackDetails.apiKey", "bltapikey");
         Config.set("stackDetails.environment", "bltenvironment");
@@ -90,7 +90,7 @@ describe("StartEditingButtonComponent", () => {
         const { getByTestId } = await asyncRender(<StartEditingButtonComponent />);
         const button = getByTestId("vcms-start-editing-btn");
         
-        expect(Config.get().editButtonBuilder.position).toBe("bottom-right")
+        expect(Config.get().editInVisualBuilderButton.position).toBe("bottom-right")
         expect(button).toBeInTheDocument();
     });
 
