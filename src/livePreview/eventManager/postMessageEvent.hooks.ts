@@ -1,4 +1,5 @@
 import Config, { setConfigFromParams } from "../../configManager/configManager";
+import ContentstackLivePreview from "../../preview/contentstack-live-preview-HOC";
 import { ILivePreviewWindowType } from "../../types/types";
 import { addParamsToUrl } from "../../utils";
 import livePreviewPostMessage from "./livePreviewEventManager";
@@ -51,6 +52,18 @@ export function useOnEntryUpdatePostMessageEvent(): void {
             });
             const { ssr, onChange } = Config.get();
             if (!ssr) {
+                console.log("onChange called for client-data-send");
+                // if client-data-send is received for the first time
+                // and onChange has not been called for the first time, call it
+                if (!ContentstackLivePreview.hasReceivedFirstClientDataSend) {
+                    ContentstackLivePreview.hasReceivedFirstClientDataSend =
+                        true;
+                    if (!ContentstackLivePreview.firstOnChangeCalled) {
+                        onChange();
+                        ContentstackLivePreview.firstOnChangeCalled = true;
+                        return;
+                    }
+                }
                 onChange();
             }
         }
@@ -79,7 +92,10 @@ export function sendInitializeLivePreviewPostMessageEvent(): void {
 
             // TODO: This is a fix for the issue where we were calling sending init in the builder
             // Let's remove this condition when we fix it.
-            if (Config?.get()?.windowType && Config.get().windowType === ILivePreviewWindowType.BUILDER) {
+            if (
+                Config?.get()?.windowType &&
+                Config.get().windowType === ILivePreviewWindowType.BUILDER
+            ) {
                 return;
             }
 
