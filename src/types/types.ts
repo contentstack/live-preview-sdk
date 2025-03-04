@@ -79,11 +79,23 @@ export declare interface IConfig {
     windowType: ILivePreviewWindowType;
     hash: string;
     editButton: IConfigEditButton;
+    editInVisualBuilderButton: IConfigEditInVisualBuilderButton;
     mode: ILivePreviewModeConfig;
     elements: {
         highlightedElement: HTMLElement | null;
     };
 }
+
+
+export declare interface IConfigEditInVisualBuilderButton {
+    enable: boolean;
+    position?:
+        | "top-left"
+        | "top-right"
+        | "bottom-left"
+        | "bottom-right"
+}
+
 
 export declare interface IConfigEditButton {
     enable: boolean;
@@ -115,6 +127,7 @@ export declare interface IInitData {
     clientUrlParams: Partial<Omit<IClientUrlParams, "url">>;
     stackSdk: IStackSdk;
     editButton: IConfigEditButton;
+    editInVisualBuilderButton: IConfigEditInVisualBuilderButton;
     mode: ILivePreviewMode;
 }
 
