@@ -27,6 +27,7 @@ import Config from "../../configManager/configManager";
 import { generateThread } from "../generators/generateThread";
 import { isCollabThread } from "../generators/generateThread";
 import { toggleCollabPopup } from "../generators/generateThread";
+import { fixSvgXPath } from "../utils/collabUtils";
 
 type HandleBuilderInteractionParams = Omit<
     EventListenerHandlerParams,
@@ -89,11 +90,17 @@ async function handleBuilderInteraction(
 
     if (config?.collab.enable === true) {
         if (config?.collab.pauseFeedback) return;
-        const xpath = getXPath(eventTarget);
+        const xpath = fixSvgXPath(getXPath(eventTarget));
         if (!eventTarget) return;
+
         const rect = eventTarget.getBoundingClientRect();
         const relativeX = (params.event.clientX - rect.left) / rect.width;
         const relativeY = (params.event.clientY - rect.top) / rect.height;
+
+        if (!isCollabThread(eventTarget)) {
+            params.event.preventDefault();
+            params.event.stopPropagation();
+        }
 
         if (isCollabThread(eventTarget)) {
             Config.set("collab.isFeedbackMode", false);
