@@ -70,7 +70,7 @@ const CommentTextArea: React.FC<ICommentTextAreaProps> = React.memo(
                             maxLength={maxMessageLength}
                             placeholder="Enter a comment or tag others using “@”"
                             ref={inputRef}
-                        ></textarea>
+                        />
                         {showSuggestions && filteredUsers.length > 0 && (
                             <ul
                                 className={classNames(
