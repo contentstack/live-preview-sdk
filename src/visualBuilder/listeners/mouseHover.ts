@@ -108,7 +108,11 @@ export function hideCustomCursor(customCursor: HTMLDivElement | null): void {
 
 export function showCustomCursor(customCursor: HTMLDivElement | null): void {
     hideDefaultCursor();
-    if (config.collab.enable && !config.collab.isFeedbackMode) return;
+    if (
+        config.collab.enable &&
+        (!config.collab.isFeedbackMode || config.collab.pauseFeedback)
+    )
+        return;
     customCursor?.classList.add("visible");
 }
 
