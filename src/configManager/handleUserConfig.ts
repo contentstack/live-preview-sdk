@@ -108,6 +108,18 @@ export const handleInitData = (initData: Partial<IInitData>): void => {
             config.editButton.includeByQueryParameter ??
             true,
     });
+    
+    Config.set("editInVisualBuilderButton", {
+        enable:
+            initData.editInVisualBuilderButton?.enable ??
+            stackSdk.live_preview?.editInVisualBuilderButton?.enable ??
+            config.editInVisualBuilderButton.enable,
+        position:  
+            initData.editInVisualBuilderButton?.position ??
+            stackSdk.live_preview?.position ??
+            config.editInVisualBuilderButton.position ??
+            "bottom-right",
+    })
 
     // client URL params
     handleClientUrlParams(
