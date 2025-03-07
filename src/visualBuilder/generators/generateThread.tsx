@@ -10,6 +10,7 @@ import {
 } from "../types/collab.types";
 import visualBuilderPostMessage from "../utils/visualBuilderPostMessage";
 import { VisualBuilderPostMessageEvents } from "../utils/types/postMessage.types";
+import { adjustPositionToViewport } from "../utils/collabUtils";
 
 const popupTopOffset = 43;
 const popupLeftOffset = 9;
@@ -96,20 +97,9 @@ export function generateThread(
     let top = rect.top + window.scrollY + relativeY * rect.height;
     let left = rect.left + window.scrollX + relativeX * rect.width;
 
-    const viewportWidth = window.innerWidth;
-    const safeMargin = 16; // pixels from edge
-    const topSafeMargin = 40;
-    const threadWidth = 16; // Estimated width of thread indicator
-
-    // Adjust position if too close to right edge
-    if (left + threadWidth > viewportWidth - safeMargin) {
-        left = viewportWidth - safeMargin - threadWidth;
-    }
-
-    // Adjust position if too close to top edge
-    if (top - window.scrollY < topSafeMargin) {
-        top = window.scrollY + topSafeMargin;
-    }
+    const adjustedPosition = adjustPositionToViewport({ top, left });
+    top = adjustedPosition.top;
+    left = adjustedPosition.left;
 
     const popupContainer = createPopupContainer(
         resolvedXPath,
@@ -175,11 +165,15 @@ export function updateCollabIconPosition() {
         }
 
         const rect = targetElement.getBoundingClientRect();
-        const x = rect.left + rect.width * relativeX + window.scrollX;
-        const y = rect.top + rect.height * relativeY + window.scrollY;
+        let left = rect.left + rect.width * relativeX + window.scrollX;
+        let top = rect.top + rect.height * relativeY + window.scrollY;
 
-        icon.style.top = `${y - popupTopOffset}px`;
-        icon.style.left = `${x - popupLeftOffset}px`;
+        const adjustedPosition = adjustPositionToViewport({ top, left });
+        top = adjustedPosition.top;
+        left = adjustedPosition.left;
+
+        icon.style.top = `${top - popupTopOffset}px`;
+        icon.style.left = `${left - popupLeftOffset}px`;
         icon.classList.remove(hiddenClass);
     });
 }
