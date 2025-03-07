@@ -175,7 +175,7 @@ export function adjustPositionToViewport(
     const { top, left } = position;
     const viewportWidth = window.innerWidth;
     const safeMargin = options.safeMargin ?? 16;
-    const topSafeMargin = options.topSafeMargin ?? 40;
+    const topSafeMargin = options.topSafeMargin ?? 42;
     const threadWidth = options.threadWidth ?? 16;
 
     let adjustedLeft = left;
