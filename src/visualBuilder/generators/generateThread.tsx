@@ -25,6 +25,7 @@ function createPopupContainer(
     top: number,
     left: number,
     updateConfig: boolean,
+    hidden: boolean,
     payload: IThreadDTO | any
 ): HTMLDivElement {
     const popupContainer = document.createElement("div");
@@ -36,6 +37,7 @@ function createPopupContainer(
     popupContainer.style.zIndex = updateConfig ? "1000" : "999";
     popupContainer.style.cursor = "pointer";
     popupContainer.className = "collab-thread";
+    if (hidden) popupContainer.classList.add(hiddenClass);
     if (payload?._id) popupContainer.setAttribute("threaduid", payload._id);
     return popupContainer;
 }
@@ -62,9 +64,17 @@ function appendPopupContainer(popupContainer: HTMLDivElement): void {
 
 export function generateThread(
     payload: IThreadDTO | any,
-    options: { isNewThread?: boolean; updateConfig?: boolean } = {}
+    options: {
+        isNewThread?: boolean;
+        updateConfig?: boolean;
+        hidden?: boolean;
+    } = {}
 ): string | undefined {
-    const { isNewThread = false, updateConfig = false } = options;
+    const {
+        isNewThread = false,
+        updateConfig = false,
+        hidden = false,
+    } = options;
     const config = Config.get?.();
 
     let relativeX: number, relativeY: number, resolvedXPath: string;
@@ -103,6 +113,7 @@ export function generateThread(
         top,
         left,
         updateConfig,
+        hidden,
         payload
     );
 
@@ -361,7 +372,7 @@ async function processThread(thread: IThreadDTO): Promise<string | undefined> {
 
     while (status.attempts < retryConfig.maxRetries) {
         try {
-            const result = generateThread(thread, { isNewThread: false });
+            const result = generateThread(thread);
             if (result === undefined) {
                 updateRenderStatus(thread._id, true);
                 return undefined;
