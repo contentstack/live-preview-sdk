@@ -93,8 +93,23 @@ export function generateThread(
     }
 
     const rect = element.getBoundingClientRect();
-    const top = rect.top + window.scrollY + relativeY * rect.height;
-    const left = rect.left + window.scrollX + relativeX * rect.width;
+    let top = rect.top + window.scrollY + relativeY * rect.height;
+    let left = rect.left + window.scrollX + relativeX * rect.width;
+
+    const viewportWidth = window.innerWidth;
+    const safeMargin = 16; // pixels from edge
+    const topSafeMargin = 40;
+    const threadWidth = 16; // Estimated width of thread indicator
+
+    // Adjust position if too close to right edge
+    if (left + threadWidth > viewportWidth - safeMargin) {
+        left = viewportWidth - safeMargin - threadWidth;
+    }
+
+    // Adjust position if too close to top edge
+    if (top - window.scrollY < topSafeMargin) {
+        top = window.scrollY + topSafeMargin;
+    }
 
     const popupContainer = createPopupContainer(
         resolvedXPath,
