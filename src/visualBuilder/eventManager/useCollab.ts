@@ -29,9 +29,14 @@ const handleRemoveCommentIcons = (fromShare: boolean = false): void => {
 };
 
 export const useCollab = () => {
+    const config = Config.get();
     const collabEnable = visualBuilderPostMessage?.on(
         VisualBuilderPostMessageEvents.COLLAB_ENABLE,
         (data: OnEvent<ICollabConfig>) => {
+            if (!data?.data?.collab) {
+                console.error("Invalid collab data structure:", data);
+                return;
+            }
             if (data?.data?.collab?.fromShare) {
                 Config.set(
                     "collab.pauseFeedback",
@@ -41,10 +46,6 @@ export const useCollab = () => {
                 return;
             }
 
-            if (!data?.data?.collab) {
-                console.error("Invalid collab data structure:", data);
-                return;
-            }
             Config.set("collab.enable", data.data.collab.enable ?? false);
             Config.set(
                 "collab.isFeedbackMode",
@@ -58,12 +59,22 @@ export const useCollab = () => {
                 "collab.inviteMetadata",
                 data.data.collab.inviteMetadata
             );
+        }
+    );
+
+    const collabPayload = visualBuilderPostMessage?.on(
+        VisualBuilderPostMessageEvents.COLLAB_THREAD_PAYLOAD,
+        (data: OnEvent<ICollabConfig>) => {
+            if (!config?.collab?.enable) return;
+
+            if (!data?.data?.collab) {
+                console.error("Invalid collab data structure:", data);
+                return;
+            }
 
             const missingThreadIds =
                 data?.data?.collab?.payload
-                    ?.map((payload: IThreadDTO) =>
-                        generateThread(payload, { isNewThread: false })
-                    )
+                    ?.map((payload: IThreadDTO) => generateThread(payload))
                     .filter((id): id is string => id !== undefined) || [];
             if (missingThreadIds.length > 0) {
                 handleMissingThreads({
@@ -97,6 +108,9 @@ export const useCollab = () => {
         VisualBuilderPostMessageEvents.COLLAB_THREAD_REMOVE,
         (data: OnEvent<IThreadIdentifier>) => {
             const threadUid = data?.data?.threadUid;
+
+            if (!config?.collab?.enable) return;
+
             if (Boolean(data?.data?.updateConfig)) {
                 Config.set("collab.isFeedbackMode", true);
             }
@@ -110,7 +124,12 @@ export const useCollab = () => {
         VisualBuilderPostMessageEvents.COLLAB_THREAD_REOPEN,
         (data: OnEvent<IThreadReopen>) => {
             const thread = data.data.thread;
-            const result = generateThread(thread, { isNewThread: false });
+
+            if (!config?.collab?.enable) return;
+
+            const result = generateThread(thread, {
+                hidden: Boolean(config?.collab?.pauseFeedback),
+            });
             if (result) {
                 handleMissingThreads({
                     payload: { isElementPresent: false },
@@ -130,6 +149,7 @@ export const useCollab = () => {
 
     return () => {
         collabEnable?.unregister();
+        collabPayload?.unregister();
         collabDisable?.unregister();
         collabThreadRemove?.unregister();
         collabThreadReopen?.unregister();
