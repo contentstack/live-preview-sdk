@@ -157,3 +157,39 @@ export function fixSvgXPath(xpath: string | null): string {
     if (!xpath) return "";
     return xpath.replace(/\/svg/g, "/*[name()='svg']");
 }
+
+/**
+ * populate the position of the thread based on edges of the screen.
+ * @param position 
+ * @param options 
+ * @returns 
+ */
+export function adjustPositionToViewport(
+    position: { top: number; left: number },
+    options: {
+        threadWidth?: number;
+        safeMargin?: number;
+        topSafeMargin?: number;
+    } = {}
+): { top: number; left: number } {
+    const { top, left } = position;
+    const viewportWidth = window.innerWidth;
+    const safeMargin = options.safeMargin ?? 16;
+    const topSafeMargin = options.topSafeMargin ?? 40;
+    const threadWidth = options.threadWidth ?? 16;
+
+    let adjustedLeft = left;
+    let adjustedTop = top;
+
+    // Adjust position if too close to right edge
+    if (adjustedLeft + threadWidth > viewportWidth - safeMargin) {
+        adjustedLeft = viewportWidth - safeMargin - threadWidth;
+    }
+
+    // Adjust position if too close to top edge
+    if (adjustedTop - window.scrollY < topSafeMargin) {
+        adjustedTop = window.scrollY + topSafeMargin;
+    }
+
+    return { top: adjustedTop, left: adjustedLeft };
+}
