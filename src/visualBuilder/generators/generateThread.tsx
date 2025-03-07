@@ -10,6 +10,7 @@ import {
 } from "../types/collab.types";
 import visualBuilderPostMessage from "../utils/visualBuilderPostMessage";
 import { VisualBuilderPostMessageEvents } from "../utils/types/postMessage.types";
+import { adjustPositionToViewport } from "../utils/collabUtils";
 
 const popupTopOffset = 43;
 const popupLeftOffset = 9;
@@ -103,8 +104,12 @@ export function generateThread(
     }
 
     const rect = element.getBoundingClientRect();
-    const top = rect.top + window.scrollY + relativeY * rect.height;
-    const left = rect.left + window.scrollX + relativeX * rect.width;
+    let top = rect.top + window.scrollY + relativeY * rect.height;
+    let left = rect.left + window.scrollX + relativeX * rect.width;
+
+    const adjustedPosition = adjustPositionToViewport({ top, left });
+    top = adjustedPosition.top;
+    left = adjustedPosition.left;
 
     const popupContainer = createPopupContainer(
         resolvedXPath,
@@ -171,11 +176,15 @@ export function updateCollabIconPosition() {
         }
 
         const rect = targetElement.getBoundingClientRect();
-        const x = rect.left + rect.width * relativeX + window.scrollX;
-        const y = rect.top + rect.height * relativeY + window.scrollY;
+        let left = rect.left + rect.width * relativeX + window.scrollX;
+        let top = rect.top + rect.height * relativeY + window.scrollY;
 
-        icon.style.top = `${y - popupTopOffset}px`;
-        icon.style.left = `${x - popupLeftOffset}px`;
+        const adjustedPosition = adjustPositionToViewport({ top, left });
+        top = adjustedPosition.top;
+        left = adjustedPosition.left;
+
+        icon.style.top = `${top - popupTopOffset}px`;
+        icon.style.left = `${left - popupLeftOffset}px`;
         icon.classList.remove(hiddenClass);
     });
 }
