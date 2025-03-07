@@ -43,6 +43,7 @@ export enum VisualBuilderPostMessageEvents {
     GET_LOCALE = "get-locale",
     SEND_VARIANT_AND_LOCALE = "send-variant-and-locale",
     COLLAB_ENABLE = "collab-enable",
+    COLLAB_THREAD_PAYLOAD = "collab-thread-payload",
     COLLAB_DISABLE = "collab-disable",
     COLLAB_THREAD_REMOVE = "collab-thread-remove",
     COLLAB_THREAD_REOPEN = "collab-thread-reopen",
