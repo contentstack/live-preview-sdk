@@ -64,7 +64,7 @@ describe("When an inline element is edited in visual builder mode", () => {
 
     afterAll(() => {
         vi.clearAllMocks();
-        document.getElementsByTagName("html")[0].innerHTML = "";
+        document.getElementsByTagName('html')[0].innerHTML = ''; 
 
         Config.reset();
     });
@@ -110,10 +110,7 @@ describe("When an inline element is edited in visual builder mode", () => {
             document.body.appendChild(singleLineField);
 
             visualBuilder = new VisualBuilder();
-            await triggerAndWaitForClickAction(
-                visualBuilderPostMessage,
-                singleLineField
-            );
+            await triggerAndWaitForClickAction(visualBuilderPostMessage, singleLineField);
             overlayWrapper = document.querySelector(
                 ".visual-builder__overlay__wrapper"
             ) as HTMLDivElement;
@@ -233,10 +230,7 @@ describe("When an inline element is edited in visual builder mode", () => {
             document.body.appendChild(container);
 
             visualBuilder = new VisualBuilder();
-            await triggerAndWaitForClickAction(
-                visualBuilderPostMessage,
-                container
-            );
+            await triggerAndWaitForClickAction(visualBuilderPostMessage, container);
         });
 
         afterAll(() => {
@@ -304,10 +298,7 @@ describe("When an inline element is edited in visual builder mode", () => {
             document.body.appendChild(container);
 
             visualBuilder = new VisualBuilder();
-            await triggerAndWaitForClickAction(
-                visualBuilderPostMessage,
-                firstSingleLineField
-            );
+            await triggerAndWaitForClickAction(visualBuilderPostMessage, firstSingleLineField);
             overlayWrapper = document.querySelector(
                 ".visual-builder__overlay__wrapper"
             ) as HTMLDivElement;
@@ -414,10 +405,7 @@ describe("When an inline element is edited in visual builder mode", () => {
             multiLineField.textContent = "Hello world";
             document.body.appendChild(multiLineField);
             visualBuilder = new VisualBuilder();
-            await triggerAndWaitForClickAction(
-                visualBuilderPostMessage,
-                multiLineField
-            );
+            await triggerAndWaitForClickAction(visualBuilderPostMessage, multiLineField);
             overlayWrapper = document.querySelector(
                 ".visual-builder__overlay__wrapper"
             ) as HTMLDivElement;
@@ -530,10 +518,7 @@ describe("When an inline element is edited in visual builder mode", () => {
             document.body.appendChild(container);
 
             visualBuilder = new VisualBuilder();
-            await triggerAndWaitForClickAction(
-                visualBuilderPostMessage,
-                container
-            );
+            await triggerAndWaitForClickAction(visualBuilderPostMessage, container);
             overlayWrapper = document.querySelector(
                 ".visual-builder__overlay__wrapper"
             ) as HTMLDivElement;
@@ -607,10 +592,7 @@ describe("When an inline element is edited in visual builder mode", () => {
             document.body.appendChild(container);
 
             visualBuilder = new VisualBuilder();
-            await triggerAndWaitForClickAction(
-                visualBuilderPostMessage,
-                firstMultiLineField
-            );
+            await triggerAndWaitForClickAction(visualBuilderPostMessage, firstMultiLineField);
         });
 
         afterEach(() => {
@@ -647,7 +629,7 @@ describe("When an inline element is edited in visual builder mode", () => {
             ) as HTMLDivElement;
             await act(async () => {
                 await fireEvent.click(overlayWrapper);
-            });
+            })
             await waitFor(() => {
                 expect(visualBuilderPostMessage?.send).toHaveBeenCalledWith(
                     VisualBuilderPostMessageEvents.UPDATE_FIELD,
