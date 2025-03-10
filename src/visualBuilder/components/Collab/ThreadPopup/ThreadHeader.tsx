@@ -1,6 +1,6 @@
 /** @jsxImportSource preact */
 import React from "preact/compat";
-import { useCallback } from "preact/hooks";
+import { useCallback, useState } from "preact/hooks";
 import classNames from "classnames";
 import Button from "../Button/Button";
 import { collabStyles, flexAlignCenter } from "../../../collab.style";
@@ -12,21 +12,26 @@ import {
 
 const ThreadHeader: React.FC<IThreadHeader> = React.memo(
     ({ onClose, displayResolve, onResolve, commentCount, activeThread }) => {
-        // Handler for deleting a comment
+        const [isResolving, setIsResolving] = useState(false);
+
         const handleResolve = useCallback(async () => {
+            if (isResolving) return;
+
             try {
-                // Call the onResolveComment function
+                setIsResolving(true);
                 const payload = {
                     threadUid: activeThread._id,
                     payload: {
                         threadState: 2,
                     },
                 };
-                const resolveResponse: IDefaultAPIResponse =
-                    await onResolve(payload);
+                await onResolve(payload);
                 onClose(true);
-            } catch (error: any) {}
-        }, [activeThread]);
+            } catch (error: any) {
+            } finally {
+                setIsResolving(false);
+            }
+        }, [activeThread, isResolving, onResolve, onClose]);
 
         return (
             <div
@@ -71,6 +76,8 @@ const ThreadHeader: React.FC<IThreadHeader> = React.memo(
                             }}
                             onClick={handleResolve}
                             testId="collab-thread-resolve-btn"
+                            isLoading={isResolving}
+                            loadingColor="secondary"
                         >
                             <span
                                 className={classNames(

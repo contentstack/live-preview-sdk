@@ -8,6 +8,22 @@ const skeletonTileProgressSlide = keyframes`
         opacity: 0.4;
     }
 `;
+const dotKeyframes = keyframes`
+  0% {
+    opacity: 0.2;
+    transform: scale(0.8, 0.8);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1.2, 1.2);
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale(1, 1);
+  }
+`;
 
 export function collabStyles() {
     return {
@@ -197,6 +213,60 @@ export function collabStyles() {
             opacity: 0.4;
             pointer-events: auto;
         `,
+        "collab-button--loading": css`
+            cursor: default;
+            pointer-events: none;
+        `,
+        "collab-button--loader": css`
+            display: flex;
+            justify-content: center;
+            text-align: center;
+        `,
+        "collab-button--loader--wrapper": css`
+            left: 50%;
+            position: absolute;
+            top: 50%;
+            -webkit-transform: translateX(-50%) translateY(-50%);
+            -moz-transform: translateX(-50%) translateY(-50%);
+        `,
+        "collab-button--loader--animation": css`
+            animation: ${dotKeyframes} 1.5s infinite ease-in-out;
+
+            border-radius: 0.625rem;
+            display: inline-block;
+            height: 0.3125rem;
+            margin-right: 0.25rem;
+            width: 0.3125rem;
+
+            &:nth-child(2) {
+                animation-delay: 0.5s;
+            }
+
+            &:nth-child(3) {
+                animation-delay: 1s;
+                margin-right: 0;
+            }
+        `,
+        "collab-button--visible": css`
+            visibility: visible;
+        `,
+        "collab-button--hidden": css`
+            visibility: hidden;
+        `,
+        "collab-button--loading--color": {
+            primary: css`
+                background-color: #f9f8ff !important;
+            `,
+            secondary: css`
+                background-color: #6c5ce7 !important;
+            `,
+            tertiary: css`
+                background-color: #6c5ce7 !important;
+            `,
+            destructive: css`
+                background-color: #f9f8ff !important;
+            `,
+        },
         "collab-button--type": {
             primary: css`
                 background-color: #6c5ce7 !important;
