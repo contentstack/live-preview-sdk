@@ -15,6 +15,7 @@ export interface IconProps {
     withTooltip?: boolean;
     onClick?: JSX.MouseEventHandler<HTMLDivElement>;
     testId?: string;
+    disabled?: boolean; 
 }
 
 const IconWrapper = ({
@@ -22,9 +23,16 @@ const IconWrapper = ({
     className,
     onClick,
     testId, 
+    disabled,
     ...otherProps
 }: Omit<IconProps, "withTooltip" | "tooltipContent">) => {
     const IconComponent = iconComponents[icon];
+
+    const handleClick = (e: JSX.TargetedMouseEvent<HTMLDivElement>) => {
+        if (disabled) return; 
+        onClick?.(e);
+    };
+
 
     return (
         <div
@@ -32,7 +40,7 @@ const IconWrapper = ({
                 "collab-icon-wrapper",
                 collabStyles()["collab-icon-wrapper"]
             )}
-            onClick={onClick}
+            onClick={handleClick}
             data-testid={testId}
             {...otherProps}
         >

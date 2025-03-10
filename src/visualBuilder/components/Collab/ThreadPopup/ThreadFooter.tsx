@@ -47,7 +47,8 @@ const ThreadFooter = ({
                     buttonType="primary"
                     onClick={onSubmit}
                     testId={"thread-save-btn"}
-                    disabled={isDisabled || loading}
+                    disabled={isDisabled}
+                    isLoading={loading}
                 >
                     {editComment === "" ? "Post" : "Update"}
                 </Button>
