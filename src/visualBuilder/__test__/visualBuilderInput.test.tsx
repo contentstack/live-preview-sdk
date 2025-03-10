@@ -627,9 +627,7 @@ describe("When an inline element is edited in visual builder mode", () => {
             const overlayWrapper = document.querySelector(
                 ".visual-builder__overlay__wrapper"
             ) as HTMLDivElement;
-            await act(async () => {
-                await fireEvent.click(overlayWrapper);
-            })
+            fireEvent.click(overlayWrapper);
             await waitFor(() => {
                 expect(visualBuilderPostMessage?.send).toHaveBeenCalledWith(
                     VisualBuilderPostMessageEvents.UPDATE_FIELD,
