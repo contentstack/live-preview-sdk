@@ -326,6 +326,12 @@ export class VisualBuilder {
                     resizeObserver: this.resizeObserver,
                     customCursor: this.customCursor,
                 });
+
+                this.mutationObserver.observe(document.body, {
+                    childList: true,
+                    subtree: true,
+                });
+
                 useHistoryPostMessageEvent();
                 useCollab();
 
