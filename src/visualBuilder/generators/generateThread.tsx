@@ -307,9 +307,6 @@ export function toggleCollabPopup({
 }
 
 export function HighlightThread(threadUid: string): void {
-    const config = Config.get?.();
-    if (config?.collab?.pauseFeedback) return;
-
     toggleCollabPopup({ threadUid, action: "open" });
 }
 

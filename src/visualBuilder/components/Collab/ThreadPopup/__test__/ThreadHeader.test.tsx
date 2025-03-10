@@ -62,7 +62,6 @@ describe("ThreadHeader Component", () => {
         render(<ThreadHeader {...defaultProps} displayResolve={false} />);
         expect(screen.queryByTestId("collab-thread-resolve-btn")).toBeNull();
     });
-
     it("calls onResolve and onClose when the resolve button is clicked", async () => {
         const mockResolveResponse = { notice: "Thread Updated successfully" };
         mockOnResolve.mockResolvedValueOnce(mockResolveResponse);
@@ -70,15 +69,20 @@ describe("ThreadHeader Component", () => {
         render(<ThreadHeader {...defaultProps} />);
 
         const resolveButton = screen.getByTestId("collab-thread-resolve-btn");
-        if (resolveButton) {
-            fireEvent.click(resolveButton);
-        } else {
-            throw new Error("Resolve btn not found");
-        }
-        // Wait for async operations to finish
-        await waitFor(() => {
-            expect(mockOnResolve).toHaveBeenCalledWith(mockResolvePayload);
-            expect(mockOnClose).toHaveBeenCalledWith(true);
-        });
+        fireEvent.click(resolveButton);
+
+        await waitFor(
+            () => {
+                expect(mockOnResolve).toHaveBeenCalledWith(mockResolvePayload);
+            },
+            { timeout: 2000 }
+        );
+
+        await waitFor(
+            () => {
+                expect(mockOnClose).toHaveBeenCalledWith(true);
+            },
+            { timeout: 2000 }
+        );
     });
 });
