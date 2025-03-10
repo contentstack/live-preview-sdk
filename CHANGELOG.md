@@ -1,8 +1,100 @@
 # Changelog
 
+## [v3.1.2](https://github.com/contentstack/live-preview-sdk/compare/v3.1.1...v3.1.2)
+
+> 3 March 2025
+
+### New Features
+
+- feat: improve edit button rendering (Faraaz Biyabani - [#371](https://github.com/contentstack/live-preview-sdk/pull/371))
+- feat(VE-5170): add plus button configuration  (Sairaj - [#349](https://github.com/contentstack/live-preview-sdk/pull/349))
+- feat: allow click on elements with studio-ui attribute (Faraaz Biyabani - [#355](https://github.com/contentstack/live-preview-sdk/pull/355))
+- feat(VE-4043): add start editing button configuration for builder mode (Sairaj - [#346](https://github.com/contentstack/live-preview-sdk/pull/346))
+
+### Fixes
+
+- fix(VE-5118): add variant revert actions for blocks and groups (srinad007 - [#372](https://github.com/contentstack/live-preview-sdk/pull/372))
+- fix(VE-5370): start edit url updates on navigation (Sairaj - [#370](https://github.com/contentstack/live-preview-sdk/pull/370))
+- fix: add buttons fix for multiple fields (Sairaj - [#359](https://github.com/contentstack/live-preview-sdk/pull/359))
+- fix(VE-5061): add observer to observe cslp of selected element (srinad007 - [#356](https://github.com/contentstack/live-preview-sdk/pull/356))
+- fix(VE-5012): add variant classes in case of adding multiple instances (srinad007 - [#351](https://github.com/contentstack/live-preview-sdk/pull/351))
+- fix(VE-5080): fix z-index for hover outline and add button (srinad007 - [#341](https://github.com/contentstack/live-preview-sdk/pull/341))
+
+### Documentation Changes
+
+- docs: add docs for start edit button configuration (Sairaj - [#376](https://github.com/contentstack/live-preview-sdk/pull/376))
+
+### General Changes
+
+- Ve 5139 (srinad007 - [#343](https://github.com/contentstack/live-preview-sdk/pull/343))
+- sync main for upcoming release (Hitesh Shetty - [#338](https://github.com/contentstack/live-preview-sdk/pull/338))
+
+### New Features
+
+- feat(VE-5170): customize add button position (Sairaj Chouhan - [4c026eb](https://github.com/contentstack/live-preview-sdk/commit/4c026eb5b6db4aa2a79d1a0e34922619c79fb3f1))
+- feat(VE-4043): add basic start editing button configuration (Sairaj Chouhan - [c006c68](https://github.com/contentstack/live-preview-sdk/commit/c006c684a349e958208bdd0ea6e14fb05cbabc7b))
+- feat: allow clicks on elements with data-studio-ui attribute set to true (Faraaz Biyabani - [957bae1](https://github.com/contentstack/live-preview-sdk/commit/957bae138622e63dfcdd849746e0327884d07747))
+
+### Fixes
+
+- fix(VE-5061): refactor handleBuilderInteraction (Srinadh Reddy - [bd71fb4](https://github.com/contentstack/live-preview-sdk/commit/bd71fb42970f6320330626b92dbd918cf80ea5d5))
+- fix(VE-5139): fix test cases (Srinadh Reddy - [2a29a81](https://github.com/contentstack/live-preview-sdk/commit/2a29a81d187117e9f86b1e2c2348414159c45afb))
+- fix(VE-5139): fix event doesnt exist logs in console (Srinadh Reddy - [89ca3d8](https://github.com/contentstack/live-preview-sdk/commit/89ca3d8e4522dd7644769968efdb17b28d4f39b5))
+- fix(VE-5118): fix unit test cases (Srinadh Reddy - [9d5b24a](https://github.com/contentstack/live-preview-sdk/commit/9d5b24a6e406bf49c8126a3fae111af7eb17b0ab))
+
+### Chores And Housekeeping
+
+- chore: remove else block (Sairaj Chouhan - [834c3e7](https://github.com/contentstack/live-preview-sdk/commit/834c3e78250f36b32e21c948bda313818f0db7bc))
+- chore: remove `describe.only` (Faraaz Biyabani - [5aa5958](https://github.com/contentstack/live-preview-sdk/commit/5aa59587217ff7f64d495240f9e252bcf5b60a9c))
+- chore: update ContentstackLivePreview version to 3.1.1 in README (hiteshshetty-dev - [d885fa5](https://github.com/contentstack/live-preview-sdk/commit/d885fa5f65ef32e22bfb86fa3871238bdec02d61))
+
+### Changes to Test Assests
+
+- test: isPointerWithinEditButtonSafeZone (Faraaz Biyabani - [3c340e8](https://github.com/contentstack/live-preview-sdk/commit/3c340e8ce52d768f06fbb6b2050ab541a6ac47cb))
+- test: add tests for start editing button in builder (Sairaj Chouhan - [f9988a7](https://github.com/contentstack/live-preview-sdk/commit/f9988a74ed9416cc99ce30ed9f3d25314f7eef5c))
+- test: increase timeout for contenteditable tests (Sairaj Chouhan - [66fee50](https://github.com/contentstack/live-preview-sdk/commit/66fee50387f0a8a9b0ec61b945bec00418dc34f9))
+
+### General Changes
+
+- Update README.md (Hitesh Shetty - [66ef1f1](https://github.com/contentstack/live-preview-sdk/commit/66ef1f1d863d5f252172a427c1851a08372433f8))
+
+## [v3.1.1](https://github.com/contentstack/live-preview-sdk/compare/v3.1.0...v3.1.1)
+
+> 3 February 2025
+
+### Fixes
+
+- fix: remove ^ from preact versions in package json (Hitesh Shetty - [#337](https://github.com/contentstack/live-preview-sdk/pull/337))
+- fix(VE-5019): remove ^ from preact versions in package json (Hitesh Shetty - [#336](https://github.com/contentstack/live-preview-sdk/pull/336))
+
+### Refactoring and Updates
+
+- refactor: replace hardcoded class names with constants for empty block parent (Hitesh Shetty - [#331](https://github.com/contentstack/live-preview-sdk/pull/331))
+
+### Changes to Test Assests
+
+- test: add unit tests for error handling and field state validation in visual builder (Hitesh Shetty - [#329](https://github.com/contentstack/live-preview-sdk/pull/329))
+
+### Fixes
+
+- fix: live preview doc (Kirtesh Suthar - [8fcdcc5](https://github.com/contentstack/live-preview-sdk/commit/8fcdcc5127ea722bd9c01f74b1168d9f579e5f30))
+
+### Changes to Test Assests
+
+- test: remove skipped number field tests and add validation for numeric input (hiteshshetty-dev - [ba0062e](https://github.com/contentstack/live-preview-sdk/commit/ba0062e6c9a5769d124707d6f02e7956a083acb2))
+- test: wrap attribute checks in waitFor for visual builder tests (hiteshshetty-dev - [a7a0d53](https://github.com/contentstack/live-preview-sdk/commit/a7a0d5382eab40e84b94699a43a479277808f35c))
+
+### General Changes
+
+- Updated codeowners (Aravind Kumar - [fe41624](https://github.com/contentstack/live-preview-sdk/commit/fe41624a179035f8ed8a2f9ee88c65c958edd29b))
+- codeql-analysis.yml (Aravind Kumar - [45c63a2](https://github.com/contentstack/live-preview-sdk/commit/45c63a2e2fbd8fd162520b8e2208fa19e864b3e8))
+- sast-scan.yml (Aravind Kumar - [8971dfb](https://github.com/contentstack/live-preview-sdk/commit/8971dfbe798ae4e7d036b86ee30b4b120cf8a6ea))
+- jira.yml (Aravind Kumar - [30e4861](https://github.com/contentstack/live-preview-sdk/commit/30e4861e33d5f7c89cffef109e50aa811f6b346a))
+- sca-scan.yml (Aravind Kumar - [bcb5ca8](https://github.com/contentstack/live-preview-sdk/commit/bcb5ca8a3a820fab6199166882ae80e8438a074d))
+
 ## [v3.1.0](https://github.com/contentstack/live-preview-sdk/compare/v3.0.2...v3.1.0)
 
-> 10 January 2025
+> 16 January 2025
 
 ### New Features
 
@@ -19,6 +111,7 @@
 
 ### General Changes
 
+- 3.1.0 (Kirtesh Suthar - [#323](https://github.com/contentstack/live-preview-sdk/pull/323))
 - Feat/auto changelog (Kirtesh Suthar - [#321](https://github.com/contentstack/live-preview-sdk/pull/321))
 
 ### New Features
@@ -29,6 +122,7 @@
 ### Fixes
 
 - fix: issue with variant revert dropdown in canvas and show variant icon for multiple fields (Srinadh Reddy - [8718c48](https://github.com/contentstack/live-preview-sdk/commit/8718c4832f30606437da1fd18513006f21e0fd34))
+- fix: live preview doc (Kirtesh Suthar - [f81fdf5](https://github.com/contentstack/live-preview-sdk/commit/f81fdf55fd2ab2ce4cac3bf974b0a31566c24001))
 
 ### Chores And Housekeeping
 

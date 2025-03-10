@@ -152,15 +152,14 @@ class ContentstackLivePreview {
                 onChangeCallback;
         }
 
-        const isWindowDefined = typeof window !== "undefined";
-        const isLivePreviewSearchParamPresent =
-            isWindowDefined &&
-            new URLSearchParams(window.location.search).has("live_preview");
-        const isBuilder =
-            isWindowDefined &&
-            new URLSearchParams(window.location.search).has("builder");
-        const shouldCallCallback =
-            isLivePreviewSearchParamPresent && isBuilder;
+        const searchParams =
+            typeof window !== "undefined"
+                ? new URLSearchParams(window.location.search)
+                : null;
+        const hasLivePreviewHash =
+            searchParams && searchParams.has("live_preview");
+        const isBuilder = searchParams && searchParams.has("builder");
+        const shouldCallCallback = hasLivePreviewHash && isBuilder;
         // calling onChangeCallback when live_preview search parameter
         // is present because we don't send the initial client-data-send
         //  message in visual builder
