@@ -4,10 +4,10 @@ import packageJson from './package.json' assert { type: "json" };
 
 export default defineConfig([
     modernConfig({
-    entry: ["src/**/*.ts","src/**/*.tsx", "!src/**/__test__", "!**/*.test.ts"],
+    entry: ["src/**/*.ts","src/**/*.tsx", "!src/**/__test__", "!**/*.test.ts","!**/*.test.tsx"],
     }),
     legacyConfig({
-    entry: ["src/**/*.ts","src/**/*.tsx", "!src/**/__test__", "!**/*.test.ts"],
+    entry: ["src/**/*.ts","src/**/*.tsx", "!src/**/__test__", "!**/*.test.ts","!**/*.test.tsx"],
     }),
 ])
 

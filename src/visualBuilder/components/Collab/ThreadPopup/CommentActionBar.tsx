@@ -1,6 +1,6 @@
 /** @jsxImportSource preact */
 import React from "preact/compat";
-import { useContext } from "preact/hooks";
+import { useContext, useState } from "preact/hooks";
 import {
     IThreadPopupState,
     ICommentActionBar,
@@ -10,7 +10,6 @@ import { ThreadProvider } from "./ContextProvider";
 import { collabStyles } from "../../../collab.style";
 import classNames from "classnames";
 
-// Define the CommentActionBar component
 const CommentActionBar: React.FC<ICommentActionBar> = ({
     mode,
     commentUser,
@@ -19,6 +18,7 @@ const CommentActionBar: React.FC<ICommentActionBar> = ({
 }) => {
     const { setThreadState, onDeleteComment, activeThread, onDeleteThread } =
         useContext(ThreadProvider)!;
+    const [isDeleting, setIsDeleting] = useState(false);
 
     const setEditComment = (uid: string | null) => {
         setThreadState((prevState: IThreadPopupState) => ({
@@ -27,31 +27,29 @@ const CommentActionBar: React.FC<ICommentActionBar> = ({
         }));
     };
 
-    // Handler for cancel action
     const handleCancel = () => {
         setEditComment(null);
     };
 
-    // Handler for editing a comment
     const handleCommentEdit = () => {
         if (commentUID) {
             setEditComment(commentUID);
         }
     };
 
-    // Handler for deleting a comment
     const handleCommentDelete = async () => {
-        if (!commentUID) {
+        if (!commentUID || isDeleting) {
             return;
         }
+
+        setIsDeleting(true);
+
         try {
-            // Call the onDeleteComment function
             const deleteResponse = await onDeleteComment({
                 threadUid: activeThread?._id,
                 commentUid: commentUID,
             });
 
-            // Update the thread state after successful deletion
             setThreadState((prevState: IThreadPopupState) => {
                 const updatedComments = prevState.comments.filter(
                     (comment) => comment._id !== commentUID
@@ -65,10 +63,12 @@ const CommentActionBar: React.FC<ICommentActionBar> = ({
                     commentCount: prevState.commentCount - 1,
                 };
             });
-        } catch (error: any) {}
+        } catch (error: any) {
+        } finally {
+            setIsDeleting(false);
+        }
     };
 
-    // Render based on the mode and user permissions
     if (mode === "edit" && commentUID) {
         return (
             <div
@@ -112,6 +112,7 @@ const CommentActionBar: React.FC<ICommentActionBar> = ({
                 withTooltip
                 testId="collab-thread-comment-delete"
                 onClick={handleCommentDelete}
+                disabled={isDeleting}
             />
         </div>
     );
