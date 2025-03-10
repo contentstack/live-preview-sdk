@@ -4,10 +4,10 @@ import { EditIcon } from "./icons";
 import { visualBuilderStyles } from "../visualBuilder.style";
 import React from "preact/compat";
 import Config from "../../configManager/configManager";
-import { IConfigEditButtonBuilder } from "../../types/types";
+import { IConfigEditInVisualBuilderButton } from "../../types/types";
 
 
-type Position = NonNullable<IConfigEditButtonBuilder['position']>;
+type Position = NonNullable<IConfigEditInVisualBuilderButton['position']>;
 
 const positionStyles: Record<Position, string> = {
     "bottom-right": visualBuilderStyles()['visual-builder__start-editing-btn__bottom-right'],
@@ -27,8 +27,16 @@ export function getEditButtonPosition(position: any): Position {
 
 function StartEditingButtonComponent(): JSX.Element | null {
     const config = Config.get()
-    const enable = config.editButtonBuilder.enable;
-    const position = config.editButtonBuilder.position || "bottom-right";
+    const enable = config.editInVisualBuilderButton.enable;
+    const position = config.editInVisualBuilderButton.position || "bottom-right";
+    
+    function updateTargetUrl(e: any){
+        const targetElement = e.target as HTMLAnchorElement;
+        targetElement.setAttribute(
+            "href",
+            getVisualBuilderRedirectionUrl().toString()
+        );
+    }
 
     return enable ? (
         <a
@@ -39,13 +47,9 @@ function StartEditingButtonComponent(): JSX.Element | null {
                 positionStyles[getEditButtonPosition(position)]
             )}
             data-testid="vcms-start-editing-btn"
-            onClick={(e) => {
-                const targetElement = e.target as HTMLAnchorElement;
-                targetElement.setAttribute(
-                    "href",
-                    getVisualBuilderRedirectionUrl().toString()
-                );
-            }}
+            onMouseEnter={(e) => updateTargetUrl(e)}
+            onFocus={(e) => updateTargetUrl(e)}
+            onClick={(e) => updateTargetUrl(e)}
         >
             <EditIcon />
             <span>Start Editing</span>

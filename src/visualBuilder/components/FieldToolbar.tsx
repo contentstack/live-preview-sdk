@@ -50,6 +50,7 @@ const TOOLTIP_TOP_EDGE_BUFFER = 96;
 interface MultipleFieldToolbarProps {
     eventDetails: VisualBuilderCslpEventDetails;
     hideOverlay: () => void;
+    isVariant?: boolean;
 }
 
 function handleReplaceAsset(fieldMetadata: CslpData) {
@@ -111,14 +112,14 @@ function handleFormFieldFocus(eventDetails: VisualBuilderCslpEventDetails) {
 function FieldToolbarComponent(
     props: MultipleFieldToolbarProps
 ): JSX.Element | null {
-    const { eventDetails } = props;
+    const { eventDetails, isVariant: isVariantOrParentOfVariant } = props;
     const { fieldMetadata, editableElement: targetElement } = eventDetails;
 
     const parentPath =
         fieldMetadata?.multipleFieldMetadata?.parentDetails?.parentCslpValue ||
         "";
+    const isVariant = !!fieldMetadata?.variant || isVariantOrParentOfVariant;
     const direction = getChildrenDirection(targetElement, parentPath);
-    const isVariant = !!fieldMetadata?.variant;
     const [fieldSchema, setFieldSchema] = useState<ISchemaFieldMap | null>(
         null
     );
@@ -169,12 +170,13 @@ function FieldToolbarComponent(
                 fieldMetadata.instance.fieldPathWithIndex ||
                 fieldMetadata.multipleFieldMetadata?.index === -1);
 
-        if (
-            DEFAULT_MULTIPLE_FIELDS.includes(fieldType) &&
-            isWholeMultipleField
-        ) {
-            return null;
-        }
+        // if (
+        //     DEFAULT_MULTIPLE_FIELDS.includes(fieldType) &&
+        //     isWholeMultipleField &&
+        //     !isVariant
+        // ) {
+        //     return null;
+        // }
     }
 
     const invertTooltipPosition =

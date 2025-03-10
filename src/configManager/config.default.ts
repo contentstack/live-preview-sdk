@@ -16,7 +16,7 @@ export function getUserInitData(): IInitData {
             position: "top",
             includeByQueryParameter: true,
         },
-        editButtonBuilder: {
+        editInVisualBuilderButton: {
             enable: true,
             position: "bottom-right"
         },
@@ -54,7 +54,7 @@ export function getDefaultConfig(): IConfig {
             position: "top",
             includeByQueryParameter: true,
         },
-        editButtonBuilder: {
+        editInVisualBuilderButton: {
             enable: true,
             position: "bottom-right"
         },
