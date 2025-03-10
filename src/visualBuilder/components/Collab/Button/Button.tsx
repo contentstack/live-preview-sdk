@@ -3,6 +3,7 @@ import React from "preact/compat";
 import { JSX } from "preact";
 import classNames from "classnames";
 import Icon, { IconProps } from "../Icon/Icon";
+import AsyncLoader from "../AsyncLoader/AsyncLoader";
 import { iconComponents } from "../../icons/CollabIcons";
 import {
     collabStyles,
@@ -18,6 +19,8 @@ interface ButtonProps {
     className?: string;
     testId?: string;
     onClick?: JSX.MouseEventHandler<HTMLButtonElement | HTMLAnchorElement>;
+    isLoading?: boolean;
+    loadingColor?: "primary" | "secondary" | "tertiary" | "destructive";
     disabled?: boolean;
     type?: "button" | "submit" | "reset";
     style?: React.CSSProperties;
@@ -35,6 +38,8 @@ const Button: React.FC<ButtonProps> = ({
     className = "",
     testId,
     onClick,
+    isLoading,
+    loadingColor = "primary",
     disabled = false,
     type = "button",
     style,
@@ -83,11 +88,13 @@ const Button: React.FC<ButtonProps> = ({
         collabStyles()["collab-button--size"][size],
         icon && collabStyles()["collab-button--icon-allignment"][iconAlignment],
         disabled && collabStyles()["collab-button--disabled"],
+        isLoading && collabStyles()["collab-button--loading"],
         className,
 
         `collab-button collab-button--${buttonType} collab-button--${size} ${
             icon ? `collab-button--icon-${iconAlignment}` : ""
-        } ${disabled ? "collab-button--disabled" : ""}`
+        } ${disabled ? "collab-button--disabled" : ""}
+        ${isLoading ? "collab-button--loading" : ""}`
     );
 
     // Ensure style is valid
@@ -107,11 +114,28 @@ const Button: React.FC<ButtonProps> = ({
             data-testid={testId}
         >
             <div className={classNames("flex-center", flexCentered)}>
+                {isLoading && (
+                    <div
+                        className={classNames(
+                            collabStyles()["collab-button--loader--wrapper"],
+                            "collab-button--loader--wrapper"
+                        )}
+                    >
+                        <AsyncLoader color={loadingColor} />
+                    </div>
+                )}
                 <div
-                    className={classNames("flex-v-center", flexAlignCenter, {
-                        [`${collabStyles()["collab-button--size"]["regular"]} collab-button--regular`]:
-                            size !== "small",
-                    })}
+                    className={classNames(
+                        "flex-v-center",
+                        flexAlignCenter,
+                        {
+                            [`${collabStyles()["collab-button--size"]["regular"]} collab-button--regular`]:
+                                size !== "small",
+                        },
+                        !isLoading
+                            ? `${collabStyles()["collab-button--visible"]} collab-button--visible`
+                            : `${collabStyles()["collab-button--hidden"]} collab-button--hidden`
+                    )}
                 >
                     {nestedChildren}
                 </div>

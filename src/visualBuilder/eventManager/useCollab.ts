@@ -111,7 +111,7 @@ export const useCollab = () => {
 
             if (!config?.collab?.enable) return;
 
-            if (Boolean(data?.data?.updateConfig)) {
+            if (data?.data?.updateConfig) {
                 Config.set("collab.isFeedbackMode", true);
             }
             if (threadUid) {
@@ -143,6 +143,9 @@ export const useCollab = () => {
         VisualBuilderPostMessageEvents.COLLAB_THREAD_HIGHLIGHT,
         (data: OnEvent<IThreadIdentifier>) => {
             const { threadUid } = data.data;
+            if (!config?.collab?.enable || config?.collab?.pauseFeedback)
+                return;
+
             HighlightThread(threadUid);
         }
     );
