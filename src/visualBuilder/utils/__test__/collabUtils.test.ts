@@ -4,6 +4,7 @@ import {
     filterOutInvalidMentions,
     getCommentBody,
     getThreadTitle,
+    normalizePath,
 } from "../collabUtils";
 import { maxMessageLength, mentionLimit } from "../constants";
 import { IMentionedList, IUserDTO } from "../../types/collab.types";
@@ -129,6 +130,33 @@ describe("Utility Functions", () => {
         it("should handle edge cases with large numbers", () => {
             const result = getThreadTitle(1000);
             expect(result).toBe("1000 Comments");
+        });
+    });
+
+    describe("normalizePath", () => {
+        test('should return "/" when given "/"', () => {
+            expect(normalizePath("/")).toBe("/");
+        });
+
+        test("should remove trailing slash from a non-root path", () => {
+            expect(normalizePath("/en/")).toBe("/en");
+            expect(normalizePath("/about-us/")).toBe("/about-us");
+            expect(normalizePath("/products/shoes/")).toBe("/products/shoes");
+        });
+
+        test("should not alter paths that do not have a trailing slash", () => {
+            expect(normalizePath("/en")).toBe("/en");
+            expect(normalizePath("/about-us")).toBe("/about-us");
+            expect(normalizePath("/products/shoes")).toBe("/products/shoes");
+        });
+
+        test("should handle paths with multiple slashes correctly", () => {
+            expect(normalizePath("/en///")).toBe("/en//");
+            expect(normalizePath("//")).toBe("/");
+        });
+
+        test("should handle empty string input gracefully", () => {
+            expect(normalizePath("")).toBe("");
         });
     });
 });

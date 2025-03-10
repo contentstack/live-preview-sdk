@@ -10,6 +10,7 @@ import {
 } from "../types/collab.types";
 import visualBuilderPostMessage from "../utils/visualBuilderPostMessage";
 import { VisualBuilderPostMessageEvents } from "../utils/types/postMessage.types";
+import { adjustPositionToViewport } from "../utils/collabUtils";
 
 const popupTopOffset = 43;
 const popupLeftOffset = 9;
@@ -25,6 +26,7 @@ function createPopupContainer(
     top: number,
     left: number,
     updateConfig: boolean,
+    hidden: boolean,
     payload: IThreadDTO | any
 ): HTMLDivElement {
     const popupContainer = document.createElement("div");
@@ -36,6 +38,7 @@ function createPopupContainer(
     popupContainer.style.zIndex = updateConfig ? "1000" : "999";
     popupContainer.style.cursor = "pointer";
     popupContainer.className = "collab-thread";
+    if (hidden) popupContainer.classList.add(hiddenClass);
     if (payload?._id) popupContainer.setAttribute("threaduid", payload._id);
     return popupContainer;
 }
@@ -62,9 +65,17 @@ function appendPopupContainer(popupContainer: HTMLDivElement): void {
 
 export function generateThread(
     payload: IThreadDTO | any,
-    options: { isNewThread?: boolean; updateConfig?: boolean } = {}
+    options: {
+        isNewThread?: boolean;
+        updateConfig?: boolean;
+        hidden?: boolean;
+    } = {}
 ): string | undefined {
-    const { isNewThread = false, updateConfig = false } = options;
+    const {
+        isNewThread = false,
+        updateConfig = false,
+        hidden = false,
+    } = options;
     const config = Config.get?.();
 
     let relativeX: number, relativeY: number, resolvedXPath: string;
@@ -77,14 +88,28 @@ export function generateThread(
         resolvedXPath = elementXPath;
     }
 
+    // Filter to remove already rendered threads
+    if (payload?._id) {
+        const existingThread = document.querySelector(
+            `div[threaduid='${payload._id}']`
+        );
+        if (existingThread) {
+            return undefined;
+        }
+    }
+
     const element = getElementByXpath(resolvedXPath);
     if (!element) {
         return payload._id;
     }
 
     const rect = element.getBoundingClientRect();
-    const top = rect.top + window.scrollY + relativeY * rect.height;
-    const left = rect.left + window.scrollX + relativeX * rect.width;
+    let top = rect.top + window.scrollY + relativeY * rect.height;
+    let left = rect.left + window.scrollX + relativeX * rect.width;
+
+    const adjustedPosition = adjustPositionToViewport({ top, left });
+    top = adjustedPosition.top;
+    left = adjustedPosition.left;
 
     const popupContainer = createPopupContainer(
         resolvedXPath,
@@ -93,10 +118,11 @@ export function generateThread(
         top,
         left,
         updateConfig,
+        hidden,
         payload
     );
 
-    if (updateConfig && config?.collab.enable) {
+    if (updateConfig && config?.collab?.enable) {
         if (config?.collab.isFeedbackMode) {
             Config.set("collab.isFeedbackMode", false);
         }
@@ -150,11 +176,15 @@ export function updateCollabIconPosition() {
         }
 
         const rect = targetElement.getBoundingClientRect();
-        const x = rect.left + rect.width * relativeX + window.scrollX;
-        const y = rect.top + rect.height * relativeY + window.scrollY;
+        let left = rect.left + rect.width * relativeX + window.scrollX;
+        let top = rect.top + rect.height * relativeY + window.scrollY;
 
-        icon.style.top = `${y - popupTopOffset}px`;
-        icon.style.left = `${x - popupLeftOffset}px`;
+        const adjustedPosition = adjustPositionToViewport({ top, left });
+        top = adjustedPosition.top;
+        left = adjustedPosition.left;
+
+        icon.style.top = `${top - popupTopOffset}px`;
+        icon.style.left = `${left - popupLeftOffset}px`;
         icon.classList.remove(hiddenClass);
     });
 }
@@ -277,9 +307,6 @@ export function toggleCollabPopup({
 }
 
 export function HighlightThread(threadUid: string): void {
-    const config = Config.get?.();
-    if (config?.collab?.pauseFeedback) return;
-
     toggleCollabPopup({ threadUid, action: "open" });
 }
 
@@ -292,7 +319,7 @@ export function isCollabThread(target: HTMLElement): boolean {
 export function handleMissingThreads(payload: MissingThreadsInfo) {
     visualBuilderPostMessage?.send(
         VisualBuilderPostMessageEvents.COLLAB_MISSING_THREADS,
-        { payload }
+        payload
     );
 }
 
@@ -308,7 +335,7 @@ export function handleEmptyThreads() {
 }
 
 const retryConfig = {
-    maxRetries: 3,
+    maxRetries: 5,
     retryDelay: 1000,
 };
 
@@ -351,7 +378,7 @@ async function processThread(thread: IThreadDTO): Promise<string | undefined> {
 
     while (status.attempts < retryConfig.maxRetries) {
         try {
-            const result = generateThread(thread, { isNewThread: false });
+            const result = generateThread(thread);
             if (result === undefined) {
                 updateRenderStatus(thread._id, true);
                 return undefined;

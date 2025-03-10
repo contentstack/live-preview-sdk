@@ -13,6 +13,8 @@ import { visualBuilderStyles } from "../visualBuilder.style";
 import { VB_EmptyBlockParentClass } from "../..";
 import Config from "../../configManager/configManager";
 import { isCollabThread } from "../generators/generateThread";
+
+const config = Config.get();
 export interface HandleMouseHoverParams
     extends Pick<
         EventListenerHandlerParams,
@@ -106,6 +108,11 @@ export function hideCustomCursor(customCursor: HTMLDivElement | null): void {
 
 export function showCustomCursor(customCursor: HTMLDivElement | null): void {
     hideDefaultCursor();
+    if (
+        config.collab.enable &&
+        (!config.collab.isFeedbackMode || config.collab.pauseFeedback)
+    )
+        return;
     customCursor?.classList.add("visible");
 }
 
@@ -127,7 +134,6 @@ async function handleMouseHover(params: HandleMouseHoverParams): Promise<void> {
     throttle(async (params: HandleMouseHoverParams) => {
         const eventDetails = getCsDataOfElement(params.event);
         const eventTarget = params.event.target as HTMLElement | null;
-        const config = Config.get();
 
         if (config?.collab.enable && config?.collab.pauseFeedback) {
             hideCustomCursor(params.customCursor);

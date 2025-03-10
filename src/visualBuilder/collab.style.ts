@@ -8,6 +8,22 @@ const skeletonTileProgressSlide = keyframes`
         opacity: 0.4;
     }
 `;
+const dotKeyframes = keyframes`
+  0% {
+    opacity: 0.2;
+    transform: scale(0.8, 0.8);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1.2, 1.2);
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale(1, 1);
+  }
+`;
 
 export function collabStyles() {
     return {
@@ -109,6 +125,54 @@ export function collabStyles() {
                 }
             }
         `,
+        "collab-tooltip--top": css`
+            &::before {
+                content: "";
+                position: absolute;
+                bottom: -5px;
+                left: 50%;
+                transform: translateX(-50%);
+                border-width: 5px 5px 0;
+                border-style: solid;
+                border-color: #767676 transparent transparent;
+            }
+        `,
+        "collab-tooltip--bottom": css`
+            &::before {
+                content: "";
+                position: absolute;
+                top: -5px;
+                left: 50%;
+                transform: translateX(-50%);
+                border-width: 0 5px 5px;
+                border-style: solid;
+                border-color: transparent transparent #767676;
+            }
+        `,
+        "collab-tooltip--left": css`
+            &::before {
+                content: "";
+                position: absolute;
+                right: -5px;
+                top: 50%;
+                transform: translateY(-50%);
+                border-width: 5px 0 5px 5px;
+                border-style: solid;
+                border-color: transparent transparent transparent #767676;
+            }
+        `,
+        "collab-tooltip--right": css`
+            &::before {
+                content: "";
+                position: absolute;
+                left: -5px;
+                top: 50%;
+                transform: translateY(-50%);
+                border-width: 5px 5px 5px 0;
+                border-style: solid;
+                border-color: transparent #767676 transparent transparent;
+            }
+        `,
         "collab-icon": css`
             height: 1.25rem;
             width: 1.25rem;
@@ -149,6 +213,60 @@ export function collabStyles() {
             opacity: 0.4;
             pointer-events: auto;
         `,
+        "collab-button--loading": css`
+            cursor: default;
+            pointer-events: none;
+        `,
+        "collab-button--loader": css`
+            display: flex;
+            justify-content: center;
+            text-align: center;
+        `,
+        "collab-button--loader--wrapper": css`
+            left: 50%;
+            position: absolute;
+            top: 50%;
+            -webkit-transform: translateX(-50%) translateY(-50%);
+            -moz-transform: translateX(-50%) translateY(-50%);
+        `,
+        "collab-button--loader--animation": css`
+            animation: ${dotKeyframes} 1.5s infinite ease-in-out;
+
+            border-radius: 0.625rem;
+            display: inline-block;
+            height: 0.3125rem;
+            margin-right: 0.25rem;
+            width: 0.3125rem;
+
+            &:nth-child(2) {
+                animation-delay: 0.5s;
+            }
+
+            &:nth-child(3) {
+                animation-delay: 1s;
+                margin-right: 0;
+            }
+        `,
+        "collab-button--visible": css`
+            visibility: visible;
+        `,
+        "collab-button--hidden": css`
+            visibility: hidden;
+        `,
+        "collab-button--loading--color": {
+            primary: css`
+                background-color: #f9f8ff !important;
+            `,
+            secondary: css`
+                background-color: #6c5ce7 !important;
+            `,
+            tertiary: css`
+                background-color: #6c5ce7 !important;
+            `,
+            destructive: css`
+                background-color: #f9f8ff !important;
+            `,
+        },
         "collab-button--type": {
             primary: css`
                 background-color: #6c5ce7 !important;
@@ -268,9 +386,15 @@ export function collabStyles() {
             color: #475161;
             width: 20.75rem;
         `,
+        "collab-thread--container": css`
+            max-height: 23.125rem;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        `,
         "collab-thread-header--wrapper": css`
             height: 2.5rem;
-            padding: 0 0 0 0.625rem;
+            padding: 0.2rem 0.1rem 0rem 0.625rem;
         `,
         "collab-thread-header--container": css`
             justify-content: space-between;
@@ -296,10 +420,15 @@ export function collabStyles() {
             width: 100%;
             flex-direction: row-reverse;
             padding: 0 0.9375rem;
+            flex-shrink: 0;
         `,
         "collab-thread-body--wrapper": css`
             border: solid #edf1f7;
             border-width: 0.0625rem 0;
+            flex: 1;
+            overflow: auto;
+            display: flex;
+            flex-direction: column;
         `,
         "collab-thread-input-indicator--wrapper": css`
             padding: 0 0.5rem;
