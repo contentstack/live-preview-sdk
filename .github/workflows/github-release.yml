@@ -126,7 +126,7 @@ jobs:
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git remote set-url origin https://x-access-token:${{ secrets.INST_TOKEN }}@github.com/contentstack/composable-studio-sdk.git
+          git remote set-url origin https://x-access-token:${{ secrets.INST_TOKEN }}@github.com/contentstack/live-preview-sdk.git
 
           git pull
 
