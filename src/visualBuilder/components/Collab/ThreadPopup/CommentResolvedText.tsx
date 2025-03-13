@@ -1,21 +1,14 @@
 /** @jsxImportSource preact */
 import { useMemo } from "preact/hooks";
 import { ICommentResolvedText } from "../../../types/collab.types";
-import {
-    getMessageWithDisplayName,
-    sanitizeData,
-} from "../../../utils/collabUtils";
+import { getMessageWithDisplayName } from "../../../utils/collabUtils";
 import { collabStyles } from "../../../collab.style";
 import classNames from "classnames";
 
 const CommentResolvedText = ({ comment, userState }: ICommentResolvedText) => {
-    const text = useMemo(() => {
-        return getMessageWithDisplayName(comment, userState, "html");
-    }, [comment.message, userState.userMap, comment.toUsers]);
-
     const sanitizedText = useMemo(() => {
-        return sanitizeData(text);
-    }, [text]);
+        return getMessageWithDisplayName(comment, userState, "html") ?? "";
+    }, [comment.message, userState.userMap, comment.toUsers]);
 
     return (
         <div

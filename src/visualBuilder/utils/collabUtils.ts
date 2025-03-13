@@ -87,7 +87,7 @@ export const getMessageWithDisplayName = (
 ): string | undefined => {
     if (!comment) return undefined;
 
-    let tempText = comment.message.replace(/<[^>]*>/g, "");
+    let tempText = sanitizeData(comment.message).replace(/<[^>]*>/g, "");
 
     comment?.toUsers?.forEach((user) => {
         const userPattern = new RegExp(`{{${user}}}`, "g");
@@ -117,7 +117,7 @@ export const sanitizeData = (dirty: any): string => {
  * @returns {Object} The comment body containing the sanitized message and mentioned users.
  */
 export const getCommentBody = (state: ICommentState): ICommentState => {
-    let finalMessage = state.message
+    let finalMessage = sanitizeData(state.message)
         .replace(/[^\S\r\n]+/g, " ")
         .replace(/ *\n */g, "\n")
         .replace(/<[^>]*>/g, "")
