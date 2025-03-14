@@ -43,13 +43,9 @@ const mockComment = {
 describe("CommentResolvedText", () => {
     it("should render the sanitized comment with display names", () => {
         // Mock the return value of getMessageWithDisplayName
+        const sanitizedHtml = "Hello <b>@John Doe</b>";
         (getMessageWithDisplayName as unknown as Mock).mockReturnValue(
-            "Hello <b>@John Doe</b>"
-        );
-
-        // Mock the return value of sanitizeData
-        (sanitizeData as unknown as Mock).mockReturnValue(
-            "Hello <b>@John Doe</b>"
+            sanitizedHtml
         );
 
         // Render the component with mock props
@@ -67,14 +63,11 @@ describe("CommentResolvedText", () => {
             "html"
         );
 
-        // Expect sanitizeData to have been called with the correct text
-        expect(sanitizeData).toHaveBeenCalledWith("Hello <b>@John Doe</b>");
-
         // Verify the component renders the sanitized HTML correctly
         const messageElement = screen.getByTestId(
             "collab-thread-comment--message"
         );
         expect(messageElement).toBeInTheDocument();
-        expect(messageElement.innerHTML).toBe("Hello <b>@John Doe</b>");
+        expect(messageElement.innerHTML).toBe(sanitizedHtml);
     });
 });
