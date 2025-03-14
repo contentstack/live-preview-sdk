@@ -15,12 +15,15 @@ const ThreadFooter = ({
     editComment,
 }: IThreadFooter) => {
     const [loading, setLoading] = useState(false);
+    const [isDisabledState, setIsDisabledState] = useState(false);
     const onSubmit: JSX.MouseEventHandler<HTMLButtonElement> = async (
         event
     ) => {
         setLoading(true);
+        setIsDisabledState(true);
         event.preventDefault();
         await handleOnSaveRef.current?.();
+        setIsDisabledState(false);
         setLoading(false);
     };
 
@@ -47,7 +50,7 @@ const ThreadFooter = ({
                     buttonType="primary"
                     onClick={onSubmit}
                     testId={"thread-save-btn"}
-                    disabled={isDisabled}
+                    disabled={isDisabled || isDisabledState}
                     isLoading={loading}
                 >
                     {editComment === "" ? "Post" : "Update"}
