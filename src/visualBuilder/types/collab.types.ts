@@ -281,6 +281,10 @@ export interface ICollabConfig {
 
 export interface IThreadIdentifier {
     threadUid: string;
+}
+
+export interface IThreadRemove {
+    threadUids: string[];
     updateConfig?: boolean;
 }
 
