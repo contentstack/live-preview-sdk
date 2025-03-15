@@ -16,6 +16,7 @@ import {
     IThreadDTO,
     ICollabConfig,
     IThreadIdentifier,
+    IThreadRemove,
     IThreadReopen,
 } from "../types/collab.types";
 import { OnEvent } from "@contentstack/advanced-post-message";
@@ -63,12 +64,20 @@ export const useCollab = () => {
     );
 
     const collabPayload = visualBuilderPostMessage?.on(
-        VisualBuilderPostMessageEvents.COLLAB_THREAD_PAYLOAD,
+        VisualBuilderPostMessageEvents.COLLAB_DATA_UPDATE,
         (data: OnEvent<ICollabConfig>) => {
             if (!config?.collab?.enable) return;
 
             if (!data?.data?.collab) {
                 console.error("Invalid collab data structure:", data);
+                return;
+            }
+
+            if (data?.data?.collab?.inviteMetadata) {
+                Config.set(
+                    "collab.inviteMetadata",
+                    data?.data?.collab?.inviteMetadata
+                );
                 return;
             }
 
@@ -105,17 +114,19 @@ export const useCollab = () => {
     );
 
     const collabThreadRemove = visualBuilderPostMessage?.on(
-        VisualBuilderPostMessageEvents.COLLAB_THREAD_REMOVE,
-        (data: OnEvent<IThreadIdentifier>) => {
-            const threadUid = data?.data?.threadUid;
+        VisualBuilderPostMessageEvents.COLLAB_THREADS_REMOVE,
+        (data: OnEvent<IThreadRemove>) => {
+            const threadUids = data?.data?.threadUids;
 
             if (!config?.collab?.enable) return;
 
             if (data?.data?.updateConfig) {
                 Config.set("collab.isFeedbackMode", true);
             }
-            if (threadUid) {
-                removeCollabIcon(threadUid);
+            if (threadUids.length > 0) {
+                threadUids.forEach((threadUid) => {
+                    removeCollabIcon(threadUid);
+                });
             }
         }
     );
