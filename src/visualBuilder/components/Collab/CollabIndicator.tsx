@@ -1,5 +1,6 @@
 /** @jsxImportSource preact */
 import { collabStyles } from "../../collab.style";
+import { useState, useEffect } from "preact/hooks";
 import classNames from "classnames";
 import React from "preact/compat";
 import ThreadPopup from "./ThreadPopup";
@@ -16,7 +17,13 @@ export interface ICollabIndicator {
 
 const CollabIndicator: React.FC<ICollabIndicator> = (props) => {
     const config = Config.get();
-    const inviteMetadata: IInviteMetadata = config?.collab?.inviteMetadata;
+    const [inviteMetadata, setInviteMetadata] = useState<IInviteMetadata>(
+        config?.collab?.inviteMetadata
+    );
+
+    useEffect(() => {
+        setInviteMetadata(config?.collab?.inviteMetadata);
+    }, [config?.collab?.inviteMetadata]);
 
     const {
         buttonRef,
