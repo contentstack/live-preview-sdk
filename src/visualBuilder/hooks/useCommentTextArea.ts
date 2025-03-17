@@ -375,6 +375,14 @@ export const useCommentTextArea = (
         ]
     );
 
+    useEffect(() => {
+        itemRefs.current[selectedIndex]?.scrollIntoView({
+            behavior: "smooth",
+            block: "nearest",
+            inline: "nearest",
+        });
+    }, [selectedIndex]);
+
     const handleSubmit = useCallback(async () => {
         if (error.hasError) return;
 
