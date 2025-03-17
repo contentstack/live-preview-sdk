@@ -14,6 +14,7 @@ const CommentTextArea: React.FC<ICommentTextAreaProps> = React.memo(
             state,
             error,
             showSuggestions,
+            cursorPosition,
             selectedIndex,
             filteredUsers,
             inputRef,
@@ -79,10 +80,16 @@ const CommentTextArea: React.FC<ICommentTextAreaProps> = React.memo(
                                         "collab-thread-body--input--textarea--suggestionsList"
                                     ]
                                 )}
-                                // style={{
-                                //     left: `${cursorPosition.left}px`,
-                                //     top: `${cursorPosition.top}px`,
-                                // }}
+                                style={{
+                                    ...(cursorPosition.showAbove
+                                        ? {
+                                              bottom: `${window.innerHeight - (inputRef.current?.getBoundingClientRect().top || 0) - cursorPosition.top}px`,
+                                              top: "auto",
+                                          }
+                                        : {
+                                              top: `${(inputRef.current?.getBoundingClientRect().top || 0) + cursorPosition.top}px`,
+                                          }),
+                                }}
                                 ref={listRef}
                             >
                                 {filteredUsers.map((user, index) => (
