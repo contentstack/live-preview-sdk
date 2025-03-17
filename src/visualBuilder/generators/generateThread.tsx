@@ -225,6 +225,101 @@ export function updatePopupPositions() {
     });
 }
 
+export function updateSuggestionListPosition() {
+    const suggestionLists = document.querySelectorAll(
+        ".collab-thread-body--input--textarea--suggestionsList"
+    );
+
+    if (!suggestionLists.length) return;
+
+    suggestionLists.forEach((list) => {
+        if (!(list instanceof HTMLElement)) return;
+
+        const textarea = document.querySelector(
+            ".collab-thread-body--input--textarea"
+        ) as HTMLTextAreaElement | null;
+
+        if (!textarea) return;
+        const positionData = list.getAttribute("data-position");
+        const parsedData = positionData ? JSON.parse(positionData) : null;
+        const showAbove = window.getComputedStyle(list).bottom !== "auto";
+        const textareaRect = textarea.getBoundingClientRect();
+        if (showAbove) {
+            const lineHeight =
+                parseInt(window.getComputedStyle(textarea).lineHeight) || 20;
+            const paddingTop =
+                parseInt(window.getComputedStyle(textarea).paddingTop) || 8;
+            const cursorLineY =
+                parsedData?.cursorLineY || paddingTop + lineHeight;
+
+            list.style.position = "fixed";
+            list.style.bottom = `${window.innerHeight - textareaRect.top - cursorLineY + lineHeight}px`;
+            list.style.top = "auto";
+        } else {
+            const lineHeight =
+                parseInt(window.getComputedStyle(textarea).lineHeight) || 20;
+            const paddingTop =
+                parseInt(window.getComputedStyle(textarea).paddingTop) || 8;
+
+            const cursorLineY =
+                parsedData?.cursorLineY || paddingTop + lineHeight;
+
+            list.style.position = "fixed";
+            list.style.top = `${textareaRect.top + cursorLineY}px`;
+            list.style.bottom = "auto";
+        }
+
+        if (!positionData && textareaRect) {
+            const lineHeight =
+                parseInt(window.getComputedStyle(textarea).lineHeight) || 20;
+            const paddingTop =
+                parseInt(window.getComputedStyle(textarea).paddingTop) || 8;
+
+            const positionInfo = {
+                showAbove: showAbove,
+                cursorLineY: paddingTop + lineHeight,
+            };
+            list.setAttribute("data-position", JSON.stringify(positionInfo));
+        }
+
+        const listRect = list.getBoundingClientRect();
+
+        if (!showAbove && listRect.bottom > window.innerHeight) {
+            const lineHeight =
+                parseInt(window.getComputedStyle(textarea).lineHeight) || 20;
+            const paddingTop =
+                parseInt(window.getComputedStyle(textarea).paddingTop) || 8;
+            const cursorLineY =
+                parsedData?.cursorLineY || paddingTop + lineHeight;
+
+            list.style.bottom = `${window.innerHeight - textareaRect.top - cursorLineY + lineHeight}px`;
+            list.style.top = "auto";
+
+            if (positionData) {
+                const updatedData = JSON.parse(positionData);
+                updatedData.showAbove = true;
+                list.setAttribute("data-position", JSON.stringify(updatedData));
+            }
+        } else if (showAbove && listRect.top < 0) {
+            const lineHeight =
+                parseInt(window.getComputedStyle(textarea).lineHeight) || 20;
+            const paddingTop =
+                parseInt(window.getComputedStyle(textarea).paddingTop) || 8;
+            const cursorLineY =
+                parsedData?.cursorLineY || paddingTop + lineHeight;
+
+            list.style.top = `${textareaRect.top + cursorLineY}px`;
+            list.style.bottom = "auto";
+
+            if (positionData) {
+                const updatedData = JSON.parse(positionData);
+                updatedData.showAbove = false;
+                list.setAttribute("data-position", JSON.stringify(updatedData));
+            }
+        }
+    });
+}
+
 export function calculatePopupPosition(
     button: HTMLElement,
     popup: HTMLElement
