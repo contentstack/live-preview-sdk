@@ -41,8 +41,11 @@ import {
 } from "./utils/updateFocussedState";
 import { useHighlightCommentIcon } from "./eventManager/useHighlightCommentIcon";
 import { updateHighlightedCommentIconPosition } from "./generators/generateHighlightedComment";
-import { updateCollabIconPosition } from "./generators/generateThread";
-import { updatePopupPositions } from "./generators/generateThread";
+import {
+    updateCollabIconPosition,
+    updatePopupPositions,
+    updateSuggestionListPosition,
+} from "./generators/generateThread";
 import { useRecalculateVariantDataCSLPValues } from "./eventManager/useRecalculateVariantDataCSLPValues";
 import { VB_EmptyBlockParentClass } from "..";
 import { useCollab } from "./eventManager/useCollab";
@@ -100,6 +103,7 @@ export class VisualBuilder {
     private scrollEventHandler = () => {
         updateCollabIconPosition();
         updatePopupPositions();
+        updateSuggestionListPosition();
         updateHighlightedCommentIconPosition(); // Update icons position
     };
 
@@ -110,6 +114,7 @@ export class VisualBuilder {
         updateHighlightedCommentIconPosition();
         updateCollabIconPosition();
         updatePopupPositions();
+        updateSuggestionListPosition();
         if (previousSelectedEditableDOM) {
             this.handlePositionChange(
                 previousSelectedEditableDOM as HTMLElement
