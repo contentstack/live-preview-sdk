@@ -48,7 +48,11 @@ export const useCommentTextArea = (
     const [state, setState] = useState<ICommentState>(initialState);
 
     const [showSuggestions, setShowSuggestions] = useState(false);
-    const [cursorPosition, setCursorPosition] = useState({ top: 0, left: 0 });
+    const [cursorPosition, setCursorPosition] = useState({
+        top: 0,
+        left: 0,
+        showAbove: false,
+    });
     const [searchTerm, setSearchTerm] = useState("");
     const [selectedIndex, setSelectedIndex] = useState(0);
     const [filteredUsers, setFilteredUsers] = useState<IMentionList[]>([]);
@@ -223,25 +227,27 @@ export const useCommentTextArea = (
             );
             document.body.removeChild(span);
 
-            const currentLineY = currentLineNumber * lineHeight + paddingTop;
+            const scrollTop = textarea.scrollTop;
+            const currentLineY =
+                currentLineNumber * lineHeight + paddingTop - scrollTop;
             const nextLineY = currentLineY + lineHeight;
 
             const viewportHeight = window.innerHeight;
             const suggestionsHeight = 160;
 
-            const spaceBelow =
-                viewportHeight -
-                (textarea.getBoundingClientRect().top + nextLineY);
+            const textareaRect = textarea.getBoundingClientRect();
+            const absoluteTop = textareaRect.top + nextLineY;
+            const spaceBelow = viewportHeight - absoluteTop;
             const showAbove = spaceBelow < suggestionsHeight;
-
-            const top = showAbove
-                ? currentLineY - suggestionsHeight
-                : nextLineY;
+            const top = showAbove ? currentLineY : nextLineY;
 
             return {
                 top,
                 left,
                 showAbove,
+                absoluteTop,
+                scrollTop,
+                currentLineNumber,
             };
         },
         []
