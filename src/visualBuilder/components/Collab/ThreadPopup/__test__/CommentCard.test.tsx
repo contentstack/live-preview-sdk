@@ -1,10 +1,9 @@
 /** @jsxImportSource preact */
 import { render, screen, waitFor } from "@testing-library/preact";
 import CommentCard from "../CommentCard";
-import { getUserName } from "../../../../utils/collabUtils";
+import { getUserName, formatDate } from "../../../../utils/collabUtils";
 import { Mock } from "vitest";
 
-// Mock necessary components and utilities
 vi.mock("../CommentTextArea", () => ({
     default: () => <div>Comment Text Area</div>,
 }));
@@ -19,21 +18,12 @@ vi.mock("../loader/ThreadBody", () => ({
 }));
 vi.mock("../../../../utils/collabUtils", () => ({
     getUserName: vi.fn(),
+    formatDate: vi.fn(),
 }));
-
-// Mock moment to control date formatting in tests
-vi.mock("moment", () => {
-    return {
-        default: (date: any) => ({
-            format: vi.fn().mockReturnValue("Jan 01, 2025, 12:00 PM"),
-        }),
-    };
-});
 
 const onClose: () => void = vi.fn();
 const handleOnSaveRef = { current: vi.fn() };
 
-// Dummy props for testing
 const mockUserState = {
     userMap: {
         user1: {
@@ -71,7 +61,6 @@ describe("CommentCard", () => {
             createdAt: "2022-01-01T12:00:00Z",
             createdBy: "user2",
         };
-        // Render the component with null comment
         render(
             <CommentCard
                 comment={mockCommentForLoading}
@@ -82,15 +71,13 @@ describe("CommentCard", () => {
             />
         );
 
-        // Verify that the loader is shown
         expect(screen.getByText("Loading...")).toBeInTheDocument();
     });
 
     it("should render comment details in view mode", async () => {
-        // Mock getUserName to return a name
         (getUserName as Mock).mockReturnValue("John Doe");
+        (formatDate as Mock).mockReturnValue("Jan 1, 2022, 12:00 PM");
 
-        // Render the component
         render(
             <CommentCard
                 comment={mockComment}
@@ -101,19 +88,16 @@ describe("CommentCard", () => {
             />
         );
 
-        // Verify that user name and formatted date are displayed
         expect(screen.getByText("John Doe")).toBeInTheDocument();
-        expect(screen.getByText("Jan 01, 2025, 12:00 PM")).toBeInTheDocument();
+        expect(screen.getByText("Jan 1, 2022, 12:00 PM")).toBeInTheDocument();
 
-        // Verify that CommentResolvedText is rendered
         expect(screen.getByText("Comment Resolved Text")).toBeInTheDocument();
     });
 
     it("should render comment details in edit mode", async () => {
-        // Mock getUserName to return a name
         (getUserName as Mock).mockReturnValue("John Doe");
+        (formatDate as Mock).mockReturnValue("Jan 1, 2022, 12:00 PM");
 
-        // Render the component in edit mode
         render(
             <CommentCard
                 comment={mockComment}
@@ -124,18 +108,15 @@ describe("CommentCard", () => {
             />
         );
 
-        // Verify that user name is displayed
         expect(screen.getByText("John Doe")).toBeInTheDocument();
 
-        // Verify that CommentTextArea is rendered
         expect(screen.getByText("Comment Text Area")).toBeInTheDocument();
     });
 
     it("should set the comment user correctly", async () => {
-        // Mock getUserName to return a name
         (getUserName as Mock).mockReturnValue("John Doe");
+        (formatDate as Mock).mockReturnValue("Jan 1, 2022, 12:00 PM");
 
-        // Render the component with the mock comment
         render(
             <CommentCard
                 comment={mockComment}
@@ -146,7 +127,6 @@ describe("CommentCard", () => {
             />
         );
 
-        // Wait for state update
         await waitFor(() => {
             expect(screen.getByText("John Doe")).toBeInTheDocument();
         });

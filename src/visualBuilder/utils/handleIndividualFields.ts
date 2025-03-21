@@ -296,8 +296,7 @@ export function cleanIndividualFieldResidual(elements: {
     if (focusedToolbar) {
         focusedToolbar.innerHTML = "";
         const toolbarEvents = [VisualBuilderPostMessageEvents.DELETE_INSTANCE, VisualBuilderPostMessageEvents.UPDATE_DISCUSSION_ID]
-        const config = Config.get();
-        if (config?.collab?.enable) return;
+
         toolbarEvents.forEach((event) => {
             //@ts-expect-error - We are accessing private method here, but it is necessary to clean up the event listeners.
             if (visualBuilderPostMessage?.requestMessageHandlers?.has(event)) {
