@@ -34,6 +34,8 @@ export default function getVisualBuilderRedirectionUrl(): URL {
         searchParams.set("locale", locale);
     }
 
+    searchParams.set("from", "start-editing-button")
+
     const completeURL = new URL(
         `/#!/stack/${apiKey}/visual-builder?${searchParams.toString()}`,
         appUrl
