@@ -9,19 +9,14 @@ describe("ThreadHeader Component", () => {
 
     const mockResolvePayload = {
         threadUid: "thread-1",
-        payload: {
-            threadState: 2,
-        },
+        payload: { threadState: 2 },
     };
 
     const mockActiveThread = {
         _id: "thread-1",
         author: "john.doe@example.com",
         inviteUid: "invite-1",
-        position: {
-            x: 10,
-            y: 20,
-        },
+        position: { x: 10, y: 20 },
         elementXPath: "/html/body/div[1]",
         isElementPresent: true,
         pageRoute: "/",
@@ -43,16 +38,13 @@ describe("ThreadHeader Component", () => {
         vi.clearAllMocks();
     });
 
-    it("renders the component with the correct title", () => {
+    it("renders the component with the correct thread title", () => {
         render(<ThreadHeader {...defaultProps} displayResolve={false} />);
-        expect(
-            screen.getByText(`${defaultProps.commentCount} Comments`)
-        ).toBeInTheDocument();
+        expect(screen.getByText("10 Comments")).toBeInTheDocument();
     });
 
     it("displays the resolve button when displayResolve is true", () => {
         render(<ThreadHeader {...defaultProps} />);
-
         expect(
             screen.getByTestId("collab-thread-resolve-btn")
         ).toBeInTheDocument();
@@ -62,27 +54,19 @@ describe("ThreadHeader Component", () => {
         render(<ThreadHeader {...defaultProps} displayResolve={false} />);
         expect(screen.queryByTestId("collab-thread-resolve-btn")).toBeNull();
     });
+
     it("calls onResolve and onClose when the resolve button is clicked", async () => {
-        const mockResolveResponse = { notice: "Thread Updated successfully" };
-        mockOnResolve.mockResolvedValueOnce(mockResolveResponse);
+        mockOnResolve.mockResolvedValueOnce({
+            notice: "Thread Updated successfully",
+        });
 
         render(<ThreadHeader {...defaultProps} />);
 
-        const resolveButton = screen.getByTestId("collab-thread-resolve-btn");
-        fireEvent.click(resolveButton);
+        fireEvent.click(screen.getByTestId("collab-thread-resolve-btn"));
 
-        await waitFor(
-            () => {
-                expect(mockOnResolve).toHaveBeenCalledWith(mockResolvePayload);
-            },
-            { timeout: 2000 }
+        await waitFor(() =>
+            expect(mockOnResolve).toHaveBeenCalledWith(mockResolvePayload)
         );
-
-        await waitFor(
-            () => {
-                expect(mockOnClose).toHaveBeenCalledWith(true);
-            },
-            { timeout: 2000 }
-        );
+        await waitFor(() => expect(mockOnClose).toHaveBeenCalledWith(true));
     });
 });

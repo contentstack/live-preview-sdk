@@ -51,6 +51,7 @@ export declare interface IMessageDTO {
     toUsers?: string[];
     images?: string[];
     createdAt: string;
+    updatedAt?: string;
     createdBy: string;
 }
 
