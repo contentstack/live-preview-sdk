@@ -13,6 +13,7 @@ import getChildrenDirection from "../getChildrenDirection";
 import visualBuilderPostMessage from "../visualBuilderPostMessage";
 import { VisualBuilderPostMessageEvents } from "../types/postMessage.types";
 import { singleLineFieldSchema } from "../../../__test__/data/fields";
+import { signal } from "@preact/signals";
 
 Object.defineProperty(globalThis, "crypto", {
     value: {
@@ -46,27 +47,16 @@ vi.mock("../visualBuilderPostMessage", async () => {
     };
 });
 
-describe("generateAddInstanceButton", () => {
-    test("should generate a button", () => {
-        const button = generateAddInstanceButton({
-            fieldSchema: singleLineFieldSchema,
-            value: "",
-            onClick: () => {},
-        });
-        expect(button.tagName).toBe("BUTTON");
-    });
-
-    test("should run the callback when the button is clicked", () => {
-        const mockCallback = vi.fn();
-        const button = generateAddInstanceButton({
-            fieldSchema: singleLineFieldSchema,
-            value: "",
-            onClick: mockCallback,
-        });
-
-        button.click();
-        expect(mockCallback).toHaveBeenCalled();
-    });
+vi.mock("@preact/signals", async (importOriginal) => {
+    const actual = await importOriginal();
+    return {
+        ...(actual as unknown as Record<string, any>),
+        signal: (initialValue: any) => {
+            return {
+                value: initialValue,
+            };
+        },
+    };
 });
 
 // TODO: rewrite this
@@ -577,13 +567,19 @@ describe("removeAddInstanceButtons", () => {
 
         previousButton = generateAddInstanceButton({
             fieldSchema: singleLineFieldSchema,
+            // @ts-expect-error mock field metadata
+            fieldMetadata: { hello: "world" },
             value: "",
             onClick: vi.fn(),
+            loading: signal(false),
         });
         nextButton = generateAddInstanceButton({
             fieldSchema: singleLineFieldSchema,
             value: "",
+            // @ts-expect-error mock field metadata
+            fieldMetadata: { hello: "world" },
             onClick: vi.fn(),
+            loading: signal(false),
         });
         overlayWrapper = document.createElement("div");
         eventTarget = document.createElement("div");
@@ -672,7 +668,10 @@ describe("removeAddInstanceButtons", () => {
             const button = generateAddInstanceButton({
                 fieldSchema: singleLineFieldSchema,
                 value: "",
-                onClick: () => {},
+                // @ts-expect-error mock field metadata
+                fieldMetadata: { hello: "world" },
+                onClick: vi.fn(),
+                loading: signal(false),
             });
             visualBuilderContainer.appendChild(button);
         }
@@ -704,7 +703,10 @@ describe("removeAddInstanceButtons", () => {
             const button = generateAddInstanceButton({
                 fieldSchema: singleLineFieldSchema,
                 value: "",
-                onClick: () => {},
+                // @ts-expect-error mock field metadata
+                fieldMetadata: { hello: "world" },
+                onClick: vi.fn(),
+                loading: signal(false),
             });
             visualBuilderContainer.appendChild(button);
         }

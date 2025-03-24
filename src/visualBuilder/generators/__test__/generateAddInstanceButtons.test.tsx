@@ -1,29 +1,67 @@
+import React from "preact/compat";
 import { singleLineFieldSchema } from "../../../__test__/data/fields";
-import { ISchemaFieldMap } from "../types/index.types";
 import {
     getAddInstanceButtons,
     generateAddInstanceButton,
-} from "./../../generators/generateAddInstanceButtons";
+} from "../generateAddInstanceButtons";
+import AddInstanceButtonComponentActual from "../../components/addInstanceButton";
+
+const AddInstanceButtonComponent = vi.mocked(AddInstanceButtonComponentActual);
+
+vi.mock("../../components/addInstanceButton", async () => {
+    return {
+        default: vi.fn().mockImplementation(() => {
+            return (
+                <button data-testid="add-instance-button">
+                    Add instance button
+                </button>
+            );
+        }),
+    };
+});
 
 describe("generateAddInstanceButton", () => {
-    test("should generate a button", () => {
+    afterEach(() => {
+        vi.clearAllMocks();
+    });
+
+    test("should generate and return a button", () => {
         const button = generateAddInstanceButton({
             fieldSchema: singleLineFieldSchema,
             value: "",
-            onClick: () => {},
+            // @ts-expect-error mock field metadata
+            fieldMetadata: { hello: "world" },
+            onClick: vi.fn(),
+            // @ts-expect-error mocking preact signal
+            loading: { value: false },
+            index: 0,
+            label: "Add Instance",
         });
         expect(button).toBeInstanceOf(HTMLButtonElement);
     });
 
-    test("should call the callback when clicked", () => {
-        const callback = vi.fn();
-        const button = generateAddInstanceButton({
+    test("should call the AddInstanceButtonComponent with the correct props", () => {
+        generateAddInstanceButton({
             fieldSchema: singleLineFieldSchema,
             value: "",
-            onClick: callback,
+            // @ts-expect-error mock field metadata
+            fieldMetadata: { hello: "world" },
+            onClick: vi.fn(),
+            // @ts-expect-error mocking preact signal
+            loading: { value: false },
+            index: 0,
+            label: "Add Instance",
         });
-        button.click();
-        expect(callback).toHaveBeenCalledTimes(1);
+        const args = AddInstanceButtonComponent.mock.calls[0][0];
+        expect(args).toStrictEqual({
+            fieldSchema: singleLineFieldSchema,
+            value: "",
+            fieldMetadata: { hello: "world" },
+            onClick: expect.any(Function),
+            loading: { value: false },
+            index: 0,
+            label: "Add Instance",
+        });
     });
 });
 
