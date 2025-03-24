@@ -1,15 +1,122 @@
 /** @jsxImportSource preact */
 import React from "preact/compat";
 import { useEffect } from "preact/hooks";
-import { collabStyles, flexAlignCenter } from "../../../collab.style";
-import { ICommentTextAreaProps } from "../../../types/collab.types";
 import { useCommentTextArea } from "../../../hooks/useCommentTextArea";
+import { collabStyles, flexAlignCenter } from "../../../collab.style";
+import {
+    ICommentTextAreaProps,
+    IMentionList,
+} from "../../../types/collab.types";
 import classNames from "classnames";
 import Tooltip from "../Tooltip/Tooltip";
 
+const ErrorIndicator: React.FC<{ errorMessage: string }> = ({
+    errorMessage,
+}) => (
+    <div
+        className={classNames(
+            "collab-thread-input-indicator--error",
+            collabStyles()["collab-thread-input-indicator--error"]
+        )}
+    >
+        {errorMessage}
+    </div>
+);
+
+const CharacterCounter: React.FC<{
+    currentLength: number;
+    maxLength: number;
+}> = ({ currentLength, maxLength }) => (
+    <div
+        className={classNames(
+            "collab-thread-input-indicator--count",
+            collabStyles()["collab-thread-input-indicator--count"]
+        )}
+    >
+        {currentLength}/{maxLength}
+    </div>
+);
+
+const MentionSuggestionsList: React.FC<{
+    filteredUsers: IMentionList[];
+    selectedIndex: number;
+    cursorPosition: { top: number; showAbove: boolean };
+    inputRef: React.RefObject<HTMLTextAreaElement>;
+    listRef: React.RefObject<HTMLUListElement>;
+    itemRefs: React.MutableRefObject<(HTMLLIElement | null)[]>;
+    insertMention: (user: IMentionList) => void;
+    handleKeyDown: (event: KeyboardEvent) => void;
+}> = ({
+    filteredUsers,
+    selectedIndex,
+    cursorPosition,
+    inputRef,
+    listRef,
+    itemRefs,
+    insertMention,
+    handleKeyDown,
+}) => {
+    if (filteredUsers.length === 0) return null;
+
+    return (
+        <ul
+            className={classNames(
+                "collab-thread-body--input--textarea--suggestionsList",
+                collabStyles()[
+                    "collab-thread-body--input--textarea--suggestionsList"
+                ]
+            )}
+            style={{
+                ...(cursorPosition.showAbove
+                    ? {
+                          bottom: `${window.innerHeight - (inputRef.current?.getBoundingClientRect().top || 0) - cursorPosition.top}px`,
+                          top: "auto",
+                      }
+                    : {
+                          top: `${(inputRef.current?.getBoundingClientRect().top || 0) + cursorPosition.top}px`,
+                      }),
+            }}
+            ref={listRef}
+        >
+            {filteredUsers.map((user, index) => (
+                <li
+                    key={user.uid}
+                    onClick={() => insertMention(user)}
+                    className={classNames(
+                        "collab-thread-body--input--textarea--suggestionsList--item",
+                        collabStyles()[
+                            "collab-thread-body--input--textarea--suggestionsList--item"
+                        ],
+                        index === selectedIndex
+                            ? collabStyles()[
+                                  "collab-thread-body--input--textarea--suggestionsList--item-selected"
+                              ]
+                            : ""
+                    )}
+                    ref={(el) => (itemRefs.current[index] = el)}
+                    onKeyDown={(e) =>
+                        e.key === "Enter"
+                            ? insertMention(user)
+                            : handleKeyDown(e as KeyboardEvent)
+                    }
+                    tabIndex={-1}
+                    aria-selected={index === selectedIndex}
+                >
+                    {(user.display?.length || 0) > 20 ? (
+                        <Tooltip content={user.display || ""}>
+                            {(user.display || "").substring(0, 18) + "..."}
+                        </Tooltip>
+                    ) : (
+                        user.display || ""
+                    )}
+                </li>
+            ))}
+        </ul>
+    );
+};
+
 const CommentTextArea: React.FC<ICommentTextAreaProps> = React.memo(
     ({ userState, handleOnSaveRef, comment, onClose }) => {
-        // Use our custom hook to get all the functionality
         const {
             state,
             error,
@@ -27,7 +134,11 @@ const CommentTextArea: React.FC<ICommentTextAreaProps> = React.memo(
             maxMessageLength,
         } = useCommentTextArea(userState, comment, onClose);
 
-        // Set up save ref for parent component
+        const onChangeHandler = (event: Event) =>
+            handleInputChange(event as any);
+        const onKeyDownHandler = (event: KeyboardEvent) =>
+            handleKeyDown(event as any);
+
         useEffect(() => {
             handleOnSaveRef.current = handleSubmit;
         }, [handleSubmit, handleOnSaveRef]);
@@ -64,76 +175,23 @@ const CommentTextArea: React.FC<ICommentTextAreaProps> = React.memo(
                                 ]
                             )}
                             value={state.message}
-                            onChange={(event) =>
-                                handleInputChange(event as any)
-                            }
-                            onKeyDown={(event) => handleKeyDown(event as any)}
+                            onChange={onChangeHandler}
+                            onKeyDown={onKeyDownHandler}
                             maxLength={maxMessageLength}
                             placeholder="Enter a comment or tag others using “@”"
                             ref={inputRef}
                         />
-                        {showSuggestions && filteredUsers.length > 0 && (
-                            <ul
-                                className={classNames(
-                                    "collab-thread-body--input--textarea--suggestionsList",
-                                    collabStyles()[
-                                        "collab-thread-body--input--textarea--suggestionsList"
-                                    ]
-                                )}
-                                style={{
-                                    ...(cursorPosition.showAbove
-                                        ? {
-                                              bottom: `${window.innerHeight - (inputRef.current?.getBoundingClientRect().top || 0) - cursorPosition.top}px`,
-                                              top: "auto",
-                                          }
-                                        : {
-                                              top: `${(inputRef.current?.getBoundingClientRect().top || 0) + cursorPosition.top}px`,
-                                          }),
-                                }}
-                                ref={listRef}
-                            >
-                                {filteredUsers.map((user, index) => (
-                                    <li
-                                        key={user.uid}
-                                        onClick={() => insertMention(user)}
-                                        className={classNames(
-                                            "collab-thread-body--input--textarea--suggestionsList--item",
-                                            collabStyles()[
-                                                "collab-thread-body--input--textarea--suggestionsList--item"
-                                            ],
-                                            "collab-thread-body--input--textarea--suggestionsList--item-selected",
-                                            index === selectedIndex
-                                                ? collabStyles()[
-                                                      "collab-thread-body--input--textarea--suggestionsList--item-selected"
-                                                  ]
-                                                : ""
-                                        )}
-                                        ref={(el: any) =>
-                                            (itemRefs.current[index] = el)
-                                        }
-                                        onKeyDown={(e) => {
-                                            if (e.key === "Enter") {
-                                                insertMention(user);
-                                            } else {
-                                                handleKeyDown(
-                                                    e as KeyboardEvent
-                                                );
-                                            }
-                                        }}
-                                        tabIndex={-1}
-                                        aria-selected={index === selectedIndex}
-                                    >
-                                        {user.display.length > 20 ? (
-                                            <Tooltip content={user.display}>
-                                                {user.display.substring(0, 18) +
-                                                    "..."}
-                                            </Tooltip>
-                                        ) : (
-                                            user.display
-                                        )}
-                                    </li>
-                                ))}
-                            </ul>
+                        {showSuggestions && (
+                            <MentionSuggestionsList
+                                filteredUsers={filteredUsers}
+                                selectedIndex={selectedIndex}
+                                cursorPosition={cursorPosition}
+                                inputRef={inputRef}
+                                listRef={listRef}
+                                itemRefs={itemRefs}
+                                insertMention={insertMention}
+                                handleKeyDown={handleKeyDown}
+                            />
                         )}
                     </div>
                 </div>
@@ -148,26 +206,11 @@ const CommentTextArea: React.FC<ICommentTextAreaProps> = React.memo(
                         flexAlignCenter
                     )}
                 >
-                    <div
-                        className={classNames(
-                            "collab-thread-input-indicator--error",
-                            collabStyles()[
-                                "collab-thread-input-indicator--error"
-                            ]
-                        )}
-                    >
-                        {error.message}
-                    </div>
-                    <div
-                        className={classNames(
-                            "collab-thread-input-indicator--count",
-                            collabStyles()[
-                                "collab-thread-input-indicator--count"
-                            ]
-                        )}
-                    >
-                        {state.message.length}/{maxMessageLength}
-                    </div>
+                    <ErrorIndicator errorMessage={error.message} />
+                    <CharacterCounter
+                        currentLength={state.message.length}
+                        maxLength={maxMessageLength}
+                    />
                 </div>
             </div>
         );
