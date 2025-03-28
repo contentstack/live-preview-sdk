@@ -1,5 +1,63 @@
 # Changelog
 
+## [v3.1.3](https://github.com/contentstack/live-preview-sdk/compare/v3.1.3...v3.1.3)
+
+> 28 March 2025
+
+### Chores And Housekeeping
+
+- chore: add tagPattern to auto-changelog configuration in package.json (hiteshshetty-dev - [e0a208b](https://github.com/contentstack/live-preview-sdk/commit/e0a208bab316535abfb9c0e1ead19dab95b76f2d))
+
+## [v3.1.3](https://github.com/contentstack/live-preview-sdk/compare/v3.1.2...v3.1.3)
+
+> 28 March 2025
+
+### New Features
+
+- feat: v3.1.2 (Faraaz Biyabani - [#381](https://github.com/contentstack/live-preview-sdk/pull/381))
+
+### Fixes
+
+- fix(VE-5643): Replace button is visible for parent wrapper for Multiple file field  (Hitesh Shetty - [#410](https://github.com/contentstack/live-preview-sdk/pull/410))
+- fix: enhance loading state for form field focus (Hitesh Shetty - [#409](https://github.com/contentstack/live-preview-sdk/pull/409))
+- fix(VE-5555): add instance button loading state (Faraaz Biyabani - [#406](https://github.com/contentstack/live-preview-sdk/pull/406))
+- fix: call onChangeCallback when live_preview parameter is present in URL (Faraaz Biyabani - [#363](https://github.com/contentstack/live-preview-sdk/pull/363))
+
+### Chores And Housekeeping
+
+- chore: rename `editButtonBulider` to `editInVisualBuilderButton` (Hitesh Shetty - [#379](https://github.com/contentstack/live-preview-sdk/pull/379))
+
+### Changes to Test Assests
+
+- test(VE-5478): add unit test for inline editing related functions (Faraaz Biyabani - [#398](https://github.com/contentstack/live-preview-sdk/pull/398))
+
+### General Changes
+
+- VE-5544: Investigate button click issue with `data-cslp` attribute (Sairaj - [#408](https://github.com/contentstack/live-preview-sdk/pull/408))
+- Stage: v3.1.2 (Faraaz Biyabani - [#377](https://github.com/contentstack/live-preview-sdk/pull/377))
+
+### New Features
+
+- feat(VE-5544): allow click in csr app with modifier key (Sairaj Chouhan - [41dc8ad](https://github.com/contentstack/live-preview-sdk/commit/41dc8adfa4bd7f0bef8f657596a16008cbbb83cc))
+
+### Fixes
+
+- fix: add instance button loading state (Faraaz Biyabani - [11e3862](https://github.com/contentstack/live-preview-sdk/commit/11e3862d59cdeb78423cfda371cf29bce499cb2b))
+- fix: call onLiveEdit on registration only in builder (Faraaz Biyabani - [98562c7](https://github.com/contentstack/live-preview-sdk/commit/98562c7370c9b03583d7abb3552af07bc0e9f57f))
+- fix(VE-5643): replace button is visible for parent wrapper for multiple file field (Sairaj Chouhan - [2e2c259](https://github.com/contentstack/live-preview-sdk/commit/2e2c259baa42c1b460044c7aa3a091330cb135ec))
+
+### Chores And Housekeeping
+
+- chore: rename editButtonBulider to editInVisualBuilderButton (Sairaj Chouhan - [bd8be29](https://github.com/contentstack/live-preview-sdk/commit/bd8be29d97c151fc85aad98f55573a6821b3d4fc))
+- chore: update integrity (hiteshshetty-dev - [ad2c8aa](https://github.com/contentstack/live-preview-sdk/commit/ad2c8aa3780b973233a82e5a978254f777773af2))
+
+### Changes to Test Assests
+
+- test: add unit test for inline editing related functions (Faraaz Biyabani - [50a2167](https://github.com/contentstack/live-preview-sdk/commit/50a21675271c7ec65d0959a1e20334011119a729))
+- test: fix unit tests related to add instance button (Faraaz Biyabani - [b6af0cc](https://github.com/contentstack/live-preview-sdk/commit/b6af0cc1d6142c9cfcbcdbef745ac245d0f271ca))
+- test: add test for replace button visibility in multiple file fields (Sairaj Chouhan - [aa1d818](https://github.com/contentstack/live-preview-sdk/commit/aa1d818533f8759cfc428c6a2c32691041beef93))
+- test: fix failing test cases (Sairaj Chouhan - [6d36acb](https://github.com/contentstack/live-preview-sdk/commit/6d36acbd5c4e717f92ce40e2e4490df28a857948))
+
 ## [v3.1.2](https://github.com/contentstack/live-preview-sdk/compare/v3.1.1...v3.1.2)
 
 > 3 March 2025
@@ -27,7 +85,6 @@
 ### General Changes
 
 - Ve 5139 (srinad007 - [#343](https://github.com/contentstack/live-preview-sdk/pull/343))
-- sync main for upcoming release (Hitesh Shetty - [#338](https://github.com/contentstack/live-preview-sdk/pull/338))
 
 ### New Features
 
@@ -46,7 +103,6 @@
 
 - chore: remove else block (Sairaj Chouhan - [834c3e7](https://github.com/contentstack/live-preview-sdk/commit/834c3e78250f36b32e21c948bda313818f0db7bc))
 - chore: remove `describe.only` (Faraaz Biyabani - [5aa5958](https://github.com/contentstack/live-preview-sdk/commit/5aa59587217ff7f64d495240f9e252bcf5b60a9c))
-- chore: update ContentstackLivePreview version to 3.1.1 in README (hiteshshetty-dev - [d885fa5](https://github.com/contentstack/live-preview-sdk/commit/d885fa5f65ef32e22bfb86fa3871238bdec02d61))
 
 ### Changes to Test Assests
 
@@ -60,7 +116,7 @@
 
 ## [v3.1.1](https://github.com/contentstack/live-preview-sdk/compare/v3.1.0...v3.1.1)
 
-> 3 February 2025
+> 6 February 2025
 
 ### Fixes
 
@@ -75,9 +131,17 @@
 
 - test: add unit tests for error handling and field state validation in visual builder (Hitesh Shetty - [#329](https://github.com/contentstack/live-preview-sdk/pull/329))
 
+### General Changes
+
+- sync main for upcoming release (Hitesh Shetty - [#338](https://github.com/contentstack/live-preview-sdk/pull/338))
+
 ### Fixes
 
 - fix: live preview doc (Kirtesh Suthar - [8fcdcc5](https://github.com/contentstack/live-preview-sdk/commit/8fcdcc5127ea722bd9c01f74b1168d9f579e5f30))
+
+### Chores And Housekeeping
+
+- chore: update ContentstackLivePreview version to 3.1.1 in README (hiteshshetty-dev - [d885fa5](https://github.com/contentstack/live-preview-sdk/commit/d885fa5f65ef32e22bfb86fa3871238bdec02d61))
 
 ### Changes to Test Assests
 
