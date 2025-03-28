@@ -148,7 +148,6 @@ function FieldToolbarComponent(
 
         fieldType = getFieldType(fieldSchema);
         isModalEditable = ALLOWED_MODAL_EDITABLE_FIELD.includes(fieldType);
-        isReplaceAllowed = ALLOWED_REPLACE_FIELDS.includes(fieldType);
 
         Icon = fieldIcons[fieldType];
 
@@ -170,6 +169,7 @@ function FieldToolbarComponent(
                 fieldMetadata.instance.fieldPathWithIndex ||
                 fieldMetadata.multipleFieldMetadata?.index === -1);
 
+        isReplaceAllowed = ALLOWED_REPLACE_FIELDS.includes(fieldType) && !isWholeMultipleField;
         // if (
         //     DEFAULT_MULTIPLE_FIELDS.includes(fieldType) &&
         //     isWholeMultipleField &&
