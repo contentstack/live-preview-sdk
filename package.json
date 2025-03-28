@@ -106,7 +106,8 @@
     },
     "auto-changelog": {
         "commitLimit": false,
-        "template": "changelog-template.hbs"
+        "template": "changelog-template.hbs",
+        "tagPattern": "^v?[0-9]+\\.[0-9]+\\.[0-9]+$"
     },
     "commitlint": {
         "extends": [
