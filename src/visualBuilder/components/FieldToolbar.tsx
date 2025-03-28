@@ -39,6 +39,7 @@ import {
     IVariantStatus,
     VariantRevertDropdown,
 } from "./FieldRevert/FieldRevertComponent";
+import { LoadingIcon } from "./icons/loading";
 
 export type FieldDetails = Pick<
     VisualBuilderCslpEventDetails,
@@ -93,20 +94,14 @@ function handleEdit(fieldMetadata: CslpData) {
 }
 
 function handleFormFieldFocus(eventDetails: VisualBuilderCslpEventDetails) {
-    const { editableElement, fieldMetadata, cslpData } = eventDetails;
-    visualBuilderPostMessage
-        ?.send(VisualBuilderPostMessageEvents.TOGGLE_FORM, {
-            fieldMetadata,
-            cslpData,
-        })
-        .then(() => {
-            visualBuilderPostMessage?.send(
-                VisualBuilderPostMessageEvents.FOCUS_FIELD,
-                {
-                    DOMEditStack: getDOMEditStack(editableElement),
-                }
-            );
-        });
+    const { editableElement } = eventDetails;
+    return visualBuilderPostMessage?.send(
+        VisualBuilderPostMessageEvents.FOCUS_FIELD,
+        {
+            DOMEditStack: getDOMEditStack(editableElement),
+            toggleVisibility: true,
+        }
+    );
 }
 
 function FieldToolbarComponent(
@@ -114,6 +109,7 @@ function FieldToolbarComponent(
 ): JSX.Element | null {
     const { eventDetails, isVariant: isVariantOrParentOfVariant } = props;
     const { fieldMetadata, editableElement: targetElement } = eventDetails;
+    const [isFormLoading, setIsFormLoading] = useState(false);
 
     const parentPath =
         fieldMetadata?.multipleFieldMetadata?.parentDetails?.parentCslpValue ||
@@ -252,15 +248,27 @@ function FieldToolbarComponent(
                     "visual-builder__tooltip--bottom": invertTooltipPosition,
                     [visualBuilderStyles()["visual-builder__tooltip--bottom"]]:
                         invertTooltipPosition,
+                },
+                {
+                    [visualBuilderStyles()["visual-builder__button--comment-loader"]]: isFormLoading,
+                    "visual-builder__button--comment-loader": isFormLoading
                 }
             )}
             data-tooltip={"Form"}
             data-testid={`visual-builder-form`}
-            onClick={(e) => {
-                handleFormFieldFocus(eventDetails);
+            onClick={async (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setIsFormLoading(true);
+                try {
+                    await handleFormFieldFocus(eventDetails);
+                } finally {
+                    setIsFormLoading(false);
+                }
             }}
+            disabled={isFormLoading}
         >
-            <FormIcon />
+            {isFormLoading ? <LoadingIcon /> : <FormIcon />}
         </button>
     );
 
