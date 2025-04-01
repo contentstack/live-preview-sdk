@@ -78,6 +78,14 @@ async function handleBuilderInteraction(
     if (eventTarget?.getAttribute("data-studio-ui") === "true") {
         return;
     }
+
+    if (params.event.altKey) {
+        if (isAnchorElement) {
+            params.event.preventDefault();
+            params.event.stopPropagation();
+        }
+        return;
+    }
     // prevent default behavior for anchor elements and elements with cslp attribute
     if (
         isAnchorElement ||
