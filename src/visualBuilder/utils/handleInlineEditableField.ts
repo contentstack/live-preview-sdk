@@ -35,7 +35,7 @@ export function handleInlineEditableField({
         if (Array.isArray(expectedFieldData)) {
             // CASE: Selected element is the multiple field itself.
             // Inline Editing not allowed on field, only allowed on instance.
-            // (We recieve unreliable `multipleFieldMetadata` in this case)
+            // (We receive unreliable `multipleFieldMetadata` in this case)
             if (!isInstance) {
                 return;
             }
