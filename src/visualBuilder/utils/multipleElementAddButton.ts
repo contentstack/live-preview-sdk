@@ -3,12 +3,11 @@ import {
     generateAddInstanceButton,
     getAddInstanceButtons,
 } from "../generators/generateAddInstanceButtons";
-import visualBuilderPostMessage from "./visualBuilderPostMessage";
-import { VisualBuilderPostMessageEvents } from "./types/postMessage.types";
 import getChildrenDirection from "./getChildrenDirection";
 import { hideOverlay } from "../generators/generateOverlay";
 import { hideHoverOutline } from "../listeners/mouseHover";
 import { ISchemaFieldMap } from "./types/index.types";
+import { signal } from "@preact/signals";
 
 const WAIT_FOR_NEW_INSTANCE_TIMEOUT = 4000;
 
@@ -106,32 +105,30 @@ export function handleAddButtonsForMultiple(
         });
     };
 
+    // this is a shared loading state between the
+    // next and previous button for the duration
+    // between the add-instance post message being
+    // sent and receiving a response for it.
+    const loading = signal(false);
+
     const previousButton = generateAddInstanceButton({
-        onClick: () => {
-            visualBuilderPostMessage
-                ?.send(VisualBuilderPostMessageEvents.ADD_INSTANCE, {
-                    fieldMetadata: eventDetails.fieldMetadata,
-                    index: prevIndex,
-                })
-                .then(onMessageSent.bind(null, prevIndex));
-        },
-        label,
         fieldSchema,
         value: expectedFieldData,
+        fieldMetadata: eventDetails.fieldMetadata,
+        index: prevIndex,
+        onClick: onMessageSent.bind(null, prevIndex),
+        loading,
+        label,
     });
 
     const nextButton = generateAddInstanceButton({
-        onClick: () => {
-            visualBuilderPostMessage
-                ?.send(VisualBuilderPostMessageEvents.ADD_INSTANCE, {
-                    fieldMetadata: eventDetails.fieldMetadata,
-                    index: nextIndex,
-                })
-                .then(onMessageSent.bind(null, nextIndex));
-        },
-        label,
         fieldSchema,
         value: expectedFieldData,
+        fieldMetadata: eventDetails.fieldMetadata,
+        index: nextIndex,
+        onClick: onMessageSent.bind(null, nextIndex),
+        loading,
+        label,
     });
 
     if (!visualBuilderContainer.contains(previousButton)) {
@@ -216,7 +213,7 @@ export function removeAddInstanceButtons(
 }
 
 /**
- * This function that observes the parent element and focuses the newly added instance.
+ * This function observes the parent element and focuses the newly added instance.
  *
  * @param parentCslp The parent cslp value.
  * @param index The index of the new instance.

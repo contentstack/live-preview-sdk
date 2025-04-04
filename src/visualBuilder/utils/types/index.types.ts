@@ -55,3 +55,9 @@ export enum FieldDataType {
     GLOBAL_FIELD = "global_field",
     TAXONOMY = "taxonomy",
 }
+
+export interface VisualBuilderEditContext {
+    visualBuilderContainer: HTMLDivElement;
+    resizeObserver: ResizeObserver;
+    lastEditedField: Element | null;
+}

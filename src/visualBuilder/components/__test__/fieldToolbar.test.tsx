@@ -7,7 +7,7 @@ import {
 } from "../../utils/instanceHandlers";
 import { ISchemaFieldMap } from "../../utils/types/index.types";
 import FieldToolbarComponent from "../FieldToolbar";
-import { mockMultipleLinkFieldSchema, singleLineFieldSchema } from "../../../__test__/data/fields";
+import { mockMultipleLinkFieldSchema, mockMultipleFileFieldSchema } from "../../../__test__/data/fields";
 import { asyncRender } from "../../../__test__/utils";
 import { VisualBuilderCslpEventDetails } from "../../types/visualBuilder.types";
 
@@ -179,5 +179,61 @@ describe("MultipleFieldToolbarComponent", () => {
             "visual-builder-canvas-variant-icon"
         );
         expect(variantIcon).toBeInTheDocument();
+    });
+
+    describe("'Replace button' visibility for multiple file fields", () => {
+        beforeEach(() => {
+            vi.spyOn(FieldSchemaMap, "getFieldSchema").mockResolvedValue(
+                mockMultipleFileFieldSchema
+            );
+        });
+
+        test("'replace button' is hidden for parent wrapper of multiple file field", async () => {
+            const parentWrapperMetadata: CslpData = {
+                ...mockMultipleFieldMetadata,
+                fieldPathWithIndex: "files",
+                instance: {
+                    fieldPathWithIndex: "files"
+                },
+            };
+
+            const parentWrapperEventDetails = {
+                ...mockEventDetails,
+                fieldMetadata: parentWrapperMetadata
+            };
+
+            const { container } = await asyncRender(
+                <FieldToolbarComponent
+                    eventDetails={parentWrapperEventDetails}
+                />
+            );
+
+            const replaceButton = container.querySelector('[data-testid="visual-builder-replace-file"]');
+            expect(replaceButton).not.toBeInTheDocument();
+        });
+
+        test("'replace button' is visible for individual field in multiple file field", async () => {
+            const individualFieldMetadata: CslpData = {
+                ...mockMultipleFieldMetadata,
+                fieldPathWithIndex: "files",
+                instance: {
+                    fieldPathWithIndex: "files.0"
+                },
+            };
+
+            const individualFieldEventDetails = {
+                ...mockEventDetails,
+                fieldMetadata: individualFieldMetadata
+            };
+
+            const { container } = await asyncRender(
+                <FieldToolbarComponent
+                    eventDetails={individualFieldEventDetails}
+                />
+            );
+
+            const replaceButton = container.querySelector('[data-testid="visual-builder-replace-file"]');
+            expect(replaceButton).toBeInTheDocument();
+        });
     });
 });
