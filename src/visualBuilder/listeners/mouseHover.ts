@@ -11,7 +11,10 @@ import { VisualBuilder } from "..";
 import { addHoverOutline } from "../generators/generateHoverOutline";
 import { visualBuilderStyles } from "../visualBuilder.style";
 import { VB_EmptyBlockParentClass } from "../..";
+import Config from "../../configManager/configManager";
+import { isCollabThread } from "../generators/generateThread";
 
+const config = Config.get();
 export interface HandleMouseHoverParams
     extends Pick<
         EventListenerHandlerParams,
@@ -27,6 +30,15 @@ function resetCustomCursor(customCursor: HTMLDivElement | null): void {
             customCursor: customCursor,
         });
     }
+}
+
+function collabCustomCursor(customCursor: HTMLDivElement | null): void {
+    if (!customCursor) return;
+
+    generateCustomCursor({
+        fieldType: "discussion",
+        customCursor: customCursor,
+    });
 }
 
 function handleCursorPosition(
@@ -96,6 +108,11 @@ export function hideCustomCursor(customCursor: HTMLDivElement | null): void {
 
 export function showCustomCursor(customCursor: HTMLDivElement | null): void {
     hideDefaultCursor();
+    if (
+        config.collab.enable &&
+        (!config.collab.isFeedbackMode || config.collab.pauseFeedback)
+    )
+        return;
     customCursor?.classList.add("visible");
 }
 
@@ -113,21 +130,35 @@ async function handleMouseHover(params: HandleMouseHoverParams): Promise<void> {
     throttle(async (params: HandleMouseHoverParams) => {
         const eventDetails = getCsDataOfElement(params.event);
         const eventTarget = params.event.target as HTMLElement | null;
+
+        if (config?.collab.enable && config?.collab.pauseFeedback) {
+            hideCustomCursor(params.customCursor);
+            return;
+        }
         if (!eventDetails) {
             if (
                 eventTarget &&
-                (isOverlay(eventTarget) || isContentEditable(eventTarget))
+                (isOverlay(eventTarget) ||
+                    isContentEditable(eventTarget) ||
+                    isCollabThread(eventTarget))
             ) {
+                handleCursorPosition(params.event, params.customCursor);
                 hideCustomCursor(params.customCursor);
                 return;
             }
-            resetCustomCursor(params.customCursor);
+            if (!config?.collab.enable) {
+                resetCustomCursor(params.customCursor);
+            }
             removeAddInstanceButtons({
                 eventTarget: params.event.target,
                 visualBuilderContainer: params.visualBuilderContainer,
                 overlayWrapper: params.overlayWrapper,
             });
             handleCursorPosition(params.event, params.customCursor);
+            if (config?.collab.enable && config?.collab.isFeedbackMode) {
+                showCustomCursor(params.customCursor);
+                collabCustomCursor(params.customCursor);
+            }
             return;
         }
 
@@ -146,13 +177,32 @@ async function handleMouseHover(params: HandleMouseHoverParams): Promise<void> {
         }
 
         if (params.customCursor) {
-          const elementUnderCursor = document.elementFromPoint(params.event.clientX, params.event.clientY);
-            if(elementUnderCursor){
-              if(elementUnderCursor.nodeName === "A" || elementUnderCursor.nodeName === "BUTTON"){
-                elementUnderCursor.classList.add(
-                  visualBuilderStyles()['visual-builder__no-cursor-style']
-                )
-              }
+            const elementUnderCursor = document.elementFromPoint(
+                params.event.clientX,
+                params.event.clientY
+            );
+            if (elementUnderCursor) {
+                if (
+                    elementUnderCursor.nodeName === "A" ||
+                    elementUnderCursor.nodeName === "BUTTON"
+                ) {
+                    elementUnderCursor.classList.add(
+                        visualBuilderStyles()["visual-builder__no-cursor-style"]
+                    );
+                }
+            }
+
+            if (config?.collab.enable && config?.collab.isFeedbackMode) {
+                collabCustomCursor(params.customCursor);
+                handleCursorPosition(params.event, params.customCursor);
+                showCustomCursor(params.customCursor);
+                return;
+            } else if (
+                config?.collab.enable &&
+                !config?.collab.isFeedbackMode
+            ) {
+                hideCustomCursor(params.customCursor);
+                return;
             }
 
             if (
@@ -182,7 +232,7 @@ async function handleMouseHover(params: HandleMouseHoverParams): Promise<void> {
              */
             FieldSchemaMap.getFieldSchema(content_type_uid, fieldPath).then(
                 (fieldSchema) => {
-                    if(!fieldSchema) return;
+                    if (!fieldSchema) return;
                     if (!params.customCursor) return;
                     const { isDisabled: fieldDisabled } = isFieldDisabled(
                         fieldSchema,
@@ -202,15 +252,13 @@ async function handleMouseHover(params: HandleMouseHoverParams): Promise<void> {
         }
 
         if (
-            !editableElement.classList.contains(
-                VB_EmptyBlockParentClass
-            ) &&
+            !editableElement.classList.contains(VB_EmptyBlockParentClass) &&
             !editableElement.classList.contains("visual-builder__empty-block")
         ) {
             addOutline(editableElement);
             FieldSchemaMap.getFieldSchema(content_type_uid, fieldPath).then(
                 (fieldSchema) => {
-                    if(!fieldSchema) return;
+                    if (!fieldSchema) return;
                     const { isDisabled: fieldDisabled, reason } =
                         isFieldDisabled(fieldSchema, eventDetails);
                     addOutline(editableElement, fieldDisabled);

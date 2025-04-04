@@ -1,3 +1,4 @@
+import { ICollabConfig } from "../visualBuilder/types/collab.types";
 export declare interface IEditEntrySearchParams {
     hash?: string;
     entry_uid?: string;
@@ -59,6 +60,7 @@ export enum ILivePreviewModeConfig {
 
 export enum ILivePreviewWindowType {
     PREVIEW = "preview",
+    PREVIEW_SHARE = "preview-share",
     BUILDER = "builder",
     INDEPENDENT = "independent",
 }
@@ -84,6 +86,7 @@ export declare interface IConfig {
     elements: {
         highlightedElement: HTMLElement | null;
     };
+    collab: ICollabConfig["collab"];
 }
 
 
@@ -203,6 +206,7 @@ export interface IVisualBuilderInitEvent {
     stackDetails: {
         masterLocale: string;
     };
+    collab?: ICollabConfig["collab"];
 }
 
 export type IExportedConfig = Pick<
