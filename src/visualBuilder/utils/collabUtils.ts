@@ -9,6 +9,7 @@ import {
 import { maxMessageLength, mentionLimit } from "./constants";
 import { uniqBy } from "lodash-es";
 import DOMPurify from "dompurify";
+import dayjs from "dayjs";
 
 const escapeRegExp = (string: string): string => {
     return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -194,3 +195,113 @@ export function adjustPositionToViewport(
 
     return { top: adjustedTop, left: adjustedLeft };
 }
+
+export function formatDate(dateString: string): string {
+    if (!dateString) return "";
+    return dayjs(dateString).format("MMM DD, YYYY, hh:mm A");
+}
+
+interface PositionCoords {
+    top: number;
+    left: number;
+}
+
+interface Positions {
+    bottom: PositionCoords;
+    top: PositionCoords;
+    left: PositionCoords;
+    right: PositionCoords;
+}
+
+/**
+ * Calculates and updates tooltip position based on available viewport space.
+ */
+export const positionTooltip = (
+    tooltipRef: React.RefObject<HTMLDivElement>,
+    targetRef: React.RefObject<HTMLDivElement>,
+    position: "top" | "bottom" | "left" | "right",
+    setActualPosition: (position: "top" | "bottom" | "left" | "right") => void
+) => {
+    if (!tooltipRef.current || !targetRef.current) return;
+
+    const targetRect = targetRef.current.getBoundingClientRect();
+    const tooltipRect = tooltipRef.current.getBoundingClientRect();
+    const margin = 8;
+
+    const positions: Positions = {
+        bottom: {
+            top: targetRect.bottom + margin,
+            left: targetRect.left + (targetRect.width - tooltipRect.width) / 2,
+        },
+        top: {
+            top: targetRect.top - tooltipRect.height - margin,
+            left: targetRect.left + (targetRect.width - tooltipRect.width) / 2,
+        },
+        left: {
+            top: targetRect.top + (targetRect.height - tooltipRect.height) / 2,
+            left: targetRect.left - tooltipRect.width - margin,
+        },
+        right: {
+            top: targetRect.top + (targetRect.height - tooltipRect.height) / 2,
+            left: targetRect.right + margin,
+        },
+    };
+
+    let bestPosition = position;
+    let coords = positions[position];
+
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+
+    const wouldBeOutsideViewport = {
+        bottom: coords.top + tooltipRect.height > viewportHeight,
+        top: coords.top < 0,
+        left: coords.left < 0,
+        right: coords.left + tooltipRect.width > viewportWidth,
+    };
+
+    const horizontalOutOfBounds =
+        coords.left < 0 || coords.left + tooltipRect.width > viewportWidth;
+
+    if (wouldBeOutsideViewport[position] || horizontalOutOfBounds) {
+        const positionPriority = ["bottom", "top", "right", "left"];
+
+        positionPriority.splice(positionPriority.indexOf(position), 1);
+        positionPriority.push(position);
+
+        for (const pos of positionPriority) {
+            const testCoords = positions[pos as keyof Positions];
+
+            const isVisible =
+                testCoords.top >= 0 &&
+                testCoords.top + tooltipRect.height <= viewportHeight &&
+                testCoords.left >= 0 &&
+                testCoords.left + tooltipRect.width <= viewportWidth;
+
+            if (isVisible) {
+                bestPosition = pos as "top" | "bottom" | "left" | "right";
+                coords = testCoords;
+                break;
+            }
+        }
+    }
+
+    if (coords.left < 0) {
+        coords.left = margin;
+    } else if (coords.left + tooltipRect.width > viewportWidth) {
+        coords.left = viewportWidth - tooltipRect.width - margin;
+    }
+
+    if (coords.top < 0) {
+        coords.top = margin;
+    } else if (coords.top + tooltipRect.height > viewportHeight) {
+        coords.top = viewportHeight - tooltipRect.height - margin;
+    }
+
+    setActualPosition(bestPosition);
+
+    Object.assign(tooltipRef.current.style, {
+        top: `${coords.top}px`,
+        left: `${coords.left}px`,
+    });
+};
