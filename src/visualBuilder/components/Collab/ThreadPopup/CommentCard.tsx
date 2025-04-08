@@ -7,8 +7,7 @@ import {
     IMessageDTO,
     IUserDTO,
 } from "../../../types/collab.types";
-import moment from "moment";
-import { getUserName } from "../../../utils/collabUtils";
+import { getUserName, formatDate } from "../../../utils/collabUtils";
 import CommentActionBar from "./CommentActionBar";
 import CommentResolvedText from "./CommentResolvedText";
 import Avatar from "../Avatar/Avatar";
@@ -17,9 +16,7 @@ import { collabStyles, flexAlignCenter } from "../../../collab.style";
 import classNames from "classnames";
 
 const formatCommentDate = (comment: IMessageDTO | null): string => {
-    return comment
-        ? moment(comment.createdAt).format("MMM DD, YYYY, hh:mm A")
-        : "";
+    return comment ? formatDate(comment.updatedAt || comment.createdAt) : "";
 };
 
 const CommentCard = ({
