@@ -8,7 +8,6 @@ import {
 import { FieldDataType } from "./types/index.types";
 import { VisualBuilderPostMessageEvents } from "./types/postMessage.types";
 import { insertSpaceAtCursor } from "./insertSpaceAtCursor";
-import { VisualBuilder } from "..";
 
 export function handleFieldInput(e: Event): void {
     const event = e as InputEvent;
@@ -20,13 +19,6 @@ export function handleFieldInput(e: Event): void {
         event.type === "input" &&
         ALLOWED_INLINE_EDITABLE_FIELD.includes(fieldType as FieldDataType)
     ) {
-        if (
-            !VisualBuilder.VisualBuilderGlobalState.value
-                .focusFieldReceivedInput
-        ) {
-            VisualBuilder.VisualBuilderGlobalState.value.focusFieldReceivedInput =
-                true;
-        }
         throttledFieldSync();
     }
 }

@@ -156,8 +156,6 @@ describe("hideFocusOverlay", () => {
         initUI({
             resizeObserver: mockResizeObserver,
         });
-        VisualBuilder.VisualBuilderGlobalState.value.focusFieldReceivedInput =
-            true;
         visualBuilderContainer = document.querySelector(
             ".visual-builder__container"
         ) as HTMLDivElement;
