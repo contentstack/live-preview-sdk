@@ -44,7 +44,14 @@ export function handleFieldKeyDown(e: Event): void {
         VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
     ) as FieldDataType | null;
 
-    if (targetElement.tagName === "BUTTON") {
+    if (
+        event
+            .composedPath()
+            .some(
+                (element) =>
+                    element instanceof Element && element.tagName === "BUTTON"
+            )
+    ) {
         handleKeyDownOnButton(event);
     }
     if (fieldType === FieldDataType.NUMBER) {
