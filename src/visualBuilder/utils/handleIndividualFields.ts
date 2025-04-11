@@ -16,7 +16,6 @@ import { isFieldMultiple } from "./isFieldMultiple";
 import { handleInlineEditableField } from "./handleInlineEditableField";
 import { VisualBuilderEditContext } from "./types/index.types";
 import { pasteAsPlainText } from "./pasteAsPlainText";
-import Config from "../../configManager/configManager";
 
 /**
  * It handles all the fields based on their data type and its "multiple" property.
@@ -156,7 +155,6 @@ export function cleanIndividualFieldResidual(elements: {
             VisualBuilderPostMessageEvents.DELETE_INSTANCE,
             VisualBuilderPostMessageEvents.UPDATE_DISCUSSION_ID,
         ];
-
         toolbarEvents.forEach((event) => {
             //@ts-expect-error - We are accessing private method here, but it is necessary to clean up the event listeners.
             if (visualBuilderPostMessage?.requestMessageHandlers?.has(event)) {
