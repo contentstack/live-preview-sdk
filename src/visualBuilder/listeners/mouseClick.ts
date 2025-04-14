@@ -23,6 +23,12 @@ import EventListenerHandlerParams from "./types";
 import { toggleHighlightedCommentIconDisplay } from "../generators/generateHighlightedComment";
 import { VB_EmptyBlockParentClass } from "../..";
 import { getFieldVariantStatus } from "../components/FieldRevert/FieldRevertComponent";
+import getXPath from "get-xpath";
+import Config from "../../configManager/configManager";
+import { generateThread } from "../generators/generateThread";
+import { isCollabThread } from "../generators/generateThread";
+import { toggleCollabPopup } from "../generators/generateThread";
+import { fixSvgXPath } from "../utils/collabUtils";
 
 type HandleBuilderInteractionParams = Omit<
     EventListenerHandlerParams,
@@ -93,6 +99,39 @@ async function handleBuilderInteraction(
     ) {
         params.event.preventDefault();
         params.event.stopPropagation();
+    }
+
+    const config = Config.get();
+
+    if (config?.collab.enable === true) {
+        if (config?.collab.pauseFeedback) return;
+        const xpath = fixSvgXPath(getXPath(eventTarget));
+        if (!eventTarget) return;
+
+        const rect = eventTarget.getBoundingClientRect();
+        const relativeX = (params.event.clientX - rect.left) / rect.width;
+        const relativeY = (params.event.clientY - rect.top) / rect.height;
+
+        if (!isCollabThread(eventTarget)) {
+            params.event.preventDefault();
+            params.event.stopPropagation();
+        }
+
+        if (isCollabThread(eventTarget)) {
+            Config.set("collab.isFeedbackMode", false);
+        } else if (config?.collab.isFeedbackMode) {
+            generateThread(
+                { xpath, relativeX, relativeY },
+                {
+                    isNewThread: true,
+                    updateConfig: true,
+                }
+            );
+        } else {
+            toggleCollabPopup({ threadUid: "", action: "close" });
+            Config.set("collab.isFeedbackMode", true);
+        }
+        return;
     }
 
     const eventDetails = getCsDataOfElement(params.event);

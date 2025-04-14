@@ -1,0 +1,31 @@
+name: Publish Alpha Package to npmjs
+on:
+    push:
+        branches:
+            - "alpha/*"
+        tags:
+            - "v*.*.*-alpha.*"
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        permissions:
+            contents: read
+            id-token: write
+        steps:
+            - uses: actions/checkout@v4
+
+            # Setup Node.js and npm registry
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: "18"
+                  registry-url: "https://registry.npmjs.org"
+                  always-auth: true
+
+            - run: npm ci
+            - run: npm run build
+
+            # Publish package to npm under the "alpha" tag
+            - run: npm publish --tag alpha --provenance
+              env:
+                  NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
