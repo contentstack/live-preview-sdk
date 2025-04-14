@@ -105,10 +105,10 @@ export function updateFocussedState({
         return;
     }
 
-    const previousSelectedElementCslp =
-        previousSelectedEditableDOM?.getAttribute("data-cslp");
+    const previousSelectedElementCslpUniqueId =
+        previousSelectedEditableDOM?.getAttribute("data-cslp-unique-id");
     const newPreviousSelectedElement = document.querySelector(
-        `[data-cslp="${previousSelectedElementCslp}"]`
+        `[data-cslp-unique-id="${previousSelectedElementCslpUniqueId}"]`
     );
     if (!newPreviousSelectedElement && resizeObserver) {
         hideFocusOverlay({
@@ -227,9 +227,9 @@ export function updateFocussedStateOnMutation(
             .previousSelectedEditableDOM;
     if (!selectedElement) return;
 
-    const selectedElementCslp = selectedElement?.getAttribute("data-cslp");
+    const selectedElementCslpUniqueId = selectedElement?.getAttribute("data-cslp-unique-id");
     const newSelectedElement = document.querySelector(
-        `[data-cslp="${selectedElementCslp}"]`
+        `[data-cslp-unique-id="${selectedElementCslpUniqueId}"]`
     );
     if (!newSelectedElement && resizeObserver) {
         hideFocusOverlay({
