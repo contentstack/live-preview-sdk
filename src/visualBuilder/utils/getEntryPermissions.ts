@@ -17,25 +17,30 @@ export async function getEntryPermissions({
     contentTypeUid: string;
     locale: string;
 }) {
-    const permissions = await visualBuilderPostMessage?.send<EntryPermissions>(
-        "get-permissions",
-        {
-            type: "entry",
-            entryUid,
-            contentTypeUid,
-            locale,
+    try {
+        const permissions =
+            await visualBuilderPostMessage?.send<EntryPermissions>(
+                "get-permissions",
+                {
+                    type: "entry",
+                    entryUid,
+                    contentTypeUid,
+                    locale,
+                }
+            );
+        if (permissions) {
+            return permissions;
         }
-    );
+    } catch (error) {
+        console.debug("[Visual Builder] Error fetching permissions", error);
+    }
     // allow editing when things go wrong,
     // e.g. when no permissions are received
-    if (!permissions) {
-        return {
-            create: true,
-            read: true,
-            update: true,
-            delete: true,
-            publish: true,
-        };
-    }
-    return permissions;
+    return {
+        create: true,
+        read: true,
+        update: true,
+        delete: true,
+        publish: true,
+    };
 }

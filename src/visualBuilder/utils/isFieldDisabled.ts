@@ -13,7 +13,7 @@ enum DisableReason {
     DisabledVariant = "This field is not editable as it doesn't match the selected variant",
     UnlocalizedVariant = "This field is not editable as it is not localized",
     None = "",
-    EntryUpdateRestricted = "You do not have permission to update this entry",
+    EntryUpdateRestricted = "You do not have permission to edit this entry",
 }
 
 interface FieldDisableState {

@@ -398,6 +398,7 @@ function FieldToolbarComponent(
                                 closeDropdown={closeVariantDropdown}
                                 invertTooltipPosition={invertTooltipPosition}
                                 toggleVariantDropdown={toggleVariantDropdown}
+                                disabled={disableFieldActions}
                             />
                         ) : null}
                         {isMultiple && !isWholeMultipleField ? (
