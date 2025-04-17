@@ -128,26 +128,21 @@ describe("handle numeric field key down", () => {
 });
 
 describe("handle keydown in button contenteditable", () => {
-    let button: HTMLButtonElement | undefined;
-    let spiedPreventDefault: MockInstance<(e: []) => void> | undefined;
-    let spiedInsertSpaceAtCursor:
-        | MockInstance<(typeof insertSpaceAtCursor)["insertSpaceAtCursor"]>
-        | undefined;
-
     test("should insert space in button content-editable", () => {
+        let spiedPreventDefault: MockInstance<(e: []) => void> | undefined;
         vi.spyOn(window, "getSelection").mockReturnValue({
-            // @ts-ignore
+            // @ts-expect-error mocking only required properties
             getRangeAt: (n: number) => ({
                 startOffset: 0,
                 endOffset: 0,
             }),
         });
-        spiedInsertSpaceAtCursor = vi.spyOn(
+        const spiedInsertSpaceAtCursor = vi.spyOn(
             insertSpaceAtCursor,
             "insertSpaceAtCursor"
         );
 
-        button = document.createElement("button");
+        const button = document.createElement("button");
         button.innerHTML = "Test";
         button.setAttribute("contenteditable", "true");
         button.setAttribute(
@@ -169,6 +164,45 @@ describe("handle keydown in button contenteditable", () => {
 
         expect(spiedPreventDefault).toHaveBeenCalledTimes(1);
         expect(spiedInsertSpaceAtCursor).toHaveBeenCalledWith(button);
+    });
+
+    test("should insert space in span content-editable inside button", () => {
+        let spiedPreventDefault: MockInstance<(e: []) => void> | undefined;
+        vi.spyOn(window, "getSelection").mockReturnValue({
+            // @ts-expect-error mocking only required properties
+            getRangeAt: (n: number) => ({
+                startOffset: 0,
+                endOffset: 0,
+            }),
+        });
+        const spiedInsertSpaceAtCursor = vi.spyOn(
+            insertSpaceAtCursor,
+            "insertSpaceAtCursor"
+        );
+
+        const button = document.createElement("button");
+        const span = document.createElement("span");
+        button.appendChild(span);
+        span.setAttribute("contenteditable", "true");
+        span.setAttribute(
+            VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY,
+            "single_line"
+        );
+
+        span.addEventListener("keydown", (e) => {
+            spiedPreventDefault = vi.spyOn(e, "preventDefault");
+            handleFieldKeyDown(e);
+        });
+
+        const keyDownEvent = new KeyboardEvent("keydown", {
+            bubbles: true,
+            key: "Space",
+            code: "Space",
+        });
+        span.dispatchEvent(keyDownEvent);
+
+        expect(spiedPreventDefault).toHaveBeenCalledTimes(1);
+        expect(spiedInsertSpaceAtCursor).toHaveBeenCalledWith(span);
     });
 });
 
