@@ -34,12 +34,12 @@ import { getDOMEditStack } from "../utils/getCsDataOfElement";
 import { VariantIcon } from "./icons/variant";
 import {
     BASE_VARIANT_STATUS,
-    FieldRevertComponent,
     getFieldVariantStatus,
     IVariantStatus,
     VariantRevertDropdown,
 } from "./FieldRevert/FieldRevertComponent";
 import { LoadingIcon } from "./icons/loading";
+import { EntryPermissions } from "../utils/getEntryPermissions";
 
 export type FieldDetails = Pick<
     VisualBuilderCslpEventDetails,
@@ -52,6 +52,7 @@ interface MultipleFieldToolbarProps {
     eventDetails: VisualBuilderCslpEventDetails;
     hideOverlay: () => void;
     isVariant?: boolean;
+    entryPermissions?: EntryPermissions;
 }
 
 function handleReplaceAsset(fieldMetadata: CslpData) {
@@ -107,7 +108,11 @@ function handleFormFieldFocus(eventDetails: VisualBuilderCslpEventDetails) {
 function FieldToolbarComponent(
     props: MultipleFieldToolbarProps
 ): JSX.Element | null {
-    const { eventDetails, isVariant: isVariantOrParentOfVariant } = props;
+    const {
+        eventDetails,
+        isVariant: isVariantOrParentOfVariant,
+        entryPermissions,
+    } = props;
     const { fieldMetadata, editableElement: targetElement } = eventDetails;
     const [isFormLoading, setIsFormLoading] = useState(false);
 
@@ -131,16 +136,17 @@ function FieldToolbarComponent(
     let fieldType = null;
     let isWholeMultipleField = false;
 
+    let disableFieldActions = false;
     if (fieldSchema) {
-        const { isDisabled } = isFieldDisabled(fieldSchema, {
-            editableElement: targetElement,
-            fieldMetadata,
-        });
-
-        // field is disabled, no actions needed
-        if (isDisabled) {
-            return null;
-        }
+        const { isDisabled } = isFieldDisabled(
+            fieldSchema,
+            {
+                editableElement: targetElement,
+                fieldMetadata,
+            },
+            entryPermissions
+        );
+        disableFieldActions = isDisabled;
 
         fieldType = getFieldType(fieldSchema);
         isModalEditable = ALLOWED_MODAL_EDITABLE_FIELD.includes(fieldType);
@@ -165,7 +171,8 @@ function FieldToolbarComponent(
                 fieldMetadata.instance.fieldPathWithIndex ||
                 fieldMetadata.multipleFieldMetadata?.index === -1);
 
-        isReplaceAllowed = ALLOWED_REPLACE_FIELDS.includes(fieldType) && !isWholeMultipleField;
+        isReplaceAllowed =
+            ALLOWED_REPLACE_FIELDS.includes(fieldType) && !isWholeMultipleField;
         // if (
         //     DEFAULT_MULTIPLE_FIELDS.includes(fieldType) &&
         //     isWholeMultipleField &&
@@ -201,6 +208,7 @@ function FieldToolbarComponent(
                 e.stopPropagation();
                 handleEdit(fieldMetadata);
             }}
+            disabled={disableFieldActions}
         >
             <Icon />
         </button>
@@ -232,6 +240,7 @@ function FieldToolbarComponent(
                     return;
                 }
             }}
+            disabled={disableFieldActions}
         >
             <ReplaceAssetIcon />
         </button>
@@ -250,8 +259,10 @@ function FieldToolbarComponent(
                         invertTooltipPosition,
                 },
                 {
-                    [visualBuilderStyles()["visual-builder__button--comment-loader"]]: isFormLoading,
-                    "visual-builder__button--comment-loader": isFormLoading
+                    [visualBuilderStyles()[
+                        "visual-builder__button--comment-loader"
+                    ]]: isFormLoading,
+                    "visual-builder__button--comment-loader": isFormLoading,
                 }
             )}
             data-tooltip={"Form"}
@@ -409,7 +420,9 @@ function FieldToolbarComponent(
                                             "previous"
                                         );
                                     }}
-                                    disabled={disableMoveLeft}
+                                    disabled={
+                                        disableFieldActions || disableMoveLeft
+                                    }
                                 >
                                     <MoveLeftIcon
                                         className={classNames({
@@ -419,7 +432,10 @@ function FieldToolbarComponent(
                                                 "visual-builder__rotate--90"
                                             ]]: direction === "vertical",
                                         })}
-                                        disabled={disableMoveLeft}
+                                        disabled={
+                                            disableFieldActions ||
+                                            disableMoveLeft
+                                        }
                                     />
                                 </button>
 
@@ -441,7 +457,9 @@ function FieldToolbarComponent(
                                             "next"
                                         );
                                     }}
-                                    disabled={disableMoveRight}
+                                    disabled={
+                                        disableFieldActions || disableMoveRight
+                                    }
                                 >
                                     <MoveRightIcon
                                         className={classNames({
@@ -451,7 +469,10 @@ function FieldToolbarComponent(
                                                 "visual-builder__rotate--90"
                                             ]]: direction === "vertical",
                                         })}
-                                        disabled={disableMoveRight}
+                                        disabled={
+                                            disableFieldActions ||
+                                            disableMoveRight
+                                        }
                                     />
                                 </button>
 
@@ -470,6 +491,7 @@ function FieldToolbarComponent(
                                         e.stopPropagation();
                                         handleDeleteInstance(fieldMetadata);
                                     }}
+                                    disabled={disableFieldActions}
                                 >
                                     <DeleteIcon />
                                 </button>

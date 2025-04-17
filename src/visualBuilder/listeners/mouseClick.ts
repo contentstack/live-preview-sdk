@@ -29,6 +29,7 @@ import { generateThread } from "../generators/generateThread";
 import { isCollabThread } from "../generators/generateThread";
 import { toggleCollabPopup } from "../generators/generateThread";
 import { fixSvgXPath } from "../utils/collabUtils";
+import { getEntryPermissionsCached } from "../utils/getEntryPermissionsCached";
 
 type HandleBuilderInteractionParams = Omit<
     EventListenerHandlerParams,
@@ -279,14 +280,23 @@ async function handleFieldSchemaAndIndividualFields(
     editableElement: Element,
     previousSelectedElement: Element | null
 ) {
-    const { content_type_uid, fieldPath } = fieldMetadata;
+    const { content_type_uid, entry_uid, fieldPath, locale } = fieldMetadata;
     const fieldSchema = await FieldSchemaMap.getFieldSchema(
         content_type_uid,
         fieldPath
     );
+    const entryAcl = await getEntryPermissionsCached({
+        entryUid: entry_uid,
+        contentTypeUid: content_type_uid,
+        locale,
+    });
 
     if (fieldSchema) {
-        const { isDisabled } = isFieldDisabled(fieldSchema, eventDetails);
+        const { isDisabled } = isFieldDisabled(
+            fieldSchema,
+            eventDetails,
+            entryAcl
+        );
         if (isDisabled) {
             addOverlay({
                 overlayWrapper: params.overlayWrapper,

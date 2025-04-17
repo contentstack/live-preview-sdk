@@ -14,6 +14,7 @@ import { visualBuilderStyles } from "../visualBuilder.style";
 import { CslpError } from "./CslpError";
 import { hasPostMessageError } from "../utils/errorHandling";
 import { VisualBuilderPostMessageEvents } from "../utils/types/postMessage.types";
+import { getEntryPermissionsCached } from "../utils/getEntryPermissionsCached";
 
 async function getFieldDisplayNames(fieldMetadata: CslpData[]) {
     const result = await visualBuilderPostMessage?.send<{
@@ -86,9 +87,15 @@ function FieldLabelWrapperComponent(
                 return;
             }
 
+            const entryPermissions = await getEntryPermissionsCached({
+                entryUid: props.fieldMetadata.entry_uid,
+                contentTypeUid: props.fieldMetadata.content_type_uid,
+                locale: props.fieldMetadata.locale,
+            });
             const { isDisabled: fieldDisabled, reason } = isFieldDisabled(
                 fieldSchema,
-                eventDetails
+                eventDetails,
+                entryPermissions
             );
 
             const currentFieldDisplayName =

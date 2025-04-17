@@ -13,8 +13,16 @@ beforeAll(() => {
         disconnect: vi.fn(),
     }));
 
-  document.elementFromPoint = vi.fn();
-})
+    document.elementFromPoint = vi.fn();
+
+    vi.mock("./src/visualBuilder/utils/getEntryPermissionsCached", () => {
+        return {
+            getEntryPermissionsCached: vi.fn().mockResolvedValue({
+                update: true,
+            }),
+        };
+    });
+});
 
 afterAll(() => {
     cleanup();
