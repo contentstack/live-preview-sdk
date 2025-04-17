@@ -8,7 +8,6 @@ import EventListenerHandlerParams from "../listeners/types";
 import { FieldSchemaMap } from "../utils/fieldSchemaMap";
 import { FieldDataType } from "../utils/types/index.types";
 import { getFieldType } from "../utils/getFieldType";
-import { CslpData } from "../../cslp/types/cslp.types";
 import { getMultilinePlaintext } from "../utils/getMultilinePlaintext";
 import { showAllHiddenHighlightedCommentIcons } from "./generateHighlightedComment";
 
@@ -119,7 +118,10 @@ export function hideFocusOverlay(elements: HideOverlayParams): void {
             }
         });
 
-        if (!noTrigger) {
+        if (
+            !noTrigger &&
+            VisualBuilder.VisualBuilderGlobalState.value.focusFieldReceivedInput
+        ) {
             sendFieldEvent({
                 visualBuilderContainer,
                 eventType: VisualBuilderPostMessageEvents.UPDATE_FIELD,
@@ -136,6 +138,8 @@ export function hideFocusOverlay(elements: HideOverlayParams): void {
             }
         }
         VisualBuilder.VisualBuilderGlobalState.value.focusFieldValue = null;
+        VisualBuilder.VisualBuilderGlobalState.value.focusFieldReceivedInput =
+            false;
         cleanIndividualFieldResidual({
             overlayWrapper: visualBuilderOverlayWrapper,
             visualBuilderContainer: visualBuilderContainer,
