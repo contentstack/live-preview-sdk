@@ -320,6 +320,15 @@ export function visualBuilderStyles() {
                 border-color 0.15s ease-in-out,
                 box-shadow 0.15s ease-in-out;
             // vertical-align: middle;
+            &:disabled {
+                cursor: not-allowed;
+                svg {
+                    fill: #999;
+                    path {
+                        fill: #999;
+                    }
+                }
+            }
         `,
         "visual-builder__button--primary": css`
             background-color: #6c5ce7;
@@ -385,7 +394,7 @@ export function visualBuilderStyles() {
                 gap: 8px;
             }
 
-            .visual-builder__button:hover {
+            .visual-builder__button:enabled:hover {
                 background-color: #f5f5f5;
 
                 svg {

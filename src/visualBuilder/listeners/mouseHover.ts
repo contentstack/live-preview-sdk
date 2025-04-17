@@ -13,6 +13,7 @@ import { visualBuilderStyles } from "../visualBuilder.style";
 import { VB_EmptyBlockParentClass } from "../..";
 import Config from "../../configManager/configManager";
 import { isCollabThread } from "../generators/generateThread";
+import { getEntryPermissionsCached } from "../utils/getEntryPermissionsCached";
 
 const config = Config.get();
 export interface HandleMouseHoverParams
@@ -233,16 +234,24 @@ async function handleMouseHover(params: HandleMouseHoverParams): Promise<void> {
             FieldSchemaMap.getFieldSchema(content_type_uid, fieldPath).then(
                 (fieldSchema) => {
                     if (!fieldSchema) return;
-                    if (!params.customCursor) return;
-                    const { isDisabled: fieldDisabled } = isFieldDisabled(
-                        fieldSchema,
-                        eventDetails
-                    );
-                    const fieldType = getFieldType(fieldSchema);
-                    generateCustomCursor({
-                        fieldType,
-                        customCursor: params.customCursor,
-                        fieldDisabled,
+
+                    getEntryPermissionsCached({
+                        entryUid: fieldMetadata.entry_uid,
+                        contentTypeUid: fieldMetadata.content_type_uid,
+                        locale: fieldMetadata.locale,
+                    }).then((entryAcl) => {
+                        if (!params.customCursor) return;
+                        const { isDisabled: fieldDisabled } = isFieldDisabled(
+                            fieldSchema,
+                            eventDetails,
+                            entryAcl
+                        );
+                        const fieldType = getFieldType(fieldSchema);
+                        generateCustomCursor({
+                            fieldType,
+                            customCursor: params.customCursor,
+                            fieldDisabled,
+                        });
                     });
                 }
             );
@@ -259,9 +268,18 @@ async function handleMouseHover(params: HandleMouseHoverParams): Promise<void> {
             FieldSchemaMap.getFieldSchema(content_type_uid, fieldPath).then(
                 (fieldSchema) => {
                     if (!fieldSchema) return;
-                    const { isDisabled: fieldDisabled, reason } =
-                        isFieldDisabled(fieldSchema, eventDetails);
-                    addOutline(editableElement, fieldDisabled);
+                    getEntryPermissionsCached({
+                        entryUid: fieldMetadata.entry_uid,
+                        contentTypeUid: fieldMetadata.content_type_uid,
+                        locale: fieldMetadata.locale,
+                    }).then((entryAcl) => {
+                        const { isDisabled: fieldDisabled } = isFieldDisabled(
+                            fieldSchema,
+                            eventDetails,
+                            entryAcl
+                        );
+                        addOutline(editableElement, fieldDisabled);
+                    });
                 }
             );
         }

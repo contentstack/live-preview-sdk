@@ -195,6 +195,7 @@ export const VariantRevertDropdown = (props: any) => {
         invertTooltipPosition,
         toggleVariantDropdown,
         variantStatus = BASE_VARIANT_STATUS,
+        disabled,
     } = props;
     const dropdownRef = useRef<HTMLDivElement>(null);
     useHandleOutsideClick(dropdownRef, closeDropdown);
@@ -221,6 +222,7 @@ export const VariantRevertDropdown = (props: any) => {
                 style={{ padding: "6px" }}
                 data-tooltip={"Variant"}
                 data-testid={`visual-builder-canvas-variant-icon`}
+                disabled={disabled}
             >
                 <VariantIcon />
             </button>
@@ -236,6 +238,7 @@ export const VariantRevertDropdown = (props: any) => {
                 data-tooltip={"Variant Revert"}
                 data-testid={`visual-builder-canvas-variant-revert`}
                 onClick={toggleVariantDropdown}
+                disabled={disabled}
             >
                 <VariantIcon />
                 <CaretIcon open={props.isOpen} />

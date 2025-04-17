@@ -16,6 +16,7 @@ import { isFieldMultiple } from "./isFieldMultiple";
 import { handleInlineEditableField } from "./handleInlineEditableField";
 import { VisualBuilderEditContext } from "./types/index.types";
 import { pasteAsPlainText } from "./pasteAsPlainText";
+import { getEntryPermissionsCached } from "./getEntryPermissionsCached";
 
 /**
  * It handles all the fields based on their data type and its "multiple" property.
@@ -47,7 +48,16 @@ export async function handleIndividualFields(
 
     const fieldType = getFieldType(fieldSchema);
 
-    const { isDisabled: disabled } = isFieldDisabled(fieldSchema, eventDetails);
+    const entryAcl = await getEntryPermissionsCached({
+        entryUid: entry_uid,
+        contentTypeUid: content_type_uid,
+        locale,
+    });
+    const { isDisabled: disabled } = isFieldDisabled(
+        fieldSchema,
+        eventDetails,
+        entryAcl
+    );
 
     editableElement.setAttribute(
         VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY,
