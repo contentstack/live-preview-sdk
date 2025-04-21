@@ -17,6 +17,9 @@ import { ThreadProvider } from "./ContextProvider/ThreadProvider";
 import useInfiniteScroll from "../../../hooks/use-infinite-scroll/useInfiniteScroll";
 import { collabStyles } from "../../../collab.style";
 import classNames from "classnames";
+import visualBuilderPostMessage from "../../../utils/visualBuilderPostMessage";
+import { VisualBuilderPostMessageEvents } from "../../../utils/types/postMessage.types";
+import { OnEvent } from "@contentstack/advanced-post-message";
 
 const initialErrorState: IErrorState = {
     hasError: false,
@@ -137,6 +140,98 @@ const ThreadPopup: React.FC<IThreadPopup> = React.memo(
             };
             fetchInitialMessages();
         }, []);
+
+        // useEffect(() => {
+        //     if (!activeThread || activeThread._id === "new") return;
+
+        //     const commentUpdateListener = visualBuilderPostMessage?.on(
+        //         VisualBuilderPostMessageEvents.COLLAB_COMMENTS_UPDATED,
+        //         (data: OnEvent<any>) => {
+        //             if (data?.data?.threadUid !== activeThread._id) return;
+
+        //             setState((prevState) => {
+        //                 const existingCommentsMap = new Map(
+        //                     prevState.comments.map((comment) => [
+        //                         comment._id,
+        //                         comment,
+        //                     ])
+        //                 );
+
+        //                 data?.data?.comments.forEach((comment: any) => {
+        //                     existingCommentsMap.set(comment._id, comment);
+        //                 });
+
+        //                 const mergedComments = Array.from(
+        //                     existingCommentsMap.values()
+        //                 ).sort(
+        //                     (a, b) =>
+        //                         new Date(b.createdAt).getTime() -
+        //                         new Date(a.createdAt).getTime()
+        //                 );
+
+        //                 return {
+        //                     ...prevState,
+        //                     commentCount: data?.data?.count,
+        //                     comments: mergedComments,
+        //                 };
+        //             });
+        //         }
+        //     );
+
+        //     return () => {
+        //         commentUpdateListener?.unregister();
+        //     };
+        // }, [activeThread?._id]);
+
+        useEffect(() => {
+            if (!activeThread || activeThread._id === "new") return;
+
+            const commentUpdateListener = visualBuilderPostMessage?.on(
+                VisualBuilderPostMessageEvents.COLLAB_COMMENTS_UPDATED,
+                (data: OnEvent<any>) => {
+                    if (data?.data?.threadUid !== activeThread._id) return;
+
+                    setState((prevState) => {
+                        const updatedComments = data?.data?.comments || [];
+                        const pageOffset = data?.data?.pageOffset || 0;
+                        const pageLimit = data?.data?.pageLimit || 10;
+
+                        const updatedCommentsMap = new Map();
+
+                        prevState.comments.forEach((comment, index) => {
+                            if (
+                                index < pageOffset ||
+                                index >= pageOffset + pageLimit
+                            ) {
+                                updatedCommentsMap.set(comment._id, comment);
+                            }
+                        });
+
+                        updatedComments.forEach((comment: any) => {
+                            updatedCommentsMap.set(comment._id, comment);
+                        });
+
+                        const mergedComments = Array.from(
+                            updatedCommentsMap.values()
+                        ).sort(
+                            (a, b) =>
+                                new Date(b.createdAt).getTime() -
+                                new Date(a.createdAt).getTime()
+                        );
+
+                        return {
+                            ...prevState,
+                            commentCount: data?.data?.count,
+                            comments: mergedComments,
+                        };
+                    });
+                }
+            );
+
+            return () => {
+                commentUpdateListener?.unregister();
+            };
+        }, [activeThread?._id]);
 
         const contextValue = useMemo<IThreadContext>(
             () => ({
