@@ -128,6 +128,21 @@ describe("handle numeric field key down", () => {
 });
 
 describe("handle keydown in button contenteditable", () => {
+    let spiedSendFieldEvent: MockInstance<() => void> | undefined;
+
+    beforeEach(() => {
+        spiedSendFieldEvent = vi
+            .spyOn(generateOverlay, "sendFieldEvent")
+            .mockImplementation(() => {});
+        const visualBuilderContainer = document.createElement("div");
+        visualBuilderContainer.classList.add("visual-builder__container");
+        document.body.appendChild(visualBuilderContainer);
+    });
+
+    afterEach(() => {
+        vi.clearAllMocks();
+    });
+
     test("should insert space in button content-editable", () => {
         let spiedPreventDefault: MockInstance<(e: []) => void> | undefined;
         vi.spyOn(window, "getSelection").mockReturnValue({
@@ -164,6 +179,7 @@ describe("handle keydown in button contenteditable", () => {
 
         expect(spiedPreventDefault).toHaveBeenCalledTimes(1);
         expect(spiedInsertSpaceAtCursor).toHaveBeenCalledWith(button);
+        expect(spiedSendFieldEvent).toHaveBeenCalled();
     });
 
     test("should insert space in span content-editable inside button", () => {
@@ -203,6 +219,7 @@ describe("handle keydown in button contenteditable", () => {
 
         expect(spiedPreventDefault).toHaveBeenCalledTimes(1);
         expect(spiedInsertSpaceAtCursor).toHaveBeenCalledWith(span);
+        expect(spiedSendFieldEvent).toHaveBeenCalled();
     });
 });
 
