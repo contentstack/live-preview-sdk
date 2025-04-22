@@ -29,6 +29,7 @@ import { generateThread } from "../generators/generateThread";
 import { isCollabThread } from "../generators/generateThread";
 import { toggleCollabPopup } from "../generators/generateThread";
 import { fixSvgXPath } from "../utils/collabUtils";
+import { v4 as uuidV4 } from "uuid";
 
 type HandleBuilderInteractionParams = Omit<
     EventListenerHandlerParams,
@@ -89,7 +90,7 @@ async function handleBuilderInteraction(
     if (duplicates.length > 1) {
         duplicates.forEach((ele) => {
             if (!ele.hasAttribute("data-cslp-unique-id")) {
-                const uniqueId = `cslp-${window.crypto.randomUUID()}`;
+                const uniqueId = `cslp-${uuidV4()}`;
                 ele.setAttribute("data-cslp-unique-id", uniqueId);
             }
         });

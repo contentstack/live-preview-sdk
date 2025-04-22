@@ -231,7 +231,7 @@ export function updateFocussedStateOnMutation(
             .previousSelectedEditableDOM;
     if (!selectedElement) return;
 
-    const selectedElementCslp = selectedElement.getAttribute("data-cslp");
+    const selectedElementCslp = selectedElement?.getAttribute("data-cslp");
     const selectedElementCslpUniqueId = selectedElement?.getAttribute(
         "data-cslp-unique-id"
     );
