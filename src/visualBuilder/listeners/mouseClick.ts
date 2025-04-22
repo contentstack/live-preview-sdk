@@ -79,6 +79,22 @@ async function handleBuilderInteraction(
         (eventTarget.hasAttribute("data-cslp") ||
             eventTarget.closest("[data-cslp]"));
 
+    // if multiple elements with the same cslp element are found,
+    // assign a unique ID to each element which we can use to identify
+    // them in updateFocussedState and other places where we
+    // would have queried the element by data-cslp
+    const duplicates = document.querySelectorAll(
+        `[data-cslp="${eventTarget?.getAttribute("data-cslp")}"]`
+    );
+    if (duplicates.length > 1) {
+        duplicates.forEach((ele) => {
+            if (!ele.hasAttribute("data-cslp-unique-id")) {
+                const uniqueId = `cslp-${window.crypto.randomUUID()}`;
+                ele.setAttribute("data-cslp-unique-id", uniqueId);
+            }
+        });
+    }
+
     // if the target element is a studio-ui element, return
     // this is currently used for the "Edit in Studio" button
     if (eventTarget?.getAttribute("data-studio-ui") === "true") {

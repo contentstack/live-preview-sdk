@@ -105,11 +105,16 @@ export function updateFocussedState({
         return;
     }
 
+    // prefer data-cslp-unique-id when available else use data-cslp.
+    // unique ID is added on click when multiple elements with same
+    // cslp element are found.
+    const cslp = editableElement?.getAttribute("data-cslp") || "";
     const previousSelectedElementCslpUniqueId =
         previousSelectedEditableDOM?.getAttribute("data-cslp-unique-id");
-    const newPreviousSelectedElement = document.querySelector(
-        `[data-cslp-unique-id="${previousSelectedElementCslpUniqueId}"]`
-    );
+    const newPreviousSelectedElement =
+        document.querySelector(
+            `[data-cslp-unique-id="${previousSelectedElementCslpUniqueId}"]`
+        ) || document.querySelector(`[data-cslp="${cslp}"]`);
     if (!newPreviousSelectedElement && resizeObserver) {
         hideFocusOverlay({
             visualBuilderOverlayWrapper: overlayWrapper,
@@ -148,7 +153,6 @@ export function updateFocussedState({
         psuedoEditableElement.style.visibility = "visible";
     }
 
-    const cslp = editableElement?.getAttribute("data-cslp") || "";
     const fieldMetadata = extractDetailsFromCslp(cslp);
 
     const targetElementDimension = editableElement.getBoundingClientRect();
@@ -227,10 +231,14 @@ export function updateFocussedStateOnMutation(
             .previousSelectedEditableDOM;
     if (!selectedElement) return;
 
-    const selectedElementCslpUniqueId = selectedElement?.getAttribute("data-cslp-unique-id");
-    const newSelectedElement = document.querySelector(
-        `[data-cslp-unique-id="${selectedElementCslpUniqueId}"]`
+    const cslp = selectedElement.getAttribute("data-cslp");
+    const selectedElementCslpUniqueId = selectedElement?.getAttribute(
+        "data-cslp-unique-id"
     );
+    const newSelectedElement =
+        document.querySelector(
+            `[data-cslp-unique-id="${selectedElementCslpUniqueId}"]`
+        ) || document.querySelector(`[data-cslp="${cslp}"]`);
     if (!newSelectedElement && resizeObserver) {
         hideFocusOverlay({
             visualBuilderOverlayWrapper: focusOverlayWrapper,
