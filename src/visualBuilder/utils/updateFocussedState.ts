@@ -107,14 +107,14 @@ export function updateFocussedState({
 
     // prefer data-cslp-unique-id when available else use data-cslp.
     // unique ID is added on click when multiple elements with same
-    // cslp element are found.
-    const cslp = editableElement?.getAttribute("data-cslp") || "";
+    // data-cslp are found.
+    const previousSelectedElementCslp = editableElement?.getAttribute("data-cslp") || "";
     const previousSelectedElementCslpUniqueId =
         previousSelectedEditableDOM?.getAttribute("data-cslp-unique-id");
     const newPreviousSelectedElement =
         document.querySelector(
             `[data-cslp-unique-id="${previousSelectedElementCslpUniqueId}"]`
-        ) || document.querySelector(`[data-cslp="${cslp}"]`);
+        ) || document.querySelector(`[data-cslp="${previousSelectedElementCslp}"]`);
     if (!newPreviousSelectedElement && resizeObserver) {
         hideFocusOverlay({
             visualBuilderOverlayWrapper: overlayWrapper,
@@ -153,7 +153,7 @@ export function updateFocussedState({
         psuedoEditableElement.style.visibility = "visible";
     }
 
-    const fieldMetadata = extractDetailsFromCslp(cslp);
+    const fieldMetadata = extractDetailsFromCslp(previousSelectedElementCslp);
 
     const targetElementDimension = editableElement.getBoundingClientRect();
     if (targetElementDimension.width && targetElementDimension.height) {
@@ -231,14 +231,14 @@ export function updateFocussedStateOnMutation(
             .previousSelectedEditableDOM;
     if (!selectedElement) return;
 
-    const cslp = selectedElement.getAttribute("data-cslp");
+    const selectedElementCslp = selectedElement.getAttribute("data-cslp");
     const selectedElementCslpUniqueId = selectedElement?.getAttribute(
         "data-cslp-unique-id"
     );
     const newSelectedElement =
         document.querySelector(
             `[data-cslp-unique-id="${selectedElementCslpUniqueId}"]`
-        ) || document.querySelector(`[data-cslp="${cslp}"]`);
+        ) || document.querySelector(`[data-cslp="${selectedElementCslp}"]`);
     if (!newSelectedElement && resizeObserver) {
         hideFocusOverlay({
             visualBuilderOverlayWrapper: focusOverlayWrapper,
