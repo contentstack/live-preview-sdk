@@ -120,13 +120,14 @@ export function hideFocusOverlay(elements: HideOverlayParams): void {
 
         if (
             !noTrigger &&
+            // send update when focussed field has received input
             VisualBuilder.VisualBuilderGlobalState.value.focusFieldReceivedInput
         ) {
             sendFieldEvent({
                 visualBuilderContainer,
                 eventType: VisualBuilderPostMessageEvents.UPDATE_FIELD,
             });
-        } else {
+        } else if (noTrigger) {
             const { previousSelectedEditableDOM, focusFieldValue } =
                 VisualBuilder.VisualBuilderGlobalState.value || {};
             if (

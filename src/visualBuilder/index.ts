@@ -343,6 +343,7 @@ export class VisualBuilder {
             previousHoveredTargetDOM: null,
             previousEmptyBlockParents: [],
             focusFieldValue: null,
+            focusFieldReceivedInput: false,
             audienceMode: false,
             locale: "en-us",
             variant: null,
