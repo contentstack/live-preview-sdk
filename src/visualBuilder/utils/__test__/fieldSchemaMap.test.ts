@@ -54,6 +54,17 @@ describe("field Schema map", () => {
         expect(FieldSchemaMap.hasFieldSchema("test_ct", "title")).toBeFalsy();
     });
 
+    test("should clear the field schema promise map", () => {
+        // Create a promise by requesting a field schema
+        const promise = FieldSchemaMap.getFieldSchema("test_ct", "title");
+        // Clear the field schema map
+        FieldSchemaMap.clear();
+        // Request the same field schema again
+        const newPromise = FieldSchemaMap.getFieldSchema("test_ct", "title");
+        // If the promise map was cleared, these should be different promise objects
+        expect(newPromise).not.toBe(promise);
+    });
+
     test("should return true if the field schema maps are equal", () => {
         FieldSchemaMap.setFieldSchema(
             "test_ct",
