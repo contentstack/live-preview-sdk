@@ -2,6 +2,7 @@ import { VisualBuilder } from "..";
 import { visualBuilderStyles } from "../visualBuilder.style";
 import visualBuilderPostMessage from "../utils/visualBuilderPostMessage";
 import { VisualBuilderPostMessageEvents } from "../utils/types/postMessage.types";
+import { FieldSchemaMap } from "../utils/fieldSchemaMap";
 
 interface VariantFieldsEvent {
     data: {
@@ -96,6 +97,12 @@ export function useVariantFieldsPostMessageEvent(): void {
         VisualBuilderPostMessageEvents.GET_VARIANT_ID,
         (event: VariantEvent) => {
             setVariant(event.data.variant);
+            // clear field schema when variant is changed.
+            // this is required as we cache field schema
+            // which contain a key isUnlinkedVariant.
+            // This key can change when variant is changed,
+            // so clear the field schema cache
+            FieldSchemaMap.clear();
         }
     );
     visualBuilderPostMessage?.on(
