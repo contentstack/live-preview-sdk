@@ -71,7 +71,8 @@ class LightLivePreviewHoC {
 }
 
 const ContentstackLivePreview =
-    process.env.PURGE_PREVIEW_SDK || process.env.REACT_APP_PURGE_PREVIEW_SDK
+    process?.env?.PURGE_PREVIEW_SDK === "true" ||
+    process?.env?.REACT_APP_PURGE_PREVIEW_SDK === "true"
         ? LightLivePreviewHoC
         : ContentstackLivePreviewHOC;
 
