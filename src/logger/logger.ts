@@ -8,7 +8,10 @@ export class PublicLogger {
             | Console["info"],
         message: any[]
     ): void {
-        if (process?.env?.NODE_ENV !== "test") {
+        if (
+            typeof process !== "undefined" &&
+            process?.env?.NODE_ENV !== "test"
+        ) {
             logCallback("Live_Preview_SDK:", ...message);
         }
     }

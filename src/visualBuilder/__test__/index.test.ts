@@ -35,6 +35,7 @@ vi.mock("../utils/visualBuilderPostMessage", async () => {
 Object.defineProperty(globalThis, "crypto", {
     value: {
         getRandomValues: (arr: Array<any>) => crypto.randomBytes(arr.length),
+        randomUUID: () => crypto.randomUUID()
     },
 });
 // Increase the timeout for the test

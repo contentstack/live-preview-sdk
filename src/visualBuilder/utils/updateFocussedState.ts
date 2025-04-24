@@ -105,11 +105,16 @@ export function updateFocussedState({
         return;
     }
 
-    const previousSelectedElementCslp =
-        previousSelectedEditableDOM?.getAttribute("data-cslp");
-    const newPreviousSelectedElement = document.querySelector(
-        `[data-cslp="${previousSelectedElementCslp}"]`
-    );
+    // prefer data-cslp-unique-id when available else use data-cslp.
+    // unique ID is added on click when multiple elements with same
+    // data-cslp are found.
+    const previousSelectedElementCslp = editableElement?.getAttribute("data-cslp") || "";
+    const previousSelectedElementCslpUniqueId =
+        previousSelectedEditableDOM?.getAttribute("data-cslp-unique-id");
+    const newPreviousSelectedElement =
+        document.querySelector(
+            `[data-cslp-unique-id="${previousSelectedElementCslpUniqueId}"]`
+        ) || document.querySelector(`[data-cslp="${previousSelectedElementCslp}"]`);
     if (!newPreviousSelectedElement && resizeObserver) {
         hideFocusOverlay({
             visualBuilderOverlayWrapper: overlayWrapper,
@@ -148,8 +153,7 @@ export function updateFocussedState({
         psuedoEditableElement.style.visibility = "visible";
     }
 
-    const cslp = editableElement?.getAttribute("data-cslp") || "";
-    const fieldMetadata = extractDetailsFromCslp(cslp);
+    const fieldMetadata = extractDetailsFromCslp(previousSelectedElementCslp);
 
     const targetElementDimension = editableElement.getBoundingClientRect();
     if (targetElementDimension.width && targetElementDimension.height) {
@@ -228,9 +232,13 @@ export function updateFocussedStateOnMutation(
     if (!selectedElement) return;
 
     const selectedElementCslp = selectedElement?.getAttribute("data-cslp");
-    const newSelectedElement = document.querySelector(
-        `[data-cslp="${selectedElementCslp}"]`
+    const selectedElementCslpUniqueId = selectedElement?.getAttribute(
+        "data-cslp-unique-id"
     );
+    const newSelectedElement =
+        document.querySelector(
+            `[data-cslp-unique-id="${selectedElementCslpUniqueId}"]`
+        ) || document.querySelector(`[data-cslp="${selectedElementCslp}"]`);
     if (!newSelectedElement && resizeObserver) {
         hideFocusOverlay({
             visualBuilderOverlayWrapper: focusOverlayWrapper,

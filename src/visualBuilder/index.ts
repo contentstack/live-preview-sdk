@@ -296,6 +296,7 @@ export class VisualBuilder {
         if (!config.enable || config.mode < ILivePreviewModeConfig.BUILDER) {
             return;
         }
+
         visualBuilderPostMessage
             ?.send<IVisualBuilderInitEvent>("init", {
                 isSSR: config.ssr,
