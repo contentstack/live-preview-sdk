@@ -1,20 +1,64 @@
 import ContentstackLivePreviewHOC from "./preview/contentstack-live-preview-HOC";
-
 import { IStackSdk as ExternalStackSdkType } from "./types/types";
-export type IStackSdk = ExternalStackSdkType;
-class LightLivePreviewHoC implements ContentstackLivePreviewHOC {
-    static init() {}
 
-    get hash() {
+import {
+    OnEntryChangeCallback,
+    OnEntryChangeCallbackUID,
+    OnEntryChangeConfig,
+} from "./livePreview/types/onEntryChangeCallback.type";
+
+export type IStackSdk = ExternalStackSdkType;
+
+class LightLivePreviewHoC {
+    private static previewConstructors = {};
+    private static onEntryChangeCallbacks = {};
+
+    static init() {
+        if (typeof window === "undefined") {
+            return Promise.resolve(LightLivePreviewHoC.previewConstructors);
+        }
+
+        return LightLivePreviewHoC.initializePreview();
+    }
+
+    private static initializePreview() {
+        LightLivePreviewHoC.previewConstructors = {
+            livePreview: {},
+            visualBuilder: {},
+        };
+
+        LightLivePreviewHoC.onEntryChangeCallbacks = {};
+
+        return Promise.resolve(LightLivePreviewHoC.previewConstructors);
+    }
+
+    static get hash() {
         return "";
     }
 
-    static onEntryChange(callback: (...args: any[]) => void) {
-        return callback();
+    static get config() {
+        return {};
     }
 
-    static onLiveEdit() {
-        // intentionally empty
+    static isInitialized() {
+        return false;
+    }
+
+    static onEntryChange(
+        callback: OnEntryChangeCallback,
+        config: OnEntryChangeConfig = {}
+    ): OnEntryChangeCallbackUID {
+        const { skipInitialRender = false } = config;
+
+        if (!skipInitialRender) {
+            callback();
+        }
+
+        return "live-preview-id";
+    }
+
+    static onLiveEdit(callback: OnEntryChangeCallback) {
+        return "live-preview-id";
     }
 
     static unsubscribeOnEntryChange() {
@@ -26,8 +70,12 @@ class LightLivePreviewHoC implements ContentstackLivePreviewHOC {
     }
 }
 
-// export const ContentstackLivePreview: ContentstackLivePreviewHOC =
-//     ContentstackLivePreviewHOC;
+const ContentstackLivePreview =
+    typeof process !== "undefined" &&
+    (process?.env?.PURGE_PREVIEW_SDK === "true" ||
+        process?.env?.REACT_APP_PURGE_PREVIEW_SDK === "true")
+        ? LightLivePreviewHoC
+        : ContentstackLivePreviewHOC;
 
 export const VB_EmptyBlockParentClass = "visual-builder__empty-block-parent";
-export default ContentstackLivePreviewHOC;
+export default ContentstackLivePreview;

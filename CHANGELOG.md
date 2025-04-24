@@ -1,11 +1,181 @@
 # Changelog
 
-## [v3.1.2](https://github.com/contentstack/live-preview-sdk/compare/v3.1.1...v3.1.2)
+## [v3.2.1](https://github.com/contentstack/live-preview-sdk/compare/v3.2.0...v3.2.1)
 
-> 3 March 2025
+> 23 April 2025
+
+### Fixes
+
+- fix(collab): add optional chaining for tree shaking (Hitesh Shetty - [#431](https://github.com/contentstack/live-preview-sdk/pull/431))
+- fix: set unique ID on element click (Faraaz Biyabani - [#429](https://github.com/contentstack/live-preview-sdk/pull/429))
+- fix(VE-5803): sync field after custom space handling (Faraaz Biyabani - [#427](https://github.com/contentstack/live-preview-sdk/pull/427))
+- fix: space key handling for editable elements inside button (Faraaz Biyabani - [#419](https://github.com/contentstack/live-preview-sdk/pull/419))
+- fix(VE-4232): implement data-cslp mutation observer to manage unique IDs for elements (Sairaj - [#421](https://github.com/contentstack/live-preview-sdk/pull/421))
+
+### General Changes
+
+- Stage-v3.2.1 (Faraaz Biyabani - [#428](https://github.com/contentstack/live-preview-sdk/pull/428))
+
+### Fixes
+
+- fix: custom space key handling when a button element is on the composed path (Faraaz Biyabani - [5dc41a2](https://github.com/contentstack/live-preview-sdk/commit/5dc41a2bd277095008a7ccb7876a0c801d6932e6))
+- fix(collab): add optional chaining for tree shaking and fix unknown user issue (MohammedZuhairAhmed - [8710ac5](https://github.com/contentstack/live-preview-sdk/commit/8710ac5acae6075d8062158cb735f4037c2139ae))
+- fix: ensure process is defined (Faraaz Biyabani - [26e63f9](https://github.com/contentstack/live-preview-sdk/commit/26e63f91bba6bbb3e86423cb253c2527fdc8d102))
+- fix: use uuid v4 (Faraaz Biyabani - [063f81a](https://github.com/contentstack/live-preview-sdk/commit/063f81acdf9e2f7541664ea027b551570648723e))
+- fix: sync field after custom space handling (Faraaz Biyabani - [fd461a4](https://github.com/contentstack/live-preview-sdk/commit/fd461a4010ccf29d23f8480651ba13a4b93111b1))
+
+### Chores And Housekeeping
+
+- chore: merge branch main into develop_v3 (MohammedZuhairAhmed - [dcc3a10](https://github.com/contentstack/live-preview-sdk/commit/dcc3a10772a1e62231d7d69263734669bfb1b0eb))
+- chore: better names (Faraaz Biyabani - [a16dfe3](https://github.com/contentstack/live-preview-sdk/commit/a16dfe39de28bccffaf8dddb251982abbd79b8fa))
+
+### Changes to Test Assests
+
+- test: udpate handleFieldKeyDown tests for space handling in button (Faraaz Biyabani - [fd886ac](https://github.com/contentstack/live-preview-sdk/commit/fd886aca36d608b57d122da86ab8b705d1fa8d78))
+- test: mock randomUUID from crypto module (Sairaj Chouhan - [0c8990b](https://github.com/contentstack/live-preview-sdk/commit/0c8990bdb3d14e18497101dccdb809ac7435330c))
+
+### General Changes
+
+- Delete jira.yml (Aravind Kumar - [80a496c](https://github.com/contentstack/live-preview-sdk/commit/80a496c805ce52542221f9bafa11116211f24f73))
+- issues-jira.yml (Aravind Kumar - [a429983](https://github.com/contentstack/live-preview-sdk/commit/a4299833949c80c274abd8af8ae81062fd78556f))
+- policy-scan.yml (Aravind Kumar - [a4b69a0](https://github.com/contentstack/live-preview-sdk/commit/a4b69a07a50b0d8145122bf99b330c3b22d91e8f))
+- Delete sast-scan.yml (Aravind Kumar - [c0bffef](https://github.com/contentstack/live-preview-sdk/commit/c0bffefd3a100a96117b080bd5cd7d2f6302deea))
+- Updated codeowners (Aravind Kumar - [b759727](https://github.com/contentstack/live-preview-sdk/commit/b759727225ca20ee5e4b5addb8783a87eb8bc385))
+- codeql-analysis.yml (Aravind Kumar - [d90af9f](https://github.com/contentstack/live-preview-sdk/commit/d90af9f61ed6fca7f4fdfac6ad6993006ed771ea))
+- issues-jira.yml (Aravind Kumar - [21f6c9f](https://github.com/contentstack/live-preview-sdk/commit/21f6c9f8cf7a285480ff1733d0dae249546a86ef))
+- policy-scan.yml (Aravind Kumar - [0dcde50](https://github.com/contentstack/live-preview-sdk/commit/0dcde504de46d092b25698a04431be8564bb4299))
+- Updated codeowners (Aravind Kumar - [7e157dd](https://github.com/contentstack/live-preview-sdk/commit/7e157dd952279e6b7c08065606955e63611ee92c))
+- codeql-analysis.yml (Aravind Kumar - [3d77444](https://github.com/contentstack/live-preview-sdk/commit/3d77444de68d183e6002e8af5bbe0596cc5bf7e8))
+- sca-scan.yml (Aravind Kumar - [a30be29](https://github.com/contentstack/live-preview-sdk/commit/a30be298eb84326c8def8500e91744bd531234db))
+
+## [v3.2.0](https://github.com/contentstack/live-preview-sdk/compare/v3.1.3...v3.2.0)
+
+> 11 April 2025
 
 ### New Features
 
+- feat(collab): add ui-components and collab feature handling (MohammedZuhairAhmed - [8d15af3](https://github.com/contentstack/live-preview-sdk/commit/8d15af302c1129cfeee6acf39e99c282ed275f00))
+- feat(collab): open popup from rhs panel (MohammedZuhairAhmed - [5b09971](https://github.com/contentstack/live-preview-sdk/commit/5b099718bf34d8991d834e81e9eed13b06a6f840))
+- feat(collab): add env based tree-shaking (MohammedZuhairAhmed - [b4ef4a5](https://github.com/contentstack/live-preview-sdk/commit/b4ef4a5fe31d77f6743be2046ac10ecd936da6c2))
+- feat(collab): add retry mechanism for thread rendering (MohammedZuhairAhmed - [65e05c5](https://github.com/contentstack/live-preview-sdk/commit/65e05c5094e17d8b291acdfe03d86ccbda92a6d5))
+- feat(collab): pause collab mode in preview share (MohammedZuhairAhmed - [4f2856f](https://github.com/contentstack/live-preview-sdk/commit/4f2856f3d7acb28c2b08434ddb0a341b78db996d))
+- feat(collab): delete thread when no comments present (Pratyush Biswas - [5f8c184](https://github.com/contentstack/live-preview-sdk/commit/5f8c184ab26044bd07a2e220a2f97ddf5d0e85b7))
+- feat: updates (Ashish Debnath - [e9d11d6](https://github.com/contentstack/live-preview-sdk/commit/e9d11d631ba108f2dac69a48f902c3522e4f0995))
+
+### Fixes
+
+- fix(collab): addressed PR comments (MohammedZuhairAhmed - [c02bb41](https://github.com/contentstack/live-preview-sdk/commit/c02bb41f061370b265721039038cd9b81b5bd221))
+- fix(collab): stop event propagation of modals in collab mode and bug fixes (MohammedZuhairAhmed - [6478284](https://github.com/contentstack/live-preview-sdk/commit/647828494eb8710f8dbac11f5b2c7a4c92e39dcb))
+- fix(collab): disable buttons and icons until api processing is completed, add asyncloader component (MohammedZuhairAhmed - [5626808](https://github.com/contentstack/live-preview-sdk/commit/56268087292f3a25102556568fdb469b3aeec635))
+- fix(collab): bug fixes and code optimisations (MohammedZuhairAhmed - [d890bcb](https://github.com/contentstack/live-preview-sdk/commit/d890bcb2cca9f8e6414a8a52f41a010027733bda))
+- fix(collab): addressed pr comments (MohammedZuhairAhmed - [cab71f0](https://github.com/contentstack/live-preview-sdk/commit/cab71f0b9918d5cf9ceff2983eac4952e5d95a0e))
+- fix(collab): re-design of indicator and api changes (MohammedZuhairAhmed - [5ccde4d](https://github.com/contentstack/live-preview-sdk/commit/5ccde4db516df3c02bdf8533db85d140ec5e795c))
+- fix(collab): user tagging enhancements (diwakarmk7 - [a7af4f4](https://github.com/contentstack/live-preview-sdk/commit/a7af4f41774a11a72b085fc0891654e27576fca1))
+- fix: add check for list overflow (Pratyush Biswas - [76a637c](https://github.com/contentstack/live-preview-sdk/commit/76a637c0637756ac0269e30ae1dd2f24518e1c4b))
+- fix(collab): highlight comment icon fix and code optimization (MohammedZuhairAhmed - [27c7fb0](https://github.com/contentstack/live-preview-sdk/commit/27c7fb06f24241244adb1107a3f62f237f021d0e))
+- fix: update field event is not sent when input event does not occur in inline editable fields (Faraaz Biyabani - [8399182](https://github.com/contentstack/live-preview-sdk/commit/83991825685975c49c48ef4e4c179fcc3af70d97))
+- fix(collab): user tagging fix (MohammedZuhairAhmed - [7e23fe5](https://github.com/contentstack/live-preview-sdk/commit/7e23fe5a058a0a7a1ecdfe2c2d9011b8c556f5c9))
+- fix: threead position changes (Ashish Debnath - [88a222a](https://github.com/contentstack/live-preview-sdk/commit/88a222a804828920b6852a6b1447ac0074dd791b))
+- fix(collab): added listener for new threads updated from state and bug fixes (MohammedZuhairAhmed - [274c0b1](https://github.com/contentstack/live-preview-sdk/commit/274c0b1b92da09301663abe6073983c7d1375a08))
+- fix(collab): made the inviteMetada to be updated when refreshed to get new comments (MohammedZuhairAhmed - [6e99bb5](https://github.com/contentstack/live-preview-sdk/commit/6e99bb55584266f1cab43c4b18abd1c8b802e38d))
+- fix(chore): add validations in textarea (Pratyush Biswas - [9780930](https://github.com/contentstack/live-preview-sdk/commit/9780930511c743604b3e6f5fe8b905c2c1e1c0ae))
+- fix(collab): fix bugs (MohammedZuhairAhmed - [94a26a0](https://github.com/contentstack/live-preview-sdk/commit/94a26a03e6ecb28256e3cf8b2fa9868dd17684f2))
+- fix: updates (Ashish Debnath - [837fa4d](https://github.com/contentstack/live-preview-sdk/commit/837fa4d232ab8090c1d3afda9a792d5fcae39d2b))
+- fix(collab): address pr reviews (MohammedZuhairAhmed - [9d5c6bb](https://github.com/contentstack/live-preview-sdk/commit/9d5c6bb01820d9191fe558afeae205192d436477))
+- fix: test cae (Ashish Debnath - [2af5eb8](https://github.com/contentstack/live-preview-sdk/commit/2af5eb8633d19b05a0a9fdc8acfa90f51cfdc256))
+- fix(collab): remove unused styles (Pratyush Biswas - [430023f](https://github.com/contentstack/live-preview-sdk/commit/430023f55690bd656829c83a368bd910abdd7244))
+- fix(collab): fix cursor when hovering on popup (Pratyush Biswas - [a0855f0](https://github.com/contentstack/live-preview-sdk/commit/a0855f0f88a53f11db7a3509c41566b03e6b3480))
+- fix: updates (Ashish Debnath - [fb5d8f1](https://github.com/contentstack/live-preview-sdk/commit/fb5d8f1d978381db9f3686b516e12433fe4fde85))
+- fix(collab): remove debugging elements (Pratyush Biswas - [d86c371](https://github.com/contentstack/live-preview-sdk/commit/d86c371d8e83185e5db9d816c122b494fbb34546))
+
+### Chores And Housekeeping
+
+- chore(collab): addressed pr comments (MohammedZuhairAhmed - [0a2e644](https://github.com/contentstack/live-preview-sdk/commit/0a2e6447ee9912136927aaab3b0d27eb717d10a1))
+- chore(collab): fix email styles (Pratyush Biswas - [ecfde0a](https://github.com/contentstack/live-preview-sdk/commit/ecfde0ae403807c7e36461e3777d0a720eb82ae1))
+
+### Refactoring and Updates
+
+- refactor(collab): addressed pr comments (MohammedZuhairAhmed - [b299441](https://github.com/contentstack/live-preview-sdk/commit/b2994415544797ca72a6327d5fa36e9c1230bb0f))
+- refactor(collab): code optimisation and bug fixes (MohammedZuhairAhmed - [7005ca9](https://github.com/contentstack/live-preview-sdk/commit/7005ca90d3d2eb5230cb10f2089018bf38746e34))
+- refactor(collab): addressed pr feedbacks (MohammedZuhairAhmed - [019b793](https://github.com/contentstack/live-preview-sdk/commit/019b793872fe24cae0f380bfd7f41c7da198806c))
+
+### Changes to Test Assests
+
+- test(collab): test cases addition and config updates (MohammedZuhairAhmed - [fd2ade5](https://github.com/contentstack/live-preview-sdk/commit/fd2ade5087bbacabdb70f88df84dcb30002bcdf5))
+- test(collab): add ui-components test cases (MohammedZuhairAhmed - [0d458ec](https://github.com/contentstack/live-preview-sdk/commit/0d458ec6b86a3048327e9e385d705be7257d7b95))
+- test(collab): fix failing test cases (Pratyush Biswas - [3763de9](https://github.com/contentstack/live-preview-sdk/commit/3763de9bc9e69d2206eaba650f32e9758a251121))
+- test(collab): add test cases for deleting thread when no comments (Pratyush Biswas - [7cce06f](https://github.com/contentstack/live-preview-sdk/commit/7cce06f1f884aa737ff33ae0d3d4e6e094b05093))
+- test(collab): added test cases (MohammedZuhairAhmed - [1fc17ac](https://github.com/contentstack/live-preview-sdk/commit/1fc17ac07ca9851994272e2541b38ee782df10d1))
+- test(collab): add corresponding test cases (Pratyush Biswas - [435c653](https://github.com/contentstack/live-preview-sdk/commit/435c653567e28e31437f46bb0d0cc3292e2e9e55))
+- test: update focusOverlayWrapper test (Faraaz Biyabani - [caf179e](https://github.com/contentstack/live-preview-sdk/commit/caf179eb6ae329de6993977fa93dcd3e74af206a))
+
+### General Changes
+
+- tagging changes (diwakarmk7 - [001f419](https://github.com/contentstack/live-preview-sdk/commit/001f419ce4cfb261ee87a727ff8150d036771358))
+- tagging users (diwakarmk7 - [f0e0d81](https://github.com/contentstack/live-preview-sdk/commit/f0e0d8102482db26e577ae5943862e3bc7887407))
+- Revert "fix: update field event is not sent when input event does not occur in inline editable fields" (Faraaz Biyabani - [c5c3827](https://github.com/contentstack/live-preview-sdk/commit/c5c3827ba9404892560e1e57444c702fd97936df))
+- Fix thread popup styles (Pratyush Biswas - [b0085ac](https://github.com/contentstack/live-preview-sdk/commit/b0085acd25dbc342bb222dc9bf6d8d13a68357af))
+- suggestion scroll movement fix (diwakarmk7 - [1584b62](https://github.com/contentstack/live-preview-sdk/commit/1584b62e0b52342cc355de645ae82945f76dc875))
+- disable button changes (diwakarmk7 - [07cb9f5](https://github.com/contentstack/live-preview-sdk/commit/07cb9f57d0ad3003054ff1f82d407c39e52c84dd))
+- added disabled state for adding comment button (diwakarmk7 - [b5c90a5](https://github.com/contentstack/live-preview-sdk/commit/b5c90a5f4040918eaec405c257e99c10f893b626))
+- tagging changes (diwakarmk7 - [598286f](https://github.com/contentstack/live-preview-sdk/commit/598286f6685695aca9e0206c18c14e76f81c8b03))
+- remove unused styles (Pratyush Biswas - [1db60c4](https://github.com/contentstack/live-preview-sdk/commit/1db60c49ae5f2decd6ec57a825d8d55206171096))
+- Fix resolve button style (Pratyush Biswas - [e0ecaaa](https://github.com/contentstack/live-preview-sdk/commit/e0ecaaaa0fbf04b1bc61736541302cb0d62e8a9b))
+- added id to tousers list (diwakarmk7 - [df62756](https://github.com/contentstack/live-preview-sdk/commit/df6275625518c222909b8039eb55d21ca38df7aa))
+
+## [v3.1.3](https://github.com/contentstack/live-preview-sdk/compare/v3.1.2...v3.1.3)
+
+> 4 April 2025
+
+### Fixes
+
+- fix(VE-5643): Replace button is visible for parent wrapper for Multiple file field  (Hitesh Shetty - [#410](https://github.com/contentstack/live-preview-sdk/pull/410))
+- fix: enhance loading state for form field focus (Hitesh Shetty - [#409](https://github.com/contentstack/live-preview-sdk/pull/409))
+- fix(VE-5555): add instance button loading state (Faraaz Biyabani - [#406](https://github.com/contentstack/live-preview-sdk/pull/406))
+- fix: call onChangeCallback when live_preview parameter is present in URL (Faraaz Biyabani - [#363](https://github.com/contentstack/live-preview-sdk/pull/363))
+
+### Changes to Test Assests
+
+- test(VE-5478): add unit test for inline editing related functions (Faraaz Biyabani - [#398](https://github.com/contentstack/live-preview-sdk/pull/398))
+
+### General Changes
+
+- v3.1.3 (Sairaj - [#413](https://github.com/contentstack/live-preview-sdk/pull/413))
+- Stage-v3.1.3 (Hitesh Shetty - [#412](https://github.com/contentstack/live-preview-sdk/pull/412))
+- VE-5544: Investigate button click issue with `data-cslp` attribute (Sairaj - [#408](https://github.com/contentstack/live-preview-sdk/pull/408))
+
+### New Features
+
+- feat(VE-5544): allow click in csr app with modifier key (Sairaj Chouhan - [41dc8ad](https://github.com/contentstack/live-preview-sdk/commit/41dc8adfa4bd7f0bef8f657596a16008cbbb83cc))
+
+### Fixes
+
+- fix: add instance button loading state (Faraaz Biyabani - [11e3862](https://github.com/contentstack/live-preview-sdk/commit/11e3862d59cdeb78423cfda371cf29bce499cb2b))
+- fix: call onLiveEdit on registration only in builder (Faraaz Biyabani - [98562c7](https://github.com/contentstack/live-preview-sdk/commit/98562c7370c9b03583d7abb3552af07bc0e9f57f))
+- fix(VE-5643): replace button is visible for parent wrapper for multiple file field (Sairaj Chouhan - [2e2c259](https://github.com/contentstack/live-preview-sdk/commit/2e2c259baa42c1b460044c7aa3a091330cb135ec))
+
+### Chores And Housekeeping
+
+- chore: add tagPattern to auto-changelog configuration in package.json (hiteshshetty-dev - [e0a208b](https://github.com/contentstack/live-preview-sdk/commit/e0a208bab316535abfb9c0e1ead19dab95b76f2d))
+- chore: update ContentstackLivePreview import to version 3.1.3 in README.md (hiteshshetty-dev - [6b52088](https://github.com/contentstack/live-preview-sdk/commit/6b52088ec4605c5d95358f3bc06002ef136e4f2c))
+
+### Changes to Test Assests
+
+- test: add unit test for inline editing related functions (Faraaz Biyabani - [50a2167](https://github.com/contentstack/live-preview-sdk/commit/50a21675271c7ec65d0959a1e20334011119a729))
+- test: fix unit tests related to add instance button (Faraaz Biyabani - [b6af0cc](https://github.com/contentstack/live-preview-sdk/commit/b6af0cc1d6142c9cfcbcdbef745ac245d0f271ca))
+- test: add test for replace button visibility in multiple file fields (Sairaj Chouhan - [aa1d818](https://github.com/contentstack/live-preview-sdk/commit/aa1d818533f8759cfc428c6a2c32691041beef93))
+
+### General Changes
+
+- Update src/visualBuilder/utils/handleInlineEditableField.ts (Hitesh Shetty - [3052877](https://github.com/contentstack/live-preview-sdk/commit/30528770bec19e0ca4a5b29b778fb53b1739bd60))
+
+## [v3.1.2](https://github.com/contentstack/live-preview-sdk/compare/v3.1.1...v3.1.2)
+
+> 7 March 2025
+
+### New Features
+
+- feat: v3.1.2 (Faraaz Biyabani - [#381](https://github.com/contentstack/live-preview-sdk/pull/381))
 - feat: improve edit button rendering (Faraaz Biyabani - [#371](https://github.com/contentstack/live-preview-sdk/pull/371))
 - feat(VE-5170): add plus button configuration  (Sairaj - [#349](https://github.com/contentstack/live-preview-sdk/pull/349))
 - feat: allow click on elements with studio-ui attribute (Faraaz Biyabani - [#355](https://github.com/contentstack/live-preview-sdk/pull/355))
@@ -20,14 +190,18 @@
 - fix(VE-5012): add variant classes in case of adding multiple instances (srinad007 - [#351](https://github.com/contentstack/live-preview-sdk/pull/351))
 - fix(VE-5080): fix z-index for hover outline and add button (srinad007 - [#341](https://github.com/contentstack/live-preview-sdk/pull/341))
 
+### Chores And Housekeeping
+
+- chore: rename `editButtonBulider` to `editInVisualBuilderButton` (Hitesh Shetty - [#379](https://github.com/contentstack/live-preview-sdk/pull/379))
+
 ### Documentation Changes
 
 - docs: add docs for start edit button configuration (Sairaj - [#376](https://github.com/contentstack/live-preview-sdk/pull/376))
 
 ### General Changes
 
+- Stage: v3.1.2 (Faraaz Biyabani - [#377](https://github.com/contentstack/live-preview-sdk/pull/377))
 - Ve 5139 (srinad007 - [#343](https://github.com/contentstack/live-preview-sdk/pull/343))
-- sync main for upcoming release (Hitesh Shetty - [#338](https://github.com/contentstack/live-preview-sdk/pull/338))
 
 ### New Features
 
@@ -44,14 +218,16 @@
 
 ### Chores And Housekeeping
 
+- chore: rename editButtonBulider to editInVisualBuilderButton (Sairaj Chouhan - [bd8be29](https://github.com/contentstack/live-preview-sdk/commit/bd8be29d97c151fc85aad98f55573a6821b3d4fc))
 - chore: remove else block (Sairaj Chouhan - [834c3e7](https://github.com/contentstack/live-preview-sdk/commit/834c3e78250f36b32e21c948bda313818f0db7bc))
+- chore: update integrity (hiteshshetty-dev - [ad2c8aa](https://github.com/contentstack/live-preview-sdk/commit/ad2c8aa3780b973233a82e5a978254f777773af2))
 - chore: remove `describe.only` (Faraaz Biyabani - [5aa5958](https://github.com/contentstack/live-preview-sdk/commit/5aa59587217ff7f64d495240f9e252bcf5b60a9c))
-- chore: update ContentstackLivePreview version to 3.1.1 in README (hiteshshetty-dev - [d885fa5](https://github.com/contentstack/live-preview-sdk/commit/d885fa5f65ef32e22bfb86fa3871238bdec02d61))
 
 ### Changes to Test Assests
 
 - test: isPointerWithinEditButtonSafeZone (Faraaz Biyabani - [3c340e8](https://github.com/contentstack/live-preview-sdk/commit/3c340e8ce52d768f06fbb6b2050ab541a6ac47cb))
 - test: add tests for start editing button in builder (Sairaj Chouhan - [f9988a7](https://github.com/contentstack/live-preview-sdk/commit/f9988a74ed9416cc99ce30ed9f3d25314f7eef5c))
+- test: fix failing test cases (Sairaj Chouhan - [6d36acb](https://github.com/contentstack/live-preview-sdk/commit/6d36acbd5c4e717f92ce40e2e4490df28a857948))
 - test: increase timeout for contenteditable tests (Sairaj Chouhan - [66fee50](https://github.com/contentstack/live-preview-sdk/commit/66fee50387f0a8a9b0ec61b945bec00418dc34f9))
 
 ### General Changes
@@ -60,7 +236,7 @@
 
 ## [v3.1.1](https://github.com/contentstack/live-preview-sdk/compare/v3.1.0...v3.1.1)
 
-> 3 February 2025
+> 6 February 2025
 
 ### Fixes
 
@@ -75,9 +251,17 @@
 
 - test: add unit tests for error handling and field state validation in visual builder (Hitesh Shetty - [#329](https://github.com/contentstack/live-preview-sdk/pull/329))
 
+### General Changes
+
+- sync main for upcoming release (Hitesh Shetty - [#338](https://github.com/contentstack/live-preview-sdk/pull/338))
+
 ### Fixes
 
 - fix: live preview doc (Kirtesh Suthar - [8fcdcc5](https://github.com/contentstack/live-preview-sdk/commit/8fcdcc5127ea722bd9c01f74b1168d9f579e5f30))
+
+### Chores And Housekeeping
+
+- chore: update ContentstackLivePreview version to 3.1.1 in README (hiteshshetty-dev - [d885fa5](https://github.com/contentstack/live-preview-sdk/commit/d885fa5f65ef32e22bfb86fa3871238bdec02d61))
 
 ### Changes to Test Assests
 

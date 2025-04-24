@@ -23,6 +23,13 @@ import EventListenerHandlerParams from "./types";
 import { toggleHighlightedCommentIconDisplay } from "../generators/generateHighlightedComment";
 import { VB_EmptyBlockParentClass } from "../..";
 import { getFieldVariantStatus } from "../components/FieldRevert/FieldRevertComponent";
+import getXPath from "get-xpath";
+import Config from "../../configManager/configManager";
+import { generateThread } from "../generators/generateThread";
+import { isCollabThread } from "../generators/generateThread";
+import { toggleCollabPopup } from "../generators/generateThread";
+import { fixSvgXPath } from "../utils/collabUtils";
+import { v4 as uuidV4 } from "uuid";
 
 type HandleBuilderInteractionParams = Omit<
     EventListenerHandlerParams,
@@ -73,6 +80,22 @@ async function handleBuilderInteraction(
         (eventTarget.hasAttribute("data-cslp") ||
             eventTarget.closest("[data-cslp]"));
 
+    // if multiple elements with the same cslp element are found,
+    // assign a unique ID to each element which we can use to identify
+    // them in updateFocussedState and other places where we
+    // would have queried the element by data-cslp
+    const duplicates = document.querySelectorAll(
+        `[data-cslp="${eventTarget?.getAttribute("data-cslp")}"]`
+    );
+    if (duplicates.length > 1) {
+        duplicates.forEach((ele) => {
+            if (!ele.hasAttribute("data-cslp-unique-id")) {
+                const uniqueId = `cslp-${uuidV4()}`;
+                ele.setAttribute("data-cslp-unique-id", uniqueId);
+            }
+        });
+    }
+
     // if the target element is a studio-ui element, return
     // this is currently used for the "Edit in Studio" button
     if (eventTarget?.getAttribute("data-studio-ui") === "true") {
@@ -93,6 +116,39 @@ async function handleBuilderInteraction(
     ) {
         params.event.preventDefault();
         params.event.stopPropagation();
+    }
+
+    const config = Config.get();
+
+    if (config?.collab.enable === true) {
+        if (config?.collab.pauseFeedback) return;
+        const xpath = fixSvgXPath(getXPath(eventTarget));
+        if (!eventTarget) return;
+
+        const rect = eventTarget.getBoundingClientRect();
+        const relativeX = (params.event.clientX - rect.left) / rect.width;
+        const relativeY = (params.event.clientY - rect.top) / rect.height;
+
+        if (!isCollabThread(eventTarget)) {
+            params.event.preventDefault();
+            params.event.stopPropagation();
+        }
+
+        if (isCollabThread(eventTarget)) {
+            Config.set("collab.isFeedbackMode", false);
+        } else if (config?.collab.isFeedbackMode) {
+            generateThread(
+                { xpath, relativeX, relativeY },
+                {
+                    isNewThread: true,
+                    updateConfig: true,
+                }
+            );
+        } else {
+            toggleCollabPopup({ threadUid: "", action: "close" });
+            Config.set("collab.isFeedbackMode", true);
+        }
+        return;
     }
 
     const eventDetails = getCsDataOfElement(params.event);
