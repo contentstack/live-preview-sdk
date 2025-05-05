@@ -44,7 +44,15 @@ export function handleFieldKeyDown(e: Event): void {
         VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
     ) as FieldDataType | null;
 
-    if (targetElement.tagName === "BUTTON") {
+    if (
+        event
+            .composedPath()
+            .some(
+                (element) =>
+                    element instanceof Element && element.tagName === "BUTTON"
+            )
+    ) {
+        // custom space handling when a button is involved
         handleKeyDownOnButton(event);
     }
     if (fieldType === FieldDataType.NUMBER) {
@@ -56,11 +64,12 @@ export function handleFieldKeyDown(e: Event): void {
 
 // spaces do not work inside a button content-editable
 // this adds a space and moves the cursor ahead, the
-// button press event is also prevented
+// button press event is also prevented, finally syncs the field
 function handleKeyDownOnButton(e: KeyboardEvent) {
     if (e.code === "Space" && e.target) {
         e.preventDefault();
         insertSpaceAtCursor(e.target as HTMLElement);
+        throttledFieldSync();
     }
 }
 

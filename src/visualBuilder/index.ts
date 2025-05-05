@@ -268,38 +268,6 @@ export class VisualBuilder {
         }, 1000)
     );
 
-    private dataCslpMutationObserver = new MutationObserver((mutations) => {
-        let shouldCheck = false;
-
-        mutations.forEach((mutation) => {
-            if (
-                mutation.type === "childList" &&
-                mutation.addedNodes.length > 0
-            ) {
-                for (const node of mutation.addedNodes) {
-                    if (node.nodeType === Node.ELEMENT_NODE) {
-                        if ((node as Element).hasAttribute("data-cslp")) {
-                            shouldCheck = true;
-                            break;
-                        }
-                    }
-                }
-            }
-        });
-
-        if (shouldCheck) {
-            const dataCslpElements = document.querySelectorAll("[data-cslp]");
-            if (dataCslpElements.length > 0) {
-                dataCslpElements.forEach((element) => {
-                    if (!element.hasAttribute("data-cslp-unique-id")) {
-                        const uniqueId = `cslp-${window.crypto.randomUUID()}`;
-                        element.setAttribute("data-cslp-unique-id", uniqueId);
-                    }
-                });
-            }
-        }
-    });
-
     constructor() {
         // Handles changes in element positions due to sidebar toggling or window resizing,
         // triggering a redraw of the visual builder
@@ -328,11 +296,6 @@ export class VisualBuilder {
         if (!config.enable || config.mode < ILivePreviewModeConfig.BUILDER) {
             return;
         }
-
-        this.dataCslpMutationObserver.observe(document.body, {
-            childList: true,
-            subtree: true,
-        });
 
         visualBuilderPostMessage
             ?.send<IVisualBuilderInitEvent>("init", {
@@ -447,7 +410,6 @@ export class VisualBuilder {
         this.resizeObserver.disconnect();
         this.mutationObserver.disconnect();
         this.threadMutationObserver.disconnect();
-        this.dataCslpMutationObserver.disconnect()
 
         // Clear global state
         VisualBuilder.VisualBuilderGlobalState.value = {

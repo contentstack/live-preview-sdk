@@ -29,6 +29,7 @@ import { generateThread } from "../generators/generateThread";
 import { isCollabThread } from "../generators/generateThread";
 import { toggleCollabPopup } from "../generators/generateThread";
 import { fixSvgXPath } from "../utils/collabUtils";
+import { v4 as uuidV4 } from "uuid";
 import { getEntryPermissionsCached } from "../utils/getEntryPermissionsCached";
 
 type HandleBuilderInteractionParams = Omit<
@@ -79,6 +80,22 @@ async function handleBuilderInteraction(
         eventTarget &&
         (eventTarget.hasAttribute("data-cslp") ||
             eventTarget.closest("[data-cslp]"));
+
+    // if multiple elements with the same cslp element are found,
+    // assign a unique ID to each element which we can use to identify
+    // them in updateFocussedState and other places where we
+    // would have queried the element by data-cslp
+    const duplicates = document.querySelectorAll(
+        `[data-cslp="${eventTarget?.getAttribute("data-cslp")}"]`
+    );
+    if (duplicates.length > 1) {
+        duplicates.forEach((ele) => {
+            if (!ele.hasAttribute("data-cslp-unique-id")) {
+                const uniqueId = `cslp-${uuidV4()}`;
+                ele.setAttribute("data-cslp-unique-id", uniqueId);
+            }
+        });
+    }
 
     // if the target element is a studio-ui element, return
     // this is currently used for the "Edit in Studio" button
