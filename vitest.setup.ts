@@ -18,7 +18,10 @@ beforeAll(() => {
     vi.mock("./src/visualBuilder/utils/getEntryPermissionsCached", () => {
         return {
             getEntryPermissionsCached: vi.fn().mockResolvedValue({
+                read: true,
+                publish: true,
                 update: true,
+                delete: true,
             }),
         };
     });
