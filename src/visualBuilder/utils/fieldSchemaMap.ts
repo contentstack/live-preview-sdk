@@ -95,5 +95,6 @@ export class FieldSchemaMap {
      */
     static clear(): void {
         FieldSchemaMap.fieldSchema = {};
+        FieldSchemaMap.fieldSchemaPromise = {};
     }
 }

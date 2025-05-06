@@ -2,6 +2,7 @@ import { VisualBuilder } from "..";
 import { visualBuilderStyles } from "../visualBuilder.style";
 import visualBuilderPostMessage from "../utils/visualBuilderPostMessage";
 import { VisualBuilderPostMessageEvents } from "../utils/types/postMessage.types";
+import { FieldSchemaMap } from "../utils/fieldSchemaMap";
 
 interface VariantFieldsEvent {
     data: {
@@ -33,7 +34,7 @@ interface LocaleEvent {
         locale: string;
     };
 }
-function addVariantFieldClass(
+export function addVariantFieldClass(
     variant_uid: string,
     highlightVariantFields: boolean
 ): void {
@@ -56,7 +57,9 @@ function addVariantFieldClass(
     });
 }
 
-function removeVariantFieldClass(onlyHighlighted: boolean = false): void {
+export function removeVariantFieldClass(
+    onlyHighlighted: boolean = false
+): void {
     if (onlyHighlighted) {
         const variantElements = document.querySelectorAll(
             `.${visualBuilderStyles()["visual-builder__variant-field"]}`
@@ -81,13 +84,13 @@ function removeVariantFieldClass(onlyHighlighted: boolean = false): void {
     }
 }
 
-function setAudienceMode(mode: boolean): void {
+export function setAudienceMode(mode: boolean): void {
     VisualBuilder.VisualBuilderGlobalState.value.audienceMode = mode;
 }
-function setVariant(uid: string | null): void {
+export function setVariant(uid: string | null): void {
     VisualBuilder.VisualBuilderGlobalState.value.variant = uid;
 }
-function setLocale(locale: string): void {
+export function setLocale(locale: string): void {
     VisualBuilder.VisualBuilderGlobalState.value.locale = locale;
 }
 
@@ -96,6 +99,12 @@ export function useVariantFieldsPostMessageEvent(): void {
         VisualBuilderPostMessageEvents.GET_VARIANT_ID,
         (event: VariantEvent) => {
             setVariant(event.data.variant);
+            // clear field schema when variant is changed.
+            // this is required as we cache field schema
+            // which contain a key isUnlinkedVariant.
+            // This key can change when variant is changed,
+            // so clear the field schema cache
+            FieldSchemaMap.clear();
         }
     );
     visualBuilderPostMessage?.on(
