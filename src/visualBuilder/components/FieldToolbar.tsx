@@ -314,6 +314,7 @@ function FieldToolbarComponent(
         </button>
     );
 
+    // TODO sibling count is incorrect for this purpose
     const totalElementCount = targetElement?.parentNode?.childElementCount ?? 1;
     const indexOfElement = fieldMetadata?.multipleFieldMetadata?.index;
 

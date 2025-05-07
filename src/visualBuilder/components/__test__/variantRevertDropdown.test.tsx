@@ -5,6 +5,7 @@ import {
     VariantRevertDropdown,
 } from "../FieldRevert/FieldRevertComponent";
 import { describe, it, expect, vi } from "vitest";
+import React from "preact/compat";
 
 const sendMock = vi.hoisted(() =>
     vi.fn().mockImplementation((_eventName: string) => {
@@ -83,6 +84,30 @@ describe("VariantRevertDropdown", () => {
             "visual-builder-canvas-variant-revert"
         );
         expect(button).toBeInTheDocument();
+    });
+
+    it("should disable dropdown button", async () => {
+        const { findByTestId } = await asyncRender(
+            <VariantRevertDropdown
+                closeDropdown={vi.fn()}
+                invertTooltipPosition={false}
+                toggleVariantDropdown={vi.fn()}
+                variantStatus={{
+                    isAddedInstances: true,
+                    isBaseModified: false,
+                    isDeletedInstances: true,
+                    isOrderChanged: false,
+                    fieldLevelCustomizations: true,
+                }}
+                fieldDataName="fieldDataName"
+                disabled={true}
+            />
+        );
+
+        const button = await findByTestId(
+            "visual-builder-canvas-variant-revert"
+        );
+        expect(button).toBeDisabled();
     });
 
     it("should call toggleVariantDropdown when button is clicked", async () => {

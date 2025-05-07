@@ -5,10 +5,20 @@ import { addFocusOverlay, hideFocusOverlay } from "../../generators/generateOver
 import { mockGetBoundingClientRect } from "../../../__test__/utils";
 import { act } from "@testing-library/preact";
 import { singleLineFieldSchema } from "../../../__test__/data/fields";
+import { getEntryPermissionsCached } from "../getEntryPermissionsCached";
+import { isFieldDisabled } from "../isFieldDisabled";
 
 vi.mock("../../generators/generateOverlay", () => ({
     addFocusOverlay: vi.fn(),
     hideFocusOverlay: vi.fn()
+}));
+
+vi.mock("../getEntryPermissionsCached", () => ({
+    getEntryPermissionsCached: vi.fn(),
+}));
+
+vi.mock("../../utils/isFieldDisabled", () => ({
+    isFieldDisabled: vi.fn().mockReturnValue({ isDisabled: false }),
 }));
 
 vi.mock("../../utils/fieldSchemaMap", () => {
@@ -121,7 +131,64 @@ describe("updateFocussedState", () => {
 
         expect(focusedToolbarMock.style.top).toBe("49px");
         expect(focusedToolbarMock.style.left).toBe("8px");
-    })
+    });
+
+    it("should handle entry permissions and field disabled state", async () => {
+        const editableElementMock = document.createElement("div");
+        editableElementMock.setAttribute(
+            "data-cslp",
+            "content_type_uid.entry_uid.locale.field_path"
+        );
+        const visualBuilderContainerMock = document.createElement("div");
+        const overlayWrapperMock = document.createElement("div");
+        const focusedToolbarMock = document.createElement("div");
+        const resizeObserverMock = {
+            disconnect: vi.fn(),
+        } as unknown as ResizeObserver;
+
+        const mockEntryPermissions = {
+            create: true,
+            read: true,
+            update: false,
+            delete: true,
+            publish: true,
+        };
+
+        vi.mocked(getEntryPermissionsCached).mockResolvedValue(
+            mockEntryPermissions
+        );
+
+        await act(async () => {
+            await updateFocussedState({
+                editableElement: editableElementMock,
+                visualBuilderContainer: visualBuilderContainerMock,
+                overlayWrapper: overlayWrapperMock,
+                focusedToolbar: focusedToolbarMock,
+                resizeObserver: resizeObserverMock,
+            });
+        });
+
+        expect(getEntryPermissionsCached).toHaveBeenCalledWith({
+            entryUid: "entry_uid",
+            contentTypeUid: "content_type_uid",
+            locale: "locale",
+        });
+
+        expect(isFieldDisabled).toHaveBeenCalledWith(
+            singleLineFieldSchema,
+            {
+                editableElement: editableElementMock,
+                fieldMetadata: expect.any(Object),
+            },
+            mockEntryPermissions
+        );
+
+        expect(addFocusOverlay).toHaveBeenCalledWith(
+            expect.any(HTMLElement),
+            overlayWrapperMock,
+            expect.any(Boolean)
+        );
+    });
 });
 
 describe("updateFocussedStateOnMutation", () => {

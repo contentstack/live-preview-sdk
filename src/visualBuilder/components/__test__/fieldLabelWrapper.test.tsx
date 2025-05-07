@@ -1,10 +1,14 @@
-import { render, cleanup, waitFor,screen } from "@testing-library/preact";
+import { waitFor } from "@testing-library/preact";
 import FieldLabelWrapperComponent from "../fieldLabelWrapper";
 import { CslpData } from "../../../cslp/types/cslp.types";
 import { VisualBuilderCslpEventDetails } from "../../types/visualBuilder.types";
 import { VisualBuilderPostMessageEvents } from "../../utils/types/postMessage.types";
 import { singleLineFieldSchema } from "../../../__test__/data/fields";
 import { asyncRender } from "../../../__test__/utils";
+import { isFieldDisabled } from "../../utils/isFieldDisabled";
+import { FieldSchemaMap } from "../../utils/fieldSchemaMap";
+import { getEntryPermissionsCached } from "../../utils/getEntryPermissionsCached";
+import React from "preact/compat";
 
 const DISPLAY_NAMES = {
     mockFieldCslp: "Field 0",
@@ -73,14 +77,7 @@ vi.mock("../../utils/visualBuilderPostMessage", async () => {
 });
 
 vi.mock("../../utils/isFieldDisabled", () => ({
-    isFieldDisabled: vi
-        .fn()
-        .mockReturnValueOnce({ isDisabled: false })
-        .mockReturnValueOnce({ isDisabled: false })
-        .mockReturnValueOnce({
-            isDisabled: true,
-            reason: "You have only read access to this field",
-        }),
+    isFieldDisabled: vi.fn().mockReturnValue({ isDisabled: false }),
 }));
 
 vi.mock("../../../cslp", () => ({
@@ -90,7 +87,17 @@ vi.mock("../../../cslp", () => ({
 }));
 
 describe("FieldLabelWrapperComponent", () => {
-    afterEach(cleanup);
+    beforeEach(() => {
+        vi.mocked(isFieldDisabled).mockReturnValue({
+            isDisabled: false,
+            // @ts-expect-error - reason is an unexported literal
+            reason: "",
+        });
+    });
+
+    afterEach(() => {
+        vi.clearAllMocks();
+    });
 
     const mockFieldMetadata: CslpData = {
         entry_uid: "",
@@ -156,6 +163,11 @@ describe("FieldLabelWrapperComponent", () => {
     });
 
     test("renders with correct class when field is disabled", async () => {
+        vi.mocked(isFieldDisabled).mockReturnValue({
+            isDisabled: true,
+            // @ts-expect-error - reason is an unexported literal
+            reason: "You have only read access to this field",
+        });
         const { findByTestId } = await asyncRender(
             <FieldLabelWrapperComponent
                 fieldMetadata={mockFieldMetadata}
@@ -174,5 +186,47 @@ describe("FieldLabelWrapperComponent", () => {
                 "visual-builder__focused-toolbar--field-disabled"
             );
         });
+    });
+
+    test("calls isFieldDisabled with correct arguments", async () => {
+        const mockFieldSchema = { ...singleLineFieldSchema };
+        const mockEntryPermissions = {
+            create: true,
+            read: true,
+            update: false,
+            delete: true,
+            publish: true,
+        };
+
+        vi.mocked(FieldSchemaMap.getFieldSchema).mockResolvedValue(
+            mockFieldSchema
+        );
+        vi.mocked(getEntryPermissionsCached).mockResolvedValue(
+            mockEntryPermissions
+        );
+
+        await asyncRender(
+            <FieldLabelWrapperComponent
+                fieldMetadata={mockFieldMetadata}
+                eventDetails={mockEventDetails}
+                parentPaths={[]}
+                getParentEditableElement={mockGetParentEditable}
+            />
+        );
+
+        // wait for component to mount
+        await waitFor(() => {
+            expect(
+                document.querySelector(
+                    ".visual-builder__focused-toolbar__field-label-container"
+                )
+            ).toBeInTheDocument();
+        });
+
+        expect(isFieldDisabled).toHaveBeenCalledWith(
+            mockFieldSchema,
+            mockEventDetails,
+            mockEntryPermissions
+        );
     });
 });

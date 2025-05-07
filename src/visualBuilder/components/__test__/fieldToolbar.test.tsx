@@ -10,6 +10,8 @@ import FieldToolbarComponent from "../FieldToolbar";
 import { mockMultipleLinkFieldSchema, mockMultipleFileFieldSchema } from "../../../__test__/data/fields";
 import { asyncRender } from "../../../__test__/utils";
 import { VisualBuilderCslpEventDetails } from "../../types/visualBuilder.types";
+import { isFieldDisabled } from "../../utils/isFieldDisabled";
+import React from "preact/compat";
 
 vi.mock("../../utils/instanceHandlers", () => ({
     handleMoveInstance: vi.fn(),
@@ -40,6 +42,10 @@ vi.mock("../../utils/getDiscussionIdByFieldMetaData", () => {
     };
 });
 
+vi.mock("../../utils/isFieldDisabled", () => ({
+    isFieldDisabled: vi.fn().mockReturnValue({ isDisabled: false }),
+}));
+
 const mockMultipleFieldMetadata: CslpData = {
     entry_uid: "",
     content_type_uid: "",
@@ -60,7 +66,7 @@ const mockMultipleFieldMetadata: CslpData = {
     },
 };
 
-describe("MultipleFieldToolbarComponent", () => {
+describe("FieldToolbarComponent", () => {
     let targetElement: HTMLDivElement;
     const mockEventDetails: VisualBuilderCslpEventDetails = {
         fieldMetadata: mockMultipleFieldMetadata,
@@ -90,6 +96,7 @@ describe("MultipleFieldToolbarComponent", () => {
         const { findByTestId } = await asyncRender(
             <FieldToolbarComponent
                 eventDetails={mockEventDetails}
+                hideOverlay={vi.fn()}
             />
         );
 
@@ -112,6 +119,7 @@ describe("MultipleFieldToolbarComponent", () => {
         const { findByTestId } = await asyncRender(
             <FieldToolbarComponent
                 eventDetails={mockEventDetails}
+                hideOverlay={vi.fn()}
             />
         );
 
@@ -132,6 +140,7 @@ describe("MultipleFieldToolbarComponent", () => {
         const { findByTestId } = await asyncRender(
             <FieldToolbarComponent
                 eventDetails={mockEventDetails}
+                hideOverlay={vi.fn()}
             />
         );
 
@@ -152,6 +161,7 @@ describe("MultipleFieldToolbarComponent", () => {
         const { findByTestId } = await asyncRender(
             <FieldToolbarComponent
                 eventDetails={mockEventDetails}
+                hideOverlay={vi.fn()}
             />
         );
 
@@ -205,6 +215,7 @@ describe("MultipleFieldToolbarComponent", () => {
             const { container } = await asyncRender(
                 <FieldToolbarComponent
                     eventDetails={parentWrapperEventDetails}
+                    hideOverlay={vi.fn()}
                 />
             );
 
@@ -229,11 +240,65 @@ describe("MultipleFieldToolbarComponent", () => {
             const { container } = await asyncRender(
                 <FieldToolbarComponent
                     eventDetails={individualFieldEventDetails}
+                    hideOverlay={vi.fn()}
                 />
             );
 
             const replaceButton = container.querySelector('[data-testid="visual-builder-replace-file"]');
             expect(replaceButton).toBeInTheDocument();
         });
+    });
+
+    test("passes disabled state correctly to child components when field is disabled", async () => {
+        // Mock isFieldDisabled to return disabled state
+        vi.mocked(isFieldDisabled).mockReturnValue({
+            isDisabled: true,
+            reason: "You have only read access to this field" as any,
+        });
+
+        const { findByTestId } = await asyncRender(
+            <FieldToolbarComponent
+                eventDetails={mockEventDetails}
+                hideOverlay={vi.fn()}
+            />
+        );
+
+        await waitFor(async () => {
+            const toolbar = await findByTestId(
+                "visual-builder__focused-toolbar__multiple-field-toolbar"
+            );
+            expect(toolbar).toBeInTheDocument();
+        });
+
+        // Check that move buttons are disabled
+        const moveLeftButton = await findByTestId(
+            "visual-builder__focused-toolbar__multiple-field-toolbar__move-left-button"
+        );
+        const moveRightButton = await findByTestId(
+            "visual-builder__focused-toolbar__multiple-field-toolbar__move-right-button"
+        );
+        const deleteButton = await findByTestId(
+            "visual-builder__focused-toolbar__multiple-field-toolbar__delete-button"
+        );
+
+        expect(moveLeftButton).toBeDisabled();
+        expect(moveRightButton).toBeDisabled();
+        expect(deleteButton).toBeDisabled();
+
+        // Check that edit button is disabled if present
+        const editButton = await findByTestId(
+            "visual-builder__focused-toolbar__multiple-field-toolbar__edit-button"
+        ).catch(() => null);
+        if (editButton) {
+            expect(editButton).toBeDisabled();
+        }
+
+        // Check that replace button is disabled if present
+        const replaceButton = document.querySelector(
+            '[data-testid="visual-builder-replace-file"]'
+        );
+        if (replaceButton) {
+            expect(replaceButton).toBeDisabled();
+        }
     });
 });

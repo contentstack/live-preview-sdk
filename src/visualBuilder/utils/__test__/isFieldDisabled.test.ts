@@ -144,4 +144,88 @@ describe('isFieldDisabled', () => {
         expect(result.isDisabled).toBe(false);
         expect(result.reason).toBe('');
     });
+    
+    it('should return disabled state due to read-only role', () => {
+        const fieldSchemaMap: ISchemaFieldMap = {
+            data_type: "block",
+            display_name: "Test Block",
+            title: "Test Block",
+            uid: "test_block",
+            schema: [],
+            field_metadata: {
+                updateRestrict: true,
+            },
+        };
+        const eventFieldDetails: FieldDetails = {
+            editableElement: document.createElement("div"),
+            fieldMetadata: {
+                locale: "en-us",
+                entry_uid: "test_entry",
+                content_type_uid: "test_content_type",
+                cslpValue: "test_cslp",
+                variant: "default",
+                fieldPath: "test_field",
+                fieldPathWithIndex: "test_field[0]",
+                instance: {
+                    fieldPathWithIndex: "test_field[0]",
+                },
+                multipleFieldMetadata: {
+                    index: 0,
+                    parentDetails: {
+                        parentCslpValue: "",
+                        parentPath: "",
+                    },
+                },
+            },
+        };
+
+        const result = isFieldDisabled(fieldSchemaMap, eventFieldDetails);
+        expect(result.isDisabled).toBe(true);
+        expect(result.reason).toBe("You have only read access to this field");
+    });
+
+    it("should return disabled state due to entry update restriction", () => {
+        const fieldSchemaMap: ISchemaFieldMap = {
+            data_type: "block",
+            display_name: "Test Block",
+            title: "Test Block",
+            uid: "test_block",
+            schema: [],
+        };
+        const eventFieldDetails: FieldDetails = {
+            editableElement: document.createElement("div"),
+            fieldMetadata: {
+                locale: "en-us",
+                entry_uid: "test_entry",
+                content_type_uid: "test_content_type",
+                cslpValue: "test_cslp",
+                variant: "default",
+                fieldPath: "test_field",
+                fieldPathWithIndex: "test_field[0]",
+                instance: {
+                    fieldPathWithIndex: "test_field[0]",
+                },
+                multipleFieldMetadata: {
+                    index: 0,
+                    parentDetails: {
+                        parentCslpValue: "",
+                        parentPath: "",
+                    },
+                },
+            },
+        };
+
+        const result = isFieldDisabled(fieldSchemaMap, eventFieldDetails, {
+            update: false,
+            create: true,
+            read: true,
+            delete: true,
+            publish: true,
+        });
+        expect(result.isDisabled).toBe(true);
+        expect(result.reason).toBe(
+            "You do not have permission to edit this entry"
+        );
+    });
+
 });
