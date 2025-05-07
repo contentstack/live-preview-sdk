@@ -270,6 +270,32 @@ describe("hideFocusOverlay", () => {
         );
     });
 
+    test("should not send update field event when focusFieldReceivedInput is false", async () => {
+        editedElement.setAttribute("contenteditable", "true");
+
+        // Set up global state
+        VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
+            editedElement;
+        VisualBuilder.VisualBuilderGlobalState.value.focusFieldReceivedInput =
+            false;
+
+        expect(focusOverlayWrapper.classList.contains("visible")).toBe(true);
+
+        hideFocusOverlay({
+            visualBuilderContainer,
+            visualBuilderOverlayWrapper: focusOverlayWrapper,
+            focusedToolbar: document.querySelector(".visual-builder__toolbar"),
+            resizeObserver: mockResizeObserver,
+            noTrigger: false
+        });
+
+        expect(focusOverlayWrapper.classList.contains("visible")).toBe(false);
+
+        await waitFor(() => {
+            expect(visualBuilderPostMessage?.send).not.toHaveBeenCalled();
+        });
+    });
+
     test("should run cleanup function", () => {
         // We"ll always click one of the overlays, so we can just grab the first one. Manually pointing the global state to the editedElement as we are not simulating mouse click on window here.
         VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
