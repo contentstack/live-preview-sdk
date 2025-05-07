@@ -6,12 +6,22 @@ import * as generateOverlay from "../../generators/generateOverlay";
 import { VisualBuilderPostMessageEvents } from "../types/postMessage.types";
 import { FieldDataType } from "../types/index.types";
 import userEvent from "@testing-library/user-event";
-import { waitFor, screen } from "@testing-library/preact";
+import { waitFor } from "@testing-library/preact";
+import { VisualBuilder } from "../../index";
+
+vi.mock("../../index", async () => ({
+    VisualBuilder: {
+        VisualBuilderGlobalState: {
+            value: { focusFieldReceivedInput: false },
+        },
+    },
+}));
 
 vi.mock("lodash-es", async () => ({
     ...(await import("lodash-es")),
     throttle: vi.fn((fn) => fn),
-}))
+}));
+
 describe("handle numeric field key down", () => {
     let h1: HTMLHeadingElement;
     let spiedPreventDefault: MockInstance<(e: []) => void> | undefined;
@@ -117,7 +127,7 @@ describe("handle numeric field key down", () => {
     });
 
     test("should only accept characters like a number input", async () => {
-        h1.innerHTML = '';
+        h1.innerHTML = "";
         await userEvent.click(h1);
         await userEvent.keyboard("ab56c78e-h10");
 
@@ -231,7 +241,10 @@ describe("handle single line field key down", () => {
         h1 = document.createElement("h1");
         h1.innerHTML = "2.2";
         h1.setAttribute("contenteditable", "true");
-        h1.setAttribute(VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY, FieldDataType.SINGLELINE);
+        h1.setAttribute(
+            VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY,
+            FieldDataType.SINGLELINE
+        );
 
         h1.addEventListener("keydown", (e) => {
             spiedPreventDefault = vi.spyOn(e, "preventDefault");
@@ -260,7 +273,7 @@ describe("handle single line field key down", () => {
 
         expect(spiedPreventDefault).toHaveBeenCalledTimes(1);
     });
-})
+});
 
 describe("`handleFieldInput`", () => {
     let h1: HTMLHeadingElement;
@@ -289,18 +302,30 @@ describe("`handleFieldInput`", () => {
     });
 
     test("should call `sendFieldEvent` on input event", () => {
-        const spiedSendFieldEvent = vi.spyOn(generateOverlay, "sendFieldEvent")
+        const spiedSendFieldEvent = vi.spyOn(generateOverlay, "sendFieldEvent");
         const consoleError = vi.spyOn(console, "error");
-        spiedSendFieldEvent.mockImplementation(() => { 
-            throw new Error("sendFieldEvent not implemented")
+        spiedSendFieldEvent.mockImplementation(() => {
+            throw new Error("sendFieldEvent not implemented");
         });
         const inputEvent = new InputEvent("input", {
             bubbles: true,
         });
         h1.dispatchEvent(inputEvent);
 
-        expect(spiedSendFieldEvent).toHaveBeenCalledWith({ visualBuilderContainer, eventType: VisualBuilderPostMessageEvents.SYNC_FIELD });
+        expect(spiedSendFieldEvent).toHaveBeenCalledWith({
+            visualBuilderContainer,
+            eventType: VisualBuilderPostMessageEvents.SYNC_FIELD,
+        });
         expect(consoleError).toHaveBeenCalled();
     });
 
-})
+    test("should set focusFieldReceivedInput to true", () => {
+        const inputEvent = new InputEvent("input", {
+            bubbles: true,
+        });
+        h1.dispatchEvent(inputEvent);
+        expect(
+            VisualBuilder.VisualBuilderGlobalState.value.focusFieldReceivedInput
+        ).toBe(true);
+    });
+});

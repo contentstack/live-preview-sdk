@@ -62,6 +62,7 @@ interface VisualBuilderGlobalStateImpl {
     previousHoveredTargetDOM: Element | null;
     previousEmptyBlockParents: Element[] | [];
     focusFieldValue: string | null;
+    focusFieldReceivedInput: boolean;
     audienceMode: boolean;
     locale: string;
     variant: string | null;
@@ -82,6 +83,7 @@ export class VisualBuilder {
             previousHoveredTargetDOM: null,
             previousEmptyBlockParents: [],
             focusFieldValue: null,
+            focusFieldReceivedInput: false,
             audienceMode: false,
             locale: Config.get().stackDetails.masterLocale || "en-us",
             variant: null,
@@ -208,9 +210,7 @@ export class VisualBuilder {
                 );
 
                 const emptyBlockParents = Array.from(
-                    document.querySelectorAll(
-                        `.${VB_EmptyBlockParentClass}`
-                    )
+                    document.querySelectorAll(`.${VB_EmptyBlockParentClass}`)
                 );
 
                 const previousEmptyBlockParents = VisualBuilder
@@ -417,6 +417,7 @@ export class VisualBuilder {
             previousHoveredTargetDOM: null,
             previousEmptyBlockParents: [],
             focusFieldValue: null,
+            focusFieldReceivedInput: false,
             audienceMode: false,
             locale: "en-us",
             variant: null,
