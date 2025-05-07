@@ -39,23 +39,23 @@ describe("generateToolbar", () => {
     });
 
     describe("appendFieldToolbar", () => {
-        it("should render FieldToolbarComponent if not already present", () => {
-            appendFieldToolbar(eventDetails, focusedToolbarElement, hideOverlay);
+        it("should render FieldToolbarComponent if not already present", async () => {
+            await appendFieldToolbar(eventDetails, focusedToolbarElement, hideOverlay);
 
             expect(render).toBeCalled();
         });
 
-        it("should not render FieldToolbarComponent if already present", () => {
+        it("should not render FieldToolbarComponent if already present", async () => {
             focusedToolbarElement.innerHTML =
                 '<div class="visual-builder__focused-toolbar__multiple-field-toolbar"></div>';
 
-            appendFieldToolbar(eventDetails, focusedToolbarElement, hideOverlay);
+            await appendFieldToolbar(eventDetails, focusedToolbarElement, hideOverlay);
 
             expect(render).not.toHaveBeenCalled();
         });
 
-        it("should append the rendered component to the focusedToolbarElement", () => {
-            appendFieldToolbar(eventDetails, focusedToolbarElement, hideOverlay);
+        it("should append the rendered component to the focusedToolbarElement", async () => {
+            await appendFieldToolbar(eventDetails, focusedToolbarElement, hideOverlay);
 
             expect(spyAppend).toHaveBeenCalledWith(expect.any(DocumentFragment));
         });
