@@ -4,6 +4,7 @@ import Config from "../../../../configManager/configManager";
 import { VisualBuilder } from "../../../index";
 import { FieldSchemaMap } from "../../../utils/fieldSchemaMap";
 import { mockDomRect } from "./mockDomRect";
+import { act } from "@testing-library/preact";
 
 vi.mock("../../../utils/visualBuilderPostMessage", async () => {
     const { getAllContentTypes } = await vi.importActual<
@@ -84,7 +85,9 @@ describe("When an element is hovered in visual builder mode", () => {
         });
 
         test("should have outline and custom cursor", async () => {
-            dataField.dispatchEvent(mousemoveEvent);
+            await act(async () => {
+                dataField.dispatchEvent(mousemoveEvent);
+            });
             await waitForHoverOutline();
             expect(dataField).toHaveAttribute("data-cslp", "all_fields.bltapikey.en-us.date");
             expect(dataField).not.toHaveAttribute("contenteditable");

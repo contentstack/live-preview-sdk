@@ -5,6 +5,7 @@ import { FieldSchemaMap } from "../../../utils/fieldSchemaMap";
 import { mockDomRect } from "./mockDomRect";
 import { VisualBuilder } from "../../../index";
 import { screen } from "@testing-library/preact";
+import { act } from "@testing-library/preact";
 
 vi.mock("../../../utils/visualBuilderPostMessage", async () => {
     const { getAllContentTypes } = await vi.importActual<
@@ -96,7 +97,9 @@ describe("When an element is hovered in visual builder mode", () => {
         });
 
         test("should have outline and custom cursor", async () => {
-            groupField.dispatchEvent(mousemoveEvent);
+            await act(async () => {
+                groupField.dispatchEvent(mousemoveEvent);
+            });
             await waitForHoverOutline();
             const hoverOutline = document.querySelector(
                 "[data-testid='visual-builder__hover-outline']"
@@ -124,7 +127,9 @@ describe("When an element is hovered in visual builder mode", () => {
 
             groupField.appendChild(singleLine);
 
-            singleLine.dispatchEvent(mousemoveEvent);
+            await act(async () => {
+                singleLine.dispatchEvent(mousemoveEvent);
+            });
             await waitForHoverOutline();
             const hoverOutline = document.querySelector(
                 "[data-testid='visual-builder__hover-outline']"
@@ -203,7 +208,9 @@ describe("When an element is hovered in visual builder mode", () => {
         });
 
         test("should have outline and custom cursor", async () => {
-            container.dispatchEvent(mousemoveEvent);
+            await act(async () => {
+                container.dispatchEvent(mousemoveEvent);
+            });
             await waitForHoverOutline();
             const hoverOutline = document.querySelector(
                 "[data-testid='visual-builder__hover-outline']"
@@ -217,7 +224,9 @@ describe("When an element is hovered in visual builder mode", () => {
             expect(customCursor).toHaveAttribute('data-icon', 'group');
             expect(customCursor?.classList.contains("visible")).toBeTruthy();
 
-            firstNestedMultiLine.dispatchEvent(mousemoveEvent);
+            await act(async () => {
+                firstNestedMultiLine.dispatchEvent(mousemoveEvent);
+            });
             await waitForHoverOutline();
 
             const newCustomCursor = document.querySelector(
