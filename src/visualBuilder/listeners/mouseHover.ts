@@ -14,6 +14,7 @@ import { VB_EmptyBlockParentClass } from "../..";
 import Config from "../../configManager/configManager";
 import { isCollabThread } from "../generators/generateThread";
 import { getEntryPermissionsCached } from "../utils/getEntryPermissionsCached";
+import { EntryPermissions } from "../utils/getEntryPermissions";
 
 const config = Config.get();
 export interface HandleMouseHoverParams
@@ -235,24 +236,36 @@ async function handleMouseHover(params: HandleMouseHoverParams): Promise<void> {
                 (fieldSchema) => {
                     if (!fieldSchema) return;
 
+                    let entryAcl: EntryPermissions | undefined;
                     getEntryPermissionsCached({
                         entryUid: fieldMetadata.entry_uid,
                         contentTypeUid: fieldMetadata.content_type_uid,
                         locale: fieldMetadata.locale,
-                    }).then((entryAcl) => {
-                        if (!params.customCursor) return;
-                        const { isDisabled: fieldDisabled } = isFieldDisabled(
-                            fieldSchema,
-                            eventDetails,
-                            entryAcl
-                        );
-                        const fieldType = getFieldType(fieldSchema);
-                        generateCustomCursor({
-                            fieldType,
-                            customCursor: params.customCursor,
-                            fieldDisabled,
+                    })
+                        .then((data) => {
+                            entryAcl = data;
+                        })
+                        .catch((error) => {
+                            console.error(
+                                "[Visual Builder] Error retrieving entry permissions:",
+                                error
+                            );
+                        })
+                        .finally(() => {
+                            if (!params.customCursor) return;
+                            const { isDisabled: fieldDisabled } =
+                                isFieldDisabled(
+                                    fieldSchema,
+                                    eventDetails,
+                                    entryAcl
+                                );
+                            const fieldType = getFieldType(fieldSchema);
+                            generateCustomCursor({
+                                fieldType,
+                                customCursor: params.customCursor,
+                                fieldDisabled,
+                            });
                         });
-                    });
                 }
             );
 
@@ -267,19 +280,31 @@ async function handleMouseHover(params: HandleMouseHoverParams): Promise<void> {
             addOutline(editableElement);
             FieldSchemaMap.getFieldSchema(content_type_uid, fieldPath).then(
                 (fieldSchema) => {
+                    let entryAcl: EntryPermissions | undefined;
                     if (!fieldSchema) return;
                     getEntryPermissionsCached({
                         entryUid: fieldMetadata.entry_uid,
                         contentTypeUid: fieldMetadata.content_type_uid,
                         locale: fieldMetadata.locale,
-                    }).then((entryAcl) => {
-                        const { isDisabled: fieldDisabled } = isFieldDisabled(
-                            fieldSchema,
-                            eventDetails,
-                            entryAcl
-                        );
-                        addOutline(editableElement, fieldDisabled);
-                    });
+                    })
+                        .then((data) => {
+                            entryAcl = data;
+                        })
+                        .catch((error) => {
+                            console.error(
+                                "[Visual Builder] Error retrieving entry permissions:",
+                                error
+                            );
+                        })
+                        .finally(() => {
+                            const { isDisabled: fieldDisabled } =
+                                isFieldDisabled(
+                                    fieldSchema,
+                                    eventDetails,
+                                    entryAcl
+                                );
+                            addOutline(editableElement, fieldDisabled);
+                        });
                 }
             );
         }
