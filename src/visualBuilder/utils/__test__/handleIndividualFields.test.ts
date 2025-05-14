@@ -71,7 +71,16 @@ describe("handleIndividualFields", () => {
         expect(FieldSchemaMap.getFieldSchema).toHaveBeenCalledWith("contentTypeUid", "fieldPath");
         expect(getFieldData).toHaveBeenCalledWith({ content_type_uid: "contentTypeUid", entry_uid: "entryUid", locale: "en-us" }, "fieldPathWithIndex");
         expect(getFieldType).toHaveBeenCalledWith(fieldSchema);
-        expect(isFieldDisabled).toHaveBeenCalledWith(fieldSchema, eventDetails);
+        expect(isFieldDisabled).toHaveBeenCalledWith(
+          fieldSchema, 
+          eventDetails, 
+          {
+            read: true,
+            update: true,
+            delete: true,
+            publish: true,
+          }
+        );
         expect(eventDetails.editableElement.getAttribute(VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY)).toBe(fieldType);
     });
 

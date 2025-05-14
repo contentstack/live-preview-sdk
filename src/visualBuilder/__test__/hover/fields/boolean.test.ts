@@ -6,6 +6,7 @@ import { VisualBuilder } from "../../../index";
 import { FieldSchemaMap } from "../../../utils/fieldSchemaMap";
 import { mockDomRect } from "./mockDomRect";
 import visualBuilderPostMessage from "../../../utils/visualBuilderPostMessage";
+import { act } from "@testing-library/preact";
 
 vi.mock("../../../utils/visualBuilderPostMessage", async () => {
     const { getAllContentTypes } = await vi.importActual<
@@ -64,7 +65,7 @@ describe("When an element is hovered in visual builder mode", () => {
         let booleanField: HTMLParagraphElement;
         let visualBuilder: VisualBuilder;
 
-        beforeEach( async () => {
+        beforeEach(async () => {
             booleanField = document.createElement("p");
             booleanField.setAttribute(
                 "data-cslp",
@@ -86,7 +87,9 @@ describe("When an element is hovered in visual builder mode", () => {
         });
 
         test("should have outline and custom cursor", async () => {
-            booleanField.dispatchEvent(mousemoveEvent);
+            await act(async () => {
+                booleanField.dispatchEvent(mousemoveEvent);
+            });
             await waitForHoverOutline();
             expect(booleanField).toHaveAttribute("data-cslp", "all_fields.bltapikey.en-us.boolean");
             expect(booleanField).not.toHaveAttribute("contenteditable");

@@ -156,6 +156,8 @@ describe("hideFocusOverlay", () => {
         initUI({
             resizeObserver: mockResizeObserver,
         });
+        VisualBuilder.VisualBuilderGlobalState.value.focusFieldReceivedInput =
+            true;
         visualBuilderContainer = document.querySelector(
             ".visual-builder__container"
         ) as HTMLDivElement;
@@ -266,6 +268,32 @@ describe("hideFocusOverlay", () => {
                 },
             }
         );
+    });
+
+    test("should not send update field event when focusFieldReceivedInput is false", async () => {
+        editedElement.setAttribute("contenteditable", "true");
+
+        // Set up global state
+        VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
+            editedElement;
+        VisualBuilder.VisualBuilderGlobalState.value.focusFieldReceivedInput =
+            false;
+
+        expect(focusOverlayWrapper.classList.contains("visible")).toBe(true);
+
+        hideFocusOverlay({
+            visualBuilderContainer,
+            visualBuilderOverlayWrapper: focusOverlayWrapper,
+            focusedToolbar: document.querySelector(".visual-builder__toolbar"),
+            resizeObserver: mockResizeObserver,
+            noTrigger: false
+        });
+
+        expect(focusOverlayWrapper.classList.contains("visible")).toBe(false);
+
+        await waitFor(() => {
+            expect(visualBuilderPostMessage?.send).not.toHaveBeenCalled();
+        });
     });
 
     test("should run cleanup function", () => {
