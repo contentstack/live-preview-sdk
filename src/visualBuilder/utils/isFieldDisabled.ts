@@ -3,6 +3,7 @@ import Config from "../../configManager/configManager";
 import { ISchemaFieldMap } from "./types/index.types";
 import { VisualBuilder } from "..";
 import { FieldDetails } from "../components/FieldToolbar";
+import { EntryPermissions } from "./getEntryPermissions";
 
 enum DisableReason {
     ReadOnly = "You have only read access to this field",
@@ -12,6 +13,7 @@ enum DisableReason {
     DisabledVariant = "This field is not editable as it doesn't match the selected variant",
     UnlocalizedVariant = "This field is not editable as it is not localized",
     None = "",
+    EntryUpdateRestricted = "You do not have permission to edit this entry",
 }
 
 interface FieldDisableState {
@@ -20,6 +22,9 @@ interface FieldDisableState {
 }
 
 const getDisableReason = (flags: Record<string, boolean>): DisableReason => {
+    if (flags.updateRestrictDueToEntryUpdateRestriction) {
+        return DisableReason.EntryUpdateRestricted;
+    }
     if (flags.updateRestrictDueToRole) return DisableReason.ReadOnly;
     if (flags.updateRestrictDueToNonLocalizableFields)
         return DisableReason.LocalizedEntry;
@@ -36,14 +41,15 @@ const getDisableReason = (flags: Record<string, boolean>): DisableReason => {
 
 export const isFieldDisabled = (
     fieldSchemaMap: ISchemaFieldMap,
-    eventFieldDetails: FieldDetails
+    eventFieldDetails: FieldDetails,
+    entryPermissions?: EntryPermissions
 ): FieldDisableState => {
     const { editableElement, fieldMetadata } = eventFieldDetails;
     const masterLocale = Config.get().stackDetails.masterLocale || "en-us";
     const { locale: cmsLocale, variant } =
         VisualBuilder.VisualBuilderGlobalState.value;
 
-    const flags = {
+    const flags: Record<string, boolean> = {
         updateRestrictDueToRole: Boolean(
             fieldSchemaMap?.field_metadata?.updateRestrict
         ),
@@ -60,6 +66,10 @@ export const isFieldDisabled = (
         updateRestrictDueToAudienceMode: false,
         updateRestrictDueToDisabledVariant: false,
     };
+
+    if (entryPermissions && !entryPermissions.update) {
+        flags.updateRestrictDueToEntryUpdateRestriction = true;
+    }
 
     if (
         VisualBuilder.VisualBuilderGlobalState.value.audienceMode &&

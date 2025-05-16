@@ -1,3 +1,4 @@
+import React from "preact/compat";
 import { VisualBuilderCslpEventDetails } from "../types/visualBuilder.types";
 import {
     DATA_CSLP_ATTR_SELECTOR,
@@ -12,6 +13,7 @@ import { isFieldDisabled } from "../utils/isFieldDisabled";
 import FieldToolbarComponent from "../components/FieldToolbar";
 import { render } from "preact";
 import FieldLabelWrapperComponent from "../components/fieldLabelWrapper";
+import { getEntryPermissionsCached } from "../utils/getEntryPermissionsCached";
 
 export function appendFocusedToolbar(
     eventDetails: VisualBuilderCslpEventDetails,
@@ -28,24 +30,30 @@ export function appendFocusedToolbar(
     );
 }
 
-export function appendFieldToolbar(
+export async function appendFieldToolbar(
     eventDetails: VisualBuilderCslpEventDetails,
     focusedToolbarElement: HTMLDivElement,
     hideOverlay: () => void,
     isVariant: boolean = false
-): void {
+): Promise<void> {
     if (
         focusedToolbarElement.querySelector(
             ".visual-builder__focused-toolbar__multiple-field-toolbar"
         )
     )
         return;
+    const entryPermissions = await getEntryPermissionsCached({
+        entryUid: eventDetails.fieldMetadata.entry_uid,
+        contentTypeUid: eventDetails.fieldMetadata.content_type_uid,
+        locale: eventDetails.fieldMetadata.locale,
+    });
     const wrapper = document.createDocumentFragment();
     render(
         <FieldToolbarComponent
             eventDetails={eventDetails}
             hideOverlay={hideOverlay}
             isVariant={isVariant}
+            entryPermissions={entryPermissions}
         />,
         wrapper
     );
