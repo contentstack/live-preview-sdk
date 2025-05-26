@@ -1,5 +1,5 @@
 import ContentstackLivePreviewHOC from "./preview/contentstack-live-preview-HOC";
-import { IStackSdk as ExternalStackSdkType } from "./types/types";
+import { IStackSdk as ExternalStackSdkType, IExportedConfig } from "./types/types";
 
 import {
     OnEntryChangeCallback,
@@ -37,7 +37,7 @@ class LightLivePreviewHoC {
     }
 
     static get config() {
-        return {};
+        return {} as IExportedConfig;
     }
 
     static isInitialized() {
