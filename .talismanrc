@@ -1,11 +1,13 @@
 fileignoreconfig:
-- filename: .github/workflows/secrets-scan.yml
-  ignore_detectors:
-    - filecontent
-- filename: README.md
-  checksum: f9e1aee750713c9c4aea3c1027686a1aefcebd759de0ffd06dbea6fdf9f576e6
-- filename: CHANGELOG.md
-  checksum: 677807c38f5135fac7ca0377e92953fb09097150ddd3c4f68667fe0368f916ee
-- filename: src/visualBuilder/components/__test__/fieldToolbar.test.tsx
-  checksum: 3badd6a142456b6a361569e6fc546349a38ac6b366bef7fd5255d1e93220444e
+    - filename: .github/workflows/secrets-scan.yml
+      ignore_detectors:
+          - filecontent
+    - filename: README.md
+      checksum: f9e1aee750713c9c4aea3c1027686a1aefcebd759de0ffd06dbea6fdf9f576e6
+    - filename: CHANGELOG.md
+      checksum: 677807c38f5135fac7ca0377e92953fb09097150ddd3c4f68667fe0368f916ee
+    - filename: src/visualBuilder/components/__test__/fieldToolbar.test.tsx
+      checksum: 3badd6a142456b6a361569e6fc546349a38ac6b366bef7fd5255d1e93220444e
+    - filename: src/visualBuilder/components/Collab/ThreadPopup/__test__/CommentTextArea.test.tsx
+      checksum: d0ef271ee5381d9feab06bda6e7e89bd0a882fee87495627bd811c1f0a5459c7
 version: "1.0"
