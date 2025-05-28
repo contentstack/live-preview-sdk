@@ -102,22 +102,12 @@ const MentionSuggestionsList: React.FC<{
                     tabIndex={-1}
                     aria-selected={index === selectedIndex}
                 >
-                    {user.display == user.email ? (
-                        user.display.length > 20 ? (
-                            <Tooltip content={user.display || ""}>
-                                {(user.display || "").substring(0, 18) + "..."}
-                            </Tooltip>
-                        ) : (
-                            user.display
-                        )
-                    ) : (
-                        <Tooltip
-                            content={user.display + " - " + user.email || ""}
-                        >
-                            {user.display.length > 20
-                                ? (user.display || "").substring(0, 18) + "..."
-                                : user.display}
+                    {(user.display?.length || 0) > 20 ? (
+                        <Tooltip content={user.display || ""}>
+                            {(user.display || "").substring(0, 18) + "..."}
                         </Tooltip>
+                    ) : (
+                        user.display || ""
                     )}
                 </li>
             ))}
