@@ -376,6 +376,7 @@ export function hideAllCollabIcons(): void {
         ".visual-builder__collab-wrapper .collab-thread"
     );
     icons?.forEach((icon) => icon?.classList.add(hiddenClass));
+    toggleCollabPopup({ threadUid: "", action: "close" });
 }
 
 export function showAllCollabIcons(): void {
