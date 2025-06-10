@@ -102,7 +102,7 @@ const MentionSuggestionsList: React.FC<{
                     tabIndex={-1}
                     aria-selected={index === selectedIndex}
                 >
-                    {user.display == user.email ? (
+                    {user.display === user.email ? (
                         user.display.length > 20 ? (
                             <Tooltip content={user.display || ""}>
                                 {(user.display || "").substring(0, 18) + "..."}
