@@ -43,6 +43,10 @@ export const useCollab = () => {
                     "collab.pauseFeedback",
                     data?.data?.collab?.pauseFeedback
                 );
+                Config.set(
+                    "collab.isFeedbackMode",
+                    data?.data?.collab?.isFeedbackMode
+                );
                 showAllCollabIcons();
                 return;
             }
