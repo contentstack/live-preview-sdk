@@ -26,18 +26,32 @@ vi.mock("../../../utils/visualBuilderPostMessage", async () => {
     };
 });
 
+vi.mock("../../../../utils/index.ts", async () => {
+    const actual = await vi.importActual("../../../../utils");
+    return {
+        __esModule: true,
+        ...actual,
+        isOpenInBuilder: vi.fn().mockReturnValue(true),
+    };
+});
+
 const convertToPx = (value: number) => {
-    return `${value}px`
-}
+    return `${value}px`;
+};
 const matchDimensions = (element: HTMLElement, hoverOutline: HTMLElement) => {
-    const elementDimensions = element.getBoundingClientRect()
+    const elementDimensions = element.getBoundingClientRect();
     // @ts-expect-error - TS doesn't know that style is a CSSStyleDeclaration
-    const hoverOutlineDimensions = hoverOutline?.style?._values as CSSStyleDeclaration;
+    const hoverOutlineDimensions = hoverOutline?.style
+        ?._values as CSSStyleDeclaration;
     expect(convertToPx(elementDimensions.x)).toBe(hoverOutlineDimensions.left);
     expect(convertToPx(elementDimensions.y)).toBe(hoverOutlineDimensions.top);
-    expect(convertToPx(elementDimensions.width)).toBe(hoverOutlineDimensions.width);
-    expect(convertToPx(elementDimensions.height)).toBe(hoverOutlineDimensions.height);
-}
+    expect(convertToPx(elementDimensions.width)).toBe(
+        hoverOutlineDimensions.width
+    );
+    expect(convertToPx(elementDimensions.height)).toBe(
+        hoverOutlineDimensions.height
+    );
+};
 describe("When an element is hovered in visual builder mode", () => {
     let mousemoveEvent: Event;
 
@@ -117,12 +131,12 @@ describe("When an element is hovered in visual builder mode", () => {
             const hoverOutline = document.querySelector(
                 "[data-testid='visual-builder__hover-outline']"
             );
-            expect(hoverOutline).toHaveAttribute('style');
+            expect(hoverOutline).toHaveAttribute("style");
 
             const customCursor = document.querySelector(
                 `[data-testid="visual-builder__cursor"]`
             );
-            expect(customCursor).toHaveAttribute('data-icon', 'file');
+            expect(customCursor).toHaveAttribute("data-icon", "file");
             expect(customCursor?.classList.contains("visible")).toBeTruthy();
         });
 
@@ -135,13 +149,13 @@ describe("When an element is hovered in visual builder mode", () => {
             const hoverOutline = document.querySelector(
                 "[data-testid='visual-builder__hover-outline']"
             );
-            expect(hoverOutline).toHaveAttribute('style');
+            expect(hoverOutline).toHaveAttribute("style");
 
             const customCursor = document.querySelector(
                 `[data-testid="visual-builder__cursor"]`
             );
 
-            expect(customCursor).toHaveAttribute('data-icon', 'file');
+            expect(customCursor).toHaveAttribute("data-icon", "file");
             expect(customCursor?.classList.contains("visible")).toBeTruthy();
         });
     });
@@ -224,12 +238,12 @@ describe("When an element is hovered in visual builder mode", () => {
             const hoverOutline = document.querySelector(
                 "[data-testid='visual-builder__hover-outline']"
             );
-            expect(hoverOutline).toHaveAttribute('style');
+            expect(hoverOutline).toHaveAttribute("style");
 
             const customCursor = document.querySelector(
                 `[data-testid="visual-builder__cursor"]`
             );
-            expect(customCursor?.getAttribute('data-icon')).toBe('file');
+            expect(customCursor?.getAttribute("data-icon")).toBe("file");
             expect(customCursor?.classList.contains("visible")).toBeTruthy();
         });
 
@@ -241,16 +255,15 @@ describe("When an element is hovered in visual builder mode", () => {
             const hoverOutline = document.querySelector(
                 "[data-testid='visual-builder__hover-outline']"
             ) as HTMLElement;
-            expect(hoverOutline).toHaveAttribute('style');
+            expect(hoverOutline).toHaveAttribute("style");
 
             matchDimensions(firstFileField, hoverOutline);
 
             const customCursor = document.querySelector(
                 `[data-testid="visual-builder__cursor"]`
             );
-            expect(customCursor?.getAttribute('data-icon')).toBe('file');
+            expect(customCursor?.getAttribute("data-icon")).toBe("file");
             expect(customCursor?.classList.contains("visible")).toBeTruthy();
-            
         });
 
         test("should have outline and custom cursor on the url", async () => {
@@ -261,7 +274,7 @@ describe("When an element is hovered in visual builder mode", () => {
             const hoverOutline = document.querySelector(
                 "[data-testid='visual-builder__hover-outline']"
             ) as HTMLElement;
-            expect(hoverOutline).toHaveAttribute('style');
+            expect(hoverOutline).toHaveAttribute("style");
             matchDimensions(firstImageField, hoverOutline);
             const customCursor = document.querySelector(
                 `[data-testid="visual-builder__cursor"]`

@@ -1,12 +1,16 @@
 import { screen } from "@testing-library/preact";
 import { getFieldSchemaMap } from "../../../../__test__/data/fieldSchemaMap";
-import { waitForBuilderSDKToBeInitialized, waitForHoverOutline } from "../../../../__test__/utils";
+import {
+    waitForBuilderSDKToBeInitialized,
+    waitForHoverOutline,
+} from "../../../../__test__/utils";
 import Config from "../../../../configManager/configManager";
 import { VisualBuilder } from "../../../index";
 import { FieldSchemaMap } from "../../../utils/fieldSchemaMap";
 import { mockDomRect } from "./mockDomRect";
 import visualBuilderPostMessage from "../../../utils/visualBuilderPostMessage";
 import { act } from "@testing-library/preact";
+import { isOpenInBuilder } from "../../../../utils";
 
 vi.mock("../../../utils/visualBuilderPostMessage", async () => {
     const { getAllContentTypes } = await vi.importActual<
@@ -25,6 +29,15 @@ vi.mock("../../../utils/visualBuilderPostMessage", async () => {
             }),
             on: vi.fn(),
         },
+    };
+});
+
+vi.mock("../../../../utils/index.ts", async () => {
+    const actual = await vi.importActual("../../../../utils");
+    return {
+        __esModule: true,
+        ...actual,
+        isOpenInBuilder: vi.fn().mockReturnValue(true),
     };
 });
 
@@ -91,7 +104,10 @@ describe("When an element is hovered in visual builder mode", () => {
                 booleanField.dispatchEvent(mousemoveEvent);
             });
             await waitForHoverOutline();
-            expect(booleanField).toHaveAttribute("data-cslp", "all_fields.bltapikey.en-us.boolean");
+            expect(booleanField).toHaveAttribute(
+                "data-cslp",
+                "all_fields.bltapikey.en-us.boolean"
+            );
             expect(booleanField).not.toHaveAttribute("contenteditable");
             const hoverOutline = document.querySelector(
                 "[data-testid='visual-builder__hover-outline']"

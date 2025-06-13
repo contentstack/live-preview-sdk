@@ -60,6 +60,15 @@ vi.mock("../../../utils/visualBuilderPostMessage", async () => {
     };
 });
 
+vi.mock("../../../../utils/index.ts", async () => {
+    const actual = await vi.importActual("../../../../utils");
+    return {
+        __esModule: true,
+        ...actual,
+        isOpenInBuilder: vi.fn().mockReturnValue(true),
+    };
+});
+
 describe("When an element is clicked in visual builder mode", () => {
     let mouseClickEvent: Event;
 
@@ -107,7 +116,10 @@ describe("When an element is clicked in visual builder mode", () => {
             document.body.appendChild(dateField);
 
             visualBuilder = new VisualBuilder();
-            await triggerAndWaitForClickAction(visualBuilderPostMessage, dateField);
+            await triggerAndWaitForClickAction(
+                visualBuilderPostMessage,
+                dateField
+            );
         });
 
         afterAll(() => {

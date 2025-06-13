@@ -32,6 +32,15 @@ global.ResizeObserver = vi.fn().mockImplementation(() => ({
     disconnect: vi.fn(),
 }));
 
+vi.mock("../../../../utils/index.ts", async () => {
+    const actual = await vi.importActual("../../../../utils");
+    return {
+        __esModule: true,
+        ...actual,
+        isOpenInBuilder: vi.fn().mockReturnValue(true),
+    };
+});
+
 describe("When an element is hovered in visual builder mode", () => {
     let mousemoveEvent: Event;
 
@@ -92,13 +101,13 @@ describe("When an element is hovered in visual builder mode", () => {
             const hoverOutline = screen.getByTestId(
                 "visual-builder__hover-outline"
             );
-            expect(hoverOutline).toHaveAttribute('style');
+            expect(hoverOutline).toHaveAttribute("style");
 
             const customCursor = document.querySelector(
                 `[data-testid="visual-builder__cursor"]`
             );
 
-            expect(customCursor).toHaveAttribute('data-icon', 'multiline');
+            expect(customCursor).toHaveAttribute("data-icon", "multiline");
             expect(customCursor?.classList.contains("visible")).toBeTruthy();
         });
     });
@@ -158,13 +167,13 @@ describe("When an element is hovered in visual builder mode", () => {
             const hoverOutline = document.querySelector(
                 "[data-testid='visual-builder__hover-outline']"
             );
-            expect(hoverOutline).toHaveAttribute('style');
+            expect(hoverOutline).toHaveAttribute("style");
 
             const customCursor = document.querySelector(
                 `[data-testid="visual-builder__cursor"]`
             );
 
-            expect(customCursor).toHaveAttribute('data-icon', 'multiline');
+            expect(customCursor).toHaveAttribute("data-icon", "multiline");
             expect(customCursor?.classList.contains("visible")).toBeTruthy();
         });
 
@@ -176,13 +185,13 @@ describe("When an element is hovered in visual builder mode", () => {
             const hoverOutline = document.querySelector(
                 "[data-testid='visual-builder__hover-outline']"
             );
-            expect(hoverOutline).toHaveAttribute('style');
+            expect(hoverOutline).toHaveAttribute("style");
 
             const customCursor = document.querySelector(
                 `[data-testid="visual-builder__cursor"]`
             );
 
-            expect(customCursor).toHaveAttribute('data-icon', 'multiline');
+            expect(customCursor).toHaveAttribute("data-icon", "multiline");
             expect(customCursor?.classList.contains("visible")).toBeTruthy();
         });
     });

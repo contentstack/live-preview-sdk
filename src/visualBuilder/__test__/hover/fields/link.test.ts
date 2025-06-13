@@ -26,6 +26,15 @@ vi.mock("../../../utils/visualBuilderPostMessage", async () => {
     };
 });
 
+vi.mock("../../../../utils/index.ts", async () => {
+    const actual = await vi.importActual("../../../../utils");
+    return {
+        __esModule: true,
+        ...actual,
+        isOpenInBuilder: vi.fn().mockReturnValue(true),
+    };
+});
+
 global.ResizeObserver = vi.fn().mockImplementation(() => ({
     observe: vi.fn(),
     unobserve: vi.fn(),
@@ -98,7 +107,7 @@ describe("When an element is hovered in visual builder mode", () => {
                 `[data-testid="visual-builder__cursor"]`
             );
 
-            expect(customCursor).toHaveAttribute('data-icon', 'link');
+            expect(customCursor).toHaveAttribute("data-icon", "link");
             expect(customCursor?.classList.contains("visible")).toBeTruthy();
         });
     });
@@ -162,7 +171,7 @@ describe("When an element is hovered in visual builder mode", () => {
                 `[data-testid="visual-builder__cursor"]`
             );
 
-            expect(customCursor).toHaveAttribute('data-icon', 'link');
+            expect(customCursor).toHaveAttribute("data-icon", "link");
             expect(customCursor?.classList.contains("visible")).toBeTruthy();
         });
 
@@ -180,7 +189,7 @@ describe("When an element is hovered in visual builder mode", () => {
                 `[data-testid="visual-builder__cursor"]`
             );
 
-            expect(customCursor).toHaveAttribute('data-icon', 'link');
+            expect(customCursor).toHaveAttribute("data-icon", "link");
             expect(customCursor?.classList.contains("visible")).toBeTruthy();
         });
     });

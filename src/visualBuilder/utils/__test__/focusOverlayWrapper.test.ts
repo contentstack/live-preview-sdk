@@ -13,7 +13,7 @@ import { mockMultipleLinkFieldSchema } from "../../../__test__/data/fields";
 // this is probably because of cyclic dependencies
 import { VisualBuilder } from "../..";
 import { screen } from "@testing-library/preact";
-
+import { isOpenInBuilder } from "../../../utils";
 vi.mock("../visualBuilderPostMessage", () => {
     return {
         __esModule: true,
@@ -28,6 +28,15 @@ vi.mock("../handleIndividualFields", () => {
     return {
         __esModule: true,
         cleanIndividualFieldResidual: vi.fn(),
+    };
+});
+
+vi.mock("../../../utils/index.ts", async () => {
+    const actual = await vi.importActual("../../../utils");
+    return {
+        __esModule: true,
+        ...actual,
+        isOpenInBuilder: vi.fn().mockReturnValue(true),
     };
 });
 
@@ -78,14 +87,17 @@ describe("addFocusOverlay", () => {
             "data-cslp",
             "all_fields.blt58a50b4cebae75c5.en-us.title"
         );
-        targetElement.getBoundingClientRect = vi.fn(() => ({
-            left: 10,
-            right: 20,
-            top: 10,
-            bottom: 20,
-            height: 10,
-            width: 10
-        } as DOMRect)) as any;
+        targetElement.getBoundingClientRect = vi.fn(
+            () =>
+                ({
+                    left: 10,
+                    right: 20,
+                    top: 10,
+                    bottom: 20,
+                    height: 10,
+                    width: 10,
+                }) as DOMRect
+        ) as any;
 
         visualBuilderContainer.appendChild(targetElement);
     });
@@ -138,8 +150,10 @@ describe("addFocusOverlay", () => {
 
         const overlayOutline = document.querySelector(
             `[data-testid="visual-builder__overlay--outline"]`
-        )
-        expect(overlayOutline).toHaveStyle("top: 10px; height: 10px; width: 10px; left: 10px; outline-color: rgb(113, 92, 221);");
+        );
+        expect(overlayOutline).toHaveStyle(
+            "top: 10px; height: 10px; width: 10px; left: 10px; outline-color: rgb(113, 92, 221);"
+        );
     });
 });
 
@@ -286,7 +300,7 @@ describe("hideFocusOverlay", () => {
             visualBuilderOverlayWrapper: focusOverlayWrapper,
             focusedToolbar: document.querySelector(".visual-builder__toolbar"),
             resizeObserver: mockResizeObserver,
-            noTrigger: false
+            noTrigger: false,
         });
 
         expect(focusOverlayWrapper.classList.contains("visible")).toBe(false);
