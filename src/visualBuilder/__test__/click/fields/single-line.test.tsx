@@ -55,8 +55,16 @@ vi.mock("../../../utils/visualBuilderPostMessage", async () => {
     };
 });
 
-describe("When an element is clicked in visual builder mode", () => {
+vi.mock("../../../../utils/index.ts", async () => {
+    const actual = await vi.importActual("../../../../utils");
+    return {
+        __esModule: true,
+        ...actual,
+        isOpenInBuilder: vi.fn().mockReturnValue(true),
+    };
+});
 
+describe("When an element is clicked in visual builder mode", () => {
     beforeAll(() => {
         FieldSchemaMap.setFieldSchema(
             "all_fields",
@@ -134,12 +142,15 @@ describe("When an element is clicked in visual builder mode", () => {
                 audienceMode: false,
             };
             visualBuilder = new VisualBuilder();
-            await triggerAndWaitForClickAction(visualBuilderPostMessage, singleLineField);
+            await triggerAndWaitForClickAction(
+                visualBuilderPostMessage,
+                singleLineField
+            );
         });
 
         afterAll(() => {
             visualBuilder.destroy();
-        })
+        });
 
         test("should have outline", () => {
             expect(singleLineField.classList.contains("cslp-edit-mode"));
@@ -210,7 +221,7 @@ describe("When an element is clicked in visual builder mode", () => {
                     return Promise.resolve({});
                 }
             );
-        
+
             container = document.createElement("div");
             container.setAttribute(
                 "data-cslp",
@@ -243,7 +254,10 @@ describe("When an element is clicked in visual builder mode", () => {
                 audienceMode: false,
             };
             visualBuilder = new VisualBuilder();
-            await triggerAndWaitForClickAction(visualBuilderPostMessage, container);
+            await triggerAndWaitForClickAction(
+                visualBuilderPostMessage,
+                container
+            );
         });
 
         afterAll(() => {

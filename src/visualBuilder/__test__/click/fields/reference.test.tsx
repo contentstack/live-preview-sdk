@@ -9,7 +9,11 @@ import visualBuilderPostMessage from "../../../utils/visualBuilderPostMessage";
 import { vi } from "vitest";
 import { VisualBuilderPostMessageEvents } from "../../../utils/types/postMessage.types";
 import { VisualBuilder } from "../../../index";
-import { mockGetBoundingClientRect, sleep, triggerAndWaitForClickAction } from "../../../../__test__/utils";
+import {
+    mockGetBoundingClientRect,
+    sleep,
+    triggerAndWaitForClickAction,
+} from "../../../../__test__/utils";
 
 vi.mock("../../../components/FieldToolbar", () => {
     return {
@@ -49,8 +53,16 @@ vi.mock("../../../utils/visualBuilderPostMessage", async () => {
     };
 });
 
-describe("When an element is clicked in visual builder mode", () => {
+vi.mock("../../../../utils/index.ts", async () => {
+    const actual = await vi.importActual("../../../../utils");
+    return {
+        __esModule: true,
+        ...actual,
+        isOpenInBuilder: vi.fn().mockReturnValue(true),
+    };
+});
 
+describe("When an element is clicked in visual builder mode", () => {
     beforeAll(async () => {
         FieldSchemaMap.setFieldSchema(
             "all_fields",
@@ -93,7 +105,10 @@ describe("When an element is clicked in visual builder mode", () => {
             document.body.appendChild(referenceField);
 
             visualBuilder = new VisualBuilder();
-            await triggerAndWaitForClickAction(visualBuilderPostMessage, referenceField)
+            await triggerAndWaitForClickAction(
+                visualBuilderPostMessage,
+                referenceField
+            );
         });
 
         afterAll(() => {
@@ -105,10 +120,13 @@ describe("When an element is clicked in visual builder mode", () => {
                 "[data-testid='visual-builder__overlay--outline']"
             );
             await waitFor(() => {
-                expect(hoverOutline).toHaveAttribute("style")
+                expect(hoverOutline).toHaveAttribute("style");
             });
-            
-            expect(hoverOutline).toHaveAttribute("style", "top: 10px; height: 5px; width: 10px; left: 10px; outline-color: rgb(113, 92, 221);");
+
+            expect(hoverOutline).toHaveAttribute(
+                "style",
+                "top: 10px; height: 5px; width: 10px; left: 10px; outline-color: rgb(113, 92, 221);"
+            );
         });
 
         test("should have an overlay", () => {
@@ -180,7 +198,10 @@ describe("When an element is clicked in visual builder mode", () => {
             document.body.appendChild(container);
 
             visualBuilder = new VisualBuilder();
-            await triggerAndWaitForClickAction(visualBuilderPostMessage, container);
+            await triggerAndWaitForClickAction(
+                visualBuilderPostMessage,
+                container
+            );
         });
 
         afterAll(() => {
@@ -192,9 +213,12 @@ describe("When an element is clicked in visual builder mode", () => {
                 "[data-testid='visual-builder__overlay--outline']"
             );
             await waitFor(() => {
-                expect(hoverOutline).toHaveAttribute("style")
+                expect(hoverOutline).toHaveAttribute("style");
             });
-            expect(hoverOutline).toHaveAttribute("style", "top: 10px; height: 5px; width: 10px; left: 10px; outline-color: rgb(113, 92, 221);");
+            expect(hoverOutline).toHaveAttribute(
+                "style",
+                "top: 10px; height: 5px; width: 10px; left: 10px; outline-color: rgb(113, 92, 221);"
+            );
         });
 
         test("should have an overlay", () => {

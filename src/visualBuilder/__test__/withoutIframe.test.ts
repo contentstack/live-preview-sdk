@@ -1,8 +1,12 @@
 import crypto from "crypto";
 
-import { triggerAndWaitForClickAction, waitForBuilderSDKToBeInitialized } from "../../__test__/utils";
+import {
+    triggerAndWaitForClickAction,
+    waitForBuilderSDKToBeInitialized,
+} from "../../__test__/utils";
 import { VisualBuilder } from "../index";
 import Config from "../../configManager/configManager";
+import { isOpenInBuilder } from "../../utils";
 
 vi.mock("../utils/visualBuilderPostMessage", async () => {
     const { getAllContentTypes } = await vi.importActual<
@@ -24,6 +28,16 @@ vi.mock("../utils/visualBuilderPostMessage", async () => {
         },
     };
 });
+
+vi.mock("../../utils/index.ts", async () => {
+    const actual = await vi.importActual("../../utils");
+    return {
+        __esModule: true,
+        ...actual,
+        isOpenInBuilder: vi.fn().mockReturnValue(true),
+    };
+});
+
 import visualBuilderPostMessage from "../utils/visualBuilderPostMessage";
 import { act, fireEvent, waitFor, screen } from "@testing-library/preact";
 
