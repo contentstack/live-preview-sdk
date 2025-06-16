@@ -28,3 +28,12 @@ export function isOpeningInTimeline(): boolean {
     }
     return false;
 }
+
+export function isOpenInBuilder(): boolean {
+    if (hasWindow()) {
+        const urlParams = new URLSearchParams(window.location.search);
+        const builder = urlParams.get("builder");
+        return !!builder;
+    }
+    return false;
+}

@@ -49,8 +49,16 @@ vi.mock("../../../utils/visualBuilderPostMessage", async () => {
     };
 });
 
-describe("When an element is clicked in visual builder mode", () => {
+vi.mock("../../../../utils/index.ts", async () => {
+    const actual = await vi.importActual("../../../../utils");
+    return {
+        __esModule: true,
+        ...actual,
+        isOpenInBuilder: vi.fn().mockReturnValue(true),
+    };
+});
 
+describe("When an element is clicked in visual builder mode", () => {
     beforeAll(async () => {
         FieldSchemaMap.setFieldSchema(
             "all_fields",
@@ -115,7 +123,10 @@ describe("When an element is clicked in visual builder mode", () => {
             document.body.appendChild(multiLineField);
             visualBuilder = new VisualBuilder();
 
-            await triggerAndWaitForClickAction(visualBuilderPostMessage, multiLineField)
+            await triggerAndWaitForClickAction(
+                visualBuilderPostMessage,
+                multiLineField
+            );
         });
 
         afterAll(() => {
@@ -222,12 +233,15 @@ describe("When an element is clicked in visual builder mode", () => {
                 audienceMode: false,
             };
             visualBuilder = new VisualBuilder();
-            await triggerAndWaitForClickAction(visualBuilderPostMessage, container);
+            await triggerAndWaitForClickAction(
+                visualBuilderPostMessage,
+                container
+            );
         });
 
         afterAll(() => {
             visualBuilder.destroy();
-        })
+        });
         test("should have outline", () => {
             expect(container.classList.contains("cslp-edit-mode"));
         });
@@ -252,7 +266,6 @@ describe("When an element is clicked in visual builder mode", () => {
                     VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
                 );
             });
-
         });
 
         test("container should not contain a contenteditable attribute but the children can", async () => {
