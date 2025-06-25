@@ -1,41 +1,41 @@
 import { getDefaultConfig } from "../../../configManager/config.default";
-import { PublicLogger } from "../../../logger/logger";
 import { IConfig } from "../../../types/types";
 import { generateStartEditingButton } from "./../../generators/generateStartEditingButton";
 
 describe("generateStartEditingButton", () => {
     let config: IConfig;
-    let visualBuilderContainer: HTMLDivElement;
 
     beforeEach(() => {
         config = getDefaultConfig();
 
         config.stackDetails.apiKey = "bltapikey";
         config.stackDetails.environment = "bltenvironment";
-
-        visualBuilderContainer = document.createElement("div");
-        document.body.appendChild(visualBuilderContainer);
     });
 
     afterEach(() => {
         vi.clearAllMocks();
-        document.body.removeChild(visualBuilderContainer);
+        const existingButton = document.querySelector(
+            ".visual-builder__start-editing-btn"
+        );
+        if (existingButton) {
+            existingButton.remove();
+        }
     });
 
-    test("should  return an anchor tag", () => {
-        const button = generateStartEditingButton(visualBuilderContainer);
+    test("should return an anchor tag", () => {
+        const button = generateStartEditingButton();
         expect(button).toBeInstanceOf(HTMLAnchorElement);
     });
 
-    test("should append the button within visualBuilderContainer", () => {
-        expect(visualBuilderContainer.children.length).toBe(0);
-        generateStartEditingButton(visualBuilderContainer);
+    test("should append the button within document.body", () => {
+        const initialBodyChildren = document.body.children.length;
+        generateStartEditingButton();
 
-        expect(visualBuilderContainer.children.length).toBe(1);
+        expect(document.body.children.length).toBe(initialBodyChildren + 1);
     });
 
     test("should update the href when clicked", () => {
-        const button = generateStartEditingButton(visualBuilderContainer);
+        const button = generateStartEditingButton();
         button?.click();
 
         expect(button?.getAttribute("href")).toBe(
@@ -43,7 +43,7 @@ describe("generateStartEditingButton", () => {
         );
     });
 
-    test("should get the href detal from cslp attribute if present", () => {
+    test("should get the href detail from cslp attribute if present", () => {
         const h1 = document.createElement("h1");
 
         h1.setAttribute(
@@ -53,19 +53,11 @@ describe("generateStartEditingButton", () => {
 
         document.body.appendChild(h1);
 
-        const button = generateStartEditingButton(visualBuilderContainer);
+        const button = generateStartEditingButton();
         button?.click();
 
         expect(button?.getAttribute("href")).toBe(
             "https://app.contentstack.com/#!/stack//visual-builder?branch=main&target-url=http%3A%2F%2Flocalhost%3A3000%2F&locale=en-us"
         );
-    });
-
-    test("should throw a warning if visualBuilderContainer is not found", () => {
-        const spiedWarn = vi.spyOn(PublicLogger, "warn");
-
-        generateStartEditingButton(null);
-
-        expect(spiedWarn).toHaveBeenCalledTimes(1);
     });
 });
