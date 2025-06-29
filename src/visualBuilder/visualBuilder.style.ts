@@ -739,6 +739,14 @@ export function visualBuilderStyles() {
                 fill: #475161;
             }
         `,
+        "visual-builder__field-location-icons-container": css`
+            display: flex;
+            gap: 0.25rem;
+            align-items: center;
+            justify-content: center;
+            margin-left: 0.25rem;
+            
+        `,
     };
 }
 
