@@ -13,7 +13,6 @@ export enum VisualBuilderPostMessageEvents {
     GET_FIELD_DISPLAY_NAMES = "get-field-display-names",
     MOUSE_CLICK = "mouse-click",
     FOCUS_FIELD = "focus-field",
-    GET_FIELD_LOCATION_DETAILS = "get-field-location-details",
     OPEN_FIELD_EDIT_MODAL = "open-field-edit-modal",
     DELETE_INSTANCE = "delete-instance",
     MOVE_INSTANCE = "move-instance",
@@ -28,6 +27,7 @@ export enum VisualBuilderPostMessageEvents {
     COLLAB_DELETE_THREAD = "collab-delete-thread",
     COLLAB_MISSING_THREADS = "collab-missing-threads",
     FIELD_LOCATION_DATA = "field-location-data",
+    FIELD_LOCATION_SELECTED_APP = "field-location-selected-app",
 
     // FROM visual builder
     GET_ALL_ENTRIES_IN_CURRENT_PAGE = "get-entries-in-current-page",
