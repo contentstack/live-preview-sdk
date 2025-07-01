@@ -61,6 +61,7 @@ interface MultipleFieldToolbarProps {
 }
 
 function handleReplaceAsset(fieldMetadata: CslpData) {
+    // TODO avoid sending whole fieldMetadata
     visualBuilderPostMessage?.send(
         VisualBuilderPostMessageEvents.OPEN_ASSET_MODAL,
         {
@@ -123,7 +124,9 @@ function FieldToolbarComponent(
     const [displayAllApps, setDisplayAllApps] = useState(false);
     const moreButtonRef = useRef<HTMLButtonElement>(null);
     const toolbarRef = useRef<HTMLDivElement>(null);
-    const [appListPosition, setAppListPosition] = useState<"left" | "right">("right");
+    const [appListPosition, setAppListPosition] = useState<"left" | "right">(
+        "right"
+    );
 
     const parentPath =
         fieldMetadata?.multipleFieldMetadata?.parentDetails?.parentCslpValue ||
@@ -168,6 +171,13 @@ function FieldToolbarComponent(
             isMultiple = (fieldSchema as IReferenceContentTypeSchema)
                 .field_metadata.ref_multiple;
 
+        // field is multiple but an instance is not selected
+        // instead the whole field (all instances) is selected.
+        // Currently, when whole featured_blogs is selected in canvas,
+        // the fieldPathWithIndex and instance.fieldPathWithIndex are the same
+        // cannot rely on -1 index, as the non-negative index then refers to the index of
+        // the featured_blogs block in page_components
+        // It is not needed except taxanomy.
         isWholeMultipleField =
             isMultiple &&
             (fieldMetadata.fieldPathWithIndex ===
@@ -176,29 +186,33 @@ function FieldToolbarComponent(
 
         isReplaceAllowed =
             ALLOWED_REPLACE_FIELDS.includes(fieldType) && !isWholeMultipleField;
+        // if (
+        //     DEFAULT_MULTIPLE_FIELDS.includes(fieldType) &&
+        //     isWholeMultipleField &&
+        //      !isVariant
+        // ) {
+        //     return null;
+        // }
     }
 
     const invertTooltipPosition =
         targetElement.getBoundingClientRect().top <= TOOLTIP_TOP_EDGE_BUFFER;
 
     const handleMoreIconClick = () => {
-        
+        if (toolbarRef.current) {
+            const rect = toolbarRef.current.getBoundingClientRect();
+            const spaceRight = window.innerWidth - rect.right;
+            const spaceLeft = rect.left;
+            let position = "";
 
-        if(toolbarRef.current){
-            const rect=toolbarRef.current.getBoundingClientRect();
-            const spaceRight=window.innerWidth-rect.right;
-            const spaceLeft=rect.left;
-            let position='';
-
-            if(spaceRight<APP_LIST_MIN_WIDTH){
-                position="left";
-            }else if (spaceRight>APP_LIST_MIN_WIDTH){
-                position="right";
-            }else {
-                position=spaceRight>spaceLeft ? "right" : "left";
+            if (spaceRight < APP_LIST_MIN_WIDTH) {
+                position = "left";
+            } else if (spaceRight > APP_LIST_MIN_WIDTH) {
+                position = "right";
+            } else {
+                position = spaceRight > spaceLeft ? "right" : "left";
             }
             setAppListPosition(position as "left" | "right");
-           
         }
 
         setDisplayAllApps(!displayAllApps);
@@ -221,6 +235,8 @@ function FieldToolbarComponent(
             )}
             data-tooltip={"Edit"}
             onClick={(e) => {
+                // TODO the listener for field path is attached to the common parent requiring
+                // propagation to be stopped, should ideally only attach onClick to fieldpath dropdown
                 e.preventDefault();
                 e.stopPropagation();
                 handleEdit(fieldMetadata);
@@ -331,16 +347,13 @@ function FieldToolbarComponent(
         </button>
     );
 
-
-
-
-
+    // TODO sibling count is incorrect for this purpose
 
     const totalElementCount = targetElement?.parentNode?.childElementCount ?? 1;
     const indexOfElement = fieldMetadata?.multipleFieldMetadata?.index;
 
-    const disableMoveLeft = indexOfElement === 0;
-    const disableMoveRight = indexOfElement === totalElementCount - 1;
+    const disableMoveLeft = indexOfElement === 0; // first element
+    const disableMoveRight = indexOfElement === totalElementCount - 1; // last element
 
     useEffect(() => {
         async function fetchFieldSchema() {
@@ -377,17 +390,15 @@ function FieldToolbarComponent(
 
     useEffect(() => {
         const event = visualBuilderPostMessage?.on(
-            VisualBuilderPostMessageEvents.FIELD_LOCATION_DATA, 
+            VisualBuilderPostMessageEvents.FIELD_LOCATION_DATA,
             (data: { data: any }) => {
-                setFieldLocationData(data.data.fieldLocationData );
+                setFieldLocationData(data.data.fieldLocationData);
             }
         );
         return () => {
             event?.unregister();
         };
     }, []);
-
-   
 
     const multipleFieldToolbarButtonClasses = classNames(
         "visual-builder__button visual-builder__button--secondary",
@@ -400,9 +411,6 @@ function FieldToolbarComponent(
                 invertTooltipPosition,
         }
     );
-
-    
-  
 
     return (
         <div
@@ -554,13 +562,24 @@ function FieldToolbarComponent(
                             </>
                         )}
 
-                       <FieldLocationIcon fieldLocationData={fieldLocationData} multipleFieldToolbarButtonClasses={multipleFieldToolbarButtonClasses} handleMoreIconClick={handleMoreIconClick} moreButtonRef={moreButtonRef} toolbarRef={toolbarRef}/>
-
+                        <FieldLocationIcon
+                            fieldLocationData={fieldLocationData}
+                            multipleFieldToolbarButtonClasses={
+                                multipleFieldToolbarButtonClasses
+                            }
+                            handleMoreIconClick={handleMoreIconClick}
+                            moreButtonRef={moreButtonRef}
+                            toolbarRef={toolbarRef}
+                        />
                     </>
                 </div>
             </div>
             {displayAllApps && (
-                <FieldLocationAppList toolbarRef={toolbarRef} apps={fieldLocationData?.apps || [] as any[]} position={appListPosition} />
+                <FieldLocationAppList
+                    toolbarRef={toolbarRef}
+                    apps={fieldLocationData?.apps || ([] as any[])}
+                    position={appListPosition}
+                />
             )}
         </div>
     );
