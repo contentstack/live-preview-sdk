@@ -123,7 +123,6 @@ function FieldToolbarComponent(
     const [displayAllApps, setDisplayAllApps] = useState(false);
     const moreButtonRef = useRef<HTMLButtonElement>(null);
     const toolbarRef = useRef<HTMLDivElement>(null);
-    const [isFieldLocationLoading, setIsFieldLocationLoading] = useState(true);
     const [appListPosition, setAppListPosition] = useState<"left" | "right">("right");
 
     const parentPath =
@@ -370,24 +369,23 @@ function FieldToolbarComponent(
                 }
             }
         );
+
         return () => {
             event?.unregister();
         };
     }, []);
 
     useEffect(() => {
-        setIsFieldLocationLoading(true);
         const event = visualBuilderPostMessage?.on(
             VisualBuilderPostMessageEvents.FIELD_LOCATION_DATA, 
             (data: { data: any }) => {
-                setFieldLocationData(data.data.fieldLocationData);
-                setIsFieldLocationLoading(false);
+                setFieldLocationData(data.data.fieldLocationData );
             }
         );
         return () => {
             event?.unregister();
         };
-    }, [fieldMetadata]);
+    }, []);
 
    
 
@@ -556,13 +554,13 @@ function FieldToolbarComponent(
                             </>
                         )}
 
-                       <FieldLocationIcon isLoading={isFieldLocationLoading} fieldLocationData={fieldLocationData} multipleFieldToolbarButtonClasses={multipleFieldToolbarButtonClasses} handleMoreIconClick={handleMoreIconClick} moreButtonRef={moreButtonRef} toolbarRef={toolbarRef}/>
+                       <FieldLocationIcon fieldLocationData={fieldLocationData} multipleFieldToolbarButtonClasses={multipleFieldToolbarButtonClasses} handleMoreIconClick={handleMoreIconClick} moreButtonRef={moreButtonRef} toolbarRef={toolbarRef}/>
 
                     </>
                 </div>
             </div>
             {displayAllApps && (
-                <FieldLocationAppList apps={fieldLocationData?.apps || [] as any[]} position={appListPosition} />
+                <FieldLocationAppList toolbarRef={toolbarRef} apps={fieldLocationData?.apps || [] as any[]} position={appListPosition} />
             )}
         </div>
     );
