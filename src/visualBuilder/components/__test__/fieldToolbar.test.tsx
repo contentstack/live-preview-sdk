@@ -12,6 +12,9 @@ import { asyncRender } from "../../../__test__/utils";
 import { VisualBuilderCslpEventDetails } from "../../types/visualBuilder.types";
 import { isFieldDisabled } from "../../utils/isFieldDisabled";
 import React from "preact/compat";
+import visualBuilderPostMessage from "../../utils/visualBuilderPostMessage";
+import { FieldLocationIcon } from "../FieldLocationIcon";
+import { VisualBuilderPostMessageEvents } from "../../utils/types/postMessage.types";
 
 vi.mock("../../utils/instanceHandlers", () => ({
     handleMoveInstance: vi.fn(),
@@ -182,7 +185,7 @@ describe("FieldToolbarComponent", () => {
     test("display variant icon instead of dropdown", async () => {
         mockEventDetails.fieldMetadata.variant = "variant";
         const { findByTestId } = await asyncRender(
-            <FieldToolbarComponent eventDetails={mockEventDetails} />
+            <FieldToolbarComponent eventDetails={mockEventDetails} hideOverlay={vi.fn()} />
         );
 
         const variantIcon = await findByTestId(
@@ -300,5 +303,86 @@ describe("FieldToolbarComponent", () => {
         if (replaceButton) {
             expect(replaceButton).toBeDisabled();
         }
+    });
+
+    describe("Field Location Dropdown", () => {
+     
+       
+
+        test("FieldLocationIcon shows dropdown icon when multiple apps are available", async () => {
+            const mockFieldLocationData = {
+                apps: [
+                    {
+                        uid: "app1",
+                        title: "First App",
+                        icon: "icon1.png",
+                        app_installation_uid: "install1"
+                    },
+                    {
+                        uid: "app2", 
+                        title: "Second App",
+                        icon: "icon2.png",
+                        app_installation_uid: "install2"
+                    }
+                ]
+            };
+
+            const mockHandleMoreIconClick = vi.fn();
+            const mockButtonRef = { current: null };
+            const mockToolbarRef = { current: null };
+
+            const { container } = await asyncRender(
+                <FieldLocationIcon
+                    fieldLocationData={mockFieldLocationData}
+                    multipleFieldToolbarButtonClasses="mock-button-class"
+                    handleMoreIconClick={mockHandleMoreIconClick}
+                    moreButtonRef={mockButtonRef}
+                    toolbarRef={mockToolbarRef}
+                />
+            );
+
+            const appIcon = container.querySelector('[data-testid="field-location-icon"]');
+            expect(appIcon).toBeInTheDocument();
+
+            const moreButton = container.querySelector('[data-testid="field-location-more-button"]');
+            expect(moreButton).toBeInTheDocument();
+
+            fireEvent.click(moreButton!);
+            expect(mockHandleMoreIconClick).toHaveBeenCalledTimes(1);
+        });
+
+        test("FieldLocationIcon does not show dropdown icon when only one app is available", async () => {
+            const mockFieldLocationData = {
+                apps: [
+                    {
+                        uid: "app1",
+                        title: "First App",
+                        icon: "icon1.png",
+                        app_installation_uid: "install1"
+                    }
+                ]
+            };
+
+            const mockHandleMoreIconClick = vi.fn();
+            const mockButtonRef = { current: null };
+            const mockToolbarRef = { current: null };
+
+            const { container } = await asyncRender(
+                <FieldLocationIcon
+                    fieldLocationData={mockFieldLocationData}
+                    multipleFieldToolbarButtonClasses="mock-button-class"
+                    handleMoreIconClick={mockHandleMoreIconClick}
+                    moreButtonRef={mockButtonRef}
+                    toolbarRef={mockToolbarRef}
+                />
+            );
+
+            const appIcon = container.querySelector('[data-testid="field-location-icon"]');
+            expect(appIcon).toBeInTheDocument();
+
+            const moreButton = container.querySelector('[data-testid="field-location-more-button"]');
+            expect(moreButton).not.toBeInTheDocument();
+        });
+
     });
 });
