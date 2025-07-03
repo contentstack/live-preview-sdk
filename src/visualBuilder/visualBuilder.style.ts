@@ -690,8 +690,8 @@ export function visualBuilderStyles() {
             background-color: #8a8f99;
         `,
         "visual-builder__field-location-icons-container__app-icon": css`
-            width: 16px;
-            height: 16px;
+            width: 24px;
+            height: 24px;
             object-fit: cover;
         `,
         "visual-builder__field-location-app-list": css`
