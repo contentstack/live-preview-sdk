@@ -56,6 +56,7 @@ import {
     clearThreadStatus,
 } from "./generators/generateThread";
 import { IThreadDTO } from "./types/collab.types";
+import { useReferenceMapEvents } from "./eventManager/useReferenceMapEvent";
 
 interface VisualBuilderGlobalStateImpl {
     previousSelectedEditableDOM: HTMLElement | Element | null;
@@ -67,6 +68,7 @@ interface VisualBuilderGlobalStateImpl {
     locale: string;
     variant: string | null;
     focusElementObserver: MutationObserver | null;
+    referenceParentMap: Record<string, string>;
 }
 
 let threadsPayload: IThreadDTO[] = [];
@@ -88,6 +90,7 @@ export class VisualBuilder {
             locale: Config.get().stackDetails.masterLocale || "en-us",
             variant: null,
             focusElementObserver: null,
+            referenceParentMap: {},
         });
 
     private handlePositionChange(editableElement: HTMLElement) {
@@ -379,6 +382,7 @@ export class VisualBuilder {
                     useRecalculateVariantDataCSLPValues();
                     useDraftFieldsPostMessageEvent();
                     useVariantFieldsPostMessageEvent();
+                    useReferenceMapEvents();
                 }
             })
             .catch(() => {
@@ -422,6 +426,7 @@ export class VisualBuilder {
             locale: "en-us",
             variant: null,
             focusElementObserver: null,
+            referenceParentMap: {},
         };
 
         // Remove DOM elements
