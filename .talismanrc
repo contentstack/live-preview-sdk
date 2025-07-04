@@ -10,4 +10,6 @@ fileignoreconfig:
       checksum: 3badd6a142456b6a361569e6fc546349a38ac6b366bef7fd5255d1e93220444e
     - filename: src/visualBuilder/components/Collab/ThreadPopup/__test__/CommentTextArea.test.tsx
       checksum: d0ef271ee5381d9feab06bda6e7e89bd0a882fee87495627bd811c1f0a5459c7
+    - filename: package-lock.json
+      checksum: fd06363871d0ee16ebfb5d9d0cc479e0922a615bb76584b80bb6933ee6c3e237
 version: "1.0"

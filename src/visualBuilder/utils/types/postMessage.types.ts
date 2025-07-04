@@ -42,10 +42,17 @@ export enum VisualBuilderPostMessageEvents {
     GET_VARIANT_ID = "get-variant-id",
     GET_LOCALE = "get-locale",
     SEND_VARIANT_AND_LOCALE = "send-variant-and-locale",
+    GET_CONTENT_TYPE_NAME = "get-content-type-name",
+    REFERENCE_MAP = "get-reference-map",
+    SYNC_REFERENCE_MAP = "sync-reference-map",
     COLLAB_ENABLE = "collab-enable",
     COLLAB_DATA_UPDATE = "collab-data-update",
     COLLAB_DISABLE = "collab-disable",
     COLLAB_THREADS_REMOVE = "collab-threads-remove",
     COLLAB_THREAD_REOPEN = "collab-thread-reopen",
     COLLAB_THREAD_HIGHLIGHT = "collab-thread-highlight",
+}
+
+export interface ReferenceMapPostMessageEventData {
+
 }

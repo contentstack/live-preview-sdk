@@ -51,6 +51,7 @@ vi.mock("../updateFocussedState", () => ({
 
 vi.mock("lodash-es", () => ({
     throttle: vi.fn((fn) => fn),
+    debounce: vi.fn((fn) => fn),
 }));
 
 vi.mock("../handleFieldInput", () => ({

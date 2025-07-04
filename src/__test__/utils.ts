@@ -39,7 +39,7 @@ export async function sleep(waitTimeInMs = 100): Promise<void> {
 export const waitForHoverOutline = async () => {
     await waitFor(() => {
         const hoverOutline = document.querySelector(
-            "[data-testid='visual-builder__hover-outline']"
+            "[data-testid='visual-builder__hover-outline'][style]"
         );
         expect(hoverOutline).not.toBeNull();
     });

@@ -1,9 +1,11 @@
+import { throttle } from "lodash-es";
 import { VisualBuilder } from "..";
 import handleBuilderInteraction from "./mouseClick";
 import handleMouseHover, {
     hideCustomCursor,
     hideHoverOutline,
     showCustomCursor,
+    showHoverToolbar,
 } from "./mouseHover";
 import EventListenerHandlerParams from "./types";
 
@@ -36,6 +38,16 @@ const eventHandlers = {
             visualBuilderContainer: params.visualBuilderContainer,
             customCursor: params.customCursor,
         });
+        showHoverToolbar({
+            event: event,
+            overlayWrapper: params.overlayWrapper,
+            visualBuilderContainer: params.visualBuilderContainer,
+            previousSelectedEditableDOM:
+                VisualBuilder.VisualBuilderGlobalState.value
+                    .previousSelectedEditableDOM,
+            focusedToolbar: params.focusedToolbar,
+            resizeObserver: params.resizeObserver,
+        });
     },
     mouseleave: (params: AddEventListenersParams) => () => {
         hideCustomCursor(params.customCursor);
@@ -55,7 +67,7 @@ export function addEventListeners(params: AddEventListenersParams): void {
     eventListenersMap.set("click", clickHandler as EventListener);
     eventListenersMap.set("mousemove", mousemoveHandler as EventListener);
     eventListenersMap.set("mouseleave", mouseleaveHandler);
-    eventListenersMap.set("mouseenter", mouseenterHandler);
+    eventListenersMap.set("mouseenter", mouseenterHandler as EventListener);
 
     window.addEventListener("click", clickHandler, { capture: true });
     window.addEventListener("mousemove", mousemoveHandler);

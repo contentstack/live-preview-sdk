@@ -8,7 +8,22 @@ import { asyncRender } from "../../../__test__/utils";
 import { isFieldDisabled } from "../../utils/isFieldDisabled";
 import { FieldSchemaMap } from "../../utils/fieldSchemaMap";
 import { getEntryPermissionsCached } from "../../utils/getEntryPermissionsCached";
+import visualBuilderPostMessage from "../../utils/visualBuilderPostMessage";
 import React from "preact/compat";
+
+// Mock the ToolbarTooltip component
+vi.mock("../Tooltip", () => ({
+    ToolbarTooltip: ({ children, data, disabled }: { children: JSX.Element, data: { contentTypeName: string, referenceFieldName: string }, disabled: boolean }) => (
+        <div 
+            data-testid="toolbar-tooltip" 
+            data-disabled={disabled}
+            data-content-type-name={data.contentTypeName}
+            data-reference-field-name={data.referenceFieldName}
+        >
+            {children}
+        </div>
+    )
+}));
 
 const DISPLAY_NAMES = {
     mockFieldCslp: "Field 0",
@@ -39,39 +54,36 @@ vi.mock("../../utils/fieldSchemaMap", () => {
 vi.mock("../../utils/visualBuilderPostMessage", async () => {
     return {
         default: {
-            send: vi
-                .fn()
-                .mockImplementation((eventName: string, fields: CslpData[]) => {
-                    if (
-                        eventName ===
-                        VisualBuilderPostMessageEvents.GET_FIELD_DISPLAY_NAMES
-                    ) {
-                        // TODO there is some issue with mocking extractCslpDetails or
-                        // the way it works with the mock cslp values, needs more investigation
-                        // const names: Record<string, string> = {};
-                        // fields.forEach((field) => {
-                        //     names[field.cslpValue] =
-                        //         /** @ts-expect-error - display name will be there */
-                        //         DISPLAY_NAMES[field.cslpValue];
-                        // });
-                        // NOTE UGLY hack for now
-                        if (fields.length === 1) {
-                            return Promise.resolve({
-                                [fields[0].cslpValue]:
-                                    DISPLAY_NAMES.mockFieldCslp,
-                            });
-                        }
-                        const names = {
-                            mockFieldCslp: "Field 0",
-                            [PARENT_PATHS[0]]: DISPLAY_NAMES.parentPath1,
-                            [PARENT_PATHS[1]]: DISPLAY_NAMES.parentPath2,
-                            [PARENT_PATHS[2]]: DISPLAY_NAMES.parentPath3,
-                        };
-                        return Promise.resolve(names);
+            send: vi.fn().mockImplementation((eventName: string, fields: CslpData[]) => {
+                if (
+                    eventName ===
+                    VisualBuilderPostMessageEvents.GET_FIELD_DISPLAY_NAMES
+                ) {
+                    // TODO there is some issue with mocking extractCslpDetails or
+                    // the way it works with the mock cslp values, needs more investigation
+                    // const names: Record<string, string> = {};
+                    // fields.forEach((field) => {
+                    //     names[field.cslpValue] =
+                    //         /** @ts-expect-error - display name will be there */
+                    //         DISPLAY_NAMES[field.cslpValue];
+                    // });
+                    // NOTE UGLY hack for now
+                    if (fields.length === 1) {
+                        return Promise.resolve({
+                            [fields[0].cslpValue]:
+                                DISPLAY_NAMES.mockFieldCslp,
+                        });
                     }
-                    return Promise.resolve({});
-                }),
-            on: vi.fn(),
+                    const names = {
+                        mockFieldCslp: "Field 0",
+                        [PARENT_PATHS[0]]: DISPLAY_NAMES.parentPath1,
+                        [PARENT_PATHS[1]]: DISPLAY_NAMES.parentPath2,
+                        [PARENT_PATHS[2]]: DISPLAY_NAMES.parentPath3,
+                    };
+                    return Promise.resolve(names);
+                }
+                return Promise.resolve({});
+            }),
         },
     };
 });
@@ -92,6 +104,29 @@ describe("FieldLabelWrapperComponent", () => {
             isDisabled: false,
             // @ts-expect-error - reason is an unexported literal
             reason: "",
+        });
+
+        // Reset the mock implementation to the default one
+        vi.mocked(visualBuilderPostMessage!.send).mockImplementation((eventName: string, fields: CslpData[]) => {
+            if (
+                eventName ===
+                VisualBuilderPostMessageEvents.GET_FIELD_DISPLAY_NAMES
+            ) {
+                if (fields.length === 1) {
+                    return Promise.resolve({
+                        [fields[0].cslpValue]:
+                            DISPLAY_NAMES.mockFieldCslp,
+                    });
+                }
+                const names = {
+                    mockFieldCslp: "Field 0",
+                    [PARENT_PATHS[0]]: DISPLAY_NAMES.parentPath1,
+                    [PARENT_PATHS[1]]: DISPLAY_NAMES.parentPath2,
+                    [PARENT_PATHS[2]]: DISPLAY_NAMES.parentPath3,
+                };
+                return Promise.resolve(names);
+            }
+            return Promise.resolve({});
         });
     });
 
@@ -228,5 +263,74 @@ describe("FieldLabelWrapperComponent", () => {
             mockEventDetails,
             mockEntryPermissions
         );
+    });
+
+    test("renders ToolbarTooltip component with correct data", async () => {
+        const { findByTestId } = await asyncRender(
+            <FieldLabelWrapperComponent
+                fieldMetadata={mockFieldMetadata}
+                eventDetails={mockEventDetails}
+                parentPaths={[]}
+                getParentEditableElement={mockGetParentEditable}
+            />
+        );
+
+        const tooltipElement = await findByTestId("toolbar-tooltip");
+        expect(tooltipElement).toBeInTheDocument();
+        expect(tooltipElement).toHaveAttribute("data-content-type-name", "Page CT");
+        expect(tooltipElement).toHaveAttribute("data-reference-field-name", "Reference Field");
+    });
+
+    test("does not render reference icon when isReference is false", async () => {
+        const { container } = await asyncRender(
+            <FieldLabelWrapperComponent
+                fieldMetadata={mockFieldMetadata}
+                eventDetails={mockEventDetails}
+                parentPaths={[]}
+                getParentEditableElement={mockGetParentEditable}
+            />
+        );
+
+        await waitFor(() => {
+            const referenceIconContainer = container.querySelector(".visual-builder__reference-icon-container");
+            expect(referenceIconContainer).not.toBeInTheDocument();
+        });
+    });
+
+    test("renders with correct hovered cslp data attribute", async () => {
+        const { findByTestId } = await asyncRender(
+            <FieldLabelWrapperComponent
+                fieldMetadata={mockFieldMetadata}
+                eventDetails={mockEventDetails}
+                parentPaths={[]}
+                getParentEditableElement={mockGetParentEditable}
+            />
+        );
+
+        const fieldLabelWrapper = await findByTestId("visual-builder__focused-toolbar__field-label-wrapper");
+        expect(fieldLabelWrapper).toHaveAttribute("data-hovered-cslp", mockFieldMetadata.cslpValue);
+    });
+
+
+    test("does not render ContentTypeIcon when loading", async () => {
+        // Mock the display names to never resolve to simulate loading state
+        vi.mocked(visualBuilderPostMessage!.send).mockImplementation(() => {
+            return new Promise(() => {}); // Never resolves
+        });
+
+        const { container } = await asyncRender(
+            <FieldLabelWrapperComponent
+                fieldMetadata={mockFieldMetadata}
+                eventDetails={mockEventDetails}
+                parentPaths={[]}
+                getParentEditableElement={mockGetParentEditable}
+            />
+        );
+
+        // Wait a bit to ensure the component has time to render
+        await new Promise(resolve => setTimeout(resolve, 100));
+
+        const contentTypeIcon = container.querySelector(".visual-builder__content-type-icon");
+        expect(contentTypeIcon).not.toBeInTheDocument();
     });
 });
