@@ -19,12 +19,13 @@ import {
     MoveLeftIcon,
     MoveRightIcon,
     ReplaceAssetIcon,
+    MoreIcon,
 } from "./icons";
 import { fieldIcons } from "./icons/fields";
 import classNames from "classnames";
 import { visualBuilderStyles } from "../visualBuilder.style";
 import CommentIcon from "./CommentIcon";
-import React, { useEffect, useState } from "preact/compat";
+import React, { useEffect, useState, useRef } from "preact/compat";
 import { FieldSchemaMap } from "../utils/fieldSchemaMap";
 import { isFieldDisabled } from "../utils/isFieldDisabled";
 import { IReferenceContentTypeSchema } from "../../cms/types/contentTypeSchema.types";
@@ -40,6 +41,10 @@ import {
 } from "./FieldRevert/FieldRevertComponent";
 import { LoadingIcon } from "./icons/loading";
 import { EntryPermissions } from "../utils/getEntryPermissions";
+import { EmptyAppIcon } from "./icons/EmptyAppIcon";
+import { FieldLocationAppList } from "./FieldLocationAppList";
+import { FieldLocationIcon } from "./FieldLocationIcon";
+
 
 export type FieldDetails = Pick<
     VisualBuilderCslpEventDetails,
@@ -115,6 +120,13 @@ function FieldToolbarComponent(
     } = props;
     const { fieldMetadata, editableElement: targetElement } = eventDetails;
     const [isFormLoading, setIsFormLoading] = useState(false);
+    const [fieldLocationData, setFieldLocationData] = useState<any>(null);
+    const [displayAllApps, setDisplayAllApps] = useState(false);
+    const moreButtonRef = useRef<HTMLButtonElement>(null);
+    const toolbarRef = useRef<HTMLDivElement>(null);
+    const [appListPosition, setAppListPosition] = useState<"left" | "right">(
+        "right"
+    );
 
     const parentPath =
         fieldMetadata?.multipleFieldMetadata?.parentDetails?.parentCslpValue ||
@@ -135,6 +147,7 @@ function FieldToolbarComponent(
     let Icon = null;
     let fieldType = null;
     let isWholeMultipleField = false;
+    const APP_LIST_MIN_WIDTH = 230;
 
     let disableFieldActions = false;
     if (fieldSchema) {
@@ -176,7 +189,7 @@ function FieldToolbarComponent(
         // if (
         //     DEFAULT_MULTIPLE_FIELDS.includes(fieldType) &&
         //     isWholeMultipleField &&
-        //     !isVariant
+        //      !isVariant
         // ) {
         //     return null;
         // }
@@ -184,6 +197,26 @@ function FieldToolbarComponent(
 
     const invertTooltipPosition =
         targetElement.getBoundingClientRect().top <= TOOLTIP_TOP_EDGE_BUFFER;
+
+    const handleMoreIconClick = () => {
+        if (toolbarRef.current) {
+            const rect = toolbarRef.current.getBoundingClientRect();
+            const spaceRight = window.innerWidth - rect.right;
+            const spaceLeft = rect.left;
+            let position = "";
+
+            if (spaceRight < APP_LIST_MIN_WIDTH) {
+                position = "left";
+            } else if (spaceRight > APP_LIST_MIN_WIDTH) {
+                position = "right";
+            } else {
+                position = spaceRight > spaceLeft ? "right" : "left";
+            }
+            setAppListPosition(position as "left" | "right");
+        }
+
+        setDisplayAllApps(!displayAllApps);
+    };
 
     const editButton = Icon ? (
         <button
@@ -315,6 +348,7 @@ function FieldToolbarComponent(
     );
 
     // TODO sibling count is incorrect for this purpose
+
     const totalElementCount = targetElement?.parentNode?.childElementCount ?? 1;
     const indexOfElement = fieldMetadata?.multipleFieldMetadata?.index;
 
@@ -346,6 +380,19 @@ function FieldToolbarComponent(
                 ) {
                     props.hideOverlay();
                 }
+            }
+        );
+
+        return () => {
+            event?.unregister();
+        };
+    }, []);
+
+    useEffect(() => {
+        const event = visualBuilderPostMessage?.on(
+            VisualBuilderPostMessageEvents.FIELD_LOCATION_DATA,
+            (data: { data: any }) => {
+                setFieldLocationData(data.data.fieldLocationData);
             }
         );
         return () => {
@@ -514,9 +561,26 @@ function FieldToolbarComponent(
                                 ) : null}
                             </>
                         )}
+
+                        <FieldLocationIcon
+                            fieldLocationData={fieldLocationData}
+                            multipleFieldToolbarButtonClasses={
+                                multipleFieldToolbarButtonClasses
+                            }
+                            handleMoreIconClick={handleMoreIconClick}
+                            moreButtonRef={moreButtonRef}
+                            toolbarRef={toolbarRef}
+                        />
                     </>
                 </div>
             </div>
+            {displayAllApps && (
+                <FieldLocationAppList
+                    toolbarRef={toolbarRef}
+                    apps={fieldLocationData?.apps || ([] as any[])}
+                    position={appListPosition}
+                />
+            )}
         </div>
     );
 }
