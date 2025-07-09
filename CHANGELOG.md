@@ -2,15 +2,32 @@
 
 ## [v3.2.5](https://github.com/contentstack/live-preview-sdk/compare/v3.2.4...v3.2.5)
 
-> 24 June 2025
+> 9 July 2025
+
+### Fixes
+
+- fix(VE-6459): psuedo-editable height collapse (Faraaz Biyabani - [#451](https://github.com/contentstack/live-preview-sdk/pull/451))
+- fix: start editing button not rendering (Sahil Chalke - [#447](https://github.com/contentstack/live-preview-sdk/pull/447))
 
 ### General Changes
 
+- Optimisation: `init` to emit postMessage on `DOMContentLoaded` (Ayush Dubey - [#448](https://github.com/contentstack/live-preview-sdk/pull/448))
 - VE-6559:add isOpenInBuilder utility function and integrate into VisualBuilder components (Sahil Chalke - [#446](https://github.com/contentstack/live-preview-sdk/pull/446))
 
 ### New Features
 
 - feat: add isOpenInBuilder utility function and integrate into VisualBuilder components (SahilCs15 - [8e80517](https://github.com/contentstack/live-preview-sdk/commit/8e80517437e979fd143a162cc5b293cabb84e94e))
+
+### Fixes
+
+- fix: extract the overriding function and improve unit tests (Faraaz Biyabani - [e8388d0](https://github.com/contentstack/live-preview-sdk/commit/e8388d05c49464ab3352cd566ca9a1976ff5f6b1))
+- fix: psuedo-editable height collapse (Faraaz Biyabani - [f28d629](https://github.com/contentstack/live-preview-sdk/commit/f28d629d362d5820b8583f748b42bd98d464c180))
+- fix: changed DOM events (csAyushDubey - [8e433b4](https://github.com/contentstack/live-preview-sdk/commit/8e433b41328acefd969ba157d25cf6f6ad5cc351))
+- fix: test fix (csAyushDubey - [af6acf5](https://github.com/contentstack/live-preview-sdk/commit/af6acf5eba9236ba3fb13bb32da8fdade9063d51))
+
+### Chores And Housekeeping
+
+- chore: update README.md to reference ContentstackLivePreview version 3.2.5 (hiteshshetty-dev - [e063d6e](https://github.com/contentstack/live-preview-sdk/commit/e063d6ef8fd95faaef612981f4586b4db66f9e4d))
 
 ## [v3.2.4](https://github.com/contentstack/live-preview-sdk/compare/v3.2.3...v3.2.4)
 
@@ -39,7 +56,6 @@
 ### Fixes
 
 - fix: update LightLivePreviewHoC config to use IExportedConfig type (Kirtesh Suthar - [#438](https://github.com/contentstack/live-preview-sdk/pull/438))
-- fix(VE-5851): error handling for getEntryPermissionsCached (Hitesh Shetty - [#434](https://github.com/contentstack/live-preview-sdk/pull/434))
 
 ### General Changes
 
@@ -47,30 +63,17 @@
 - Revert "Collab" (diwakarmk7 - [#441](https://github.com/contentstack/live-preview-sdk/pull/441))
 - Collab (diwakarmk7 - [#439](https://github.com/contentstack/live-preview-sdk/pull/439))
 - Prepare for release from - Develop v3 (Kirtesh Suthar - [#440](https://github.com/contentstack/live-preview-sdk/pull/440))
-- v3.2.2 (Hitesh Shetty - [#435](https://github.com/contentstack/live-preview-sdk/pull/435))
-- Stage v3.2.2 (Hitesh Shetty - [#433](https://github.com/contentstack/live-preview-sdk/pull/433))
 
 ### Fixes
 
 - fix: update Contentstack Live Preview utils import to version 3.2.3 in README.md (Kirtesh Suthar - [e7da871](https://github.com/contentstack/live-preview-sdk/commit/e7da8715787d6636cff4ad4c09233e57a727af72))
-- fix: error handling for getEntryPermissionsCached usages (Faraaz Biyabani - [25b1be6](https://github.com/contentstack/live-preview-sdk/commit/25b1be665d40b4950d510b781ef17fb3fbc7e6eb))
 - fix(collab): username display difference fix (diwakarmk7 - [bfc29e3](https://github.com/contentstack/live-preview-sdk/commit/bfc29e36527e62fa682089769bb3653dbc924dbc))
 - fix: update checksum for README.md in .talismanrc (Kirtesh Suthar - [45c8c99](https://github.com/contentstack/live-preview-sdk/commit/45c8c9976ae04970a0fcf11dd2fce35f4dee949b))
 - fix: update script integrity hash in README.md for Contentstack Live Preview utils (Kirtesh Suthar - [1f024ce](https://github.com/contentstack/live-preview-sdk/commit/1f024ce31c299cd312cfb26ba85498d967f02d25))
 
-### Chores And Housekeeping
-
-- chore: add CHANGELOG.md and fieldToolbar.test.tsx to talismanrc with checksums (hiteshshetty-dev - [6dc5eed](https://github.com/contentstack/live-preview-sdk/commit/6dc5eed360eb0dfa5db96b7c4638f9194f4f40f3))
-- chore: update Contentstack Live Preview utils to version 3.2.2 in README (hiteshshetty-dev - [5da31f1](https://github.com/contentstack/live-preview-sdk/commit/5da31f1c8f26e7de1cf1432483768b6f7b32d241))
-- chore: add README.md to talismanrc file with checksum (hiteshshetty-dev - [7640872](https://github.com/contentstack/live-preview-sdk/commit/7640872c97395ee44e7d6e3abe570b6555bf455b))
-
 ### Refactoring and Updates
 
 - refactor: move LightLivePreviewHoC to a new file and simplify index.ts (Kirtesh Suthar - [e248309](https://github.com/contentstack/live-preview-sdk/commit/e248309141411ac1398b7661bdc5bd83dfab8857))
-
-### Changes to Test Assests
-
-- test: update field mouse hover tests (Faraaz Biyabani - [16306dd](https://github.com/contentstack/live-preview-sdk/commit/16306dd590cfa0dc996a1d8ffa32ef762997caa6))
 
 ### General Changes
 
@@ -81,7 +84,7 @@
 
 ## [v3.2.2](https://github.com/contentstack/live-preview-sdk/compare/v3.2.1...v3.2.2)
 
-> 13 May 2025
+> 16 May 2025
 
 ### New Features
 
@@ -89,11 +92,18 @@
 
 ### Fixes
 
+- fix(VE-5851): error handling for getEntryPermissionsCached (Hitesh Shetty - [#434](https://github.com/contentstack/live-preview-sdk/pull/434))
 - fix(VE-5361): update field event is not sent when input event does not occur in inline editable fields (Faraaz Biyabani - [#422](https://github.com/contentstack/live-preview-sdk/pull/422))
 - fix(VE-6191): clear field schema map on variant change (Faraaz Biyabani - [#432](https://github.com/contentstack/live-preview-sdk/pull/432))
 
+### General Changes
+
+- v3.2.2 (Hitesh Shetty - [#435](https://github.com/contentstack/live-preview-sdk/pull/435))
+- Stage v3.2.2 (Hitesh Shetty - [#433](https://github.com/contentstack/live-preview-sdk/pull/433))
+
 ### Fixes
 
+- fix: error handling for getEntryPermissionsCached usages (Faraaz Biyabani - [25b1be6](https://github.com/contentstack/live-preview-sdk/commit/25b1be665d40b4950d510b781ef17fb3fbc7e6eb))
 - fix: update field event is not sent when input event does not occur in inline editable fields (Faraaz Biyabani - [15e016d](https://github.com/contentstack/live-preview-sdk/commit/15e016da1d5801fe0770ff31387e47b3b4835d71))
 - fix: disable variant entry actions when no entry edit permission (Faraaz Biyabani - [6d31575](https://github.com/contentstack/live-preview-sdk/commit/6d315751c128d6231f15ee76d8ef83e5fdb1a1bf))
 - fix: clear field schema map on variant change (Faraaz Biyabani - [1d1fd4f](https://github.com/contentstack/live-preview-sdk/commit/1d1fd4fc5c0220486a7eef2470a7bb62464ee2f0))
@@ -102,11 +112,15 @@
 ### Chores And Housekeeping
 
 - chore: remove formatting changes and do a global mock for getEntryPermissionsCached (Faraaz Biyabani - [696a803](https://github.com/contentstack/live-preview-sdk/commit/696a80376028204dfa3e44b5342426c84f052d6c))
+- chore: add CHANGELOG.md and fieldToolbar.test.tsx to talismanrc with checksums (hiteshshetty-dev - [6dc5eed](https://github.com/contentstack/live-preview-sdk/commit/6dc5eed360eb0dfa5db96b7c4638f9194f4f40f3))
+- chore: update Contentstack Live Preview utils to version 3.2.2 in README (hiteshshetty-dev - [5da31f1](https://github.com/contentstack/live-preview-sdk/commit/5da31f1c8f26e7de1cf1432483768b6f7b32d241))
+- chore: add README.md to talismanrc file with checksum (hiteshshetty-dev - [7640872](https://github.com/contentstack/live-preview-sdk/commit/7640872c97395ee44e7d6e3abe570b6555bf455b))
 
 ### Changes to Test Assests
 
 - test: update fieldSchemaMap tests and add tests for variant event handlers (Faraaz Biyabani - [5d4a695](https://github.com/contentstack/live-preview-sdk/commit/5d4a6956a2a4cd653ba8b852eb24270cc3db4653))
 - test: add tests for various modules (Faraaz Biyabani - [ce30b02](https://github.com/contentstack/live-preview-sdk/commit/ce30b02e94c5f7ceae8bf754518a764a59b530ea))
+- test: update field mouse hover tests (Faraaz Biyabani - [16306dd](https://github.com/contentstack/live-preview-sdk/commit/16306dd590cfa0dc996a1d8ffa32ef762997caa6))
 - test: createCachedFetch (Faraaz Biyabani - [c4711b4](https://github.com/contentstack/live-preview-sdk/commit/c4711b4527982766d480b294af9b9d7bf2e4c8f3))
 - test: not sending field event in handleFieldInput (Faraaz Biyabani - [8e6a56d](https://github.com/contentstack/live-preview-sdk/commit/8e6a56d55e9f0d9a097a91f1ca06db8002a154b6))
 - test: update failing tests (Faraaz Biyabani - [c05998b](https://github.com/contentstack/live-preview-sdk/commit/c05998bca1aea2d010856d5bd41fd699817cc145))
@@ -174,11 +188,6 @@
 
 > 11 April 2025
 
-### General Changes
-
-- v3.1.3 (Sairaj - [#413](https://github.com/contentstack/live-preview-sdk/pull/413))
-- Stage-v3.1.3 (Hitesh Shetty - [#412](https://github.com/contentstack/live-preview-sdk/pull/412))
-
 ### New Features
 
 - feat(collab): add ui-components and collab feature handling (MohammedZuhairAhmed - [8d15af3](https://github.com/contentstack/live-preview-sdk/commit/8d15af302c1129cfeee6acf39e99c282ed275f00))
@@ -219,8 +228,6 @@
 
 - chore(collab): addressed pr comments (MohammedZuhairAhmed - [0a2e644](https://github.com/contentstack/live-preview-sdk/commit/0a2e6447ee9912136927aaab3b0d27eb717d10a1))
 - chore(collab): fix email styles (Pratyush Biswas - [ecfde0a](https://github.com/contentstack/live-preview-sdk/commit/ecfde0ae403807c7e36461e3777d0a720eb82ae1))
-- chore: add tagPattern to auto-changelog configuration in package.json (hiteshshetty-dev - [e0a208b](https://github.com/contentstack/live-preview-sdk/commit/e0a208bab316535abfb9c0e1ead19dab95b76f2d))
-- chore: update ContentstackLivePreview import to version 3.1.3 in README.md (hiteshshetty-dev - [6b52088](https://github.com/contentstack/live-preview-sdk/commit/6b52088ec4605c5d95358f3bc06002ef136e4f2c))
 
 ### Refactoring and Updates
 
@@ -251,15 +258,10 @@
 - remove unused styles (Pratyush Biswas - [1db60c4](https://github.com/contentstack/live-preview-sdk/commit/1db60c49ae5f2decd6ec57a825d8d55206171096))
 - Fix resolve button style (Pratyush Biswas - [e0ecaaa](https://github.com/contentstack/live-preview-sdk/commit/e0ecaaaa0fbf04b1bc61736541302cb0d62e8a9b))
 - added id to tousers list (diwakarmk7 - [df62756](https://github.com/contentstack/live-preview-sdk/commit/df6275625518c222909b8039eb55d21ca38df7aa))
-- Update src/visualBuilder/utils/handleInlineEditableField.ts (Hitesh Shetty - [3052877](https://github.com/contentstack/live-preview-sdk/commit/30528770bec19e0ca4a5b29b778fb53b1739bd60))
 
 ## [v3.1.3](https://github.com/contentstack/live-preview-sdk/compare/v3.1.2...v3.1.3)
 
-> 28 March 2025
-
-### New Features
-
-- feat: v3.1.2 (Faraaz Biyabani - [#381](https://github.com/contentstack/live-preview-sdk/pull/381))
+> 4 April 2025
 
 ### Fixes
 
@@ -268,18 +270,15 @@
 - fix(VE-5555): add instance button loading state (Faraaz Biyabani - [#406](https://github.com/contentstack/live-preview-sdk/pull/406))
 - fix: call onChangeCallback when live_preview parameter is present in URL (Faraaz Biyabani - [#363](https://github.com/contentstack/live-preview-sdk/pull/363))
 
-### Chores And Housekeeping
-
-- chore: rename `editButtonBulider` to `editInVisualBuilderButton` (Hitesh Shetty - [#379](https://github.com/contentstack/live-preview-sdk/pull/379))
-
 ### Changes to Test Assests
 
 - test(VE-5478): add unit test for inline editing related functions (Faraaz Biyabani - [#398](https://github.com/contentstack/live-preview-sdk/pull/398))
 
 ### General Changes
 
+- v3.1.3 (Sairaj - [#413](https://github.com/contentstack/live-preview-sdk/pull/413))
+- Stage-v3.1.3 (Hitesh Shetty - [#412](https://github.com/contentstack/live-preview-sdk/pull/412))
 - VE-5544: Investigate button click issue with `data-cslp` attribute (Sairaj - [#408](https://github.com/contentstack/live-preview-sdk/pull/408))
-- Stage: v3.1.2 (Faraaz Biyabani - [#377](https://github.com/contentstack/live-preview-sdk/pull/377))
 
 ### New Features
 
@@ -293,22 +292,26 @@
 
 ### Chores And Housekeeping
 
-- chore: rename editButtonBulider to editInVisualBuilderButton (Sairaj Chouhan - [bd8be29](https://github.com/contentstack/live-preview-sdk/commit/bd8be29d97c151fc85aad98f55573a6821b3d4fc))
-- chore: update integrity (hiteshshetty-dev - [ad2c8aa](https://github.com/contentstack/live-preview-sdk/commit/ad2c8aa3780b973233a82e5a978254f777773af2))
+- chore: add tagPattern to auto-changelog configuration in package.json (hiteshshetty-dev - [e0a208b](https://github.com/contentstack/live-preview-sdk/commit/e0a208bab316535abfb9c0e1ead19dab95b76f2d))
+- chore: update ContentstackLivePreview import to version 3.1.3 in README.md (hiteshshetty-dev - [6b52088](https://github.com/contentstack/live-preview-sdk/commit/6b52088ec4605c5d95358f3bc06002ef136e4f2c))
 
 ### Changes to Test Assests
 
 - test: add unit test for inline editing related functions (Faraaz Biyabani - [50a2167](https://github.com/contentstack/live-preview-sdk/commit/50a21675271c7ec65d0959a1e20334011119a729))
 - test: fix unit tests related to add instance button (Faraaz Biyabani - [b6af0cc](https://github.com/contentstack/live-preview-sdk/commit/b6af0cc1d6142c9cfcbcdbef745ac245d0f271ca))
 - test: add test for replace button visibility in multiple file fields (Sairaj Chouhan - [aa1d818](https://github.com/contentstack/live-preview-sdk/commit/aa1d818533f8759cfc428c6a2c32691041beef93))
-- test: fix failing test cases (Sairaj Chouhan - [6d36acb](https://github.com/contentstack/live-preview-sdk/commit/6d36acbd5c4e717f92ce40e2e4490df28a857948))
+
+### General Changes
+
+- Update src/visualBuilder/utils/handleInlineEditableField.ts (Hitesh Shetty - [3052877](https://github.com/contentstack/live-preview-sdk/commit/30528770bec19e0ca4a5b29b778fb53b1739bd60))
 
 ## [v3.1.2](https://github.com/contentstack/live-preview-sdk/compare/v3.1.1...v3.1.2)
 
-> 3 March 2025
+> 7 March 2025
 
 ### New Features
 
+- feat: v3.1.2 (Faraaz Biyabani - [#381](https://github.com/contentstack/live-preview-sdk/pull/381))
 - feat: improve edit button rendering (Faraaz Biyabani - [#371](https://github.com/contentstack/live-preview-sdk/pull/371))
 - feat(VE-5170): add plus button configuration  (Sairaj - [#349](https://github.com/contentstack/live-preview-sdk/pull/349))
 - feat: allow click on elements with studio-ui attribute (Faraaz Biyabani - [#355](https://github.com/contentstack/live-preview-sdk/pull/355))
@@ -323,12 +326,17 @@
 - fix(VE-5012): add variant classes in case of adding multiple instances (srinad007 - [#351](https://github.com/contentstack/live-preview-sdk/pull/351))
 - fix(VE-5080): fix z-index for hover outline and add button (srinad007 - [#341](https://github.com/contentstack/live-preview-sdk/pull/341))
 
+### Chores And Housekeeping
+
+- chore: rename `editButtonBulider` to `editInVisualBuilderButton` (Hitesh Shetty - [#379](https://github.com/contentstack/live-preview-sdk/pull/379))
+
 ### Documentation Changes
 
 - docs: add docs for start edit button configuration (Sairaj - [#376](https://github.com/contentstack/live-preview-sdk/pull/376))
 
 ### General Changes
 
+- Stage: v3.1.2 (Faraaz Biyabani - [#377](https://github.com/contentstack/live-preview-sdk/pull/377))
 - Ve 5139 (srinad007 - [#343](https://github.com/contentstack/live-preview-sdk/pull/343))
 
 ### New Features
@@ -346,13 +354,16 @@
 
 ### Chores And Housekeeping
 
+- chore: rename editButtonBulider to editInVisualBuilderButton (Sairaj Chouhan - [bd8be29](https://github.com/contentstack/live-preview-sdk/commit/bd8be29d97c151fc85aad98f55573a6821b3d4fc))
 - chore: remove else block (Sairaj Chouhan - [834c3e7](https://github.com/contentstack/live-preview-sdk/commit/834c3e78250f36b32e21c948bda313818f0db7bc))
+- chore: update integrity (hiteshshetty-dev - [ad2c8aa](https://github.com/contentstack/live-preview-sdk/commit/ad2c8aa3780b973233a82e5a978254f777773af2))
 - chore: remove `describe.only` (Faraaz Biyabani - [5aa5958](https://github.com/contentstack/live-preview-sdk/commit/5aa59587217ff7f64d495240f9e252bcf5b60a9c))
 
 ### Changes to Test Assests
 
 - test: isPointerWithinEditButtonSafeZone (Faraaz Biyabani - [3c340e8](https://github.com/contentstack/live-preview-sdk/commit/3c340e8ce52d768f06fbb6b2050ab541a6ac47cb))
 - test: add tests for start editing button in builder (Sairaj Chouhan - [f9988a7](https://github.com/contentstack/live-preview-sdk/commit/f9988a74ed9416cc99ce30ed9f3d25314f7eef5c))
+- test: fix failing test cases (Sairaj Chouhan - [6d36acb](https://github.com/contentstack/live-preview-sdk/commit/6d36acbd5c4e717f92ce40e2e4490df28a857948))
 - test: increase timeout for contenteditable tests (Sairaj Chouhan - [66fee50](https://github.com/contentstack/live-preview-sdk/commit/66fee50387f0a8a9b0ec61b945bec00418dc34f9))
 
 ### General Changes
