@@ -18,6 +18,14 @@ import { getEntryPermissionsCached } from "../utils/getEntryPermissionsCached";
 import { ContentTypeIcon } from "./icons";
 import { ToolbarTooltip } from "./Tooltip";
 
+interface ReferenceParentMap {
+    [entryUid: string]: {
+        contentTypeUid: string;
+        contentTypeTitle: string;
+        referenceFieldName: string;
+    }[]
+}
+
 async function getFieldDisplayNames(fieldMetadata: CslpData[]) {
     const result = await visualBuilderPostMessage?.send<{
         [k: string]: string;
@@ -26,13 +34,30 @@ async function getFieldDisplayNames(fieldMetadata: CslpData[]) {
 }
 
 async function getContentTypeName(contentTypeUid: string) {
-    const result = await visualBuilderPostMessage?.send<{
-        [k: string]: string;
-    }>(VisualBuilderPostMessageEvents.GET_CONTENT_TYPE_NAME, {
-        content_type_uid: contentTypeUid,
-    });
-    return result;
+    try {
+        const result = await visualBuilderPostMessage?.send<{
+            contentTypeName: string;
+        }>(VisualBuilderPostMessageEvents.GET_CONTENT_TYPE_NAME, {
+            content_type_uid: contentTypeUid,
+        });
+        return result?.contentTypeName;
+    } catch(e) {
+        console.warn("[getFieldLabelWrapper] Error getting content type name", e);
+        return "";
+    }
 }
+
+async function getReferenceParentMap() {
+    try {
+        const result = await visualBuilderPostMessage?.send<ReferenceParentMap>(VisualBuilderPostMessageEvents.REFERENCE_MAP, {}) ?? {};
+        return result;
+    } catch(e) {
+        console.warn("[getFieldLabelWrapper] Error getting reference parent map", e);
+        return {};
+    }
+    
+}
+
 interface FieldLabelWrapperProps {
     fieldMetadata: CslpData;
     eventDetails: VisualBuilderCslpEventDetails;
@@ -49,6 +74,7 @@ interface ICurrentField {
     isVariant: boolean;
     isReference: boolean;
     referenceFieldName: string;
+    parentContentTypeName: string;
     isEmbedded: boolean;
 }
 
@@ -65,12 +91,13 @@ function FieldLabelWrapperComponent(
         isVariant: false,
         isReference: false,
         referenceFieldName: "",
+        parentContentTypeName: "",
         isEmbedded: false,
     });
     const [displayNames, setDisplayNames] = useState<Record<string, string>>(
         {}
     );
-    const [displayNamesLoading, setDisplayNamesLoading] = useState(true);
+    const [dataLoading, setDataLoading] = useState(true);
     const [error, setError] = useState(false);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
@@ -82,7 +109,7 @@ function FieldLabelWrapperComponent(
 
     useEffect(() => {
         const fetchData = async () => {
-            setDisplayNamesLoading(true);
+            setDataLoading(true);
             const allPaths = uniqBy(
                 [
                     props.fieldMetadata,
@@ -99,12 +126,34 @@ function FieldLabelWrapperComponent(
                     props.fieldMetadata.fieldPath
                 )
             ]);
-            // const contentTypeName = await getContentTypeName(
-            //     props.fieldMetadata.content_type_uid
-            // );
+            const contentTypeName = await getContentTypeName(
+                props.fieldMetadata.content_type_uid
+            );
+            const referenceParentMap = await getReferenceParentMap();
+            const entryUid = props.fieldMetadata.entry_uid;
+            
+            const referenceData = referenceParentMap[entryUid];
+            const isReference = !!referenceData;
+
+            let referenceFieldName = referenceData ? referenceData[0].referenceFieldName : "";
+            let parentContentTypeName = referenceData ? referenceData[0].contentTypeTitle : "";
+
+            if(isReference) {
+                const domAncestor = eventDetails.editableElement.closest(`[data-cslp]:not([data-cslp^="${props.fieldMetadata.content_type_uid}"])`);
+                if(domAncestor) {
+                    const domAncestorCslp = domAncestor.getAttribute("data-cslp");
+                    const domAncestorDetails = extractDetailsFromCslp(domAncestorCslp!);
+                    const domAncestorContentTypeUid = domAncestorDetails.content_type_uid;
+                    const domAncestorContentParent = referenceData?.find(data => data.contentTypeUid === domAncestorContentTypeUid);
+                    if(domAncestorContentParent) {
+                        referenceFieldName = domAncestorContentParent.referenceFieldName;
+                        parentContentTypeName = domAncestorContentParent.contentTypeTitle;
+                    }
+                }
+            }
 
             if (hasPostMessageError(displayNames) || !fieldSchema) {
-                setDisplayNamesLoading(false);
+                setDataLoading(false);
                 setError(true);
 
                 return;
@@ -130,7 +179,7 @@ function FieldLabelWrapperComponent(
 
             setCurrentField({
                 text: currentFieldDisplayName,
-                contentTypeName: 'Page CT',
+                contentTypeName: contentTypeName ?? "",
                 icon: fieldDisabled ? (
                     <div
                         className={classNames(
@@ -147,11 +196,12 @@ function FieldLabelWrapperComponent(
                 ) : (
                     <></>
                 ),
-                isReference: false,
+                isReference,
                 isEmbedded: false,
                 prefixIcon: getFieldIcon(fieldSchema),
                 disabled: fieldDisabled,
-                referenceFieldName: "Reference Field",
+                referenceFieldName,
+                parentContentTypeName,
                 isVariant: isVariant,
             });
 
@@ -159,11 +209,15 @@ function FieldLabelWrapperComponent(
                 setDisplayNames(displayNames);
             }
             if (Object.keys(displayNames || {})?.length === allPaths.length) {
-                setDisplayNamesLoading(false);
+                setDataLoading(false);
             }
         };
 
-        fetchData();
+        try {
+            fetchData();
+        } catch(e) {
+            console.warn("[getFieldLabelWrapper] Error fetching field label data", e);
+        }
     }, [props]);
 
     const onParentPathClick = (cslp: string) => {
@@ -177,7 +231,7 @@ function FieldLabelWrapperComponent(
     function getCurrentFieldIcon() {
         if (error) {
             return null;
-        } else if (displayNamesLoading) {
+        } else if (dataLoading) {
             return <LoadingIcon />;
         } else {
             return currentField.icon;
@@ -193,7 +247,7 @@ function FieldLabelWrapperComponent(
                 ]
             )}
         >
-            <ToolbarTooltip data={{contentTypeName: currentField.contentTypeName, referenceFieldName: currentField.referenceFieldName}} disabled={!currentField.isReference}>
+            <ToolbarTooltip data={{contentTypeName: currentField.parentContentTypeName, referenceFieldName: currentField.referenceFieldName}} disabled={!currentField.isReference || isDropdownOpen}>
                 <div
                     className={classNames(
                         "visual-builder__focused-toolbar__field-label-wrapper",
@@ -235,10 +289,10 @@ function FieldLabelWrapperComponent(
                                     "visual-builder__button-error"
                                 ]
                         )}
-                        disabled={displayNamesLoading}
+                        disabled={dataLoading}
                     >
                         {
-                            currentField.isReference && !displayNamesLoading && !error ? 
+                            currentField.isReference && !dataLoading && !error ? 
                             <div 
                             className={classNames(
                                 "visual-builder__reference-icon-container",
@@ -260,8 +314,8 @@ function FieldLabelWrapperComponent(
                                 <CaretRightIcon />
                             </div> : null
                         }
-                        {!displayNamesLoading && !error && <ContentTypeIcon />}
-                        {currentField.contentTypeName && !displayNamesLoading && !error ? (
+                        {!dataLoading && !error && <ContentTypeIcon />}
+                        {currentField.contentTypeName && !dataLoading && !error ? (
                             <div
                             className={classNames(
                                 "visual-builder__focused-toolbar__text",
