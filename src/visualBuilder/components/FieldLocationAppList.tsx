@@ -4,6 +4,7 @@ import { VisualBuilderPostMessageEvents } from "../utils/types/postMessage.types
 import visualBuilderPostMessage from "../utils/visualBuilderPostMessage";
 import { visualBuilderStyles } from "../visualBuilder.style";
 import classNames from "classnames";
+import { CslpData } from "../../utils/cslpdata";
 
 interface App {
     app_installation_uid: string;
@@ -30,6 +31,9 @@ interface FieldLocationAppListProps {
     apps: App[];
     position: "left" | "right";
     toolbarRef: React.RefObject<HTMLDivElement>;
+    domEditStack:CslpData[]
+    setDisplayAllApps: (displayAllApps: boolean) => void;
+    displayAllApps: boolean;
 }
 
 const normalize = (text: string) =>
@@ -42,6 +46,8 @@ export const FieldLocationAppList = ({
     apps,
     position,
     toolbarRef,
+    domEditStack,
+    setDisplayAllApps,
 }: FieldLocationAppListProps) => {
     const remainingApps = apps.filter((app, index) => index !== 0);
     const [search, setSearch] = useState("");
@@ -63,8 +69,10 @@ export const FieldLocationAppList = ({
             {
                 app: app,
                 position: toolbarRef.current?.getBoundingClientRect(),
+                DomEditStack:domEditStack
             }
         );
+        setDisplayAllApps(false);
     };
 
     return (
