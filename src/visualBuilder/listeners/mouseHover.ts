@@ -26,7 +26,7 @@ const config = Config.get();
 export interface HandleMouseHoverParams
     extends Pick<
         EventListenerHandlerParams,
-        "event" | "overlayWrapper" | "visualBuilderContainer"
+        "event" | "overlayWrapper" | "visualBuilderContainer" | "focusedToolbar" | "resizeObserver"
     > {
     customCursor: HTMLDivElement | null;
 }
@@ -200,15 +200,6 @@ function isFieldPathDropdown(target: HTMLElement): boolean {
     return target.classList.contains("visual-builder__focused-toolbar__field-label-wrapper") || target.classList.contains("visual-builder__focused-toolbar__field-label-wrapper__current-field");
 }
 
-export function syncReferenceMap() {
-    const referenceParentMap = VisualBuilder.VisualBuilderGlobalState.value.referenceParentMap;
-    // Only sync on first hover
-    if(!referenceParentMap) {
-        return;
-    }
-    visualBuilderPostMessage?.send(VisualBuilderPostMessageEvents.SYNC_REFERENCE_MAP);
-}
-
 const throttledMouseHover = throttle(async (params: HandleMouseHoverParams) => {
     const eventDetails = getCsDataOfElement(params.event);
     const eventTarget = params.event.target as HTMLElement | null;
@@ -233,6 +224,16 @@ const throttledMouseHover = throttle(async (params: HandleMouseHoverParams) => {
             isFieldPathDropdown(eventTarget)
         ) {
             showOutline();
+            showHoverToolbar({
+                event: params.event,
+                overlayWrapper: params.overlayWrapper,
+                visualBuilderContainer: params.visualBuilderContainer,
+                previousSelectedEditableDOM:
+                    VisualBuilder.VisualBuilderGlobalState.value
+                        .previousSelectedEditableDOM,
+                focusedToolbar: params.focusedToolbar,
+                resizeObserver: params.resizeObserver,
+            });
         }
         if (!config?.collab.enable) {
             resetCustomCursor(params.customCursor);
@@ -369,6 +370,16 @@ const throttledMouseHover = throttle(async (params: HandleMouseHoverParams) => {
             content_type_uid,
             fieldPath,
             fieldMetadata,
+        });
+        showHoverToolbar({
+            event: params.event,
+            overlayWrapper: params.overlayWrapper,
+            visualBuilderContainer: params.visualBuilderContainer,
+            previousSelectedEditableDOM:
+                VisualBuilder.VisualBuilderGlobalState.value
+                    .previousSelectedEditableDOM,
+            focusedToolbar: params.focusedToolbar,
+            resizeObserver: params.resizeObserver,
         });
     }
 

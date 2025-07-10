@@ -1,4 +1,3 @@
-import { throttle } from "lodash-es";
 import { VisualBuilder } from "..";
 import handleBuilderInteraction from "./mouseClick";
 import handleMouseHover, {
@@ -37,16 +36,8 @@ const eventHandlers = {
             overlayWrapper: params.overlayWrapper,
             visualBuilderContainer: params.visualBuilderContainer,
             customCursor: params.customCursor,
-        });
-        showHoverToolbar({
-            event: event,
-            overlayWrapper: params.overlayWrapper,
-            visualBuilderContainer: params.visualBuilderContainer,
-            previousSelectedEditableDOM:
-                VisualBuilder.VisualBuilderGlobalState.value
-                    .previousSelectedEditableDOM,
-            focusedToolbar: params.focusedToolbar,
             resizeObserver: params.resizeObserver,
+            focusedToolbar: params.focusedToolbar,
         });
     },
     mouseleave: (params: AddEventListenersParams) => () => {
