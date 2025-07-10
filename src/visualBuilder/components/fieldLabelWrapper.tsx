@@ -314,20 +314,23 @@ function FieldLabelWrapperComponent(
                                 <CaretRightIcon />
                             </div> : null
                         }
-                        {!dataLoading && !error && <ContentTypeIcon />}
-                        {currentField.contentTypeName && !dataLoading && !error ? (
-                            <div
-                            className={classNames(
-                                "visual-builder__focused-toolbar__text",
-                                visualBuilderStyles()[
-                                    "visual-builder__focused-toolbar__text"
-                                ]
-                            )}
-                            data-testid="visual-builder__focused-toolbar__ct-name"
-                        >
-                            {currentField.contentTypeName + " : "}
-                        </div>
-                        ) : null}
+                        {
+                            currentField.contentTypeName && !dataLoading && !error ?
+                            <>
+                                <ContentTypeIcon />
+                                <div
+                                    className={classNames(
+                                        "visual-builder__focused-toolbar__text",
+                                        visualBuilderStyles()[
+                                            "visual-builder__focused-toolbar__text"
+                                        ]
+                                    )}
+                                    data-testid="visual-builder__focused-toolbar__ct-name"
+                                >
+                                    {currentField.contentTypeName + " : "}
+                                </div>
+                            </> : null
+                        }
                         {currentField.prefixIcon ? (
                             <div
                                 className={classNames(
