@@ -383,7 +383,7 @@ export class VisualBuilder {
             })
             .catch(() => {
                 if (!inIframe()) {
-                    generateStartEditingButton(this.visualBuilderContainer);
+                    generateStartEditingButton();
                 }
             });
     }

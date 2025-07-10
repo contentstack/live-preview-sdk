@@ -26,6 +26,17 @@ vi.mock("../../../utils/visualBuilderPostMessage", async () => {
     };
 });
 
+vi.mock("../../../../utils/index.ts", () => {
+    return {
+        __esModule: true,
+        isOpenInBuilder: vi.fn().mockReturnValue(true),
+        isOpeningInTimeline: vi.fn().mockReturnValue(false),
+        hasWindow: vi.fn().mockReturnValue(true),
+        addLivePreviewQueryTags: vi.fn(),
+        addParamsToUrl: vi.fn(),
+    };
+});
+
 global.ResizeObserver = vi.fn().mockImplementation(() => ({
     observe: vi.fn(),
     unobserve: vi.fn(),
@@ -89,7 +100,10 @@ describe("When an element is hovered in visual builder mode", () => {
                 dataField.dispatchEvent(mousemoveEvent);
             });
             await waitForHoverOutline();
-            expect(dataField).toHaveAttribute("data-cslp", "all_fields.bltapikey.en-us.date");
+            expect(dataField).toHaveAttribute(
+                "data-cslp",
+                "all_fields.bltapikey.en-us.date"
+            );
             expect(dataField).not.toHaveAttribute("contenteditable");
             const hoverOutline = document.querySelector(
                 "[data-testid='visual-builder__hover-outline']"

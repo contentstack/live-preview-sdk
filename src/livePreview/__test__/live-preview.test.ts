@@ -460,7 +460,7 @@ describe("testing window event listeners", () => {
         document.body.appendChild(descPara);
         document.body.appendChild(linkPara);
 
-        addEventListenerMock = vi.spyOn(window, "addEventListener");
+        addEventListenerMock = vi.spyOn(document, "addEventListener");
     });
 
     afterEach(() => {
@@ -482,7 +482,7 @@ describe("testing window event listeners", () => {
         livePreviewInstance = new LivePreview();
 
         expect(addEventListenerMock).toBeCalledWith(
-            "load",
+            "DOMContentLoaded",
             expect.any(Function)
         );
         readyState.mockRestore();
