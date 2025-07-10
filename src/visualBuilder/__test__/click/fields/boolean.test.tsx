@@ -60,6 +60,15 @@ vi.mock("../../../utils/visualBuilderPostMessage", async () => {
     };
 });
 
+vi.mock("../../../../utils/index.ts", async () => {
+    const actual = await vi.importActual("../../../../utils");
+    return {
+        __esModule: true,
+        ...actual,
+        isOpenInBuilder: vi.fn().mockReturnValue(true),
+    };
+});
+
 describe("When an element is clicked in visual builder mode", () => {
     let mouseClickEvent: Event;
 
@@ -107,7 +116,10 @@ describe("When an element is clicked in visual builder mode", () => {
             document.body.appendChild(booleanField);
 
             visualBuilder = new VisualBuilder();
-            await triggerAndWaitForClickAction(visualBuilderPostMessage, booleanField);
+            await triggerAndWaitForClickAction(
+                visualBuilderPostMessage,
+                booleanField
+            );
         });
 
         afterAll(() => {
@@ -147,7 +159,6 @@ describe("When an element is clicked in visual builder mode", () => {
         });
 
         test("should send a focus field message to parent", async () => {
-
             await waitFor(() => {
                 expect(visualBuilderPostMessage?.send).toBeCalledWith(
                     VisualBuilderPostMessageEvents.FOCUS_FIELD,

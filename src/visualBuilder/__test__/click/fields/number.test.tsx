@@ -53,6 +53,15 @@ vi.mock("../../../utils/visualBuilderPostMessage", async () => {
     };
 });
 
+vi.mock("../../../../utils/index.ts", async () => {
+    const actual = await vi.importActual("../../../../utils");
+    return {
+        __esModule: true,
+        ...actual,
+        isOpenInBuilder: vi.fn().mockReturnValue(true),
+    };
+});
+
 describe("When an element is clicked in visual builder mode", () => {
     beforeAll(async () => {
         FieldSchemaMap.setFieldSchema(
@@ -118,7 +127,10 @@ describe("When an element is clicked in visual builder mode", () => {
             document.body.appendChild(numberField);
 
             visualBuilder = new VisualBuilder();
-            await triggerAndWaitForClickAction(visualBuilderPostMessage, numberField)
+            await triggerAndWaitForClickAction(
+                visualBuilderPostMessage,
+                numberField
+            );
         });
 
         afterAll(() => {
@@ -214,7 +226,10 @@ describe("When an element is clicked in visual builder mode", () => {
             document.body.appendChild(container);
 
             visualBuilder = new VisualBuilder();
-            await triggerAndWaitForClickAction(visualBuilderPostMessage, container)
+            await triggerAndWaitForClickAction(
+                visualBuilderPostMessage,
+                container
+            );
         });
 
         afterAll(() => {
