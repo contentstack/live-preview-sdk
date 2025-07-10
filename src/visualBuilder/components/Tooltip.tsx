@@ -89,7 +89,7 @@ const Tooltip = ({ children, content, placement = 'top-start' }: TooltipProps) =
                     
                     if (side === 'top' || side === 'bottom') {
                         // For top/bottom placements, center the arrow horizontally
-                        arrowElement.style.left = `${tooltipRect.width / 2 - 4}px`; // 4px = half arrow width
+                        arrowElement.style.left = `${14}px`; // 4px = half arrow width
                         if (arrowY != null) {
                             arrowElement.style.top = `${arrowY}px`;
                         }
