@@ -1,12 +1,48 @@
 # Changelog
 
-## [v3.2.4](https://github.com/contentstack/live-preview-sdk/compare/v3.2.3...v3.2.4)
+## [v3.2.5](https://github.com/contentstack/live-preview-sdk/compare/v3.2.4...v3.2.5)
 
-> 10 June 2025
+> 9 July 2025
+
+### Fixes
+
+- fix(VE-6459): psuedo-editable height collapse (Faraaz Biyabani - [#451](https://github.com/contentstack/live-preview-sdk/pull/451))
+- fix: start editing button not rendering (Sahil Chalke - [#447](https://github.com/contentstack/live-preview-sdk/pull/447))
 
 ### General Changes
 
+- Optimisation: `init` to emit postMessage on `DOMContentLoaded` (Ayush Dubey - [#448](https://github.com/contentstack/live-preview-sdk/pull/448))
+- VE-6559:add isOpenInBuilder utility function and integrate into VisualBuilder components (Sahil Chalke - [#446](https://github.com/contentstack/live-preview-sdk/pull/446))
+
+### New Features
+
+- feat: add isOpenInBuilder utility function and integrate into VisualBuilder components (SahilCs15 - [8e80517](https://github.com/contentstack/live-preview-sdk/commit/8e80517437e979fd143a162cc5b293cabb84e94e))
+
+### Fixes
+
+- fix: extract the overriding function and improve unit tests (Faraaz Biyabani - [e8388d0](https://github.com/contentstack/live-preview-sdk/commit/e8388d05c49464ab3352cd566ca9a1976ff5f6b1))
+- fix: psuedo-editable height collapse (Faraaz Biyabani - [f28d629](https://github.com/contentstack/live-preview-sdk/commit/f28d629d362d5820b8583f748b42bd98d464c180))
+- fix: changed DOM events (csAyushDubey - [8e433b4](https://github.com/contentstack/live-preview-sdk/commit/8e433b41328acefd969ba157d25cf6f6ad5cc351))
+- fix: test fix (csAyushDubey - [af6acf5](https://github.com/contentstack/live-preview-sdk/commit/af6acf5eba9236ba3fb13bb32da8fdade9063d51))
+
+### Chores And Housekeeping
+
+- chore: update README.md to reference ContentstackLivePreview version 3.2.5 (hiteshshetty-dev - [e063d6e](https://github.com/contentstack/live-preview-sdk/commit/e063d6ef8fd95faaef612981f4586b4db66f9e4d))
+
+## [v3.2.4](https://github.com/contentstack/live-preview-sdk/compare/v3.2.3...v3.2.4)
+
+> 16 June 2025
+
+### General Changes
+
+- Release - 12th June (merge `stage_v3`) (Hitesh Shetty - [#445](https://github.com/contentstack/live-preview-sdk/pull/445))
+- Staging develop_v3 (Ayush Dubey - [#444](https://github.com/contentstack/live-preview-sdk/pull/444))
 - Revert 441 revert 439 collab (diwakarmk7 - [#443](https://github.com/contentstack/live-preview-sdk/pull/443))
+
+### Chores And Housekeeping
+
+- chore: talismanrc update (csAyushDubey - [c9c9bda](https://github.com/contentstack/live-preview-sdk/commit/c9c9bda746467c15da4cba9ac22f6428bbc7e1ef))
+- chore: readme update (csAyushDubey - [76bb848](https://github.com/contentstack/live-preview-sdk/commit/76bb84894055450762aa64df0c2a453d0f7782cd))
 
 ### General Changes
 

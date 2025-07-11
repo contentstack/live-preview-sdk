@@ -31,6 +31,15 @@ global.ResizeObserver = vi.fn().mockImplementation(() => ({
     disconnect: vi.fn(),
 }));
 
+vi.mock("../../../../utils/index.ts", async () => {
+    const actual = await vi.importActual("../../../../utils");
+    return {
+        __esModule: true,
+        ...actual,
+        isOpenInBuilder: vi.fn().mockReturnValue(true),
+    };
+});
+
 describe("When an element is hovered in visual builder mode", () => {
     let mousemoveEvent: Event;
 
@@ -90,7 +99,9 @@ describe("When an element is hovered in visual builder mode", () => {
             const hoverOutline = screen.getByTestId(
                 "visual-builder__hover-outline"
             );
-            expect(hoverOutline).toHaveStyle("top: 51px; left: 51px; width: 27.7734375px; height: 20.3984375px;");
+            expect(hoverOutline).toHaveStyle(
+                "top: 51px; left: 51px; width: 27.7734375px; height: 20.3984375px;"
+            );
 
             const customCursor = document.querySelector(
                 `[data-testid="visual-builder__cursor"]`
@@ -124,7 +135,7 @@ describe("When an element is hovered in visual builder mode", () => {
 
         test("should have outline and custom cursor", async () => {
             await act(() => {
-              singleLineField.dispatchEvent(mousemoveEvent);
+                singleLineField.dispatchEvent(mousemoveEvent);
             });
             await waitForHoverOutline();
             expect(singleLineField).not.toHaveAttribute("style");
@@ -189,18 +200,20 @@ describe("When an element is hovered in visual builder mode", () => {
             });
             container.dispatchEvent(mousemoveEvent);
             await waitForHoverOutline();
-            expect(container).not.toHaveAttribute('style');
+            expect(container).not.toHaveAttribute("style");
 
             const hoverOutline = document.querySelector(
                 "[data-testid='visual-builder__hover-outline']"
             );
-            expect(hoverOutline).toHaveStyle("top: 34px; left: 34px; width: 828px; height: 54.3984375px;");
+            expect(hoverOutline).toHaveStyle(
+                "top: 34px; left: 34px; width: 828px; height: 54.3984375px;"
+            );
 
             const customCursor = document.querySelector(
                 `[data-testid="visual-builder__cursor"]`
             );
 
-            expect(customCursor).toHaveAttribute('data-icon', 'singleline');
+            expect(customCursor).toHaveAttribute("data-icon", "singleline");
             expect(customCursor?.classList.contains("visible")).toBeTruthy();
         });
 
@@ -209,17 +222,19 @@ describe("When an element is hovered in visual builder mode", () => {
                 firstSingleLineField.dispatchEvent(mousemoveEvent);
             });
             await waitForHoverOutline();
-            expect(firstSingleLineField).not.toHaveAttribute('style');
+            expect(firstSingleLineField).not.toHaveAttribute("style");
             const hoverOutline = document.querySelector(
                 "[data-testid='visual-builder__hover-outline']"
             );
-            expect(hoverOutline).toHaveStyle("top: 51px; left: 51px; width: 27.7734375px; height: 20.3984375px;");
+            expect(hoverOutline).toHaveStyle(
+                "top: 51px; left: 51px; width: 27.7734375px; height: 20.3984375px;"
+            );
 
             const customCursor = document.querySelector(
                 `[data-testid="visual-builder__cursor"]`
             );
 
-            expect(customCursor).toHaveAttribute('data-icon', 'singleline');
+            expect(customCursor).toHaveAttribute("data-icon", "singleline");
             expect(customCursor?.classList.contains("visible")).toBeTruthy();
         });
     });
