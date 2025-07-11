@@ -8,10 +8,16 @@ export function addLivePreviewQueryTags(link: string): string {
         const ctUid: string | null =
             docUrl.searchParams.get("content_type_uid");
         const entryUid: string | null = docUrl.searchParams.get("entry_uid");
-        if (livePreviewHash && ctUid && entryUid) {
+        const previewTimestamp: string | null = docUrl.searchParams.get("preview_timestamp");
+        if (livePreviewHash) {
             newUrl.searchParams.set("live_preview", livePreviewHash);
+        }
+        if(ctUid && entryUid){
             newUrl.searchParams.set("content_type_uid", ctUid);
             newUrl.searchParams.set("entry_uid", entryUid);
+        }
+        if (previewTimestamp) {
+            newUrl.searchParams.set("preview_timestamp", previewTimestamp);
         }
         return newUrl.href;
     } catch (error) {
