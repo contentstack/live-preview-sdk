@@ -92,8 +92,7 @@ describe("getChildrenDirection", () => {
     });
 
     afterEach(() => {
-        vi.clearAllTimers();
-        document.body.innerHTML = '';
+        document.getElementsByTagName("body")[0].innerHTML = "";
         vi.clearAllMocks();
     });
 
@@ -233,8 +232,7 @@ describe("handleAddButtonsForMultiple", () => {
         });
 
         afterEach(() => {
-            vi.clearAllTimers();
-            document.body.innerHTML = '';
+            document.getElementsByTagName("body")[0].innerHTML = "";
             vi.clearAllMocks();
         });
 
@@ -468,8 +466,7 @@ describe("handleAddButtonsForMultiple", () => {
         });
 
         afterEach(() => {
-            vi.clearAllTimers();
-            document.body.innerHTML = '';
+            document.getElementsByTagName("body")[0].innerHTML = "";
             vi.clearAllMocks();
         });
 
@@ -593,8 +590,7 @@ describe("removeAddInstanceButtons", () => {
     });
 
     afterEach(() => {
-        vi.clearAllTimers();
-        document.body.innerHTML = '';
+        document.getElementsByTagName("body")[0].innerHTML = "";
         vi.clearAllMocks();
     });
 
