@@ -79,6 +79,13 @@ export function visualBuilderStyles() {
                 visibility: visible;
             }
         `,
+        "visual-builder__empty-block-plus-icon": css`
+            font-size: 22px;
+            font-weight: 300;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        `,
         "visual-builder__overlay--outline": css`
             position: absolute;
             outline: 4px solid #715cdd;
@@ -506,19 +513,24 @@ export function visualBuilderStyles() {
             line-height: 100%;
             color: #647696;
         `,
+        "visual-builder__empty-block-field-name": css`
+            font-weight: 700;
+        `,
         "visual-builder__empty-block-add-button": css`
             height: 32px;
             border-radius: 4px;
             background: #f9f8ff;
             border-color: #6c5ce7;
             border-width: 1px;
-            padding: 8px 16px 8px 16px;
+            padding: 0 16px;
             font-size: 0.9rem;
             font-family: Inter;
             font-weight: 600;
             color: #6c5ce7;
-            padding-block: 0px;
             letter-spacing: 0.01rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
         `,
         "visual-builder__hover-outline": css`
             position: absolute;
