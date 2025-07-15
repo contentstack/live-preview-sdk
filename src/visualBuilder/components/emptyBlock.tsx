@@ -46,7 +46,18 @@ export function EmptyBlock(props: EmptyBlockProps): JSX.Element {
                     visualBuilderStyles()["visual-builder__empty-block-title"]
                 )}
             >
-                There are no {blockParentName.toLowerCase()} on this page yet. Click the button below to add one.
+                This page doesn’t have any{" "}
+                <span
+                    className={classNames(
+                        "visual-builder__empty-block-field-name",
+                        visualBuilderStyles()[
+                            "visual-builder__empty-block-field-name"
+                        ]
+                    )}
+                >
+                    {blockParentName.toLowerCase()}
+                </span>{" "}
+                added. Click the button below to add one.
             </div>
             <button
                 className={classNames(
@@ -59,8 +70,17 @@ export function EmptyBlock(props: EmptyBlockProps): JSX.Element {
                 type="button"
                 data-testid="visual-builder__empty-block-add-button"
             >
-                <i className="fas fa-plus"></i> &nbsp;
-                {blockParentName}
+                <span
+                    className={classNames(
+                        "visual-builder__empty-block-plus-icon",
+                        visualBuilderStyles()[
+                            "visual-builder__empty-block-plus-icon"
+                        ]
+                    )}
+                >
+                    +
+                </span>
+                &nbsp; Add {blockParentName}
             </button>
         </div>
     );
