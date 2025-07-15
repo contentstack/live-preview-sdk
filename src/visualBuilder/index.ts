@@ -367,6 +367,22 @@ export class VisualBuilder {
                         VisualBuilderPostMessageEvents.SEND_VARIANT_AND_LOCALE
                     );
 
+                        visualBuilderPostMessage?.on<{
+                            scroll: boolean
+                        }>(
+                            VisualBuilderPostMessageEvents.TOGGLE_SCROLL,
+                            (event) => {
+                                if (!event.data.scroll) {
+                                    document.body.style.overflow = 'hidden'
+                                } else {
+                                    document.body.style.overflow = 'auto'
+                                }
+                            }
+                        );
+                    
+                    
+                    
+
                     useHideFocusOverlayPostMessageEvent({
                         overlayWrapper: this.overlayWrapper,
                         visualBuilderContainer: this.visualBuilderContainer,

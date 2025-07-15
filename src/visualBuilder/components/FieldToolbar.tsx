@@ -1,4 +1,5 @@
 import { CslpData } from "../../cslp/types/cslp.types";
+import { CslpData as CslpDataUtil } from "../../utils/cslpdata";
 import getChildrenDirection from "../utils/getChildrenDirection";
 import {
     ALLOWED_MODAL_EDITABLE_FIELD,
@@ -194,6 +195,9 @@ function FieldToolbarComponent(
         //     return null;
         // }
     }
+
+    const domEditStack=getDOMEditStack(eventDetails.editableElement) as CslpDataUtil[]
+
 
     const invertTooltipPosition =
         targetElement.getBoundingClientRect().top <= TOOLTIP_TOP_EDGE_BUFFER;
@@ -570,6 +574,7 @@ function FieldToolbarComponent(
                             handleMoreIconClick={handleMoreIconClick}
                             moreButtonRef={moreButtonRef}
                             toolbarRef={toolbarRef}
+                            domEditStack={domEditStack}
                         />
                     </>
                 </div>
@@ -579,6 +584,9 @@ function FieldToolbarComponent(
                     toolbarRef={toolbarRef}
                     apps={fieldLocationData?.apps || ([] as any[])}
                     position={appListPosition}
+                    domEditStack={domEditStack}
+                    setDisplayAllApps={setDisplayAllApps}
+                    displayAllApps={displayAllApps}
                 />
             )}
         </div>
