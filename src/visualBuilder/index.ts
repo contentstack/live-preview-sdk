@@ -56,7 +56,6 @@ import {
     clearThreadStatus,
 } from "./generators/generateThread";
 import { IThreadDTO } from "./types/collab.types";
-import { useReferenceMapEvents } from "./eventManager/useReferenceMapEvent";
 
 interface VisualBuilderGlobalStateImpl {
     previousSelectedEditableDOM: HTMLElement | Element | null;
@@ -382,7 +381,6 @@ export class VisualBuilder {
                     useRecalculateVariantDataCSLPValues();
                     useDraftFieldsPostMessageEvent();
                     useVariantFieldsPostMessageEvent();
-                    useReferenceMapEvents();
                 }
             })
             .catch(() => {

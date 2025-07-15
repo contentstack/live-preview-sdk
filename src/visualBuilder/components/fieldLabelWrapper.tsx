@@ -75,7 +75,6 @@ interface ICurrentField {
     isReference: boolean;
     referenceFieldName: string;
     parentContentTypeName: string;
-    isEmbedded: boolean;
 }
 
 function FieldLabelWrapperComponent(
@@ -92,7 +91,6 @@ function FieldLabelWrapperComponent(
         isReference: false,
         referenceFieldName: "",
         parentContentTypeName: "",
-        isEmbedded: false,
     });
     const [displayNames, setDisplayNames] = useState<Record<string, string>>(
         {}
@@ -197,7 +195,6 @@ function FieldLabelWrapperComponent(
                     <></>
                 ),
                 isReference,
-                isEmbedded: false,
                 prefixIcon: getFieldIcon(fieldSchema),
                 disabled: fieldDisabled,
                 referenceFieldName,
