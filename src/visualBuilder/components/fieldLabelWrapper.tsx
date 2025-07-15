@@ -117,17 +117,17 @@ function FieldLabelWrapperComponent(
                 ],
                 "cslpValue"
             );
-            const [displayNames, fieldSchema] = await Promise.all([
+            const [displayNames, fieldSchema, contentTypeName, referenceParentMap] = await Promise.all([
                 getFieldDisplayNames(allPaths),
                 FieldSchemaMap.getFieldSchema(
                     props.fieldMetadata.content_type_uid,
                     props.fieldMetadata.fieldPath
-                )
+                ),
+                getContentTypeName(
+                    props.fieldMetadata.content_type_uid
+                ),
+                getReferenceParentMap()
             ]);
-            const contentTypeName = await getContentTypeName(
-                props.fieldMetadata.content_type_uid
-            );
-            const referenceParentMap = await getReferenceParentMap();
             const entryUid = props.fieldMetadata.entry_uid;
             
             const referenceData = referenceParentMap[entryUid];
@@ -306,7 +306,7 @@ function FieldLabelWrapperComponent(
                                     dangerouslySetInnerHTML={{
                                         __html: FieldTypeIconsMap.reference,
                                     }}
-                                    data-testid="visual-builder__field-icon"
+                                    data-testid="visual-builder__field-icon-caret"
                                 />
                                 <CaretRightIcon />
                             </div> : null
