@@ -230,8 +230,8 @@ describe("FieldLabelWrapperComponent", () => {
             />
         );
 
-        const caretIcon = await findByTestId("visual-builder__field-icon-caret");
-        expect(caretIcon).toBeInTheDocument();
+        const fieldIcon = await findByTestId("visual-builder__field-icon");
+        expect(fieldIcon).toBeInTheDocument();
     });
 
     test("renders with correct class when field is disabled", async () => {
