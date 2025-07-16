@@ -69,6 +69,7 @@ interface VisualBuilderGlobalStateImpl {
     variant: string | null;
     focusElementObserver: MutationObserver | null;
     referenceParentMap: Record<string, string>;
+    isFocussed: boolean;
 }
 
 let threadsPayload: IThreadDTO[] = [];
@@ -91,6 +92,7 @@ export class VisualBuilder {
             variant: null,
             focusElementObserver: null,
             referenceParentMap: {},
+            isFocussed: false,
         });
 
     private handlePositionChange(editableElement: HTMLElement) {
@@ -427,6 +429,7 @@ export class VisualBuilder {
             variant: null,
             focusElementObserver: null,
             referenceParentMap: {},
+            isFocussed: false,
         };
 
         // Remove DOM elements
