@@ -372,16 +372,19 @@ const throttledMouseHover = throttle(async (params: HandleMouseHoverParams) => {
             fieldPath,
             fieldMetadata,
         });
-        showHoverToolbar({
+        const isFocussed= VisualBuilder.VisualBuilderGlobalState.value.isFocussed;
+        if(!isFocussed) {
+            showHoverToolbar({
             event: params.event,
             overlayWrapper: params.overlayWrapper,
             visualBuilderContainer: params.visualBuilderContainer,
             previousSelectedEditableDOM:
                 VisualBuilder.VisualBuilderGlobalState.value
                     .previousSelectedEditableDOM,
-            focusedToolbar: params.focusedToolbar,
-            resizeObserver: params.resizeObserver,
-        });
+                focusedToolbar: params.focusedToolbar,
+                resizeObserver: params.resizeObserver,
+            });
+        }
     }
 
     if (

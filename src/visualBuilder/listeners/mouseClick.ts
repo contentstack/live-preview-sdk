@@ -271,6 +271,7 @@ function addOverlayAndToolbar(
     editableElement: Element,
     isVariant: boolean
 ) {
+    VisualBuilder.VisualBuilderGlobalState.value.isFocussed = true;
     addOverlay({
         overlayWrapper: params.overlayWrapper,
         resizeObserver: params.resizeObserver,

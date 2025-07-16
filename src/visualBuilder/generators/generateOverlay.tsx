@@ -216,6 +216,7 @@ interface HideOverlayParams
 }
 
 export function hideOverlay(params: HideOverlayParams): void {
+    VisualBuilder.VisualBuilderGlobalState.value.isFocussed = false;
     const focusElementObserver =
         VisualBuilder.VisualBuilderGlobalState.value.focusElementObserver;
     if (focusElementObserver) {
