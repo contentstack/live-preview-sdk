@@ -64,6 +64,48 @@ export function visualBuilderStyles() {
                 cursor: none;
             }
         `,
+        "tooltip-container": css`
+            position: absolute;
+            background-color: #767676;
+            color: white;
+            padding: 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            line-height: 1.4;
+            z-index: 1000;
+            pointer-events: none;
+            max-width: 250px;
+            text-align: center;
+        `,
+        "tooltip-arrow": css`
+            position: absolute;
+            background: #767676;
+            width: 8px;
+            height: 8px;
+            transform: rotate(45deg);
+        `,
+        "toolbar-tooltip-content": css`
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        `,
+        "toolbar-tooltip-content-item": css`
+            display: flex;
+            align-items: center;
+            justify-content: start;
+            gap: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+
+            p {
+                margin: 0;
+                color: #fff;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                max-width: 100%;
+            }
+        `,
         "visual-builder__overlay__wrapper": css`
             position: absolute;
             top: 0;
@@ -385,7 +427,30 @@ export function visualBuilderStyles() {
             svg {
                 height: 16px;
                 width: 16px;
-                margin-right: 5px;
+                margin-right: 3px;
+            }
+        `,
+        "visual-builder__content-type-icon": css`
+            svg {
+                height: 16px;
+                width: 16px;
+                margin-right: 3px;
+            }
+        `,
+        "visual-builder__caret-right-icon": css`
+            svg {
+                height: 16px;
+                width: 16px;
+            }
+        `,
+        "visual-builder__reference-icon-container": css`
+            display: flex;
+            align-items: center;
+
+            .visual-builder__field-icon {
+                svg {
+                    margin-right: 0px;
+                }            
             }
         `,
         "visual-builder__focused-toolbar__button-group": css`
