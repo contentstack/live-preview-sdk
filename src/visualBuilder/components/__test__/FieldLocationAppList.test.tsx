@@ -29,7 +29,21 @@ vi.mock("../../visualBuilder.style", () => ({
 }));
 
 vi.mock("classnames", () => ({
-    default: (...args: any[]) => args.filter(Boolean).join(" "),
+    default: (...args: any[]) => {
+        const classes: string[] = [];
+        args.forEach(arg => {
+            if (typeof arg === 'string') {
+                classes.push(arg);
+            } else if (typeof arg === 'object' && arg !== null) {
+                Object.entries(arg).forEach(([className, condition]) => {
+                    if (condition) {
+                        classes.push(className);
+                    }
+                });
+            }
+        });
+        return classes.join(' ');
+    },
 }));
 
 vi.mock("../icons/EmptyAppIcon", () => ({
@@ -108,7 +122,7 @@ describe("FieldLocationAppList", () => {
     });
 
     it("should render the app list with search input", () => {
-        render(<FieldLocationAppList apps={mockApps} position="right" toolbarRef={mockToolbarRef} />);
+        render(<FieldLocationAppList apps={mockApps} position="right" toolbarRef={mockToolbarRef} domEditStack={[]} setDisplayAllApps={() => {}} displayAllApps={true} />);
 
         expect(screen.getByPlaceholderText("Search for Apps")).toBeInTheDocument();
         expect(screen.getByText("Second App")).toBeInTheDocument();
@@ -116,7 +130,7 @@ describe("FieldLocationAppList", () => {
     });
 
     it("should not render the first app (index 0)", () => {
-        render(<FieldLocationAppList apps={mockApps} position="right" toolbarRef={mockToolbarRef} />);
+        render(<FieldLocationAppList apps={mockApps} position="right" toolbarRef={mockToolbarRef} domEditStack={[]} setDisplayAllApps={() => {}} displayAllApps={true} />);
 
         expect(screen.queryByText("First App")).not.toBeInTheDocument();
         expect(screen.getByText("Second App")).toBeInTheDocument();
@@ -124,7 +138,7 @@ describe("FieldLocationAppList", () => {
     });
 
     it("should filter apps when searching", () => {
-        render(<FieldLocationAppList apps={mockApps} position="right" toolbarRef={mockToolbarRef} />);
+        render(<FieldLocationAppList apps={mockApps} position="right" toolbarRef={mockToolbarRef} domEditStack={[]} setDisplayAllApps={() => {}} displayAllApps={true} />);
 
         const searchInput = screen.getByPlaceholderText("Search for Apps");
         fireEvent.input(searchInput, { target: { value: "Second" } });
@@ -134,7 +148,7 @@ describe("FieldLocationAppList", () => {
     });
 
     it("should show no results message when search has no matches", () => {
-        render(<FieldLocationAppList apps={mockApps} position="right" toolbarRef={mockToolbarRef} />);
+        render(<FieldLocationAppList apps={mockApps} position="right" toolbarRef={mockToolbarRef} domEditStack={[]} setDisplayAllApps={() => {}} displayAllApps={true} />);
 
         const searchInput = screen.getByPlaceholderText("Search for Apps");
         fireEvent.input(searchInput, { target: { value: "NonExistent" } });
@@ -168,40 +182,54 @@ describe("FieldLocationAppList", () => {
         expect(mockSetDisplayAllApps).toHaveBeenCalledWith(false);
     });
 
-  
-
 
 
     it("should apply correct CSS classes for right position", () => {
-        const { container } = render(<FieldLocationAppList apps={mockApps} position="right" toolbarRef={mockToolbarRef} />);
-
+        const { container } = render(
+            <FieldLocationAppList
+                apps={mockApps}
+                position="right"
+                toolbarRef={mockToolbarRef}
+                domEditStack={[]}
+                setDisplayAllApps={() => {}}
+                displayAllApps={true}
+            />
+        );
         const appList = container.firstChild as HTMLElement;
-        expect(appList).toHaveClass("visual-builder__field-location-app-list");
+        expect(appList).toHaveClass("visual-builder__field-location-app-list--right");
     });
 
-    it("should apply correct CSS classes for left position", () => {
-        const { container } = render(<FieldLocationAppList apps={mockApps} position="left" toolbarRef={mockToolbarRef} />);
-
+    it("should apply correct CSS classes and left position style for left position", () => {
+        const { container } = render(
+            <FieldLocationAppList
+                apps={mockApps}
+                position="left"
+                toolbarRef={mockToolbarRef}
+                domEditStack={[]}
+                setDisplayAllApps={() => {}}
+                displayAllApps={true}
+            />
+        );
         const appList = container.firstChild as HTMLElement;
-        expect(appList).toHaveClass("visual-builder__field-location-app-list");
+        expect(appList).toHaveClass("visual-builder__field-location-app-list--left");
     });
 
     it("should handle empty apps array", () => {
-        render(<FieldLocationAppList apps={[]} position="right" toolbarRef={mockToolbarRef} />);
+        render(<FieldLocationAppList apps={[]} position="right" toolbarRef={mockToolbarRef} domEditStack={[]} setDisplayAllApps={() => {}} displayAllApps={true} />);
 
         expect(screen.getByText("No matching results found!")).toBeInTheDocument();
     });
 
     it("should handle single app (which gets filtered out)", () => {
         const singleApp = [mockApps[0]];
-        render(<FieldLocationAppList apps={singleApp} position="right" toolbarRef={mockToolbarRef} />);
+        render(<FieldLocationAppList apps={singleApp} position="right" toolbarRef={mockToolbarRef} domEditStack={[]} setDisplayAllApps={() => {}} displayAllApps={true} />);
 
         expect(screen.getByText("No matching results found!")).toBeInTheDocument();
         expect(screen.queryByText("First App")).not.toBeInTheDocument();
     });
 
     it("should handle case-insensitive search", () => {
-        render(<FieldLocationAppList apps={mockApps} position="right" toolbarRef={mockToolbarRef} />);
+        render(<FieldLocationAppList apps={mockApps} position="right" toolbarRef={mockToolbarRef} domEditStack={[]} setDisplayAllApps={() => {}} displayAllApps={true} />);
 
         const searchInput = screen.getByPlaceholderText("Search for Apps");
         fireEvent.input(searchInput, { target: { value: "second" } });
@@ -211,7 +239,7 @@ describe("FieldLocationAppList", () => {
     });
 
     it("should clear search results when search input is cleared", () => {
-        render(<FieldLocationAppList apps={mockApps} position="right" toolbarRef={mockToolbarRef} />);
+        render(<FieldLocationAppList apps={mockApps} position="right" toolbarRef={mockToolbarRef} domEditStack={[]} setDisplayAllApps={() => {}} displayAllApps={true} />);
 
         const searchInput = screen.getByPlaceholderText("Search for Apps");
 
