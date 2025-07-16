@@ -7,21 +7,26 @@ import {
     TOOLBAR_EDGE_BUFFER,
     TOP_EDGE_BUFFER,
 } from "../utils/constants";
-import { FieldSchemaMap } from "../utils/fieldSchemaMap";
-import { isFieldDisabled } from "../utils/isFieldDisabled";
-
 import FieldToolbarComponent from "../components/FieldToolbar";
 import { render } from "preact";
 import FieldLabelWrapperComponent from "../components/fieldLabelWrapper";
 import { getEntryPermissionsCached } from "../utils/getEntryPermissionsCached";
+import { VisualBuilderPostMessageEvents } from "../utils/types/postMessage.types";
+import visualBuilderPostMessage from "../utils/visualBuilderPostMessage";
 
 export function appendFocusedToolbar(
     eventDetails: VisualBuilderCslpEventDetails,
     focusedToolbarElement: HTMLDivElement,
     hideOverlay: () => void,
-    isVariant: boolean = false
+    isVariant: boolean = false,
+    options?: {
+        isHover?: boolean;
+    }
 ): void {
-    appendFieldPathDropdown(eventDetails, focusedToolbarElement);
+    appendFieldPathDropdown(eventDetails, focusedToolbarElement, options);
+    if(options?.isHover) {
+        return;
+    }
     appendFieldToolbar(
         eventDetails,
         focusedToolbarElement,
@@ -34,12 +39,16 @@ export async function appendFieldToolbar(
     eventDetails: VisualBuilderCslpEventDetails,
     focusedToolbarElement: HTMLDivElement,
     hideOverlay: () => void,
-    isVariant: boolean = false
+    isVariant: boolean = false,
+    options?: {
+        isHover?: boolean;
+    }
 ): Promise<void> {
+    const { isHover } = options || {};
     if (
         focusedToolbarElement.querySelector(
             ".visual-builder__focused-toolbar__multiple-field-toolbar"
-        )
+        ) && !isHover
     )
         return;
     const entryPermissions = await getEntryPermissionsCached({
@@ -62,15 +71,30 @@ export async function appendFieldToolbar(
 
 export function appendFieldPathDropdown(
     eventDetails: VisualBuilderCslpEventDetails,
-    focusedToolbarElement: HTMLDivElement
+    focusedToolbarElement: HTMLDivElement,
+    options?: {
+        isHover?: boolean;
+    }
 ): void {
-    if (
-        document.querySelector(
-            ".visual-builder__focused-toolbar__field-label-wrapper"
-        )
-    )
-        return;
+    const { isHover } = options || {};
+    const fieldLabelWrapper = document.querySelector(
+        ".visual-builder__focused-toolbar__field-label-wrapper"
+    ) as HTMLDivElement | null;
     const { editableElement: targetElement, fieldMetadata } = eventDetails;
+
+    if (fieldLabelWrapper) {
+        if(isHover) {
+            const fieldCslp = fieldLabelWrapper.getAttribute("data-hovered-cslp");
+            if(fieldCslp === fieldMetadata.cslpValue) {
+                return;
+            } else {
+                removeFieldToolbar(focusedToolbarElement);
+            }
+        } else {
+            return;
+        }
+    }
+    
     const targetElementDimension = targetElement.getBoundingClientRect();
 
     const distanceFromTop =
@@ -147,4 +171,19 @@ function collectParentCSLPPaths(
     }
 
     return cslpPaths;
+}
+
+export function removeFieldToolbar(toolbar: Element) {
+    toolbar.innerHTML = "";
+    const toolbarEvents = [
+        VisualBuilderPostMessageEvents.DELETE_INSTANCE,
+        VisualBuilderPostMessageEvents.UPDATE_DISCUSSION_ID,
+    ];
+    toolbarEvents.forEach((event) => {
+        //@ts-expect-error - We are accessing private method here, but it is necessary to clean up the event listeners.
+        if (visualBuilderPostMessage?.requestMessageHandlers?.has(event)) {
+            //@ts-expect-error - We are accessing private method here, but it is necessary to clean up the event listeners.
+            visualBuilderPostMessage?.unregisterEvent?.(event);
+        }
+    });
 }
