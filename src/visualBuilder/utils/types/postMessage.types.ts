@@ -51,7 +51,3 @@ export enum VisualBuilderPostMessageEvents {
     COLLAB_THREAD_REOPEN = "collab-thread-reopen",
     COLLAB_THREAD_HIGHLIGHT = "collab-thread-highlight",
 }
-
-export interface ReferenceMapPostMessageEventData {
-
-}

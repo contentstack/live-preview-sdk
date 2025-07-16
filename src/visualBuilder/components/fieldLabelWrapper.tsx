@@ -75,7 +75,6 @@ interface ICurrentField {
     isReference: boolean;
     referenceFieldName: string;
     parentContentTypeName: string;
-    isEmbedded: boolean;
 }
 
 function FieldLabelWrapperComponent(
@@ -92,7 +91,10 @@ function FieldLabelWrapperComponent(
         isReference: false,
         referenceFieldName: "",
         parentContentTypeName: "",
+<<<<<<< HEAD
         isEmbedded: false,
+=======
+>>>>>>> 0d36fbc (Merge pull request #455 from contentstack/VE-6600-Hover-Toolbar-Support)
     });
     const [displayNames, setDisplayNames] = useState<Record<string, string>>(
         {}
@@ -119,17 +121,30 @@ function FieldLabelWrapperComponent(
                 ],
                 "cslpValue"
             );
+<<<<<<< HEAD
             const [displayNames, fieldSchema] = await Promise.all([
+=======
+            const [displayNames, fieldSchema, contentTypeName, referenceParentMap] = await Promise.all([
+>>>>>>> 0d36fbc (Merge pull request #455 from contentstack/VE-6600-Hover-Toolbar-Support)
                 getFieldDisplayNames(allPaths),
                 FieldSchemaMap.getFieldSchema(
                     props.fieldMetadata.content_type_uid,
                     props.fieldMetadata.fieldPath
+<<<<<<< HEAD
                 )
             ]);
             const contentTypeName = await getContentTypeName(
                 props.fieldMetadata.content_type_uid
             );
             const referenceParentMap = await getReferenceParentMap();
+=======
+                ),
+                getContentTypeName(
+                    props.fieldMetadata.content_type_uid
+                ),
+                getReferenceParentMap()
+            ]);
+>>>>>>> 0d36fbc (Merge pull request #455 from contentstack/VE-6600-Hover-Toolbar-Support)
             const entryUid = props.fieldMetadata.entry_uid;
             
             const referenceData = referenceParentMap[entryUid];
@@ -197,7 +212,10 @@ function FieldLabelWrapperComponent(
                     <></>
                 ),
                 isReference,
+<<<<<<< HEAD
                 isEmbedded: false,
+=======
+>>>>>>> 0d36fbc (Merge pull request #455 from contentstack/VE-6600-Hover-Toolbar-Support)
                 prefixIcon: getFieldIcon(fieldSchema),
                 disabled: fieldDisabled,
                 referenceFieldName,
@@ -294,6 +312,7 @@ function FieldLabelWrapperComponent(
                         {
                             currentField.isReference && !dataLoading && !error ? 
                             <div 
+<<<<<<< HEAD
                             className={classNames(
                                 "visual-builder__reference-icon-container",
                                 visualBuilderStyles()["visual-builder__reference-icon-container"]
@@ -317,12 +336,92 @@ function FieldLabelWrapperComponent(
                         {!dataLoading && !error && <ContentTypeIcon />}
                         {currentField.contentTypeName && !dataLoading && !error ? (
                             <div
+=======
+>>>>>>> 0d36fbc (Merge pull request #455 from contentstack/VE-6600-Hover-Toolbar-Support)
                             className={classNames(
-                                "visual-builder__focused-toolbar__text",
+                                "visual-builder__reference-icon-container",
+                                visualBuilderStyles()["visual-builder__reference-icon-container"]
+                            )}
+                            >
+                                <div
+                                    className={classNames(
+                                        "visual-builder__field-icon",
+                                        visualBuilderStyles()[
+                                            "visual-builder__field-icon"
+                                        ]
+                                    )}
+                                    dangerouslySetInnerHTML={{
+                                        __html: FieldTypeIconsMap.reference,
+                                    }}
+                                    data-testid="visual-builder__field-icon-caret"
+                                />
+                                <CaretRightIcon />
+                            </div> : null
+                        }
+                        {
+                            currentField.contentTypeName && !dataLoading && !error ?
+                            <>
+                                <ContentTypeIcon />
+                                <div
+                                    className={classNames(
+                                        "visual-builder__focused-toolbar__text",
+                                        visualBuilderStyles()[
+                                            "visual-builder__focused-toolbar__text"
+                                        ]
+                                    )}
+                                    data-testid="visual-builder__focused-toolbar__ct-name"
+                                >
+                                    {currentField.contentTypeName + " : "}
+                                </div>
+                            </> : null
+                        }
+                        {currentField.prefixIcon ? (
+                            <div
+                                className={classNames(
+                                    "visual-builder__field-icon",
+                                    visualBuilderStyles()[
+                                        "visual-builder__field-icon"
+                                    ]
+                                )}
+                                dangerouslySetInnerHTML={{
+                                    __html: currentField.prefixIcon,
+                                }}
+                                data-testid="visual-builder__field-icon"
+                            />
+                        ) : null}
+                        {currentField.text ? (
+                            <div
+                                className={classNames(
+                                    "visual-builder__focused-toolbar__text",
+                                    visualBuilderStyles()[
+                                        "visual-builder__focused-toolbar__text"
+                                    ]
+                                )}
+                                data-testid="visual-builder__focused-toolbar__text"
+                            >
+                                {currentField.text}
+                            </div>
+                        ) : null}
+                        {getCurrentFieldIcon()}
+                        {error ? <CslpError /> : null}
+                    </button>
+                    {props.parentPaths.map((path, index) => (
+                        <button
+                            key={path}
+                            className={classNames(
+                                "visual-builder__focused-toolbar__field-label-wrapper__parent-field visual-builder__button visual-builder__button--secondary visual-builder__focused-toolbar__text",
+                                visualBuilderStyles()[
+                                    "visual-builder__focused-toolbar__field-label-wrapper__parent-field"
+                                ],
+                                visualBuilderStyles()["visual-builder__button"],
+                                visualBuilderStyles()[
+                                    "visual-builder__button--secondary"
+                                ],
                                 visualBuilderStyles()[
                                     "visual-builder__focused-toolbar__text"
                                 ]
                             )}
+<<<<<<< HEAD
                             data-testid="visual-builder__focused-toolbar__ct-name"
                         >
                             {currentField.contentTypeName + " : "}
@@ -378,6 +477,12 @@ function FieldLabelWrapperComponent(
                             style={{ top: calculateTopOffset(index) }}
                             onClick={() => onParentPathClick(path)}
                         >
+=======
+                            data-target-cslp={path}
+                            style={{ top: calculateTopOffset(index) }}
+                            onClick={() => onParentPathClick(path)}
+                        >
+>>>>>>> 0d36fbc (Merge pull request #455 from contentstack/VE-6600-Hover-Toolbar-Support)
                             {displayNames[path]}
                         </button>
                     ))}
