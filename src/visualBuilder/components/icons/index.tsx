@@ -325,6 +325,8 @@ export function MoreIcon(): JSX.Element {
             <circle cx="12" cy="18" r="2" fill="#475161" />
         </svg>
     );
+}
+
 export function ContentTypeIcon(): JSX.Element {
     return (
         <div
