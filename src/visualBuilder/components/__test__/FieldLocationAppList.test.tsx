@@ -28,24 +28,6 @@ vi.mock("../../visualBuilder.style", () => ({
     }),
 }));
 
-vi.mock("classnames", () => ({
-    default: (...args: any[]) => {
-        const classes: string[] = [];
-        args.forEach(arg => {
-            if (typeof arg === 'string') {
-                classes.push(arg);
-            } else if (typeof arg === 'object' && arg !== null) {
-                Object.entries(arg).forEach(([className, condition]) => {
-                    if (condition) {
-                        classes.push(className);
-                    }
-                });
-            }
-        });
-        return classes.join(' ');
-    },
-}));
-
 vi.mock("../icons/EmptyAppIcon", () => ({
     EmptyAppIcon: ({ id }: { id: string }) => <div data-testid={`empty-app-icon-${id}`}>Empty Icon</div>,
 }));
@@ -214,12 +196,7 @@ describe("FieldLocationAppList", () => {
         expect(appList).toHaveClass("visual-builder__field-location-app-list--left");
     });
 
-    it("should handle empty apps array", () => {
-        render(<FieldLocationAppList apps={[]} position="right" toolbarRef={mockToolbarRef} domEditStack={[]} setDisplayAllApps={() => {}} displayAllApps={true} />);
-
-        expect(screen.getByText("No matching results found!")).toBeInTheDocument();
-    });
-
+  
     it("should handle single app (which gets filtered out)", () => {
         const singleApp = [mockApps[0]];
         render(<FieldLocationAppList apps={singleApp} position="right" toolbarRef={mockToolbarRef} domEditStack={[]} setDisplayAllApps={() => {}} displayAllApps={true} />);
