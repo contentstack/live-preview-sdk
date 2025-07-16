@@ -67,6 +67,7 @@ interface VisualBuilderGlobalStateImpl {
     locale: string;
     variant: string | null;
     focusElementObserver: MutationObserver | null;
+    referenceParentMap: Record<string, string>;
 }
 
 let threadsPayload: IThreadDTO[] = [];
@@ -88,6 +89,7 @@ export class VisualBuilder {
             locale: Config.get().stackDetails.masterLocale || "en-us",
             variant: null,
             focusElementObserver: null,
+            referenceParentMap: {},
         });
 
     private handlePositionChange(editableElement: HTMLElement) {
@@ -438,6 +440,7 @@ export class VisualBuilder {
             locale: "en-us",
             variant: null,
             focusElementObserver: null,
+            referenceParentMap: {},
         };
 
         // Remove DOM elements
