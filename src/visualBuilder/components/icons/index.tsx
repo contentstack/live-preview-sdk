@@ -311,22 +311,6 @@ export function WarningOctagonIcon(): JSX.Element {
     );
 }
 
-export function MoreIcon(): JSX.Element {
-    return (
-        <svg
-            width="32"
-            height="32"
-            viewBox="0 0 24 24"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-        >
-            <circle cx="12" cy="6" r="2" fill="#475161" />
-            <circle cx="12" cy="12" r="2" fill="#475161" />
-            <circle cx="12" cy="18" r="2" fill="#475161" />
-        </svg>
-    );
-}
-
 export function ContentTypeIcon(): JSX.Element {
     return (
         <div

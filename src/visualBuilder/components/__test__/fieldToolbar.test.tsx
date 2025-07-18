@@ -12,9 +12,6 @@ import { asyncRender } from "../../../__test__/utils";
 import { VisualBuilderCslpEventDetails } from "../../types/visualBuilder.types";
 import { isFieldDisabled } from "../../utils/isFieldDisabled";
 import React from "preact/compat";
-import visualBuilderPostMessage from "../../utils/visualBuilderPostMessage";
-import { FieldLocationIcon } from "../FieldLocationIcon";
-import { VisualBuilderPostMessageEvents } from "../../utils/types/postMessage.types";
 
 vi.mock("../../utils/instanceHandlers", () => ({
     handleMoveInstance: vi.fn(),
@@ -185,7 +182,7 @@ describe("FieldToolbarComponent", () => {
     test("display variant icon instead of dropdown", async () => {
         mockEventDetails.fieldMetadata.variant = "variant";
         const { findByTestId } = await asyncRender(
-            <FieldToolbarComponent eventDetails={mockEventDetails} hideOverlay={vi.fn()} />
+            <FieldToolbarComponent eventDetails={mockEventDetails} />
         );
 
         const variantIcon = await findByTestId(

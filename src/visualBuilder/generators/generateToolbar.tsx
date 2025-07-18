@@ -178,7 +178,6 @@ export function removeFieldToolbar(toolbar: Element) {
     const toolbarEvents = [
         VisualBuilderPostMessageEvents.DELETE_INSTANCE,
         VisualBuilderPostMessageEvents.UPDATE_DISCUSSION_ID,
-        VisualBuilderPostMessageEvents.FIELD_LOCATION_DATA
     ];
     toolbarEvents.forEach((event) => {
         //@ts-expect-error - We are accessing private method here, but it is necessary to clean up the event listeners.
