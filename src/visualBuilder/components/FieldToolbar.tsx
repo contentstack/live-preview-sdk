@@ -392,17 +392,23 @@ function FieldToolbarComponent(
         };
     }, []);
 
+
+
     useEffect(() => {
-        const event = visualBuilderPostMessage?.on(
-            VisualBuilderPostMessageEvents.FIELD_LOCATION_DATA,
-            (data: { data: any }) => {
-                setFieldLocationData(data.data.fieldLocationData);
+        const fetchFieldLocationData = async () => {
+            try {
+                const event = await visualBuilderPostMessage?.send(VisualBuilderPostMessageEvents.FIELD_LOCATION_DATA, {
+                    domEditStack: getDOMEditStack(eventDetails.editableElement)
+                });
+               
+                setFieldLocationData(event)
+            } catch (error) {
+                console.error('Error fetching field location data:', error);
             }
-        );
-        return () => {
-            event?.unregister();
         };
-    }, []);
+
+        fetchFieldLocationData();
+    }, [eventDetails.editableElement]);
 
     const multipleFieldToolbarButtonClasses = classNames(
         "visual-builder__button visual-builder__button--secondary",
