@@ -150,18 +150,18 @@ function ToolbarTooltipContent({contentTypeName, referenceFieldName}: {contentTy
   return (
     <div className={classNames("toolbar-tooltip-content", visualBuilderStyles()["toolbar-tooltip-content"])}>
       {
-        referenceFieldName && (
-          <div className={classNames("toolbar-tooltip-content-item", visualBuilderStyles()["toolbar-tooltip-content-item"])}>
-            <div dangerouslySetInnerHTML={{__html: FieldTypeIconsMap.reference}} className={classNames("visual-builder__field-icon", visualBuilderStyles()["visual-builder__field-icon"])}/>
-            <p>{referenceFieldName}</p>
-          </div>
-        )
-      }
-      {
         contentTypeName && (
           <div className={classNames("toolbar-tooltip-content-item", visualBuilderStyles()["toolbar-tooltip-content-item"])}>
             <ContentTypeIcon />
             <p>{contentTypeName}</p>
+          </div>
+        )
+      }
+      {
+        referenceFieldName && (
+          <div className={classNames("toolbar-tooltip-content-item", visualBuilderStyles()["toolbar-tooltip-content-item"])}>
+            <div dangerouslySetInnerHTML={{__html: FieldTypeIconsMap.reference}} className={classNames("visual-builder__field-icon", visualBuilderStyles()["visual-builder__field-icon"])}/>
+            <p>{referenceFieldName}</p>
           </div>
         )
       }

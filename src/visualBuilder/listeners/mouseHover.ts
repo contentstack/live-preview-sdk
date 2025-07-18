@@ -223,6 +223,7 @@ const throttledMouseHover = throttle(async (params: HandleMouseHoverParams) => {
             eventTarget &&
             isFieldPathDropdown(eventTarget)
         ) {
+            params.customCursor && hideCustomCursor(params.customCursor);
             showOutline();
             showHoverToolbar({
                 event: params.event,
