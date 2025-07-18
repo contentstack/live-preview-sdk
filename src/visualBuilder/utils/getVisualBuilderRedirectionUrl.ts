@@ -18,7 +18,11 @@ export default function getVisualBuilderRedirectionUrl(): URL {
         searchParams.set("environment", environment);
     }
 
-    searchParams.set("target-url", window.location.href);
+    // Set the current page (without query string) as the target URL
+    searchParams.set(
+        "target-url",
+        window.location.origin + window.location.pathname
+    );
 
     // get the locale from the data cslp attribute
     const elementWithDataCslp = document.querySelector(`[data-cslp]`);
