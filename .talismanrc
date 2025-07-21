@@ -12,4 +12,13 @@ fileignoreconfig:
       checksum: d0ef271ee5381d9feab06bda6e7e89bd0a882fee87495627bd811c1f0a5459c7
     - filename: src/visualBuilder/utils/__test__/getVisualBuilderRedirectionUrl.test.ts
       checksum: c50dc0a34b3aeb8ff50ac36af38e4ace9b6ee137522faa3d82ae2309ee285040
+    - filename: package-lock.json
+      checksum: fd06363871d0ee16ebfb5d9d0cc479e0922a615bb76584b80bb6933ee6c3e237
+    - filename: src/visualBuilder/components/FieldLocationIcon.tsx
+      checksum: d7d1330dcc55c8c1d3e154e1c55ed16132255d502046e3b23eb88b0b38833c24
+    - filename: src/visualBuilder/components/FieldLocationAppList.tsx
+      checksum: 5cf8f044f0e285120a0f4527bc875fc5b874d9598579e272b37f325e060f9eef
+    - filename: src/visualBuilder/components/__test__/startEditingButton.test.tsx
+      checksum: 3205d6199640ad160ddb62232882a019d735bb94fde87cf662629ae191e285c7
+    - filename: src/visualBuilder/components/FieldLocationAppList.tsx
 version: "1.0"
