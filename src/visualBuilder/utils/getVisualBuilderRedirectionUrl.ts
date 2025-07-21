@@ -31,7 +31,9 @@ export default function getVisualBuilderRedirectionUrl(): URL {
         } else {
             pathFromHash = "/" + hash.substring(1);
         }
-        url.pathname = (url.pathname + pathFromHash).replace(/\/\//g, "/");
+        // remove query parameters from the path if we have both hash routing and query string
+        let onlyPathname = pathFromHash.split("?")[0];
+        url.pathname = (url.pathname + onlyPathname).replace(/\/\//g, "/");
         url.hash = "";
     } else {
         url.hash = "";

@@ -11,5 +11,5 @@ fileignoreconfig:
     - filename: src/visualBuilder/components/Collab/ThreadPopup/__test__/CommentTextArea.test.tsx
       checksum: d0ef271ee5381d9feab06bda6e7e89bd0a882fee87495627bd811c1f0a5459c7
     - filename: src/visualBuilder/utils/__test__/getVisualBuilderRedirectionUrl.test.ts
-      checksum: 5a4ec2ca7f5cc6342b1d74c954637f6bab0b4a55f46696ea0a7f57f7f4b16457
+      checksum: c50dc0a34b3aeb8ff50ac36af38e4ace9b6ee137522faa3d82ae2309ee285040
 version: "1.0"

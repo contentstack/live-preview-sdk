@@ -28,7 +28,7 @@ describe("getVisualBuilderRedirectionUrl", () => {
 
         const result = getVisualBuilderRedirectionUrl();
         expect(result.toString()).toBe(
-            "https://app.example.com/#!/stack/12345/visual-builder?branch=main&environment=production&target-url=https%3A%2F%2Fexample.com%2F&locale=en-US"
+            "https://app.example.com/#!/stack/12345/visual-builder?target-url=https%3A%2F%2Fexample.com&branch=main&environment=production&locale=en-US"
         );
     });
 
@@ -47,7 +47,7 @@ describe("getVisualBuilderRedirectionUrl", () => {
 
         const result = getVisualBuilderRedirectionUrl();
         expect(result.toString()).toBe(
-            "https://app.example.com/#!/stack/12345/visual-builder?target-url=https%3A%2F%2Fexample.com%2F&locale=en-US"
+            "https://app.example.com/#!/stack/12345/visual-builder?target-url=https%3A%2F%2Fexample.com&locale=en-US"
         );
     });
 
@@ -69,7 +69,7 @@ describe("getVisualBuilderRedirectionUrl", () => {
 
         const result = getVisualBuilderRedirectionUrl();
         expect(result.toString()).toBe(
-            "https://app.example.com/#!/stack/12345/visual-builder?branch=main&environment=production&target-url=https%3A%2F%2Fexample.com%2F&locale=fr-FR"
+            "https://app.example.com/#!/stack/12345/visual-builder?target-url=https%3A%2F%2Fexample.com&branch=main&environment=production&locale=fr-FR"
         );
     });
 
@@ -89,7 +89,7 @@ describe("getVisualBuilderRedirectionUrl", () => {
 
         const result = getVisualBuilderRedirectionUrl();
         expect(result.toString()).toBe(
-            "https://app.example.com/#!/stack/12345/visual-builder?branch=main&environment=production&target-url=https%3A%2F%2Fexample.com%2F"
+            "https://app.example.com/#!/stack/12345/visual-builder?target-url=https%3A%2F%2Fexample.com&branch=main&environment=production"
         );
     });
 
@@ -116,5 +116,95 @@ describe("getVisualBuilderRedirectionUrl", () => {
             "target-url=https%3A%2F%2Fexample.com%2Fpage"
         );
         expect(result.toString()).not.toContain("?query=test");
+    });
+    it("should return the correct URL with slash type hash routing", () => {
+        Object.defineProperty(window, "location", {
+            writable: true,
+            value: new URL("https://example.com/#/page"),
+        });
+        Config.get.mockReturnValue({
+            stackDetails: {
+                branch: "main",
+                apiKey: "12345",
+                environment: "production",
+                locale: "en-US",
+            },
+            clientUrlParams: {
+                url: "https://app.example.com",
+            },
+        });
+
+        const result = getVisualBuilderRedirectionUrl();
+        expect(result.toString()).toBe(
+            "https://app.example.com/#!/stack/12345/visual-builder?target-url=https%3A%2F%2Fexample.com%2Fpage&branch=main&environment=production&locale=en-US"
+        );
+    });
+
+    it("should return the correct URL with no slash type hash routing", () => {
+        Object.defineProperty(window, "location", {
+            writable: true,
+            value: new URL("https://example.com/#page"),
+        });
+        Config.get.mockReturnValue({
+            stackDetails: {
+                branch: "main",
+                apiKey: "12345",
+                environment: "production",
+                locale: "en-US",
+            },
+            clientUrlParams: {
+                url: "https://app.example.com",
+            },
+        });
+
+        const result = getVisualBuilderRedirectionUrl();
+        expect(result.toString()).toBe(
+            "https://app.example.com/#!/stack/12345/visual-builder?target-url=https%3A%2F%2Fexample.com%2Fpage&branch=main&environment=production&locale=en-US"
+        );
+    });
+    it("should return the correct URL with hash bang type hash routing", () => {
+        Object.defineProperty(window, "location", {
+            writable: true,
+            value: new URL("https://example.com/#!/page"),
+        });
+        Config.get.mockReturnValue({
+            stackDetails: {
+                branch: "main",
+                apiKey: "12345",
+                environment: "production",
+                locale: "en-US",
+            },
+            clientUrlParams: {
+                url: "https://app.example.com",
+            },
+        });
+
+        const result = getVisualBuilderRedirectionUrl();
+        expect(result.toString()).toBe(
+            "https://app.example.com/#!/stack/12345/visual-builder?target-url=https%3A%2F%2Fexample.com%2Fpage&branch=main&environment=production&locale=en-US"
+        );
+    });
+
+    it("should return the correct URL with hash bang type hash routing", () => {
+        Object.defineProperty(window, "location", {
+            writable: true,
+            value: new URL("https://example.com/#!/page?query=test"),
+        });
+        Config.get.mockReturnValue({
+            stackDetails: {
+                branch: "main",
+                apiKey: "12345",
+                environment: "production",
+                locale: "en-US",
+            },
+            clientUrlParams: {
+                url: "https://app.example.com",
+            },
+        });
+
+        const result = getVisualBuilderRedirectionUrl();
+        expect(result.toString()).toBe(
+            "https://app.example.com/#!/stack/12345/visual-builder?target-url=https%3A%2F%2Fexample.com%2Fpage&branch=main&environment=production&locale=en-US"
+        );
     });
 });
