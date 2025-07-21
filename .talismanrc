@@ -11,7 +11,7 @@ fileignoreconfig:
     - filename: src/visualBuilder/components/Collab/ThreadPopup/__test__/CommentTextArea.test.tsx
       checksum: d0ef271ee5381d9feab06bda6e7e89bd0a882fee87495627bd811c1f0a5459c7
     - filename: src/visualBuilder/utils/__test__/getVisualBuilderRedirectionUrl.test.ts
-      checksum: c50dc0a34b3aeb8ff50ac36af38e4ace9b6ee137522faa3d82ae2309ee285040
+      checksum: 136be2b65e28df8a0fec100cb0f2dfb735341162038f46b5492c803771b58d55
     - filename: package-lock.json
       checksum: fd06363871d0ee16ebfb5d9d0cc479e0922a615bb76584b80bb6933ee6c3e237
     - filename: src/visualBuilder/components/FieldLocationIcon.tsx
