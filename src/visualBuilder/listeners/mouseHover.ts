@@ -200,6 +200,10 @@ function isFieldPathDropdown(target: HTMLElement): boolean {
     return target.classList.contains("visual-builder__focused-toolbar__field-label-wrapper") || target.classList.contains("visual-builder__focused-toolbar__field-label-wrapper__current-field");
 }
 
+function isFieldPathParent(target: HTMLElement): boolean {
+    return target.classList.contains("visual-builder__focused-toolbar__field-label-wrapper__parent-field");
+}
+
 const throttledMouseHover = throttle(async (params: HandleMouseHoverParams) => {
     const eventDetails = getCsDataOfElement(params.event);
     const eventTarget = params.event.target as HTMLElement | null;
@@ -221,7 +225,7 @@ const throttledMouseHover = throttle(async (params: HandleMouseHoverParams) => {
         }
         if(
             eventTarget &&
-            isFieldPathDropdown(eventTarget)
+            (isFieldPathDropdown(eventTarget) || isFieldPathParent(eventTarget))
         ) {
             params.customCursor && hideCustomCursor(params.customCursor);
             showOutline();
