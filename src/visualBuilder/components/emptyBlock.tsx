@@ -6,6 +6,7 @@ import { observeParentAndFocusNewInstance } from "../utils/multipleElementAddBut
 import { ISchemaFieldMap } from "../utils/types/index.types";
 import { VisualBuilderPostMessageEvents } from "../utils/types/postMessage.types";
 import React from "preact/compat";
+import { startCase, toLower } from "lodash-es";
 
 interface EmptyBlockProps {
     details: {
@@ -55,7 +56,7 @@ export function EmptyBlock(props: EmptyBlockProps): JSX.Element {
                         ]
                     )}
                 >
-                    {blockParentName.toLowerCase()}
+                    {startCase(toLower(blockParentName))}
                 </span>{" "}
                 added. Click the button below to add one.
             </div>
