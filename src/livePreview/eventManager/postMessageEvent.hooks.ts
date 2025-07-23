@@ -7,6 +7,7 @@ import {
     HistoryLivePreviewPostMessageEventData,
     LivePreviewInitEventResponse,
     OnChangeLivePreviewPostMessageEventData,
+    OnReloadLivePreviewPostMessageEventData,
 } from "./types/livePreviewPostMessageEvent.type";
 
 /**
@@ -52,6 +53,20 @@ export function useOnEntryUpdatePostMessageEvent(): void {
             const { ssr, onChange } = Config.get();
             if (!ssr) {
                 onChange();
+            }
+        }
+    );
+}
+
+export function useOnReloadPostMessageEvent(): void {
+    livePreviewPostMessage?.on<OnReloadLivePreviewPostMessageEventData>(
+        LIVE_PREVIEW_POST_MESSAGE_EVENTS.ON_RELOAD,
+        (event) => {
+            setConfigFromParams({
+                live_preview: event.data.hash,
+            });
+            if (window) {
+                window.location?.reload();
             }
         }
     );
@@ -109,6 +124,7 @@ export function sendInitializeLivePreviewPostMessageEvent(): void {
 
             useHistoryPostMessageEvent();
             useOnEntryUpdatePostMessageEvent();
+            useOnReloadPostMessageEvent();
         })
         .catch((e) => {
             // TODO: add debug logs that runs conditionally
