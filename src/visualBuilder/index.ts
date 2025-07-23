@@ -68,6 +68,7 @@ interface VisualBuilderGlobalStateImpl {
     variant: string | null;
     focusElementObserver: MutationObserver | null;
     referenceParentMap: Record<string, string>;
+    isFocussed: boolean;
 }
 
 let threadsPayload: IThreadDTO[] = [];
@@ -90,6 +91,7 @@ export class VisualBuilder {
             variant: null,
             focusElementObserver: null,
             referenceParentMap: {},
+            isFocussed: false,
         });
 
     private handlePositionChange(editableElement: HTMLElement) {
@@ -369,6 +371,22 @@ export class VisualBuilder {
                         VisualBuilderPostMessageEvents.SEND_VARIANT_AND_LOCALE
                     );
 
+                        visualBuilderPostMessage?.on<{
+                            scroll: boolean
+                        }>(
+                            VisualBuilderPostMessageEvents.TOGGLE_SCROLL,
+                            (event) => {
+                                if (!event.data.scroll) {
+                                    document.body.style.overflow = 'hidden'
+                                } else {
+                                    document.body.style.overflow = 'auto'
+                                }
+                            }
+                        );
+                    
+                    
+                    
+
                     useHideFocusOverlayPostMessageEvent({
                         overlayWrapper: this.overlayWrapper,
                         visualBuilderContainer: this.visualBuilderContainer,
@@ -425,6 +443,7 @@ export class VisualBuilder {
             variant: null,
             focusElementObserver: null,
             referenceParentMap: {},
+            isFocussed: false,
         };
 
         // Remove DOM elements
