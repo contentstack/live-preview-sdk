@@ -26,7 +26,7 @@ export const FieldLocationIcon = ({
 
 
 
-    if (!fieldLocationData?.apps || fieldLocationData?.apps?.length === 0) {
+    if (!fieldLocationData?.apps || fieldLocationData.apps.length === 0) {
         return null;
     }
 
