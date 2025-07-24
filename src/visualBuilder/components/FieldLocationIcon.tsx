@@ -72,20 +72,14 @@ export const FieldLocationIcon = ({
                 )}
             </button>
 
-           
-           {
-            fieldLocationData.apps.length > 1 && (
-                <button
-                    ref={moreButtonRef}
-                    className={multipleFieldToolbarButtonClasses}
-                    data-tooltip={"More"}
-                    onClick={handleMoreIconClick}
-                    data-testid="field-location-more-button"
-                >
-                    <MoreIcon />
-                </button>
-            )
-           }
+            <button
+                ref={moreButtonRef}
+                className={multipleFieldToolbarButtonClasses}
+                data-tooltip={"More"}
+                onClick={handleMoreIconClick}
+            >
+                <MoreIcon />
+            </button>
         </div>
     );
 };
