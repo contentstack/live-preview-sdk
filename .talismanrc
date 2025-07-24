@@ -5,9 +5,11 @@ fileignoreconfig:
     - filename: README.md
       checksum: 568289bbe7c088967493db246dbf29e465382648ac574c1b1236be57d5662a38
     - filename: CHANGELOG.md
-      checksum: 09ed2613ba45ee13b6dbb4fc178911e93674d4e5c40af026d66266ea172374a4
+      checksum: ed794e2f5c5884f74af12e5f5bfbb117c08ba454104f929df3deb7627407317a
     - filename: src/visualBuilder/components/__test__/fieldToolbar.test.tsx
       checksum: 3badd6a142456b6a361569e6fc546349a38ac6b366bef7fd5255d1e93220444e
     - filename: src/visualBuilder/components/Collab/ThreadPopup/__test__/CommentTextArea.test.tsx
       checksum: d0ef271ee5381d9feab06bda6e7e89bd0a882fee87495627bd811c1f0a5459c7
+    - filename: package-lock.json
+      checksum: fd06363871d0ee16ebfb5d9d0cc479e0922a615bb76584b80bb6933ee6c3e237
 version: "1.0"

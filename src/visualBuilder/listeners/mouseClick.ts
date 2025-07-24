@@ -32,7 +32,7 @@ import { fixSvgXPath } from "../utils/collabUtils";
 import { v4 as uuidV4 } from "uuid";
 import { getEntryPermissionsCached } from "../utils/getEntryPermissionsCached";
 
-type HandleBuilderInteractionParams = Omit<
+export type HandleBuilderInteractionParams = Omit<
     EventListenerHandlerParams,
     "eventDetails" | "customCursor"
 > & { reEvaluate?: boolean };
@@ -45,7 +45,7 @@ type AddFocusOverlayParams = Pick<
 type AddFocusedToolbarParams = Pick<
     EventListenerHandlerParams,
     "eventDetails" | "focusedToolbar"
-> & { hideOverlay: () => void; isVariant: boolean };
+> & { hideOverlay: () => void; isVariant: boolean, options?: { isHover?: boolean } };
 
 function addOverlay(params: AddFocusOverlayParams) {
     if (!params.overlayWrapper || !params.editableElement) return;
@@ -67,11 +67,12 @@ export function addFocusedToolbar(params: AddFocusedToolbarParams): void {
         params.eventDetails,
         params.focusedToolbar,
         params.hideOverlay,
-        params.isVariant
+        params.isVariant,
+        params.options
     );
 }
 
-async function handleBuilderInteraction(
+export async function handleBuilderInteraction(
     params: HandleBuilderInteractionParams
 ): Promise<void> {
     const eventTarget = params.event.target as HTMLElement | null;
@@ -270,6 +271,7 @@ function addOverlayAndToolbar(
     editableElement: Element,
     isVariant: boolean
 ) {
+    VisualBuilder.VisualBuilderGlobalState.value.isFocussed = true;
     addOverlay({
         overlayWrapper: params.overlayWrapper,
         resizeObserver: params.resizeObserver,
