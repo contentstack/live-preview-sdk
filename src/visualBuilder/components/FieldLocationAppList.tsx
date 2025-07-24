@@ -1,135 +1,101 @@
-import React, { useState, useEffect, useRef } from "preact/compat";
+import React from "react";
 import { EmptyAppIcon } from "./icons/EmptyAppIcon";
-import { VisualBuilderPostMessageEvents } from "../utils/types/postMessage.types";
-import visualBuilderPostMessage from "../utils/visualBuilderPostMessage";
-import { visualBuilderStyles } from "../visualBuilder.style";
-import classNames from "classnames";
 
 interface App {
-    app_installation_uid: string;
-    app_uid: string;
-    contentTypeUid: string;
-    entryUid: string;
-    fieldDataType: string;
-    fieldDisplayName: string;
-    fieldPath: string;
-    icon?: string;
-    locale: string;
-    manifest: {
-        uid: string;
-        name: string;
-        description: string;
-        icon: string;
-        visibility: string;
-    };
-    title: string;
     uid: string;
+    title: string;
+    name: string;
+    icon?: string;
+    visible: boolean;
 }
-
 
 interface FieldLocationAppListProps {
     apps: App[];
-    position: "left" | "right";
 }
 
-export const FieldLocationAppList = ({ apps, position }: FieldLocationAppListProps) => {
-    const [search, setSearch] = useState("");
-    const [filteredApps, setFilteredApps] = useState(apps);
-    const appRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
-
-    useEffect(() => {
-        const filtered = apps.filter(app =>
-            app.title.toLowerCase().includes(search.toLowerCase())
-        );
-        setFilteredApps(filtered);
-    }, [search, apps]);
-
-    const handleAppClick = (app: App) => {
-        const appElement = appRefs.current[app.uid];
-        const positionData = appElement?.getBoundingClientRect();
-        visualBuilderPostMessage?.send(VisualBuilderPostMessageEvents.FIELD_LOCATION_SELECTED_APP, {
-            app: app,
-            position: positionData,
-        });
+export const FieldLocationAppList: React.FC<FieldLocationAppListProps> = ({ apps }) => {
+    if (!apps || apps.length === 0) {
+        return null;
     }
 
     return (
         <div
-            className={classNames(
-                visualBuilderStyles()["visual-builder__field-location-app-list"],
-                {
-                    [visualBuilderStyles()["visual-builder__field-location-app-list--left"]]: position === "left",
-                    [visualBuilderStyles()["visual-builder__field-location-app-list--right"]]: position === "right",
-                }
-            )}
+            style={{
+                position: "absolute",
+                top: 0,
+                left: "100%",
+                backgroundColor: "white",
+                border: "1px solid #e0e0e0",
+                borderRadius: "4px",
+                boxShadow: "0 2px 8px rgba(0, 0, 0, 0.15)",
+                zIndex: 1000,
+                minWidth: "200px",
+                maxHeight: "300px",
+                overflowY: "auto",
+                padding: "8px 0",
+                marginLeft: "8px",
+            }}
         >
-            <div className={visualBuilderStyles()["visual-builder__field-location-app-list__search-container"]}>
-                <svg
-                    width="14"
-                    height="14"
-                    viewBox="0 0 14 14"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                    className={classNames(
-                        "Search__search-icon Icon--mini",
-                        visualBuilderStyles()["visual-builder__field-location-app-list__search-icon"]
-                    )}
-                    name="Search"
-                    data-test-id="cs-icon"
+            {apps.map((app) => (
+                <div
+                    key={app.uid}
+                    style={{
+                        display: "flex",
+                        alignItems: "center",
+                        padding: "8px 12px",
+                        cursor: "pointer",
+                        borderBottom: "1px solid #f0f0f0",
+                    }}
+                    onClick={() => {
+                        console.log("App clicked:", app);
+                    }}
                 >
-                    <path
-                        d="M12.438 12.438L9.624 9.624M6.25 10.75a4.5 4.5 0 100-9 4.5 4.5 0 000 9z"
-                        stroke="#A9B6CB"
-                        stroke-width="2"
-                        stroke-miterlimit="10"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                    ></path>
-                </svg>
-                <input
-                    type="text"
-                    value={search}
-                    onInput={(e) =>
-                        setSearch((e.target as HTMLInputElement).value)
-                    }
-                    placeholder="Search for Apps"
-                    className={visualBuilderStyles()["visual-builder__field-location-app-list__search-input"]}
-                />
-            </div>
-            <div className={visualBuilderStyles()["visual-builder__field-location-app-list__content"]}>
-                {filteredApps.length === 0 && (
-                    <div className={visualBuilderStyles()["visual-builder__field-location-app-list__no-results"]}>
-                        <span className={visualBuilderStyles()["visual-builder__field-location-app-list__no-results-text"]}>
-                            No matching results found!
-                        </span>
+                    <div
+                        style={{
+                            width: "16px",
+                            height: "16px",
+                            marginRight: "8px",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                        }}
+                    >
+                        {app.icon ? (
+                            <img
+                                src={app.icon}
+                                alt={app.title}
+                                style={{
+                                    width: "16px",
+                                    height: "16px",
+                                    objectFit: "cover",
+                                }}
+                            />
+                        ) : (
+                            <EmptyAppIcon />
+                        )}
                     </div>
-                )}
-                {filteredApps
-                    .filter((_, index) => index !== 0)
-                    .map((app) => (
+                    <div style={{ flex: 1 }}>
                         <div
-                            key={app.uid}
-                            ref={(el) => (appRefs.current[app.uid] = el)}
-                            className={visualBuilderStyles()["visual-builder__field-location-app-list__item"]}
-                            onClick={() => handleAppClick(app)}
+                            style={{
+                                fontSize: "12px",
+                                fontWeight: "500",
+                                color: "#333",
+                            }}
                         >
-                            <div className={visualBuilderStyles()["visual-builder__field-location-app-list__item-icon-container"]}>
-                                {app.icon ? (
-                                    <img
-                                        src={app.icon}
-                                        alt={app.title}
-                                        className={visualBuilderStyles()["visual-builder__field-location-app-list__item-icon"]}
-                                    />
-                                ) : (
-                                    <EmptyAppIcon id={app.app_installation_uid} />
-                                )}
-                            </div>
-                            <span className={visualBuilderStyles()["visual-builder__field-location-app-list__item-title"]}>
-                                {app.title}
-                            </span>
+                            {app.title}
                         </div>
-                    ))}
-            </div>
+                        <div
+                            style={{
+                                fontSize: "11px",
+                                color: "#666",
+                            }}
+                        >
+                            {app.name}
+                        </div>
+                    </div>
+                  
+                </div>
+            ))}
         </div>
     );
 };
