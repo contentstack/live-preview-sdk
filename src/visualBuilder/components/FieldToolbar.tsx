@@ -19,13 +19,12 @@ import {
     MoveLeftIcon,
     MoveRightIcon,
     ReplaceAssetIcon,
-    MoreIcon,
 } from "./icons";
 import { fieldIcons } from "./icons/fields";
 import classNames from "classnames";
 import { visualBuilderStyles } from "../visualBuilder.style";
 import CommentIcon from "./CommentIcon";
-import React, { useEffect, useState, useRef } from "preact/compat";
+import React, { useEffect, useState } from "preact/compat";
 import { FieldSchemaMap } from "../utils/fieldSchemaMap";
 import { isFieldDisabled } from "../utils/isFieldDisabled";
 import { IReferenceContentTypeSchema } from "../../cms/types/contentTypeSchema.types";
@@ -41,9 +40,6 @@ import {
 } from "./FieldRevert/FieldRevertComponent";
 import { LoadingIcon } from "./icons/loading";
 import { EntryPermissions } from "../utils/getEntryPermissions";
-import { EmptyAppIcon } from "./icons/EmptyAppIcon";
-import { FieldLocationAppList } from "./FieldLocationAppList.tsx";
-
 
 export type FieldDetails = Pick<
     VisualBuilderCslpEventDetails,
@@ -60,6 +56,7 @@ interface MultipleFieldToolbarProps {
 }
 
 function handleReplaceAsset(fieldMetadata: CslpData) {
+    // TODO avoid sending whole fieldMetadata
     visualBuilderPostMessage?.send(
         VisualBuilderPostMessageEvents.OPEN_ASSET_MODAL,
         {
@@ -118,9 +115,6 @@ function FieldToolbarComponent(
     } = props;
     const { fieldMetadata, editableElement: targetElement } = eventDetails;
     const [isFormLoading, setIsFormLoading] = useState(false);
-    const [fieldLocationData, setFieldLocationData] = useState<any>(null);
-    const [displayAllApps, setDisplayAllApps] = useState(false);
-    const moreButtonRef = useRef<HTMLButtonElement>(null);
 
     const parentPath =
         fieldMetadata?.multipleFieldMetadata?.parentDetails?.parentCslpValue ||
@@ -164,6 +158,13 @@ function FieldToolbarComponent(
             isMultiple = (fieldSchema as IReferenceContentTypeSchema)
                 .field_metadata.ref_multiple;
 
+        // field is multiple but an instance is not selected
+        // instead the whole field (all instances) is selected.
+        // Currently, when whole featured_blogs is selected in canvas,
+        // the fieldPathWithIndex and instance.fieldPathWithIndex are the same
+        // cannot rely on -1 index, as the non-negative index then refers to the index of
+        // the featured_blogs block in page_components
+        // It is not needed except taxanomy.
         isWholeMultipleField =
             isMultiple &&
             (fieldMetadata.fieldPathWithIndex ===
@@ -172,14 +173,17 @@ function FieldToolbarComponent(
 
         isReplaceAllowed =
             ALLOWED_REPLACE_FIELDS.includes(fieldType) && !isWholeMultipleField;
+        // if (
+        //     DEFAULT_MULTIPLE_FIELDS.includes(fieldType) &&
+        //     isWholeMultipleField &&
+        //     !isVariant
+        // ) {
+        //     return null;
+        // }
     }
 
     const invertTooltipPosition =
         targetElement.getBoundingClientRect().top <= TOOLTIP_TOP_EDGE_BUFFER;
-
-    const handleMoreIconClick = () => {
-        setDisplayAllApps(!displayAllApps);
-    };
 
     const editButton = Icon ? (
         <button
@@ -198,6 +202,8 @@ function FieldToolbarComponent(
             )}
             data-tooltip={"Edit"}
             onClick={(e) => {
+                // TODO the listener for field path is attached to the common parent requiring
+                // propagation to be stopped, should ideally only attach onClick to fieldpath dropdown
                 e.preventDefault();
                 e.stopPropagation();
                 handleEdit(fieldMetadata);
@@ -308,16 +314,12 @@ function FieldToolbarComponent(
         </button>
     );
 
-
-
-
-
-
+    // TODO sibling count is incorrect for this purpose
     const totalElementCount = targetElement?.parentNode?.childElementCount ?? 1;
     const indexOfElement = fieldMetadata?.multipleFieldMetadata?.index;
 
-    const disableMoveLeft = indexOfElement === 0;
-    const disableMoveRight = indexOfElement === totalElementCount - 1;
+    const disableMoveLeft = indexOfElement === 0; // first element
+    const disableMoveRight = indexOfElement === totalElementCount - 1; // last element
 
     useEffect(() => {
         async function fetchFieldSchema() {
@@ -351,25 +353,6 @@ function FieldToolbarComponent(
         };
     }, []);
 
-    useEffect(() => {
-        const event = visualBuilderPostMessage?.on(
-            VisualBuilderPostMessageEvents.FIELD_LOCATION_DATA, 
-            (data: { data: any }) => {
-                console.log('fieldLocationData received:', data.data);
-                setFieldLocationData(data.data.fieldLocationData || data.data);
-            }
-        );
-        return () => {
-            event?.unregister();
-        };
-    }, [fieldMetadata]);
-
-    // Debug logging
-    useEffect(() => {
-        console.log('fieldLocationData state:', fieldLocationData);
-        console.log('apps from fieldLocationData:', fieldLocationData?.apps);
-    }, [fieldLocationData, fieldMetadata]);
-
     const multipleFieldToolbarButtonClasses = classNames(
         "visual-builder__button visual-builder__button--secondary",
         visualBuilderStyles()["visual-builder__button"],
@@ -381,9 +364,6 @@ function FieldToolbarComponent(
                 invertTooltipPosition,
         }
     );
-
-    
-  
 
     return (
         <div
@@ -534,78 +514,9 @@ function FieldToolbarComponent(
                                 ) : null}
                             </>
                         )}
-
-                        <div>
-                            {fieldLocationData?.apps &&
-                                fieldLocationData.apps.length > 0 && (
-                                    <div
-                                        className={classNames(
-                                            visualBuilderStyles()[
-                                                "visual-builder__field-location-icons-container"
-                                            ]
-                                        )}
-                                    >
-                                        <button
-                                            key={`${fieldLocationData.apps[0].uid}`}
-                                            title={
-                                                fieldLocationData.apps[0].title
-                                            }
-                                            className={
-                                                multipleFieldToolbarButtonClasses
-                                            }
-                                            data-tooltip={
-                                                fieldLocationData.apps[0].title
-                                            }
-                                            onClick={(e) => {
-                                                e.preventDefault();
-                                                e.stopPropagation();
-                                                // Handle app icon click
-                                                console.log(
-                                                    "App clicked:",
-                                                    fieldLocationData.apps[0]
-                                                );
-                                            }}
-                                        >
-                                            {fieldLocationData.apps[0].icon ? (
-                                                <img
-                                                    src={
-                                                        fieldLocationData
-                                                            .apps[0].icon
-                                                    }
-                                                    alt={
-                                                        fieldLocationData
-                                                            .apps[0].title
-                                                    }
-                                                    style={{
-                                                        width: "16px",
-                                                        height: "16px",
-                                                        objectFit: "cover",
-                                                    }}
-                                                />
-                                            ) : (
-                                                <EmptyAppIcon />
-                                            )}
-                                        </button>
-
-                                        <button
-                                            ref={moreButtonRef}
-                                            className={
-                                                multipleFieldToolbarButtonClasses
-                                            }
-                                            data-tooltip={"More"}
-                                            onClick={handleMoreIconClick}
-                                        >
-                                            <MoreIcon />
-                                        </button>
-                                    </div>
-                                )}
-                        </div>
                     </>
                 </div>
             </div>
-            {displayAllApps && (
-                <FieldLocationAppList apps={fieldLocationData?.apps || []} />
-            )}
         </div>
     );
 }
