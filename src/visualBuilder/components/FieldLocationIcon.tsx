@@ -6,7 +6,6 @@ import React, { useRef } from "preact/compat";
 import { LoadingIcon } from "./icons/loading";
 import { VisualBuilderPostMessageEvents } from "../utils/types/postMessage.types";
 import visualBuilderPostMessage from "../utils/visualBuilderPostMessage";
-import { CslpData } from "../../utils/cslpdata";
 
 export const FieldLocationIcon = ({
     fieldLocationData,
@@ -14,14 +13,12 @@ export const FieldLocationIcon = ({
     handleMoreIconClick,
     moreButtonRef,
     toolbarRef,
-    domEditStack
 }: {
     fieldLocationData: any;
     multipleFieldToolbarButtonClasses: any;
     handleMoreIconClick: () => void;
     moreButtonRef: any;
     toolbarRef: any;
-    domEditStack:CslpData[]
 }) => {
 
 
@@ -35,7 +32,7 @@ export const FieldLocationIcon = ({
         visualBuilderPostMessage?.send(VisualBuilderPostMessageEvents.FIELD_LOCATION_SELECTED_APP, {
             app,
             position: toolbarRef.current?.getBoundingClientRect(),
-            DomEditStack:domEditStack
+            DomEditStack:fieldLocationData.DomEditStack
         });
     };
 
