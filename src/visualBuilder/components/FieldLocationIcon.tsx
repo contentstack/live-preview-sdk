@@ -32,7 +32,6 @@ export const FieldLocationIcon = ({
         visualBuilderPostMessage?.send(VisualBuilderPostMessageEvents.FIELD_LOCATION_SELECTED_APP, {
             app,
             position: toolbarRef.current?.getBoundingClientRect(),
-            DomEditStack:fieldLocationData.DomEditStack
         });
     };
 

@@ -145,8 +145,7 @@ describe("FieldLocationAppList", () => {
     });
 
     it("should send event when app is clicked", () => {
-        const mockSetDisplayAllApps = vi.fn();
-        render(<FieldLocationAppList apps={mockApps} position="right" toolbarRef={mockToolbarRef} domEditStack={[]} setDisplayAllApps={mockSetDisplayAllApps} displayAllApps={true} />);
+        render(<FieldLocationAppList apps={mockApps} position="right" toolbarRef={mockToolbarRef} />);
 
         const secondApp = screen.getByText("Second App");
         fireEvent.click(secondApp);
@@ -154,18 +153,7 @@ describe("FieldLocationAppList", () => {
         expect(visualBuilderPostMessage?.send).toHaveBeenCalledWith("field-location-selected-app", {
             app: mockApps[1],
             position: { top: 0, left: 0, right: 100, bottom: 50, width: 100, height: 50, x: 0, y: 0 },
-            DomEditStack: []
         });
-    });
-
-    it("should close the app list when an app is selected", () => {
-        const mockSetDisplayAllApps = vi.fn();
-        render(<FieldLocationAppList apps={mockApps} position="right" toolbarRef={mockToolbarRef} domEditStack={[]} setDisplayAllApps={mockSetDisplayAllApps} displayAllApps={true} />);
-
-        const secondApp = screen.getByText("Second App");
-        fireEvent.click(secondApp);
-
-        expect(mockSetDisplayAllApps).toHaveBeenCalledWith(false);
     });
 
   

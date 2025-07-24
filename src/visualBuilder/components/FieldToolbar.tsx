@@ -579,9 +579,6 @@ function FieldToolbarComponent(
                     toolbarRef={toolbarRef}
                     apps={fieldLocationData?.apps || ([] as any[])}
                     position={appListPosition}
-                    domEditStack={fieldLocationData.DomEditStack}
-                    setDisplayAllApps={setDisplayAllApps}
-                    displayAllApps={displayAllApps}
                 />
             )}
         </div>
