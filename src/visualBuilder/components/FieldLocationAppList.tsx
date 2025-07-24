@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "preact/compat";
+import React, { useState, useEffect, useRef } from "preact/compat";
 import { EmptyAppIcon } from "./icons/EmptyAppIcon";
 import { VisualBuilderPostMessageEvents } from "../utils/types/postMessage.types";
 import visualBuilderPostMessage from "../utils/visualBuilderPostMessage";
@@ -26,70 +26,44 @@ interface App {
     uid: string;
 }
 
+
 interface FieldLocationAppListProps {
     apps: App[];
     position: "left" | "right";
-    toolbarRef: React.RefObject<HTMLDivElement>;
 }
 
-const normalize = (text: string) =>
-    text
-        .toLowerCase()
-        .replace(/[^a-z0-9 ]/gi, "")
-        .trim();
-
-export const FieldLocationAppList = ({
-    apps,
-    position,
-    toolbarRef,
-}: FieldLocationAppListProps) => {
-    const remainingApps = apps.filter((app, index) => index !== 0);
+export const FieldLocationAppList = ({ apps, position }: FieldLocationAppListProps) => {
     const [search, setSearch] = useState("");
+    const [filteredApps, setFilteredApps] = useState(apps);
+    const appRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
 
-    const filteredApps = useMemo(() => {
-        if (!search.trim()) return remainingApps;
-
-        const normalizedSearch = normalize(search);
-        return remainingApps.filter((app) => {
-            return (
-                normalize(app.title).includes(normalizedSearch) 
-            );
-        });
-    }, [search, remainingApps]);
+    useEffect(() => {
+        const filtered = apps.filter(app =>
+            app.title.toLowerCase().includes(search.toLowerCase())
+        );
+        setFilteredApps(filtered);
+    }, [search, apps]);
 
     const handleAppClick = (app: App) => {
-        visualBuilderPostMessage?.send(
-            VisualBuilderPostMessageEvents.FIELD_LOCATION_SELECTED_APP,
-            {
-                app: app,
-                position: toolbarRef.current?.getBoundingClientRect(),
-            }
-        );
-    };
+        const appElement = appRefs.current[app.uid];
+        const positionData = appElement?.getBoundingClientRect();
+        visualBuilderPostMessage?.send(VisualBuilderPostMessageEvents.FIELD_LOCATION_SELECTED_APP, {
+            app: app,
+            position: positionData,
+        });
+    }
 
     return (
         <div
             className={classNames(
-                visualBuilderStyles()[
-                    "visual-builder__field-location-app-list"
-                ],
+                visualBuilderStyles()["visual-builder__field-location-app-list"],
                 {
-                    [visualBuilderStyles()[
-                        "visual-builder__field-location-app-list--left"
-                    ]]: position === "left",
-                    [visualBuilderStyles()[
-                        "visual-builder__field-location-app-list--right"
-                    ]]: position === "right",
+                    [visualBuilderStyles()["visual-builder__field-location-app-list--left"]]: position === "left",
+                    [visualBuilderStyles()["visual-builder__field-location-app-list--right"]]: position === "right",
                 }
             )}
         >
-            <div
-                className={
-                    visualBuilderStyles()[
-                        "visual-builder__field-location-app-list__search-container"
-                    ]
-                }
-            >
+            <div className={visualBuilderStyles()["visual-builder__field-location-app-list__search-container"]}>
                 <svg
                     width="14"
                     height="14"
@@ -98,18 +72,18 @@ export const FieldLocationAppList = ({
                     xmlns="http://www.w3.org/2000/svg"
                     className={classNames(
                         "Search__search-icon Icon--mini",
-                        visualBuilderStyles()[
-                            "visual-builder__field-location-app-list__search-icon"
-                        ]
+                        visualBuilderStyles()["visual-builder__field-location-app-list__search-icon"]
                     )}
+                    name="Search"
+                    data-test-id="cs-icon"
                 >
                     <path
                         d="M12.438 12.438L9.624 9.624M6.25 10.75a4.5 4.5 0 100-9 4.5 4.5 0 000 9z"
                         stroke="#A9B6CB"
-                        strokeWidth="2"
-                        strokeMiterlimit="10"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
+                        stroke-width="2"
+                        stroke-miterlimit="10"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
                     ></path>
                 </svg>
                 <input
@@ -119,82 +93,42 @@ export const FieldLocationAppList = ({
                         setSearch((e.target as HTMLInputElement).value)
                     }
                     placeholder="Search for Apps"
-                    className={
-                        visualBuilderStyles()[
-                            "visual-builder__field-location-app-list__search-input"
-                        ]
-                    }
+                    className={visualBuilderStyles()["visual-builder__field-location-app-list__search-input"]}
                 />
             </div>
-
-            <div
-                className={
-                    visualBuilderStyles()[
-                        "visual-builder__field-location-app-list__content"
-                    ]
-                }
-            >
+            <div className={visualBuilderStyles()["visual-builder__field-location-app-list__content"]}>
                 {filteredApps.length === 0 && (
-                    <div
-                        className={
-                            visualBuilderStyles()[
-                                "visual-builder__field-location-app-list__no-results"
-                            ]
-                        }
-                    >
-                        <span
-                            className={
-                                visualBuilderStyles()[
-                                    "visual-builder__field-location-app-list__no-results-text"
-                                ]
-                            }
-                        >
+                    <div className={visualBuilderStyles()["visual-builder__field-location-app-list__no-results"]}>
+                        <span className={visualBuilderStyles()["visual-builder__field-location-app-list__no-results-text"]}>
                             No matching results found!
                         </span>
                     </div>
                 )}
-                {filteredApps.map((app) => (
-                    <div
-                        key={app.uid}
-                        className={
-                            visualBuilderStyles()[
-                                "visual-builder__field-location-app-list__item"
-                            ]
-                        }
-                        onClick={() => handleAppClick(app)}
-                    >
+                {filteredApps
+                    .filter((_, index) => index !== 0)
+                    .map((app) => (
                         <div
-                            className={
-                                visualBuilderStyles()[
-                                    "visual-builder__field-location-app-list__item-icon-container"
-                                ]
-                            }
+                            key={app.uid}
+                            ref={(el) => (appRefs.current[app.uid] = el)}
+                            className={visualBuilderStyles()["visual-builder__field-location-app-list__item"]}
+                            onClick={() => handleAppClick(app)}
                         >
-                            {app.icon ? (
-                                <img
-                                    src={app.icon}
-                                    alt={app.title}
-                                    className={
-                                        visualBuilderStyles()[
-                                            "visual-builder__field-location-app-list__item-icon"
-                                        ]
-                                    }
-                                />
-                            ) : (
-                                <EmptyAppIcon id={app.app_installation_uid} />
-                            )}
+                            <div className={visualBuilderStyles()["visual-builder__field-location-app-list__item-icon-container"]}>
+                                {app.icon ? (
+                                    <img
+                                        src={app.icon}
+                                        alt={app.title}
+                                        className={visualBuilderStyles()["visual-builder__field-location-app-list__item-icon"]}
+                                    />
+                                ) : (
+                                    <EmptyAppIcon id={app.app_installation_uid} />
+                                )}
+                            </div>
+                            <span className={visualBuilderStyles()["visual-builder__field-location-app-list__item-title"]}>
+                                {app.title}
+                            </span>
                         </div>
-                        <span
-                            className={
-                                visualBuilderStyles()[
-                                    "visual-builder__field-location-app-list__item-title"
-                                ]
-                            }
-                        >
-                            {app.title}
-                        </span>
-                    </div>
-                ))}
+                    ))}
             </div>
         </div>
     );

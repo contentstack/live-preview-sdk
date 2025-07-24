@@ -12,28 +12,37 @@ export const FieldLocationIcon = ({
     multipleFieldToolbarButtonClasses,
     handleMoreIconClick,
     moreButtonRef,
+    isLoading,
     toolbarRef,
 }: {
     fieldLocationData: any;
     multipleFieldToolbarButtonClasses: any;
     handleMoreIconClick: () => void;
     moreButtonRef: any;
+    isLoading: boolean;
     toolbarRef: any;
 }) => {
+    // if (isLoading) {
+    //     return (
+    //         <div
+    //             className={classNames(
+    //                 visualBuilderStyles()[
+    //                     "visual-builder__field-location-icons-container"
+    //                 ]
+    //             )}
+    //         >
+    //             <button className={multipleFieldToolbarButtonClasses}>
+    //                 <LoadingIcon />
+    //             </button>
+    //         </div>
+    //     );
+    // }
 
-
+    const currentAppRef = useRef<HTMLButtonElement>(null);
 
     if (!fieldLocationData?.apps || fieldLocationData.apps.length === 0) {
         return null;
     }
-
-    const handleAppClick = (app: any) => {
-        if(!toolbarRef.current) return
-        visualBuilderPostMessage?.send(VisualBuilderPostMessageEvents.FIELD_LOCATION_SELECTED_APP, {
-            app,
-            position: toolbarRef.current?.getBoundingClientRect(),
-        });
-    };
 
     return (
         <div
@@ -52,12 +61,16 @@ export const FieldLocationIcon = ({
                 title={fieldLocationData.apps[0].title}
                 className={multipleFieldToolbarButtonClasses}
                 data-tooltip={fieldLocationData.apps[0].title}
+                ref={currentAppRef}
                 onClick={(e) => {
-                   e.preventDefault();
-                   e.stopPropagation();
-                   handleAppClick(fieldLocationData.apps[0]);
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const positionData = currentAppRef.current?.getBoundingClientRect();
+                    visualBuilderPostMessage?.send(VisualBuilderPostMessageEvents.FIELD_LOCATION_SELECTED_APP, {
+                        app: fieldLocationData.apps[0],
+                        position: positionData,
+                    });
                 }}
-                data-testid="field-location-icon"
             >
                 {fieldLocationData.apps[0].icon ? (
                     <img

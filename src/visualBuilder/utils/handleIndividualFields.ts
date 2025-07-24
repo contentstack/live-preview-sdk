@@ -10,12 +10,13 @@ import {
     handleAddButtonsForMultiple,
     removeAddInstanceButtons,
 } from "./multipleElementAddButton";
+import { VisualBuilderPostMessageEvents } from "./types/postMessage.types";
+import visualBuilderPostMessage from "./visualBuilderPostMessage";
 import { isFieldMultiple } from "./isFieldMultiple";
 import { handleInlineEditableField } from "./handleInlineEditableField";
 import { VisualBuilderEditContext } from "./types/index.types";
 import { pasteAsPlainText } from "./pasteAsPlainText";
 import { getEntryPermissionsCached } from "./getEntryPermissionsCached";
-import { removeFieldToolbar } from "../generators/generateToolbar";
 
 /**
  * It handles all the fields based on their data type and its "multiple" property.
@@ -159,6 +160,17 @@ export function cleanIndividualFieldResidual(elements: {
     }
 
     if (focusedToolbar) {
-        removeFieldToolbar(focusedToolbar);
+        focusedToolbar.innerHTML = "";
+        const toolbarEvents = [
+            VisualBuilderPostMessageEvents.DELETE_INSTANCE,
+            VisualBuilderPostMessageEvents.UPDATE_DISCUSSION_ID,
+        ];
+        toolbarEvents.forEach((event) => {
+            //@ts-expect-error - We are accessing private method here, but it is necessary to clean up the event listeners.
+            if (visualBuilderPostMessage?.requestMessageHandlers?.has(event)) {
+                //@ts-expect-error - We are accessing private method here, but it is necessary to clean up the event listeners.
+                visualBuilderPostMessage?.unregisterEvent?.(event);
+            }
+        });
     }
 }
