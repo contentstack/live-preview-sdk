@@ -5,7 +5,6 @@ import LightLivePreviewHoC from "./light-sdk";
 
 export type IStackSdk = ExternalStackSdkType;
 
-
 const ContentstackLivePreview =
     typeof process !== "undefined" &&
     (process?.env?.PURGE_PREVIEW_SDK === "true" ||
