@@ -1,8 +1,27 @@
 # Changelog
 
+## [v3.3.0](https://github.com/contentstack/live-preview-sdk/compare/v3.2.5...v3.3.0)
+
+> 24 July 2025
+
+### Fixes
+
+- Fix: HoverToolbar to not render when focussed (Ayush Dubey - [#461](https://github.com/contentstack/live-preview-sdk/pull/461))
+
+### General Changes
+
+- Release 24 July to stage_v3 (Sairaj - [#473](https://github.com/contentstack/live-preview-sdk/pull/473))
+- HoverToolbar: Requested Changes (Ayush Dubey - [#464](https://github.com/contentstack/live-preview-sdk/pull/464))
+- [Feature] HoverToolbar (Ayush Dubey - [#455](https://github.com/contentstack/live-preview-sdk/pull/455))
+
 ## [v3.2.5](https://github.com/contentstack/live-preview-sdk/compare/v3.2.4...v3.2.5)
 
-> 9 July 2025
+> 10 July 2025
+
+### New Features
+
+- feat: v3.2.5 lp sdk (Karan Gandhi - [#454](https://github.com/contentstack/live-preview-sdk/pull/454))
+- feat: v3.2.5 (Karan Gandhi - [#452](https://github.com/contentstack/live-preview-sdk/pull/452))
 
 ### Fixes
 
@@ -24,9 +43,11 @@
 - fix: psuedo-editable height collapse (Faraaz Biyabani - [f28d629](https://github.com/contentstack/live-preview-sdk/commit/f28d629d362d5820b8583f748b42bd98d464c180))
 - fix: changed DOM events (csAyushDubey - [8e433b4](https://github.com/contentstack/live-preview-sdk/commit/8e433b41328acefd969ba157d25cf6f6ad5cc351))
 - fix: test fix (csAyushDubey - [af6acf5](https://github.com/contentstack/live-preview-sdk/commit/af6acf5eba9236ba3fb13bb32da8fdade9063d51))
+- fix: talisman update (Karan Gandhi - [cf73f0b](https://github.com/contentstack/live-preview-sdk/commit/cf73f0b267e3c42e2fce13579ca014d5edae1a57))
 
 ### Chores And Housekeeping
 
+- chore: changelog update (Karan Gandhi - [f3a512e](https://github.com/contentstack/live-preview-sdk/commit/f3a512e3b72c9a956b2d1580af34d6c4c7e94ecc))
 - chore: update README.md to reference ContentstackLivePreview version 3.2.5 (hiteshshetty-dev - [e063d6e](https://github.com/contentstack/live-preview-sdk/commit/e063d6ef8fd95faaef612981f4586b4db66f9e4d))
 
 ## [v3.2.4](https://github.com/contentstack/live-preview-sdk/compare/v3.2.3...v3.2.4)

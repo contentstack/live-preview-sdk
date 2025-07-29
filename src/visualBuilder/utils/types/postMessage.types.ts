@@ -52,5 +52,4 @@ export enum VisualBuilderPostMessageEvents {
     COLLAB_THREADS_REMOVE = "collab-threads-remove",
     COLLAB_THREAD_REOPEN = "collab-thread-reopen",
     COLLAB_THREAD_HIGHLIGHT = "collab-thread-highlight",
-    TOGGLE_SCROLL = "toggle-scroll",
 }
