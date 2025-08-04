@@ -163,7 +163,7 @@ function FieldToolbarComponent(
         disableFieldActions = isDisabled;
 
         fieldType = getFieldType(fieldSchema);
-        isModalEditable = ALLOWED_MODAL_EDITABLE_FIELD.includes(fieldType);
+     
 
         Icon = fieldIcons[fieldType];
 
@@ -184,6 +184,8 @@ function FieldToolbarComponent(
             (fieldMetadata.fieldPathWithIndex ===
                 fieldMetadata.instance.fieldPathWithIndex ||
                 fieldMetadata.multipleFieldMetadata?.index === -1);
+
+        isModalEditable = ALLOWED_MODAL_EDITABLE_FIELD.includes(fieldType) && !isWholeMultipleField;
 
         isReplaceAllowed =
             ALLOWED_REPLACE_FIELDS.includes(fieldType) && !isWholeMultipleField;
