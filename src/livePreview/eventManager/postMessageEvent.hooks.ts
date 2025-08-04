@@ -51,7 +51,6 @@ export function useOnEntryUpdatePostMessageEvent(): void {
             try {
                 const { ssr, onChange } = Config.get();
                 const event_type = event.data._metadata?.event_type;
-                console.log("on change event", event.data);
                 setConfigFromParams({
                     live_preview: event.data.hash,
                 });
@@ -75,15 +74,12 @@ export function useOnEntryUpdatePostMessageEvent(): void {
                 if(event_type === OnChangeLivePreviewPostMessageEventTypes.HASH_CHANGE){
                     const newUrl = new URL(window.location.href);
                     newUrl.searchParams.set("live_preview", event.data.hash);
-                    console.log("on change event newUrl", newUrl.toString());
                     window.history.pushState({}, "", newUrl.toString());
                 }
 
                 // This section will run when the URL of the page changes
-                if(event_type === OnChangeLivePreviewPostMessageEventTypes.URL_CHANGE){
-                    if(event.data.url){
-                        window.location.href = event.data.url;
-                    }
+                if(event_type === OnChangeLivePreviewPostMessageEventTypes.URL_CHANGE && event.data.url){
+                    window.location.href = event.data.url;
                 }
             } catch (error) {
                 PublicLogger.error("Error handling live preview update:", error);
