@@ -1,6 +1,6 @@
 import Config, { setConfigFromParams } from "../../configManager/configManager";
 import { ILivePreviewWindowType } from "../../types/types";
-import { addParamsToUrl } from "../../utils";
+import { addParamsToUrl, isOpeningInTimeline } from "../../utils";
 import livePreviewPostMessage from "./livePreviewEventManager";
 import { LIVE_PREVIEW_POST_MESSAGE_EVENTS } from "./livePreviewEventManager.constant";
 import {
@@ -95,7 +95,7 @@ export function sendInitializeLivePreviewPostMessageEvent(): void {
                 //     "init message did not contain contentTypeUid or entryUid."
                 // );
             }
-            if (Config.get().ssr) {
+            if (Config.get().ssr || isOpeningInTimeline()) {
                 addParamsToUrl();
             }
             Config.set("windowType", windowType);
