@@ -1,4 +1,5 @@
 import Config, { setConfigFromParams } from "../../configManager/configManager";
+import { PublicLogger } from "../../logger/logger";
 import { ILivePreviewWindowType } from "../../types/types";
 import { addParamsToUrl } from "../../utils";
 import livePreviewPostMessage from "./livePreviewEventManager";
@@ -7,7 +8,7 @@ import {
     HistoryLivePreviewPostMessageEventData,
     LivePreviewInitEventResponse,
     OnChangeLivePreviewPostMessageEventData,
-    OnReloadLivePreviewPostMessageEventData,
+    OnChangeLivePreviewPostMessageEventTypes,
 } from "./types/livePreviewPostMessageEvent.type";
 
 /**
@@ -47,26 +48,42 @@ export function useOnEntryUpdatePostMessageEvent(): void {
     livePreviewPostMessage?.on<OnChangeLivePreviewPostMessageEventData>(
         LIVE_PREVIEW_POST_MESSAGE_EVENTS.ON_CHANGE,
         (event) => {
-            setConfigFromParams({
-                live_preview: event.data.hash,
-            });
-            const { ssr, onChange } = Config.get();
-            if (!ssr) {
-                onChange();
-            }
-        }
-    );
-}
+            try {
+                const { ssr, onChange } = Config.get();
+                const event_type = event.data._metadata?.event_type;
+                setConfigFromParams({
+                    live_preview: event.data.hash,
+                });
 
-export function useOnReloadPostMessageEvent(): void {
-    livePreviewPostMessage?.on<OnReloadLivePreviewPostMessageEventData>(
-        LIVE_PREVIEW_POST_MESSAGE_EVENTS.ON_RELOAD,
-        (event) => {
-            setConfigFromParams({
-                live_preview: event.data.hash,
-            });
-            if (window) {
-                window.location?.reload();
+                // This section will run when there is a change in the entry and the website is CSR
+                if (!ssr && !event_type) {
+                    onChange();
+                } 
+
+                if(!window) {
+                    PublicLogger.error("window is not defined");
+                    return;
+                };
+                
+                // This section will run when there is a change in the entry and the website is SSR
+                if(ssr && !event_type) {
+                    window.location.reload();
+                }
+
+                // This section will run when the hash changes and the website is SSR or CSR
+                if(event_type === OnChangeLivePreviewPostMessageEventTypes.HASH_CHANGE){
+                    const newUrl = new URL(window.location.href);
+                    newUrl.searchParams.set("live_preview", event.data.hash);
+                    window.history.pushState({}, "", newUrl.toString());
+                }
+
+                // This section will run when the URL of the page changes
+                if(event_type === OnChangeLivePreviewPostMessageEventTypes.URL_CHANGE && event.data.url){
+                    window.location.href = event.data.url;
+                }
+            } catch (error) {
+                PublicLogger.error("Error handling live preview update:", error);
+                return;
             }
         }
     );
@@ -124,7 +141,6 @@ export function sendInitializeLivePreviewPostMessageEvent(): void {
 
             useHistoryPostMessageEvent();
             useOnEntryUpdatePostMessageEvent();
-            useOnReloadPostMessageEvent();
         })
         .catch((e) => {
             // TODO: add debug logs that runs conditionally

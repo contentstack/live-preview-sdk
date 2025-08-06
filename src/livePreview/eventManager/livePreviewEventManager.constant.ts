@@ -5,7 +5,6 @@ export const LIVE_PREVIEW_POST_MESSAGE_EVENTS = {
     CHECK_ENTRY_PAGE: "check-entry-page",
     URL_CHANGE: "url-change",
     VARIANT_PATCH: "variant-patch-update",
-    ON_RELOAD: "cslp-reload"
 } as const;
 
 export const LIVE_PREVIEW_CHANNEL_ID = "live-preview";

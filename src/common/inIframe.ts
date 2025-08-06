@@ -5,3 +5,11 @@ export function inIframe(): boolean {
         return true;
     }
 }
+
+export function inNewTab(): boolean {
+    try {
+        return !!window.opener;
+    } catch (e) {
+        return false;
+    }
+}
