@@ -1,8 +1,12 @@
+import { getCommunicationTarget } from "../common";
+
 export const handlePageTraversal = () => {
     window.addEventListener("unload", () => {
         const targetURL = (document.activeElement as HTMLAnchorElement).href;
-        if (targetURL) {
-            window.parent.postMessage(
+        const target = getCommunicationTarget();
+        
+        if (targetURL && target) {
+            target.postMessage(
                 {
                     from: "live-preview",
                     type: "url-change",

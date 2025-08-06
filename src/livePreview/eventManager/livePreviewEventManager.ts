@@ -1,20 +1,19 @@
 import { EventManager } from "@contentstack/advanced-post-message";
+import { getCommunicationTarget } from "../../common";
 import { LIVE_PREVIEW_CHANNEL_ID } from "./livePreviewEventManager.constant";
 
 let livePreviewPostMessage: EventManager | undefined;
 
 if (typeof window !== "undefined") {
-    let eventOptions = {
-        target: window.parent,
-        debug: false,
-        suppressErrors: true
-    };
-
-    if (window.opener) {
-        eventOptions.target = window.opener;
+    const target = getCommunicationTarget();
+    
+    if (target) {
+        livePreviewPostMessage = new EventManager(LIVE_PREVIEW_CHANNEL_ID, {
+            target,
+            debug: false,
+            suppressErrors: true
+        });
     }
-
-    livePreviewPostMessage = new EventManager(LIVE_PREVIEW_CHANNEL_ID, eventOptions);
 }
 
 export default livePreviewPostMessage;
