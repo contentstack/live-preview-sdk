@@ -7,16 +7,23 @@ export { addLivePreviewQueryTags };
 export function addParamsToUrl() {
     // Setting the query params to all the click events related to current domain
     window.addEventListener("click", (event: any) => {
-        const target: any = event.target;
-        const targetHref: string | any = target.href;
+        const clickedElement = event.target;
+        const anchorElement = clickedElement.closest('a');
+        
+        // Only proceed if the clicked element is either an anchor or a direct/indirect child of an anchor
+        if (!anchorElement || !anchorElement.contains(clickedElement)) {
+            return;
+        }
+
+        const targetHref: string | any = anchorElement.href;
         const docOrigin: string = document.location.origin;
         if (
             targetHref &&
             targetHref.includes(docOrigin) &&
             !targetHref.includes("live_preview")
         ) {
-            const newUrl = addLivePreviewQueryTags(target.href);
-            event.target.href = newUrl || target.href;
+            const newUrl = addLivePreviewQueryTags(targetHref);
+            anchorElement.href = newUrl || targetHref;
         }
     });
 }
