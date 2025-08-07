@@ -114,6 +114,18 @@ describe("When an element is clicked in visual builder mode", () => {
                             "all_fields.bltapikey.en-us.single_line":
                                 "Single Line",
                         });
+                    } else if (
+                        eventName ===
+                        VisualBuilderPostMessageEvents.GET_WORKFLOW_STAGE_DETAILS
+                    ) {
+                        return Promise.resolve({
+                            stage: { name: "Example Stage" },
+                            permissions: {
+                                entry: {
+                                    update: true,
+                                },
+                            },
+                        });
                     }
                     return Promise.resolve({});
                 }
@@ -216,6 +228,18 @@ describe("When an element is clicked in visual builder mode", () => {
                         };
                         return Promise.resolve({
                             fieldData: values[args.entryPath],
+                        });
+                    } else if (
+                        eventName ===
+                        VisualBuilderPostMessageEvents.GET_WORKFLOW_STAGE_DETAILS
+                    ) {
+                        return Promise.resolve({
+                            stage: { name: "Example Stage" },
+                            permissions: {
+                                entry: {
+                                    update: true,
+                                },
+                            },
                         });
                     }
                     return Promise.resolve({});
