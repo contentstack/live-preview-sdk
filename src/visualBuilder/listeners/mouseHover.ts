@@ -13,14 +13,11 @@ import { visualBuilderStyles } from "../visualBuilder.style";
 import { VB_EmptyBlockParentClass } from "../..";
 import Config from "../../configManager/configManager";
 import { isCollabThread } from "../generators/generateThread";
-import { getEntryPermissionsCached } from "../utils/getEntryPermissionsCached";
-import { EntryPermissions } from "../utils/getEntryPermissions";
-import visualBuilderPostMessage from "../utils/visualBuilderPostMessage";
-import { VisualBuilderPostMessageEvents } from "../utils/types/postMessage.types";
 import { HandleBuilderInteractionParams } from "./mouseClick";
-import { appendFieldPathDropdown, removeFieldToolbar } from "../generators/generateToolbar";
+import { appendFieldPathDropdown } from "../generators/generateToolbar";
 import { VisualBuilderCslpEventDetails } from "../types/visualBuilder.types";
 import { CslpData } from "../../cslp/types/cslp.types";
+import { fetchEntryPermissionsAndStageDetails } from "../utils/fetchEntryPermissionsAndStageDetails";
 
 const config = Config.get();
 export interface HandleMouseHoverParams
@@ -71,46 +68,43 @@ function handleCursorPosition(
     }
 }
 
-function addOutline(params?: AddOutlineParams): void {
-    if(!params) {
+async function addOutline(params?: AddOutlineParams): Promise<void> {
+    if (!params) {
         return;
     }
-    const { editableElement, eventDetails, content_type_uid, fieldPath, fieldMetadata, fieldDisabled } = params;
+    const {
+        editableElement,
+        eventDetails,
+        content_type_uid,
+        fieldPath,
+        fieldMetadata,
+        fieldDisabled,
+    } = params;
     if (!editableElement) return;
     addHoverOutline(editableElement as HTMLElement, fieldDisabled);
-    FieldSchemaMap.getFieldSchema(content_type_uid, fieldPath).then(
-        (fieldSchema) => {
-            let entryAcl: EntryPermissions | undefined;
-            if (!fieldSchema) return;
-            getEntryPermissionsCached({
-                entryUid: fieldMetadata.entry_uid,
-                contentTypeUid: fieldMetadata.content_type_uid,
-                locale: fieldMetadata.locale,
-            })
-            .then((data) => {
-                entryAcl = data;
-            })
-            .catch((error) => {
-                console.error(
-                    "[Visual Builder] Error retrieving entry permissions:",
-                    error
-                );
-            })
-            .finally(() => {
-                const { isDisabled: fieldDisabled } =
-                    isFieldDisabled(
-                        fieldSchema,
-                        eventDetails,
-                        entryAcl
-                    );
-                addHoverOutline(editableElement, fieldDisabled);
-            });
-        }
+    const fieldSchema = await FieldSchemaMap.getFieldSchema(
+        content_type_uid,
+        fieldPath
     );
+    if (!fieldSchema) return;
+    const { acl: entryAcl, workflowStage: entryWorkflowStageDetails } =
+        await fetchEntryPermissionsAndStageDetails({
+            entryUid: fieldMetadata.entry_uid,
+            contentTypeUid: fieldMetadata.content_type_uid,
+            locale: fieldMetadata.locale,
+            variantUid: fieldMetadata.variant,
+        });
+    const { isDisabled } = isFieldDisabled(
+        fieldSchema,
+        eventDetails,
+        entryAcl,
+        entryWorkflowStageDetails
+    );
+    addHoverOutline(editableElement, fieldDisabled || isDisabled);
 }
 
 const debouncedAddOutline = debounce(addOutline, 50, { trailing: true });
-const showOutline = (params?: AddOutlineParams): void => debouncedAddOutline(params);
+const showOutline = (params?: AddOutlineParams): Promise<void> | undefined => debouncedAddOutline(params);
 
 function hideDefaultCursor(): void {
     if (
@@ -223,7 +217,7 @@ const throttledMouseHover = throttle(async (params: HandleMouseHoverParams) => {
             hideCustomCursor(params.customCursor);
             return;
         }
-        if(
+        if (
             eventTarget &&
             (isFieldPathDropdown(eventTarget) || isFieldPathParent(eventTarget))
         ) {
@@ -291,10 +285,7 @@ const throttledMouseHover = throttle(async (params: HandleMouseHoverParams) => {
             handleCursorPosition(params.event, params.customCursor);
             showCustomCursor(params.customCursor);
             return;
-        } else if (
-            config?.collab.enable &&
-            !config?.collab.isFeedbackMode
-        ) {
+        } else if (config?.collab.enable && !config?.collab.isFeedbackMode) {
             hideCustomCursor(params.customCursor);
             return;
         }
@@ -318,48 +309,11 @@ const throttledMouseHover = throttle(async (params: HandleMouseHoverParams) => {
             });
         }
 
-        /**
-         * We called it seperately inside the code block to ensure that
-         * the code will not wait for the promise to resolve.
-         * If we get a cache miss, we will send a message to the iframe
-         * without blocking the code.
-         */
-        FieldSchemaMap.getFieldSchema(content_type_uid, fieldPath).then(
-            (fieldSchema) => {
-                if (!fieldSchema) return;
-
-                let entryAcl: EntryPermissions | undefined;
-                getEntryPermissionsCached({
-                    entryUid: fieldMetadata.entry_uid,
-                    contentTypeUid: fieldMetadata.content_type_uid,
-                    locale: fieldMetadata.locale,
-                })
-                    .then((data) => {
-                        entryAcl = data;
-                    })
-                    .catch((error) => {
-                        console.error(
-                            "[Visual Builder] Error retrieving entry permissions:",
-                            error
-                        );
-                    })
-                    .finally(() => {
-                        if (!params.customCursor) return;
-                        const { isDisabled: fieldDisabled } =
-                            isFieldDisabled(
-                                fieldSchema,
-                                eventDetails,
-                                entryAcl
-                            );
-                        const fieldType = getFieldType(fieldSchema);
-                        generateCustomCursor({
-                            fieldType,
-                            customCursor: params.customCursor,
-                            fieldDisabled,
-                        });
-                    });
-            }
-        );
+        // we can generate the cursor asynchronously
+        generateCursor({
+            eventDetails,
+            customCursor: params.customCursor,
+        });
 
         handleCursorPosition(params.event, params.customCursor);
         showCustomCursor(params.customCursor);
@@ -402,6 +356,45 @@ const throttledMouseHover = throttle(async (params: HandleMouseHoverParams) => {
         editableElement;
 }, 10);
 
-const handleMouseHover = async (params: HandleMouseHoverParams): Promise<void> => await throttledMouseHover(params);
+async function generateCursor({
+    eventDetails,
+    customCursor,
+}: {
+    eventDetails: VisualBuilderCslpEventDetails;
+    customCursor: HTMLDivElement | null;
+}) {
+    if (!customCursor) return;
+    const { fieldMetadata } = eventDetails;
+    const fieldSchema = await FieldSchemaMap.getFieldSchema(
+        fieldMetadata.content_type_uid,
+        fieldMetadata.fieldPath
+    );
+    if (!fieldSchema) {
+        return;
+    }
+    const { acl: entryAcl, workflowStage: entryWorkflowStageDetails } =
+        await fetchEntryPermissionsAndStageDetails({
+            entryUid: fieldMetadata.entry_uid,
+            contentTypeUid: fieldMetadata.content_type_uid,
+            locale: fieldMetadata.locale,
+            variantUid: fieldMetadata.variant,
+        });
+    const { isDisabled: fieldDisabled } = isFieldDisabled(
+        fieldSchema,
+        eventDetails,
+        entryAcl,
+        entryWorkflowStageDetails
+    );
+    const fieldType = getFieldType(fieldSchema);
+    generateCustomCursor({
+        fieldType,
+        customCursor,
+        fieldDisabled,
+    });
+}
+
+const handleMouseHover = async (
+    params: HandleMouseHoverParams
+): Promise<void> => await throttledMouseHover(params);
 
 export default handleMouseHover;

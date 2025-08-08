@@ -14,9 +14,9 @@ import { visualBuilderStyles } from "../visualBuilder.style";
 import { CslpError } from "./CslpError";
 import { hasPostMessageError } from "../utils/errorHandling";
 import { VisualBuilderPostMessageEvents } from "../utils/types/postMessage.types";
-import { getEntryPermissionsCached } from "../utils/getEntryPermissionsCached";
 import { ContentTypeIcon } from "./icons";
 import { ToolbarTooltip } from "./Tooltip";
+import { fetchEntryPermissionsAndStageDetails } from "../utils/fetchEntryPermissionsAndStageDetails";
 
 interface ReferenceParentMap {
     [entryUid: string]: {
@@ -55,7 +55,6 @@ async function getReferenceParentMap() {
         console.warn("[getFieldLabelWrapper] Error getting reference parent map", e);
         return {};
     }
-    
 }
 
 interface FieldLabelWrapperProps {
@@ -157,15 +156,18 @@ function FieldLabelWrapperComponent(
                 return;
             }
 
-            const entryPermissions = await getEntryPermissionsCached({
-                entryUid: props.fieldMetadata.entry_uid,
-                contentTypeUid: props.fieldMetadata.content_type_uid,
-                locale: props.fieldMetadata.locale,
-            });
+            const { acl: entryAcl, workflowStage: entryWorkflowStageDetails } =
+                await fetchEntryPermissionsAndStageDetails({
+                    entryUid: props.fieldMetadata.entry_uid,
+                    contentTypeUid: props.fieldMetadata.content_type_uid,
+                    locale: props.fieldMetadata.locale,
+                    variantUid: props.fieldMetadata.variant,
+                });
             const { isDisabled: fieldDisabled, reason } = isFieldDisabled(
                 fieldSchema,
                 eventDetails,
-                entryPermissions
+                entryAcl,
+                entryWorkflowStageDetails
             );
 
             const currentFieldDisplayName =

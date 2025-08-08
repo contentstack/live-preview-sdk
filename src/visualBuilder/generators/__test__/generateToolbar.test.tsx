@@ -1,9 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { appendFocusedToolbar, appendFieldToolbar, appendFieldPathDropdown } from "../generateToolbar";
+import {
+    appendFieldToolbar,
+    appendFieldPathDropdown,
+} from "../generateToolbar";
 import { VisualBuilderCslpEventDetails } from "../../types/visualBuilder.types";
 import { render } from "preact";
-import FieldToolbarComponent from "../../components/FieldToolbar";
-import FieldLabelWrapperComponent from "../../components/fieldLabelWrapper";
 import { LIVE_PREVIEW_OUTLINE_WIDTH_IN_PX } from "../../utils/constants";
 import React from "preact/compat";
 
@@ -19,6 +20,28 @@ vi.mock("../../components/FieldToolbar", () => ({
 
 vi.mock("../../components/fieldLabelWrapper", () => ({
     default: vi.fn().mockImplementation(() => <div>Test</div>),
+}));
+
+vi.mock("../../utils/fetchEntryPermissionsAndStageDetails", () => ({
+    fetchEntryPermissionsAndStageDetails: async () => ({
+        acl: {
+            update: {
+                create: true,
+                read: true,
+                update: true,
+                delete: true,
+                publish: true,
+            },
+        },
+        workflowStage: {
+            stage: undefined,
+            permissions: {
+                entry: {
+                    update: true,
+                },
+            },
+        },
+    }),
 }));
 
 describe("generateToolbar", () => {

@@ -4,7 +4,6 @@ import getChildrenDirection from "../utils/getChildrenDirection";
 import {
     ALLOWED_MODAL_EDITABLE_FIELD,
     ALLOWED_REPLACE_FIELDS,
-    DEFAULT_MULTIPLE_FIELDS,
 } from "../utils/constants";
 import { getFieldType } from "../utils/getFieldType";
 import {
@@ -20,7 +19,6 @@ import {
     MoveLeftIcon,
     MoveRightIcon,
     ReplaceAssetIcon,
-    MoreIcon,
 } from "./icons";
 import { fieldIcons } from "./icons/fields";
 import classNames from "classnames";
@@ -42,10 +40,9 @@ import {
 } from "./FieldRevert/FieldRevertComponent";
 import { LoadingIcon } from "./icons/loading";
 import { EntryPermissions } from "../utils/getEntryPermissions";
-import { EmptyAppIcon } from "./icons/EmptyAppIcon";
 import { FieldLocationAppList } from "./FieldLocationAppList";
 import { FieldLocationIcon } from "./FieldLocationIcon";
-
+import { WorkflowStageDetails } from "../utils/getWorkflowStageDetails";
 
 export type FieldDetails = Pick<
     VisualBuilderCslpEventDetails,
@@ -58,7 +55,8 @@ interface MultipleFieldToolbarProps {
     eventDetails: VisualBuilderCslpEventDetails;
     hideOverlay: () => void;
     isVariant?: boolean;
-    entryPermissions?: EntryPermissions;
+    entryPermissions?: EntryPermissions | undefined;
+    entryWorkflowStageDetails?: WorkflowStageDetails | undefined;
 }
 
 function handleReplaceAsset(fieldMetadata: CslpData) {
@@ -118,6 +116,7 @@ function FieldToolbarComponent(
         eventDetails,
         isVariant: isVariantOrParentOfVariant,
         entryPermissions,
+        entryWorkflowStageDetails,
     } = props;
     const { fieldMetadata, editableElement: targetElement } = eventDetails;
     const [isFormLoading, setIsFormLoading] = useState(false);
@@ -158,12 +157,12 @@ function FieldToolbarComponent(
                 editableElement: targetElement,
                 fieldMetadata,
             },
-            entryPermissions
+            entryPermissions,
+            entryWorkflowStageDetails
         );
         disableFieldActions = isDisabled;
 
         fieldType = getFieldType(fieldSchema);
-     
 
         Icon = fieldIcons[fieldType];
 
@@ -393,8 +392,6 @@ function FieldToolbarComponent(
             event?.unregister();
         };
     }, []);
-
-
 
     useEffect(() => {
         const fetchFieldLocationData = async () => {

@@ -6,7 +6,6 @@ import { singleLineFieldSchema } from "../../../__test__/data/fields";
 import { asyncRender } from "../../../__test__/utils";
 import { isFieldDisabled } from "../../utils/isFieldDisabled";
 import { FieldSchemaMap } from "../../utils/fieldSchemaMap";
-import { getEntryPermissionsCached } from "../../utils/getEntryPermissionsCached";
 import visualBuilderPostMessage from "../../utils/visualBuilderPostMessage";
 import React from "preact/compat";
 
@@ -81,21 +80,33 @@ vi.mock("../../utils/isFieldDisabled", () => ({
 
 vi.mock("../../../cslp", () => ({
     extractDetailsFromCslp: vi.fn().mockImplementation((path) => {
-        return { 
-            content_type_uid: "mockContentTypeUid", 
+        return {
+            content_type_uid: "mockContentTypeUid",
             fieldPath: path,
-            cslpValue: path 
+            cslpValue: path,
         };
     }),
 }));
 
-vi.mock("../../utils/getEntryPermissionsCached", () => ({
-    getEntryPermissionsCached: vi.fn().mockResolvedValue({
-        create: true,
-        read: true,
-        update: true,
-        delete: true,
-        publish: true,
+vi.mock("../../utils/fetchEntryPermissionsAndStageDetails", () => ({
+    fetchEntryPermissionsAndStageDetails: async () => ({
+        acl: {
+            update: {
+                create: true,
+                read: true,
+                update: true,
+                delete: true,
+                publish: true,
+            },
+        },
+        workflowStage: {
+            stage: undefined,
+            permissions: {
+                entry: {
+                    update: true,
+                },
+            },
+        },
     }),
 }));
 
@@ -132,7 +143,6 @@ describe("FieldLabelWrapperComponent", () => {
     beforeEach(() => {
         vi.mocked(isFieldDisabled).mockReturnValue({
             isDisabled: false,
-            // @ts-expect-error - reason is an unexported literal
             reason: "",
         });
 
@@ -237,7 +247,6 @@ describe("FieldLabelWrapperComponent", () => {
     test("renders with correct class when field is disabled", async () => {
         vi.mocked(isFieldDisabled).mockReturnValue({
             isDisabled: true,
-            // @ts-expect-error - reason is an unexported literal
             reason: "You have only read access to this field",
         });
         const { findByTestId } = await asyncRender(
@@ -262,19 +271,9 @@ describe("FieldLabelWrapperComponent", () => {
 
     test("calls isFieldDisabled with correct arguments", async () => {
         const mockFieldSchema = { ...singleLineFieldSchema };
-        const mockEntryPermissions = {
-            create: true,
-            read: true,
-            update: false,
-            delete: true,
-            publish: true,
-        };
 
         vi.mocked(FieldSchemaMap.getFieldSchema).mockResolvedValue(
             mockFieldSchema
-        );
-        vi.mocked(getEntryPermissionsCached).mockResolvedValue(
-            mockEntryPermissions
         );
 
         await asyncRender(
@@ -298,7 +297,23 @@ describe("FieldLabelWrapperComponent", () => {
         expect(isFieldDisabled).toHaveBeenCalledWith(
             mockFieldSchema,
             mockEventDetails,
-            mockEntryPermissions
+            {
+                update: {
+                    create: true,
+                    read: true,
+                    update: true,
+                    delete: true,
+                    publish: true,
+                },
+            },
+            {
+                stage: undefined,
+                permissions: {
+                    entry: {
+                        update: true,
+                    },
+                },
+            }
         );
     });
 
@@ -350,7 +365,6 @@ describe("FieldLabelWrapperComponent", () => {
         const fieldLabelWrapper = await findByTestId("visual-builder__focused-toolbar__field-label-wrapper");
         expect(fieldLabelWrapper).toHaveAttribute("data-hovered-cslp", mockFieldMetadata.cslpValue);
     });
-
 
     test("does not render ContentTypeIcon when loading", async () => {
         // Mock the display names to never resolve to simulate loading state

@@ -9,7 +9,7 @@ import { handleAddButtonsForMultiple, removeAddInstanceButtons } from "../multip
 import { VisualBuilderPostMessageEvents } from "../types/postMessage.types";
 import visualBuilderPostMessage from "../visualBuilderPostMessage";
 import { VisualBuilder } from "../..";
-import { act, screen } from "@testing-library/preact";
+import { act } from "@testing-library/preact";
 import { VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY } from "../constants";
 import { FieldDataType } from "../types/index.types";
 
@@ -31,6 +31,7 @@ describe("handleIndividualFields", () => {
 
     beforeEach(() => {
         eventDetails = {
+            // @ts-expect-error mocking only required properties
             fieldMetadata: {
                 content_type_uid: "contentTypeUid",
                 entry_uid: "entryUid",
@@ -79,6 +80,16 @@ describe("handleIndividualFields", () => {
             update: true,
             delete: true,
             publish: true,
+          },
+          {
+            permissions: {
+                entry: {
+                    update: true,
+                },
+            },
+            stage: {
+                name: "Unknown"
+            }
           }
         );
         expect(eventDetails.editableElement.getAttribute(VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY)).toBe(fieldType);
