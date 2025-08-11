@@ -51,7 +51,7 @@ const getDisableReason = (
         flags.updateRestrictDueToWorkflowStagePermission
     ) {
         return DisableReason.EntryUpdateRestrictedRoleAndWorkflowStage({
-            stageName: params?.stageName ?? "Unknown",
+            stageName: params?.stageName ? params.stageName : "Unknown",
         });
     }
     if (flags.updateRestrictDueToEntryUpdateRestriction) {
@@ -59,7 +59,7 @@ const getDisableReason = (
     }
     if (flags.updateRestrictDueToWorkflowStagePermission) {
         return DisableReason.WorkflowStagePermission({
-            stageName: params?.stageName ?? "Unknown",
+            stageName: params?.stageName ? params.stageName : "Unknown",
         });
     }
     return DisableReason.None;
