@@ -11,6 +11,8 @@ import { VisualBuilderPostMessageEvents } from "../../../utils/types/postMessage
 import { VisualBuilder } from "../../../index";
 import { triggerAndWaitForClickAction } from "../../../../__test__/utils";
 
+const EXAMPLE_STAGE_NAME = "Example Stage";
+
 const VALUES = {
     number: "10.5",
 };
@@ -117,7 +119,7 @@ describe("When an element is clicked in visual builder mode", () => {
                         VisualBuilderPostMessageEvents.GET_WORKFLOW_STAGE_DETAILS
                     ) {
                         return Promise.resolve({
-                            stage: { name: "Example Stage" },
+                            stage: { name: EXAMPLE_STAGE_NAME },
                             permissions: {
                                 entry: {
                                     update: true,
@@ -213,7 +215,7 @@ describe("When an element is clicked in visual builder mode", () => {
                         VisualBuilderPostMessageEvents.GET_WORKFLOW_STAGE_DETAILS
                     ) {
                         return Promise.resolve({
-                            stage: { name: "Example Stage" },
+                            stage: { name: EXAMPLE_STAGE_NAME },
                             permissions: {
                                 entry: {
                                     update: true,

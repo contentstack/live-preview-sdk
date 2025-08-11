@@ -10,7 +10,8 @@ import { Mock, vi } from "vitest";
 import { VisualBuilderPostMessageEvents } from "../../../utils/types/postMessage.types";
 import { VisualBuilder } from "../../../index";
 import { triggerAndWaitForClickAction } from "../../../../__test__/utils";
-import { act } from "preact/test-utils";
+
+const EXAMPLE_STAGE_NAME = "Example Stage";
 
 const VALUES = {
     singleLine: "Single line",
@@ -99,35 +100,28 @@ describe("When an element is clicked in visual builder mode", () => {
         beforeAll(async () => {
             (visualBuilderPostMessage?.send as Mock).mockImplementation(
                 (eventName: string) => {
-                    if (
-                        eventName ===
-                        VisualBuilderPostMessageEvents.GET_FIELD_DATA
-                    ) {
-                        return Promise.resolve({
-                            fieldData: VALUES.singleLine,
-                        });
-                    } else if (
-                        eventName ===
-                        VisualBuilderPostMessageEvents.GET_FIELD_DISPLAY_NAMES
-                    ) {
-                        return Promise.resolve({
-                            "all_fields.bltapikey.en-us.single_line":
-                                "Single Line",
-                        });
-                    } else if (
-                        eventName ===
-                        VisualBuilderPostMessageEvents.GET_WORKFLOW_STAGE_DETAILS
-                    ) {
-                        return Promise.resolve({
-                            stage: { name: "Example Stage" },
-                            permissions: {
-                                entry: {
-                                    update: true,
+                    switch (eventName) {
+                        case VisualBuilderPostMessageEvents.GET_FIELD_DATA:
+                            return Promise.resolve({
+                                fieldData: VALUES.singleLine,
+                            });
+                        case VisualBuilderPostMessageEvents.GET_FIELD_DISPLAY_NAMES:
+                            return Promise.resolve({
+                                "all_fields.bltapikey.en-us.single_line":
+                                    "Single Line",
+                            });
+                        case VisualBuilderPostMessageEvents.GET_WORKFLOW_STAGE_DETAILS:
+                            return Promise.resolve({
+                                stage: { name: EXAMPLE_STAGE_NAME },
+                                permissions: {
+                                    entry: {
+                                        update: true,
+                                    },
                                 },
-                            },
-                        });
+                            });
+                        default:
+                            return Promise.resolve({});
                     }
-                    return Promise.resolve({});
                 }
             );
 
@@ -217,32 +211,32 @@ describe("When an element is clicked in visual builder mode", () => {
         beforeAll(async () => {
             (visualBuilderPostMessage?.send as Mock).mockImplementation(
                 (eventName: string, args) => {
-                    if (
-                        eventName ===
-                        VisualBuilderPostMessageEvents.GET_FIELD_DATA
-                    ) {
-                        const values: Record<string, any> = {
-                            single_line_textbox_multiple_: ["Hello", "world"],
-                            "single_line_textbox_multiple_.0": "Hello",
-                            "single_line_textbox_multiple_.1": "world",
-                        };
-                        return Promise.resolve({
-                            fieldData: values[args.entryPath],
-                        });
-                    } else if (
-                        eventName ===
-                        VisualBuilderPostMessageEvents.GET_WORKFLOW_STAGE_DETAILS
-                    ) {
-                        return Promise.resolve({
-                            stage: { name: "Example Stage" },
-                            permissions: {
-                                entry: {
-                                    update: true,
+                    switch (eventName) {
+                        case VisualBuilderPostMessageEvents.GET_FIELD_DATA: {
+                            const values: Record<string, any> = {
+                                single_line_textbox_multiple_: [
+                                    "Hello",
+                                    "world",
+                                ],
+                                "single_line_textbox_multiple_.0": "Hello",
+                                "single_line_textbox_multiple_.1": "world",
+                            };
+                            return Promise.resolve({
+                                fieldData: values[args.entryPath],
+                            });
+                        }
+                        case VisualBuilderPostMessageEvents.GET_WORKFLOW_STAGE_DETAILS:
+                            return Promise.resolve({
+                                stage: { name: EXAMPLE_STAGE_NAME },
+                                permissions: {
+                                    entry: {
+                                        update: true,
+                                    },
                                 },
-                            },
-                        });
+                            });
+                        default:
+                            return Promise.resolve({});
                     }
-                    return Promise.resolve({});
                 }
             );
 
