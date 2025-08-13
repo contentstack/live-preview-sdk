@@ -6,7 +6,6 @@ import {
     hideFocusOverlay,
 } from "../generators/generateOverlay";
 import { hideHoverOutline } from "../listeners/mouseHover";
-import { getEntryPermissionsCached } from "./getEntryPermissionsCached";
 import {
     LIVE_PREVIEW_OUTLINE_WIDTH_IN_PX,
     RIGHT_EDGE_BUFFER,
@@ -17,6 +16,7 @@ import { FieldSchemaMap } from "./fieldSchemaMap";
 import getChildrenDirection from "./getChildrenDirection";
 import { getPsuedoEditableElementStyles } from "./getPsuedoEditableStylesElement";
 import { isFieldDisabled } from "./isFieldDisabled";
+import { fetchEntryPermissionsAndStageDetails } from "./fetchEntryPermissionsAndStageDetails";
 
 interface ToolbarPositionParams {
     focusedToolbar: HTMLElement | null;
@@ -146,15 +146,18 @@ export async function updateFocussedState({
         fieldMetadata.content_type_uid,
         fieldMetadata.fieldPath
     );
-    const entryAcl = await getEntryPermissionsCached({
-        entryUid: fieldMetadata.entry_uid,
-        contentTypeUid: fieldMetadata.content_type_uid,
-        locale: fieldMetadata.locale,
-    });
+    const { acl: entryAcl, workflowStage: entryWorkflowStageDetails } =
+        await fetchEntryPermissionsAndStageDetails({
+            entryUid: fieldMetadata.entry_uid,
+            contentTypeUid: fieldMetadata.content_type_uid,
+            locale: fieldMetadata.locale,
+            variantUid: fieldMetadata.variant,
+        });
     const { isDisabled } = isFieldDisabled(
         fieldSchema,
         { editableElement, fieldMetadata },
-        entryAcl
+        entryAcl,
+        entryWorkflowStageDetails
     );
     addFocusOverlay(previousSelectedEditableDOM, overlayWrapper, isDisabled);
 

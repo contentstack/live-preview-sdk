@@ -10,9 +10,9 @@ import {
 import FieldToolbarComponent from "../components/FieldToolbar";
 import { render } from "preact";
 import FieldLabelWrapperComponent from "../components/fieldLabelWrapper";
-import { getEntryPermissionsCached } from "../utils/getEntryPermissionsCached";
 import { VisualBuilderPostMessageEvents } from "../utils/types/postMessage.types";
 import visualBuilderPostMessage from "../utils/visualBuilderPostMessage";
+import { fetchEntryPermissionsAndStageDetails } from "../utils/fetchEntryPermissionsAndStageDetails";
 
 export function appendFocusedToolbar(
     eventDetails: VisualBuilderCslpEventDetails,
@@ -51,11 +51,13 @@ export async function appendFieldToolbar(
         ) && !isHover
     )
         return;
-    const entryPermissions = await getEntryPermissionsCached({
-        entryUid: eventDetails.fieldMetadata.entry_uid,
-        contentTypeUid: eventDetails.fieldMetadata.content_type_uid,
-        locale: eventDetails.fieldMetadata.locale,
-    });
+    const { acl: entryPermissions, workflowStage: entryWorkflowStageDetails } =
+        await fetchEntryPermissionsAndStageDetails({
+            entryUid: eventDetails.fieldMetadata.entry_uid,
+            contentTypeUid: eventDetails.fieldMetadata.content_type_uid,
+            locale: eventDetails.fieldMetadata.locale,
+            variantUid: eventDetails.fieldMetadata.variant,
+        });
     const wrapper = document.createDocumentFragment();
     render(
         <FieldToolbarComponent
@@ -63,6 +65,7 @@ export async function appendFieldToolbar(
             hideOverlay={hideOverlay}
             isVariant={isVariant}
             entryPermissions={entryPermissions}
+            entryWorkflowStageDetails={entryWorkflowStageDetails}
         />,
         wrapper
     );

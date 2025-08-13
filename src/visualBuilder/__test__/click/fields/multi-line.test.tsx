@@ -11,6 +11,8 @@ import { VisualBuilderPostMessageEvents } from "../../../utils/types/postMessage
 import { VisualBuilder } from "../../../index";
 import { triggerAndWaitForClickAction } from "../../../../__test__/utils";
 
+const EXAMPLE_STAGE_NAME = "Example Stage";
+
 vi.mock("../../../components/FieldToolbar", () => {
     return {
         default: () => {
@@ -94,23 +96,28 @@ describe("When an element is clicked in visual builder mode", () => {
         beforeAll(async () => {
             (visualBuilderPostMessage?.send as Mock).mockImplementation(
                 (eventName: string, args) => {
-                    if (
-                        eventName ===
-                        VisualBuilderPostMessageEvents.GET_FIELD_DATA
-                    ) {
-                        return Promise.resolve({
-                            fieldData: "Hello world",
-                        });
-                    } else if (
-                        eventName ===
-                        VisualBuilderPostMessageEvents.GET_FIELD_DISPLAY_NAMES
-                    ) {
-                        return Promise.resolve({
-                            "all_fields.bltapikey.en-us.single_line":
-                                "Single Line",
-                        });
+                    switch (eventName) {
+                        case VisualBuilderPostMessageEvents.GET_FIELD_DATA:
+                            return Promise.resolve({
+                                fieldData: "Hello world",
+                            });
+                        case VisualBuilderPostMessageEvents.GET_FIELD_DISPLAY_NAMES:
+                            return Promise.resolve({
+                                "all_fields.bltapikey.en-us.single_line":
+                                    "Single Line",
+                            });
+                        case VisualBuilderPostMessageEvents.GET_WORKFLOW_STAGE_DETAILS:
+                            return Promise.resolve({
+                                stage: { name: EXAMPLE_STAGE_NAME },
+                                permissions: {
+                                    entry: {
+                                        update: true,
+                                    },
+                                },
+                            });
+                        default:
+                            return Promise.resolve({});
                     }
-                    return Promise.resolve({});
                 }
             );
 
@@ -185,20 +192,33 @@ describe("When an element is clicked in visual builder mode", () => {
         beforeAll(async () => {
             (visualBuilderPostMessage?.send as Mock).mockImplementation(
                 (eventName: string, args) => {
-                    if (
-                        eventName ===
-                        VisualBuilderPostMessageEvents.GET_FIELD_DATA
-                    ) {
-                        const values: Record<string, any> = {
-                            multi_line_textbox_multiple_: ["Hello", "world"],
-                            "multi_line_textbox_multiple_.0": "Hello",
-                            "multi_line_textbox_multiple_.1": "world",
-                        };
-                        return Promise.resolve({
-                            fieldData: values[args.entryPath],
-                        });
+                    switch (eventName) {
+                        case VisualBuilderPostMessageEvents.GET_FIELD_DATA: {
+                            const values: Record<string, any> = {
+                                multi_line_textbox_multiple_: [
+                                    "Hello",
+                                    "world",
+                                ],
+                                "multi_line_textbox_multiple_.0": "Hello",
+                                "multi_line_textbox_multiple_.1": "world",
+                            };
+                            return Promise.resolve({
+                                fieldData: values[args.entryPath],
+                            });
+                        }
+                        case VisualBuilderPostMessageEvents.GET_WORKFLOW_STAGE_DETAILS: {
+                            return Promise.resolve({
+                                stage: { name: EXAMPLE_STAGE_NAME },
+                                permissions: {
+                                    entry: {
+                                        update: true,
+                                    },
+                                },
+                            });
+                        }
+                        default:
+                            return Promise.resolve({});
                     }
-                    return Promise.resolve({});
                 }
             );
 
