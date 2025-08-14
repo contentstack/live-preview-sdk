@@ -7,7 +7,6 @@ import { appendFieldPathDropdown } from "../generateToolbar";
 import visualBuilderPostMessage from "../../utils/visualBuilderPostMessage";
 import { VisualBuilderPostMessageEvents } from "../../utils/types/postMessage.types";
 import { singleLineFieldSchema } from "../../../__test__/data/fields";
-import { sleep } from "../../../__test__/utils";
 
 const MOCK_CSLP = "all_fields.bltapikey.en-us.single_line";
 
@@ -15,6 +14,28 @@ global.ResizeObserver = vi.fn().mockImplementation(() => ({
     observe: vi.fn(),
     unobserve: vi.fn(),
     disconnect: vi.fn(),
+}));
+
+vi.mock("../../utils/fetchEntryPermissionsAndStageDetails", () => ({
+    fetchEntryPermissionsAndStageDetails: async () => ({
+        acl: {
+            update: {
+                create: true,
+                read: true,
+                update: true,
+                delete: true,
+                publish: true,
+            },
+        },
+        workflowStage: {
+            stage: undefined,
+            permissions: {
+                entry: {
+                    update: true,
+                },
+            },
+        },
+    }),
 }));
 
 describe("appendFieldPathDropdown", () => {

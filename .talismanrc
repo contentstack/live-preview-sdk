@@ -5,7 +5,7 @@ fileignoreconfig:
     - filename: README.md
       checksum: 568289bbe7c088967493db246dbf29e465382648ac574c1b1236be57d5662a38
     - filename: CHANGELOG.md
-      checksum: ed794e2f5c5884f74af12e5f5bfbb117c08ba454104f929df3deb7627407317a
+      checksum: 8e2495db48ed58704b0883b052c5d44b9f1a96cff7556235f924d16a47442688
     - filename: src/visualBuilder/components/__test__/fieldToolbar.test.tsx
       checksum: 3badd6a142456b6a361569e6fc546349a38ac6b366bef7fd5255d1e93220444e
     - filename: src/visualBuilder/components/Collab/ThreadPopup/__test__/CommentTextArea.test.tsx

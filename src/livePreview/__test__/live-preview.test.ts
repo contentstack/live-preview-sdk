@@ -432,7 +432,7 @@ describe("incoming postMessage", () => {
 
 describe("testing window event listeners", () => {
     let addEventListenerMock: any;
-    let sendInitEvent = vi.fn().mockImplementation(mockLivePreviewInitEventListener);
+    const sendInitEvent = vi.fn().mockImplementation(mockLivePreviewInitEventListener);
     let livePreviewInstance: LivePreview;
 
     beforeEach(() => {
