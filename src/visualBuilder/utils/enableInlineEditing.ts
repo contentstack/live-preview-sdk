@@ -28,6 +28,8 @@ export function enableInlineEditing({
     VisualBuilder.VisualBuilderGlobalState.value.focusFieldValue =
         actualEditableField?.innerText;
 
+    VisualBuilder.VisualBuilderGlobalState.value.isEditing = true;
+
     const elementComputedDisplay =
         window.getComputedStyle(actualEditableField).display;
 

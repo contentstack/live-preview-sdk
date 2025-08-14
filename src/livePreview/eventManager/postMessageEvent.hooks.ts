@@ -1,6 +1,7 @@
 import Config, { setConfigFromParams } from "../../configManager/configManager";
 import { ILivePreviewWindowType } from "../../types/types";
 import { addParamsToUrl, isOpeningInTimeline } from "../../utils";
+import { VisualBuilder } from "../../visualBuilder";
 import livePreviewPostMessage from "./livePreviewEventManager";
 import { LIVE_PREVIEW_POST_MESSAGE_EVENTS } from "./livePreviewEventManager.constant";
 import {
@@ -27,6 +28,7 @@ export function useHistoryPostMessageEvent(): void {
                     break;
                 }
                 case "reload": {
+                    if(VisualBuilder.VisualBuilderGlobalState.value.isEditing) return;
                     window.history.go();
                     break;
                 }
@@ -46,6 +48,7 @@ export function useOnEntryUpdatePostMessageEvent(): void {
     livePreviewPostMessage?.on<OnChangeLivePreviewPostMessageEventData>(
         LIVE_PREVIEW_POST_MESSAGE_EVENTS.ON_CHANGE,
         (event) => {
+            if(VisualBuilder.VisualBuilderGlobalState.value.isEditing) return;
             setConfigFromParams({
                 live_preview: event.data.hash,
             });
