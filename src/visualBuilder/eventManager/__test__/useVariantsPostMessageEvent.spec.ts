@@ -58,7 +58,7 @@ vi.mock("../../../visualBuilder", () => {
 });
 
 // Create a more realistic mock of the CSS modules
-const cssClassMock = "go655717959"; // Match the actual generated class name
+const cssClassMock = "go109692693"; // Match the actual generated class name
 
 vi.mock("../../../visualBuilder.style", () => {
     return {
