@@ -1,3 +1,4 @@
+import { VisualBuilderPostMessageEvents } from "./types/postMessage.types";
 import visualBuilderPostMessage from "./visualBuilderPostMessage";
 
 export interface EntryPermissions {
@@ -20,7 +21,7 @@ export async function getEntryPermissions({
     try {
         const permissions =
             await visualBuilderPostMessage?.send<EntryPermissions>(
-                "get-permissions",
+                VisualBuilderPostMessageEvents.GET_PERMISSIONS,
                 {
                     type: "entry",
                     entryUid,
