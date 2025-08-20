@@ -23,7 +23,7 @@ const DisableReason = {
     }: {
         stageName: string;
     }) =>
-        `You do not have permission to edit this entry as per the role(s) assigned to you and the workflow stage rules for the '${stageName}' stage.`,
+        `Editing is restricted for your role or by the rules for the '${stageName}' stage. Contact your admin for edit access.`,
 } as const;
 
 interface FieldDisableState {
