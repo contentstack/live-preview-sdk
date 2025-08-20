@@ -1,7 +1,6 @@
 import { EventManager } from "@contentstack/advanced-post-message";
 import { LIVE_PREVIEW_CHANNEL_ID } from "./livePreviewEventManager.constant";
 import { isOpeningInNewTab } from "../../common/inIframe";
-import { Z } from "vitest/dist/chunks/reporters.D7Jzd9GS.js";
 
 let livePreviewPostMessage: EventManager | undefined;
 
