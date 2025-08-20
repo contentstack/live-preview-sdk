@@ -16,6 +16,7 @@ import {
     useOnEntryUpdatePostMessageEvent,
     useHistoryPostMessageEvent,
 } from "../postMessageEvent.hooks";
+import { isOpeningInNewTab } from "../../../common/inIframe";
 
 // Mock dependencies
 vi.mock("../../../configManager/configManager", () => ({
@@ -35,6 +36,10 @@ vi.mock("../livePreviewEventManager", () => ({
     default: {
         on: vi.fn(),
     },
+}));
+
+vi.mock("../../../common/inIframe", () => ({
+    isOpeningInNewTab: vi.fn(),
 }));
 
 describe("postMessageEvent.hooks", () => {
@@ -59,6 +64,12 @@ describe("postMessageEvent.hooks", () => {
                 go: vi.fn(),
             },
         };
+
+        // Make location.href writable
+        Object.defineProperty(mockWindow.location, 'href', {
+            writable: true,
+            value: "https://example.com"
+        });
         
         // Mock onChange function
         mockOnChange = vi.fn();
@@ -83,6 +94,9 @@ describe("postMessageEvent.hooks", () => {
                 mockWindow._eventCallbacks[event] = callback;
             }
         );
+
+        // Mock isOpeningInNewTab to return true by default
+        (isOpeningInNewTab as any).mockReturnValue(true);
     });
 
     afterEach(() => {
@@ -146,6 +160,9 @@ describe("postMessageEvent.hooks", () => {
             });
 
             it("should reload window when ssr is true and no event_type", () => {
+                // Set URL to include live_preview parameter so reload path is taken
+                mockWindow.location.href = "https://example.com?live_preview=old-hash";
+
                 const eventData: OnChangeLivePreviewPostMessageEventData = {
                     hash: "test-hash",
                 };
@@ -180,6 +197,12 @@ describe("postMessageEvent.hooks", () => {
         });
 
         describe("HASH_CHANGE event type", () => {
+            beforeEach(() => {
+                // Reset config for these tests to non-SSR
+                mockConfig.ssr = false;
+                (Config.get as any).mockReturnValue(mockConfig);
+            });
+
             it("should update URL with new hash in query params", () => {
                 const eventData: OnChangeLivePreviewPostMessageEventData = {
                     hash: "new-hash-value",
@@ -214,6 +237,9 @@ describe("postMessageEvent.hooks", () => {
                 const callback = mockWindow._eventCallbacks[LIVE_PREVIEW_POST_MESSAGE_EVENTS.ON_CHANGE];
                 callback({ data: eventData });
 
+                expect(setConfigFromParams).toHaveBeenCalledWith({
+                    live_preview: "updated-hash",
+                });
                 expect(mockWindow.history.pushState).toHaveBeenCalledWith(
                     {},
                     "",
@@ -223,6 +249,12 @@ describe("postMessageEvent.hooks", () => {
         });
 
         describe("URL_CHANGE event type", () => {
+            beforeEach(() => {
+                // Reset config for these tests to non-SSR
+                mockConfig.ssr = false;
+                (Config.get as any).mockReturnValue(mockConfig);
+            });
+
             it("should navigate to new URL when url is provided", () => {
                 const eventData: OnChangeLivePreviewPostMessageEventData = {
                     hash: "test-hash",
@@ -262,6 +294,9 @@ describe("postMessageEvent.hooks", () => {
 
         describe("Error handling", () => {
             it("should log error and return when window is not defined", () => {
+                // Mock isOpeningInNewTab to return true so we enter the if block
+                (isOpeningInNewTab as any).mockReturnValue(true);
+                
                 // Mock window as undefined
                 Object.defineProperty(global, "window", {
                     value: undefined,
@@ -276,6 +311,12 @@ describe("postMessageEvent.hooks", () => {
                 callback({ data: eventData });
 
                 expect(PublicLogger.error).toHaveBeenCalledWith("window is not defined");
+
+                // Restore window for other tests
+                Object.defineProperty(global, "window", {
+                    value: mockWindow,
+                    writable: true,
+                });
             });
 
             it("should handle errors in try-catch block", () => {

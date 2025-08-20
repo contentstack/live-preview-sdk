@@ -12,11 +12,11 @@ vi.mock("@contentstack/advanced-post-message", () => ({
 }));
 
 vi.mock("../../../common/inIframe", () => ({
-    inNewTab: vi.fn(),
+    isOpeningInNewTab: vi.fn(),
 }));
 
 // Import after mocking
-import { inNewTab } from "../../../common/inIframe";
+import { isOpeningInNewTab } from "../../../common/inIframe";
 
 describe("livePreviewEventManager", () => {
     let mockEventManager: any;
@@ -36,8 +36,8 @@ describe("livePreviewEventManager", () => {
         // Store original window
         originalWindow = global.window;
         
-        // Reset inNewTab mock
-        (inNewTab as any).mockReturnValue(false);
+        // Reset isOpeningInNewTab mock
+        (isOpeningInNewTab as any).mockReturnValue(false);
     });
 
     afterEach(() => {
@@ -83,7 +83,7 @@ describe("livePreviewEventManager", () => {
         });
 
         it("should initialize EventManager with window.parent as target when not in new tab", async () => {
-            (inNewTab as any).mockReturnValue(false);
+            (isOpeningInNewTab as any).mockReturnValue(false);
 
             // Re-import the module to trigger initialization
             const module = await import("../livePreviewEventManager");
@@ -97,7 +97,7 @@ describe("livePreviewEventManager", () => {
         });
 
         it("should initialize EventManager with window.opener as target when in new tab", async () => {
-            (inNewTab as any).mockReturnValue(true);
+            (isOpeningInNewTab as any).mockReturnValue(true);
 
             // Re-import the module to trigger initialization
             const module = await import("../livePreviewEventManager");
@@ -110,11 +110,11 @@ describe("livePreviewEventManager", () => {
             expect(module.default).toBe(mockEventManager);
         });
 
-        it("should call inNewTab to determine the target", async () => {
+        it("should call isOpeningInNewTab to determine the target", async () => {
             // Re-import the module to trigger initialization
             await import("../livePreviewEventManager");
 
-            expect(inNewTab).toHaveBeenCalled();
+            expect(isOpeningInNewTab).toHaveBeenCalled();
         });
 
         it("should use correct channel ID", async () => {
@@ -128,7 +128,7 @@ describe("livePreviewEventManager", () => {
         });
 
         it("should set correct default event options", async () => {
-            (inNewTab as any).mockReturnValue(false);
+            (isOpeningInNewTab as any).mockReturnValue(false);
 
             // Re-import the module to trigger initialization
             await import("../livePreviewEventManager");
@@ -143,8 +143,8 @@ describe("livePreviewEventManager", () => {
         });
 
         describe("target selection logic", () => {
-            it("should prioritize window.opener when inNewTab returns true", async () => {
-                (inNewTab as any).mockReturnValue(true);
+            it("should prioritize window.opener when isOpeningInNewTab returns true", async () => {
+                (isOpeningInNewTab as any).mockReturnValue(true);
 
                 // Re-import the module to trigger initialization
                 await import("../livePreviewEventManager");
@@ -154,8 +154,8 @@ describe("livePreviewEventManager", () => {
                 expect(callArgs[1].target).not.toBe(mockWindow.parent);
             });
 
-            it("should use window.parent when inNewTab returns false", async () => {
-                (inNewTab as any).mockReturnValue(false);
+            it("should use window.parent when isOpeningInNewTab returns false", async () => {
+                (isOpeningInNewTab as any).mockReturnValue(false);
 
                 // Re-import the module to trigger initialization
                 await import("../livePreviewEventManager");
@@ -165,22 +165,22 @@ describe("livePreviewEventManager", () => {
                 expect(callArgs[1].target).not.toBe(mockWindow.opener);
             });
 
-            it("should throw error when inNewTab throws an error", async () => {
-                (inNewTab as any).mockImplementation(() => {
-                    throw new Error("inNewTab error");
+            it("should throw error when isOpeningInNewTab throws an error", async () => {
+                (isOpeningInNewTab as any).mockImplementation(() => {
+                    throw new Error("isOpeningInNewTab error");
                 });
 
-                // Should throw because inNewTab error is not caught in the implementation
+                // Should throw because isOpeningInNewTab error is not caught in the implementation
                 await expect(async () => {
                     await import("../livePreviewEventManager");
-                }).rejects.toThrow("inNewTab error");
+                }).rejects.toThrow("isOpeningInNewTab error");
             });
         });
 
         describe("edge cases", () => {
             it("should handle missing window.parent gracefully", async () => {
                 mockWindow.parent = undefined;
-                (inNewTab as any).mockReturnValue(false);
+                (isOpeningInNewTab as any).mockReturnValue(false);
 
                 // Re-import the module to trigger initialization
                 const module = await import("../livePreviewEventManager");
@@ -195,7 +195,7 @@ describe("livePreviewEventManager", () => {
 
             it("should handle missing window.opener gracefully", async () => {
                 mockWindow.opener = undefined;
-                (inNewTab as any).mockReturnValue(true);
+                (isOpeningInNewTab as any).mockReturnValue(true);
 
                 // Re-import the module to trigger initialization
                 const module = await import("../livePreviewEventManager");

@@ -1,3 +1,5 @@
+import { hasWindow } from "../utils";
+
 export function inIframe(): boolean {
     try {
         return window.self !== window.top;
@@ -6,9 +8,12 @@ export function inIframe(): boolean {
     }
 }
 
-export function inNewTab(): boolean {
+export function isOpeningInNewTab(): boolean {
     try {
-        return !!window.opener;
+        if(hasWindow()) {
+            return !!window.opener;
+        }
+        return false;
     } catch (e) {
         return false;
     }

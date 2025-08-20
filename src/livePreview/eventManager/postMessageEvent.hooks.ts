@@ -1,3 +1,4 @@
+import { isOpeningInNewTab } from "../../common/inIframe";
 import Config, { setConfigFromParams } from "../../configManager/configManager";
 import { PublicLogger } from "../../logger/logger";
 import { ILivePreviewWindowType } from "../../types/types";
@@ -60,27 +61,39 @@ export function useOnEntryUpdatePostMessageEvent(): void {
                     onChange();
                 } 
 
-                if(!window) {
-                    PublicLogger.error("window is not defined");
-                    return;
-                };
+                if(isOpeningInNewTab()) {
+                    if(!window) {
+                        PublicLogger.error("window is not defined");
+                        return;
+                    };
+                    
+                    // This section will run when there is a change in the entry and the website is SSR
+                    if(ssr && !event_type) {
+                        if(window.location.href.includes("live_preview")) {
+                            window.location.reload();
+                        } else {
+                            const url = new URL(window.location.href);
+                            url.searchParams.set("live_preview", event.data.hash);
+                            url.searchParams.set("content_type_uid", Config.get().stackDetails.contentTypeUid || "");
+                            url.searchParams.set("entry_uid", Config.get().stackDetails.entryUid || "");
+                            window.location.href = url.toString();
+                        }
+                    }
+    
+                    // This section will run when the hash changes and the website is SSR or CSR
+                    if(event_type === OnChangeLivePreviewPostMessageEventTypes.HASH_CHANGE){
+                        const newUrl = new URL(window.location.href);
+                        newUrl.searchParams.set("live_preview", event.data.hash);
+                        window.history.pushState({}, "", newUrl.toString());
+                    }
+    
+                    // This section will run when the URL of the page changes
+                    if(event_type === OnChangeLivePreviewPostMessageEventTypes.URL_CHANGE && event.data.url){
+                        window.location.href = event.data.url;
+                    }
+                }
+
                 
-                // This section will run when there is a change in the entry and the website is SSR
-                if(ssr && !event_type) {
-                    window.location.reload();
-                }
-
-                // This section will run when the hash changes and the website is SSR or CSR
-                if(event_type === OnChangeLivePreviewPostMessageEventTypes.HASH_CHANGE){
-                    const newUrl = new URL(window.location.href);
-                    newUrl.searchParams.set("live_preview", event.data.hash);
-                    window.history.pushState({}, "", newUrl.toString());
-                }
-
-                // This section will run when the URL of the page changes
-                if(event_type === OnChangeLivePreviewPostMessageEventTypes.URL_CHANGE && event.data.url){
-                    window.location.href = event.data.url;
-                }
             } catch (error) {
                 PublicLogger.error("Error handling live preview update:", error);
                 return;
@@ -127,7 +140,7 @@ export function sendInitializeLivePreviewPostMessageEvent(): void {
                 //     "init message did not contain contentTypeUid or entryUid."
                 // );
             }
-            if (Config.get().ssr || isOpeningInTimeline()) {
+            if (Config.get().ssr || isOpeningInTimeline() || isOpeningInNewTab()) {
                 addParamsToUrl();
             }
             Config.set("windowType", windowType);

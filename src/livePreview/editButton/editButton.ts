@@ -1,5 +1,5 @@
 import { effect } from "@preact/signals";
-import { inIframe, inNewTab } from "../../common/inIframe";
+import { inIframe, isOpeningInNewTab } from "../../common/inIframe";
 import Config from "../../configManager/configManager";
 import { addCslpOutline, extractDetailsFromCslp } from "../../cslp";
 import { cslpTagStyles } from "./editButton.style";
@@ -448,7 +448,7 @@ export class LivePreviewEditButton {
                 fieldPathWithIndex,
             } = extractDetailsFromCslp(cslpTag);
 
-            if (inIframe() || inNewTab()) {
+            if (inIframe() || isOpeningInNewTab()) {
                 livePreviewPostMessage?.send("scroll", {
                     field: fieldPathWithIndex,
                     content_type_uid,
