@@ -26,6 +26,8 @@ export enum VisualBuilderPostMessageEvents {
     COLLAB_RESOLVE_THREAD = "collab-resolve-thread",
     COLLAB_DELETE_THREAD = "collab-delete-thread",
     COLLAB_MISSING_THREADS = "collab-missing-threads",
+    FIELD_LOCATION_DATA = "field-location-data",
+    FIELD_LOCATION_SELECTED_APP = "field-location-selected-app",
 
     // FROM visual builder
     GET_ALL_ENTRIES_IN_CURRENT_PAGE = "get-entries-in-current-page",
@@ -42,10 +44,13 @@ export enum VisualBuilderPostMessageEvents {
     GET_VARIANT_ID = "get-variant-id",
     GET_LOCALE = "get-locale",
     SEND_VARIANT_AND_LOCALE = "send-variant-and-locale",
+    GET_CONTENT_TYPE_NAME = "get-content-type-name",
+    REFERENCE_MAP = "get-reference-map",
     COLLAB_ENABLE = "collab-enable",
     COLLAB_DATA_UPDATE = "collab-data-update",
     COLLAB_DISABLE = "collab-disable",
     COLLAB_THREADS_REMOVE = "collab-threads-remove",
     COLLAB_THREAD_REOPEN = "collab-thread-reopen",
     COLLAB_THREAD_HIGHLIGHT = "collab-thread-highlight",
+    TOGGLE_SCROLL = "toggle-scroll",
 }
