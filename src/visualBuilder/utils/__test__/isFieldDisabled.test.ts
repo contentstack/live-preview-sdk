@@ -337,7 +337,7 @@ describe("isFieldDisabled", () => {
             );
             expect(result.isDisabled).toBe(true);
             expect(result.reason).toBe(
-                "You do not have permission to edit this entry as per the role(s) assigned to you and the workflow stage rules for the 'Final Review' stage."
+                "Editing is restricted for your role or by the rules for the 'Final Review' stage. Contact your admin for edit access."
             );
         });
 
@@ -454,7 +454,7 @@ describe("isFieldDisabled", () => {
             );
             expect(result.isDisabled).toBe(true);
             expect(result.reason).toBe(
-                "You do not have permission to edit this entry as per the role(s) assigned to you and the workflow stage rules for the 'Unknown' stage."
+                "Editing is restricted for your role or by the rules for the 'Unknown' stage. Contact your admin for edit access."
             );
         });
 
