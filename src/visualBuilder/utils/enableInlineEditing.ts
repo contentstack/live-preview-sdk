@@ -31,6 +31,7 @@ export function enableInlineEditing({
     const elementComputedDisplay =
         window.getComputedStyle(actualEditableField).display;
 
+    
     let textContent =
         (editableElement as HTMLElement).innerText ||
         editableElement.textContent ||
@@ -41,14 +42,17 @@ export function enableInlineEditing({
         actualEditableField.addEventListener("paste", pasteAsPlainText);
     }
     const expectedTextContent = expectedFieldData;
+    
+    const isFieldLastEdited = document.querySelector("[data-cs-last-edited]") === editableElement;
     if (
         (expectedTextContent && textContent !== expectedTextContent) ||
-        isEllipsisActive(editableElement as HTMLElement)
+        isEllipsisActive(editableElement as HTMLElement) ||
+        isFieldLastEdited
     ) {
         // TODO: Testing will be done in the E2E.
         const pseudoEditableField = generatePseudoEditableElement(
             { editableElement: editableElement as HTMLElement },
-            { textContent: expectedFieldData }
+            { textContent: expectedFieldData } 
         );
 
         (editableElement as HTMLElement).style.visibility = "hidden";
@@ -90,6 +94,9 @@ export function enableInlineEditing({
     actualEditableField.setAttribute("contenteditable", "true");
     actualEditableField.addEventListener("input", handleFieldInput);
     actualEditableField.addEventListener("keydown", handleFieldKeyDown);
+
+    editableElement.setAttribute("data-cs-last-edited", "true");
+
     // focus on the contenteditable element to start accepting input
     actualEditableField.focus();
 
