@@ -11,6 +11,8 @@ import { VisualBuilderPostMessageEvents } from "../../../utils/types/postMessage
 import { VisualBuilder } from "../../../index";
 import { triggerAndWaitForClickAction } from "../../../../__test__/utils";
 
+const EXAMPLE_STAGE_NAME = "Example Stage";
+
 const VALUES = {
     number: "10.5",
 };
@@ -112,6 +114,18 @@ describe("When an element is clicked in visual builder mode", () => {
                         return Promise.resolve({
                             "all_fields.bltapikey.en-us.number": "Number",
                         });
+                    } else if (
+                        eventName ===
+                        VisualBuilderPostMessageEvents.GET_WORKFLOW_STAGE_DETAILS
+                    ) {
+                        return Promise.resolve({
+                            stage: { name: EXAMPLE_STAGE_NAME },
+                            permissions: {
+                                entry: {
+                                    update: true,
+                                },
+                            },
+                        });
                     }
                     return Promise.resolve({});
                 }
@@ -195,6 +209,18 @@ describe("When an element is clicked in visual builder mode", () => {
                         };
                         return Promise.resolve({
                             fieldData: values[args.entryPath],
+                        });
+                    } else if (
+                        eventName ===
+                        VisualBuilderPostMessageEvents.GET_WORKFLOW_STAGE_DETAILS
+                    ) {
+                        return Promise.resolve({
+                            stage: { name: EXAMPLE_STAGE_NAME },
+                            permissions: {
+                                entry: {
+                                    update: true,
+                                },
+                            },
                         });
                     }
                     return Promise.resolve({});
