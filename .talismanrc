@@ -12,4 +12,6 @@ fileignoreconfig:
       checksum: d0ef271ee5381d9feab06bda6e7e89bd0a882fee87495627bd811c1f0a5459c7
     - filename: package-lock.json
       checksum: fd06363871d0ee16ebfb5d9d0cc479e0922a615bb76584b80bb6933ee6c3e237
+    - filename: CHANGELOG.md
+      checksum: 8522880c11ce1518b18b8760a0f5a9cdcdd2d330575f50ba6ab403b7f8f7e74f
 version: "1.0"
