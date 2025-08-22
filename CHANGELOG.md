@@ -1,8 +1,16 @@
 # Changelog
 
-## [v4.0.0](https://github.com/contentstack/live-preview-sdk/compare/v4.1.0...v4.0.0)
+## [v4.0.1](https://github.com/contentstack/live-preview-sdk/compare/v4.0.0...v4.0.1)
 
-> 20 August 2025
+> 22 August 2025
+
+### Fixes
+
+- fix(preview): add util function to allow operations in preview share (Zuhair Ahmed - [fb70cdf](https://github.com/contentstack/live-preview-sdk/commit/fb70cdf8f238a0f54bbf85cacd84a09688d54b9e))
+
+## [v4.0.0](https://github.com/contentstack/live-preview-sdk/compare/v3.4.0...v4.0.0)
+
+> 22 August 2025
 
 ### New Features
 
@@ -12,6 +20,7 @@
 
 ### General Changes
 
+- 21st august 2025 release  (Sahil Chalke - [#495](https://github.com/contentstack/live-preview-sdk/pull/495))
 - Live preview outside iframe (Mridul Sharma - [#492](https://github.com/contentstack/live-preview-sdk/pull/492))
 
 ### New Features
@@ -29,7 +38,9 @@
 ### Chores And Housekeeping
 
 - chore: replace ifs with switch (Faraaz Biyabani - [5e216ea](https://github.com/contentstack/live-preview-sdk/commit/5e216ea01311dceee09405e1265190267745afc0))
+- chore: updated the changelog.md (SahilCs15 - [fab45bf](https://github.com/contentstack/live-preview-sdk/commit/fab45bf178e31340ae72577a2f3038449970f3e1))
 - chore: updated version (Mridul Sharma - [ede97b9](https://github.com/contentstack/live-preview-sdk/commit/ede97b983727e69c5d44d8d9879d18592a47548a))
+- chore: updated the .talismanrc (SahilCs15 - [4686298](https://github.com/contentstack/live-preview-sdk/commit/4686298249bb51900fc2b703653be939a8ebc0a4))
 - chore: update tooltip message (Faraaz Biyabani - [c23798e](https://github.com/contentstack/live-preview-sdk/commit/c23798e0467c0a6318047ee2e4fdfeef4f74a5fd))
 - chore: remove sequential from unit tests (Faraaz Biyabani - [07f3c96](https://github.com/contentstack/live-preview-sdk/commit/07f3c964950db86a2537988d53ad1b78af3f1860))
 
