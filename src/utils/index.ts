@@ -44,3 +44,13 @@ export function isOpenInBuilder(): boolean {
     }
     return false;
 }
+
+
+export function isOpenInPreviewShare(): boolean {
+    if (hasWindow()) {
+        const urlParams = new URLSearchParams(window.location.search);
+        const previewShare = urlParams.get("preview_share");
+        return !!previewShare;
+    }
+    return false;
+}

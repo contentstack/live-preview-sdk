@@ -30,6 +30,7 @@ vi.mock("../../../../utils/index.ts", () => {
     return {
         __esModule: true,
         isOpenInBuilder: vi.fn().mockReturnValue(true),
+        isOpenInPreviewShare: vi.fn().mockReturnValue(false),
         isOpeningInTimeline: vi.fn().mockReturnValue(false),
         hasWindow: vi.fn().mockReturnValue(true),
         addLivePreviewQueryTags: vi.fn(),
