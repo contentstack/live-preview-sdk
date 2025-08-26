@@ -9,6 +9,7 @@ interface VariantFieldsEvent {
         variant_data: {
             variant: string;
             highlightVariantFields: boolean;
+            variantOrder: string[];
         };
     };
 }
@@ -34,9 +35,26 @@ interface LocaleEvent {
         locale: string;
     };
 }
+
+function isLowerOrderVariant(variant_uid: string, dataCslp: string, variantOrder: string[]): boolean {
+    const indexOfVariant = variantOrder.indexOf(variant_uid);
+    let indexOfDataCslp = -1;
+    for (let i = variantOrder.length-1; i >= 0; i--) {
+        if (dataCslp.includes(variantOrder[i])) {
+            indexOfDataCslp = i;
+            break;
+        }
+    }
+    if(indexOfDataCslp < 0) {
+        return false;
+    }
+    return indexOfDataCslp < indexOfVariant;
+}
+
 export function addVariantFieldClass(
     variant_uid: string,
-    highlightVariantFields: boolean
+    highlightVariantFields: boolean,
+    variantOrder: string[]
 ): void {
     const elements = document.querySelectorAll(`[data-cslp]`);
     elements.forEach((element) => {
@@ -51,7 +69,11 @@ export function addVariantFieldClass(
             element.classList.add("visual-builder__variant-field");
         } else if (!dataCslp.startsWith("v2:")) {
             element.classList.add("visual-builder__base-field");
-        } else {
+        } 
+        else if (isLowerOrderVariant(variant_uid, dataCslp, variantOrder)) {
+            element.classList.add("visual-builder__variant-field");
+        }
+        else {
             element.classList.add("visual-builder__disabled-variant-field");
         }
     });
@@ -125,7 +147,8 @@ export function useVariantFieldsPostMessageEvent(): void {
             removeVariantFieldClass();
             addVariantFieldClass(
                 event.data.variant_data.variant,
-                event.data.variant_data.highlightVariantFields
+                event.data.variant_data.highlightVariantFields,
+                event.data.variant_data.variantOrder
             );
         }
     );
