@@ -328,4 +328,69 @@ describe("`handleFieldInput`", () => {
             VisualBuilder.VisualBuilderGlobalState.value.focusFieldReceivedInput
         ).toBe(true);
     });
+
+    test("should manage data-cs-last-edited attribute when field receives input", () => {
+        const previousField = document.createElement("div");
+        previousField.setAttribute("data-cs-last-edited", "true");
+        document.body.appendChild(previousField);
+
+        const inputEvent = new InputEvent("input", {
+            bubbles: true,
+        });
+        h1.dispatchEvent(inputEvent);
+
+        expect(previousField.getAttribute("data-cs-last-edited")).toBeNull();
+        expect(h1.getAttribute("data-cs-last-edited")).toBe("true");
+
+        document.body.removeChild(previousField);
+    });
+
+    test("should not change data-cs-last-edited attribute when same field receives input", () => {
+        h1.setAttribute("data-cs-last-edited", "true");
+
+        const inputEvent = new InputEvent("input", {
+            bubbles: true,
+        });
+        h1.dispatchEvent(inputEvent);
+
+        expect(h1.getAttribute("data-cs-last-edited")).toBe("true");
+    });
+
+    test("should set data-cs-last-edited attribute on new field when no previous field exists", () => {
+        const inputEvent = new InputEvent("input", {
+            bubbles: true,
+        });
+        h1.dispatchEvent(inputEvent);
+
+        expect(h1.getAttribute("data-cs-last-edited")).toBe("true");
+    });
+
+    test("should transfer data-cs-last-edited attribute between multiple fields", () => {
+        const field1 = document.createElement("div");
+        const field2 = document.createElement("div");
+        field1.setAttribute(VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY, "number");
+        field2.setAttribute(VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY, "number");
+        field1.setAttribute("data-cs-last-edited", "true");
+
+        field1.addEventListener("input", handleFieldInput);
+        field2.addEventListener("input", handleFieldInput);
+
+        document.body.appendChild(field1);
+        document.body.appendChild(field2);
+
+        const inputEvent1 = new InputEvent("input", { bubbles: true });
+        field1.dispatchEvent(inputEvent1);
+
+        expect(field1.getAttribute("data-cs-last-edited")).toBe("true");
+        expect(field2.getAttribute("data-cs-last-edited")).toBeNull();
+
+        const inputEvent2 = new InputEvent("input", { bubbles: true });
+        field2.dispatchEvent(inputEvent2);
+
+        expect(field1.getAttribute("data-cs-last-edited")).toBeNull();
+        expect(field2.getAttribute("data-cs-last-edited")).toBe("true");
+
+        document.body.removeChild(field1);
+        document.body.removeChild(field2);
+    });
 });

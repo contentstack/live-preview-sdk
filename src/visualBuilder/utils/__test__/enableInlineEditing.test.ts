@@ -40,6 +40,7 @@ vi.mock("../../generators/generatePseudoEditableField", () => ({
     generatePseudoEditableElement: vi.fn(() => {
         const pseudoElement = document.createElement("div");
         pseudoElement.setAttribute("data-testid", "pseudo-element");
+        pseudoElement.className = "visual-builder__pseudo-editable-element";
         return pseudoElement;
     }),
     isEllipsisActive: vi.fn(() => false),
@@ -275,5 +276,117 @@ describe("enableInlineEditing", () => {
         expect(
             VisualBuilder.VisualBuilderGlobalState.value.focusFieldValue
         ).toBe("Test content");
+    });
+
+    it("should create pseudo element when field is last edited", () => {
+        document.body.appendChild(editableElement);
+        editableElement.setAttribute("data-cs-last-edited", "true");
+
+        enableInlineEditing({
+            expectedFieldData: "Test content",
+            editableElement,
+            fieldType: FieldDataType.SINGLELINE,
+            elements: {
+                visualBuilderContainer,
+                resizeObserver,
+                lastEditedField: null,
+            },
+        });
+
+        expect(generatePseudoEditableElement).toHaveBeenCalled();
+        expect(editableElement.style.visibility).toBe("hidden");
+        expect(resizeObserver.observe).toHaveBeenCalled();
+        
+        document.body.removeChild(editableElement);
+    });
+
+    it("should set data-cs-last-edited attribute on editable element", () => {
+        enableInlineEditing({
+            expectedFieldData: "Test content",
+            editableElement,
+            fieldType: FieldDataType.SINGLELINE,
+            elements: {
+                visualBuilderContainer,
+                resizeObserver,
+                lastEditedField: null,
+            },
+        });
+
+        expect(editableElement.getAttribute("data-cs-last-edited")).toBe("true");
+    });
+
+    it("should create pseudo element when field is last edited even with same content", () => {
+        document.body.appendChild(editableElement);
+        editableElement.setAttribute("data-cs-last-edited", "true");
+        editableElement.textContent = "Test content";
+        editableElement.innerText = "Test content";
+
+        enableInlineEditing({
+            expectedFieldData: "Test content",
+            editableElement,
+            fieldType: FieldDataType.SINGLELINE,
+            elements: {
+                visualBuilderContainer,
+                resizeObserver,
+                lastEditedField: null,
+            },
+        });
+
+        expect(generatePseudoEditableElement).toHaveBeenCalled();
+        expect(editableElement.style.visibility).toBe("hidden");
+        
+        document.body.removeChild(editableElement);
+    });
+
+    it("should not create pseudo element when field is not last edited and content matches", () => {
+        const otherElement = document.createElement("div");
+        otherElement.setAttribute("data-cs-last-edited", "true");
+        document.body.appendChild(otherElement);
+
+        editableElement.textContent = "Test content";
+        editableElement.innerText = "Test content";
+
+        enableInlineEditing({
+            expectedFieldData: "Test content",
+            editableElement,
+            fieldType: FieldDataType.SINGLELINE,
+            elements: {
+                visualBuilderContainer,
+                resizeObserver,
+                lastEditedField: null,
+            },
+        });
+
+        expect(generatePseudoEditableElement).not.toHaveBeenCalled();
+        expect(editableElement.style.visibility).toBe("");
+        expect(editableElement.getAttribute("data-cs-last-edited")).toBe("true");
+
+        document.body.removeChild(otherElement);
+    });
+
+    it("should not create nested pseudo elements when pseudo element is clicked", () => {
+        document.body.appendChild(editableElement);
+        editableElement.setAttribute("data-cs-last-edited", "true");
+
+        enableInlineEditing({
+            expectedFieldData: "Test content",
+            editableElement,
+            fieldType: FieldDataType.SINGLELINE,
+            elements: {
+                visualBuilderContainer,
+                resizeObserver,
+                lastEditedField: null,
+            },
+        });
+
+        expect(generatePseudoEditableElement).toHaveBeenCalled();
+        expect(editableElement.style.visibility).toBe("hidden");
+        
+        const pseudoElement = visualBuilderContainer.querySelector(".visual-builder__pseudo-editable-element");
+        expect(pseudoElement).toBeTruthy();
+        expect(pseudoElement?.getAttribute("data-cslp")).toBeNull();
+        expect(editableElement.getAttribute("data-cs-last-edited")).toBe("true");
+        
+        document.body.removeChild(editableElement);
     });
 });
