@@ -1,21 +1,77 @@
 # Changelog
 
-## [v3.4.0](https://github.com/contentstack/live-preview-sdk/compare/v3.3.0...v3.4.0)
+## [v4.0.1](https://github.com/contentstack/live-preview-sdk/compare/v4.0.0...v4.0.1)
 
-> 6 August 2025
+> 22 August 2025
 
 ### Fixes
 
-- fix: multiple reloads in timeline (Mridul Sharma - [#484](https://github.com/contentstack/live-preview-sdk/pull/484))
-- fix: removed edit icon when the click is on the container (#478) (Sahil Chalke - [#485](https://github.com/contentstack/live-preview-sdk/pull/485))
+- fix(preview): add util function to allow operations in preview share (Zuhair Ahmed - [fb70cdf](https://github.com/contentstack/live-preview-sdk/commit/fb70cdf8f238a0f54bbf85cacd84a09688d54b9e))
+
+## [v4.0.0](https://github.com/contentstack/live-preview-sdk/compare/v3.4.0...v4.0.0)
+
+> 22 August 2025
+
+### New Features
+
+- feat(VB-132 | VE-7062): disable editing when workflow stage rules restrict the same  (Faraaz Biyabani - [#494](https://github.com/contentstack/live-preview-sdk/pull/494))
+- feat: live preview: added outside iframe code (Mridul Sharma - [#477](https://github.com/contentstack/live-preview-sdk/pull/477))
+- feat: live preview: added outside iframe code (Mridul Sharma - [#468](https://github.com/contentstack/live-preview-sdk/pull/468))
+
+### General Changes
+
+- 21st august 2025 release  (Sahil Chalke - [#495](https://github.com/contentstack/live-preview-sdk/pull/495))
+- Live preview outside iframe (Mridul Sharma - [#492](https://github.com/contentstack/live-preview-sdk/pull/492))
+
+### New Features
+
+- feat: disable editing when workflow stage rules restrict the same (Faraaz Biyabani - [7aeeb63](https://github.com/contentstack/live-preview-sdk/commit/7aeeb6381300b19f2d459ae030275c89a9f4d21f))
+
+### Fixes
+
+- fix: resolve new tab bugs (Mridul Sharma - [b50c43e](https://github.com/contentstack/live-preview-sdk/commit/b50c43ed14ef31de86a67bc57e346aa25c5d9679))
+- fix: removed unused imports and increased the version (Mridul Sharma - [42ee5c1](https://github.com/contentstack/live-preview-sdk/commit/42ee5c1a2ef62af43ac82274e6f1809ee0be37c3))
+- fix:added offset (Karan Gandhi - [55adf72](https://github.com/contentstack/live-preview-sdk/commit/55adf7291d307134d31fe2b09168fd84622426d9))
+- fix: handle empty stage name correctly (Faraaz Biyabani - [472e2e6](https://github.com/contentstack/live-preview-sdk/commit/472e2e67687cf680b2276788e896d9c04f60a44f))
+- fix: test case fix (Karan Gandhi - [57eb755](https://github.com/contentstack/live-preview-sdk/commit/57eb7552c19fbf731cdd18ee387acd4aba5acac8))
+
+### Chores And Housekeeping
+
+- chore: replace ifs with switch (Faraaz Biyabani - [5e216ea](https://github.com/contentstack/live-preview-sdk/commit/5e216ea01311dceee09405e1265190267745afc0))
+- chore: updated the changelog.md (SahilCs15 - [fab45bf](https://github.com/contentstack/live-preview-sdk/commit/fab45bf178e31340ae72577a2f3038449970f3e1))
+- chore: updated version (Mridul Sharma - [ede97b9](https://github.com/contentstack/live-preview-sdk/commit/ede97b983727e69c5d44d8d9879d18592a47548a))
+- chore: updated the .talismanrc (SahilCs15 - [4686298](https://github.com/contentstack/live-preview-sdk/commit/4686298249bb51900fc2b703653be939a8ebc0a4))
+- chore: update tooltip message (Faraaz Biyabani - [c23798e](https://github.com/contentstack/live-preview-sdk/commit/c23798e0467c0a6318047ee2e4fdfeef4f74a5fd))
+- chore: remove sequential from unit tests (Faraaz Biyabani - [07f3c96](https://github.com/contentstack/live-preview-sdk/commit/07f3c964950db86a2537988d53ad1b78af3f1860))
+
+### Changes to Test Assests
+
+- test: added new test cases for livePreviewEventManager and postMessageEvent (Mridul Sharma - [dffe855](https://github.com/contentstack/live-preview-sdk/commit/dffe8551a7de5912db6b8caf9a4d0f12b5bb384f))
+- test: add cases for isFieldDisabled (Faraaz Biyabani - [10c763d](https://github.com/contentstack/live-preview-sdk/commit/10c763d51b539596e859ed7c1de4de5698715ccb))
+- test: fix tests (Faraaz Biyabani - [790875a](https://github.com/contentstack/live-preview-sdk/commit/790875aef18c045f070de48f630bccdbf4cae5a9))
+- test: update message (Faraaz Biyabani - [729ac76](https://github.com/contentstack/live-preview-sdk/commit/729ac763e04f82d0f848d9550bcc05458e36ba55))
+
+### General Changes
+
+- Merge pull request #493 from contentstack/VE-7071-apply-outline-offset-highlight-for-variant-fields-on-canvas (Karan Gandhi - [92d2bcc](https://github.com/contentstack/live-preview-sdk/commit/92d2bccc73082c80ca6f6ea8097a0cf1c1b4834b))
+
+## [v3.4.0](https://github.com/contentstack/live-preview-sdk/compare/v3.3.0...v3.4.0)
+
+> 7 August 2025
+
+### Fixes
+
+- fix: multiple reloads in timeline (Faraaz Biyabani - [#484](https://github.com/contentstack/live-preview-sdk/pull/484))
+- fix: removed edit icon when the click is on the container (#478) (Faraaz Biyabani - [#485](https://github.com/contentstack/live-preview-sdk/pull/485))
+- fix: removed edit icon when the click is on the container (Sahil Chalke - [#478](https://github.com/contentstack/live-preview-sdk/pull/478))
 - Fix: Issue with hover toolbar click-ability (Ayush Dubey - [#467](https://github.com/contentstack/live-preview-sdk/pull/467))
 - fix: modified the way we were handling fieldlocation data fetch (Sahil Chalke - [#462](https://github.com/contentstack/live-preview-sdk/pull/462))
 
 ### General Changes
 
-- VE-6918  (Aditya Pachauri - [#487](https://github.com/contentstack/live-preview-sdk/pull/487))
-- Hover Toolbar Click-ability Missed Commit (Ayush Dubey - [#482](https://github.com/contentstack/live-preview-sdk/pull/482))
-- Ve 5474 clean (Sahil Chalke - [#481](https://github.com/contentstack/live-preview-sdk/pull/481))
+- VE-6918  (Faraaz Biyabani - [#487](https://github.com/contentstack/live-preview-sdk/pull/487))
+- Hover Toolbar Click-ability Missed Commit (Faraaz Biyabani - [#482](https://github.com/contentstack/live-preview-sdk/pull/482))
+- Ve 5474 clean (Faraaz Biyabani - [#481](https://github.com/contentstack/live-preview-sdk/pull/481))
 
 ### Fixes
 
@@ -35,6 +91,7 @@
 - chore: fieldlocation fetch completed (SahilCs15 - [bab5a47](https://github.com/contentstack/live-preview-sdk/commit/bab5a47953979af9cc5acc4fc05cbe6623caeb55))
 - chore(VE-6918/error-text): unit test file added (Aditya Pachauri - [ed1c0bb](https://github.com/contentstack/live-preview-sdk/commit/ed1c0bb03bc21a92f61c63e8db6120b6b35cb17e))
 - chore(VE-6918/error-text): warning message improved (Aditya Pachauri - [8122192](https://github.com/contentstack/live-preview-sdk/commit/8122192f46a29579da04ea7e7c6e0fb102a9043a))
+- chore: skip tests (Faraaz Biyabani - [d470fcb](https://github.com/contentstack/live-preview-sdk/commit/d470fcb1962f26c48a7e4b71492a76b258d15cd6))
 - chore(VE-6918/error-text): component name changed to title case (Aditya Pachauri - [dc3901f](https://github.com/contentstack/live-preview-sdk/commit/dc3901fafe5560b8a58f57303f934e21bbb73d98))
 - chore: test fix from merge operation (Mridul Sharma - [e335877](https://github.com/contentstack/live-preview-sdk/commit/e335877c8f7d120f5f0549463f6ad1a1c81c9176))
 
@@ -44,6 +101,7 @@
 
 ### General Changes
 
+- Merge pull request #488 from contentstack/stage_v3 (Karan Gandhi - [3bcf72d](https://github.com/contentstack/live-preview-sdk/commit/3bcf72dfc58525cf9c13add4302d44c0265a5401))
 - redner the app on dom (SahilCs15 - [bd5095a](https://github.com/contentstack/live-preview-sdk/commit/bd5095a556930aeef55afc9de7f64d26f5e268d6))
 
 ## [v3.3.0](https://github.com/contentstack/live-preview-sdk/compare/v3.2.5...v3.3.0)
@@ -172,7 +230,6 @@
 
 - v3.2.2 (Hitesh Shetty - [#435](https://github.com/contentstack/live-preview-sdk/pull/435))
 - Stage v3.2.2 (Hitesh Shetty - [#433](https://github.com/contentstack/live-preview-sdk/pull/433))
-- v3.2.1 (Faraaz Biyabani - [#430](https://github.com/contentstack/live-preview-sdk/pull/430))
 
 ### Fixes
 
@@ -202,7 +259,6 @@
 ### General Changes
 
 - secrets-scan.yml (Aravind Kumar - [f9c5068](https://github.com/contentstack/live-preview-sdk/commit/f9c5068f3996d39aa73dcabac788950903513e32))
-- policy-scan.yml (Aravind Kumar - [7ae545b](https://github.com/contentstack/live-preview-sdk/commit/7ae545b3167869dc01874c8a75ffaff118d0d00a))
 - talismanrc file updated (Aravind Kumar - [8a70888](https://github.com/contentstack/live-preview-sdk/commit/8a70888d24083ff4f5f9c2878d3b94661dabbd08))
 - Updated codeowners (Aravind Kumar - [86bc538](https://github.com/contentstack/live-preview-sdk/commit/86bc538fc3f1bb42f2d86cf39ae8568be94880dd))
 - issues-jira.yml (Aravind Kumar - [84a292c](https://github.com/contentstack/live-preview-sdk/commit/84a292cc28491bdab4ea9ab819594de320a99e8e))
@@ -210,7 +266,7 @@
 
 ## [v3.2.1](https://github.com/contentstack/live-preview-sdk/compare/v3.2.0...v3.2.1)
 
-> 23 April 2025
+> 24 April 2025
 
 ### Fixes
 
@@ -222,6 +278,7 @@
 
 ### General Changes
 
+- v3.2.1 (Faraaz Biyabani - [#430](https://github.com/contentstack/live-preview-sdk/pull/430))
 - Stage-v3.2.1 (Faraaz Biyabani - [#428](https://github.com/contentstack/live-preview-sdk/pull/428))
 
 ### Fixes
@@ -247,6 +304,7 @@
 - Delete jira.yml (Aravind Kumar - [80a496c](https://github.com/contentstack/live-preview-sdk/commit/80a496c805ce52542221f9bafa11116211f24f73))
 - issues-jira.yml (Aravind Kumar - [a429983](https://github.com/contentstack/live-preview-sdk/commit/a4299833949c80c274abd8af8ae81062fd78556f))
 - policy-scan.yml (Aravind Kumar - [a4b69a0](https://github.com/contentstack/live-preview-sdk/commit/a4b69a07a50b0d8145122bf99b330c3b22d91e8f))
+- policy-scan.yml (Aravind Kumar - [7ae545b](https://github.com/contentstack/live-preview-sdk/commit/7ae545b3167869dc01874c8a75ffaff118d0d00a))
 - Delete sast-scan.yml (Aravind Kumar - [c0bffef](https://github.com/contentstack/live-preview-sdk/commit/c0bffefd3a100a96117b080bd5cd7d2f6302deea))
 - Updated codeowners (Aravind Kumar - [b759727](https://github.com/contentstack/live-preview-sdk/commit/b759727225ca20ee5e4b5addb8783a87eb8bc385))
 - codeql-analysis.yml (Aravind Kumar - [d90af9f](https://github.com/contentstack/live-preview-sdk/commit/d90af9f61ed6fca7f4fdfac6ad6993006ed771ea))

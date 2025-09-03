@@ -5,7 +5,7 @@ import {
     VisualBuilderGlobalStyles,
 } from "../visualBuilder.style";
 import React from "preact/compat";
-import { isOpenInBuilder } from "../../utils";
+import { isOpenInBuilder , isOpenInPreviewShare} from "../../utils";
 
 interface VisualBuilderProps {
     visualBuilderContainer: HTMLDivElement | null;
@@ -13,7 +13,10 @@ interface VisualBuilderProps {
 }
 
 function VisualBuilderComponent(props: VisualBuilderProps): JSX.Element | null {
-    if (!isOpenInBuilder()) {
+    const isInBuilder = isOpenInBuilder();
+    const isInPreviewShare = isOpenInPreviewShare();
+
+    if (!isInBuilder && !isInPreviewShare) {
         return null;
     }
 
