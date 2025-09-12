@@ -37,6 +37,9 @@ interface LocaleEvent {
 }
 
 function isLowerOrderVariant(variant_uid: string, dataCslp: string, variantOrder: string[]): boolean {
+    if(!variantOrder || variantOrder.length === 0) {
+        return false;
+    }
     const indexOfVariant = variantOrder.indexOf(variant_uid);
     let indexOfDataCslp = -1;
     for (let i = variantOrder.length-1; i >= 0; i--) {
