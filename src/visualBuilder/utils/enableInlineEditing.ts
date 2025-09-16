@@ -55,7 +55,11 @@ export function enableInlineEditing({
             { textContent: expectedFieldData } 
         );
 
-        (editableElement as HTMLElement).style.visibility = "hidden";
+        // Hide original element immediately, disabling any transitions/animations
+        const originalElement = editableElement as HTMLElement;
+        originalElement.style.visibility = "hidden";
+        originalElement.style.transition = "none";
+        originalElement.style.animation = "none";
 
         // set field type attribute to the pseudo editable field
         // ensures proper keydown handling similar to the actual editable field
