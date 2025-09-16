@@ -17,6 +17,11 @@ import getChildrenDirection from "./getChildrenDirection";
 import { getPsuedoEditableElementStyles } from "./getPsuedoEditableStylesElement";
 import { isFieldDisabled } from "./isFieldDisabled";
 import { fetchEntryPermissionsAndStageDetails } from "./fetchEntryPermissionsAndStageDetails";
+import {
+    removeTruncateStyles,
+    restoreTruncateStyles,
+    hasStoredLineClampStyles,
+} from "./truncateHandler";
 
 interface ToolbarPositionParams {
     focusedToolbar: HTMLElement | null;
@@ -139,6 +144,11 @@ export async function updateFocussedState({
     const fieldMetadata = extractDetailsFromCslp(cslp);
 
     hideHoverOutline(visualBuilderContainer);
+
+    // Remove line-clamp styles from the currently focused element
+    if (editableElement) {
+        removeTruncateStyles(editableElement);
+    }
 
     // in every case, this function will bring cached values
     // and this should be quick
@@ -265,6 +275,10 @@ export function updateFocussedStateOnMutation(
             `[data-cslp-unique-id="${selectedElementCslpUniqueId}"]`
         ) || document.querySelector(`[data-cslp="${selectedElementCslp}"]`);
     if (!newSelectedElement && resizeObserver) {
+        // Restore truncate styles for the selected element before hiding focus
+        if (selectedElement && hasStoredLineClampStyles(selectedElement)) {
+            restoreTruncateStyles(selectedElement);
+        }
         hideFocusOverlay({
             visualBuilderOverlayWrapper: focusOverlayWrapper,
             focusedToolbar,
