@@ -146,8 +146,6 @@ export function sendInitializeLivePreviewPostMessageEvent(): void {
 
             if (contentTypeUid && entryUid) {
                 // TODO: we should not use this function. Instead we should have sideEffect run automatically when we set the config.
-                console.log("setConfigFromParams", contentTypeUid, entryUid);
-                // setConfigFromParams(`?content_type_uid=${contentTypeUid}&entry_uid=${entryUid}`);
                 setConfigFromParams({
                     content_type_uid: contentTypeUid,
                     entry_uid: entryUid,
