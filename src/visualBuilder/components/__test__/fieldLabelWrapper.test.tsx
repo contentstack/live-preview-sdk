@@ -297,6 +297,7 @@ describe("FieldLabelWrapperComponent", () => {
         expect(isFieldDisabled).toHaveBeenCalledWith(
             mockFieldSchema,
             mockEventDetails,
+            undefined,
             {
                 update: {
                     create: true,

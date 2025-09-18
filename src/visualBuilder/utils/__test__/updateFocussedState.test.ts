@@ -223,6 +223,9 @@ describe("updateFocussedState", () => {
                 editableElement: editableElementMock,
                 fieldMetadata: expect.any(Object),
             },
+            {
+                update: true,
+            },
             mockEntryPermissions,
             mockWorkflowStageDetails
         );
