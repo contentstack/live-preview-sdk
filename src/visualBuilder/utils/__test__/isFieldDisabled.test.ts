@@ -123,7 +123,7 @@ describe("isFieldDisabled", () => {
         const result = isFieldDisabled(fieldSchemaMap, eventFieldDetails);
         expect(result.isDisabled).toBe(true);
         expect(result.reason).toBe(
-            "To edit an experience, click the Audience widget and select the Edit icon."
+            "To edit an experience, open the Audience widget and click the Edit icon."
         );
     });
 
