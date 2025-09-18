@@ -1,12 +1,107 @@
 # Changelog
 
+## [v4.0.2](https://github.com/contentstack/live-preview-sdk/compare/v4.0.1...v4.0.2)
+
+> 16 September 2025
+
+### New Features
+
+- feat(VE-7062-dev): disable editing based on workflow stage rules (Faraaz Biyabani - [#489](https://github.com/contentstack/live-preview-sdk/pull/489))
+
+### Fixes
+
+- fix: remove integrity attribute from script tag and update copyright year in `main.mustache` (Hitesh Shetty - [#499](https://github.com/contentstack/live-preview-sdk/pull/499))
+- fix: multiple reloads in timeline (Mridul Sharma - [#479](https://github.com/contentstack/live-preview-sdk/pull/479))
+- fix: removed edit icon when the click is on the container (Sahil Chalke - [#478](https://github.com/contentstack/live-preview-sdk/pull/478))
+- Fix: Issue with hover toolbar click-ability (Ayush Dubey - [#467](https://github.com/contentstack/live-preview-sdk/pull/467))
+- fix: modified the way we were handling fieldlocation data fetch (Sahil Chalke - [#462](https://github.com/contentstack/live-preview-sdk/pull/462))
+- Fix: HoverToolbar to not render when focussed (Ayush Dubey - [#461](https://github.com/contentstack/live-preview-sdk/pull/461))
+
+### General Changes
+
+- Develop v4 (Kirtesh Suthar - [#506](https://github.com/contentstack/live-preview-sdk/pull/506))
+- 18th sept 2025 release (Kirtesh Suthar - [#505](https://github.com/contentstack/live-preview-sdk/pull/505))
+- Live preview new tab ssr issue (Mridul Sharma - [#502](https://github.com/contentstack/live-preview-sdk/pull/502))
+- VB-248 fixed the cursor moving to the start with a explicitly adding pseudo element on second time a field is visited (Sahil Chalke - [#497](https://github.com/contentstack/live-preview-sdk/pull/497))
+- VE-6918 : warning message improved  (Aditya Pachauri - [#475](https://github.com/contentstack/live-preview-sdk/pull/475))
+- HoverToolbar: Requested Changes (Ayush Dubey - [#464](https://github.com/contentstack/live-preview-sdk/pull/464))
+- Ve 5474 field modifier support for canvas in visual builder (Sahil Chalke - [#460](https://github.com/contentstack/live-preview-sdk/pull/460))
+- [Feature] HoverToolbar (Ayush Dubey - [#455](https://github.com/contentstack/live-preview-sdk/pull/455))
+- Disable scroll when field modifer is active (Sahil Chalke - [#458](https://github.com/contentstack/live-preview-sdk/pull/458))
+- [HoverToolbar]: Handling postMessage for ReferenceParentMap and rendering changes (Ayush Dubey - [#453](https://github.com/contentstack/live-preview-sdk/pull/453))
+- [Feat: HoverToolbar] Component and rendering logic changes (Ayush Dubey - [#450](https://github.com/contentstack/live-preview-sdk/pull/450))
+- Field modifiers in canvas (Sairaj - [#449](https://github.com/contentstack/live-preview-sdk/pull/449))
+
+### New Features
+
+- feat: hovertoolbar component and rendering (csAyushDubey - [000168e](https://github.com/contentstack/live-preview-sdk/commit/000168ed0a2757d48912e96917950b4915cce8ab))
+- feat: fieldLabelWrapper changes (csAyushDubey - [42c1576](https://github.com/contentstack/live-preview-sdk/commit/42c15760efe4faf271e78911be5db8f76be8c700))
+
+### Fixes
+
+- fix: tests (csAyushDubey - [71f24d8](https://github.com/contentstack/live-preview-sdk/commit/71f24d82b67ad1682dd9240fddc84adbede15211))
+- fix: fixed the required changes (SahilCs15 - [435a028](https://github.com/contentstack/live-preview-sdk/commit/435a02894c456c015107a10ee0367f8f5a348ecf))
+- fix: resolved the issues (SahilCs15 - [a0ff5b0](https://github.com/contentstack/live-preview-sdk/commit/a0ff5b0d32c8b62f86e81bd5130f6cce04aa914f))
+- fix: undo unneccsary changes (SahilCs15 - [bf2cc68](https://github.com/contentstack/live-preview-sdk/commit/bf2cc68b83f3bb4889c3ecc497b6e77d785ee001))
+- fix: new tab ssr params issue fix (Mridul Sharma - [b78db51](https://github.com/contentstack/live-preview-sdk/commit/b78db513ce62e657c7ca9b4c343b6742a47e293e))
+- fix: missed rendering case (csAyushDubey - [8478bbc](https://github.com/contentstack/live-preview-sdk/commit/8478bbc2b1216d78fbbb1a831ee47dbb62e1f413))
+- fix: removed not requied changes (SahilCs15 - [37dccb8](https://github.com/contentstack/live-preview-sdk/commit/37dccb8265ce92ac6f63832220828ac7ec41428b))
+- fix: disable scroll when field modifer is active (SahilCs15 - [1cae0c3](https://github.com/contentstack/live-preview-sdk/commit/1cae0c38962d8b4cef541931125d5e4c2d987fa5))
+- fix: no hovertoolbar when focussed (csAyushDubey - [a80d08d](https://github.com/contentstack/live-preview-sdk/commit/a80d08d26de47e9eb357b0fc2da5888f3f72ddb4))
+- fix: remove integrity attribute from script tag and update copyright year in main.mustache (hiteshshetty-dev - [51fec5b](https://github.com/contentstack/live-preview-sdk/commit/51fec5bbe8ad125552f404bf4844a94aa58960e2))
+- fix: changed order in tooltip and customcursor hiding (csAyushDubey - [cc71759](https://github.com/contentstack/live-preview-sdk/commit/cc71759fe7479f46d4cdc6dc76e433cd67b1336a))
+- fix: addresed the requested cahnges (SahilCs15 - [12be298](https://github.com/contentstack/live-preview-sdk/commit/12be2984477ce3dfd249a81de33f1777c6cf59eb))
+- fix:removed uncessary changes (SahilCs15 - [14ba432](https://github.com/contentstack/live-preview-sdk/commit/14ba43239ccc486767ea282729bb3ec7f6f824f0))
+- fix: field parent clickability (csAyushDubey - [ac4fdb3](https://github.com/contentstack/live-preview-sdk/commit/ac4fdb383bc2c27c8e157446e663cbdbcf0879bd))
+- fix: fixed conficts (SahilCs15 - [c8e3a35](https://github.com/contentstack/live-preview-sdk/commit/c8e3a350cdc1f59a3422b05265d9d9ade5e5ac79))
+- fix: tooltip arrow change (csAyushDubey - [bab4171](https://github.com/contentstack/live-preview-sdk/commit/bab41716a7dfbe4bcb3b74f310cb314c2faa16b4))
+
+### Chores And Housekeeping
+
+- chore: rendered the fieldmodifier apps added an event listner to send the selected app (SahilCs15 - [26a70f4](https://github.com/contentstack/live-preview-sdk/commit/26a70f48ac9e62af5b7f9d69bc10eefa0f103255))
+- chore: added test cases for the field location data (SahilCs15 - [c394b1f](https://github.com/contentstack/live-preview-sdk/commit/c394b1f74fca020f9cc9eef3a8ca24cc51882507))
+- chore: fieldlocation fetch completed (SahilCs15 - [2c4e0ee](https://github.com/contentstack/live-preview-sdk/commit/2c4e0ee8896cf71c22edbadcaa750d75f4642de3))
+- chore: added test cases for testing the pseudo element (SahilCs15 - [41de9c3](https://github.com/contentstack/live-preview-sdk/commit/41de9c3fc50f33dd83d53767d216c4dfd0c43e88))
+- chore(VE-6918/error-text): unit test file added (Aditya Pachauri - [7ecfb19](https://github.com/contentstack/live-preview-sdk/commit/7ecfb19309e55bba554ad71cf8b66bd95c575a1e))
+- chore(VE-6918/error-text): warning message improved (Aditya Pachauri - [6b83664](https://github.com/contentstack/live-preview-sdk/commit/6b83664d5393bd5ebaf0c57667c0086f328d50d2))
+- chore: remove ssri and @types/ssri from installed packages (hiteshshetty-dev - [2305f45](https://github.com/contentstack/live-preview-sdk/commit/2305f45ffb102555d1a56145b0e715c2cda72ba9))
+- chore: cleanup commit (csAyushDubey - [51204af](https://github.com/contentstack/live-preview-sdk/commit/51204af486426ade2095bdc84b8cf46c375ebb2c))
+- chore: increased test timeout for CI (csAyushDubey - [8830f3c](https://github.com/contentstack/live-preview-sdk/commit/8830f3c3fa5bec5253b3b57f85e866d331089198))
+- chore: increased timeout further (csAyushDubey - [da638dd](https://github.com/contentstack/live-preview-sdk/commit/da638dd326270a094cc456289b6c533bca1f43ba))
+- chore(VE-6918/error-text): component name changed to title case (Aditya Pachauri - [ec3ccab](https://github.com/contentstack/live-preview-sdk/commit/ec3ccab4ef0d8d456d650f4dd6896d119bb9c32b))
+- chore: removed unused console log (Mridul Sharma - [e65d15c](https://github.com/contentstack/live-preview-sdk/commit/e65d15c51445e58b46e8d37a2a375fe2cf2f739a))
+- chore: added test cases and updated .talismanrc (SahilCs15 - [07ffb6e](https://github.com/contentstack/live-preview-sdk/commit/07ffb6ea358ff1232c958b7e2cd05b25b46f430f))
+- chore: talismanrc update (csAyushDubey - [d9a0d09](https://github.com/contentstack/live-preview-sdk/commit/d9a0d09bd157ffcf8675c05efc5afd6add854c56))
+- chore: added retry to vitest (csAyushDubey - [abfd640](https://github.com/contentstack/live-preview-sdk/commit/abfd64004407350d1e65af16fcf11f564edcfa52))
+- chore: incresed hook timeout for CI (csAyushDubey - [eb2d72f](https://github.com/contentstack/live-preview-sdk/commit/eb2d72f7665f65ef9c46b4d3a6f36c1bd045cef9))
+
+### Changes to Test Assests
+
+- test: fieldlabelwrapper (csAyushDubey - [bc21aae](https://github.com/contentstack/live-preview-sdk/commit/bc21aae35120e03d9b555676974442b955c046cd))
+- test: updated new tab test for ssr reload (Mridul Sharma - [f3c6abc](https://github.com/contentstack/live-preview-sdk/commit/f3c6abcffa822e224f6bd6a95bb6d7f99e12e3e0))
+
+### General Changes
+
+- redner the app on dom (SahilCs15 - [88a81a4](https://github.com/contentstack/live-preview-sdk/commit/88a81a4d82cb02b1e54977aa5d9fa684a6a773a2))
+- Delete secrets-scan.yml (Aravind Kumar - [52f91a4](https://github.com/contentstack/live-preview-sdk/commit/52f91a4c851d9b0e618ce0bb8c96863fba85065c))
+- Updated codeowners (Aravind Kumar - [1b89e20](https://github.com/contentstack/live-preview-sdk/commit/1b89e20fab643f51abe0b5edd4dec357622fce92))
+
 ## [v4.0.1](https://github.com/contentstack/live-preview-sdk/compare/v4.0.0...v4.0.1)
 
-> 22 August 2025
+> 25 August 2025
+
+### General Changes
+
+- V4.0.1 (Zuhair Ahmed - [#496](https://github.com/contentstack/live-preview-sdk/pull/496))
 
 ### Fixes
 
 - fix(preview): add util function to allow operations in preview share (Zuhair Ahmed - [fb70cdf](https://github.com/contentstack/live-preview-sdk/commit/fb70cdf8f238a0f54bbf85cacd84a09688d54b9e))
+
+### Chores And Housekeeping
+
+- chore(talisman): update .talismanrc (Zuhair Ahmed - [e044f1b](https://github.com/contentstack/live-preview-sdk/commit/e044f1b304c2de666471f47d4a5a3235945b6f6c))
+- chore(readme): update readme (Zuhair Ahmed - [2e6d835](https://github.com/contentstack/live-preview-sdk/commit/2e6d835b4d99ca628835e00a6cb1ff1a2197c039))
 
 ## [v4.0.0](https://github.com/contentstack/live-preview-sdk/compare/v3.4.0...v4.0.0)
 
@@ -520,9 +615,11 @@
 ### General Changes
 
 - sync main for upcoming release (Hitesh Shetty - [#338](https://github.com/contentstack/live-preview-sdk/pull/338))
+- 3.1.0 (Kirtesh Suthar - [#323](https://github.com/contentstack/live-preview-sdk/pull/323))
 
 ### Fixes
 
+- fix: live preview doc (Kirtesh Suthar - [f81fdf5](https://github.com/contentstack/live-preview-sdk/commit/f81fdf55fd2ab2ce4cac3bf974b0a31566c24001))
 - fix: live preview doc (Kirtesh Suthar - [8fcdcc5](https://github.com/contentstack/live-preview-sdk/commit/8fcdcc5127ea722bd9c01f74b1168d9f579e5f30))
 
 ### Chores And Housekeeping
@@ -544,7 +641,7 @@
 
 ## [v3.1.0](https://github.com/contentstack/live-preview-sdk/compare/v3.0.2...v3.1.0)
 
-> 16 January 2025
+> 10 January 2025
 
 ### New Features
 
@@ -561,7 +658,6 @@
 
 ### General Changes
 
-- 3.1.0 (Kirtesh Suthar - [#323](https://github.com/contentstack/live-preview-sdk/pull/323))
 - Feat/auto changelog (Kirtesh Suthar - [#321](https://github.com/contentstack/live-preview-sdk/pull/321))
 
 ### New Features
@@ -572,7 +668,6 @@
 ### Fixes
 
 - fix: issue with variant revert dropdown in canvas and show variant icon for multiple fields (Srinadh Reddy - [8718c48](https://github.com/contentstack/live-preview-sdk/commit/8718c4832f30606437da1fd18513006f21e0fd34))
-- fix: live preview doc (Kirtesh Suthar - [f81fdf5](https://github.com/contentstack/live-preview-sdk/commit/f81fdf55fd2ab2ce4cac3bf974b0a31566c24001))
 
 ### Chores And Housekeeping
 

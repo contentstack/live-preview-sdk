@@ -15,8 +15,8 @@ npm install @contentstack/live-preview-utils
 Alternatively, if you want to include the package directly in your website HTML code, use the following command:
 
 ```html
-<script type='module'  integrity='sha384-b6G+ggU20rGxqCqsgaS6zludFgj5N11xsuXhMEIARMuQY2PtyDS04TU0H5goP+32' crossorigin="anonymous">
-     import ContentstackLivePreview from 'https://esm.sh/@contentstack/live-preview-utils@4.0.1';
+<script type='module' crossorigin="anonymous">
+     import ContentstackLivePreview from 'https://esm.sh/@contentstack/live-preview-utils@4.0.2';
 
      ContentstackLivePreview.init({
         stackDetails: {
@@ -51,7 +51,7 @@ ContentstackLivePreview.init({
 
 MIT License
 
-Copyright © 2024 [Contentstack](https://www.contentstack.com/). All Rights Reserved
+Copyright © 2021-2025 [Contentstack](https://www.contentstack.com/). All Rights Reserved
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
