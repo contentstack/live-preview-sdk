@@ -10,7 +10,7 @@ const DisableReason = {
     LocalizedEntry: "Editing this field is restricted in localized entries",
     UnlinkedVariant:
         "This field is not editable as it is not linked to the selected variant",
-    AudienceMode: "To edit an experience, open the Audience widget and select the Edit icon.",
+    AudienceMode: "To edit an experience, open the Audience widget and click the Edit icon.",
     DisabledVariant:
         "This field is not editable as it doesn't match the selected variant",
     UnlocalizedVariant: "This field is not editable as it is not localized",
