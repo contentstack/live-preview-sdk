@@ -6,7 +6,6 @@
 interface LineClampStyles {
     webkitLineClamp?: string;
     overflow?: string;
-    display?: string;
     webkitBoxOrient?: string;
     whiteSpace?: string;
 }
@@ -36,10 +35,6 @@ export function removeTruncateStyles(element: Element): void {
         styles.overflow = computedStyles.overflow;
     }
 
-    if (computedStyles.display && computedStyles.display.includes("box")) {
-        styles.display = computedStyles.display;
-    }
-
     if (
         computedStyles.webkitBoxOrient &&
         computedStyles.webkitBoxOrient !== "horizontal"
@@ -58,10 +53,6 @@ export function removeTruncateStyles(element: Element): void {
         // Remove the styles
         element.style.webkitLineClamp = "none";
         element.style.overflow = "visible";
-        // Reset display if it was -webkit-box
-        if (styles.display?.includes("box")) {
-            element.style.display = "block";
-        }
         if (styles.webkitBoxOrient) {
             element.style.webkitBoxOrient = "horizontal";
         }
@@ -94,12 +85,6 @@ export function restoreTruncateStyles(element: Element): void {
         element.style.removeProperty("overflow");
     }
 
-    if (storedStyles.display) {
-        element.style.display = storedStyles.display;
-    } else {
-        element.style.removeProperty("display");
-    }
-
     if (storedStyles.webkitBoxOrient) {
         element.style.webkitBoxOrient = storedStyles.webkitBoxOrient;
     } else {
@@ -128,7 +113,6 @@ export function hasTruncateStyles(element: Element): boolean {
     return (
         computedStyles.webkitLineClamp !== "none" ||
         (computedStyles.overflow === "hidden" &&
-            computedStyles.display?.includes("box") &&
             computedStyles.webkitBoxOrient === "vertical") ||
         computedStyles.whiteSpace === "nowrap"
     );
