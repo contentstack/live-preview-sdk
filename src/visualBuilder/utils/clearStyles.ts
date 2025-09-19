@@ -1,4 +1,4 @@
-const originalStyles = new WeakMap<
+const elementStyles = new WeakMap<
     HTMLElement,
     {
         visibility?: string;
@@ -6,29 +6,34 @@ const originalStyles = new WeakMap<
         animation?: string;
     }
 >();
+/**
+ * Clears the visibility, transition, and animation styles of an element and stores the original values
+ * @param element - The element to clear the styles from
+ * VB-277 Fix: Clear visibility, transition, and animation styles of an element
+ */
 
-export function clearVisibelityStyles(element: HTMLElement) {
+export function clearVisibilityStyles(element: HTMLElement) {
     const originalStyleValues = {
         visibility: element.style.visibility,
         transition: element.style.transition,
         animation: element.style.animation,
     };
 
-    originalStyles.set(element, originalStyleValues);
+    elementStyles.set(element, originalStyleValues);
 
     element.style.visibility = "hidden";
     element.style.transition = "none";
     element.style.animation = "none";
 }
 
-export function restoreVisibelityStyles(element: HTMLElement) {
-    const storedStyles = originalStyles.get(element);
+export function restoreVisibilityStyles(element: HTMLElement) {
+    const storedStyles = elementStyles.get(element);
 
     if (storedStyles) {
         element.style.visibility = storedStyles.visibility || "";
         element.style.transition = storedStyles.transition || "";
         element.style.animation = storedStyles.animation || "";
 
-        originalStyles.delete(element);
+        elementStyles.delete(element);
     }
 }
