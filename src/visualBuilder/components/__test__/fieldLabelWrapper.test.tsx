@@ -222,177 +222,177 @@ describe("FieldLabelWrapperComponent", () => {
 
     const mockGetParentEditable = () => document.createElement("div");
 
-    // test("renders current field and parent fields correctly", async () => {
-    //     const { findByText } = await asyncRender(
-    //         <FieldLabelWrapperComponent
-    //             fieldMetadata={mockFieldMetadata}
-    //             eventDetails={mockEventDetails}
-    //             parentPaths={PARENT_PATHS}
-    //             getParentEditableElement={mockGetParentEditable}
-    //         />
-    //     );
+    test("renders current field and parent fields correctly", async () => {
+        const { findByText } = await asyncRender(
+            <FieldLabelWrapperComponent
+                fieldMetadata={mockFieldMetadata}
+                eventDetails={mockEventDetails}
+                parentPaths={PARENT_PATHS}
+                getParentEditableElement={mockGetParentEditable}
+            />
+        );
 
-    //     const currentField = await findByText(DISPLAY_NAMES.mockFieldCslp, {}, { timeout: 15000 });
-    //     expect(currentField).toBeVisible();
-    // }, { timeout: 20000 });
+        const currentField = await findByText(DISPLAY_NAMES.mockFieldCslp, {}, { timeout: 15000 });
+        expect(currentField).toBeVisible();
+    }, { timeout: 20000 });
 
-    // test("displays current field icon", async () => {
-    //     const { findByTestId } = await asyncRender(
-    //         <FieldLabelWrapperComponent
-    //             fieldMetadata={mockFieldMetadata}
-    //             eventDetails={mockEventDetails}
-    //             parentPaths={[]}
-    //             getParentEditableElement={mockGetParentEditable}
-    //         />
-    //     );
+    test("displays current field icon", async () => {
+        const { findByTestId } = await asyncRender(
+            <FieldLabelWrapperComponent
+                fieldMetadata={mockFieldMetadata}
+                eventDetails={mockEventDetails}
+                parentPaths={[]}
+                getParentEditableElement={mockGetParentEditable}
+            />
+        );
 
-    //     const fieldIcon = await findByTestId("visual-builder__field-icon");
-    //     expect(fieldIcon).toBeInTheDocument();
-    // });
+        const fieldIcon = await findByTestId("visual-builder__field-icon");
+        expect(fieldIcon).toBeInTheDocument();
+    });
 
-    // test("renders with correct class when field is disabled", async () => {
-    //     vi.mocked(isFieldDisabled).mockReturnValue({
-    //         isDisabled: true,
-    //         reason: "You have only read access to this field",
-    //     });
-    //     const { findByTestId } = await asyncRender(
-    //         <FieldLabelWrapperComponent
-    //             fieldMetadata={mockFieldMetadata}
-    //             eventDetails={mockEventDetails}
-    //             parentPaths={[]}
-    //             getParentEditableElement={mockGetParentEditable}
-    //         />
-    //     );
+    test("renders with correct class when field is disabled", async () => {
+        vi.mocked(isFieldDisabled).mockReturnValue({
+            isDisabled: true,
+            reason: "You have only read access to this field",
+        });
+        const { findByTestId } = await asyncRender(
+            <FieldLabelWrapperComponent
+                fieldMetadata={mockFieldMetadata}
+                eventDetails={mockEventDetails}
+                parentPaths={[]}
+                getParentEditableElement={mockGetParentEditable}
+            />
+        );
 
-    //     const fieldLabel = await findByTestId(
-    //         "visual-builder__focused-toolbar__field-label-wrapper"
-    //     );
+        const fieldLabel = await findByTestId(
+            "visual-builder__focused-toolbar__field-label-wrapper"
+        );
 
-    //     await waitFor(() => {
-    //         expect(fieldLabel).toHaveClass(
-    //             "visual-builder__focused-toolbar--field-disabled"
-    //         );
-    //     });
-    // });
+        await waitFor(() => {
+            expect(fieldLabel).toHaveClass(
+                "visual-builder__focused-toolbar--field-disabled"
+            );
+        });
+    });
 
-    // test("calls isFieldDisabled with correct arguments", async () => {
-    //     const mockFieldSchema = { ...singleLineFieldSchema };
+    test("calls isFieldDisabled with correct arguments", async () => {
+        const mockFieldSchema = { ...singleLineFieldSchema };
 
-    //     vi.mocked(FieldSchemaMap.getFieldSchema).mockResolvedValue(
-    //         mockFieldSchema
-    //     );
+        vi.mocked(FieldSchemaMap.getFieldSchema).mockResolvedValue(
+            mockFieldSchema
+        );
 
-    //     await asyncRender(
-    //         <FieldLabelWrapperComponent
-    //             fieldMetadata={mockFieldMetadata}
-    //             eventDetails={mockEventDetails}
-    //             parentPaths={[]}
-    //             getParentEditableElement={mockGetParentEditable}
-    //         />
-    //     );
+        await asyncRender(
+            <FieldLabelWrapperComponent
+                fieldMetadata={mockFieldMetadata}
+                eventDetails={mockEventDetails}
+                parentPaths={[]}
+                getParentEditableElement={mockGetParentEditable}
+            />
+        );
 
-    //     // wait for component to mount
-    //     await waitFor(() => {
-    //         expect(
-    //             document.querySelector(
-    //                 ".visual-builder__focused-toolbar__field-label-container"
-    //             )
-    //         ).toBeInTheDocument();
-    //     });
+        // wait for component to mount
+        await waitFor(() => {
+            expect(
+                document.querySelector(
+                    ".visual-builder__focused-toolbar__field-label-container"
+                )
+            ).toBeInTheDocument();
+        });
 
-    //     expect(isFieldDisabled).toHaveBeenCalledWith(
-    //         mockFieldSchema,
-    //         mockEventDetails,
-    //         {
-    //             update: {
-    //                 create: true,
-    //                 read: true,
-    //                 update: true,
-    //                 delete: true,
-    //                 publish: true,
-    //             },
-    //         },
-    //         {
-    //             stage: undefined,
-    //             permissions: {
-    //                 entry: {
-    //                     update: true,
-    //                 },
-    //             },
-    //         }
-    //     );
-    // });
+        expect(isFieldDisabled).toHaveBeenCalledWith(
+            mockFieldSchema,
+            mockEventDetails,
+            {
+                update: {
+                    create: true,
+                    read: true,
+                    update: true,
+                    delete: true,
+                    publish: true,
+                },
+            },
+            {
+                stage: undefined,
+                permissions: {
+                    entry: {
+                        update: true,
+                    },
+                },
+            }
+        );
+    });
 
-    // test("renders ToolbarTooltip component with correct data", async () => {
-    //     const { findByTestId } = await asyncRender(
-    //         <FieldLabelWrapperComponent
-    //             fieldMetadata={mockFieldMetadata}
-    //             eventDetails={mockEventDetails}
-    //             parentPaths={[]}
-    //             getParentEditableElement={mockGetParentEditable}
-    //         />
-    //     );
+    test("renders ToolbarTooltip component with correct data", async () => {
+        const { findByTestId } = await asyncRender(
+            <FieldLabelWrapperComponent
+                fieldMetadata={mockFieldMetadata}
+                eventDetails={mockEventDetails}
+                parentPaths={[]}
+                getParentEditableElement={mockGetParentEditable}
+            />
+        );
         
-    //     // Check that the ToolbarTooltip wrapper is rendered
-    //     const tooltipWrapper = await findByTestId("toolbar-tooltip", { timeout: 15000 });
-    //     expect(tooltipWrapper).toBeInTheDocument();
+        // Check that the ToolbarTooltip wrapper is rendered
+        const tooltipWrapper = await findByTestId("toolbar-tooltip", { timeout: 15000 });
+        expect(tooltipWrapper).toBeInTheDocument();
         
-    //     // Check that the main field label wrapper is rendered
-    //     const fieldLabelWrapper = await findByTestId("visual-builder__focused-toolbar__field-label-wrapper", { timeout: 15000 });
-    //     expect(fieldLabelWrapper).toBeInTheDocument();
-    // }, { timeout: 20000 });
+        // Check that the main field label wrapper is rendered
+        const fieldLabelWrapper = await findByTestId("visual-builder__focused-toolbar__field-label-wrapper", { timeout: 15000 });
+        expect(fieldLabelWrapper).toBeInTheDocument();
+    }, { timeout: 20000 });
 
-    // test("does not render reference icon when isReference is false", async () => {
-    //     const { container } = await asyncRender(
-    //         <FieldLabelWrapperComponent
-    //             fieldMetadata={mockFieldMetadata}
-    //             eventDetails={mockEventDetails}
-    //             parentPaths={[]}
-    //             getParentEditableElement={mockGetParentEditable}
-    //         />
-    //     );
+    test("does not render reference icon when isReference is false", async () => {
+        const { container } = await asyncRender(
+            <FieldLabelWrapperComponent
+                fieldMetadata={mockFieldMetadata}
+                eventDetails={mockEventDetails}
+                parentPaths={[]}
+                getParentEditableElement={mockGetParentEditable}
+            />
+        );
 
-    //     await waitFor(() => {
-    //         const referenceIconContainer = container.querySelector(".visual-builder__reference-icon-container");
-    //         expect(referenceIconContainer).not.toBeInTheDocument();
-    //     });
-    // });
+        await waitFor(() => {
+            const referenceIconContainer = container.querySelector(".visual-builder__reference-icon-container");
+            expect(referenceIconContainer).not.toBeInTheDocument();
+        });
+    });
 
-    // test("renders with correct hovered cslp data attribute", async () => {
-    //     const { findByTestId } = await asyncRender(
-    //         <FieldLabelWrapperComponent
-    //             fieldMetadata={mockFieldMetadata}
-    //             eventDetails={mockEventDetails}
-    //             parentPaths={[]}
-    //             getParentEditableElement={mockGetParentEditable}
-    //         />
-    //     );
+    test("renders with correct hovered cslp data attribute", async () => {
+        const { findByTestId } = await asyncRender(
+            <FieldLabelWrapperComponent
+                fieldMetadata={mockFieldMetadata}
+                eventDetails={mockEventDetails}
+                parentPaths={[]}
+                getParentEditableElement={mockGetParentEditable}
+            />
+        );
 
-    //     const fieldLabelWrapper = await findByTestId("visual-builder__focused-toolbar__field-label-wrapper");
-    //     expect(fieldLabelWrapper).toHaveAttribute("data-hovered-cslp", mockFieldMetadata.cslpValue);
-    // });
+        const fieldLabelWrapper = await findByTestId("visual-builder__focused-toolbar__field-label-wrapper");
+        expect(fieldLabelWrapper).toHaveAttribute("data-hovered-cslp", mockFieldMetadata.cslpValue);
+    });
 
-    // test("does not render ContentTypeIcon when loading", async () => {
-    //     // Mock the display names to never resolve to simulate loading state
-    //     vi.mocked(visualBuilderPostMessage!.send).mockImplementation(() => {
-    //         return new Promise(() => {}); // Never resolves
-    //     });
+    test("does not render ContentTypeIcon when loading", async () => {
+        // Mock the display names to never resolve to simulate loading state
+        vi.mocked(visualBuilderPostMessage!.send).mockImplementation(() => {
+            return new Promise(() => {}); // Never resolves
+        });
 
-    //     const { container } = await asyncRender(
-    //         <FieldLabelWrapperComponent
-    //             fieldMetadata={mockFieldMetadata}
-    //             eventDetails={mockEventDetails}
-    //             parentPaths={[]}
-    //             getParentEditableElement={mockGetParentEditable}
-    //         />
-    //     );
+        const { container } = await asyncRender(
+            <FieldLabelWrapperComponent
+                fieldMetadata={mockFieldMetadata}
+                eventDetails={mockEventDetails}
+                parentPaths={[]}
+                getParentEditableElement={mockGetParentEditable}
+            />
+        );
 
-    //     // Wait a bit to ensure the component has time to render
-    //     await new Promise(resolve => setTimeout(resolve, 100));
+        // Wait a bit to ensure the component has time to render
+        await new Promise(resolve => setTimeout(resolve, 100));
 
-    //     const contentTypeIcon = container.querySelector(".visual-builder__content-type-icon");
-    //     expect(contentTypeIcon).not.toBeInTheDocument();
-    // });
+        const contentTypeIcon = container.querySelector(".visual-builder__content-type-icon");
+        expect(contentTypeIcon).not.toBeInTheDocument();
+    });
 
     test("renders VariantIndicator when field has variant", async () => {
         const variantFieldMetadata = {
