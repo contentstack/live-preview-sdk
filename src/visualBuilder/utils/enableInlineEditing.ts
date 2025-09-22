@@ -10,7 +10,7 @@ import { handleFieldInput, handleFieldKeyDown } from "./handleFieldMouseDown";
 import { FieldDataType, VisualBuilderEditContext } from "./types/index.types";
 import { updateFocussedState } from "./updateFocussedState";
 import { pasteAsPlainText } from "./pasteAsPlainText";
-import { clearVisibelityStyles } from "./clearStyles";
+import { clearVisibilityStyles } from "./clearStyles";
 
 export function enableInlineEditing({
     expectedFieldData,
@@ -58,7 +58,7 @@ export function enableInlineEditing({
 
         // Hide original element immediately, disabling any transitions/animations
         const originalElement = editableElement as HTMLElement;
-        clearVisibelityStyles(originalElement);
+        clearVisibilityStyles(originalElement);
 
         // set field type attribute to the pseudo editable field
         // ensures proper keydown handling similar to the actual editable field
