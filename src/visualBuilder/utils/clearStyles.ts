@@ -13,13 +13,16 @@ const elementStyles = new WeakMap<
  */
 
 export function clearVisibilityStyles(element: HTMLElement) {
-    const originalStyleValues = {
-        visibility: element.style.visibility,
-        transition: element.style.transition,
-        animation: element.style.animation,
-    };
+    // Only store original values if not already stored
+    if (!elementStyles.has(element)) {
+        const originalStyleValues = {
+            visibility: element.style.visibility,
+            transition: element.style.transition,
+            animation: element.style.animation,
+        };
 
-    elementStyles.set(element, originalStyleValues);
+        elementStyles.set(element, originalStyleValues);
+    }
 
     element.style.visibility = "hidden";
     element.style.transition = "none";

@@ -12,6 +12,7 @@ import { handleFieldInput, handleFieldKeyDown } from "../handleFieldMouseDown";
 import { pasteAsPlainText } from "../pasteAsPlainText";
 import { FieldDataType } from "../types/index.types";
 import { updateFocussedState as updateFocussedStateActual } from "../updateFocussedState";
+import { clearVisibilityStyles } from "../clearStyles";
 
 const isEllipsisActive = vi.mocked(isEllipsisActiveActual);
 const generatePseudoEditableElement = vi.mocked(
@@ -65,6 +66,11 @@ vi.mock("../handleFieldKeyDown", () => ({
 
 vi.mock("../pasteAsPlainText", () => ({
     pasteAsPlainText: vi.fn(),
+}));
+
+vi.mock("../clearStyles", () => ({
+    clearVisibilityStyles: vi.fn(),
+    restoreVisibilityStyles: vi.fn(),
 }));
 
 describe("enableInlineEditing", () => {
@@ -165,7 +171,7 @@ describe("enableInlineEditing", () => {
         });
 
         expect(generatePseudoEditableElement).toHaveBeenCalled();
-        expect(editableElement.style.visibility).toBe("hidden");
+        expect(clearVisibilityStyles).toHaveBeenCalledWith(editableElement);
         expect(resizeObserver.observe).toHaveBeenCalled();
     });
 
@@ -184,7 +190,7 @@ describe("enableInlineEditing", () => {
         });
 
         expect(generatePseudoEditableElement).toHaveBeenCalled();
-        expect(editableElement.style.visibility).toBe("hidden");
+        expect(clearVisibilityStyles).toHaveBeenCalledWith(editableElement);
     });
 
     it("should set field type attribute on pseudo element", () => {
@@ -294,9 +300,9 @@ describe("enableInlineEditing", () => {
         });
 
         expect(generatePseudoEditableElement).toHaveBeenCalled();
-        expect(editableElement.style.visibility).toBe("hidden");
+        expect(clearVisibilityStyles).toHaveBeenCalledWith(editableElement);
         expect(resizeObserver.observe).toHaveBeenCalled();
-        
+
         document.body.removeChild(editableElement);
     });
 
@@ -312,7 +318,9 @@ describe("enableInlineEditing", () => {
             },
         });
 
-        expect(editableElement.getAttribute("data-cs-last-edited")).toBe("true");
+        expect(editableElement.getAttribute("data-cs-last-edited")).toBe(
+            "true"
+        );
     });
 
     it("should create pseudo element when field is last edited even with same content", () => {
@@ -333,8 +341,8 @@ describe("enableInlineEditing", () => {
         });
 
         expect(generatePseudoEditableElement).toHaveBeenCalled();
-        expect(editableElement.style.visibility).toBe("hidden");
-        
+        expect(clearVisibilityStyles).toHaveBeenCalledWith(editableElement);
+
         document.body.removeChild(editableElement);
     });
 
@@ -358,8 +366,10 @@ describe("enableInlineEditing", () => {
         });
 
         expect(generatePseudoEditableElement).not.toHaveBeenCalled();
-        expect(editableElement.style.visibility).toBe("");
-        expect(editableElement.getAttribute("data-cs-last-edited")).toBe("true");
+        expect(clearVisibilityStyles).not.toHaveBeenCalled();
+        expect(editableElement.getAttribute("data-cs-last-edited")).toBe(
+            "true"
+        );
 
         document.body.removeChild(otherElement);
     });
@@ -380,13 +390,56 @@ describe("enableInlineEditing", () => {
         });
 
         expect(generatePseudoEditableElement).toHaveBeenCalled();
-        expect(editableElement.style.visibility).toBe("hidden");
-        
-        const pseudoElement = visualBuilderContainer.querySelector(".visual-builder__pseudo-editable-element");
+        expect(clearVisibilityStyles).toHaveBeenCalledWith(editableElement);
+
+        const pseudoElement = visualBuilderContainer.querySelector(
+            ".visual-builder__pseudo-editable-element"
+        );
         expect(pseudoElement).toBeTruthy();
         expect(pseudoElement?.getAttribute("data-cslp")).toBeNull();
-        expect(editableElement.getAttribute("data-cs-last-edited")).toBe("true");
-        
+        expect(editableElement.getAttribute("data-cs-last-edited")).toBe(
+            "true"
+        );
+
         document.body.removeChild(editableElement);
+    });
+
+    it("should call clearVisibilityStyles to immediately hide element when creating pseudo element", () => {
+        // Test that clearVisibilityStyles is called specifically for hiding transitions/animations
+        enableInlineEditing({
+            expectedFieldData: "Different content",
+            editableElement,
+            fieldType: FieldDataType.SINGLELINE,
+            elements: {
+                visualBuilderContainer,
+                resizeObserver,
+                lastEditedField: null,
+            },
+        });
+
+        // Verify clearVisibilityStyles was called with the correct element
+        expect(clearVisibilityStyles).toHaveBeenCalledTimes(1);
+        expect(clearVisibilityStyles).toHaveBeenCalledWith(editableElement);
+
+        // Verify it was called before other operations
+        expect(generatePseudoEditableElement).toHaveBeenCalled();
+        expect(resizeObserver.observe).toHaveBeenCalled();
+    });
+
+    it("should not call clearVisibilityStyles when pseudo element is not needed", () => {
+        // When content matches and no ellipsis, no pseudo element should be created
+        enableInlineEditing({
+            expectedFieldData: "Test content",
+            editableElement,
+            fieldType: FieldDataType.SINGLELINE,
+            elements: {
+                visualBuilderContainer,
+                resizeObserver,
+                lastEditedField: null,
+            },
+        });
+
+        expect(clearVisibilityStyles).not.toHaveBeenCalled();
+        expect(generatePseudoEditableElement).not.toHaveBeenCalled();
     });
 });
