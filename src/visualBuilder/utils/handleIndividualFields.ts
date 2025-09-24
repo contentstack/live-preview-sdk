@@ -16,6 +16,7 @@ import { VisualBuilderEditContext } from "./types/index.types";
 import { pasteAsPlainText } from "./pasteAsPlainText";
 import { removeFieldToolbar } from "../generators/generateToolbar";
 import { fetchEntryPermissionsAndStageDetails } from "./fetchEntryPermissionsAndStageDetails";
+import { restoreVisibilityStyles } from "./clearStyles";
 
 /**
  * It handles all the fields based on their data type and its "multiple" property.
@@ -154,9 +155,7 @@ export function cleanIndividualFieldResidual(elements: {
         pseudoEditableElement.removeEventListener("paste", pasteAsPlainText);
         pseudoEditableElement.remove();
         if (previousSelectedEditableDOM) {
-            (previousSelectedEditableDOM as HTMLElement).style.removeProperty(
-                "visibility"
-            );
+            restoreVisibilityStyles(previousSelectedEditableDOM as HTMLElement);
         }
     }
 
