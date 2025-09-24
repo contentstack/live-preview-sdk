@@ -159,9 +159,9 @@ describe("postMessageEvent.hooks", () => {
                 (Config.get as any).mockReturnValue(mockConfig);
             });
 
-            it("should reload window when ssr is true and no event_type", () => {
-                // Set URL to include live_preview parameter so reload path is taken
-                mockWindow.location.href = "https://example.com?live_preview=old-hash";
+            it("should reload window when ssr is true and no event_type and all params present", () => {
+                // Set URL to include all required params so reload path is taken
+                mockWindow.location.href = "https://example.com?live_preview=old-hash&content_type_uid=blog&entry_uid=entry-123";
 
                 const eventData: OnChangeLivePreviewPostMessageEventData = {
                     hash: "test-hash",
