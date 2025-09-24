@@ -81,7 +81,8 @@ async function addOutline(params?: AddOutlineParams): Promise<void> {
         fieldDisabled,
     } = params;
     if (!editableElement) return;
-    addHoverOutline(editableElement as HTMLElement, fieldDisabled);
+    const isVariant = !!fieldMetadata.variant;
+    addHoverOutline(editableElement as HTMLElement, fieldDisabled, isVariant);
     const fieldSchema = await FieldSchemaMap.getFieldSchema(
         content_type_uid,
         fieldPath
@@ -100,7 +101,7 @@ async function addOutline(params?: AddOutlineParams): Promise<void> {
         entryAcl,
         entryWorkflowStageDetails
     );
-    addHoverOutline(editableElement, fieldDisabled || isDisabled);
+    addHoverOutline(editableElement, fieldDisabled || isDisabled, isVariant);
 }
 
 const debouncedAddOutline = debounce(addOutline, 50, { trailing: true });
@@ -333,15 +334,16 @@ const throttledMouseHover = throttle(async (params: HandleMouseHoverParams) => {
         const isFocussed= VisualBuilder.VisualBuilderGlobalState.value.isFocussed;
         if(!isFocussed) {
             showHoverToolbar({
-            event: params.event,
-            overlayWrapper: params.overlayWrapper,
-            visualBuilderContainer: params.visualBuilderContainer,
-            previousSelectedEditableDOM:
-                VisualBuilder.VisualBuilderGlobalState.value
-                    .previousSelectedEditableDOM,
-                focusedToolbar: params.focusedToolbar,
-                resizeObserver: params.resizeObserver,
-            });
+                event: params.event,
+                overlayWrapper: params.overlayWrapper,
+                visualBuilderContainer: params.visualBuilderContainer,
+                previousSelectedEditableDOM:
+                    VisualBuilder.VisualBuilderGlobalState.value
+                        .previousSelectedEditableDOM,
+                    focusedToolbar: params.focusedToolbar,
+                    resizeObserver: params.resizeObserver,
+                }
+            );
         }
     }
 
