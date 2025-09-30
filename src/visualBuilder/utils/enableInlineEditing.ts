@@ -10,7 +10,6 @@ import { handleFieldInput, handleFieldKeyDown } from "./handleFieldMouseDown";
 import { FieldDataType, VisualBuilderEditContext } from "./types/index.types";
 import { updateFocussedState } from "./updateFocussedState";
 import { pasteAsPlainText } from "./pasteAsPlainText";
-import { clearVisibilityStyles } from "./clearStyles";
 
 export function enableInlineEditing({
     expectedFieldData,
@@ -32,6 +31,7 @@ export function enableInlineEditing({
     const elementComputedDisplay =
         window.getComputedStyle(actualEditableField).display;
 
+    
     let textContent =
         (editableElement as HTMLElement).innerText ||
         editableElement.textContent ||
@@ -42,9 +42,8 @@ export function enableInlineEditing({
         actualEditableField.addEventListener("paste", pasteAsPlainText);
     }
     const expectedTextContent = expectedFieldData;
-
-    const isFieldLastEdited =
-        document.querySelector("[data-cs-last-edited]") === editableElement;
+    
+    const isFieldLastEdited = document.querySelector("[data-cs-last-edited]") === editableElement;
     if (
         (expectedTextContent && textContent !== expectedTextContent) ||
         isEllipsisActive(editableElement as HTMLElement) ||
@@ -53,12 +52,10 @@ export function enableInlineEditing({
         // TODO: Testing will be done in the E2E.
         const pseudoEditableField = generatePseudoEditableElement(
             { editableElement: editableElement as HTMLElement },
-            { textContent: expectedFieldData }
+            { textContent: expectedFieldData } 
         );
 
-        // Hide original element immediately, disabling any transitions/animations
-        const originalElement = editableElement as HTMLElement;
-        clearVisibilityStyles(originalElement);
+        (editableElement as HTMLElement).style.visibility = "hidden";
 
         // set field type attribute to the pseudo editable field
         // ensures proper keydown handling similar to the actual editable field
