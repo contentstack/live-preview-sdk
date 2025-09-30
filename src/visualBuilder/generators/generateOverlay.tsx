@@ -10,10 +10,6 @@ import { FieldDataType } from "../utils/types/index.types";
 import { getFieldType } from "../utils/getFieldType";
 import { getMultilinePlaintext } from "../utils/getMultilinePlaintext";
 import { showAllHiddenHighlightedCommentIcons } from "./generateHighlightedComment";
-import {
-    restoreTruncateStyles,
-    hasStoredLineClampStyles,
-} from "../utils/truncateHandler";
 
 /**
  * Adds a focus overlay to the target element.
@@ -228,18 +224,6 @@ export function hideOverlay(params: HideOverlayParams): void {
         VisualBuilder.VisualBuilderGlobalState.value.focusElementObserver =
             null;
     }
-
-    // Restore truncate styles for the previously selected element before hiding overlay
-    const previousSelectedElement =
-        VisualBuilder.VisualBuilderGlobalState.value
-            .previousSelectedEditableDOM;
-    if (
-        previousSelectedElement &&
-        hasStoredLineClampStyles(previousSelectedElement)
-    ) {
-        restoreTruncateStyles(previousSelectedElement);
-    }
-
     hideFocusOverlay({
         visualBuilderContainer: params.visualBuilderContainer,
         visualBuilderOverlayWrapper: params.visualBuilderOverlayWrapper,

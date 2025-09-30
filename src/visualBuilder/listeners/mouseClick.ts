@@ -32,11 +32,6 @@ import { fixSvgXPath } from "../utils/collabUtils";
 import { v4 as uuidV4 } from "uuid";
 import { CslpData } from "../../cslp/types/cslp.types";
 import { fetchEntryPermissionsAndStageDetails } from "../utils/fetchEntryPermissionsAndStageDetails";
-import {
-    removeTruncateStyles,
-    restoreTruncateStyles,
-    hasStoredLineClampStyles,
-} from "../utils/truncateHandler";
 
 export type HandleBuilderInteractionParams = Omit<
     EventListenerHandlerParams,
@@ -248,14 +243,6 @@ function cleanResidualsIfNeeded(
             previousSelectedElement !== editableElement) ||
         params.reEvaluate
     ) {
-        // Restore truncate styles for the previously selected element
-        if (
-            previousSelectedElement &&
-            hasStoredLineClampStyles(previousSelectedElement)
-        ) {
-            restoreTruncateStyles(previousSelectedElement);
-        }
-
         cleanIndividualFieldResidual({
             overlayWrapper: params.overlayWrapper!,
             visualBuilderContainer: params.visualBuilderContainer,
@@ -290,10 +277,6 @@ function addOverlayAndToolbar(
     isVariant: boolean
 ) {
     VisualBuilder.VisualBuilderGlobalState.value.isFocussed = true;
-
-    // Remove truncate styles from the focused element
-    removeTruncateStyles(editableElement);
-
     addOverlay({
         overlayWrapper: params.overlayWrapper,
         resizeObserver: params.resizeObserver,
