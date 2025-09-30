@@ -291,6 +291,21 @@ export function visualBuilderStyles() {
         "visual-builder__cursor-icon--loader": css`
             animation: visual-builder__spinner 1s linear infinite;
         `,
+        "visual-builder__variant-indicator": css`
+            height: calc(100% - 1px);
+            aspect-ratio: 1;
+            background: white;
+            border-radius: 2px;
+            border-width: 2px;
+            border-style: solid;
+            align-content: center;
+            text-align: center;
+            border-color: #BD59FA;
+
+            svg {
+                color: #BD59FA;
+            }
+        `,
         "visual-builder__focused-toolbar": css`
             position: absolute;
             transform: translateY(-100%);
@@ -347,10 +362,11 @@ export function visualBuilderStyles() {
             display: flex;
             flex-direction: column-reverse;
             position: relative;
+            margin-right: 0.5rem;
         `,
         "visual-builder__focused-toolbar__field-label-container": css`
             display: flex;
-            column-gap: 0.5rem;
+            height: 1.75rem;
             align-items: center;
         `,
         "visual-builder__button": css`
@@ -514,6 +530,12 @@ export function visualBuilderStyles() {
                 background: #909090;
             }
         `,
+        "visual-builder__focused-toolbar--variant": css`
+            .visual-builder__focused-toolbar__field-label-wrapper__current-field {
+                background: #BD59FA;
+            }
+
+        `,
         "visual-builder__cursor-disabled": css`
             .visual-builder__cursor-icon {
                 background: #909090;
@@ -611,6 +633,9 @@ export function visualBuilderStyles() {
         `,
         "visual-builder__hover-outline--disabled": css`
             outline: 2px dashed #909090;
+        `,
+        "visual-builder__hover-outline--variant": css`
+            outline: 2px dashed #BD59FA;
         `,
         "visual-builder__default-cursor--disabled": css`
             cursor: none;

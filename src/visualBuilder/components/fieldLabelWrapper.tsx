@@ -17,6 +17,7 @@ import { VisualBuilderPostMessageEvents } from "../utils/types/postMessage.types
 import { ContentTypeIcon } from "./icons";
 import { ToolbarTooltip } from "./Tooltip";
 import { fetchEntryPermissionsAndStageDetails } from "../utils/fetchEntryPermissionsAndStageDetails";
+import { VariantIndicator } from "./VariantIndicator";
 
 interface ReferenceParentMap {
     [entryUid: string]: {
@@ -246,6 +247,7 @@ function FieldLabelWrapperComponent(
                 ]
             )}
         >
+            {currentField.isVariant ? <VariantIndicator /> : null}
             <ToolbarTooltip data={{contentTypeName: currentField.parentContentTypeName, referenceFieldName: currentField.referenceFieldName}} disabled={!currentField.isReference || isDropdownOpen}>
                 <div
                     className={classNames(
@@ -266,6 +268,15 @@ function FieldLabelWrapperComponent(
                             "field-label-dropdown-open": isDropdownOpen,
                             [visualBuilderStyles()["field-label-dropdown-open"]]:
                                 isDropdownOpen,
+                        },
+                        {
+                            "visual-builder__focused-toolbar--variant":
+                                currentField.isVariant,
+                        },
+                        {
+                            [visualBuilderStyles()[
+                                "visual-builder__focused-toolbar--variant"
+                            ]]: currentField.isVariant,
                         }
                     )}
                     onClick={() => setIsDropdownOpen((prev) => !prev)}
