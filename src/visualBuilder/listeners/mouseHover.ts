@@ -88,16 +88,18 @@ async function addOutline(params?: AddOutlineParams): Promise<void> {
         fieldPath
     );
     if (!fieldSchema) return;
-    const { acl: entryAcl, workflowStage: entryWorkflowStageDetails } =
+    const { acl: entryAcl, workflowStage: entryWorkflowStageDetails, resolvedVariantPermissions } =
         await fetchEntryPermissionsAndStageDetails({
             entryUid: fieldMetadata.entry_uid,
             contentTypeUid: fieldMetadata.content_type_uid,
             locale: fieldMetadata.locale,
             variantUid: fieldMetadata.variant,
+            fieldPathWithIndex: fieldMetadata.fieldPathWithIndex,
         });
     const { isDisabled } = isFieldDisabled(
         fieldSchema,
         eventDetails,
+        resolvedVariantPermissions,
         entryAcl,
         entryWorkflowStageDetails
     );
@@ -374,16 +376,18 @@ async function generateCursor({
     if (!fieldSchema) {
         return;
     }
-    const { acl: entryAcl, workflowStage: entryWorkflowStageDetails } =
+    const { acl: entryAcl, workflowStage: entryWorkflowStageDetails, resolvedVariantPermissions } =
         await fetchEntryPermissionsAndStageDetails({
             entryUid: fieldMetadata.entry_uid,
             contentTypeUid: fieldMetadata.content_type_uid,
             locale: fieldMetadata.locale,
             variantUid: fieldMetadata.variant,
+            fieldPathWithIndex: fieldMetadata.fieldPathWithIndex,
         });
     const { isDisabled: fieldDisabled } = isFieldDisabled(
         fieldSchema,
         eventDetails,
+        resolvedVariantPermissions,
         entryAcl,
         entryWorkflowStageDetails
     );
