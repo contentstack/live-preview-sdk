@@ -8,7 +8,8 @@ import { visualBuilderStyles } from "../visualBuilder.style";
  */
 export function addHoverOutline(
     targetElement: Element,
-    disabled?: boolean
+    disabled?: boolean,
+    isVariant?: boolean
 ): void {
     const targetElementDimension = targetElement.getBoundingClientRect();
 
@@ -29,6 +30,15 @@ export function addHoverOutline(
             hoverOutline.classList.remove(
                 visualBuilderStyles()["visual-builder__hover-outline--disabled"]
             );
+            if (isVariant) {
+                hoverOutline.classList.add(
+                    visualBuilderStyles()["visual-builder__hover-outline--variant"]
+                );
+            } else {
+                hoverOutline.classList.remove(
+                    visualBuilderStyles()["visual-builder__hover-outline--variant"]
+                );
+            }
         }
 
         hoverOutline.style.top = `${

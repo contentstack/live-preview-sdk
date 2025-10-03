@@ -118,7 +118,13 @@ vi.mock("../generators/generateCustomCursor", () => ({
 }));
 
 vi.mock("../visualBuilder.style", () => ({
-    visualBuilderStyles: vi.fn().mockReturnValue({}),
+    visualBuilderStyles: vi.fn().mockReturnValue({
+        "visual-builder__focused-toolbar--variant": "visual-builder__focused-toolbar--variant"
+    }),
+}));
+
+vi.mock("../VariantIndicator", () => ({
+    VariantIndicator: () => <div data-testid="variant-indicator">Variant</div>
 }));
 
 vi.mock("../../utils/errorHandling", () => ({
@@ -386,5 +392,79 @@ describe("FieldLabelWrapperComponent", () => {
 
         const contentTypeIcon = container.querySelector(".visual-builder__content-type-icon");
         expect(contentTypeIcon).not.toBeInTheDocument();
+    });
+
+    test("renders VariantIndicator when field has variant", async () => {
+        const variantFieldMetadata = {
+            ...mockFieldMetadata,
+            variant: "variant-uid-123"
+        };
+
+        const { findByTestId } = await asyncRender(
+            <FieldLabelWrapperComponent
+                fieldMetadata={variantFieldMetadata}
+                eventDetails={mockEventDetails}
+                parentPaths={[]}
+                getParentEditableElement={mockGetParentEditable}
+            />
+        );
+
+        const variantIndicator = await findByTestId("variant-indicator");
+        expect(variantIndicator).toBeInTheDocument();
+    });
+
+    test("does not render VariantIndicator when field has no variant", async () => {
+        const { container } = await asyncRender(
+            <FieldLabelWrapperComponent
+                fieldMetadata={mockFieldMetadata}
+                eventDetails={mockEventDetails}
+                parentPaths={[]}
+                getParentEditableElement={mockGetParentEditable}
+            />
+        );
+
+        await waitFor(() => {
+            const variantIndicator = container.querySelector("[data-testid='variant-indicator']");
+            expect(variantIndicator).not.toBeInTheDocument();
+        });
+    });
+
+    test("applies variant CSS classes when field has variant", async () => {
+        const variantFieldMetadata = {
+            ...mockFieldMetadata,
+            variant: "variant-uid-123"
+        };
+
+        const { findByTestId } = await asyncRender(
+            <FieldLabelWrapperComponent
+                fieldMetadata={variantFieldMetadata}
+                eventDetails={mockEventDetails}
+                parentPaths={[]}
+                getParentEditableElement={mockGetParentEditable}
+            />
+        );
+
+        const fieldLabelWrapper = await findByTestId("visual-builder__focused-toolbar__field-label-wrapper");
+        
+        await waitFor(() => {
+            expect(fieldLabelWrapper).toHaveClass("visual-builder__focused-toolbar--variant");
+        });
+    });
+
+    test("does not apply variant CSS classes when field has no variant", async () => {
+        const { findByTestId } = await asyncRender(
+            <FieldLabelWrapperComponent
+                fieldMetadata={mockFieldMetadata}
+                eventDetails={mockEventDetails}
+                parentPaths={[]}
+                getParentEditableElement={mockGetParentEditable}
+            />
+        );
+
+        const fieldLabelWrapper = await findByTestId("visual-builder__focused-toolbar__field-label-wrapper");
+        
+        await waitFor(() => {
+            expect(fieldLabelWrapper).not.toHaveClass("visual-builder__focused-toolbar--variant");
+        });
     });
 });
