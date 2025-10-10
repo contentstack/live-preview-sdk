@@ -9,8 +9,11 @@ const DisableReason = {
     ReadOnly: "You have only read access to this field",
     LocalizedEntry: "Editing this field is restricted in localized entries",
     UnlinkedVariant:
-        "This field is not editable as it is not linked to the selected variant",
-    AudienceMode: "To edit an experience, open the Audience widget and click the Edit icon.",
+        "This field is not editable as it is not linked to the selected variant.",
+    canLinkVaraint: "Click here to link a variant",
+    cannotLinkVariant: "Contact your stack admin or owner to link it.",
+    AudienceMode:
+        "To edit an experience, open the Audience widget and click the Edit icon.",
     DisabledVariant:
         "This field is not editable as it doesn't match the selected variant",
     UnlocalizedVariant: "This field is not editable as it is not localized",
@@ -40,8 +43,15 @@ const getDisableReason = (
         return DisableReason.LocalizedEntry;
     if (flags.updateRestrictDueToUnlocalizedVariant)
         return DisableReason.UnlocalizedVariant;
-    if (flags.updateRestrictDueToUnlinkVariant)
-        return DisableReason.UnlinkedVariant;
+    if (flags.updateRestrictDueToUnlinkVariant) {
+        let reason = DisableReason.UnlinkedVariant;
+        if (flags.canLinkVariant) {
+            reason += ` ${DisableReason.canLinkVaraint}`;
+        } else {
+            reason += ` ${DisableReason.cannotLinkVariant}`;
+        }
+        return reason;
+    }
     if (flags.updateRestrictDueToAudienceMode)
         return DisableReason.AudienceMode;
     if (flags.updateRestrictDueToDisabledVariant)
@@ -83,6 +93,7 @@ export const isFieldDisabled = (
         updateRestrictDueToUnlinkVariant: Boolean(
             fieldSchemaMap?.field_metadata?.isUnlinkedVariant
         ),
+        canLinkVariant: Boolean(fieldSchemaMap?.field_metadata?.canLinkVariant),
         updateRestrictDueToUnlocalizedVariant: Boolean(
             variant && fieldMetadata.locale !== cmsLocale
         ),
