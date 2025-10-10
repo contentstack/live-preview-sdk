@@ -129,7 +129,7 @@ function FieldLabelWrapperComponent(
                 getReferenceParentMap()
             ]);
             const entryUid = props.fieldMetadata.entry_uid;
-            
+
             const referenceData = referenceParentMap[entryUid];
             const isReference = !!referenceData;
 
@@ -189,6 +189,18 @@ function FieldLabelWrapperComponent(
                             ]
                         )}
                         data-tooltip={reason}
+                        onClick={() => {
+                            if (fieldSchema.field_metadata?.canLinkVariant) {
+                                visualBuilderPostMessage?.send(
+                                    VisualBuilderPostMessageEvents.OPEN_LINK_VARIANT_MODAL,
+                                    {
+                                        contentTypeUid:
+                                            props.fieldMetadata
+                                                .content_type_uid,
+                                    }
+                                );
+                            }
+                        }}
                     >
                         <InfoIcon />
                     </div>
@@ -303,11 +315,11 @@ function FieldLabelWrapperComponent(
                     >
                         {
                             currentField.isReference && !dataLoading && !error ? 
-                            <div 
-                            className={classNames(
-                                "visual-builder__reference-icon-container",
+                            <div
+                                className={classNames(
+                                    "visual-builder__reference-icon-container",
                                 visualBuilderStyles()["visual-builder__reference-icon-container"]
-                            )}
+                                )}
                             >
                                 <div
                                     className={classNames(
