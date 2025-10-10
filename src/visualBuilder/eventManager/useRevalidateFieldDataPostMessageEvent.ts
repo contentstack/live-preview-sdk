@@ -53,10 +53,6 @@ async function handleRevalidateFieldData(): Promise<void> {
                     ]);
 
                     if (fieldSchema && fieldData) {
-                        console.log(
-                            "Successfully revalidated field data for content type:",
-                            fieldMetadata.content_type_uid
-                        );
                         return;
                     }
                 } catch (fieldError) {
@@ -72,16 +68,12 @@ async function handleRevalidateFieldData(): Promise<void> {
         // Fallback 1: Clear all field schema cache
         try {
             FieldSchemaMap.clear();
-            console.log(
-                "Cleared all field schema cache due to revalidation request"
-            );
             return;
         } catch (clearError) {
-            console.warn("Failed to clear field schema cache:", clearError);
+            console.error("Failed to clear field schema cache:", clearError);
         }
 
         // Fallback 2: Refresh the entire iframe
-        console.log("Refreshing iframe due to failed field data revalidation");
         window.location.reload();
     } catch (error) {
         console.error("Error handling revalidate field data:", error);
