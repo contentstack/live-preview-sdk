@@ -9,6 +9,8 @@ export enum VisualBuilderPostMessageEvents {
     TOGGLE_FORM = "toggle-quick-form",
     GET_FIELD_SCHEMA = "get-field-schema",
     GET_FIELD_DATA = "get-field-data",
+    REVALIDATE_FIELD_DATA = "revalidate-field-data",
+    OPEN_LINK_VARIANT_MODAL = "open-link-variant-modal",
     GET_FIELD_PATH_WITH_UID = "get-field-path-with-uid",
     GET_FIELD_DISPLAY_NAMES = "get-field-display-names",
     MOUSE_CLICK = "mouse-click",
