@@ -72,7 +72,30 @@ describe("isFieldDisabled", () => {
         const result = isFieldDisabled(fieldSchemaMap, eventFieldDetails);
         expect(result.isDisabled).toBe(true);
         expect(result.reason).toBe(
-            "This field is not editable as it is not linked to the selected variant"
+            "This field is not editable as it is not linked to the selected variant. Contact your stack admin or owner to link it."
+        );
+    });
+
+    it("should return disabled state due to unlinked variant with link option", () => {
+        // @ts-expect-error mocking only required properties
+        const fieldSchemaMap: ISchemaFieldMap = {
+            field_metadata: {
+                isUnlinkedVariant: true,
+                canLinkVariant: true,
+            },
+        };
+        const eventFieldDetails: FieldDetails = {
+            editableElement: document.createElement("div"),
+            // @ts-expect-error mocking only required properties
+            fieldMetadata: {
+                locale: "en-us",
+            },
+        };
+
+        const result = isFieldDisabled(fieldSchemaMap, eventFieldDetails);
+        expect(result.isDisabled).toBe(true);
+        expect(result.reason).toBe(
+            "This field is not editable as it is not linked to the selected variant. Click here to link a variant"
         );
     });
 
