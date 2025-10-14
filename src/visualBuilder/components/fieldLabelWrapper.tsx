@@ -188,20 +188,42 @@ function FieldLabelWrapperComponent(
                                 "visual-builder__tooltip--persistent"
                             ]
                         )}
-                        data-tooltip={reason}
-                        onClick={() => {
-                            if (fieldSchema.field_metadata?.canLinkVariant) {
-                                visualBuilderPostMessage?.send(
-                                    VisualBuilderPostMessageEvents.OPEN_LINK_VARIANT_MODAL,
-                                    {
-                                        contentTypeUid:
-                                            props.fieldMetadata
-                                                .content_type_uid,
-                                    }
-                                );
-                            }
-                        }}
+                        data-tooltip={!reason?.toLowerCase().includes("click here to link a variant")
+                            ? reason
+                            : undefined}
                     >
+                        {reason
+                            .toLowerCase()
+                            .includes("click here to link a variant") && (
+                                <div
+                                className={visualBuilderStyles()["visual-builder__custom-tooltip"]}
+                                onClick={() => {
+                                    if (fieldSchema.field_metadata?.canLinkVariant) {
+                                        visualBuilderPostMessage?.send(
+                                            VisualBuilderPostMessageEvents.OPEN_LINK_VARIANT_MODAL,
+                                            {
+                                                contentTypeUid:
+                                                    props.fieldMetadata
+                                                        .content_type_uid,
+                                            }
+                                        );
+                                    }
+                                }}
+                            >
+                                {(() => {
+                                    const [before, after] = reason.split(
+                                        /here/i
+                                    );
+                                    return (
+                                        <>
+                                            {before}
+                                            <span style={{ textDecoration: "underline" }}>here</span>
+                                            {after}
+                                        </>
+                                    );
+                                })()}
+                            </div>
+                        )}
                         <InfoIcon />
                     </div>
                 ) : hasParentPaths ? (
