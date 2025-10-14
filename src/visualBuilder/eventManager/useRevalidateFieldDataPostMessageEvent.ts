@@ -44,27 +44,6 @@ async function handleRevalidateFieldData(): Promise<void> {
                     FieldSchemaMap.clearContentTypeSchema(
                         fieldMetadata.content_type_uid
                     );
-
-                    // Fetch fresh field schema and data
-                    const [fieldSchema, fieldData] = await Promise.all([
-                        FieldSchemaMap.getFieldSchema(
-                            fieldMetadata.content_type_uid,
-                            fieldMetadata.fieldPath
-                        ),
-                        getFieldData(
-                            {
-                                content_type_uid:
-                                    fieldMetadata.content_type_uid,
-                                entry_uid: fieldMetadata.entry_uid,
-                                locale: fieldMetadata.locale,
-                            },
-                            fieldMetadata.fieldPathWithIndex
-                        ),
-                    ]);
-
-                    if (fieldSchema && fieldData) {
-                        return;
-                    }
                 } catch (fieldError) {
                     console.warn(
                         "Failed to revalidate content type:",

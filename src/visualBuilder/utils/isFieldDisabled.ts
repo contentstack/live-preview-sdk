@@ -10,8 +10,8 @@ const DisableReason = {
     LocalizedEntry: "Editing this field is restricted in localized entries",
     UnlinkedVariant:
         "This field is not editable as it is not linked to the selected variant.",
-    canLinkVaraint: "Click here to link a variant",
-    cannotLinkVariant: "Contact your stack admin or owner to link it.",
+    CanLinkVaraint: "Click here to link a variant",
+    CannotLinkVariant: "Contact your stack admin or owner to link it.",
     AudienceMode:
         "To edit an experience, open the Audience widget and click the Edit icon.",
     DisabledVariant:
@@ -46,9 +46,9 @@ const getDisableReason = (
     if (flags.updateRestrictDueToUnlinkVariant) {
         let reason = DisableReason.UnlinkedVariant;
         if (flags.canLinkVariant) {
-            reason += ` ${DisableReason.canLinkVaraint}`;
+            reason += ` ${DisableReason.CanLinkVaraint}`;
         } else {
-            reason += ` ${DisableReason.cannotLinkVariant}`;
+            reason += ` ${DisableReason.CannotLinkVariant}`;
         }
         return reason;
     }
