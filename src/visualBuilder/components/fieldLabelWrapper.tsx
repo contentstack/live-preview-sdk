@@ -129,7 +129,7 @@ function FieldLabelWrapperComponent(
                 getReferenceParentMap()
             ]);
             const entryUid = props.fieldMetadata.entry_uid;
-            
+
             const referenceData = referenceParentMap[entryUid];
             const isReference = !!referenceData;
 
@@ -171,6 +171,19 @@ function FieldLabelWrapperComponent(
                 entryWorkflowStageDetails
             );
 
+            const handleLinkVariant = () => {
+                if (fieldSchema.field_metadata?.canLinkVariant) {
+                    visualBuilderPostMessage?.send(
+                        VisualBuilderPostMessageEvents.OPEN_LINK_VARIANT_MODAL,
+                        {
+                            contentTypeUid:
+                                props.fieldMetadata
+                                    .content_type_uid,
+                        }
+                    );
+                }
+            };
+
             const currentFieldDisplayName =
                 displayNames?.[props.fieldMetadata.cslpValue] ??
                 fieldSchema.display_name;
@@ -188,8 +201,31 @@ function FieldLabelWrapperComponent(
                                 "visual-builder__tooltip--persistent"
                             ]
                         )}
-                        data-tooltip={reason}
+                        data-tooltip={!reason?.toLowerCase().includes("click here to link a variant")
+                            ? reason
+                            : undefined}
                     >
+                        {reason
+                            .toLowerCase()
+                            .includes("click here to link a variant") && (
+                                <div
+                                className={visualBuilderStyles()["visual-builder__custom-tooltip"]}
+                                onClick={handleLinkVariant}
+                            >
+                                {(() => {
+                                    const [before, after] = reason.split(
+                                        /here/i
+                                    );
+                                    return (
+                                        <>
+                                            {before}
+                                            <span style={{ textDecoration: "underline" }}>here</span>
+                                            {after}
+                                        </>
+                                    );
+                                })()}
+                            </div>
+                        )}
                         <InfoIcon />
                     </div>
                 ) : hasParentPaths ? (
@@ -303,11 +339,11 @@ function FieldLabelWrapperComponent(
                     >
                         {
                             currentField.isReference && !dataLoading && !error ? 
-                            <div 
-                            className={classNames(
-                                "visual-builder__reference-icon-container",
+                            <div
+                                className={classNames(
+                                    "visual-builder__reference-icon-container",
                                 visualBuilderStyles()["visual-builder__reference-icon-container"]
-                            )}
+                                )}
                             >
                                 <div
                                     className={classNames(

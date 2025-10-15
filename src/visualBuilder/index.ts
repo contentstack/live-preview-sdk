@@ -25,6 +25,7 @@ import { extractDetailsFromCslp } from "../cslp";
 import initUI from "./components";
 import { useDraftFieldsPostMessageEvent } from "./eventManager/useDraftFieldsPostMessageEvent";
 import { useHideFocusOverlayPostMessageEvent } from "./eventManager/useHideFocusOverlayPostMessageEvent";
+import { useRevalidateFieldDataPostMessageEvent } from "./eventManager/useRevalidateFieldDataPostMessageEvent";
 import { useScrollToField } from "./eventManager/useScrollToField";
 import { useVariantFieldsPostMessageEvent } from "./eventManager/useVariantsPostMessageEvent";
 import {
@@ -371,21 +372,18 @@ export class VisualBuilder {
                         VisualBuilderPostMessageEvents.SEND_VARIANT_AND_LOCALE
                     );
 
-                        visualBuilderPostMessage?.on<{
-                            scroll: boolean
-                        }>(
-                            VisualBuilderPostMessageEvents.TOGGLE_SCROLL,
-                            (event) => {
-                                if (!event.data.scroll) {
-                                    document.body.style.overflow = 'hidden'
-                                } else {
-                                    document.body.style.overflow = 'auto'
-                                }
+                    visualBuilderPostMessage?.on<{
+                        scroll: boolean;
+                    }>(
+                        VisualBuilderPostMessageEvents.TOGGLE_SCROLL,
+                        (event) => {
+                            if (!event.data.scroll) {
+                                document.body.style.overflow = "hidden";
+                            } else {
+                                document.body.style.overflow = "auto";
                             }
-                        );
-                    
-                    
-                    
+                        }
+                    );
 
                     useHideFocusOverlayPostMessageEvent({
                         overlayWrapper: this.overlayWrapper,
@@ -399,6 +397,7 @@ export class VisualBuilder {
                     useRecalculateVariantDataCSLPValues();
                     useDraftFieldsPostMessageEvent();
                     useVariantFieldsPostMessageEvent();
+                    useRevalidateFieldDataPostMessageEvent();
                 }
             })
             .catch(() => {
