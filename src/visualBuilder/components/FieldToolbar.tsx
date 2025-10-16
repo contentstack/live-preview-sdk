@@ -43,6 +43,7 @@ import { EntryPermissions } from "../utils/getEntryPermissions";
 import { FieldLocationAppList } from "./FieldLocationAppList";
 import { FieldLocationIcon } from "./FieldLocationIcon";
 import { WorkflowStageDetails } from "../utils/getWorkflowStageDetails";
+import { ResolvedVariantPermissions } from "../utils/getResolvedVariantPermissions";
 
 export type FieldDetails = Pick<
     VisualBuilderCslpEventDetails,
@@ -57,6 +58,7 @@ interface MultipleFieldToolbarProps {
     isVariant?: boolean;
     entryPermissions?: EntryPermissions | undefined;
     entryWorkflowStageDetails?: WorkflowStageDetails | undefined;
+    resolvedVariantPermissions?: ResolvedVariantPermissions | undefined;
 }
 
 function handleReplaceAsset(fieldMetadata: CslpData) {
@@ -117,6 +119,7 @@ function FieldToolbarComponent(
         isVariant: isVariantOrParentOfVariant,
         entryPermissions,
         entryWorkflowStageDetails,
+        resolvedVariantPermissions,
     } = props;
     const { fieldMetadata, editableElement: targetElement } = eventDetails;
     const [isFormLoading, setIsFormLoading] = useState(false);
@@ -157,8 +160,9 @@ function FieldToolbarComponent(
                 editableElement: targetElement,
                 fieldMetadata,
             },
+            resolvedVariantPermissions,
             entryPermissions,
-            entryWorkflowStageDetails
+            entryWorkflowStageDetails,
         );
         disableFieldActions = isDisabled;
 

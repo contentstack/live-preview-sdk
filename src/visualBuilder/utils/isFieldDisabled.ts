@@ -4,10 +4,12 @@ import { VisualBuilder } from "..";
 import { FieldDetails } from "../components/FieldToolbar";
 import { EntryPermissions } from "./getEntryPermissions";
 import { WorkflowStageDetails } from "./getWorkflowStageDetails";
+import { ResolvedVariantPermissions } from "./getResolvedVariantPermissions";
 
 const DisableReason = {
     ReadOnly: "You have only read access to this field",
     LocalizedEntry: "Editing this field is restricted in localized entries",
+    ResolvedVariantPermissions: "This field does not exist in the selected variant",
     UnlinkedVariant:
         "This field is not editable as it is not linked to the selected variant",
     AudienceMode: "To edit an experience, open the Audience widget and click the Edit icon.",
@@ -62,14 +64,18 @@ const getDisableReason = (
             stageName: params?.stageName ? params.stageName : "Unknown",
         });
     }
+    if(flags.updateRestrictDueToResolvedVariantPermissions) {
+        return DisableReason.ResolvedVariantPermissions;
+    }
     return DisableReason.None;
 };
 
 export const isFieldDisabled = (
     fieldSchemaMap: ISchemaFieldMap,
     eventFieldDetails: FieldDetails,
+    resolvedVariantPermissions?: ResolvedVariantPermissions,
     entryPermissions?: EntryPermissions,
-    entryWorkflowStageDetails?: WorkflowStageDetails
+    entryWorkflowStageDetails?: WorkflowStageDetails,
 ): FieldDisableState => {
     const { editableElement, fieldMetadata } = eventFieldDetails;
     const masterLocale = Config.get().stackDetails.masterLocale || "en-us";
@@ -90,6 +96,9 @@ export const isFieldDisabled = (
             fieldSchemaMap?.non_localizable &&
                 masterLocale !== fieldMetadata.locale
         ),
+        updateRestrictDueToResolvedVariantPermissions: resolvedVariantPermissions ? Boolean(
+            !resolvedVariantPermissions.update
+        ) : false,
         updateRestrictDueToAudienceMode: false,
         updateRestrictDueToDisabledVariant: false,
     };

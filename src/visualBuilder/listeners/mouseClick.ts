@@ -310,23 +310,26 @@ async function handleFieldSchemaAndIndividualFields(
         fieldPath,
         locale,
         variant: variantUid,
+        fieldPathWithIndex,
     } = fieldMetadata;
     const fieldSchema = await FieldSchemaMap.getFieldSchema(
         content_type_uid,
         fieldPath
     );
-    const { acl: entryAcl, workflowStage: entryWorkflowStageDetails } =
+    const { acl: entryAcl, workflowStage: entryWorkflowStageDetails, resolvedVariantPermissions } =
         await fetchEntryPermissionsAndStageDetails({
             entryUid: entry_uid,
             contentTypeUid: content_type_uid,
             locale,
             variantUid,
+            fieldPathWithIndex,
         });
 
     if (fieldSchema) {
         const { isDisabled } = isFieldDisabled(
             fieldSchema,
             eventDetails,
+            resolvedVariantPermissions,
             entryAcl,
             entryWorkflowStageDetails
         );

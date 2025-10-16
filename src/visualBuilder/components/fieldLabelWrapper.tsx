@@ -157,18 +157,20 @@ function FieldLabelWrapperComponent(
                 return;
             }
 
-            const { acl: entryAcl, workflowStage: entryWorkflowStageDetails } =
+            const { acl: entryAcl, workflowStage: entryWorkflowStageDetails, resolvedVariantPermissions } =
                 await fetchEntryPermissionsAndStageDetails({
                     entryUid: props.fieldMetadata.entry_uid,
                     contentTypeUid: props.fieldMetadata.content_type_uid,
                     locale: props.fieldMetadata.locale,
                     variantUid: props.fieldMetadata.variant,
+                    fieldPathWithIndex: props.fieldMetadata.fieldPathWithIndex,
                 });
             const { isDisabled: fieldDisabled, reason } = isFieldDisabled(
                 fieldSchema,
                 eventDetails,
+                resolvedVariantPermissions,
                 entryAcl,
-                entryWorkflowStageDetails
+                entryWorkflowStageDetails,
             );
 
             const currentFieldDisplayName =
