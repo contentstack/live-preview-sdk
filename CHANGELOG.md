@@ -1,8 +1,48 @@
 # Changelog
 
+## [v4.1.1](https://github.com/contentstack/live-preview-sdk/compare/v4.1.0...v4.1.1)
+
+> 15 October 2025
+
+### Fixes
+
+- fix: preact signals issue with newer npm version 11 (Kirtesh Suthar - [#513](https://github.com/contentstack/live-preview-sdk/pull/513))
+
+### General Changes
+
+- Develop v4 (Kirtesh Suthar - [#515](https://github.com/contentstack/live-preview-sdk/pull/515))
+
+### Fixes
+
+- fix: just use the caret symbol to update preat signals properly (Kirtesh Suthar - [29ecef4](https://github.com/contentstack/live-preview-sdk/commit/29ecef4dbf5df3c6cdf0027dc8e882125aae1bcf))
+
+## [v4.1.0](https://github.com/contentstack/live-preview-sdk/compare/v4.0.2...v4.1.0)
+
+> 3 October 2025
+
+### General Changes
+
+- 2nd Oct Release (Mridul Sharma - [#512](https://github.com/contentstack/live-preview-sdk/pull/512))
+- 2nd October release  (Mridul Sharma - [#511](https://github.com/contentstack/live-preview-sdk/pull/511))
+- 1st oct 2025 to develop v4 (Aditya Pachauri - [#510](https://github.com/contentstack/live-preview-sdk/pull/510))
+- [Feat/VB-442] Indicator for variant fields (Ayush Dubey - [#508](https://github.com/contentstack/live-preview-sdk/pull/508))
+
+### New Features
+
+- feat: variant indicator (csAyushDubey - [178f8ef](https://github.com/contentstack/live-preview-sdk/commit/178f8ef912a9ebcf57df5a8d71d38d916ed5aa31))
+
+### Fixes
+
+- fix: test (csAyushDubey - [6c018c5](https://github.com/contentstack/live-preview-sdk/commit/6c018c5308a06a77af502c6a27dd4df4cc0c23dd))
+- fix: test (csAyushDubey - [a89e061](https://github.com/contentstack/live-preview-sdk/commit/a89e061e66718871ce17d1217a0550ccaf83698b))
+
+### Chores And Housekeeping
+
+- chore: update the version from v4.0.2 to v4.1.0 (Mridul Sharma - [4e4153a](https://github.com/contentstack/live-preview-sdk/commit/4e4153a9a44c0bb83bcfb4b2cc5a4c071e55c0e7))
+
 ## [v4.0.2](https://github.com/contentstack/live-preview-sdk/compare/v4.0.1...v4.0.2)
 
-> 16 September 2025
+> 18 September 2025
 
 ### New Features
 
@@ -19,6 +59,7 @@
 
 ### General Changes
 
+- stage v4 to main (Aditya Pachauri - [#507](https://github.com/contentstack/live-preview-sdk/pull/507))
 - Develop v4 (Kirtesh Suthar - [#506](https://github.com/contentstack/live-preview-sdk/pull/506))
 - 18th sept 2025 release (Kirtesh Suthar - [#505](https://github.com/contentstack/live-preview-sdk/pull/505))
 - Live preview new tab ssr issue (Mridul Sharma - [#502](https://github.com/contentstack/live-preview-sdk/pull/502))
@@ -69,6 +110,7 @@
 - chore: increased test timeout for CI (csAyushDubey - [8830f3c](https://github.com/contentstack/live-preview-sdk/commit/8830f3c3fa5bec5253b3b57f85e866d331089198))
 - chore: increased timeout further (csAyushDubey - [da638dd](https://github.com/contentstack/live-preview-sdk/commit/da638dd326270a094cc456289b6c533bca1f43ba))
 - chore(VE-6918/error-text): component name changed to title case (Aditya Pachauri - [ec3ccab](https://github.com/contentstack/live-preview-sdk/commit/ec3ccab4ef0d8d456d650f4dd6896d119bb9c32b))
+- chore: update readme with new version (Kirtesh Suthar - [de3a9db](https://github.com/contentstack/live-preview-sdk/commit/de3a9dbf8930a6926bb2d36762204ac18799ddb8))
 - chore: removed unused console log (Mridul Sharma - [e65d15c](https://github.com/contentstack/live-preview-sdk/commit/e65d15c51445e58b46e8d37a2a375fe2cf2f739a))
 - chore: added test cases and updated .talismanrc (SahilCs15 - [07ffb6e](https://github.com/contentstack/live-preview-sdk/commit/07ffb6ea358ff1232c958b7e2cd05b25b46f430f))
 - chore: talismanrc update (csAyushDubey - [d9a0d09](https://github.com/contentstack/live-preview-sdk/commit/d9a0d09bd157ffcf8675c05efc5afd6add854c56))
@@ -263,6 +305,15 @@
 - Release - 12th June (merge `stage_v3`) (Hitesh Shetty - [#445](https://github.com/contentstack/live-preview-sdk/pull/445))
 - Staging develop_v3 (Ayush Dubey - [#444](https://github.com/contentstack/live-preview-sdk/pull/444))
 - Revert 441 revert 439 collab (diwakarmk7 - [#443](https://github.com/contentstack/live-preview-sdk/pull/443))
+- Release version 3.2.3 (Kirtesh Suthar - [#442](https://github.com/contentstack/live-preview-sdk/pull/442))
+- Revert "Collab" (diwakarmk7 - [#441](https://github.com/contentstack/live-preview-sdk/pull/441))
+- Collab (diwakarmk7 - [#439](https://github.com/contentstack/live-preview-sdk/pull/439))
+- Prepare for release from - Develop v3 (Kirtesh Suthar - [#440](https://github.com/contentstack/live-preview-sdk/pull/440))
+
+### Fixes
+
+- fix(collab): username display difference fix (diwakarmk7 - [bfc29e3](https://github.com/contentstack/live-preview-sdk/commit/bfc29e36527e62fa682089769bb3653dbc924dbc))
+- fix: update Contentstack Live Preview utils import to version 3.2.3 in README.md (Kirtesh Suthar - [e7da871](https://github.com/contentstack/live-preview-sdk/commit/e7da8715787d6636cff4ad4c09233e57a727af72))
 
 ### Chores And Housekeeping
 
@@ -272,40 +323,28 @@
 ### General Changes
 
 - Revert "Revert "Collab"" (diwakarmk7 - [087ab2a](https://github.com/contentstack/live-preview-sdk/commit/087ab2aa818897ce409c61c2472f4b03cbf9762b))
+- added tests for comment text area comp (diwakarmk7 - [2ca321b](https://github.com/contentstack/live-preview-sdk/commit/2ca321b853e524f8d635f6270ca7f26e5bf8807a))
+- added tests for comment text area comp (diwakarmk7 - [119fc48](https://github.com/contentstack/live-preview-sdk/commit/119fc48cedaaa67518096595984d6c4b120edaa0))
+- popup state fix (diwakarmk7 - [0f8dcf1](https://github.com/contentstack/live-preview-sdk/commit/0f8dcf1df32a52ffff9e1a168200c28f085bee2f))
 - review comment resolved (diwakarmk7 - [87f990f](https://github.com/contentstack/live-preview-sdk/commit/87f990f9b8e8770ab074dbc5a0624e021e5529fd))
+- conflict resolve (diwakarmk7 - [45d4c6f](https://github.com/contentstack/live-preview-sdk/commit/45d4c6f77a05a4a254f9b96624b87a2453f03679))
 
 ## [v3.2.3](https://github.com/contentstack/live-preview-sdk/compare/v3.2.2...v3.2.3)
 
-> 29 May 2025
+> 28 May 2025
 
 ### Fixes
 
 - fix: update LightLivePreviewHoC config to use IExportedConfig type (Kirtesh Suthar - [#438](https://github.com/contentstack/live-preview-sdk/pull/438))
 
-### General Changes
-
-- Release version 3.2.3 (Kirtesh Suthar - [#442](https://github.com/contentstack/live-preview-sdk/pull/442))
-- Revert "Collab" (diwakarmk7 - [#441](https://github.com/contentstack/live-preview-sdk/pull/441))
-- Collab (diwakarmk7 - [#439](https://github.com/contentstack/live-preview-sdk/pull/439))
-- Prepare for release from - Develop v3 (Kirtesh Suthar - [#440](https://github.com/contentstack/live-preview-sdk/pull/440))
-
 ### Fixes
 
-- fix: update Contentstack Live Preview utils import to version 3.2.3 in README.md (Kirtesh Suthar - [e7da871](https://github.com/contentstack/live-preview-sdk/commit/e7da8715787d6636cff4ad4c09233e57a727af72))
-- fix(collab): username display difference fix (diwakarmk7 - [bfc29e3](https://github.com/contentstack/live-preview-sdk/commit/bfc29e36527e62fa682089769bb3653dbc924dbc))
 - fix: update checksum for README.md in .talismanrc (Kirtesh Suthar - [45c8c99](https://github.com/contentstack/live-preview-sdk/commit/45c8c9976ae04970a0fcf11dd2fce35f4dee949b))
 - fix: update script integrity hash in README.md for Contentstack Live Preview utils (Kirtesh Suthar - [1f024ce](https://github.com/contentstack/live-preview-sdk/commit/1f024ce31c299cd312cfb26ba85498d967f02d25))
 
 ### Refactoring and Updates
 
 - refactor: move LightLivePreviewHoC to a new file and simplify index.ts (Kirtesh Suthar - [e248309](https://github.com/contentstack/live-preview-sdk/commit/e248309141411ac1398b7661bdc5bd83dfab8857))
-
-### General Changes
-
-- conflict resolve (diwakarmk7 - [45d4c6f](https://github.com/contentstack/live-preview-sdk/commit/45d4c6f77a05a4a254f9b96624b87a2453f03679))
-- added tests for comment text area comp (diwakarmk7 - [2ca321b](https://github.com/contentstack/live-preview-sdk/commit/2ca321b853e524f8d635f6270ca7f26e5bf8807a))
-- added tests for comment text area comp (diwakarmk7 - [119fc48](https://github.com/contentstack/live-preview-sdk/commit/119fc48cedaaa67518096595984d6c4b120edaa0))
-- popup state fix (diwakarmk7 - [0f8dcf1](https://github.com/contentstack/live-preview-sdk/commit/0f8dcf1df32a52ffff9e1a168200c28f085bee2f))
 
 ## [v3.2.2](https://github.com/contentstack/live-preview-sdk/compare/v3.2.1...v3.2.2)
 
@@ -615,11 +654,9 @@
 ### General Changes
 
 - sync main for upcoming release (Hitesh Shetty - [#338](https://github.com/contentstack/live-preview-sdk/pull/338))
-- 3.1.0 (Kirtesh Suthar - [#323](https://github.com/contentstack/live-preview-sdk/pull/323))
 
 ### Fixes
 
-- fix: live preview doc (Kirtesh Suthar - [f81fdf5](https://github.com/contentstack/live-preview-sdk/commit/f81fdf55fd2ab2ce4cac3bf974b0a31566c24001))
 - fix: live preview doc (Kirtesh Suthar - [8fcdcc5](https://github.com/contentstack/live-preview-sdk/commit/8fcdcc5127ea722bd9c01f74b1168d9f579e5f30))
 
 ### Chores And Housekeeping
@@ -639,9 +676,9 @@
 - jira.yml (Aravind Kumar - [30e4861](https://github.com/contentstack/live-preview-sdk/commit/30e4861e33d5f7c89cffef109e50aa811f6b346a))
 - sca-scan.yml (Aravind Kumar - [bcb5ca8](https://github.com/contentstack/live-preview-sdk/commit/bcb5ca8a3a820fab6199166882ae80e8438a074d))
 
-## [v3.1.0](https://github.com/contentstack/live-preview-sdk/compare/v3.0.2...v3.1.0)
+## [v3.1.0](https://github.com/contentstack/live-preview-sdk/compare/v3.0.3...v3.1.0)
 
-> 10 January 2025
+> 16 January 2025
 
 ### New Features
 
@@ -658,6 +695,7 @@
 
 ### General Changes
 
+- 3.1.0 (Kirtesh Suthar - [#323](https://github.com/contentstack/live-preview-sdk/pull/323))
 - Feat/auto changelog (Kirtesh Suthar - [#321](https://github.com/contentstack/live-preview-sdk/pull/321))
 
 ### New Features
@@ -668,6 +706,7 @@
 ### Fixes
 
 - fix: issue with variant revert dropdown in canvas and show variant icon for multiple fields (Srinadh Reddy - [8718c48](https://github.com/contentstack/live-preview-sdk/commit/8718c4832f30606437da1fd18513006f21e0fd34))
+- fix: live preview doc (Kirtesh Suthar - [f81fdf5](https://github.com/contentstack/live-preview-sdk/commit/f81fdf55fd2ab2ce4cac3bf974b0a31566c24001))
 
 ### Chores And Housekeeping
 
@@ -685,9 +724,9 @@
 - test: update mock type casting in visual builder tests (hiteshshetty-dev - [a2d4397](https://github.com/contentstack/live-preview-sdk/commit/a2d4397f53f114e5c7d19e3c0ea2329581e1009f))
 - test: enable number field test suite in visual builder input tests (hiteshshetty-dev - [0f59956](https://github.com/contentstack/live-preview-sdk/commit/0f5995635cb1cf29ccdac1ec45b1288b6d494e2d))
 
-## [v3.0.2](https://github.com/contentstack/live-preview-sdk/compare/v3.0.1...v3.0.2)
+## [v3.0.3](https://github.com/contentstack/live-preview-sdk/compare/v3.0.2...v3.0.3)
 
-> 3 January 2025
+> 7 January 2025
 
 ### Fixes
 
@@ -732,6 +771,14 @@
 
 - Merge pull request #308 from contentstack/VE-4326 (Sairaj - [1b5cde7](https://github.com/contentstack/live-preview-sdk/commit/1b5cde7de17ebf6d9c26facb3f155ce7d4baae0f))
 - Merge pull request #301 from contentstack/VE-4009-pseudo-multiple (Sairaj - [e8c6080](https://github.com/contentstack/live-preview-sdk/commit/e8c608078df7256d1634175f81c9928612b0d9b8))
+
+## [v3.0.2](https://github.com/contentstack/live-preview-sdk/compare/v3.0.1...v3.0.2)
+
+> 7 January 2025
+
+### New Features
+
+- feat: added changelog flow (Kirtesh Suthar - [ff5c822](https://github.com/contentstack/live-preview-sdk/commit/ff5c82244b126dbc4c4545be6025950bb2cf9421))
 
 ## [v3.0.1](https://github.com/contentstack/live-preview-sdk/compare/v3.0.0...v3.0.1)
 
@@ -1363,6 +1410,7 @@
 
 ### Fixes
 
+- fix: add version bump in package json (Kirtesh Suthar - [#142](https://github.com/contentstack/live-preview-sdk/pull/142))
 - fix: edit button was removed from document (Mridul Sharma - [#135](https://github.com/contentstack/live-preview-sdk/pull/135))
 - fix: removed headers key from SDK init data (Mridul Sharma - [#132](https://github.com/contentstack/live-preview-sdk/pull/132))
 
@@ -1386,10 +1434,6 @@
 ## [v2.0.1](https://github.com/contentstack/live-preview-sdk/compare/v2.0.0...v2.0.1)
 
 > 18 June 2024
-
-### Fixes
-
-- fix: add version bump in package json (Kirtesh Suthar - [#142](https://github.com/contentstack/live-preview-sdk/pull/142))
 
 ### General Changes
 
