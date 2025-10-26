@@ -161,7 +161,7 @@ describe("appendFieldPathDropdown", () => {
         fireEvent.click(focusedToolbar);
 
         expect(fieldLabelWrapper?.classList.toString()).toBe(
-            "visual-builder__focused-toolbar__field-label-wrapper go3399023040"
+            "visual-builder__focused-toolbar__field-label-wrapper go3061601331"
         );
     });
 });

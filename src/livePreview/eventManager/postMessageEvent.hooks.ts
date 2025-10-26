@@ -50,7 +50,7 @@ export function useOnEntryUpdatePostMessageEvent(): void {
         LIVE_PREVIEW_POST_MESSAGE_EVENTS.ON_CHANGE,
         (event) => {
             try {
-                const { ssr, onChange } = Config.get();
+                const { ssr, onChange, stackDetails } = Config.get();
                 const event_type = event.data._metadata?.event_type;
                 setConfigFromParams({
                     live_preview: event.data.hash,
@@ -59,41 +59,57 @@ export function useOnEntryUpdatePostMessageEvent(): void {
                 // This section will run when there is a change in the entry and the website is CSR
                 if (!ssr && !event_type) {
                     onChange();
-                } 
+                }
 
-                if(isOpeningInNewTab()) {
-                    if(!window) {
+                if (isOpeningInNewTab()) {
+                    if (!window) {
                         PublicLogger.error("window is not defined");
                         return;
                     };
-                    
-                    // This section will run when there is a change in the entry and the website is SSR
-                    if(ssr && !event_type) {
-                        if(window.location.href.includes("live_preview")) {
+
+                    if (ssr && !event_type) {
+                        const url = new URL(window.location.href);
+                        let live_preview = url.searchParams.get("live_preview");
+                        let content_type_uid = url.searchParams.get("content_type_uid");
+                        let entry_uid = url.searchParams.get("entry_uid");
+
+                        if (live_preview && content_type_uid && entry_uid) {
+                            // All required params are present, just reload
                             window.location.reload();
                         } else {
-                            const url = new URL(window.location.href);
-                            url.searchParams.set("live_preview", event.data.hash);
-                            url.searchParams.set("content_type_uid", Config.get().stackDetails.contentTypeUid || "");
-                            url.searchParams.set("entry_uid", Config.get().stackDetails.entryUid || "");
+                            live_preview = event.data.hash;
+                            content_type_uid = event.data.content_type_uid || stackDetails.$contentTypeUid?.toString() || "";
+                            entry_uid = event.data.entry_uid || stackDetails.$entryUid?.toString() || "";
+                            // Set missing params and redirect
+                            url.searchParams.set("live_preview", live_preview);
+                            if (content_type_uid) {
+                                url.searchParams.set(
+                                    "content_type_uid",
+                                    content_type_uid
+                                );
+                            }
+                            if (entry_uid) {
+                                url.searchParams.set(
+                                    "entry_uid",
+                                    entry_uid
+                                );
+                            }
                             window.location.href = url.toString();
                         }
                     }
-    
+
                     // This section will run when the hash changes and the website is SSR or CSR
-                    if(event_type === OnChangeLivePreviewPostMessageEventTypes.HASH_CHANGE){
+                    if (event_type === OnChangeLivePreviewPostMessageEventTypes.HASH_CHANGE) {
                         const newUrl = new URL(window.location.href);
                         newUrl.searchParams.set("live_preview", event.data.hash);
                         window.history.pushState({}, "", newUrl.toString());
                     }
-    
+
                     // This section will run when the URL of the page changes
-                    if(event_type === OnChangeLivePreviewPostMessageEventTypes.URL_CHANGE && event.data.url){
+                    if (event_type === OnChangeLivePreviewPostMessageEventTypes.URL_CHANGE && event.data.url) {
                         window.location.href = event.data.url;
                     }
                 }
-
-                
             } catch (error) {
                 PublicLogger.error("Error handling live preview update:", error);
                 return;
