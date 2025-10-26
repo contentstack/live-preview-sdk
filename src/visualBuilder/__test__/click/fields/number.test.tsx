@@ -223,6 +223,11 @@ describe("When an element is clicked in visual builder mode", () => {
                             },
                         });
                     }
+                    else if (eventName === VisualBuilderPostMessageEvents.GET_RESOLVED_VARIANT_PERMISSIONS) {
+                        return Promise.resolve({
+                            update: true,
+                        });
+                    }
                     return Promise.resolve({});
                 }
             );
