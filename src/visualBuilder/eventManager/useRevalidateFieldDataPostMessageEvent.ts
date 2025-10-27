@@ -1,9 +1,6 @@
 import { VisualBuilder } from "..";
 import { extractDetailsFromCslp } from "../../cslp";
 import { FieldSchemaMap } from "../utils/fieldSchemaMap";
-import { getFieldData } from "../utils/getFieldData";
-import visualBuilderPostMessage from "../utils/visualBuilderPostMessage";
-import { VisualBuilderPostMessageEvents } from "../utils/types/postMessage.types";
 import { hideFocusOverlay } from "../generators/generateOverlay";
 import { handleBuilderInteraction } from "../listeners/mouseClick";
 
@@ -11,7 +8,7 @@ import { handleBuilderInteraction } from "../listeners/mouseClick";
  * Revalidates field data and schema after variant linking operations.
  * Unfocuses the selected element, revalidates data, and then reselects it.
  */
-async function handleRevalidateFieldData(): Promise<void> {
+export async function handleRevalidateFieldData(): Promise<void> {
     const focusedElement =
         VisualBuilder.VisualBuilderGlobalState.value
             .previousSelectedEditableDOM;
@@ -164,11 +161,4 @@ function getVisualBuilderElements() {
             ".visual-builder__focused-toolbar"
         ) as HTMLDivElement | null,
     };
-}
-
-export function useRevalidateFieldDataPostMessageEvent(): void {
-    visualBuilderPostMessage?.on(
-        VisualBuilderPostMessageEvents.REVALIDATE_FIELD_DATA,
-        handleRevalidateFieldData
-    );
 }

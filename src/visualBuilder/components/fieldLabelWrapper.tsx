@@ -18,6 +18,7 @@ import { ContentTypeIcon } from "./icons";
 import { ToolbarTooltip } from "./Tooltip";
 import { fetchEntryPermissionsAndStageDetails } from "../utils/fetchEntryPermissionsAndStageDetails";
 import { VariantIndicator } from "./VariantIndicator";
+import { handleRevalidateFieldData } from "../eventManager/useRevalidateFieldDataPostMessageEvent";
 
 interface ReferenceParentMap {
     [entryUid: string]: {
@@ -171,16 +172,37 @@ function FieldLabelWrapperComponent(
                 entryWorkflowStageDetails
             );
 
-            const handleLinkVariant = () => {
+            const handleLinkVariant = async () => {
                 if (fieldSchema.field_metadata?.canLinkVariant) {
-                    visualBuilderPostMessage?.send(
-                        VisualBuilderPostMessageEvents.OPEN_LINK_VARIANT_MODAL,
-                        {
-                            contentTypeUid:
-                                props.fieldMetadata
-                                    .content_type_uid,
+                    try {
+                        const result = await visualBuilderPostMessage?.send<{
+                            success?: boolean;
+                            action?: string;
+                            message?: string;
+                            error?: boolean;
+                        }>(
+                            VisualBuilderPostMessageEvents.OPEN_LINK_VARIANT_MODAL,
+                            {
+                                contentTypeUid:
+                                    props.fieldMetadata.content_type_uid,
+                            }
+                        );
+
+                        // If the modal was closed or linking failed, do nothing
+                        if (!result || !result.success) {
+                            return;
                         }
-                    );
+
+                        // If linking was successful and requires revalidation, revalidate
+                        if (result.action === "revalidate") {
+                            await handleRevalidateFieldData();
+                        }
+                    } catch (error) {
+                        console.error(
+                            "Error in link variant modal flow:",
+                            error
+                        );
+                    }
                 }
             };
 
@@ -202,13 +224,13 @@ function FieldLabelWrapperComponent(
                             ]
                         )}
                         data-tooltip={!reason?.toLowerCase().includes("click here to link a variant")
-                            ? reason
+                                ? reason
                             : undefined}
                     >
                         {reason
                             .toLowerCase()
                             .includes("click here to link a variant") && (
-                                <div
+                            <div
                                 className={visualBuilderStyles()["visual-builder__custom-tooltip"]}
                                 onClick={handleLinkVariant}
                             >
