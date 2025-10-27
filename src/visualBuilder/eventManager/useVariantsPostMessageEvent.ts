@@ -3,6 +3,7 @@ import { visualBuilderStyles } from "../visualBuilder.style";
 import visualBuilderPostMessage from "../utils/visualBuilderPostMessage";
 import { VisualBuilderPostMessageEvents } from "../utils/types/postMessage.types";
 import { FieldSchemaMap } from "../utils/fieldSchemaMap";
+import { extractDetailsFromCslp } from "../../cslp/cslpdata";
 
 interface VariantFieldsEvent {
     data: {
@@ -40,18 +41,13 @@ function isLowerOrderVariant(variant_uid: string, dataCslp: string, variantOrder
     if(!variantOrder || variantOrder.length === 0) {
         return false;
     }
-    const indexOfVariant = variantOrder.indexOf(variant_uid);
-    let indexOfDataCslp = -1;
-    for (let i = variantOrder.length-1; i >= 0; i--) {
-        if (dataCslp.includes(variantOrder[i])) {
-            indexOfDataCslp = i;
-            break;
-        }
-    }
-    if(indexOfDataCslp < 0) {
+    const {variant: cslpVariant} = extractDetailsFromCslp(dataCslp);
+    const indexOfCmsVariant = variantOrder.lastIndexOf(variant_uid);
+    const indexOfCslpVariant = variantOrder.lastIndexOf(cslpVariant || "");
+    if(indexOfCslpVariant < 0) {
         return false;
     }
-    return indexOfDataCslp < indexOfVariant;
+    return indexOfCslpVariant < indexOfCmsVariant;
 }
 
 export function addVariantFieldClass(
@@ -74,7 +70,7 @@ export function addVariantFieldClass(
             element.classList.add("visual-builder__base-field");
         } 
         else if (isLowerOrderVariant(variant_uid, dataCslp, variantOrder)) {
-            element.classList.add("visual-builder__variant-field");
+            element.classList.add("visual-builder__variant-field", "visual-builder__lower-order-variant-field");
         }
         else {
             element.classList.add("visual-builder__disabled-variant-field");

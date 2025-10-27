@@ -114,6 +114,13 @@ export const isFieldDisabled = (
         flags.updateRestrictDueToWorkflowStagePermission = true;
     }
 
+    if(VisualBuilder.VisualBuilderGlobalState.value.audienceMode
+        && editableElement.classList.contains("visual-builder__lower-order-variant-field")) {
+        // If resolvedVariantPermissions errors out for any reason, we need to disable editing
+        // for lower order (priority) variant fields with updateRestrictDueToDisabledVariant's message
+        flags.updateRestrictDueToDisabledVariant = resolvedVariantPermissions ? !!resolvedVariantPermissions.error : false;
+    }
+
     if (
         VisualBuilder.VisualBuilderGlobalState.value.audienceMode &&
         !editableElement.classList.contains("visual-builder__variant-field") &&

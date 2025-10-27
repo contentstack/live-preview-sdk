@@ -6,6 +6,7 @@ export type FieldContext = Pick<CslpData, "content_type_uid" | "entry_uid" | "lo
 
 export interface ResolvedVariantPermissions {
   update: boolean;
+  error?: boolean;
 }
 
 export async function getResolvedVariantPermissions(fieldContext: FieldContext) {
@@ -13,12 +14,14 @@ export async function getResolvedVariantPermissions(fieldContext: FieldContext) 
     const result = await visualBuilderPostMessage?.send<ResolvedVariantPermissions>(VisualBuilderPostMessageEvents.GET_RESOLVED_VARIANT_PERMISSIONS, fieldContext);
     return result ?? {
       update: true,
+      error: true,
     };
   }
   catch(e) {
     console.warn("Error retrieving resolved variant permissions", e);
     return {
       update: true,
+      error: true,
     };
   }
 }
