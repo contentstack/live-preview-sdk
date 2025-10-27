@@ -25,7 +25,6 @@ import { extractDetailsFromCslp } from "../cslp";
 import initUI from "./components";
 import { useDraftFieldsPostMessageEvent } from "./eventManager/useDraftFieldsPostMessageEvent";
 import { useHideFocusOverlayPostMessageEvent } from "./eventManager/useHideFocusOverlayPostMessageEvent";
-import { useRevalidateFieldDataPostMessageEvent } from "./eventManager/useRevalidateFieldDataPostMessageEvent";
 import { useScrollToField } from "./eventManager/useScrollToField";
 import { useVariantFieldsPostMessageEvent } from "./eventManager/useVariantsPostMessageEvent";
 import {
@@ -397,7 +396,6 @@ export class VisualBuilder {
                     useRecalculateVariantDataCSLPValues();
                     useDraftFieldsPostMessageEvent();
                     useVariantFieldsPostMessageEvent();
-                    useRevalidateFieldDataPostMessageEvent();
                 }
             })
             .catch(() => {
