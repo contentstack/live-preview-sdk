@@ -105,6 +105,7 @@ async function addOutline(params?: AddOutlineParams): Promise<void> {
 }
 
 const debouncedAddOutline = debounce(addOutline, 50, { trailing: true });
+export const cancelPendingAddOutline = () => debouncedAddOutline.cancel();
 const showOutline = (params?: AddOutlineParams): Promise<void> | undefined => debouncedAddOutline(params);
 
 function hideDefaultCursor(): void {
@@ -181,6 +182,8 @@ const debouncedRenderHoverToolbar = debounce(async (params: HandleBuilderInterac
 
 export const showHoverToolbar = async (params: HandleBuilderInteractionParams) => await debouncedRenderHoverToolbar(params);
 
+export const cancelPendingHoverToolbar = () => debouncedRenderHoverToolbar.cancel();
+
 function isOverlay(target: HTMLElement): boolean {
     return target.classList.contains("visual-builder__overlay");
 }
@@ -222,7 +225,9 @@ const throttledMouseHover = throttle(async (params: HandleMouseHoverParams) => {
             eventTarget &&
             (isFieldPathDropdown(eventTarget) || isFieldPathParent(eventTarget))
         ) {
-            params.customCursor && hideCustomCursor(params.customCursor);
+            if (params.customCursor) {
+                hideCustomCursor(params.customCursor);
+            }
             showOutline();
             showHoverToolbar({
                 event: params.event,
@@ -398,5 +403,7 @@ async function generateCursor({
 const handleMouseHover = async (
     params: HandleMouseHoverParams
 ): Promise<void> => await throttledMouseHover(params);
+
+export const cancelPendingMouseHover = () => throttledMouseHover.cancel();
 
 export default handleMouseHover;

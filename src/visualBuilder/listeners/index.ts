@@ -1,10 +1,13 @@
 import { VisualBuilder } from "..";
+import { removeFieldToolbar } from "../generators/generateToolbar";
 import handleBuilderInteraction from "./mouseClick";
 import handleMouseHover, {
+    cancelPendingAddOutline,
+    cancelPendingHoverToolbar,
+    cancelPendingMouseHover,
     hideCustomCursor,
     hideHoverOutline,
     showCustomCursor,
-    showHoverToolbar,
 } from "./mouseHover";
 import EventListenerHandlerParams from "./types";
 
@@ -41,8 +44,15 @@ const eventHandlers = {
         });
     },
     mouseleave: (params: AddEventListenersParams) => () => {
+        cancelPendingMouseHover();
+        cancelPendingHoverToolbar();
+        cancelPendingAddOutline();
+        
         hideCustomCursor(params.customCursor);
         hideHoverOutline(params.visualBuilderContainer);
+        if(!VisualBuilder?.VisualBuilderGlobalState?.value?.isFocussed && params?.focusedToolbar) {
+            removeFieldToolbar(params.focusedToolbar);
+        }
     },
     mouseenter: (params: AddEventListenersParams) => () => {
         showCustomCursor(params.customCursor);
