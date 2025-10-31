@@ -74,7 +74,11 @@ describe("handleIndividualFields", () => {
         expect(getFieldType).toHaveBeenCalledWith(fieldSchema);
         expect(isFieldDisabled).toHaveBeenCalledWith(
           fieldSchema, 
-          eventDetails, 
+          eventDetails,
+          {
+            update: true,
+            error: true
+          },
           {
             read: true,
             update: true,

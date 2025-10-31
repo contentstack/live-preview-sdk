@@ -115,6 +115,10 @@ describe("When an element is clicked in visual builder mode", () => {
                                     },
                                 },
                             });
+                        case VisualBuilderPostMessageEvents.GET_RESOLVED_VARIANT_PERMISSIONS:
+                            return Promise.resolve({
+                                update: true,
+                            });
                         default:
                             return Promise.resolve({});
                     }
@@ -216,6 +220,10 @@ describe("When an element is clicked in visual builder mode", () => {
                                 },
                             });
                         }
+                        case VisualBuilderPostMessageEvents.GET_RESOLVED_VARIANT_PERMISSIONS:
+                            return Promise.resolve({
+                                update: true,
+                            });
                         default:
                             return Promise.resolve({});
                     }
