@@ -92,7 +92,7 @@ export function removeVariantFieldClass(
         });
     } else {
         const variantAndBaseFieldElements = document.querySelectorAll(
-            ".visual-builder__disabled-variant-field, .visual-builder__variant-field, .visual-builder__base-field, visual-builder__lower-order-variant-field" 
+            ".visual-builder__disabled-variant-field, .visual-builder__variant-field, .visual-builder__base-field, .visual-builder__lower-order-variant-field" 
         );
         variantAndBaseFieldElements.forEach((element) => {
             element.classList.remove(

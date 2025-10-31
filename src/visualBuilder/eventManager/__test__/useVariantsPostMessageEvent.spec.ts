@@ -102,7 +102,7 @@ const mockQuerySelectorAll = vi.fn().mockImplementation((selector) => {
         return mockElements; // For onlyHighlighted=true case
     } else if (
         selector ===
-        ".visual-builder__disabled-variant-field, .visual-builder__variant-field, .visual-builder__base-field"
+        ".visual-builder__disabled-variant-field, .visual-builder__variant-field, .visual-builder__base-field, .visual-builder__lower-order-variant-field"
     ) {
         return mockElements; // For onlyHighlighted=false case
     }
@@ -304,7 +304,7 @@ describe("useVariantFieldsPostMessageEvent", () => {
 
         // Verify querySelectorAll was called with the correct selector
         expect(mockQuerySelectorAll).toHaveBeenCalledWith(
-            ".visual-builder__disabled-variant-field, .visual-builder__variant-field, .visual-builder__base-field"
+            ".visual-builder__disabled-variant-field, .visual-builder__variant-field, .visual-builder__base-field, .visual-builder__lower-order-variant-field"
         );
 
         // Verify that classes were removed from elements correctly
@@ -313,7 +313,8 @@ describe("useVariantFieldsPostMessageEvent", () => {
                 "visual-builder__disabled-variant-field",
                 "visual-builder__variant-field",
                 visualBuilderStyles()["visual-builder__variant-field"],
-                "visual-builder__base-field"
+                "visual-builder__base-field",
+                "visual-builder__lower-order-variant-field"
             );
         });
     });
@@ -439,7 +440,7 @@ describe("removeVariantFieldClass", () => {
 
         // Verify querySelectorAll was called with the correct selector
         expect(mockQuerySelectorAll).toHaveBeenCalledWith(
-            ".visual-builder__disabled-variant-field, .visual-builder__variant-field, .visual-builder__base-field"
+            ".visual-builder__disabled-variant-field, .visual-builder__variant-field, .visual-builder__base-field, .visual-builder__lower-order-variant-field"
         );
 
         // Verify classes were removed
@@ -448,7 +449,8 @@ describe("removeVariantFieldClass", () => {
                 "visual-builder__disabled-variant-field",
                 "visual-builder__variant-field",
                 visualBuilderStyles()["visual-builder__variant-field"],
-                "visual-builder__base-field"
+                "visual-builder__base-field",
+                "visual-builder__lower-order-variant-field"
             );
         });
     });
@@ -458,7 +460,7 @@ describe("removeVariantFieldClass", () => {
 
         // Verify querySelectorAll was called with the correct selector
         expect(mockQuerySelectorAll).toHaveBeenCalledWith(
-            ".visual-builder__disabled-variant-field, .visual-builder__variant-field, .visual-builder__base-field"
+            ".visual-builder__disabled-variant-field, .visual-builder__variant-field, .visual-builder__base-field, .visual-builder__lower-order-variant-field"
         );
     });
 });

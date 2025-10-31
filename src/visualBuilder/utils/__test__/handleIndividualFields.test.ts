@@ -77,6 +77,7 @@ describe("handleIndividualFields", () => {
           eventDetails,
           {
             update: true,
+            error: true
           },
           {
             read: true,

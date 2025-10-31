@@ -225,6 +225,7 @@ describe("updateFocussedState", () => {
             },
             {
                 update: true,
+                error: true
             },
             mockEntryPermissions,
             mockWorkflowStageDetails
