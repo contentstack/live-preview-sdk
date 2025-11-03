@@ -176,10 +176,8 @@ function FieldLabelWrapperComponent(
                 if (fieldSchema.field_metadata?.canLinkVariant) {
                     try {
                         const result = await visualBuilderPostMessage?.send<{
-                            success?: boolean;
-                            action?: string;
-                            message?: string;
-                            error?: boolean;
+                            type: "success" | "error";
+                            message: string;
                         }>(
                             VisualBuilderPostMessageEvents.OPEN_LINK_VARIANT_MODAL,
                             {
@@ -187,20 +185,21 @@ function FieldLabelWrapperComponent(
                                     props.fieldMetadata.content_type_uid,
                             }
                         );
+                        console.log("result", result);
 
                         // If the modal was closed or linking failed, do nothing
-                        if (!result || !result.success) {
+                        if (!result || result.type === "error") {
                             return;
                         }
 
                         // If linking was successful and requires revalidation, revalidate
-                        if (result.action === "revalidate") {
+                        if (result.type === "success" ) {
                             await handleRevalidateFieldData();
                         }
-                    } catch (error) {
+                    } catch (message) {
                         console.error(
                             "Error in link variant modal flow:",
-                            error
+                            message
                         );
                     }
                 }
