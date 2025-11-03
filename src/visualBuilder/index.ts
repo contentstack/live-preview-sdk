@@ -380,10 +380,13 @@ export class VisualBuilder {
                                 document.body.style.overflow = "hidden";
                             } else {
                                 document.body.style.overflow = "auto";
+
                             }
                         }
                     );
 
+
+                    
                     useHideFocusOverlayPostMessageEvent({
                         overlayWrapper: this.overlayWrapper,
                         visualBuilderContainer: this.visualBuilderContainer,
