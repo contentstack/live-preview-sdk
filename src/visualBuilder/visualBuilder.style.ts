@@ -300,10 +300,10 @@ export function visualBuilderStyles() {
             border-style: solid;
             align-content: center;
             text-align: center;
-            border-color: #bd59fa;
+            border-color: #BD59FA;
 
             svg {
-                color: #bd59fa;
+                color: #BD59FA;
             }
         `,
         "visual-builder__focused-toolbar": css`
@@ -532,7 +532,7 @@ export function visualBuilderStyles() {
         `,
         "visual-builder__focused-toolbar--variant": css`
             .visual-builder__focused-toolbar__field-label-wrapper__current-field {
-                background: #bd59fa;
+                background: #BD59FA;
             }
         `,
         "visual-builder__cursor-disabled": css`
@@ -665,7 +665,7 @@ export function visualBuilderStyles() {
             outline: 2px dashed #909090;
         `,
         "visual-builder__hover-outline--variant": css`
-            outline: 2px dashed #bd59fa;
+            outline: 2px dashed #BD59FA;
         `,
         "visual-builder__default-cursor--disabled": css`
             cursor: none;

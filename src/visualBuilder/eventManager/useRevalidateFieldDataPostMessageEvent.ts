@@ -57,10 +57,9 @@ export async function handleRevalidateFieldData(): Promise<void> {
             return;
         } catch (clearError) {
             console.error("Failed to clear field schema cache:", clearError);
+            // Fallback 2: Refresh the entire iframe
+            window.location.reload();
         }
-
-        // Fallback 2: Refresh the entire iframe
-        window.location.reload();
     } catch (error) {
         console.error("Error handling revalidate field data:", error);
         // Final fallback - refresh the page

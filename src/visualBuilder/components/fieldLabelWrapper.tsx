@@ -236,7 +236,7 @@ function FieldLabelWrapperComponent(
                             >
                                 {(() => {
                                     const [before, after] = reason.split(
-                                        /here/i
+                                        "here"
                                     );
                                     return (
                                         <>
