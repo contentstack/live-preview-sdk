@@ -93,7 +93,9 @@ const MentionSuggestionsList: React.FC<{
                               ]
                             : ""
                     )}
-                    ref={(el) => (itemRefs.current[index] = el)}
+                    ref={(el) => {
+                        itemRefs.current[index] = el;
+                    }}
                     onKeyDown={(e) =>
                         e.key === "Enter"
                             ? insertMention(user)
