@@ -1,4 +1,12 @@
-import { act, cleanup, fireEvent, render, waitFor, screen, queryByTestId } from "@testing-library/preact";
+import {
+    act,
+    cleanup,
+    fireEvent,
+    render,
+    waitFor,
+    screen,
+    queryByTestId,
+} from "@testing-library/preact";
 import { CslpData } from "../../../cslp/types/cslp.types";
 import { FieldSchemaMap } from "../../utils/fieldSchemaMap";
 import {
@@ -7,7 +15,10 @@ import {
 } from "../../utils/instanceHandlers";
 import { ISchemaFieldMap } from "../../utils/types/index.types";
 import FieldToolbarComponent from "../FieldToolbar";
-import { mockMultipleLinkFieldSchema, mockMultipleFileFieldSchema } from "../../../__test__/data/fields";
+import {
+    mockMultipleLinkFieldSchema,
+    mockMultipleFileFieldSchema,
+} from "../../../__test__/data/fields";
 import { asyncRender } from "../../../__test__/utils";
 import { VisualBuilderCslpEventDetails } from "../../types/visualBuilder.types";
 import { isFieldDisabled } from "../../utils/isFieldDisabled";
@@ -23,8 +34,8 @@ vi.mock("../../utils/instanceHandlers", () => ({
 
 //CommentIcon testcases are covered seperatly
 vi.mock("../CommentIcon", () => ({
-    default: vi.fn(() => <div>Comment Icon</div>)
-  }));
+    default: vi.fn(() => <div>Comment Icon</div>),
+}));
 
 vi.mock("../../utils/visualBuilderPostMessage", async () => {
     return {
@@ -74,14 +85,14 @@ describe("FieldToolbarComponent", () => {
     const mockEventDetails: VisualBuilderCslpEventDetails = {
         fieldMetadata: mockMultipleFieldMetadata,
         editableElement: {} as Element,
-        cslpData: ""
-    }
+        cslpData: "",
+    };
 
     beforeEach(() => {
         document.getElementsByTagName("html")[0].innerHTML = "";
         targetElement = document.createElement("div");
         targetElement.setAttribute("data-testid", "mock-target-element");
-        mockEventDetails['editableElement'] = targetElement;
+        mockEventDetails["editableElement"] = targetElement;
         document.body.appendChild(targetElement);
 
         vi.spyOn(FieldSchemaMap, "getFieldSchema").mockResolvedValue(
@@ -180,12 +191,15 @@ describe("FieldToolbarComponent", () => {
             expect(handleDeleteInstance).toHaveBeenCalledWith(
                 mockMultipleFieldMetadata
             );
-        })
+        });
     });
     test("display variant icon instead of dropdown", async () => {
         mockEventDetails.fieldMetadata.variant = "variant";
         const { findByTestId } = await asyncRender(
-            <FieldToolbarComponent eventDetails={mockEventDetails} hideOverlay={vi.fn()} />
+            <FieldToolbarComponent
+                eventDetails={mockEventDetails}
+                hideOverlay={vi.fn()}
+            />
         );
 
         const variantIcon = await findByTestId(
@@ -206,13 +220,13 @@ describe("FieldToolbarComponent", () => {
                 ...mockMultipleFieldMetadata,
                 fieldPathWithIndex: "files",
                 instance: {
-                    fieldPathWithIndex: "files"
+                    fieldPathWithIndex: "files",
                 },
             };
 
             const parentWrapperEventDetails = {
                 ...mockEventDetails,
-                fieldMetadata: parentWrapperMetadata
+                fieldMetadata: parentWrapperMetadata,
             };
 
             const { container } = await asyncRender(
@@ -222,7 +236,9 @@ describe("FieldToolbarComponent", () => {
                 />
             );
 
-            const replaceButton = container.querySelector('[data-testid="visual-builder-replace-file"]');
+            const replaceButton = container.querySelector(
+                '[data-testid="visual-builder-replace-file"]'
+            );
             expect(replaceButton).not.toBeInTheDocument();
         });
 
@@ -231,13 +247,13 @@ describe("FieldToolbarComponent", () => {
                 ...mockMultipleFieldMetadata,
                 fieldPathWithIndex: "files",
                 instance: {
-                    fieldPathWithIndex: "files.0"
+                    fieldPathWithIndex: "files.0",
                 },
             };
 
             const individualFieldEventDetails = {
                 ...mockEventDetails,
-                fieldMetadata: individualFieldMetadata
+                fieldMetadata: individualFieldMetadata,
             };
 
             const { container } = await asyncRender(
@@ -247,7 +263,9 @@ describe("FieldToolbarComponent", () => {
                 />
             );
 
-            const replaceButton = container.querySelector('[data-testid="visual-builder-replace-file"]');
+            const replaceButton = container.querySelector(
+                '[data-testid="visual-builder-replace-file"]'
+            );
             expect(replaceButton).toBeInTheDocument();
         });
     });
