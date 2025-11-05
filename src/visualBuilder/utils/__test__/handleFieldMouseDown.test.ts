@@ -303,7 +303,7 @@ describe("`handleFieldInput`", () => {
 
     test("should call `sendFieldEvent` on input event", () => {
         const spiedSendFieldEvent = vi.spyOn(generateOverlay, "sendFieldEvent");
-        const consoleError = vi.spyOn(console, "error");
+        const consoleError = vi.spyOn(console, "error").mockImplementation(() => {});
         spiedSendFieldEvent.mockImplementation(() => {
             throw new Error("sendFieldEvent not implemented");
         });
