@@ -49,6 +49,7 @@ import {
 import { useRecalculateVariantDataCSLPValues } from "./eventManager/useRecalculateVariantDataCSLPValues";
 import { VB_EmptyBlockParentClass } from "..";
 import { useCollab } from "./eventManager/useCollab";
+import { usePopupBlockedPostMessageEvent } from "./eventManager/usePopupBlockedPostMessageEvent";
 import {
     handleMissingThreads,
     processThreadsBatch,
@@ -343,6 +344,7 @@ export class VisualBuilder {
 
                 useHistoryPostMessageEvent();
                 useCollab();
+                usePopupBlockedPostMessageEvent();
 
                 if (windowType === ILivePreviewWindowType.BUILDER) {
                     addKeyboardShortcuts({
