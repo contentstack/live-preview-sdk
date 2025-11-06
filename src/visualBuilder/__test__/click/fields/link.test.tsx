@@ -110,18 +110,30 @@ describe("When an element is clicked in visual builder mode", () => {
             visualBuilder.destroy();
         });
 
-        test("should have outline", () => {
-            expect(linkField.classList.contains("cslp-edit-mode"));
+        test("should have field type attribute set", () => {
+            // Field type is set during click - this is what actually happens
+            expect(linkField).toHaveAttribute(
+                "data-cslp-field-type",
+                "link"
+            );
         });
 
-        test("should have an overlay", () => {
+        test("should have an overlay wrapper rendered", () => {
+            // Overlay wrapper is rendered (not checking for 'visible' class as it's conditional)
+            const overlayWrapper = document.querySelector(
+                ".visual-builder__overlay__wrapper"
+            );
+            expect(overlayWrapper).not.toBeNull();
+            
+            // Check that overlay elements exist
             const overlay = document.querySelector(".visual-builder__overlay");
-            expect(overlay!.classList.contains("visible"));
+            expect(overlay).not.toBeNull();
         });
 
         test("should have a field path dropdown", async () => {
-            await waitFor(async () => {
-                const toolbar = await screen.findByTestId(
+            // waitFor needed for async component rendering
+            await waitFor(() => {
+                const toolbar = screen.getByTestId(
                     "mock-field-label-wrapper"
                 );
                 expect(toolbar).toBeInTheDocument();
@@ -142,15 +154,14 @@ describe("When an element is clicked in visual builder mode", () => {
             });
         });
 
-        test("should send a focus field message to parent", async () => {
-            await waitFor(() => {
-                expect(visualBuilderPostMessage?.send).toBeCalledWith(
-                    VisualBuilderPostMessageEvents.FOCUS_FIELD,
-                    {
-                        DOMEditStack: getDOMEditStack(linkField),
-                    }
-                );
-            });
+        test("should send a focus field message to parent", () => {
+            // Mock function calls are tracked synchronously
+            expect(visualBuilderPostMessage?.send).toBeCalledWith(
+                VisualBuilderPostMessageEvents.FOCUS_FIELD,
+                {
+                    DOMEditStack: getDOMEditStack(linkField),
+                }
+            );
         });
     });
 
@@ -195,13 +206,24 @@ describe("When an element is clicked in visual builder mode", () => {
             visualBuilder.destroy();
         });
 
-        test("should have outline", () => {
-            expect(container.classList.contains("cslp-edit-mode"));
+        test("should have field type attribute set", () => {
+            // Field type is set during click - this is what actually happens
+            expect(container).toHaveAttribute(
+                "data-cslp-field-type",
+                "link"
+            );
         });
 
-        test("should have an overlay", () => {
+        test("should have an overlay wrapper rendered", () => {
+            // Overlay wrapper is rendered (not checking for 'visible' class as it's conditional)
+            const overlayWrapper = document.querySelector(
+                ".visual-builder__overlay__wrapper"
+            );
+            expect(overlayWrapper).not.toBeNull();
+            
+            // Check that overlay elements exist
             const overlay = document.querySelector(".visual-builder__overlay");
-            expect(overlay!.classList.contains("visible"));
+            expect(overlay).not.toBeNull();
         });
 
         test("should contain a data-cslp-field-type attribute", async () => {
@@ -233,15 +255,14 @@ describe("When an element is clicked in visual builder mode", () => {
             });
         });
 
-        test("should send a focus field message to parent", async () => {
-            await waitFor(() => {
-                expect(visualBuilderPostMessage?.send).toBeCalledWith(
-                    VisualBuilderPostMessageEvents.FOCUS_FIELD,
-                    {
-                        DOMEditStack: getDOMEditStack(container),
-                    }
-                );
-            });
+        test("should send a focus field message to parent", () => {
+            // Mock function calls are tracked synchronously
+            expect(visualBuilderPostMessage?.send).toBeCalledWith(
+                VisualBuilderPostMessageEvents.FOCUS_FIELD,
+                {
+                    DOMEditStack: getDOMEditStack(container),
+                }
+            );
         });
     });
 });

@@ -129,9 +129,16 @@ describe("When an element is clicked in visual builder mode", () => {
             );
         });
 
-        test("should have an overlay", () => {
+        test("should have an overlay wrapper rendered", () => {
+            // Overlay wrapper is rendered (not checking for 'visible' class as it's conditional)
+            const overlayWrapper = document.querySelector(
+                ".visual-builder__overlay__wrapper"
+            );
+            expect(overlayWrapper).not.toBeNull();
+            
+            // Check that overlay elements exist
             const overlay = document.querySelector(".visual-builder__overlay");
-            expect(overlay!.classList.contains("visible"));
+            expect(overlay).not.toBeNull();
         });
 
         test("should have a field path dropdown", () => {
@@ -155,15 +162,14 @@ describe("When an element is clicked in visual builder mode", () => {
             });
         });
 
-        test("should send a focus field message to parent", async () => {
-            await waitFor(() => {
-                expect(visualBuilderPostMessage?.send).toBeCalledWith(
-                    VisualBuilderPostMessageEvents.FOCUS_FIELD,
-                    {
-                        DOMEditStack: getDOMEditStack(referenceField),
-                    }
-                );
-            });
+        test("should send a focus field message to parent", () => {
+            // Mock function calls are tracked synchronously
+            expect(visualBuilderPostMessage?.send).toBeCalledWith(
+                VisualBuilderPostMessageEvents.FOCUS_FIELD,
+                {
+                    DOMEditStack: getDOMEditStack(referenceField),
+                }
+            );
         });
     });
 
@@ -221,9 +227,16 @@ describe("When an element is clicked in visual builder mode", () => {
             );
         });
 
-        test("should have an overlay", () => {
+        test("should have an overlay wrapper rendered", () => {
+            // Overlay wrapper is rendered (not checking for 'visible' class as it's conditional)
+            const overlayWrapper = document.querySelector(
+                ".visual-builder__overlay__wrapper"
+            );
+            expect(overlayWrapper).not.toBeNull();
+            
+            // Check that overlay elements exist
             const overlay = document.querySelector(".visual-builder__overlay");
-            expect(overlay!.classList.contains("visible"));
+            expect(overlay).not.toBeNull();
         });
 
         test("should have a field path dropdown", () => {
@@ -262,15 +275,14 @@ describe("When an element is clicked in visual builder mode", () => {
             });
         });
 
-        test("should send a focus field message to parent", async () => {
-            await waitFor(() => {
-                expect(visualBuilderPostMessage?.send).toBeCalledWith(
-                    VisualBuilderPostMessageEvents.FOCUS_FIELD,
-                    {
-                        DOMEditStack: getDOMEditStack(container),
-                    }
-                );
-            });
+        test("should send a focus field message to parent", () => {
+            // Mock function calls are tracked synchronously
+            expect(visualBuilderPostMessage?.send).toBeCalledWith(
+                VisualBuilderPostMessageEvents.FOCUS_FIELD,
+                {
+                    DOMEditStack: getDOMEditStack(container),
+                }
+            );
         });
     });
 });
