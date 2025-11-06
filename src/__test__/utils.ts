@@ -43,29 +43,35 @@ export const waitForHoverOutline = async () => {
         );
         expect(hoverOutline).not.toBeNull();
     });
-}
-export const waitForBuilderSDKToBeInitialized = async (visualBuilderPostMessage: EventManager | undefined) => {
+};
+export const waitForBuilderSDKToBeInitialized = async (
+    visualBuilderPostMessage: EventManager | undefined
+) => {
     await waitFor(() => {
         expect(visualBuilderPostMessage?.send).toBeCalledWith(
             VisualBuilderPostMessageEvents.INIT,
             expect.any(Object)
         );
     });
-}
+};
 interface WaitForClickActionOptions {
     skipWaitForFieldType?: boolean;
 }
-export const triggerAndWaitForClickAction = async (visualBuilderPostMessage: EventManager | undefined, element: HTMLElement, {skipWaitForFieldType}: WaitForClickActionOptions = {}) => {
+export const triggerAndWaitForClickAction = async (
+    visualBuilderPostMessage: EventManager | undefined,
+    element: HTMLElement,
+    { skipWaitForFieldType }: WaitForClickActionOptions = {}
+) => {
     await waitForBuilderSDKToBeInitialized(visualBuilderPostMessage);
     await act(async () => {
         await fireEvent.click(element);
-    })
-    if(!skipWaitForFieldType) {
+    });
+    if (!skipWaitForFieldType) {
         await waitFor(() => {
-            expect(element).toHaveAttribute("data-cslp-field-type")
-        })
+            expect(element).toHaveAttribute("data-cslp-field-type");
+        });
     }
-}
+};
 export const waitForToolbaxToBeVisible = async () => {
     await waitFor(() => {
         const toolbar = document.querySelector(
@@ -73,7 +79,7 @@ export const waitForToolbaxToBeVisible = async () => {
         );
         expect(toolbar).not.toBeNull();
     });
-}
+};
 const defaultRect = {
     left: 10,
     right: 20,
@@ -81,17 +87,24 @@ const defaultRect = {
     bottom: 20,
     width: 10,
     height: 5,
-}
-export const mockGetBoundingClientRect = (element: HTMLElement, rect = defaultRect) => {
-    vi.spyOn(element, "getBoundingClientRect").mockImplementation(() => rect as DOMRect);
-}
+};
+export const mockGetBoundingClientRect = (
+    element: HTMLElement,
+    rect = defaultRect
+) => {
+    vi.spyOn(element, "getBoundingClientRect").mockImplementation(
+        () => rect as DOMRect
+    );
+};
 export const getElementBytestId = (testId: string) => {
     return document.querySelector(`[data-testid="${testId}"]`);
-}
-export const asyncRender: (componentChild: ComponentChild) => ReturnType<typeof render> = async (...args) => {
+};
+export const asyncRender: (
+    componentChild: ComponentChild
+) => ReturnType<typeof render> = async (...args) => {
     let returnValue: ReturnType<typeof render>;
     await act(async () => {
         returnValue = render(...args);
     });
     return returnValue;
-}
+};

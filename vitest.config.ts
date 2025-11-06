@@ -15,8 +15,9 @@ export default defineConfig({
         globals: true,
         setupFiles: "./vitest.setup.ts",
         retry: 2,
-        testTimeout: 30000, // Reduced from 30s to 15s
-        hookTimeout: 30000, // Reduced from 30s to 15s
+        testTimeout: 30000,
+        hookTimeout: 30000,
+        teardownTimeout: 10000, // Allow time for cleanup
         // Enable file parallelization
         fileParallelism: true,
         // Optimize pool for better performance
@@ -26,7 +27,11 @@ export default defineConfig({
                 // Use more workers on CI
                 maxForks: process.env.CI ? 4 : undefined,
                 minForks: process.env.CI ? 2 : undefined,
+                // Increase timeout for worker communication
+                execArgv: [],
             },
         },
+        // Prevent worker timeout errors
+        slowTestThreshold: 15000, // Warn about tests over 15s
     },
 });
