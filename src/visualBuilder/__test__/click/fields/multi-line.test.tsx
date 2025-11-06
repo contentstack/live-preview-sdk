@@ -176,7 +176,7 @@ describe("When an element is clicked in visual builder mode", () => {
             });
         });
 
-        test.skip("should send a focus field message to parent", async () => {
+        test("should send a focus field message to parent", async () => {
             await waitFor(() => {
                 expect(visualBuilderPostMessage?.send).toBeCalledWith(
                     VisualBuilderPostMessageEvents.FOCUS_FIELD,
@@ -317,7 +317,7 @@ describe("When an element is clicked in visual builder mode", () => {
             });
         });
 
-        test.skip("should send a focus field message to parent", async () => {
+        test("should send a focus field message to parent", async () => {
             await waitFor(() => {
                 expect(visualBuilderPostMessage?.send).toBeCalledWith(
                     VisualBuilderPostMessageEvents.FOCUS_FIELD,
