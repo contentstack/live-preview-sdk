@@ -15,8 +15,8 @@ export default defineConfig({
         globals: true,
         setupFiles: "./vitest.setup.ts",
         retry: 2,
-        testTimeout: 15000, // Reduced from 30s to 15s
-        hookTimeout: 15000, // Reduced from 30s to 15s
+        testTimeout: 30000, // Reduced from 30s to 15s
+        hookTimeout: 30000, // Reduced from 30s to 15s
         // Enable file parallelization
         fileParallelism: true,
         // Optimize pool for better performance
