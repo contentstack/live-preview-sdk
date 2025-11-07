@@ -560,11 +560,15 @@ describe("removeAddInstanceButtons", () => {
     let overlayWrapper: HTMLDivElement;
     let eventTarget: EventTarget;
 
-    beforeEach(() => {
+    // Shared container setup - run once
+    beforeAll(() => {
         visualBuilderContainer = document.createElement("div");
         visualBuilderContainer.classList.add("visual-builder__container");
         document.body.appendChild(visualBuilderContainer);
+    });
 
+    beforeEach(() => {
+        // Only create buttons for each test (fast DOM operations)
         previousButton = generateAddInstanceButton({
             fieldSchema: singleLineFieldSchema,
             // @ts-expect-error mock field metadata
@@ -590,8 +594,14 @@ describe("removeAddInstanceButtons", () => {
     });
 
     afterEach(() => {
-        document.getElementsByTagName("body")[0].innerHTML = "";
+        // Only clean what we created in beforeEach
+        visualBuilderContainer.innerHTML = "";
         vi.clearAllMocks();
+    });
+
+    afterAll(() => {
+        // Clean up shared container
+        document.body.innerHTML = "";
     });
 
     test("should not remove buttons if wrapper or buttons are not present", () => {
