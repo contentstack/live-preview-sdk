@@ -5,12 +5,13 @@ import { FieldDetails } from "../components/FieldToolbar";
 import { EntryPermissions } from "./getEntryPermissions";
 import { WorkflowStageDetails } from "./getWorkflowStageDetails";
 
-const DisableReason = {
+export const DisableReason = {
     ReadOnly: "You have only read access to this field",
     LocalizedEntry: "Editing this field is restricted in localized entries",
     UnlinkedVariant:
         "This field is not editable as it is not linked to the selected variant.",
-    CanLinkVaraint: "Click here to link a variant",
+    CanLinkVariant: "Click here to link a variant",
+    SplitOn: "here",
     CannotLinkVariant: "Contact your stack admin or owner to link it.",
     AudienceMode:
         "To edit an experience, open the Audience widget and click the Edit icon.",
@@ -44,13 +45,9 @@ const getDisableReason = (
     if (flags.updateRestrictDueToUnlocalizedVariant)
         return DisableReason.UnlocalizedVariant;
     if (flags.updateRestrictDueToUnlinkVariant) {
-        let reason = DisableReason.UnlinkedVariant;
-        if (flags.canLinkVariant) {
-            reason += ` ${DisableReason.CanLinkVaraint}`;
-        } else {
-            reason += ` ${DisableReason.CannotLinkVariant}`;
-        }
-        return reason;
+        return flags.canLinkVariant
+            ? `${DisableReason.UnlinkedVariant} ${DisableReason.CanLinkVariant} `
+            : `${DisableReason.UnlinkedVariant} ${DisableReason.CannotLinkVariant}`;
     }
     if (flags.updateRestrictDueToAudienceMode)
         return DisableReason.AudienceMode;

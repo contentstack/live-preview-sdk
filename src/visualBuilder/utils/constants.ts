@@ -16,6 +16,11 @@ export const TOOLBAR_EDGE_BUFFER = 8;
 
 export const DATA_CSLP_ATTR_SELECTOR = "data-cslp";
 
+export const RESULT_TYPES = {
+    SUCCESS: "success",
+    ERROR: "error",
+};
+
 /**
  * The field that can be directly modified using contenteditable=true.
  * This includes all text fields like title and numbers.
