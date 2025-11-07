@@ -36,30 +36,15 @@ export async function handleRevalidateFieldData(): Promise<void> {
                 const fieldMetadata = extractDetailsFromCslp(cslp);
 
                 // Try to revalidate specific field schema and data
-                try {
-                    // Clear the entire content type schema from cache to force fresh fetch
-                    FieldSchemaMap.clearContentTypeSchema(
-                        fieldMetadata.content_type_uid
-                    );
-                } catch (fieldError) {
-                    console.warn(
-                        "Failed to revalidate content type:",
-                        fieldMetadata.content_type_uid,
-                        fieldError
-                    );
-                }
+                // Clear the entire content type schema from cache to force fresh fetch
+                FieldSchemaMap.clearContentTypeSchema(
+                    fieldMetadata.content_type_uid
+                );
             }
         }
 
         // Fallback 1: Clear all field schema cache
-        try {
-            FieldSchemaMap.clear();
-            return;
-        } catch (clearError) {
-            console.error("Failed to clear field schema cache:", clearError);
-            // Fallback 2: Refresh the entire iframe
-            window.location.reload();
-        }
+        FieldSchemaMap.clear();
     } catch (error) {
         console.error("Error handling revalidate field data:", error);
         // Final fallback - refresh the page

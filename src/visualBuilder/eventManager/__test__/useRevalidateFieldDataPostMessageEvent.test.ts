@@ -42,10 +42,8 @@ describe("handleRevalidateFieldData", () => {
     let overlayWrapper: HTMLDivElement;
     let focusedToolbar: HTMLDivElement;
 
-    beforeEach(() => {
-        vi.clearAllMocks();
-
-        // Create DOM elements
+    // Create DOM elements once for all tests (optimization)
+    beforeAll(() => {
         visualBuilderContainer = document.createElement("div");
         visualBuilderContainer.classList.add("visual-builder__container");
         overlayWrapper = document.createElement("div");
@@ -56,6 +54,11 @@ describe("handleRevalidateFieldData", () => {
         document.body.appendChild(visualBuilderContainer);
         document.body.appendChild(overlayWrapper);
         document.body.appendChild(focusedToolbar);
+    });
+
+    beforeEach(() => {
+        // Clear mocks before each test to ensure clean state
+        vi.clearAllMocks();
 
         // Reset VisualBuilder global state
         VisualBuilder.VisualBuilderGlobalState = {
@@ -68,7 +71,8 @@ describe("handleRevalidateFieldData", () => {
         };
     });
 
-    afterEach(() => {
+    // Clean up DOM after all tests complete
+    afterAll(() => {
         document.body.innerHTML = "";
     });
 
@@ -195,7 +199,8 @@ describe("handleRevalidateFieldData", () => {
         let hideFocusOverlay: any;
         let handleBuilderInteraction: any;
 
-        beforeEach(async () => {
+        // Import mocked modules once for all tests in this describe block
+        beforeAll(async () => {
             const overlayModule = await import(
                 "../../generators/generateOverlay"
             );

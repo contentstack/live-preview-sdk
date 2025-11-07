@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { isFieldDisabled } from "../isFieldDisabled";
+import { isFieldDisabled, DisableReason } from "../isFieldDisabled";
 import { ISchemaFieldMap } from "../types/index.types";
 import { FieldDetails } from "../../components/FieldToolbar";
 import Config from "../../../configManager/configManager";
@@ -24,7 +24,7 @@ describe("isFieldDisabled", () => {
 
         const result = isFieldDisabled(fieldSchemaMap, eventFieldDetails);
         expect(result.isDisabled).toBe(true);
-        expect(result.reason).toBe("You have only read access to this field");
+        expect(result.reason).toBe(DisableReason.ReadOnly);
     });
 
     it("should return disabled state due to non-localizable fields", () => {
@@ -49,9 +49,7 @@ describe("isFieldDisabled", () => {
 
         const result = isFieldDisabled(fieldSchemaMap, eventFieldDetails);
         expect(result.isDisabled).toBe(true);
-        expect(result.reason).toBe(
-            "Editing this field is restricted in localized entries"
-        );
+        expect(result.reason).toBe(DisableReason.LocalizedEntry);
     });
 
     it("should return disabled state due to unlinked variant", () => {
@@ -72,7 +70,7 @@ describe("isFieldDisabled", () => {
         const result = isFieldDisabled(fieldSchemaMap, eventFieldDetails);
         expect(result.isDisabled).toBe(true);
         expect(result.reason).toBe(
-            "This field is not editable as it is not linked to the selected variant. Contact your stack admin or owner to link it."
+            `${DisableReason.UnlinkedVariant} ${DisableReason.CannotLinkVariant}`
         );
     });
 
@@ -95,7 +93,7 @@ describe("isFieldDisabled", () => {
         const result = isFieldDisabled(fieldSchemaMap, eventFieldDetails);
         expect(result.isDisabled).toBe(true);
         expect(result.reason).toBe(
-            "This field is not editable as it is not linked to the selected variant. Click here to link a variant"
+            `${DisableReason.UnlinkedVariant} ${DisableReason.CanLinkVariant} `
         );
     });
 
@@ -120,9 +118,7 @@ describe("isFieldDisabled", () => {
 
         const result = isFieldDisabled(fieldSchemaMap, eventFieldDetails);
         expect(result.isDisabled).toBe(true);
-        expect(result.reason).toBe(
-            "This field is not editable as it is not localized"
-        );
+        expect(result.reason).toBe(DisableReason.UnlocalizedVariant);
     });
 
     it("should return disabled state due to audience mode", () => {
@@ -145,9 +141,7 @@ describe("isFieldDisabled", () => {
 
         const result = isFieldDisabled(fieldSchemaMap, eventFieldDetails);
         expect(result.isDisabled).toBe(true);
-        expect(result.reason).toBe(
-            "To edit an experience, open the Audience widget and click the Edit icon."
-        );
+        expect(result.reason).toBe(DisableReason.AudienceMode);
     });
 
     it("should return disabled state due to disabled variant", () => {
@@ -173,9 +167,7 @@ describe("isFieldDisabled", () => {
 
         const result = isFieldDisabled(fieldSchemaMap, eventFieldDetails);
         expect(result.isDisabled).toBe(true);
-        expect(result.reason).toBe(
-            "This field is not editable as it doesn't match the selected variant"
-        );
+        expect(result.reason).toBe(DisableReason.DisabledVariant);
         VisualBuilder.VisualBuilderGlobalState = {
             // @ts-expect-error mocking only required properties
             value: {
@@ -197,7 +189,7 @@ describe("isFieldDisabled", () => {
 
         const result = isFieldDisabled(fieldSchemaMap, eventFieldDetails);
         expect(result.isDisabled).toBe(false);
-        expect(result.reason).toBe("");
+        expect(result.reason).toBe(DisableReason.None);
     });
 
     it("should return disabled state due to read-only role", () => {
@@ -236,7 +228,7 @@ describe("isFieldDisabled", () => {
 
         const result = isFieldDisabled(fieldSchemaMap, eventFieldDetails);
         expect(result.isDisabled).toBe(true);
-        expect(result.reason).toBe("You have only read access to this field");
+        expect(result.reason).toBe(DisableReason.ReadOnly);
     });
 
     it("should return disabled state due to entry update restriction", () => {
@@ -278,9 +270,7 @@ describe("isFieldDisabled", () => {
             publish: true,
         });
         expect(result.isDisabled).toBe(true);
-        expect(result.reason).toBe(
-            "You do not have permission to edit this entry"
-        );
+        expect(result.reason).toBe(DisableReason.EntryUpdateRestricted);
     });
 
     describe("workflow stage restrictions", () => {
@@ -320,7 +310,9 @@ describe("isFieldDisabled", () => {
             );
             expect(result.isDisabled).toBe(true);
             expect(result.reason).toBe(
-                "You do not have Edit access to this entry on the 'Review Stage' workflow stage"
+                DisableReason.WorkflowStagePermission({
+                    stageName: "Review Stage",
+                })
             );
         });
 
@@ -360,7 +352,9 @@ describe("isFieldDisabled", () => {
             );
             expect(result.isDisabled).toBe(true);
             expect(result.reason).toBe(
-                "Editing is restricted for your role or by the rules for the 'Final Review' stage. Contact your admin for edit access."
+                DisableReason.EntryUpdateRestrictedRoleAndWorkflowStage({
+                    stageName: "Final Review",
+                })
             );
         });
 
@@ -399,7 +393,7 @@ describe("isFieldDisabled", () => {
                 workflowStageDetails
             );
             expect(result.isDisabled).toBe(false);
-            expect(result.reason).toBe("");
+            expect(result.reason).toBe(DisableReason.None);
         });
 
         it("should handle workflow stage details with undefined stage name", () => {
@@ -436,7 +430,7 @@ describe("isFieldDisabled", () => {
             );
             expect(result.isDisabled).toBe(true);
             expect(result.reason).toBe(
-                "You do not have Edit access to this entry on the 'Unknown' workflow stage"
+                DisableReason.WorkflowStagePermission({ stageName: "Unknown" })
             );
         });
 
@@ -477,7 +471,9 @@ describe("isFieldDisabled", () => {
             );
             expect(result.isDisabled).toBe(true);
             expect(result.reason).toBe(
-                "Editing is restricted for your role or by the rules for the 'Unknown' stage. Contact your admin for edit access."
+                DisableReason.EntryUpdateRestrictedRoleAndWorkflowStage({
+                    stageName: "Unknown",
+                })
             );
         });
 
@@ -521,9 +517,7 @@ describe("isFieldDisabled", () => {
             );
             expect(result.isDisabled).toBe(true);
             // Should return read-only role message first based on getDisableReason logic
-            expect(result.reason).toBe(
-                "You have only read access to this field"
-            );
+            expect(result.reason).toBe(DisableReason.ReadOnly);
         });
 
         it("should return enabled state when no workflow stage details provided", () => {
@@ -551,7 +545,7 @@ describe("isFieldDisabled", () => {
                 undefined
             );
             expect(result.isDisabled).toBe(false);
-            expect(result.reason).toBe("");
+            expect(result.reason).toBe(DisableReason.None);
         });
     });
 });

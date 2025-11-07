@@ -4,7 +4,7 @@ import { extractDetailsFromCslp } from "../../cslp";
 import { CslpData } from "../../cslp/types/cslp.types";
 import { VisualBuilderCslpEventDetails } from "../types/visualBuilder.types";
 import { FieldSchemaMap } from "../utils/fieldSchemaMap";
-import { isFieldDisabled } from "../utils/isFieldDisabled";
+import { DisableReason, isFieldDisabled } from "../utils/isFieldDisabled";
 import visualBuilderPostMessage from "../utils/visualBuilderPostMessage";
 import { CaretIcon, CaretRightIcon, InfoIcon } from "./icons";
 import { LoadingIcon } from "./icons/loading";
@@ -19,6 +19,7 @@ import { ToolbarTooltip } from "./Tooltip";
 import { fetchEntryPermissionsAndStageDetails } from "../utils/fetchEntryPermissionsAndStageDetails";
 import { VariantIndicator } from "./VariantIndicator";
 import { handleRevalidateFieldData } from "../eventManager/useRevalidateFieldDataPostMessageEvent";
+import { RESULT_TYPES } from "../utils/constants";
 
 interface ReferenceParentMap {
     [entryUid: string]: {
@@ -173,10 +174,10 @@ function FieldLabelWrapperComponent(
             );
 
             const handleLinkVariant = async () => {
-                if (fieldSchema.field_metadata?.canLinkVariant) {
-                    try {
+                try {
+                    if (fieldSchema.field_metadata?.canLinkVariant) {
                         const result = await visualBuilderPostMessage?.send<{
-                            type: "success" | "error";
+                            type: typeof RESULT_TYPES.SUCCESS | typeof RESULT_TYPES.ERROR;
                             message: string;
                         }>(
                             VisualBuilderPostMessageEvents.OPEN_LINK_VARIANT_MODAL,
@@ -187,20 +188,20 @@ function FieldLabelWrapperComponent(
                         );
 
                         // If the modal was closed or linking failed, do nothing
-                        if (!result || result.type === "error") {
+                        if (!result || result.type === RESULT_TYPES.ERROR) {
                             return;
                         }
 
                         // If linking was successful and requires revalidation, revalidate
-                        if (result.type === "success") {
+                        if (result.type === RESULT_TYPES.SUCCESS) {
                             await handleRevalidateFieldData();
                         }
-                    } catch (message) {
-                        console.error(
-                            "Error in link variant modal flow:",
-                            message
-                        );
                     }
+                } catch (error) {
+                    console.error(
+                        "Error in link variant modal flow:",
+                        error
+                    );
                 }
             };
 
@@ -221,25 +222,25 @@ function FieldLabelWrapperComponent(
                                 "visual-builder__tooltip--persistent"
                             ]
                         )}
-                        data-tooltip={!reason?.toLowerCase().includes("click here to link a variant")
+                        data-tooltip={!reason?.toLowerCase().includes(DisableReason.CanLinkVariant)
                                 ? reason
                             : undefined}
                     >
                         {reason
                             .toLowerCase()
-                            .includes("click here to link a variant") && (
+                            .includes(DisableReason.CanLinkVariant) && (
                             <div
                                 className={visualBuilderStyles()["visual-builder__custom-tooltip"]}
                                 onClick={handleLinkVariant}
                             >
                                 {(() => {
                                     const [before, after] = reason.split(
-                                        "here"
+                                        DisableReason.SplitOn
                                     );
                                     return (
                                         <>
                                             {before}
-                                            <span style={{ textDecoration: "underline" }}>here</span>
+                                            <span style={{ textDecoration: "underline" }}>{DisableReason.SplitOn}</span>
                                             {after}
                                         </>
                                     );
