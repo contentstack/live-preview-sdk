@@ -171,12 +171,10 @@ describe("When an element is clicked in visual builder mode", () => {
             expect(overlay).not.toBeNull();
         });
 
-        test("should have a field path dropdown", async () => {
-            // waitFor needed for async component rendering
-            await waitFor(() => {
-                const toolbar = screen.getByTestId("mock-field-label-wrapper");
-                expect(toolbar).toBeInTheDocument();
-            });
+        test("should have a field path dropdown", () => {
+            // Component is already rendered from beforeAll setup
+            const toolbar = screen.getByTestId("mock-field-label-wrapper");
+            expect(toolbar).toBeInTheDocument();
         });
 
         test("should contain a data-cslp-field-type attribute", () => {
@@ -294,12 +292,10 @@ describe("When an element is clicked in visual builder mode", () => {
             expect(overlay).not.toBeNull();
         });
 
-        test("should have a field path dropdown", async () => {
-            // waitFor needed for async component rendering
-            await waitFor(() => {
-                const toolbar = screen.getByTestId("mock-field-label-wrapper");
-                expect(toolbar).toBeInTheDocument();
-            });
+        test("should have a field path dropdown", () => {
+            // Component is already rendered from beforeAll setup
+            const toolbar = screen.getByTestId("mock-field-label-wrapper");
+            expect(toolbar).toBeInTheDocument();
         });
 
         test("should contain a data-cslp-field-type attribute", () => {
