@@ -268,14 +268,14 @@ describe("hideFocusOverlay", () => {
 
         expect(editedElement.textContent).toBe("New text");
 
-        // close the overlay
+        // close the overlay - this triggers async save operation
         fireEvent.click(focusOverlayWrapper);
         expect(focusOverlayWrapper.classList.contains("visible")).toBe(false);
 
-        // Wait for the message to be sent (async operation)
-        await waitFor(() => {
-            expect(visualBuilderPostMessage?.send).toHaveBeenCalled();
-        });
+        // Need to wait a tick for async message sending
+        await new Promise((resolve) => setTimeout(resolve, 0));
+
+        expect(visualBuilderPostMessage?.send).toHaveBeenCalled();
 
         expect(visualBuilderPostMessage?.send).toHaveBeenCalledWith(
             VisualBuilderPostMessageEvents.UPDATE_FIELD,

@@ -14,24 +14,30 @@ export default defineConfig({
         },
         globals: true,
         setupFiles: "./vitest.setup.ts",
-        retry: 2,
+        // Reduce retry attempts - with optimized tests, we don't need many retries
+        retry: process.env.CI ? 1 : 0,
+        // Reduced timeouts - optimized tests should complete faster
         testTimeout: 30000,
         hookTimeout: 30000,
-        teardownTimeout: 10000, // Allow time for cleanup
+        teardownTimeout: 5000,
         // Enable file parallelization
         fileParallelism: true,
-        // Optimize pool for better performance
-        pool: "forks", // Better isolation and parallel performance
+        // Use threads pool for better performance on multi-core systems
+        pool: "threads",
         poolOptions: {
-            forks: {
-                // Use more workers on CI
-                maxForks: process.env.CI ? 4 : undefined,
-                minForks: process.env.CI ? 2 : undefined,
-                // Increase timeout for worker communication
-                execArgv: [],
+            threads: {
+                // Optimize worker count for CI
+                maxThreads: process.env.CI ? 4 : undefined,
+                minThreads: process.env.CI ? 2 : undefined,
+                // Isolate tests to prevent side effects
+                singleThread: false,
             },
         },
-        // Prevent worker timeout errors
-        slowTestThreshold: 15000, // Warn about tests over 15s
+        // Set lower threshold to identify slow tests
+        slowTestThreshold: 5000,
+        // Isolate tests for better parallelization
+        isolate: true,
+        // Reduce overhead
+        css: false,
     },
 });
