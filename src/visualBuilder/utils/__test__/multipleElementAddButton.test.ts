@@ -673,7 +673,7 @@ describe("removeAddInstanceButtons", () => {
         expect(visualBuilderContainer.contains(nextButton)).toBeFalsy();
     });
 
-    test("should remove all buttons if forceRemoveAll is true", () => {
+    test("should remove all buttons if forceRemoveAll is true", async () => {
         for (let i = 0; i < 5; i++) {
             const button = generateAddInstanceButton({
                 fieldSchema: singleLineFieldSchema,
@@ -685,6 +685,9 @@ describe("removeAddInstanceButtons", () => {
             });
             visualBuilderContainer.appendChild(button);
         }
+
+        // Give components a tick to render
+        await new Promise((resolve) => setTimeout(resolve, 0));
 
         let buttons = visualBuilderContainer.querySelectorAll(
             `[data-testid="visual-builder-add-instance-button"]`
@@ -708,7 +711,7 @@ describe("removeAddInstanceButtons", () => {
         expect(buttons.length).toBe(0);
     });
 
-    test("should not remove all buttons if forceRemoveAll is false", () => {
+    test("should not remove all buttons if forceRemoveAll is false", async () => {
         for (let i = 0; i < 5; i++) {
             const button = generateAddInstanceButton({
                 fieldSchema: singleLineFieldSchema,
@@ -720,6 +723,9 @@ describe("removeAddInstanceButtons", () => {
             });
             visualBuilderContainer.appendChild(button);
         }
+
+        // Give components a tick to render
+        await new Promise((resolve) => setTimeout(resolve, 0));
 
         let buttons = visualBuilderContainer.querySelectorAll(
             `[data-testid="visual-builder-add-instance-button"]`
@@ -734,10 +740,6 @@ describe("removeAddInstanceButtons", () => {
                 overlayWrapper: overlayWrapper,
             },
             false
-        );
-
-        buttons = visualBuilderContainer.querySelectorAll(
-            `[data-testid="visual-builder-add-instance-button"]`
         );
 
         const addInstanceButtons = visualBuilderContainer.querySelectorAll(

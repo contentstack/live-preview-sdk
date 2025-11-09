@@ -185,7 +185,7 @@ describe("FieldToolbarComponent", () => {
         const deleteButton = getByTestId(
             "visual-builder__focused-toolbar__multiple-field-toolbar__delete-button"
         );
-        
+
         fireEvent.click(deleteButton);
 
         expect(handleDeleteInstance).toHaveBeenCalledWith(
@@ -201,7 +201,7 @@ describe("FieldToolbarComponent", () => {
                 variant: "variant",
             },
         };
-        
+
         const { getByTestId } = await asyncRender(
             <FieldToolbarComponent
                 eventDetails={variantEventDetails}
@@ -209,9 +209,10 @@ describe("FieldToolbarComponent", () => {
             />
         );
 
-        const variantIcon = getByTestId(
-            "visual-builder-canvas-variant-icon"
-        );
+        // Give component a tick to fully render variant icon
+        await new Promise((resolve) => setTimeout(resolve, 0));
+
+        const variantIcon = getByTestId("visual-builder-canvas-variant-icon");
         expect(variantIcon).toBeInTheDocument();
     });
 
