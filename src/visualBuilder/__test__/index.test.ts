@@ -78,7 +78,7 @@ describe(
         });
 
         beforeEach(() => {
-            (visualBuilderPostMessage?.send as Mock).mockClear();
+            vi.clearAllMocks();
             document.getElementsByTagName("html")[0].innerHTML = "";
             cleanup();
         });
@@ -129,37 +129,35 @@ describe(
             }
         );
 
-        test(
-            "should add overlay to DOM when clicked",
-            async () => {
-                const h1Tag = document.createElement("h1");
-                h1Tag.textContent = INLINE_EDITABLE_FIELD_VALUE;
-                h1Tag.setAttribute(
-                    "data-cslp",
-                    "all_fields.blt58a50b4cebae75c5.en-us.modular_blocks.0.block.single_line"
-                );
-                document.body.appendChild(h1Tag);
-                mockGetBoundingClientRect(h1Tag);
-                const x = new VisualBuilder();
-                await triggerAndWaitForClickAction(
-                    visualBuilderPostMessage,
-                    h1Tag
-                );
-                await waitFor(() => {
-                    const overlayOutline = document.querySelector(
-                        '[data-testid="visual-builder__overlay--outline"]'
-                    );
-                    expect(overlayOutline).toHaveStyle({
-                        top: "10px",
-                        left: "10px",
-                        width: "10px",
-                        height: "5px",
-                        "outline-color": "rgb(113, 92, 221)",
-                    });
-                });
-                x.destroy();
-            },
-        );
+        test("should add overlay to DOM when clicked", async () => {
+            const h1Tag = document.createElement("h1");
+            h1Tag.textContent = INLINE_EDITABLE_FIELD_VALUE;
+            h1Tag.setAttribute(
+                "data-cslp",
+                "all_fields.blt58a50b4cebae75c5.en-us.modular_blocks.0.block.single_line"
+            );
+            document.body.appendChild(h1Tag);
+            mockGetBoundingClientRect(h1Tag);
+            const x = new VisualBuilder();
+            
+            await triggerAndWaitForClickAction(
+                visualBuilderPostMessage,
+                h1Tag
+            );
+            
+            const overlayOutline = document.querySelector(
+                '[data-testid="visual-builder__overlay--outline"]'
+            );
+            expect(overlayOutline).toHaveStyle({
+                top: "10px",
+                left: "10px",
+                width: "10px",
+                height: "5px",
+                "outline-color": "rgb(113, 92, 221)",
+            });
+            
+            x.destroy();
+        });
 
         // skipped as this is already tested in click related tests.
         // this can cause failure for the above test.
@@ -241,47 +239,35 @@ describe(
                 afterEach(() => {
                     visualBuilder.destroy();
                 });
-                test(
-                    "single line should be contenteditable",
-                    async () => {
-                        await triggerAndWaitForClickAction(
-                            visualBuilderPostMessage,
-                            h1
-                        );
+                test("single line should be contenteditable", async () => {
+                    await triggerAndWaitForClickAction(
+                        visualBuilderPostMessage,
+                        h1
+                    );
 
-                        await waitFor(() => {
-                            expect(h1).toHaveAttribute("contenteditable");
-                            expect(h1).toHaveAttribute(
-                                "data-cslp-field-type",
-                                "singleline"
-                            );
-                        });
-                    },
-                    { timeout: 40 * 1000 }
-                );
+                    expect(h1).toHaveAttribute("contenteditable");
+                    expect(h1).toHaveAttribute(
+                        "data-cslp-field-type",
+                        "singleline"
+                    );
+                });
 
-                test(
-                    "multi line should be contenteditable",
-                    async () => {
-                        h1.setAttribute(
-                            "data-cslp",
-                            "all_fields.blt58a50b4cebae75c5.en-us.multi_line"
-                        );
-                        await triggerAndWaitForClickAction(
-                            visualBuilderPostMessage,
-                            h1
-                        );
+                test("multi line should be contenteditable", async () => {
+                    h1.setAttribute(
+                        "data-cslp",
+                        "all_fields.blt58a50b4cebae75c5.en-us.multi_line"
+                    );
+                    await triggerAndWaitForClickAction(
+                        visualBuilderPostMessage,
+                        h1
+                    );
 
-                        await waitFor(() => {
-                            expect(h1).toHaveAttribute("contenteditable");
-                            expect(h1).toHaveAttribute(
-                                "data-cslp-field-type",
-                                "multiline"
-                            );
-                        });
-                    },
-                    { timeout: 40 * 1000 }
-                );
+                    expect(h1).toHaveAttribute("contenteditable");
+                    expect(h1).toHaveAttribute(
+                        "data-cslp-field-type",
+                        "multiline"
+                    );
+                });
             });
         });
     },
