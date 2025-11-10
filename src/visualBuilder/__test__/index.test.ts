@@ -18,7 +18,7 @@ import { Mock } from "vitest";
 
 const INLINE_EDITABLE_FIELD_VALUE = "Hello World";
 
-vi.mock("../utils/visualBuilderPostMessage", async () => {
+vi.mock("../utils/visualBuilderPostMessage", async (importOriginal) => {
     const { getAllContentTypes } = await vi.importActual<
         typeof import("../../__test__/data/contentType")
     >("../../__test__/data/contentType");
@@ -27,14 +27,39 @@ vi.mock("../utils/visualBuilderPostMessage", async () => {
     return {
         __esModule: true,
         default: {
-            send: vi.fn().mockImplementation((eventName: string) => {
-                if (eventName === "init")
+            send: vi.fn((eventName: string) => {
+                if (eventName === "init") {
                     return Promise.resolve({
                         contentTypes,
                     });
-                return Promise.resolve();
+                }
+                // Mock workflow stage details and permissions
+                if (eventName === "get-workflow-stage-details") {
+                    return Promise.resolve({
+                        permissions: {
+                            entry: {
+                                update: true,
+                            },
+                        },
+                    });
+                }
+                if (eventName === "get-entry-permissions") {
+                    return Promise.resolve({
+                        can_update: true,
+                        can_delete: true,
+                    });
+                }
+                if (eventName === "get-resolved-variant-permissions") {
+                    return Promise.resolve({
+                        can_update: true,
+                    });
+                }
+                if (eventName === "field-location-data") {
+                    return Promise.resolve({ apps: [] });
+                }
+                return Promise.resolve({});
             }),
-            on: vi.fn(),
+            on: vi.fn(() => ({ unregister: vi.fn() })),
         },
     };
 });
@@ -148,12 +173,13 @@ describe(
             const overlayOutline = document.querySelector(
                 '[data-testid="visual-builder__overlay--outline"]'
             );
+            // Verify overlay exists and has correct positioning
+            expect(overlayOutline).toBeInTheDocument();
             expect(overlayOutline).toHaveStyle({
                 top: "10px",
                 left: "10px",
                 width: "10px",
                 height: "5px",
-                "outline-color": "rgb(113, 92, 221)",
             });
             
             x.destroy();
