@@ -101,8 +101,8 @@ export const getElementBytestId = (testId: string) => {
 };
 export const asyncRender: (
     componentChild: ComponentChild
-) => ReturnType<typeof render> = async (...args) => {
-    let returnValue: ReturnType<typeof render>;
+) => Promise<ReturnType<typeof render>> = async (...args) => {
+    let returnValue!: ReturnType<typeof render>;
     await act(async () => {
         returnValue = render(...args);
     });
