@@ -222,12 +222,11 @@ function FieldLabelWrapperComponent(
                                 "visual-builder__tooltip--persistent"
                             ]
                         )}
-                        data-tooltip={!reason?.toLowerCase().includes(DisableReason.CanLinkVariant)
+                        data-tooltip={!reason?.includes(DisableReason.CanLinkVariant)
                                 ? reason
                             : undefined}
                     >
                         {reason
-                            .toLowerCase()
                             .includes(DisableReason.CanLinkVariant) && (
                             <div
                                 className={visualBuilderStyles()["visual-builder__custom-tooltip"]}
