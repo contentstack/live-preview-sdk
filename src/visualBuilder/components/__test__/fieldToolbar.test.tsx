@@ -37,17 +37,17 @@ vi.mock("../CommentIcon", () => ({
     default: vi.fn(() => <div>Comment Icon</div>),
 }));
 
-vi.mock("../../utils/visualBuilderPostMessage", async () => {
+vi.mock("../../utils/visualBuilderPostMessage", () => {
     return {
         default: {
-            send: vi.fn().mockImplementation((eventName: string) => {
+            send: vi.fn((eventName: string) => {
                 // Return mock data for FIELD_LOCATION_DATA to prevent hanging
                 if (eventName === "field-location-data") {
                     return Promise.resolve({ apps: [] });
                 }
                 return Promise.resolve({});
             }),
-            on: vi.fn(),
+            on: vi.fn(() => ({ unregister: vi.fn() })),
         },
     };
 });
@@ -64,8 +64,9 @@ vi.mock("../../utils/isFieldDisabled", () => ({
     isFieldDisabled: vi.fn().mockReturnValue({ isDisabled: false }),
 }));
 
-vi.mock("../FieldRevert/FieldRevertComponent", async () => {
-    const actual = await vi.importActual("../FieldRevert/FieldRevertComponent");
+vi.mock("../FieldRevert/FieldRevertComponent", async (importOriginal) => {
+    const actual = await importOriginal<typeof import("../FieldRevert/FieldRevertComponent")>();
+    
     return {
         ...actual,
         getFieldVariantStatus: vi.fn().mockResolvedValue({

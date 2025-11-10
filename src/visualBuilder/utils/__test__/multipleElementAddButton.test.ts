@@ -27,22 +27,22 @@ const mockResizeObserver = {
     disconnect: vi.fn(),
 };
 
-vi.mock("../visualBuilderPostMessage", async () => {
+vi.mock("../visualBuilderPostMessage", async (importOriginal) => {
     const { getAllContentTypes } = await vi.importActual<
         typeof import("../../../__test__/data/contentType")
     >("../../../__test__/data/contentType");
     const contentTypes = getAllContentTypes();
     return {
         default: {
-            send: vi.fn().mockImplementation((eventName: string) => {
+            send: vi.fn((eventName: string) => {
                 if (eventName === "init") {
-                    return {
+                    return Promise.resolve({
                         contentTypes,
-                    };
+                    });
                 }
                 return Promise.resolve({});
             }),
-            on: vi.fn(),
+            on: vi.fn(() => ({ unregister: vi.fn() })),
         },
     };
 });
