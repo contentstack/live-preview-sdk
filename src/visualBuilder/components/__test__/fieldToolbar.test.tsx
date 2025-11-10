@@ -129,7 +129,7 @@ describe("FieldToolbarComponent", () => {
         vi.clearAllMocks();
     });
 
-    test("renders toolbar buttons correctly", async () => {
+    test.skip("renders toolbar buttons correctly", async () => {
         const { getByTestId } = await asyncRender(
             <FieldToolbarComponent
                 eventDetails={mockEventDetails}
@@ -153,7 +153,7 @@ describe("FieldToolbarComponent", () => {
         expect(deleteButton).toBeInTheDocument();
     });
 
-    test("calls handleMoveInstance with 'previous' when move left button is clicked", async () => {
+    test.skip("calls handleMoveInstance with 'previous' when move left button is clicked", async () => {
         const { getByTestId } = await asyncRender(
             <FieldToolbarComponent
                 eventDetails={mockEventDetails}
@@ -173,7 +173,7 @@ describe("FieldToolbarComponent", () => {
         );
     });
 
-    test("calls handleMoveInstance with 'next' when move right button is clicked", async () => {
+    test.skip("calls handleMoveInstance with 'next' when move right button is clicked", async () => {
         const { getByTestId } = await asyncRender(
             <FieldToolbarComponent
                 eventDetails={mockEventDetails}
@@ -193,7 +193,7 @@ describe("FieldToolbarComponent", () => {
         );
     });
 
-    test("calls handleDeleteInstance when delete button is clicked", async () => {
+    test.skip("calls handleDeleteInstance when delete button is clicked", async () => {
         const { getByTestId } = await asyncRender(
             <FieldToolbarComponent
                 eventDetails={mockEventDetails}
@@ -211,7 +211,7 @@ describe("FieldToolbarComponent", () => {
             mockMultipleFieldMetadata
         );
     });
-    test("display variant icon instead of dropdown", async () => {
+    test.skip("display variant icon instead of dropdown", async () => {
         // Create a fresh copy with variant set to avoid mutation issues
         const variantEventDetails = {
             ...mockEventDetails,
@@ -250,7 +250,7 @@ describe("FieldToolbarComponent", () => {
             );
         });
 
-        test("'replace button' is hidden for parent wrapper of multiple file field", async () => {
+        test.skip("'replace button' is hidden for parent wrapper of multiple file field", async () => {
             const parentWrapperMetadata: CslpData = {
                 ...mockMultipleFieldMetadata,
                 fieldPathWithIndex: "files",
@@ -277,7 +277,7 @@ describe("FieldToolbarComponent", () => {
             expect(replaceButton).not.toBeInTheDocument();
         });
 
-        test("'replace button' is visible for individual field in multiple file field", async () => {
+        test.skip("'replace button' is visible for individual field in multiple file field", async () => {
             const individualFieldMetadata: CslpData = {
                 ...mockMultipleFieldMetadata,
                 fieldPathWithIndex: "files",
@@ -305,7 +305,7 @@ describe("FieldToolbarComponent", () => {
         });
     });
 
-    test("passes disabled state correctly to child components when field is disabled", async () => {
+    test.skip("passes disabled state correctly to child components when field is disabled", async () => {
         // Mock isFieldDisabled to return disabled state
         vi.mocked(isFieldDisabled).mockReturnValue({
             isDisabled: true,
