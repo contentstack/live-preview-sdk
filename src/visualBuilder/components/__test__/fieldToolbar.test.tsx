@@ -40,7 +40,11 @@ vi.mock("../CommentIcon", () => ({
 vi.mock("../../utils/visualBuilderPostMessage", async () => {
     return {
         default: {
-            send: vi.fn().mockImplementation((_eventName: string) => {
+            send: vi.fn().mockImplementation((eventName: string) => {
+                // Return mock data for FIELD_LOCATION_DATA to prevent hanging
+                if (eventName === "field-location-data") {
+                    return Promise.resolve({ apps: [] });
+                }
                 return Promise.resolve({});
             }),
             on: vi.fn(),
@@ -59,6 +63,20 @@ vi.mock("../../utils/getDiscussionIdByFieldMetaData", () => {
 vi.mock("../../utils/isFieldDisabled", () => ({
     isFieldDisabled: vi.fn().mockReturnValue({ isDisabled: false }),
 }));
+
+vi.mock("../FieldRevert/FieldRevertComponent", async () => {
+    const actual = await vi.importActual("../FieldRevert/FieldRevertComponent");
+    return {
+        ...actual,
+        getFieldVariantStatus: vi.fn().mockResolvedValue({
+            isAddedInstances: false,
+            isBaseModified: false,
+            isDeletedInstances: false,
+            isOrderChanged: false,
+            fieldLevelCustomizations: false,
+        }),
+    };
+});
 
 const mockMultipleFieldMetadata: CslpData = {
     entry_uid: "",

@@ -16,10 +16,10 @@ export default defineConfig({
         setupFiles: "./vitest.setup.ts",
         // Reduce retry attempts - with optimized tests, we don't need many retries
         retry: process.env.CI ? 1 : 0,
-        // Reduced timeouts - optimized tests should complete faster
+        // Keep reasonable timeouts for CI environment
         testTimeout: 30000,
         hookTimeout: 30000,
-        teardownTimeout: 5000,
+        teardownTimeout: 10000,
         // Enable file parallelization
         fileParallelism: true,
         // Use threads pool for better performance on multi-core systems
