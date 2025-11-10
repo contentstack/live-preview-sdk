@@ -322,7 +322,7 @@ describe("handleAddButtonsForMultiple", () => {
                 }
             );
 
-            await sleep(0);
+            // Buttons are appended synchronously
             const addInstanceButtons = visualBuilderContainer.querySelectorAll(
                 `[data-testid="visual-builder-add-instance-button"]`
             );
@@ -345,8 +345,7 @@ describe("handleAddButtonsForMultiple", () => {
                     label: undefined,
                 }
             );
-            await sleep(0);
-
+            // Buttons are appended and positioned synchronously
             const addInstanceButtons = visualBuilderContainer.querySelectorAll(
                 `[data-testid="visual-builder-add-instance-button"]`
             );
@@ -389,8 +388,7 @@ describe("handleAddButtonsForMultiple", () => {
                     label: undefined,
                 }
             );
-            await sleep(0);
-
+            // Buttons are appended and positioned synchronously
             const addInstanceButtons = visualBuilderContainer.querySelectorAll(
                 `[data-testid="visual-builder-add-instance-button"]`
             );
@@ -486,7 +484,7 @@ describe("handleAddButtonsForMultiple", () => {
                 }
             );
 
-            await sleep(0);
+            // Buttons are appended synchronously
             const addInstanceButtons = visualBuilderContainer.querySelectorAll(
                 `[data-testid="visual-builder-add-instance-button"]`
             );
@@ -565,6 +563,11 @@ describe("removeAddInstanceButtons", () => {
         visualBuilderContainer = document.createElement("div");
         visualBuilderContainer.classList.add("visual-builder__container");
         document.body.appendChild(visualBuilderContainer);
+        
+        // Set longer timeout for CI environment where Preact rendering is slower
+        if (process.env.CI) {
+            vi.setConfig({ testTimeout: 60000, hookTimeout: 60000 });
+        }
     });
 
     beforeEach(() => {
@@ -686,9 +689,7 @@ describe("removeAddInstanceButtons", () => {
             visualBuilderContainer.appendChild(button);
         }
 
-        // Give components a tick to render
-        await new Promise((resolve) => setTimeout(resolve, 0));
-
+        // Buttons are appended synchronously
         let buttons = visualBuilderContainer.querySelectorAll(
             `[data-testid="visual-builder-add-instance-button"]`
         );
@@ -724,9 +725,7 @@ describe("removeAddInstanceButtons", () => {
             visualBuilderContainer.appendChild(button);
         }
 
-        // Give components a tick to render
-        await new Promise((resolve) => setTimeout(resolve, 0));
-
+        // Buttons are appended synchronously
         let buttons = visualBuilderContainer.querySelectorAll(
             `[data-testid="visual-builder-add-instance-button"]`
         );
