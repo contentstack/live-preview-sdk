@@ -36,6 +36,7 @@ vi.mock("../utils/visualBuilderPostMessage", async (importOriginal) => {
                 // Mock workflow stage details and permissions
                 if (eventName === "get-workflow-stage-details") {
                     return Promise.resolve({
+                        stage: { name: "Draft" },
                         permissions: {
                             entry: {
                                 update: true,
@@ -56,6 +57,19 @@ vi.mock("../utils/visualBuilderPostMessage", async (importOriginal) => {
                 }
                 if (eventName === "field-location-data") {
                     return Promise.resolve({ apps: [] });
+                }
+                // Mock field data for modular blocks
+                if (eventName === "get-field-data") {
+                    return Promise.resolve({
+                        fieldData: INLINE_EDITABLE_FIELD_VALUE,
+                    });
+                }
+                // Mock field display names
+                if (eventName === "get-field-display-names") {
+                    return Promise.resolve({
+                        "all_fields.blt58a50b4cebae75c5.en-us.modular_blocks.0.block.single_line":
+                            "Single Line",
+                    });
                 }
                 return Promise.resolve({});
             }),
