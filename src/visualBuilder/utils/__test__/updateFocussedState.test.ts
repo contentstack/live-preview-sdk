@@ -7,7 +7,9 @@ import { VisualBuilder } from "../..";
 import {
     addFocusOverlay,
     hideFocusOverlay,
+    wasFocusOverlayDisabled,
 } from "../../generators/generateOverlay";
+import { addFocusedToolbar } from "../../listeners/mouseClick";
 import { mockGetBoundingClientRect } from "../../../__test__/utils";
 import { act } from "@testing-library/preact";
 import { singleLineFieldSchema } from "../../../__test__/data/fields";
@@ -18,6 +20,12 @@ import { isFieldDisabled } from "../isFieldDisabled";
 vi.mock("../../generators/generateOverlay", () => ({
     addFocusOverlay: vi.fn(),
     hideFocusOverlay: vi.fn(),
+    wasFocusOverlayDisabled: vi.fn(),
+    hideOverlay: vi.fn(),
+}));
+
+vi.mock("../../listeners/mouseClick", () => ({
+    addFocusedToolbar: vi.fn(),
 }));
 
 vi.mock("../getEntryPermissionsCached", () => ({
@@ -246,6 +254,8 @@ describe("updateFocussedStateOnMutation", () => {
         document.body.appendChild(previousSelectedEditableDOM);
         VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
             previousSelectedEditableDOM;
+        // Clear all mocks before each test
+        vi.clearAllMocks();
     });
     afterEach(() => {
         document.body.innerHTML = "";
@@ -277,21 +287,27 @@ describe("updateFocussedStateOnMutation", () => {
         expect(hideFocusOverlay).toHaveBeenCalled();
     });
 
-    it("should update focus outline dimensions", () => {
+    /**
+     * Test: Should re-initialize overlay using wasFocusOverlayDisabled and addFocusOverlay.
+     * This validates the refactored behavior where overlay is fully re-initialized
+     * instead of manually updating dimensions, ensuring disabled state is preserved.
+     */
+    it("should re-initialize overlay using wasFocusOverlayDisabled and addFocusOverlay", () => {
         const focusOverlayWrapperMock = document.createElement("div");
-        const focusOutlineMock = document.createElement("div");
-        focusOutlineMock.classList.add("visual-builder__overlay--outline");
-        focusOverlayWrapperMock.appendChild(focusOutlineMock);
+        const outlineMock = document.createElement("div");
+        outlineMock.classList.add("visual-builder__overlay--outline");
+        outlineMock.style.outlineColor = "#909090"; // disabled state
+        focusOverlayWrapperMock.appendChild(outlineMock);
 
         const selectedElementMock = document.createElement("div");
-        selectedElementMock.getBoundingClientRect = vi.fn().mockReturnValue({
-            top: 10,
-            left: 10,
-            width: 100,
-            height: 100,
-        });
+        selectedElementMock.setAttribute(
+            "data-cslp",
+            "content_type_uid.entry_uid.locale.field_path"
+        );
+        mockGetBoundingClientRect(selectedElementMock);
 
         document.querySelector = vi.fn().mockReturnValue(selectedElementMock);
+        vi.mocked(wasFocusOverlayDisabled).mockReturnValue(true);
 
         updateFocussedStateOnMutation(
             focusOverlayWrapperMock,
@@ -300,9 +316,133 @@ describe("updateFocussedStateOnMutation", () => {
             null
         );
 
-        expect(focusOutlineMock.style.top).toBe("10px");
-        expect(focusOutlineMock.style.left).toBe("10px");
-        expect(focusOutlineMock.style.width).toBe("100px");
-        expect(focusOutlineMock.style.height).toBe("100px");
+        // Verify wasFocusOverlayDisabled was called to check previous state
+        expect(wasFocusOverlayDisabled).toHaveBeenCalledWith(
+            focusOverlayWrapperMock
+        );
+        // Verify addFocusOverlay was called with the disabled state preserved
+        expect(addFocusOverlay).toHaveBeenCalledWith(
+            selectedElementMock,
+            focusOverlayWrapperMock,
+            true
+        );
+    });
+
+    /**
+     * Test: Should call addFocusedToolbar when toolbar is empty and resizeObserver exists.
+     * This validates the new toolbar initialization logic when toolbar needs to be created.
+     */
+    it("should call addFocusedToolbar when toolbar is empty", () => {
+        const focusOverlayWrapperMock = document.createElement("div");
+        const focusedToolbarMock = document.createElement("div");
+        // Toolbar is empty (no children)
+        const visualBuilderContainerMock = document.createElement("div");
+        const resizeObserverMock = {
+            disconnect: vi.fn(),
+            unobserve: vi.fn(),
+        } as unknown as ResizeObserver;
+
+        const selectedElementMock = document.createElement("div");
+        selectedElementMock.setAttribute(
+            "data-cslp",
+            "content_type_uid.entry_uid.locale.field_path"
+        );
+        mockGetBoundingClientRect(selectedElementMock);
+
+        document.querySelector = vi.fn().mockReturnValue(selectedElementMock);
+        vi.mocked(wasFocusOverlayDisabled).mockReturnValue(false);
+
+        VisualBuilder.VisualBuilderGlobalState.value.focusElementObserver = null;
+        VisualBuilder.VisualBuilderGlobalState.value.isFocussed = false;
+
+        updateFocussedStateOnMutation(
+            focusOverlayWrapperMock,
+            focusedToolbarMock,
+            visualBuilderContainerMock,
+            resizeObserverMock
+        );
+
+        // Verify addFocusedToolbar was called with correct parameters
+        expect(addFocusedToolbar).toHaveBeenCalledWith({
+            eventDetails: expect.objectContaining({
+                editableElement: selectedElementMock,
+                cslpData: "content_type_uid.entry_uid.locale.field_path",
+                fieldMetadata: expect.any(Object),
+            }),
+            focusedToolbar: focusedToolbarMock,
+            hideOverlay: expect.any(Function),
+            isVariant: false,
+        });
+    });
+
+    /**
+     * Test: Should position toolbar when it already has content.
+     * This validates the optimization where existing toolbar is repositioned
+     * instead of being recreated, avoiding unnecessary re-renders.
+     */
+    it("should position toolbar when it already has content", () => {
+        const focusOverlayWrapperMock = document.createElement("div");
+        const focusedToolbarMock = document.createElement("div");
+        // Toolbar has content (add a child)
+        const toolbarChild = document.createElement("div");
+        focusedToolbarMock.appendChild(toolbarChild);
+        const visualBuilderContainerMock = document.createElement("div");
+        const resizeObserverMock = {
+            disconnect: vi.fn(),
+        } as unknown as ResizeObserver;
+
+        const selectedElementMock = document.createElement("div");
+        selectedElementMock.setAttribute(
+            "data-cslp",
+            "content_type_uid.entry_uid.locale.field_path"
+        );
+        mockGetBoundingClientRect(selectedElementMock);
+
+        document.querySelector = vi.fn().mockReturnValue(selectedElementMock);
+        vi.mocked(wasFocusOverlayDisabled).mockReturnValue(false);
+
+        updateFocussedStateOnMutation(
+            focusOverlayWrapperMock,
+            focusedToolbarMock,
+            visualBuilderContainerMock,
+            resizeObserverMock
+        );
+
+        // Verify addFocusedToolbar was NOT called (toolbar has content)
+        expect(addFocusedToolbar).not.toHaveBeenCalled();
+        // Verify toolbar position was updated
+        expect(focusedToolbarMock.style.top).toBe("49px");
+        expect(focusedToolbarMock.style.left).toBe("8px");
+    });
+
+    /**
+     * Test: Should not call addFocusedToolbar when resizeObserver is null.
+     * Edge case: toolbar initialization requires resizeObserver to be present.
+     */
+    it("should not call addFocusedToolbar when resizeObserver is null", () => {
+        const focusOverlayWrapperMock = document.createElement("div");
+        const focusedToolbarMock = document.createElement("div");
+        // Toolbar is empty but no resizeObserver
+        const visualBuilderContainerMock = document.createElement("div");
+
+        const selectedElementMock = document.createElement("div");
+        selectedElementMock.setAttribute(
+            "data-cslp",
+            "content_type_uid.entry_uid.locale.field_path"
+        );
+        mockGetBoundingClientRect(selectedElementMock);
+
+        document.querySelector = vi.fn().mockReturnValue(selectedElementMock);
+        vi.mocked(wasFocusOverlayDisabled).mockReturnValue(false);
+
+        updateFocussedStateOnMutation(
+            focusOverlayWrapperMock,
+            focusedToolbarMock,
+            visualBuilderContainerMock,
+            null
+        );
+
+        // Verify addFocusedToolbar was NOT called (no resizeObserver)
+        expect(addFocusedToolbar).not.toHaveBeenCalled();
     });
 });

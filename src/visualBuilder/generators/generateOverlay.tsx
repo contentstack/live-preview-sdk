@@ -94,6 +94,14 @@ export function addFocusOverlay(
     }
 }
 
+export function wasFocusOverlayDisabled(focusOverlayWrapper: HTMLDivElement): boolean {
+    const outlineDOM = focusOverlayWrapper.querySelector<HTMLDivElement>(
+        ".visual-builder__overlay--outline"
+    );
+    // Browser normalizes hex colors to RGB
+    return outlineDOM?.style.outlineColor === "rgb(144, 144, 144)";
+}
+
 /**
  * Hides the focus overlay and performs necessary cleanup actions when the user clicks outside of the focused element.
  * @param event - The mouse event that triggered the function.
