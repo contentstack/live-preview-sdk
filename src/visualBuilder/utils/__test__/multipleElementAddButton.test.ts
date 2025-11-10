@@ -676,7 +676,7 @@ describe("removeAddInstanceButtons", () => {
         expect(visualBuilderContainer.contains(nextButton)).toBeFalsy();
     });
 
-    test("should remove all buttons if forceRemoveAll is true", async () => {
+    test("should remove all buttons if forceRemoveAll is true", () => {
         for (let i = 0; i < 5; i++) {
             const button = generateAddInstanceButton({
                 fieldSchema: singleLineFieldSchema,
@@ -712,7 +712,7 @@ describe("removeAddInstanceButtons", () => {
         expect(buttons.length).toBe(0);
     });
 
-    test("should not remove all buttons if forceRemoveAll is false", async () => {
+    test("should not remove all buttons if forceRemoveAll is false", () => {
         for (let i = 0; i < 5; i++) {
             const button = generateAddInstanceButton({
                 fieldSchema: singleLineFieldSchema,
