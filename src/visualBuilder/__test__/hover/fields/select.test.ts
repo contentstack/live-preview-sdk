@@ -25,11 +25,7 @@ vi.mock("../../../utils/visualBuilderPostMessage", async () => {
     };
 });
 
-global.ResizeObserver = vi.fn().mockImplementation(() => ({
-    observe: vi.fn(),
-    unobserve: vi.fn(),
-    disconnect: vi.fn(),
-}));
+// ResizeObserver and MutationObserver are already mocked in vitest.setup.ts
 
 vi.mock("../../../../utils/index.ts", async () => {
     const actual = await vi.importActual("../../../../utils");
@@ -48,16 +44,8 @@ describe("When an element is hovered in visual builder mode", () => {
             "all_fields",
             getFieldSchemaMap().all_fields
         );
-        global.ResizeObserver = vi.fn().mockImplementation(() => ({
-            observe: vi.fn(),
-            unobserve: vi.fn(),
-            disconnect: vi.fn(),
-        }));
-
-        global.MutationObserver = vi.fn().mockImplementation(() => ({
-            observe: vi.fn(),
-            disconnect: vi.fn(),
-        }));
+        // ResizeObserver and MutationObserver are already mocked in vitest.setup.ts
+        // No need to re-mock them here
     });
 
     beforeEach(() => {

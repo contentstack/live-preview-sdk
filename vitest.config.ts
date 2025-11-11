@@ -24,15 +24,9 @@ export default defineConfig({
         fileParallelism: true,
         // Use threads pool for better performance on multi-core systems
         pool: "threads",
-        poolOptions: {
-            threads: {
-                // Optimize worker count for CI
-                maxThreads: process.env.CI ? 4 : undefined,
-                minThreads: process.env.CI ? 2 : undefined,
-                // Isolate tests to prevent side effects
-                singleThread: false,
-            },
-        },
+        // Vitest v4: maxThreads/minThreads are replaced with maxWorkers/minWorkers
+        maxWorkers: process.env.CI ? 4 : undefined,
+        minWorkers: process.env.CI ? 2 : undefined,
         // Set lower threshold to identify slow tests
         slowTestThreshold: 5000,
         // Isolate tests for better parallelization

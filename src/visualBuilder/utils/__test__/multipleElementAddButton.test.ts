@@ -712,7 +712,7 @@ describe("removeAddInstanceButtons", () => {
         expect(buttons.length).toBe(0);
     });
 
-    test.skip("should not remove all buttons if forceRemoveAll is false", () => {
+    test("should not remove all buttons if forceRemoveAll is false", () => {
         for (let i = 0; i < 5; i++) {
             const button = generateAddInstanceButton({
                 fieldSchema: singleLineFieldSchema,

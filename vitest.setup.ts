@@ -1,19 +1,23 @@
 import { afterAll, afterEach, beforeAll, vi } from "vitest";
 import { cleanup } from "@testing-library/preact";
 import "@testing-library/jest-dom/vitest";
+
+// Vitest v4 compatible mocks - using proper constructor functions
+class ResizeObserverMock {
+    observe = vi.fn();
+    unobserve = vi.fn();
+    disconnect = vi.fn();
+}
+
+class MutationObserverMock {
+    observe = vi.fn();
+    disconnect = vi.fn();
+    takeRecords = vi.fn(() => []);
+}
+
 beforeAll(() => {
-    global.ResizeObserver = vi.fn().mockImplementation(() => ({
-        observe: vi.fn(),
-        unobserve: vi.fn(),
-        disconnect: vi.fn(),
-    }));
-
-    global.MutationObserver = vi.fn().mockImplementation(() => ({
-        observe: vi.fn(),
-        disconnect: vi.fn(),
-        takeRecords: vi.fn(() => []),
-    }));
-
+    global.ResizeObserver = ResizeObserverMock as any;
+    global.MutationObserver = MutationObserverMock as any;
     document.elementFromPoint = vi.fn();
 
     vi.mock("./src/visualBuilder/utils/getEntryPermissionsCached", () => {
@@ -28,11 +32,14 @@ beforeAll(() => {
     });
 });
 
+// afterEach(() => {
+//     cleanup();
+// });
+
 afterAll(() => {
     cleanup();
     vi.clearAllMocks();
 });
-
 // const sideEffects = {
 //     document: {
 //         addEventListener: {
@@ -94,3 +101,4 @@ afterAll(() => {
 //     // Restore base elements
 //     rootElm.innerHTML = '<head></head><body></body>';
 // });
+

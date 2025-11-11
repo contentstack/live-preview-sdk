@@ -155,7 +155,7 @@ const PARENT_PATHS = [
     `${pathPrefix}.parentPath3`,
 ];
 
-describe.skip("FieldLabelWrapperComponent", () => {
+describe("FieldLabelWrapperComponent", () => {
     beforeEach(() => {
         vi.mocked(isFieldDisabled).mockReturnValue({
             isDisabled: false,
@@ -243,27 +243,23 @@ describe.skip("FieldLabelWrapperComponent", () => {
 
     const mockGetParentEditable = () => document.createElement("div");
 
-    test(
-        "renders current field and parent fields correctly",
-        async () => {
-            const { findByText } = await asyncRender(
-                <FieldLabelWrapperComponent
-                    fieldMetadata={mockFieldMetadata}
-                    eventDetails={mockEventDetails}
-                    parentPaths={PARENT_PATHS}
-                    getParentEditableElement={mockGetParentEditable}
-                />
-            );
+    test("renders current field and parent fields correctly", async () => {
+        const { findByText } = await asyncRender(
+            <FieldLabelWrapperComponent
+                fieldMetadata={mockFieldMetadata}
+                eventDetails={mockEventDetails}
+                parentPaths={PARENT_PATHS}
+                getParentEditableElement={mockGetParentEditable}
+            />
+        );
 
-            const currentField = await findByText(
-                DISPLAY_NAMES.mockFieldCslp,
-                {},
-                { timeout: 15000 }
-            );
-            expect(currentField).toBeVisible();
-        },
-        { timeout: 20000 }
-    );
+        const currentField = await findByText(
+            DISPLAY_NAMES.mockFieldCslp,
+            {},
+            { timeout: 15000 }
+        );
+        expect(currentField).toBeVisible();
+    });
 
     test("displays current field icon", async () => {
         const { findByTestId } = await asyncRender(
@@ -353,33 +349,29 @@ describe.skip("FieldLabelWrapperComponent", () => {
         );
     });
 
-    test(
-        "renders ToolbarTooltip component with correct data",
-        async () => {
-            const { findByTestId } = await asyncRender(
-                <FieldLabelWrapperComponent
-                    fieldMetadata={mockFieldMetadata}
-                    eventDetails={mockEventDetails}
-                    parentPaths={[]}
-                    getParentEditableElement={mockGetParentEditable}
-                />
-            );
+    test("renders ToolbarTooltip component with correct data", async () => {
+        const { findByTestId } = await asyncRender(
+            <FieldLabelWrapperComponent
+                fieldMetadata={mockFieldMetadata}
+                eventDetails={mockEventDetails}
+                parentPaths={[]}
+                getParentEditableElement={mockGetParentEditable}
+            />
+        );
 
-            // Check that the ToolbarTooltip wrapper is rendered
-            const tooltipWrapper = await findByTestId("toolbar-tooltip", {
-                timeout: 15000,
-            });
-            expect(tooltipWrapper).toBeInTheDocument();
+        // Check that the ToolbarTooltip wrapper is rendered
+        const tooltipWrapper = await findByTestId("toolbar-tooltip", {
+            timeout: 15000,
+        });
+        expect(tooltipWrapper).toBeInTheDocument();
 
-            // Check that the main field label wrapper is rendered
-            const fieldLabelWrapper = await findByTestId(
-                "visual-builder__focused-toolbar__field-label-wrapper",
-                { timeout: 15000 }
-            );
-            expect(fieldLabelWrapper).toBeInTheDocument();
-        },
-        { timeout: 20000 }
-    );
+        // Check that the main field label wrapper is rendered
+        const fieldLabelWrapper = await findByTestId(
+            "visual-builder__focused-toolbar__field-label-wrapper",
+            { timeout: 15000 }
+        );
+        expect(fieldLabelWrapper).toBeInTheDocument();
+    });
 
     test("does not render reference icon when isReference is false", async () => {
         const { container } = await asyncRender(
