@@ -11,7 +11,7 @@ export const DisableReason = {
     UnlinkedVariant:
         "This field is not editable as it is not linked to the selected variant.",
     CanLinkVariant: "Click here to link a variant",
-    SplitOn: "here",
+    UnderlinedAndClickableWord: "here",
     CannotLinkVariant: "Contact your stack admin or owner to link it.",
     AudienceMode:
         "To edit an experience, open the Audience widget and click the Edit icon.",

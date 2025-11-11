@@ -5,6 +5,7 @@ import { FieldDetails } from "../../components/FieldToolbar";
 import Config from "../../../configManager/configManager";
 import { VisualBuilder } from "../..";
 import { EntryPermissions } from "../getEntryPermissions";
+import { WORKFLOW_STAGES } from "../constants";
 
 describe("isFieldDisabled", () => {
     it("should return disabled state due to read-only role", () => {
@@ -311,7 +312,7 @@ describe("isFieldDisabled", () => {
             expect(result.isDisabled).toBe(true);
             expect(result.reason).toBe(
                 DisableReason.WorkflowStagePermission({
-                    stageName: "Review Stage",
+                    stageName: WORKFLOW_STAGES.REVIEW,
                 })
             );
         });
@@ -353,7 +354,7 @@ describe("isFieldDisabled", () => {
             expect(result.isDisabled).toBe(true);
             expect(result.reason).toBe(
                 DisableReason.EntryUpdateRestrictedRoleAndWorkflowStage({
-                    stageName: "Final Review",
+                    stageName: WORKFLOW_STAGES.FINAL_REVIEW,
                 })
             );
         });
@@ -393,7 +394,7 @@ describe("isFieldDisabled", () => {
                 workflowStageDetails
             );
             expect(result.isDisabled).toBe(false);
-            expect(result.reason).toBe(DisableReason.None);
+            expect(result.reason).toBe("");
         });
 
         it("should handle workflow stage details with undefined stage name", () => {
@@ -430,7 +431,9 @@ describe("isFieldDisabled", () => {
             );
             expect(result.isDisabled).toBe(true);
             expect(result.reason).toBe(
-                DisableReason.WorkflowStagePermission({ stageName: "Unknown" })
+                DisableReason.WorkflowStagePermission({
+                    stageName: WORKFLOW_STAGES.UNKNOWN,
+                })
             );
         });
 
@@ -472,7 +475,7 @@ describe("isFieldDisabled", () => {
             expect(result.isDisabled).toBe(true);
             expect(result.reason).toBe(
                 DisableReason.EntryUpdateRestrictedRoleAndWorkflowStage({
-                    stageName: "Unknown",
+                    stageName: WORKFLOW_STAGES.UNKNOWN,
                 })
             );
         });

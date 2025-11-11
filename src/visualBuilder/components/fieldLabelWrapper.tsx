@@ -234,12 +234,12 @@ function FieldLabelWrapperComponent(
                             >
                                 {(() => {
                                     const [before, after] = reason.split(
-                                        DisableReason.SplitOn
+                                        DisableReason.UnderlinedAndClickableWord
                                     );
                                     return (
                                         <>
                                             {before}
-                                            <span style={{ textDecoration: "underline" }}>{DisableReason.SplitOn}</span>
+                                            <span style={{ textDecoration: "underline" }}>{DisableReason.UnderlinedAndClickableWord}</span>
                                             {after}
                                         </>
                                     );
