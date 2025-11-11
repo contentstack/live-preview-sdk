@@ -16,10 +16,16 @@ export const TOOLBAR_EDGE_BUFFER = 8;
 
 export const DATA_CSLP_ATTR_SELECTOR = "data-cslp";
 
-export const RESULT_TYPES = {
+export const RESULT_TYPES = Object.freeze({
     SUCCESS: "success",
     ERROR: "error",
-};
+});
+
+export const WORKFLOW_STAGES = Object.freeze({
+    REVIEW: "Review Stage",
+    FINAL_REVIEW: "Final Review",
+    UNKNOWN: "Unknown",
+});
 
 /**
  * The field that can be directly modified using contenteditable=true.
