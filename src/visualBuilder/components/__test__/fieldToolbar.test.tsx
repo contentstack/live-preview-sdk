@@ -65,8 +65,11 @@ vi.mock("../../utils/isFieldDisabled", () => ({
 }));
 
 vi.mock("../FieldRevert/FieldRevertComponent", async (importOriginal) => {
-    const actual = await importOriginal<typeof import("../FieldRevert/FieldRevertComponent")>();
-    
+    const actual =
+        await importOriginal<
+            typeof import("../FieldRevert/FieldRevertComponent")
+        >();
+
     return {
         ...actual,
         getFieldVariantStatus: vi.fn().mockResolvedValue({
@@ -130,21 +133,21 @@ describe("FieldToolbarComponent", () => {
     });
 
     test("renders toolbar buttons correctly", async () => {
-        const { getByTestId } = await asyncRender(
+        const { findByTestId } = await asyncRender(
             <FieldToolbarComponent
                 eventDetails={mockEventDetails}
                 hideOverlay={vi.fn()}
             />
         );
 
-        // Use getByTestId instead of findByTestId since elements should be immediately available
-        const moveLeftButton = getByTestId(
+        // Wait for async operations to complete before checking elements
+        const moveLeftButton = await findByTestId(
             "visual-builder__focused-toolbar__multiple-field-toolbar__move-left-button"
         );
-        const moveRightButton = getByTestId(
+        const moveRightButton = await findByTestId(
             "visual-builder__focused-toolbar__multiple-field-toolbar__move-right-button"
         );
-        const deleteButton = getByTestId(
+        const deleteButton = await findByTestId(
             "visual-builder__focused-toolbar__multiple-field-toolbar__delete-button"
         );
 
@@ -154,14 +157,14 @@ describe("FieldToolbarComponent", () => {
     });
 
     test("calls handleMoveInstance with 'previous' when move left button is clicked", async () => {
-        const { getByTestId } = await asyncRender(
+        const { findByTestId } = await asyncRender(
             <FieldToolbarComponent
                 eventDetails={mockEventDetails}
                 hideOverlay={vi.fn()}
             />
         );
 
-        const moveLeftButton = getByTestId(
+        const moveLeftButton = await findByTestId(
             "visual-builder__focused-toolbar__multiple-field-toolbar__move-left-button"
         );
 
@@ -174,14 +177,14 @@ describe("FieldToolbarComponent", () => {
     });
 
     test("calls handleMoveInstance with 'next' when move right button is clicked", async () => {
-        const { getByTestId } = await asyncRender(
+        const { findByTestId } = await asyncRender(
             <FieldToolbarComponent
                 eventDetails={mockEventDetails}
                 hideOverlay={vi.fn()}
             />
         );
 
-        const moveRightButton = getByTestId(
+        const moveRightButton = await findByTestId(
             "visual-builder__focused-toolbar__multiple-field-toolbar__move-right-button"
         );
 
@@ -194,14 +197,14 @@ describe("FieldToolbarComponent", () => {
     });
 
     test("calls handleDeleteInstance when delete button is clicked", async () => {
-        const { getByTestId } = await asyncRender(
+        const { findByTestId } = await asyncRender(
             <FieldToolbarComponent
                 eventDetails={mockEventDetails}
                 hideOverlay={vi.fn()}
             />
         );
 
-        const deleteButton = getByTestId(
+        const deleteButton = await findByTestId(
             "visual-builder__focused-toolbar__multiple-field-toolbar__delete-button"
         );
 
@@ -221,17 +224,17 @@ describe("FieldToolbarComponent", () => {
             },
         };
 
-        const { getByTestId } = await asyncRender(
+        const { findByTestId } = await asyncRender(
             <FieldToolbarComponent
                 eventDetails={variantEventDetails}
                 hideOverlay={vi.fn()}
             />
         );
 
-        // Give component a tick to fully render variant icon
-        await new Promise((resolve) => setTimeout(resolve, 0));
-
-        const variantIcon = getByTestId("visual-builder-canvas-variant-icon");
+        // Wait for async operations and variant icon to render
+        const variantIcon = await findByTestId(
+            "visual-builder-canvas-variant-icon"
+        );
         expect(variantIcon).toBeInTheDocument();
     });
 
@@ -264,12 +267,21 @@ describe("FieldToolbarComponent", () => {
                 fieldMetadata: parentWrapperMetadata,
             };
 
-            const { container } = await asyncRender(
+            const { container, findByTestId } = await asyncRender(
                 <FieldToolbarComponent
                     eventDetails={parentWrapperEventDetails}
                     hideOverlay={vi.fn()}
                 />
             );
+
+            // Wait for component to fully render
+            await waitFor(() => {
+                expect(
+                    container.querySelector(
+                        ".visual-builder__focused-toolbar__button-group"
+                    )
+                ).toBeInTheDocument();
+            });
 
             const replaceButton = container.querySelector(
                 '[data-testid="visual-builder-replace-file"]'
@@ -291,15 +303,16 @@ describe("FieldToolbarComponent", () => {
                 fieldMetadata: individualFieldMetadata,
             };
 
-            const { container } = await asyncRender(
+            const { findByTestId } = await asyncRender(
                 <FieldToolbarComponent
                     eventDetails={individualFieldEventDetails}
                     hideOverlay={vi.fn()}
                 />
             );
 
-            const replaceButton = container.querySelector(
-                '[data-testid="visual-builder-replace-file"]'
+            // Wait for async operations to complete and replace button to render
+            const replaceButton = await findByTestId(
+                "visual-builder-replace-file"
             );
             expect(replaceButton).toBeInTheDocument();
         });
@@ -312,26 +325,26 @@ describe("FieldToolbarComponent", () => {
             reason: "You have only read access to this field" as any,
         });
 
-        const { getByTestId, queryByTestId } = await asyncRender(
+        const { findByTestId, queryByTestId } = await asyncRender(
             <FieldToolbarComponent
                 eventDetails={mockEventDetails}
                 hideOverlay={vi.fn()}
             />
         );
 
-        const toolbar = getByTestId(
+        const toolbar = await findByTestId(
             "visual-builder__focused-toolbar__multiple-field-toolbar"
         );
         expect(toolbar).toBeInTheDocument();
 
         // Check that move buttons are disabled
-        const moveLeftButton = getByTestId(
+        const moveLeftButton = await findByTestId(
             "visual-builder__focused-toolbar__multiple-field-toolbar__move-left-button"
         );
-        const moveRightButton = getByTestId(
+        const moveRightButton = await findByTestId(
             "visual-builder__focused-toolbar__multiple-field-toolbar__move-right-button"
         );
-        const deleteButton = getByTestId(
+        const deleteButton = await findByTestId(
             "visual-builder__focused-toolbar__multiple-field-toolbar__delete-button"
         );
 

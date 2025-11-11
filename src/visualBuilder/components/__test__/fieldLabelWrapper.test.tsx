@@ -361,14 +361,14 @@ describe("FieldLabelWrapperComponent", () => {
 
         // Check that the ToolbarTooltip wrapper is rendered
         const tooltipWrapper = await findByTestId("toolbar-tooltip", {
-            timeout: 15000,
+            timeout: 5000,
         });
         expect(tooltipWrapper).toBeInTheDocument();
 
         // Check that the main field label wrapper is rendered
         const fieldLabelWrapper = await findByTestId(
             "visual-builder__focused-toolbar__field-label-wrapper",
-            { timeout: 15000 }
+            { timeout: 5000 }
         );
         expect(fieldLabelWrapper).toBeInTheDocument();
     });
@@ -411,9 +411,10 @@ describe("FieldLabelWrapperComponent", () => {
     });
 
     test("does not render ContentTypeIcon when loading", async () => {
-        // Mock the display names to never resolve to simulate loading state
+        // Mock the display names to simulate loading state by delaying resolution
         vi.mocked(visualBuilderPostMessage!.send).mockImplementation(() => {
-            return new Promise(() => {}); // Never resolves
+            // Return a promise that resolves after a delay to simulate loading
+            return new Promise((resolve) => setTimeout(() => resolve({}), 100));
         });
 
         const { container } = await asyncRender(
@@ -425,7 +426,7 @@ describe("FieldLabelWrapperComponent", () => {
             />
         );
 
-        // Component renders synchronously, no need for timeout
+        // Check immediately after render - icon should not be present during loading
         const contentTypeIcon = container.querySelector(
             ".visual-builder__content-type-icon"
         );
