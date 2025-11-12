@@ -27,7 +27,7 @@ function modernConfig(opts) {
     format: ['cjs', 'esm'],
     target: ['chrome91', 'firefox90', 'edge91', 'safari15', 'ios15', 'opera77'],
     outDir: 'dist/modern',
-        dts: false,
+        dts: true,
         sourcemap: true,
         clean: true,
     esbuildPlugins: [esbuildPluginFilePathExtensions({ esmExtension: 'js' })]
@@ -46,7 +46,7 @@ function legacyConfig(opts) {
     format: ['cjs', 'esm'],
     target: ['es2020', 'node16'],
     outDir: 'dist/legacy',
-        dts: false,
+        dts: true,
         sourcemap: true,
         clean: true,
     esbuildPlugins: [esbuildPluginFilePathExtensions({ esmExtension: 'js' })],

@@ -114,7 +114,7 @@ export async function updateFocussedState({
     // data-cslp are found.
     const previousSelectedElementCslp = getElementCslpData(editableElement) || "";
     const previousSelectedElementCslpUniqueId =
-        previousSelectedEditableDOM?.getAttribute("data-cslp-unique-id");
+        previousSelectedEditableDOM?.getAttribute("data-cslp-unique-id") || undefined;
     const newPreviousSelectedElement = queryCslpElementByIdOrValue(
         previousSelectedElementCslpUniqueId,
         previousSelectedElementCslp
@@ -259,7 +259,7 @@ export function updateFocussedStateOnMutation(
     const selectedElementCslp = getElementCslpData(selectedElement);
     const selectedElementCslpUniqueId = selectedElement?.getAttribute(
         "data-cslp-unique-id"
-    );
+    ) || undefined;
     const newSelectedElement = selectedElementCslp 
         ? queryCslpElementByIdOrValue(
             selectedElementCslpUniqueId,
