@@ -391,9 +391,6 @@ export class LivePreviewEditButton {
 
     private addEditStyleOnHover(e: MouseEvent) {
         const updateStyles = this.shouldUpdateStyle(e);
-        // Checks whether the mouse pointer is within the safe zone of the
-        // element which was hovered on, since it also returns undefined when the
-        // above can't be determined we can still add styles
         const shouldRedraw =
             typeof updateStyles === "undefined" ? true : updateStyles;
         if (!shouldRedraw) {

@@ -7,6 +7,7 @@ import {
 import Config from "../configManager/configManager";
 import { DeepSignal } from "deepsignal";
 import { cslpTagStyles } from "../livePreview/editButton/editButton.style";
+import { decodeMetadataFromString } from "../utils/encodeDecode";
 
 /**
  * Extracts details from a CSLP value string.
@@ -161,7 +162,17 @@ export function addCslpOutline(
         if (element.nodeName === "BODY") break;
         if (typeof element?.getAttribute !== "function") continue;
 
-        const cslpTag = element.getAttribute("data-cslp");
+        let cslpTag = element.getAttribute("data-cslp");
+
+        if (!cslpTag) {
+            const textContent = element.textContent?.trim();
+            if (textContent) {
+                const { metadata } = decodeMetadataFromString(textContent);
+                if (metadata?.cslp) {
+                    cslpTag = metadata.cslp;
+                }
+            }
+        }
 
         if (trigger && cslpTag) {
             if (elements.highlightedElement)
