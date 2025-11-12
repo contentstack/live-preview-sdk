@@ -16,6 +16,7 @@ import { VisualBuilderEditContext } from "./types/index.types";
 import { pasteAsPlainText } from "./pasteAsPlainText";
 import { removeFieldToolbar } from "../generators/generateToolbar";
 import { fetchEntryPermissionsAndStageDetails } from "./fetchEntryPermissionsAndStageDetails";
+import { decodeMetadataFromString, encodeMetadataIntoString } from "../../utils/encodeDecode";
 
 /**
  * It handles all the fields based on their data type and its "multiple" property.
@@ -148,8 +149,29 @@ export function cleanIndividualFieldResidual(elements: {
 
     const pseudoEditableElement = visualBuilderContainer?.querySelector(
         ".visual-builder__pseudo-editable-element"
-    );
+    ) as HTMLElement | null;
+    
     if (pseudoEditableElement) {
+        // Copy content from pseudo-editable to actual element before cleanup
+        // This ensures immediate reflection of changes while preserving invisible metadata
+        if (previousSelectedEditableDOM) {
+            const pseudoContent = pseudoEditableElement.innerText;
+            const actualElement = previousSelectedEditableDOM as HTMLElement;
+            
+            // Check if the actual element has invisible metadata
+            const originalTextContent = actualElement.textContent || "";
+            const { metadata } = decodeMetadataFromString(originalTextContent);
+            
+            if (metadata) {
+                // Re-encode the new content with the existing metadata
+                const updatedContent = encodeMetadataIntoString(pseudoContent, metadata);
+                actualElement.textContent = updatedContent;
+            } else {
+                // No metadata, just update normally
+                actualElement.innerText = pseudoContent;
+            }
+        }
+        
         elements.resizeObserver.unobserve(pseudoEditableElement);
         pseudoEditableElement.removeEventListener("paste", pasteAsPlainText);
         pseudoEditableElement.remove();
