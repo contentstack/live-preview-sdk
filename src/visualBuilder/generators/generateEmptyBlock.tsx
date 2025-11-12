@@ -2,12 +2,13 @@ import { hydrate } from "preact";
 import { EmptyBlock } from "../components/emptyBlock";
 import { extractDetailsFromCslp } from "../../cslp";
 import { FieldSchemaMap } from "../utils/fieldSchemaMap";
+import { getElementCslpData } from "../utils/getCsDataOfElement";
 
 export async function generateEmptyBlocks(
     emptyBlockParents: Element[] | []
 ): Promise<void> {
     for (const emptyBlockParent of emptyBlockParents) {
-        const cslpData = emptyBlockParent.getAttribute("data-cslp");
+        const cslpData = getElementCslpData(emptyBlockParent);
         if (!cslpData) {
             return;
         }

@@ -1,6 +1,7 @@
 import { useEffect } from "preact/compat";
 import visualBuilderPostMessage from "../utils/visualBuilderPostMessage";
 import { VisualBuilderPostMessageEvents } from "../utils/types/postMessage.types";
+import { queryCslpElement } from "../utils/cslpQueryHelpers";
 
 // Define the interface for the ScrollToField event data
 export interface IScrollToFieldEventData {
@@ -21,8 +22,8 @@ const handleScrollToField = (event: IScrollToFieldEvent) => {
 
     const cslpValue = `${content_type_uid}.${entry_uid}.${locale}.${path}`;
 
-    // Query the element using the generated cslpValue
-    const element = document.querySelector(`[data-cslp="${cslpValue}"]`);
+    // Query the element using the generated cslpValue (checks both attribute and invisible metadata)
+    const element = queryCslpElement(cslpValue);
 
     if (element) {
         element.scrollIntoView({ behavior: "smooth", block: "center" });

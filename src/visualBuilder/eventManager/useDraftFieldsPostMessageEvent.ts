@@ -1,6 +1,7 @@
 import { visualBuilderStyles } from "../visualBuilder.style";
 import visualBuilderPostMessage from "../utils/visualBuilderPostMessage";
 import { VisualBuilderPostMessageEvents } from "../utils/types/postMessage.types";
+import { queryCslpElement } from "../utils/cslpQueryHelpers";
 
 interface DraftFieldsEvent {
     data: {
@@ -21,7 +22,8 @@ function removeDraftFieldClass(): void {
 
 function addDraftFieldClass(fields: string[]): void {
     fields.forEach((field: string) => {
-        const element = document.querySelector(`[data-cslp="${field}"]`);
+        // Query element with both attribute and invisible metadata support
+        const element = queryCslpElement(field);
         if (element) {
             element.classList.add(
                 visualBuilderStyles()["visual-builder__draft-field"]

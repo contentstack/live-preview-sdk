@@ -18,6 +18,7 @@ import { ContentTypeIcon } from "./icons";
 import { ToolbarTooltip } from "./Tooltip";
 import { fetchEntryPermissionsAndStageDetails } from "../utils/fetchEntryPermissionsAndStageDetails";
 import { VariantIndicator } from "./VariantIndicator";
+import { closestElementWithCslp, getElementCslpData } from "../utils/getCsDataOfElement";
 
 interface ReferenceParentMap {
     [entryUid: string]: {
@@ -137,15 +138,32 @@ function FieldLabelWrapperComponent(
             let parentContentTypeName = referenceData ? referenceData[0].contentTypeTitle : "";
 
             if(isReference) {
-                const domAncestor = eventDetails.editableElement.closest(`[data-cslp]:not([data-cslp^="${props.fieldMetadata.content_type_uid}"])`);
+                // Try to find ancestor with data-cslp attribute first
+                let domAncestor = eventDetails.editableElement.closest(`[data-cslp]:not([data-cslp^="${props.fieldMetadata.content_type_uid}"])`);
+                
+                // If not found via attribute, try invisible metadata
+                if (!domAncestor) {
+                    let current = eventDetails.editableElement.parentElement;
+                    while (current && current !== document.body) {
+                        const cslpValue = getElementCslpData(current);
+                        if (cslpValue && !cslpValue.startsWith(props.fieldMetadata.content_type_uid)) {
+                            domAncestor = current;
+                            break;
+                        }
+                        current = current.parentElement;
+                    }
+                }
+                
                 if(domAncestor) {
-                    const domAncestorCslp = domAncestor.getAttribute("data-cslp");
-                    const domAncestorDetails = extractDetailsFromCslp(domAncestorCslp!);
-                    const domAncestorContentTypeUid = domAncestorDetails.content_type_uid;
-                    const domAncestorContentParent = referenceData?.find(data => data.contentTypeUid === domAncestorContentTypeUid);
-                    if(domAncestorContentParent) {
-                        referenceFieldName = domAncestorContentParent.referenceFieldName;
-                        parentContentTypeName = domAncestorContentParent.contentTypeTitle;
+                    const domAncestorCslp = getElementCslpData(domAncestor);
+                    if (domAncestorCslp) {
+                        const domAncestorDetails = extractDetailsFromCslp(domAncestorCslp);
+                        const domAncestorContentTypeUid = domAncestorDetails.content_type_uid;
+                        const domAncestorContentParent = referenceData?.find(data => data.contentTypeUid === domAncestorContentTypeUid);
+                        if(domAncestorContentParent) {
+                            referenceFieldName = domAncestorContentParent.referenceFieldName;
+                            parentContentTypeName = domAncestorContentParent.contentTypeTitle;
+                        }
                     }
                 }
             }

@@ -1,7 +1,7 @@
 import Config from "../configManager/configManager";
 import { PublicLogger } from "../logger/logger";
 import { ILivePreviewModeConfig } from "../types/types";
-import { addLivePreviewQueryTags, isOpeningInTimeline } from "../utils";
+import { isOpeningInTimeline, imageSrcCleaner } from "../utils";
 import { LivePreviewEditButton } from "./editButton/editButton";
 import { sendInitializeLivePreviewPostMessageEvent } from "./eventManager/postMessageEvent.hooks";
 import { removeDataCslp } from "./livePreviewProductionCleanup";
@@ -35,6 +35,12 @@ export default class LivePreview {
                 "Contentstack Live Preview Debugging mode: config --",
                 Config.config
             );
+        }
+
+        // Start observing and cleaning image src attributes to remove invisible metadata
+        // This ensures images load properly regardless of the mode
+        if (typeof window !== "undefined" && typeof document !== "undefined") {
+            imageSrcCleaner.start();
         }
 
         if (config.enable) {

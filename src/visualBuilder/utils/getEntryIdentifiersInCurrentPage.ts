@@ -1,4 +1,5 @@
 import { extractDetailsFromCslp } from "../../cslp/cslpdata";
+import { queryCslpAllElements, getElementCslpValue } from "./cslpQueryHelpers";
 
 type EntryIdentifiers = {
     entriesInCurrentPage: {
@@ -9,21 +10,21 @@ type EntryIdentifiers = {
 }
 
 export function getEntryIdentifiersInCurrentPage(): EntryIdentifiers {
-    const elementsWithCslp = Array.from(
-        document.querySelectorAll("[data-cslp]")
-    );
+    const elementsWithCslp = queryCslpAllElements();
     const uniqueEntriesMap = new Map<string, { entryUid: string, contentTypeUid: string, locale: string}>();
+    
     elementsWithCslp.forEach((element) => {
-        const cslpData = extractDetailsFromCslp(
-            element.getAttribute("data-cslp") as string
-        );
-        uniqueEntriesMap.set(cslpData.entry_uid, 
-            { 
-                entryUid: cslpData.entry_uid, 
-                contentTypeUid: cslpData.content_type_uid, 
-                locale: cslpData.locale 
-            }
-        );
+        const cslpValue = getElementCslpValue(element);
+        if (cslpValue) {
+            const cslpData = extractDetailsFromCslp(cslpValue);
+            uniqueEntriesMap.set(cslpData.entry_uid, 
+                { 
+                    entryUid: cslpData.entry_uid, 
+                    contentTypeUid: cslpData.content_type_uid, 
+                    locale: cslpData.locale 
+                }
+            );
+        }
     });
     
     const uniqueEntriesArray = Array.from(uniqueEntriesMap.values());

@@ -4,6 +4,7 @@ import HighlightedCommentIcon from "../components/HighlightedCommentIcon";
 import { css } from "goober";
 import React from "preact/compat";
 import { IHighlightCommentData } from "../eventManager/useHighlightCommentIcon";
+import { queryCslpElement } from "../utils/cslpQueryHelpers";
 
 /**
  * Inserts highlighted comment icons based on an array of paths.
@@ -30,7 +31,8 @@ export function highlightCommentIconOnCanvas(
 
         uniquePaths[cslpValue] = true; // Mark it as processed
 
-        const element = document.querySelector(`[data-cslp="${cslpValue}"]`);
+        // Query element with both attribute and invisible metadata support
+        const element = queryCslpElement(cslpValue);
         if (element && element instanceof HTMLElement) {
             const { top, left } = element.getBoundingClientRect();
 
@@ -83,10 +85,8 @@ export function updateHighlightedCommentIconPosition() {
             // Get the field-path attribute from the icon container
             const path = icon.getAttribute("field-path");
             if (path) {
-                // Query the target element using the path
-                const targetElement = document.querySelector(
-                    `[data-cslp="${path}"]`
-                );
+                // Query the target element using the path (checks both attribute and invisible metadata)
+                const targetElement = queryCslpElement(path);
                 if (targetElement && targetElement instanceof HTMLElement) {
                     // Get the target element's position relative to the viewport
                     const { top, left } = targetElement.getBoundingClientRect();

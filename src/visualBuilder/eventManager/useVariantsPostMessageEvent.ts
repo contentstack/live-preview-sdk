@@ -3,6 +3,7 @@ import { visualBuilderStyles } from "../visualBuilder.style";
 import visualBuilderPostMessage from "../utils/visualBuilderPostMessage";
 import { VisualBuilderPostMessageEvents } from "../utils/types/postMessage.types";
 import { FieldSchemaMap } from "../utils/fieldSchemaMap";
+import { queryCslpAllElements, getElementCslpValue } from "../utils/cslpQueryHelpers";
 
 interface VariantFieldsEvent {
     data: {
@@ -38,9 +39,9 @@ export function addVariantFieldClass(
     variant_uid: string,
     highlightVariantFields: boolean
 ): void {
-    const elements = document.querySelectorAll(`[data-cslp]`);
+    const elements = queryCslpAllElements();
     elements.forEach((element) => {
-        const dataCslp = element.getAttribute("data-cslp");
+        const dataCslp = getElementCslpValue(element);
         if (!dataCslp) return;
 
         if (dataCslp?.includes(variant_uid)) {

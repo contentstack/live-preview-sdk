@@ -17,6 +17,8 @@ import getChildrenDirection from "./getChildrenDirection";
 import { getPsuedoEditableElementStyles } from "./getPsuedoEditableStylesElement";
 import { isFieldDisabled } from "./isFieldDisabled";
 import { fetchEntryPermissionsAndStageDetails } from "./fetchEntryPermissionsAndStageDetails";
+import { getElementCslpData } from "./getCsDataOfElement";
+import { queryCslpElementByIdOrValue } from "./cslpQueryHelpers";
 
 interface ToolbarPositionParams {
     focusedToolbar: HTMLElement | null;
@@ -110,15 +112,13 @@ export async function updateFocussedState({
     // prefer data-cslp-unique-id when available else use data-cslp.
     // unique ID is added on click when multiple elements with same
     // data-cslp are found.
-    const previousSelectedElementCslp =
-        editableElement?.getAttribute("data-cslp") || "";
+    const previousSelectedElementCslp = getElementCslpData(editableElement) || "";
     const previousSelectedElementCslpUniqueId =
         previousSelectedEditableDOM?.getAttribute("data-cslp-unique-id");
-    const newPreviousSelectedElement =
-        document.querySelector(
-            `[data-cslp-unique-id="${previousSelectedElementCslpUniqueId}"]`
-        ) ||
-        document.querySelector(`[data-cslp="${previousSelectedElementCslp}"]`);
+    const newPreviousSelectedElement = queryCslpElementByIdOrValue(
+        previousSelectedElementCslpUniqueId,
+        previousSelectedElementCslp
+    );
     if (!newPreviousSelectedElement && resizeObserver) {
         hideFocusOverlay({
             visualBuilderOverlayWrapper: overlayWrapper,
@@ -135,7 +135,7 @@ export async function updateFocussedState({
             previousSelectedEditableDOM;
     }
 
-    const cslp = editableElement?.getAttribute("data-cslp") || "";
+    const cslp = getElementCslpData(editableElement) || "";
     const fieldMetadata = extractDetailsFromCslp(cslp);
 
     hideHoverOutline(visualBuilderContainer);
@@ -256,14 +256,16 @@ export function updateFocussedStateOnMutation(
             .previousSelectedEditableDOM;
     if (!selectedElement) return;
 
-    const selectedElementCslp = selectedElement?.getAttribute("data-cslp");
+    const selectedElementCslp = getElementCslpData(selectedElement);
     const selectedElementCslpUniqueId = selectedElement?.getAttribute(
         "data-cslp-unique-id"
     );
-    const newSelectedElement =
-        document.querySelector(
-            `[data-cslp-unique-id="${selectedElementCslpUniqueId}"]`
-        ) || document.querySelector(`[data-cslp="${selectedElementCslp}"]`);
+    const newSelectedElement = selectedElementCslp 
+        ? queryCslpElementByIdOrValue(
+            selectedElementCslpUniqueId,
+            selectedElementCslp
+        )
+        : null;
     if (!newSelectedElement && resizeObserver) {
         hideFocusOverlay({
             visualBuilderOverlayWrapper: focusOverlayWrapper,

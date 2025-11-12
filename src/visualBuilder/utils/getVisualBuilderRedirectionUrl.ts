@@ -1,5 +1,6 @@
 import Config from "../../configManager/configManager";
 import { extractDetailsFromCslp } from "../../cslp";
+import { queryCslpAllElements, getElementCslpValue } from "./cslpQueryHelpers";
 
 /**
  * Returns the redirection URL for the Visual builder.
@@ -20,16 +21,16 @@ export default function getVisualBuilderRedirectionUrl(): URL {
 
     searchParams.set("target-url", window.location.href);
 
-    // get the locale from the data cslp attribute
-    const elementWithDataCslp = document.querySelector(`[data-cslp]`);
+    // get the locale from the data cslp attribute (or invisible metadata)
+    const elementsWithCslp = queryCslpAllElements();
+    const elementWithDataCslp = elementsWithCslp.at(0);
 
     if (elementWithDataCslp) {
-        const cslpData = elementWithDataCslp.getAttribute(
-            "data-cslp"
-        ) as string;
-        const { locale } = extractDetailsFromCslp(cslpData);
-
-        searchParams.set("locale", locale);
+        const cslpData = getElementCslpValue(elementWithDataCslp);
+        if (cslpData) {
+            const { locale } = extractDetailsFromCslp(cslpData);
+            searchParams.set("locale", locale);
+        }
     } else if (locale) {
         searchParams.set("locale", locale);
     }

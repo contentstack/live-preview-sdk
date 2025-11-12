@@ -22,6 +22,7 @@ import { setup } from "goober";
 import { debounce, isEqual } from "lodash-es";
 import { h } from "preact";
 import { extractDetailsFromCslp } from "../cslp";
+import { getElementCslpData } from "./utils/getCsDataOfElement";
 import initUI from "./components";
 import { useDraftFieldsPostMessageEvent } from "./eventManager/useDraftFieldsPostMessageEvent";
 import { useHideFocusOverlayPostMessageEvent } from "./eventManager/useHideFocusOverlayPostMessageEvent";
@@ -173,8 +174,7 @@ export class VisualBuilder {
         }
 
         // update the overlay if field is disabled
-        const cslpData =
-            editableElement && editableElement.getAttribute("data-cslp");
+        const cslpData = editableElement ? getElementCslpData(editableElement) : null;
 
         if (!editableElement || !cslpData) {
             return;

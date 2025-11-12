@@ -5,6 +5,7 @@ export function hasWindow(): boolean {
 }
 export { addLivePreviewQueryTags };
 export * from "./encodeDecode";
+export { imageSrcCleaner } from "./cleanImageSrcObserver";
 export function addParamsToUrl() {
     // Setting the query params to all the click events related to current domain
     window.addEventListener("click", (event: any) => {

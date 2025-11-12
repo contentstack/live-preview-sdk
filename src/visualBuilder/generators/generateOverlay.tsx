@@ -10,6 +10,7 @@ import { FieldDataType } from "../utils/types/index.types";
 import { getFieldType } from "../utils/getFieldType";
 import { getMultilinePlaintext } from "../utils/getMultilinePlaintext";
 import { showAllHiddenHighlightedCommentIcons } from "./generateHighlightedComment";
+import { getElementCslpData } from "../utils/getCsDataOfElement";
 
 /**
  * Adds a focus overlay to the target element.
@@ -177,9 +178,12 @@ export function sendFieldEvent(options: ISendFieldEventParams): void {
                 ? actualEditedElement.innerText
                 : actualEditedElement.textContent;
 
-        const fieldMetadata = extractDetailsFromCslp(
-            previousSelectedEditableDOM.getAttribute("data-cslp") as string
-        );
+        const cslpValue = getElementCslpData(previousSelectedEditableDOM);
+        if (!cslpValue) {
+            return;
+        }
+        
+        const fieldMetadata = extractDetailsFromCslp(cslpValue);
 
         FieldSchemaMap.getFieldSchema(
             fieldMetadata.content_type_uid,

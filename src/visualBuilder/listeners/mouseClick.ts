@@ -6,6 +6,7 @@ import {
 import {
     getCsDataOfElement,
     getDOMEditStack,
+    getElementCslpData,
 } from "../utils/getCsDataOfElement";
 
 import { appendFocusedToolbar } from "../generators/generateToolbar";
@@ -32,6 +33,7 @@ import { fixSvgXPath } from "../utils/collabUtils";
 import { v4 as uuidV4 } from "uuid";
 import { CslpData } from "../../cslp/types/cslp.types";
 import { fetchEntryPermissionsAndStageDetails } from "../utils/fetchEntryPermissionsAndStageDetails";
+import { getElementCslpValue, queryCslpAllElements } from "../utils/cslpQueryHelpers";
 
 export type HandleBuilderInteractionParams = Omit<
     EventListenerHandlerParams,
@@ -85,22 +87,27 @@ export async function handleBuilderInteraction(
     const elementHasCslp =
         eventTarget &&
         (eventTarget.hasAttribute("data-cslp") ||
-            eventTarget.closest("[data-cslp]"));
+            eventTarget.closest("[data-cslp]") ||
+            getElementCslpData(eventTarget));
 
     // if multiple elements with the same cslp element are found,
     // assign a unique ID to each element which we can use to identify
     // them in updateFocussedState and other places where we
     // would have queried the element by data-cslp
-    const duplicates = document.querySelectorAll(
-        `[data-cslp="${eventTarget?.getAttribute("data-cslp")}"]`
-    );
-    if (duplicates.length > 1) {
-        duplicates.forEach((ele) => {
-            if (!ele.hasAttribute("data-cslp-unique-id")) {
-                const uniqueId = `cslp-${uuidV4()}`;
-                ele.setAttribute("data-cslp-unique-id", uniqueId);
-            }
-        });
+    const eventTargetCslp = eventTarget ? getElementCslpData(eventTarget) : null;
+    if (eventTargetCslp) {
+        // Find duplicates by checking both attribute and invisible metadata
+        const duplicates = queryCslpAllElements().filter(
+            (el) => getElementCslpValue(el) === eventTargetCslp
+        );
+        if (duplicates.length > 1) {
+            duplicates.forEach((ele) => {
+                if (!ele.hasAttribute("data-cslp-unique-id")) {
+                    const uniqueId = `cslp-${uuidV4()}`;
+                    ele.setAttribute("data-cslp-unique-id", uniqueId);
+                }
+            });
+        }
     }
 
     // if the target element is a studio-ui element, return
