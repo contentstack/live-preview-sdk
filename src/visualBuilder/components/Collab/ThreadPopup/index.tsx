@@ -94,6 +94,13 @@ const ThreadPopup: React.FC<IThreadPopup> = React.memo(
                 }
             });
 
+            // Add AI to the mentions list
+            userList.push({
+                display: "AI",
+                email: "ai@assistant",
+                uid: "ai-assistant",
+            });
+
             setState((prevState) => ({
                 ...prevState,
                 userState: {

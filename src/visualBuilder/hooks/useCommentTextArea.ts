@@ -31,6 +31,14 @@ import { collabStyles } from "../collab.style";
 import { maxMessageLength } from "../utils/constants";
 import { ThreadProvider } from "../components/Collab/ThreadPopup/ContextProvider";
 import useDynamicTextareaRows from "../hooks/useDynamicTextareaRows";
+import { processAIRequest } from "../utils/aiService";
+import { FieldDataType } from "../utils/types/index.types";
+import { extractDetailsFromCslp } from "../../cslp/cslpdata";
+import { FieldSchemaMap } from "../utils/fieldSchemaMap";
+import { getFieldType } from "../utils/getFieldType";
+import { getFieldData } from "../utils/getFieldData";
+import visualBuilderPostMessage from "../utils/visualBuilderPostMessage";
+import { VisualBuilderPostMessageEvents } from "../utils/types/postMessage.types";
 
 const initialState: ICommentState = {
     message: "",
@@ -408,6 +416,114 @@ export const useCommentTextArea = (
                 threadUid: threadUID,
                 commentPayload,
             };
+
+            // Check if comment contains @ai mention
+            const isAIComment =
+                state.toUsers?.some((user) => user.id === "ai-assistant") ||
+                state.message.toLowerCase().includes("@ai");
+
+            if (isAIComment) {
+                try {
+                    // Get element - try from thread container first, then xpath
+                    let element: HTMLElement | null = null;
+
+                    // Try to get element from thread container
+                    const threadContainer = document.querySelector(
+                        `div[threaduid='${threadUID}']`
+                    );
+                    if (threadContainer) {
+                        const fieldPath =
+                            threadContainer.getAttribute("field-path");
+                        if (fieldPath) {
+                            element = document.evaluate(
+                                fieldPath,
+                                document,
+                                null,
+                                XPathResult.FIRST_ORDERED_NODE_TYPE,
+                                null
+                            ).singleNodeValue as HTMLElement | null;
+                        }
+                    }
+
+                    // Fallback to elementXPath from activeThread
+                    if (!element && activeThread?.elementXPath) {
+                        element = document.evaluate(
+                            activeThread.elementXPath,
+                            document,
+                            null,
+                            XPathResult.FIRST_ORDERED_NODE_TYPE,
+                            null
+                        ).singleNodeValue as HTMLElement | null;
+                    }
+
+                    if (element) {
+                        // Get field metadata from data-cslp attribute
+                        const cslpData = element.getAttribute("data-cslp");
+                        if (cslpData) {
+                            const fieldMetadata =
+                                extractDetailsFromCslp(cslpData);
+
+                            // Get field schema and type
+                            const fieldSchema =
+                                await FieldSchemaMap.getFieldSchema(
+                                    fieldMetadata.content_type_uid,
+                                    fieldMetadata.fieldPath
+                                );
+                            const fieldType = getFieldType(fieldSchema);
+
+                            const allowedFieldTypes = [
+                                FieldDataType.SINGLELINE,
+                                FieldDataType.MULTILINE,
+                                FieldDataType.FILE,
+                            ];
+
+                            if (allowedFieldTypes.includes(fieldType)) {
+                                const fieldData = await getFieldData(
+                                    {
+                                        content_type_uid:
+                                            fieldMetadata.content_type_uid,
+                                        entry_uid: fieldMetadata.entry_uid,
+                                        locale: fieldMetadata.locale,
+                                    },
+                                    fieldMetadata.fieldPathWithIndex
+                                );
+
+                                const prompt = state.message
+                                    .replace(/@ai\s*/gi, "")
+                                    .trim();
+
+                                const aiResponse = await processAIRequest({
+                                    fieldType,
+                                    currentValue: fieldData,
+                                    prompt,
+                                });
+
+                                try {
+                                    const response: any =
+                                        await visualBuilderPostMessage?.send(
+                                            VisualBuilderPostMessageEvents.SYNC_FIELD,
+                                            {
+                                                data: aiResponse.enhancedValue,
+                                                fieldMetadata,
+                                            }
+                                        );
+                                    if (response?.success === true) {
+                                        window.history.go();
+                                        // window.location.reload();
+                                    }
+                                } catch (sendError: any) {
+                                    console.error(
+                                        "Error sending SYNC_FIELD:",
+                                        sendError
+                                    );
+                                }
+                            }
+                        }
+                    }
+                } catch (aiError: any) {
+                    console.error("Error processing AI comment:", aiError);
+                }
+            }
 
             if (editComment) {
                 let commentResponse: ICommentResponse = await onEditComment({

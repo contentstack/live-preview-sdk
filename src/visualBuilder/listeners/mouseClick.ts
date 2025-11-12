@@ -32,6 +32,7 @@ import { fixSvgXPath } from "../utils/collabUtils";
 import { v4 as uuidV4 } from "uuid";
 import { CslpData } from "../../cslp/types/cslp.types";
 import { fetchEntryPermissionsAndStageDetails } from "../utils/fetchEntryPermissionsAndStageDetails";
+import { getFieldType } from "../utils/getFieldType";
 
 export type HandleBuilderInteractionParams = Omit<
     EventListenerHandlerParams,
