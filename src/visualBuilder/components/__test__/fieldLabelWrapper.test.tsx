@@ -155,7 +155,7 @@ const PARENT_PATHS = [
     `${pathPrefix}.parentPath3`,
 ];
 
-describe.skip("FieldLabelWrapperComponent", () => {
+describe("FieldLabelWrapperComponent", () => {
     beforeEach(() => {
         vi.mocked(isFieldDisabled).mockReturnValue({
             isDisabled: false,

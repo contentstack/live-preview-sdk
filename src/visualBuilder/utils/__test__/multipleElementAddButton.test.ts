@@ -563,7 +563,7 @@ describe("removeAddInstanceButtons", () => {
         visualBuilderContainer = document.createElement("div");
         visualBuilderContainer.classList.add("visual-builder__container");
         document.body.appendChild(visualBuilderContainer);
-        
+
         // Set longer timeout for CI environment where Preact rendering is slower
         if (process.env.CI) {
             vi.setConfig({ testTimeout: 60000, hookTimeout: 60000 });
@@ -712,7 +712,7 @@ describe("removeAddInstanceButtons", () => {
         expect(buttons.length).toBe(0);
     });
 
-    test.skip("should not remove all buttons if forceRemoveAll is false", () => {
+    test("should not remove all buttons if forceRemoveAll is false", () => {
         for (let i = 0; i < 5; i++) {
             const button = generateAddInstanceButton({
                 fieldSchema: singleLineFieldSchema,
