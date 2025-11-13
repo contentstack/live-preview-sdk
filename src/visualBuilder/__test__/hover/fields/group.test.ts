@@ -5,7 +5,6 @@ import { FieldSchemaMap } from "../../../utils/fieldSchemaMap";
 import { mockDomRect } from "./mockDomRect";
 import { VisualBuilder } from "../../../index";
 import { screen } from "@testing-library/preact";
-import { act } from "@testing-library/preact";
 
 vi.mock("../../../utils/visualBuilderPostMessage", async () => {
     const { getAllContentTypes } = await vi.importActual<
@@ -106,9 +105,7 @@ describe("When an element is hovered in visual builder mode", () => {
         });
 
         test("should have outline and custom cursor", async () => {
-            await act(async () => {
-                groupField.dispatchEvent(mousemoveEvent);
-            });
+            groupField.dispatchEvent(mousemoveEvent);
             await waitForHoverOutline();
             const hoverOutline = document.querySelector(
                 "[data-testid='visual-builder__hover-outline']"
@@ -136,9 +133,7 @@ describe("When an element is hovered in visual builder mode", () => {
 
             groupField.appendChild(singleLine);
 
-            await act(async () => {
-                singleLine.dispatchEvent(mousemoveEvent);
-            });
+            singleLine.dispatchEvent(mousemoveEvent);
             await waitForHoverOutline();
             const hoverOutline = document.querySelector(
                 "[data-testid='visual-builder__hover-outline']"
@@ -216,10 +211,8 @@ describe("When an element is hovered in visual builder mode", () => {
             visualBuilder.destroy();
         });
 
-        test("should have outline and custom cursor", async () => {
-            await act(async () => {
-                container.dispatchEvent(mousemoveEvent);
-            });
+        test("should have outline and custom cursor on container", async () => {
+            container.dispatchEvent(mousemoveEvent);
             await waitForHoverOutline();
             const hoverOutline = document.querySelector(
                 "[data-testid='visual-builder__hover-outline']"
@@ -232,17 +225,22 @@ describe("When an element is hovered in visual builder mode", () => {
 
             expect(customCursor).toHaveAttribute("data-icon", "group");
             expect(customCursor?.classList.contains("visible")).toBeTruthy();
+        });
 
-            await act(async () => {
-                firstNestedMultiLine.dispatchEvent(mousemoveEvent);
-            });
+        test("should have outline and custom cursor on nested multi line", async () => {
+            firstNestedMultiLine.dispatchEvent(mousemoveEvent);
             await waitForHoverOutline();
 
-            const newCustomCursor = document.querySelector(
+            const hoverOutline = document.querySelector(
+                "[data-testid='visual-builder__hover-outline']"
+            );
+            expect(hoverOutline).toHaveAttribute("style");
+
+            const customCursor = document.querySelector(
                 `[data-testid="visual-builder__cursor"]`
             );
-            expect(newCustomCursor).toHaveAttribute("data-icon", "multiline");
-            expect(newCustomCursor?.classList.contains("visible")).toBeTruthy();
+            expect(customCursor).toHaveAttribute("data-icon", "multiline");
+            expect(customCursor?.classList.contains("visible")).toBeTruthy();
         });
     });
 });

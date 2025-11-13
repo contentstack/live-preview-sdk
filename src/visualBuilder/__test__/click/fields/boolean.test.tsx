@@ -1,4 +1,4 @@
-import { act, waitFor, screen } from "@testing-library/preact";
+import { waitFor, screen } from "@testing-library/preact";
 import "@testing-library/jest-dom";
 import { getFieldSchemaMap } from "../../../../__test__/data/fieldSchemaMap";
 import Config from "../../../../configManager/configManager";

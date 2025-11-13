@@ -1,4 +1,4 @@
-import { screen, waitFor, act } from "@testing-library/preact";
+import { screen, waitFor} from "@testing-library/preact";
 import { getFieldSchemaMap } from "../../../../__test__/data/fieldSchemaMap";
 import { waitForHoverOutline } from "../../../../__test__/utils";
 import Config from "../../../../configManager/configManager";
@@ -124,9 +124,7 @@ describe("When an element is hovered in visual builder mode", () => {
         });
 
         test("should have outline and custom cursor", async () => {
-            await act(async () => {
-                fileField.dispatchEvent(mousemoveEvent);
-            });
+            fileField.dispatchEvent(mousemoveEvent);
             await waitForHoverOutline();
             const hoverOutline = document.querySelector(
                 "[data-testid='visual-builder__hover-outline']"
@@ -141,9 +139,7 @@ describe("When an element is hovered in visual builder mode", () => {
         });
 
         test("should have a outline and custom cursor on the url as well", async () => {
-            await act(async () => {
-                imageField.dispatchEvent(mousemoveEvent);
-            });
+            imageField.dispatchEvent(mousemoveEvent);
             await waitForHoverOutline();
 
             const hoverOutline = document.querySelector(
@@ -231,9 +227,7 @@ describe("When an element is hovered in visual builder mode", () => {
         });
 
         test("should have outline and custom cursor", async () => {
-            await act(async () => {
-                container.dispatchEvent(mousemoveEvent);
-            });
+            container.dispatchEvent(mousemoveEvent);
             await waitForHoverOutline();
             const hoverOutline = document.querySelector(
                 "[data-testid='visual-builder__hover-outline']"
@@ -248,9 +242,7 @@ describe("When an element is hovered in visual builder mode", () => {
         });
 
         test("should have outline and custom cursor on individual instances", async () => {
-            await act(async () => {
-                firstFileField.dispatchEvent(mousemoveEvent);
-            });
+            firstFileField.dispatchEvent(mousemoveEvent);
             await waitForHoverOutline();
             const hoverOutline = document.querySelector(
                 "[data-testid='visual-builder__hover-outline']"
@@ -267,9 +259,7 @@ describe("When an element is hovered in visual builder mode", () => {
         });
 
         test("should have outline and custom cursor on the url", async () => {
-            await act(async () => {
-                firstImageField.dispatchEvent(mousemoveEvent);
-            });
+            firstImageField.dispatchEvent(mousemoveEvent);
             await waitForHoverOutline();
             const hoverOutline = document.querySelector(
                 "[data-testid='visual-builder__hover-outline']"
