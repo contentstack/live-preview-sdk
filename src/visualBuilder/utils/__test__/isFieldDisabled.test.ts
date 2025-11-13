@@ -6,6 +6,12 @@ import Config from "../../../configManager/configManager";
 import { VisualBuilder } from "../..";
 import { EntryPermissions } from "../getEntryPermissions";
 import { WORKFLOW_STAGES } from "../constants";
+import { ResolvedVariantPermissions } from "../getResolvedVariantPermissions";
+
+const resolvedVariantPermissions: ResolvedVariantPermissions = {
+    update: true,
+};
+
 
 describe("isFieldDisabled", () => {
     it("should return disabled state due to read-only role", () => {
@@ -263,7 +269,7 @@ describe("isFieldDisabled", () => {
             },
         };
 
-        const result = isFieldDisabled(fieldSchemaMap, eventFieldDetails, {
+        const result = isFieldDisabled(fieldSchemaMap, eventFieldDetails, resolvedVariantPermissions, {
             update: false,
             create: true,
             read: true,
@@ -306,6 +312,7 @@ describe("isFieldDisabled", () => {
             const result = isFieldDisabled(
                 fieldSchemaMap,
                 eventFieldDetails,
+                resolvedVariantPermissions,
                 entryPermissions,
                 workflowStageDetails
             );
@@ -348,6 +355,7 @@ describe("isFieldDisabled", () => {
             const result = isFieldDisabled(
                 fieldSchemaMap,
                 eventFieldDetails,
+                resolvedVariantPermissions,
                 entryPermissions,
                 workflowStageDetails
             );
@@ -390,6 +398,7 @@ describe("isFieldDisabled", () => {
             const result = isFieldDisabled(
                 fieldSchemaMap,
                 eventFieldDetails,
+                resolvedVariantPermissions,
                 entryPermissions,
                 workflowStageDetails
             );
@@ -426,6 +435,7 @@ describe("isFieldDisabled", () => {
             const result = isFieldDisabled(
                 fieldSchemaMap,
                 eventFieldDetails,
+                resolvedVariantPermissions,
                 entryPermissions,
                 workflowStageDetails
             );
@@ -468,6 +478,7 @@ describe("isFieldDisabled", () => {
             const result = isFieldDisabled(
                 fieldSchemaMap,
                 eventFieldDetails,
+                resolvedVariantPermissions,
                 entryPermissions,
                 // @ts-expect-error testing missing name property
                 workflowStageDetails
@@ -515,6 +526,7 @@ describe("isFieldDisabled", () => {
             const result = isFieldDisabled(
                 fieldSchemaMap,
                 eventFieldDetails,
+                resolvedVariantPermissions,
                 entryPermissions,
                 workflowStageDetails
             );
@@ -544,6 +556,7 @@ describe("isFieldDisabled", () => {
             const result = isFieldDisabled(
                 fieldSchemaMap,
                 eventFieldDetails,
+                resolvedVariantPermissions,
                 entryPermissions,
                 undefined
             );
