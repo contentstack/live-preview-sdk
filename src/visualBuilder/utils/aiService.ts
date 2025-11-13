@@ -1,4 +1,5 @@
 import { FieldDataType } from "./types/index.types";
+import { callAgentApi, AgentApiRequest } from "./agentApi";
 
 export interface AIProcessRequest {
     fieldType: FieldDataType;
@@ -7,115 +8,31 @@ export interface AIProcessRequest {
 }
 
 export interface AIProcessResponse {
-    enhancedValue: string;
+    type: "enhance" | "score";
+    value: string;
+    msg: string;
+    enhancedValue?: string; // For backward compatibility
 }
 
 /**
- * Process AI request for singleline fields
+ * Processes AI request by calling the agent API
+ * @param request - The AI process request
+ * @returns Promise resolving to the AI process response
  */
-async function processSinglelineAI(
-    currentValue: string,
-    prompt: string
-): Promise<string> {
-    // TODO: Replace with actual AI API call
-    // For now, this is a placeholder
-    // const response = await fetch("/api/ai/enhance", {
-    //     method: "POST",
-    //     headers: {
-    //         "Content-Type": "application/json",
-    //     },
-    //     body: JSON.stringify({
-    //         fieldType: "singleline",
-    //         currentValue,
-    //         prompt,
-    //     }),
-    // });
-
-    // if (!response.ok) {
-    //     throw new Error("AI API call failed");
-    // }
-
-    // const data = await response.json();
-    // return data.enhancedValue || currentValue;
-    return currentValue + " processed";
-}
-
-/**
- * Process AI request for multiline fields
- */
-async function processMultilineAI(
-    currentValue: string,
-    prompt: string
-): Promise<string> {
-    // TODO: Replace with actual AI API call
-    // For now, this is a placeholder
-    // const response = await fetch("/api/ai/enhance", {
-    //     method: "POST",
-    //     headers: {
-    //         "Content-Type": "application/json",
-    //     },
-    //     body: JSON.stringify({
-    //         fieldType: "multiline",
-    //         currentValue,
-    //         prompt,
-    //     }),
-    // });
-
-    // if (!response.ok) {
-    //     throw new Error("AI API call failed");
-    // }
-
-    // const data = await response.json();
-    // return data.enhancedValue || currentValue;
-    return currentValue + " processed";
-}
-
-/**
- * Process AI request for file fields
- */
-async function processFileAI(
-    currentValue: string,
-    prompt: string
-): Promise<string> {
-    // TODO: Replace with actual AI API call
-    // For file fields, this might involve image generation or file manipulation
-    // For now, this is a placeholder
-    const response = await fetch("/api/ai/enhance", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-            fieldType: "file",
-            currentValue,
-            prompt,
-        }),
-    });
-
-    if (!response.ok) {
-        throw new Error("AI API call failed");
-    }
-
-    const data = await response.json();
-    return data.enhancedValue || currentValue;
-}
-
 export async function processAIRequest(
     request: AIProcessRequest
 ): Promise<AIProcessResponse> {
     const { fieldType, currentValue, prompt } = request;
 
-    let enhancedValue: string;
-
+    // Determine type based on field type
+    let type: string;
     switch (fieldType) {
         case FieldDataType.SINGLELINE:
-            enhancedValue = await processSinglelineAI(currentValue, prompt);
-            break;
         case FieldDataType.MULTILINE:
-            enhancedValue = await processMultilineAI(currentValue, prompt);
+            type = "text";
             break;
         case FieldDataType.FILE:
-            enhancedValue = await processFileAI(currentValue, prompt);
+            type = "image";
             break;
         default:
             throw new Error(
@@ -123,7 +40,80 @@ export async function processAIRequest(
             );
     }
 
+    // Prepare agent API request
+    const agentRequest: AgentApiRequest = {
+        type,
+        value: currentValue,
+        prompt,
+    };
+
+    const agentResponse = await callAgentApi(agentRequest);
+
+    if (!agentResponse.success || !agentResponse.data) {
+        throw new Error(agentResponse.error || "Agent API call failed");
+    }
+
+    // Parse the response - the API returns JSON with type, value, and msg
+    let responseData: { type: string; value: string; msg: string };
+
+    // Handle different response formats
+    if (typeof agentResponse.data === "string") {
+        try {
+            responseData = JSON.parse(agentResponse.data);
+        } catch {
+            throw new Error("Failed to parse agent response as JSON string");
+        }
+    } else if (
+        agentResponse.data &&
+        typeof agentResponse.data === "object" &&
+        agentResponse.data.type &&
+        agentResponse.data.value !== undefined
+    ) {
+        // Direct object format
+        responseData = agentResponse.data as {
+            type: string;
+            value: string;
+            msg: string;
+        };
+    } else if (
+        agentResponse.data &&
+        typeof agentResponse.data === "object" &&
+        (agentResponse.data as any).message
+    ) {
+        // Try to extract from nested structure with message property
+        const dataObj = agentResponse.data as any;
+        const messageContent = dataObj.message?.content || dataObj.content;
+        if (messageContent) {
+            try {
+                responseData =
+                    typeof messageContent === "string"
+                        ? JSON.parse(messageContent)
+                        : messageContent;
+            } catch {
+                throw new Error(
+                    "Failed to parse message content from agent response"
+                );
+            }
+        } else {
+            throw new Error("Invalid response format from agent API");
+        }
+    } else {
+        throw new Error("Invalid response format from agent API");
+    }
+
+    // Validate response structure
+    if (
+        !responseData.type ||
+        responseData.value === undefined ||
+        !responseData.msg
+    ) {
+        throw new Error("Invalid response structure from agent API");
+    }
+
     return {
-        enhancedValue,
+        type: responseData.type as "enhance" | "score",
+        value: responseData.value,
+        msg: responseData.msg,
+        enhancedValue: responseData.value, // For backward compatibility
     };
 }

@@ -417,10 +417,10 @@ export const useCommentTextArea = (
                 commentPayload,
             };
 
-            // Check if comment contains @ai mention
             const isAIComment =
-                state.toUsers?.some((user) => user.id === "ai-assistant") ||
-                state.message.toLowerCase().includes("@ai");
+                state.toUsers?.some(
+                    (user) => user.display?.toLowerCase() === "polaris"
+                ) || state.message.toLowerCase().includes("@polaris");
 
             if (isAIComment) {
                 try {
@@ -490,6 +490,7 @@ export const useCommentTextArea = (
 
                                 const prompt = state.message
                                     .replace(/@ai\s*/gi, "")
+                                    .replace(/@polaris\s*/gi, "")
                                     .trim();
 
                                 const aiResponse = await processAIRequest({
@@ -498,24 +499,98 @@ export const useCommentTextArea = (
                                     prompt,
                                 });
 
-                                try {
-                                    const response: any =
-                                        await visualBuilderPostMessage?.send(
-                                            VisualBuilderPostMessageEvents.SYNC_FIELD,
-                                            {
-                                                data: aiResponse.enhancedValue,
-                                                fieldMetadata,
-                                            }
-                                        );
-                                    if (response?.success === true) {
-                                        window.history.go();
-                                        // window.location.reload();
+                                // Create a comment message based on response type
+                                let aiCommentMessage = "";
+                                if (aiResponse.type === "enhance") {
+                                    if (fieldType === FieldDataType.FILE) {
+                                        // For file fields, use generic message
+                                        aiCommentMessage =
+                                            "Enhanced this field";
+                                    } else {
+                                        // For text fields, use the msg from response
+                                        aiCommentMessage = aiResponse.msg;
                                     }
-                                } catch (sendError: any) {
-                                    console.error(
-                                        "Error sending SYNC_FIELD:",
-                                        sendError
-                                    );
+                                } else if (aiResponse.type === "score") {
+                                    // For score type, use the msg from response
+                                    aiCommentMessage = aiResponse.msg;
+                                }
+
+                                // Create AI comment in the thread
+                                if (aiCommentMessage) {
+                                    try {
+                                        const aiCommentState: ICommentState = {
+                                            message: aiCommentMessage,
+                                            toUsers: [],
+                                            images: [],
+                                            createdBy:
+                                                userState.currentUser.uid,
+                                            author: userState.currentUser.email,
+                                        };
+
+                                        const aiCommentPayload = {
+                                            ...getCommentBody(aiCommentState),
+                                        };
+
+                                        const aiCommentData: ICommentPayload = {
+                                            threadUid: threadUID,
+                                            commentPayload: aiCommentPayload,
+                                        };
+
+                                        const aiCommentResponse: ICommentResponse =
+                                            await onCreateComment(
+                                                aiCommentData
+                                            );
+
+                                        setThreadState(
+                                            (prevState: IThreadPopupState) => ({
+                                                ...prevState,
+                                                comments: [
+                                                    aiCommentResponse.comment,
+                                                    ...prevState.comments,
+                                                ],
+                                                commentCount:
+                                                    prevState.commentCount + 1,
+                                            })
+                                        );
+                                    } catch (commentError: any) {
+                                        console.error(
+                                            "Error creating AI comment:",
+                                            commentError
+                                        );
+                                    }
+                                }
+
+                                // Handle field update for enhance type
+                                if (aiResponse.type === "enhance") {
+                                    try {
+                                        // For file fields, the value is an asset ID
+                                        // We need to attach it to the field path
+                                        let syncValue = aiResponse.value;
+
+                                        if (fieldType === FieldDataType.FILE) {
+                                            // For file fields, the value is an asset ID
+                                            // The VB listener expects the asset ID to be attached to the field path
+                                            syncValue = aiResponse.value;
+                                        }
+
+                                        const response: any =
+                                            await visualBuilderPostMessage?.send(
+                                                VisualBuilderPostMessageEvents.SYNC_FIELD,
+                                                {
+                                                    data: syncValue,
+                                                    fieldMetadata,
+                                                }
+                                            );
+                                        if (response?.success === true) {
+                                            window.history.go();
+                                            // window.location.reload();
+                                        }
+                                    } catch (sendError: any) {
+                                        console.error(
+                                            "Error sending SYNC_FIELD:",
+                                            sendError
+                                        );
+                                    }
                                 }
                             }
                         }
