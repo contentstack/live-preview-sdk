@@ -168,7 +168,7 @@ describe(
             }
         );
 
-        test.skip("should add overlay to DOM when clicked", async () => {
+        test("should add overlay to DOM when clicked", async () => {
             const h1Tag = document.createElement("h1");
             h1Tag.textContent = INLINE_EDITABLE_FIELD_VALUE;
             h1Tag.setAttribute(
