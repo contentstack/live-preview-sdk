@@ -5,7 +5,6 @@ import Config from "../../../../configManager/configManager";
 import { VisualBuilder } from "../../../index";
 import { FieldSchemaMap } from "../../../utils/fieldSchemaMap";
 import { mockDomRect } from "./mockDomRect";
-import { act } from "@testing-library/preact";
 
 vi.mock("../../../utils/visualBuilderPostMessage", async () => {
     const { getAllContentTypes } = await vi.importActual<
@@ -94,9 +93,7 @@ describe("When an element is hovered in visual builder mode", () => {
         });
 
         test("should have outline and custom cursor", async () => {
-            await act(async () => {
-                jsonRteField.dispatchEvent(mousemoveEvent);
-            });
+            jsonRteField.dispatchEvent(mousemoveEvent);
             await waitForHoverOutline();
             const hoverOutline = document.querySelector(
                 "[data-testid='visual-builder__hover-outline']"
@@ -161,9 +158,7 @@ describe("When an element is hovered in visual builder mode", () => {
         });
 
         test("should have outline and custom cursor", async () => {
-            await act(async () => {
-                container.dispatchEvent(mousemoveEvent);
-            });
+            container.dispatchEvent(mousemoveEvent);
             await waitForHoverOutline();
             const hoverOutline = document.querySelector(
                 "[data-testid='visual-builder__hover-outline']"
@@ -179,9 +174,7 @@ describe("When an element is hovered in visual builder mode", () => {
         });
 
         test("should have outline and custom cursor on individual instances", async () => {
-            await act(async () => {
-                firstJsonRteField.dispatchEvent(mousemoveEvent);
-            });
+            firstJsonRteField.dispatchEvent(mousemoveEvent);
             await waitForHoverOutline();
             const hoverOutline = document.querySelector(
                 "[data-testid='visual-builder__hover-outline']"
