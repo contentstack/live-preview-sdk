@@ -4,7 +4,7 @@ import Config from "../../../../configManager/configManager";
 import { VisualBuilder } from "../../../index";
 import { FieldSchemaMap } from "../../../utils/fieldSchemaMap";
 import { mockDomRect } from "./mockDomRect";
-import { act, screen } from "@testing-library/preact";
+import { screen } from "@testing-library/preact";
 
 vi.mock("../../../utils/visualBuilderPostMessage", async () => {
     const { getAllContentTypes } = await vi.importActual<
@@ -91,9 +91,7 @@ describe("When an element is hovered in visual builder mode", () => {
         });
 
         test("should have outline and custom cursor", async () => {
-            await act(() => {
-                titleField.dispatchEvent(mousemoveEvent);
-            });
+            titleField.dispatchEvent(mousemoveEvent);
             await waitForHoverOutline();
             expect(titleField).not.toHaveAttribute("style");
             const hoverOutline = screen.getByTestId(
@@ -134,9 +132,7 @@ describe("When an element is hovered in visual builder mode", () => {
         });
 
         test("should have outline and custom cursor", async () => {
-            await act(() => {
-                singleLineField.dispatchEvent(mousemoveEvent);
-            });
+            singleLineField.dispatchEvent(mousemoveEvent);
             await waitForHoverOutline();
             expect(singleLineField).not.toHaveAttribute("style");
 
@@ -195,9 +191,7 @@ describe("When an element is hovered in visual builder mode", () => {
         });
 
         test("should have outline and custom cursor", async () => {
-            await act(() => {
-                container.dispatchEvent(mousemoveEvent);
-            });
+            container.dispatchEvent(mousemoveEvent);
             container.dispatchEvent(mousemoveEvent);
             await waitForHoverOutline();
             expect(container).not.toHaveAttribute("style");
@@ -218,9 +212,7 @@ describe("When an element is hovered in visual builder mode", () => {
         });
 
         test("should have outline and custom cursor on individual instances", async () => {
-            await act(() => {
-                firstSingleLineField.dispatchEvent(mousemoveEvent);
-            });
+            firstSingleLineField.dispatchEvent(mousemoveEvent);
             await waitForHoverOutline();
             expect(firstSingleLineField).not.toHaveAttribute("style");
             const hoverOutline = document.querySelector(
