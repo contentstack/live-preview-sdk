@@ -19,7 +19,7 @@ import {
     mockMultipleLinkFieldSchema,
     mockMultipleFileFieldSchema,
 } from "../../../__test__/data/fields";
-import { asyncRender } from "../../../__test__/utils";
+import { render } from "@testing-library/preact";
 import { VisualBuilderCslpEventDetails } from "../../types/visualBuilder.types";
 import { isFieldDisabled } from "../../utils/isFieldDisabled";
 import React from "preact/compat";
@@ -133,21 +133,20 @@ describe("FieldToolbarComponent", () => {
     });
 
     test("renders toolbar buttons correctly", async () => {
-        const { getByTestId } = await asyncRender(
+        const { findByTestId } = render(
             <FieldToolbarComponent
                 eventDetails={mockEventDetails}
                 hideOverlay={vi.fn()}
             />
         );
 
-        // Use getByTestId instead of findByTestId since elements should be immediately available
-        const moveLeftButton = getByTestId(
+        const moveLeftButton = await findByTestId(
             "visual-builder__focused-toolbar__multiple-field-toolbar__move-left-button"
         );
-        const moveRightButton = getByTestId(
+        const moveRightButton = await findByTestId(
             "visual-builder__focused-toolbar__multiple-field-toolbar__move-right-button"
         );
-        const deleteButton = getByTestId(
+        const deleteButton = await findByTestId(
             "visual-builder__focused-toolbar__multiple-field-toolbar__delete-button"
         );
 
@@ -157,14 +156,14 @@ describe("FieldToolbarComponent", () => {
     });
 
     test("calls handleMoveInstance with 'previous' when move left button is clicked", async () => {
-        const { getByTestId } = await asyncRender(
+        const { findByTestId } = render(
             <FieldToolbarComponent
                 eventDetails={mockEventDetails}
                 hideOverlay={vi.fn()}
             />
         );
 
-        const moveLeftButton = getByTestId(
+        const moveLeftButton = await findByTestId(
             "visual-builder__focused-toolbar__multiple-field-toolbar__move-left-button"
         );
 
@@ -177,14 +176,14 @@ describe("FieldToolbarComponent", () => {
     });
 
     test("calls handleMoveInstance with 'next' when move right button is clicked", async () => {
-        const { getByTestId } = await asyncRender(
+        const { findByTestId } = render(
             <FieldToolbarComponent
                 eventDetails={mockEventDetails}
                 hideOverlay={vi.fn()}
             />
         );
 
-        const moveRightButton = getByTestId(
+        const moveRightButton = await findByTestId(
             "visual-builder__focused-toolbar__multiple-field-toolbar__move-right-button"
         );
 
@@ -197,14 +196,14 @@ describe("FieldToolbarComponent", () => {
     });
 
     test("calls handleDeleteInstance when delete button is clicked", async () => {
-        const { getByTestId } = await asyncRender(
+        const { findByTestId } = render(
             <FieldToolbarComponent
                 eventDetails={mockEventDetails}
                 hideOverlay={vi.fn()}
             />
         );
 
-        const deleteButton = getByTestId(
+        const deleteButton = await findByTestId(
             "visual-builder__focused-toolbar__multiple-field-toolbar__delete-button"
         );
 
@@ -214,7 +213,7 @@ describe("FieldToolbarComponent", () => {
             mockMultipleFieldMetadata
         );
     });
-    test("display variant icon instead of dropdown", async () => {
+    test("display variant icon instead of dropdown", () => {
         // Create a fresh copy with variant set to avoid mutation issues
         const variantEventDetails = {
             ...mockEventDetails,
@@ -224,16 +223,14 @@ describe("FieldToolbarComponent", () => {
             },
         };
 
-        const { getByTestId } = await asyncRender(
+        const { getByTestId } = render(
             <FieldToolbarComponent
                 eventDetails={variantEventDetails}
                 hideOverlay={vi.fn()}
             />
         );
 
-        // Give component a tick to fully render variant icon
-        await new Promise((resolve) => setTimeout(resolve, 0));
-
+        // Component renders synchronously, no need to wait
         const variantIcon = getByTestId("visual-builder-canvas-variant-icon");
         expect(variantIcon).toBeInTheDocument();
     });
@@ -253,7 +250,7 @@ describe("FieldToolbarComponent", () => {
             );
         });
 
-        test("'replace button' is hidden for parent wrapper of multiple file field", async () => {
+        test("'replace button' is hidden for parent wrapper of multiple file field", () => {
             const parentWrapperMetadata: CslpData = {
                 ...mockMultipleFieldMetadata,
                 fieldPathWithIndex: "files",
@@ -267,7 +264,7 @@ describe("FieldToolbarComponent", () => {
                 fieldMetadata: parentWrapperMetadata,
             };
 
-            const { container } = await asyncRender(
+            const { container } = render(
                 <FieldToolbarComponent
                     eventDetails={parentWrapperEventDetails}
                     hideOverlay={vi.fn()}
@@ -294,17 +291,23 @@ describe("FieldToolbarComponent", () => {
                 fieldMetadata: individualFieldMetadata,
             };
 
-            const { container } = await asyncRender(
+            const { container } = render(
                 <FieldToolbarComponent
                     eventDetails={individualFieldEventDetails}
                     hideOverlay={vi.fn()}
                 />
             );
 
-            const replaceButton = container.querySelector(
-                '[data-testid="visual-builder-replace-file"]'
+            // Wait for component to render and load async data
+            await waitFor(
+                () => {
+                    const replaceButton = container.querySelector(
+                        '[data-testid="visual-builder-replace-file"]'
+                    );
+                    expect(replaceButton).toBeInTheDocument();
+                },
+                { timeout: 10000 }
             );
-            expect(replaceButton).toBeInTheDocument();
         });
     });
 
@@ -315,26 +318,26 @@ describe("FieldToolbarComponent", () => {
             reason: "You have only read access to this field" as any,
         });
 
-        const { getByTestId, queryByTestId } = await asyncRender(
+        const { findByTestId, container } = render(
             <FieldToolbarComponent
                 eventDetails={mockEventDetails}
                 hideOverlay={vi.fn()}
             />
         );
 
-        const toolbar = getByTestId(
+        const toolbar = await findByTestId(
             "visual-builder__focused-toolbar__multiple-field-toolbar"
         );
         expect(toolbar).toBeInTheDocument();
 
         // Check that move buttons are disabled
-        const moveLeftButton = getByTestId(
+        const moveLeftButton = await findByTestId(
             "visual-builder__focused-toolbar__multiple-field-toolbar__move-left-button"
         );
-        const moveRightButton = getByTestId(
+        const moveRightButton = await findByTestId(
             "visual-builder__focused-toolbar__multiple-field-toolbar__move-right-button"
         );
-        const deleteButton = getByTestId(
+        const deleteButton = await findByTestId(
             "visual-builder__focused-toolbar__multiple-field-toolbar__delete-button"
         );
 
@@ -343,15 +346,15 @@ describe("FieldToolbarComponent", () => {
         expect(deleteButton).toBeDisabled();
 
         // Check that edit button is disabled if present
-        const editButton = queryByTestId(
-            "visual-builder__focused-toolbar__multiple-field-toolbar__edit-button"
+        const editButton = container.querySelector(
+            '[data-testid="visual-builder__focused-toolbar__multiple-field-toolbar__edit-button"]'
         );
         if (editButton) {
             expect(editButton).toBeDisabled();
         }
 
         // Check that replace button is disabled if present
-        const replaceButton = document.querySelector(
+        const replaceButton = container.querySelector(
             '[data-testid="visual-builder-replace-file"]'
         );
         if (replaceButton) {
