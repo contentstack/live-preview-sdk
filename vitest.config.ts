@@ -39,5 +39,23 @@ export default defineConfig({
         isolate: true,
         // Reduce overhead
         css: false,
+        // Enhanced reporting for CI/CD debugging
+        reporters: process.env.CI
+            ? [
+                  "verbose",
+                  "json",
+                  "junit",
+                  "github-actions",
+                  "./vitest.reporter.ts",
+              ]
+            : ["verbose", "./vitest.reporter.ts"],
+        outputFile: {
+            json: "./test-results.json",
+            junit: "./junit.xml",
+        },
+        // Enable detailed logging in CI for debugging failures
+        logHeapUsage: process.env.CI === "true",
+        // Bail on first failure in CI to save time (optional)
+        // bail: process.env.CI ? 1 : undefined,
     },
 });

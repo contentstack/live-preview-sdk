@@ -1,0 +1,185 @@
+import type { Reporter, Task, File } from "vitest";
+import { promises as fs } from "fs";
+import path from "path";
+
+interface TestProfile {
+    name: string;
+    duration: number;
+    status: "passed" | "failed" | "skipped";
+    file: string;
+    retries: number;
+    error?: string;
+}
+
+export default class ProfileReporter implements Reporter {
+    private profiles: TestProfile[] = [];
+    private startTime: number = 0;
+
+    onInit() {
+        this.startTime = Date.now();
+        console.log("\n🔍 Test Profiler Initialized");
+        console.log(`📊 CI Mode: ${process.env.CI ? "YES" : "NO"}`);
+        console.log(`🕐 Started at: ${new Date().toISOString()}\n`);
+    }
+
+    onTaskUpdate(tasks: Task[]) {
+        this.collectTestProfiles(tasks);
+    }
+
+    private collectTestProfiles(tasks: Task[]) {
+        tasks.forEach((task) => {
+            // Recursively collect from suites
+            if (task.type === "suite" && task.tasks) {
+                this.collectTestProfiles(task.tasks);
+            }
+            
+            if (task.type === "test") {
+                // Determine status
+                let status: "passed" | "failed" | "skipped" = "skipped";
+                if (task.result) {
+                    if (task.result.state === "pass") status = "passed";
+                    else if (task.result.state === "fail") status = "failed";
+                    else if (task.result.state === "skip") status = "skipped";
+                } else if (task.mode === "skip") {
+                    status = "skipped";
+                }
+
+                const profile: TestProfile = {
+                    name: task.name,
+                    duration: task.result?.duration || 0,
+                    status,
+                    file: (task.file as File)?.filepath || "unknown",
+                    retries: task.result?.retryCount || 0,
+                    error: task.result?.errors?.[0]?.message,
+                };
+                
+                // Only add if test has completed (has result)
+                if (task.result || task.mode === "skip") {
+                    // Update or add profile
+                    const existingIndex = this.profiles.findIndex(
+                        p => p.name === profile.name && p.file === profile.file
+                    );
+                    
+                    if (existingIndex >= 0) {
+                        this.profiles[existingIndex] = profile;
+                    } else {
+                        this.profiles.push(profile);
+                    }
+                }
+            }
+        });
+    }
+
+    async onFinished(files?: File[], errors?: unknown[]) {
+        // Collect any remaining profiles from files
+        if (files) {
+            this.collectTestProfiles(files);
+        }
+        
+        const totalDuration = Date.now() - this.startTime;
+        
+        // Sort by duration (slowest first)
+        const sorted = [...this.profiles].sort((a, b) => b.duration - a.duration);
+        
+        console.log("\n" + "=".repeat(80));
+        console.log("📊 TEST PROFILING REPORT");
+        console.log("=".repeat(80) + "\n");
+        
+        // Summary
+        const passed = this.profiles.filter(p => p.status === "passed").length;
+        const failed = this.profiles.filter(p => p.status === "failed").length;
+        const skipped = this.profiles.filter(p => p.status === "skipped").length;
+        const retriedTests = this.profiles.filter(p => p.retries > 0);
+        
+        console.log(`✅ Passed: ${passed}`);
+        console.log(`❌ Failed: ${failed}`);
+        console.log(`⏭️  Skipped: ${skipped}`);
+        console.log(`🔄 Retried: ${retriedTests.length}`);
+        console.log(`⏱️  Total Duration: ${(totalDuration / 1000).toFixed(2)}s\n`);
+        
+        // Top 10 slowest tests
+        console.log("🐌 TOP 10 SLOWEST TESTS:");
+        console.log("-".repeat(80));
+        sorted.slice(0, 10).forEach((profile, index) => {
+            const icon = profile.status === "passed" ? "✅" : 
+                        profile.status === "failed" ? "❌" : "⏭️";
+            const fileName = path.basename(profile.file);
+            console.log(
+                `${index + 1}. ${icon} ${(profile.duration / 1000).toFixed(2)}s - ${profile.name}`
+            );
+            console.log(`   📁 ${fileName}`);
+            if (profile.retries > 0) {
+                console.log(`   🔄 Retried ${profile.retries} time(s)`);
+            }
+        });
+        
+        // Failed tests
+        if (failed > 0) {
+            console.log("\n" + "=".repeat(80));
+            console.log("❌ FAILED TESTS:");
+            console.log("-".repeat(80));
+            this.profiles
+                .filter(p => p.status === "failed")
+                .forEach((profile) => {
+                    const fileName = path.basename(profile.file);
+                    console.log(`\n📁 ${fileName}`);
+                    console.log(`   Test: ${profile.name}`);
+                    console.log(`   Duration: ${(profile.duration / 1000).toFixed(2)}s`);
+                    if (profile.retries > 0) {
+                        console.log(`   Retries: ${profile.retries}`);
+                    }
+                    if (profile.error) {
+                        console.log(`   Error: ${profile.error.substring(0, 200)}...`);
+                    }
+                });
+        }
+        
+        // Flaky tests (tests that needed retries but eventually passed)
+        const flakyTests = this.profiles.filter(
+            p => p.retries > 0 && p.status === "passed"
+        );
+        if (flakyTests.length > 0) {
+            console.log("\n" + "=".repeat(80));
+            console.log("⚠️  FLAKY TESTS (passed after retry):");
+            console.log("-".repeat(80));
+            flakyTests.forEach((profile) => {
+                const fileName = path.basename(profile.file);
+                console.log(`📁 ${fileName}`);
+                console.log(`   Test: ${profile.name}`);
+                console.log(`   Retries: ${profile.retries}`);
+                console.log(`   Duration: ${(profile.duration / 1000).toFixed(2)}s\n`);
+            });
+        }
+        
+        // Save detailed report to file in CI
+        if (process.env.CI) {
+            const report = {
+                summary: {
+                    passed,
+                    failed,
+                    skipped,
+                    totalTests: this.profiles.length,
+                    retriedCount: retriedTests.length,
+                    totalDuration,
+                },
+                slowestTests: sorted.slice(0, 20),
+                failedTests: this.profiles.filter(p => p.status === "failed"),
+                flakyTests: flakyTests,
+                allTests: this.profiles,
+            };
+            
+            try {
+                await fs.writeFile(
+                    "test-profile-report.json",
+                    JSON.stringify(report, null, 2)
+                );
+                console.log("\n💾 Detailed profile saved to: test-profile-report.json");
+            } catch (error) {
+                console.error("Failed to save profile report:", error);
+            }
+        }
+        
+        console.log("\n" + "=".repeat(80) + "\n");
+    }
+}
+
