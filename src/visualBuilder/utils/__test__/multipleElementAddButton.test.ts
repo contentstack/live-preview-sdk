@@ -726,11 +726,11 @@ describe("removeAddInstanceButtons", () => {
         }
 
         // Buttons are appended synchronously
-        let buttons = visualBuilderContainer.querySelectorAll(
+        const buttonsBeforeRemoval = visualBuilderContainer.querySelectorAll(
             `[data-testid="visual-builder-add-instance-button"]`
         );
 
-        expect(buttons.length).toBe(7);
+        expect(buttonsBeforeRemoval.length).toBe(7);
 
         removeAddInstanceButtons(
             {
@@ -746,5 +746,5 @@ describe("removeAddInstanceButtons", () => {
         );
 
         expect(addInstanceButtons.length).toBe(5);
-    });
+    }, 5000); // Add explicit 5s timeout for this test
 });

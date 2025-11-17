@@ -138,5 +138,9 @@ temp/
 
 .DS_Store
 
+# Test results and profiling reports
+test-results.json
+junit.xml
+test-profile-report.json
 
 # End of https://www.toptal.com/developers/gitignore/api/node,web,vscode
