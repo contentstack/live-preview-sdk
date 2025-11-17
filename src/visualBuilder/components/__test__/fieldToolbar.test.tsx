@@ -125,6 +125,12 @@ describe("FieldToolbarComponent", () => {
             editableElement: targetElement,
             cslpData: "",
         };
+
+        // Reset mocks to default state
+        vi.mocked(isFieldDisabled).mockReturnValue({ isDisabled: false });
+        vi.mocked(FieldSchemaMap.getFieldSchema).mockResolvedValue(
+            mockMultipleLinkFieldSchema
+        );
     });
 
     afterEach(() => {
@@ -236,18 +242,15 @@ describe("FieldToolbarComponent", () => {
     });
 
     describe("'Replace button' visibility for multiple file fields", () => {
-        beforeAll(() => {
-            // Override the mock for this describe block
-            vi.spyOn(FieldSchemaMap, "getFieldSchema").mockResolvedValue(
+        beforeEach(() => {
+            // Override the mock for this describe block (must be beforeEach to override outer beforeEach)
+            vi.mocked(FieldSchemaMap.getFieldSchema).mockResolvedValue(
                 mockMultipleFileFieldSchema
             );
         });
 
-        afterAll(() => {
-            // Restore the original mock
-            vi.spyOn(FieldSchemaMap, "getFieldSchema").mockResolvedValue(
-                mockMultipleLinkFieldSchema
-            );
+        afterEach(() => {
+            // Restore will happen in outer afterEach via clearAllMocks
         });
 
         test("'replace button' is hidden for parent wrapper of multiple file field", () => {
