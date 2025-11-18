@@ -150,24 +150,24 @@ describe("FieldToolbarComponent", () => {
             />
         );
 
-        // Use findByTestId which is optimized for async elements
+        // Use findByTestId with faster polling (5ms) for quicker detection
         await findByTestId(
             container as HTMLElement,
             "visual-builder__focused-toolbar__multiple-field-toolbar__move-left-button",
             {},
-            { timeout: 20000 }
+            { timeout: 10000, interval: 5 }
         );
         await findByTestId(
             container as HTMLElement,
             "visual-builder__focused-toolbar__multiple-field-toolbar__move-right-button",
             {},
-            { timeout: 20000 }
+            { timeout: 10000, interval: 5 }
         );
         await findByTestId(
             container as HTMLElement,
             "visual-builder__focused-toolbar__multiple-field-toolbar__delete-button",
             {},
-            { timeout: 20000 }
+            { timeout: 10000, interval: 5 }
         );
     });
 
@@ -183,7 +183,7 @@ describe("FieldToolbarComponent", () => {
             container as HTMLElement,
             "visual-builder__focused-toolbar__multiple-field-toolbar__move-left-button",
             {},
-            { timeout: 20000 }
+            { timeout: 10000, interval: 5 }
         )) as HTMLElement;
 
         fireEvent.click(moveLeftButton);
@@ -206,7 +206,7 @@ describe("FieldToolbarComponent", () => {
             container as HTMLElement,
             "visual-builder__focused-toolbar__multiple-field-toolbar__move-right-button",
             {},
-            { timeout: 20000 }
+            { timeout: 10000, interval: 5 }
         )) as HTMLElement;
 
         fireEvent.click(moveRightButton);
@@ -229,7 +229,7 @@ describe("FieldToolbarComponent", () => {
             container as HTMLElement,
             "visual-builder__focused-toolbar__multiple-field-toolbar__delete-button",
             {},
-            { timeout: 20000 }
+            { timeout: 10000, interval: 5 }
         )) as HTMLElement;
 
         fireEvent.click(deleteButton);
@@ -260,7 +260,7 @@ describe("FieldToolbarComponent", () => {
             container as HTMLElement,
             "visual-builder-canvas-variant-icon",
             {},
-            { timeout: 20000 }
+            { timeout: 10000, interval: 5 }
         );
     });
 
