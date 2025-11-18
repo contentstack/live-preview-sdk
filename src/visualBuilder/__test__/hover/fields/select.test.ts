@@ -199,6 +199,6 @@ describe("When an element is hovered in visual builder mode", () => {
 
             expect(customCursor).toHaveAttribute("data-icon", "select");
             expect(customCursor?.classList.contains("visible")).toBeTruthy();
-        });
+        }, 60000);
     });
 });

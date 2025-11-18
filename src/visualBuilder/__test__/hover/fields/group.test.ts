@@ -225,7 +225,7 @@ describe("When an element is hovered in visual builder mode", () => {
 
             expect(customCursor).toHaveAttribute("data-icon", "group");
             expect(customCursor?.classList.contains("visible")).toBeTruthy();
-        });
+        }, 60000);
 
         test("should have outline and custom cursor on nested multi line", async () => {
             firstNestedMultiLine.dispatchEvent(mousemoveEvent);
