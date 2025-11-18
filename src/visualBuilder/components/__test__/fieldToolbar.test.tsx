@@ -158,7 +158,7 @@ describe("FieldToolbarComponent", () => {
             container as HTMLElement,
             "visual-builder__focused-toolbar__multiple-field-toolbar__move-left-button",
             {},
-            { timeout: 10000, interval: 5 }
+            { timeout: 5000, interval: 5 } // Reduced timeout from 10s to 5s
         )) as HTMLElement;
 
         fireEvent.click(moveLeftButton);
@@ -181,7 +181,7 @@ describe("FieldToolbarComponent", () => {
             container as HTMLElement,
             "visual-builder__focused-toolbar__multiple-field-toolbar__move-right-button",
             {},
-            { timeout: 10000, interval: 5 }
+            { timeout: 5000, interval: 5 } // Reduced timeout from 10s to 5s
         )) as HTMLElement;
 
         fireEvent.click(moveRightButton);
@@ -204,7 +204,7 @@ describe("FieldToolbarComponent", () => {
             container as HTMLElement,
             "visual-builder__focused-toolbar__multiple-field-toolbar__delete-button",
             {},
-            { timeout: 10000, interval: 5 }
+            { timeout: 5000, interval: 5 } // Reduced timeout from 10s to 5s
         )) as HTMLElement;
 
         fireEvent.click(deleteButton);
@@ -235,7 +235,7 @@ describe("FieldToolbarComponent", () => {
             container as HTMLElement,
             "visual-builder-canvas-variant-icon",
             {},
-            { timeout: 10000, interval: 5 }
+            { timeout: 5000, interval: 5 } // Reduced timeout from 10s to 5s
         );
     });
 
@@ -279,7 +279,7 @@ describe("FieldToolbarComponent", () => {
                     );
                     expect(replaceButton).not.toBeInTheDocument();
                 },
-                { timeout: 25000 }
+                { timeout: 10000, interval: 5 } // Reduced timeout from 25s to 10s with faster polling
             );
         });
 
@@ -312,7 +312,7 @@ describe("FieldToolbarComponent", () => {
                     );
                     expect(replaceButton).toBeInTheDocument();
                 },
-                { timeout: 25000 }
+                { timeout: 10000, interval: 5 } // Reduced timeout from 25s to 10s with faster polling
             );
         });
 
@@ -368,7 +368,7 @@ describe("FieldToolbarComponent", () => {
                         expect(replaceButton).toBeDisabled();
                     }
                 },
-                { timeout: 25000 }
+                { timeout: 10000, interval: 5 } // Reduced timeout from 25s to 10s with faster polling
             );
         });
     });
