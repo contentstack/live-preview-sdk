@@ -15,6 +15,7 @@ import {
 import {
     useOnEntryUpdatePostMessageEvent,
     useHistoryPostMessageEvent,
+    sendInitializeLivePreviewPostMessageEvent,
 } from "../postMessageEvent.hooks";
 import { isOpeningInNewTab } from "../../../common/inIframe";
 
@@ -22,6 +23,7 @@ import { isOpeningInNewTab } from "../../../common/inIframe";
 vi.mock("../../../configManager/configManager", () => ({
     default: {
         get: vi.fn(),
+        set: vi.fn(),
     },
     setConfigFromParams: vi.fn(),
 }));
@@ -35,11 +37,17 @@ vi.mock("../../../logger/logger", () => ({
 vi.mock("../livePreviewEventManager", () => ({
     default: {
         on: vi.fn(),
+        send: vi.fn(),
     },
 }));
 
 vi.mock("../../../common/inIframe", () => ({
     isOpeningInNewTab: vi.fn(),
+}));
+
+vi.mock("../../../utils", () => ({
+    addParamsToUrl: vi.fn(),
+    isOpeningInTimeline: vi.fn(() => false),
 }));
 
 describe("postMessageEvent.hooks", () => {
@@ -413,6 +421,58 @@ describe("postMessageEvent.hooks", () => {
             expect(() => {
                 callback({ data: eventData });
             }).toThrow("Unhandled event: unknown");
+        });
+    });
+
+    describe("sendInitializeLivePreviewPostMessageEvent", () => {
+        beforeEach(() => {
+            // default send resolves with preview windowType, no contentType/entry to avoid side-effects
+            (livePreviewPostMessage as any).send.mockResolvedValue({
+                windowType: "preview",
+            });
+        });
+
+        it("should include enableLivePreviewOutsideIframe=false in INIT payload", async () => {
+            mockConfig = {
+                ssr: true, // avoid timers
+                mode: 1,
+                enableLivePreviewOutsideIframe: false,
+            };
+            (Config.get as any).mockReturnValue(mockConfig);
+
+            await sendInitializeLivePreviewPostMessageEvent();
+            // allow microtasks to flush
+            await Promise.resolve();
+
+            expect(livePreviewPostMessage?.send).toHaveBeenCalledWith(
+                LIVE_PREVIEW_POST_MESSAGE_EVENTS.INIT,
+                expect.objectContaining({
+                    config: expect.objectContaining({
+                        enableLivePreviewOutsideIframe: false,
+                    }),
+                })
+            );
+        });
+
+        it("should include enableLivePreviewOutsideIframe=true in INIT payload", async () => {
+            mockConfig = {
+                ssr: true, // avoid timers
+                mode: 1,
+                enableLivePreviewOutsideIframe: true,
+            };
+            (Config.get as any).mockReturnValue(mockConfig);
+
+            await sendInitializeLivePreviewPostMessageEvent();
+            await Promise.resolve();
+
+            expect(livePreviewPostMessage?.send).toHaveBeenCalledWith(
+                LIVE_PREVIEW_POST_MESSAGE_EVENTS.INIT,
+                expect.objectContaining({
+                    config: expect.objectContaining({
+                        enableLivePreviewOutsideIframe: true,
+                    }),
+                })
+            );
         });
     });
 });

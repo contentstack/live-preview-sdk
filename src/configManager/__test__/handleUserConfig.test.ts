@@ -411,6 +411,41 @@ describe("handleInitData()", () => {
     });
 });
 
+describe("handleInitData() - enableLivePreviewOutsideIframe", () => {
+    let config: DeepSignal<IConfig>;
+
+    beforeEach(() => {
+        Config.reset();
+        config = Config.get();
+    });
+
+    afterAll(() => {
+        Config.reset();
+    });
+
+    test("should default to false when not provided", () => {
+        const initData: Partial<IInitData> = {};
+        handleInitData(initData);
+        expect(config.enableLivePreviewOutsideIframe).toBe(false);
+    });
+
+    test("should set to true when provided as true", () => {
+        const initData: Partial<IInitData> = {
+            enableLivePreviewOutsideIframe: true,
+        };
+        handleInitData(initData);
+        expect(config.enableLivePreviewOutsideIframe).toBe(true);
+    });
+
+    test("should remain false when provided as false", () => {
+        const initData: Partial<IInitData> = {
+            enableLivePreviewOutsideIframe: false,
+        };
+        handleInitData(initData);
+        expect(config.enableLivePreviewOutsideIframe).toBe(false);
+    });
+});
+
 describe("handleClientUrlParams()", () => {
     let config: DeepSignal<IConfig>;
 
