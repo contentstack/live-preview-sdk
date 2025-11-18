@@ -25,7 +25,8 @@
     "sideEffects": false,
     "scripts": {
         "build": "NODE_OPTIONS='--max-old-space-size=16384' tsup",
-        "test": "vitest",
+        "test": "vitest --run",
+        "test:watch": "vitest",
         "test:once": "vitest run",
         "test:coverage": "vitest --coverage",
         "dev": "NODE_OPTIONS='--max-old-space-size=16384' tsup --watch",

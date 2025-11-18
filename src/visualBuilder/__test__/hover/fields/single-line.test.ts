@@ -67,6 +67,30 @@ vi.mock("../../../../utils/index.ts", async () => {
     };
 });
 
+// Mock fetchEntryPermissionsAndStageDetails to resolve immediately - speeds up hover tests
+vi.mock("../../../utils/fetchEntryPermissionsAndStageDetails", () => ({
+    fetchEntryPermissionsAndStageDetails: vi.fn().mockResolvedValue({
+        acl: {
+            create: true,
+            read: true,
+            update: true,
+            delete: true,
+            publish: true,
+        },
+        workflowStage: {
+            stage: undefined,
+            permissions: {
+                entry: {
+                    update: true,
+                },
+            },
+        },
+        resolvedVariantPermissions: {
+            update: true,
+        },
+    }),
+}));
+
 describe("When an element is hovered in visual builder mode", () => {
     let mousemoveEvent: Event;
 
@@ -86,8 +110,11 @@ describe("When an element is hovered in visual builder mode", () => {
         });
     });
 
-    afterEach(() => {
-        vi.clearAllMocks();
+    afterEach(async () => {
+        // Wait longer for any pending async operations (like fetchEntryPermissionsAndStageDetails) to complete
+        await new Promise((resolve) => setTimeout(resolve, 500));
+        // Don't clear mocks here - it causes unhandled rejections in async code
+        // vi.clearAllMocks();
         document.getElementsByTagName("html")[0].innerHTML = "";
     });
 

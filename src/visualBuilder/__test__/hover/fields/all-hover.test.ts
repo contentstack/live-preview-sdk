@@ -53,17 +53,15 @@ vi.mock("../../../utils/visualBuilderPostMessage", async () => {
 });
 
 // Mock fetchEntryPermissionsAndStageDetails to resolve immediately - this is called during hover
-// and causes delays for html-rte, json-rte, link, and other fields
+// Mock fetchEntryPermissionsAndStageDetails to resolve immediately - speeds up hover tests
 vi.mock("../../../utils/fetchEntryPermissionsAndStageDetails", () => ({
     fetchEntryPermissionsAndStageDetails: vi.fn().mockResolvedValue({
         acl: {
-            update: {
-                create: true,
-                read: true,
-                update: true,
-                delete: true,
-                publish: true,
-            },
+            create: true,
+            read: true,
+            update: true,
+            delete: true,
+            publish: true,
         },
         workflowStage: {
             stage: undefined,
@@ -213,8 +211,9 @@ describe("When an element is hovered in visual builder mode", () => {
         });
     });
 
-    afterEach(() => {
-        vi.clearAllMocks();
+    afterEach(async () => {
+        // Wait longer for any pending async operations (like fetchEntryPermissionsAndStageDetails) to complete
+        await new Promise((resolve) => setTimeout(resolve, 500));
         document.getElementsByTagName("html")[0].innerHTML = "";
     });
 
