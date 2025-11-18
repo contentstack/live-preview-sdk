@@ -24,9 +24,11 @@ export default class ProfileReporter implements Reporter {
             const ciMode = `📊 CI Mode: ${process.env.CI ? "YES" : "NO"}`;
             const startedAt = `🕐 Started at: ${new Date().toISOString()}\n`;
             
-            // Use stderr for CI to avoid mixing with test output
+            // Use both stderr and stdout for CI to ensure visibility
             if (process.env.CI) {
-                process.stderr.write(`${message}\n${ciMode}\n${startedAt}\n`);
+                const initOutput = `${message}\n${ciMode}\n${startedAt}\n`;
+                process.stderr.write(initOutput);
+                console.log(initOutput);
             } else {
                 console.log(message);
                 console.log(ciMode);
@@ -178,8 +180,10 @@ export default class ProfileReporter implements Reporter {
             // Print all output at once
             const finalOutput = output.join("\n");
             if (process.env.CI) {
-                // In CI, write to stderr to avoid mixing with test output
+                // In CI, write to both stderr and stdout to ensure visibility
                 process.stderr.write(finalOutput + "\n");
+                // Also write to stdout for GitHub Actions to capture
+                console.log(finalOutput);
             } else {
                 console.log(finalOutput);
             }
@@ -206,7 +210,9 @@ export default class ProfileReporter implements Reporter {
                         "test-profile-report.json",
                         JSON.stringify(report, null, 2)
                     );
-                    process.stderr.write("\n💾 Detailed profile saved to: test-profile-report.json\n");
+                    const saveMessage = "\n💾 Detailed profile saved to: test-profile-report.json\n";
+                    process.stderr.write(saveMessage);
+                    console.log(saveMessage);
                 } catch (error) {
                     console.error("Failed to save profile report:", error);
                 }
