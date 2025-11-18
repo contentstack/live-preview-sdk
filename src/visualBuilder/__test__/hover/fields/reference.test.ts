@@ -25,6 +25,33 @@ vi.mock("../../../utils/visualBuilderPostMessage", async () => {
     };
 });
 
+// Mock waitForHoverOutline to wait for outline with optimized timeout
+// This speeds up tests while still ensuring the outline is actually present
+vi.mock("../../../../__test__/utils", async () => {
+    const actual = await vi.importActual<
+        typeof import("../../../../__test__/utils")
+    >("../../../../__test__/utils");
+    const { waitFor } = await import("@testing-library/preact");
+
+    return {
+        ...actual,
+        waitForHoverOutline: vi.fn().mockImplementation(async () => {
+            // Wait for outline with shorter timeout and faster polling for tests
+            await waitFor(
+                () => {
+                    const hoverOutline = document.querySelector(
+                        "[data-testid='visual-builder__hover-outline'][style]"
+                    );
+                    if (!hoverOutline) {
+                        throw new Error("Hover outline not found");
+                    }
+                },
+                { timeout: 5000, interval: 50 } // Faster polling, shorter timeout for tests
+            );
+        }),
+    };
+});
+
 vi.mock("../../../../utils/index.ts", async () => {
     const actual = await vi.importActual("../../../../utils");
     return {
