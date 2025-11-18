@@ -61,6 +61,11 @@ describe("generateToolbar", () => {
         vi.clearAllMocks();
     });
 
+    afterEach(async () => {
+        // Wait for any pending async operations (like fetchData in fieldLabelWrapper) to complete
+        await new Promise((resolve) => setTimeout(resolve, 500));
+    });
+
     describe("appendFieldToolbar", () => {
         it("should render FieldToolbarComponent if not already present", async () => {
             await appendFieldToolbar(eventDetails, focusedToolbarElement, hideOverlay);
