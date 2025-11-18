@@ -66,13 +66,11 @@ vi.mock("../../../../utils/index.ts", async () => {
 vi.mock("../../../utils/fetchEntryPermissionsAndStageDetails", () => ({
     fetchEntryPermissionsAndStageDetails: vi.fn().mockResolvedValue({
         acl: {
-            update: {
-                create: true,
-                read: true,
-                update: true,
-                delete: true,
-                publish: true,
-            },
+            create: true,
+            read: true,
+            update: true,
+            delete: true,
+            publish: true,
         },
         workflowStage: {
             stage: undefined,
@@ -131,8 +129,9 @@ describe("When an element is hovered in visual builder mode", () => {
         document.getElementsByTagName("html")[0].innerHTML = "";
     });
 
-    afterEach(() => {
-        vi.clearAllMocks();
+    afterEach(async () => {
+        // Wait longer for any pending async operations (like fetchEntryPermissionsAndStageDetails) to complete
+        await new Promise((resolve) => setTimeout(resolve, 500));
         document.getElementsByTagName("html")[0].innerHTML = "";
     });
 
