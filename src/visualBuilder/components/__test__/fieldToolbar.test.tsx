@@ -1,7 +1,9 @@
 import { act, cleanup, fireEvent, render, waitFor, screen, queryByTestId } from "@testing-library/preact";
 import { CslpData } from "../../../cslp/types/cslp.types";
 import { FieldSchemaMap } from "../../utils/fieldSchemaMap";
-import {
+import {    
+    handleDeleteInstance,
+    handleMoveInstance,
 } from "../../utils/instanceHandlers";
 import { ISchemaFieldMap } from "../../utils/types/index.types";
 import FieldToolbarComponent from "../FieldToolbar";
