@@ -142,34 +142,9 @@ describe("FieldToolbarComponent", () => {
         vi.clearAllMocks();
     });
 
-    test("renders toolbar buttons correctly", async () => {
-        const { container } = render(
-            <FieldToolbarComponent
-                eventDetails={mockEventDetails}
-                hideOverlay={vi.fn()}
-            />
-        );
-
-        // Use findByTestId with faster polling (5ms) for quicker detection
-        await findByTestId(
-            container as HTMLElement,
-            "visual-builder__focused-toolbar__multiple-field-toolbar__move-left-button",
-            {},
-            { timeout: 10000, interval: 5 }
-        );
-        await findByTestId(
-            container as HTMLElement,
-            "visual-builder__focused-toolbar__multiple-field-toolbar__move-right-button",
-            {},
-            { timeout: 10000, interval: 5 }
-        );
-        await findByTestId(
-            container as HTMLElement,
-            "visual-builder__focused-toolbar__multiple-field-toolbar__delete-button",
-            {},
-            { timeout: 10000, interval: 5 }
-        );
-    });
+    // REMOVED: "renders toolbar buttons correctly" - redundant test
+    // This test only checks that buttons exist, which is already covered by the click handler tests below.
+    // The click tests verify buttons exist AND work correctly, making this test unnecessary.
 
     test("calls handleMoveInstance with 'previous' when move left button is clicked", async () => {
         const { container } = render(
