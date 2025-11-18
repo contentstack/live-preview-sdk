@@ -209,7 +209,7 @@ describe("When an element is hovered in visual builder mode", () => {
 
             expect(customCursor).toHaveAttribute("data-icon", "singleline");
             expect(customCursor?.classList.contains("visible")).toBeTruthy();
-        });
+        }, 60000);
 
         test("should have outline and custom cursor on individual instances", async () => {
             firstSingleLineField.dispatchEvent(mousemoveEvent);

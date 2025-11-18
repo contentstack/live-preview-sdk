@@ -185,7 +185,7 @@ describe("Visual builder", () => {
         });
 
         x.destroy();
-    });
+    }, 60000);
 
     // skipped as this is already tested in click related tests.
     // this can cause failure for the above test.

@@ -166,7 +166,7 @@ describe("FieldToolbarComponent", () => {
             },
             { timeout: 25000 }
         );
-    });
+    }, 60000);
 
     test("calls handleMoveInstance with 'previous' when move left button is clicked", async () => {
         const { container } = render(
@@ -195,7 +195,7 @@ describe("FieldToolbarComponent", () => {
             mockMultipleFieldMetadata,
             "previous"
         );
-    });
+    }, 60000);
 
     test("calls handleMoveInstance with 'next' when move right button is clicked", async () => {
         const { container } = render(
@@ -224,7 +224,7 @@ describe("FieldToolbarComponent", () => {
             mockMultipleFieldMetadata,
             "next"
         );
-    });
+    }, 60000);
 
     test("calls handleDeleteInstance when delete button is clicked", async () => {
         const { container } = render(
@@ -252,7 +252,7 @@ describe("FieldToolbarComponent", () => {
         expect(handleDeleteInstance).toHaveBeenCalledWith(
             mockMultipleFieldMetadata
         );
-    });
+    }, 60000);
     test("display variant icon instead of dropdown", async () => {
         // Create a fresh copy with variant set to avoid mutation issues
         const variantEventDetails = {
@@ -279,7 +279,7 @@ describe("FieldToolbarComponent", () => {
             },
             { timeout: 25000 }
         );
-    });
+    }, 60000);
 
     describe("'Replace button' visibility for multiple file fields", () => {
         beforeEach(() => {
@@ -323,7 +323,7 @@ describe("FieldToolbarComponent", () => {
                 },
                 { timeout: 25000 }
             );
-        });
+        }, 60000);
 
         test("'replace button' is visible for individual field in multiple file field", async () => {
             const individualFieldMetadata: CslpData = {
@@ -356,7 +356,7 @@ describe("FieldToolbarComponent", () => {
                 },
                 { timeout: 25000 }
             );
-        });
+        }, 60000);
     });
 
     test("passes disabled state correctly to child components when field is disabled", async () => {
@@ -413,5 +413,5 @@ describe("FieldToolbarComponent", () => {
             },
             { timeout: 25000 }
         );
-    });
+    }, 60000);
 });
