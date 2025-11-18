@@ -128,6 +128,7 @@ export function sendInitializeLivePreviewPostMessageEvent(): void {
                     href: window.location.href,
                     sdkVersion: process?.env?.PACKAGE_VERSION,
                     mode: Config.get().mode,
+                    enableLivePreviewOutsideIframe: Config.get().enableLivePreviewOutsideIframe,
                 },
             }
         )

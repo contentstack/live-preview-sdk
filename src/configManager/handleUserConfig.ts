@@ -121,6 +121,8 @@ export const handleInitData = (initData: Partial<IInitData>): void => {
             "bottom-right",
     })
 
+    Config.set("enableLivePreviewOutsideIframe", initData.enableLivePreviewOutsideIframe ?? config.enableLivePreviewOutsideIframe ?? false);
+
     // client URL params
     handleClientUrlParams(
         initData.clientUrlParams ??
