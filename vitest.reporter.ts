@@ -9,6 +9,14 @@ interface TestProfile {
     file: string;
     retries: number;
     error?: string;
+    errorDetails?: {
+        message: string;
+        stack?: string;
+        line?: number;
+        column?: number;
+        timeout?: boolean;
+        slowLines?: Array<{ line: number; duration: number }>;
+    };
 }
 
 export default class ProfileReporter implements Reporter {
@@ -51,14 +59,47 @@ export default class ProfileReporter implements Reporter {
             }
             
             if (task.type === "test") {
-                // Determine status
+                // Determine status - check multiple conditions for failures
                 let status: "passed" | "failed" | "skipped" = "skipped";
                 if (task.result) {
                     if (task.result.state === "pass") status = "passed";
-                    else if (task.result.state === "fail") status = "failed";
-                    else if (task.result.state === "skip") status = "skipped";
+                    else if (task.result.state === "fail" || task.result.state === "run") {
+                        // Check if test actually failed (has errors or timed out)
+                        if (task.result.errors && task.result.errors.length > 0) {
+                            status = "failed";
+                        } else if (task.result.state === "run" && task.result.duration === 0) {
+                            // Test is still running or timed out
+                            status = "failed";
+                        } else {
+                            status = task.result.state === "fail" ? "failed" : status;
+                        }
+                    } else if (task.result.state === "skip") {
+                        status = "skipped";
+                    }
                 } else if (task.mode === "skip") {
                     status = "skipped";
+                } else if (task.result?.state === "fail" || (task.result?.errors && task.result.errors.length > 0)) {
+                    status = "failed";
+                }
+
+                // Extract error details with line numbers
+                let errorDetails: TestProfile["errorDetails"] | undefined;
+                const error = task.result?.errors?.[0];
+                if (error) {
+                    errorDetails = {
+                        message: error.message || error.stack?.split('\n')[0] || "Unknown error",
+                        stack: error.stack,
+                        timeout: error.message?.includes("timeout") || error.message?.includes("Timeout") || false,
+                    };
+                    
+                    // Try to extract line number from stack trace
+                    if (error.stack) {
+                        const lineMatch = error.stack.match(/\((.+):(\d+):(\d+)\)/);
+                        if (lineMatch) {
+                            errorDetails.line = parseInt(lineMatch[2], 10);
+                            errorDetails.column = parseInt(lineMatch[3], 10);
+                        }
+                    }
                 }
 
                 const profile: TestProfile = {
@@ -67,11 +108,12 @@ export default class ProfileReporter implements Reporter {
                     status,
                     file: (task.file as File)?.filepath || "unknown",
                     retries: task.result?.retryCount || 0,
-                    error: task.result?.errors?.[0]?.message,
+                    error: error?.message || error?.stack?.split('\n')[0],
+                    errorDetails,
                 };
                 
-                // Only add if test has completed (has result)
-                if (task.result || task.mode === "skip") {
+                // Only add if test has completed (has result) or failed
+                if (task.result || task.mode === "skip" || status === "failed") {
                     // Update or add profile
                     const existingIndex = this.profiles.findIndex(
                         p => p.name === profile.name && p.file === profile.file
@@ -137,7 +179,7 @@ export default class ProfileReporter implements Reporter {
                 }
             });
         
-            // Failed tests
+            // Failed tests with detailed error information
             if (failed > 0) {
                 output.push("\n" + "=".repeat(80));
                 output.push("❌ FAILED TESTS:");
@@ -152,8 +194,36 @@ export default class ProfileReporter implements Reporter {
                         if (profile.retries > 0) {
                             output.push(`   Retries: ${profile.retries}`);
                         }
-                        if (profile.error) {
-                            output.push(`   Error: ${profile.error.substring(0, 200)}...`);
+                        
+                        // Enhanced error reporting
+                        if (profile.errorDetails) {
+                            if (profile.errorDetails.timeout) {
+                                output.push(`   ⏱️  TIMEOUT ERROR`);
+                            }
+                            if (profile.errorDetails.line) {
+                                output.push(`   📍 Failed at line ${profile.errorDetails.line}${profile.errorDetails.column ? `:${profile.errorDetails.column}` : ''}`);
+                            }
+                            if (profile.errorDetails.message) {
+                                const errorMsg = profile.errorDetails.message.length > 300 
+                                    ? profile.errorDetails.message.substring(0, 300) + "..."
+                                    : profile.errorDetails.message;
+                                output.push(`   Error: ${errorMsg}`);
+                            }
+                            // Show relevant stack trace lines (first 5 lines)
+                            if (profile.errorDetails.stack) {
+                                const stackLines = profile.errorDetails.stack.split('\n').slice(0, 6);
+                                output.push(`   Stack:`);
+                                stackLines.forEach(line => {
+                                    if (line.trim()) {
+                                        output.push(`      ${line.trim()}`);
+                                    }
+                                });
+                            }
+                        } else if (profile.error) {
+                            const errorMsg = profile.error.length > 300 
+                                ? profile.error.substring(0, 300) + "..."
+                                : profile.error;
+                            output.push(`   Error: ${errorMsg}`);
                         }
                     });
             }

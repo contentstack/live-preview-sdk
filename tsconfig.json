@@ -17,7 +17,9 @@
         "skipLibCheck": true ,
         "forceConsistentCasingInFileNames": true ,
         "jsx": "react-jsx",
-        "module": "ESNext"
+        "module": "ESNext",
+        // This skips type checking during test runs (type checking should be done separately)
+        "isolatedModules": true
     },
     "include": ["src"]
 }
