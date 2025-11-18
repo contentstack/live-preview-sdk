@@ -1,4 +1,9 @@
-import { render, waitFor } from "@testing-library/preact";
+import {
+    render,
+    waitFor,
+    findByTestId,
+    findByText,
+} from "@testing-library/preact";
 import FieldLabelWrapperComponent from "../fieldLabelWrapper";
 import { CslpData } from "../../../cslp/types/cslp.types";
 import { asyncRender } from "../../../__test__/utils";
@@ -47,9 +52,11 @@ vi.mock("../../utils/visualBuilderPostMessage", () => ({
                 VisualBuilderPostMessageEvents.GET_FIELD_DISPLAY_NAMES
             ) {
                 // Always return display names for all requested fields immediately
+                // This is critical: component only sets dataLoading=false when all paths have display names
                 const result: Record<string, string> = {};
                 if (Array.isArray(fields)) {
                     fields.forEach((field: any) => {
+                        // Return display name for every field to ensure dataLoading completes
                         if (field.cslpValue === "mockFieldCslp") {
                             result[field.cslpValue] = "Field 0";
                         } else if (
@@ -68,12 +75,15 @@ vi.mock("../../utils/visualBuilderPostMessage", () => ({
                         ) {
                             result[field.cslpValue] = "Field 3";
                         } else {
+                            // Fallback: use field path or cslpValue as display name
                             result[field.cslpValue] =
-                                field.cslpValue || "Unknown Field"; // fallback
+                                field.cslpValue ||
+                                field.fieldPath ||
+                                "Unknown Field";
                         }
                     });
                 }
-                // Resolve immediately
+                // Resolve immediately with all display names
                 return Promise.resolve(result);
             } else if (
                 eventName ===
@@ -236,14 +246,14 @@ describe("FieldLabelWrapperComponent", () => {
             />
         );
 
-        await waitFor(
-            () => {
-                const text = container.textContent;
-                expect(text).toContain(DISPLAY_NAMES.mockFieldCslp);
-            },
-            { timeout: 25000 }
+        // Use findByText which is optimized for async elements
+        await findByText(
+            container as HTMLElement,
+            DISPLAY_NAMES.mockFieldCslp,
+            {},
+            { timeout: 20000 }
         );
-    });
+    }, 30000);
 
     test("displays current field icon", async () => {
         const { container } = render(
@@ -255,16 +265,14 @@ describe("FieldLabelWrapperComponent", () => {
             />
         );
 
-        await waitFor(
-            () => {
-                const fieldIcon = container.querySelector(
-                    '[data-testid="visual-builder__field-icon"]'
-                );
-                expect(fieldIcon).toBeInTheDocument();
-            },
-            { timeout: 25000 }
+        // Use findByTestId which is optimized for async elements
+        await findByTestId(
+            container as HTMLElement,
+            "visual-builder__field-icon",
+            {},
+            { timeout: 20000 }
         );
-    });
+    }, 30000);
 
     test("renders with correct class when field is disabled", async () => {
         vi.mocked(isFieldDisabled).mockReturnValue({
@@ -280,30 +288,24 @@ describe("FieldLabelWrapperComponent", () => {
             />
         );
 
-        // Wait for data loading to complete first
-        await waitFor(
-            () => {
-                const fieldLabel = container.querySelector(
-                    '[data-testid="visual-builder__focused-toolbar__field-label-wrapper"]'
-                );
-                expect(fieldLabel).toBeInTheDocument();
-            },
-            { timeout: 25000 }
-        );
+        // Use findByTestId and waitFor for class check
+        const fieldLabel = (await findByTestId(
+            container as HTMLElement,
+            "visual-builder__focused-toolbar__field-label-wrapper",
+            {},
+            { timeout: 20000 }
+        )) as HTMLElement;
 
-        // Then check for disabled class
+        // Wait for disabled class to be applied
         await waitFor(
             () => {
-                const fieldLabel = container.querySelector(
-                    '[data-testid="visual-builder__focused-toolbar__field-label-wrapper"]'
-                );
                 expect(fieldLabel).toHaveClass(
                     "visual-builder__focused-toolbar--field-disabled"
                 );
             },
             { timeout: 5000 }
         );
-    });
+    }, 30000);
 
     test("calls isFieldDisabled with correct arguments", async () => {
         const { container } = render(
@@ -315,16 +317,20 @@ describe("FieldLabelWrapperComponent", () => {
             />
         );
 
-        // wait for component to mount and isFieldDisabled to be called
+        // Wait for component to mount using findByTestId
+        await findByTestId(
+            container as HTMLElement,
+            "visual-builder__focused-toolbar__field-label-wrapper",
+            {},
+            { timeout: 20000 }
+        );
+
+        // Wait for isFieldDisabled to be called
         await waitFor(
             () => {
-                const wrapper = container.querySelector(
-                    '[data-testid="visual-builder__focused-toolbar__field-label-wrapper"]'
-                );
-                expect(wrapper).toBeInTheDocument();
                 expect(isFieldDisabled).toHaveBeenCalled();
             },
-            { timeout: 25000 }
+            { timeout: 5000 }
         );
 
         expect(isFieldDisabled).toHaveBeenCalledWith(
@@ -368,23 +374,24 @@ describe("FieldLabelWrapperComponent", () => {
             />
         );
 
+        // Component returns LoadingIcon when dataLoading=true, so wait for loading to complete
+        // Loading completes when displayNames has keys matching allPaths.length
+        // For parentPaths=[], allPaths.length=1, so we need 1 display name
         await waitFor(
             () => {
-                // Check that the ToolbarTooltip wrapper is rendered
+                // Check that main structure is rendered (LoadingIcon is gone)
                 const tooltipWrapper = container.querySelector(
                     '[data-testid="toolbar-tooltip"]'
                 );
-                expect(tooltipWrapper).toBeInTheDocument();
-
-                // Check that the main field label wrapper is rendered
                 const fieldLabelWrapper = container.querySelector(
                     '[data-testid="visual-builder__focused-toolbar__field-label-wrapper"]'
                 );
+                expect(tooltipWrapper).toBeInTheDocument();
                 expect(fieldLabelWrapper).toBeInTheDocument();
             },
             { timeout: 25000 }
         );
-    }, 60000);
+    }, 35000);
 
     test("does not render reference icon when isReference is false", async () => {
         const { container } = render(
@@ -396,7 +403,7 @@ describe("FieldLabelWrapperComponent", () => {
             />
         );
 
-        // Wait for component to finish loading first
+        // Wait for component to finish loading (dataLoading becomes false)
         await waitFor(
             () => {
                 const fieldLabelWrapper = container.querySelector(
@@ -412,7 +419,7 @@ describe("FieldLabelWrapperComponent", () => {
             ".visual-builder__reference-icon-container"
         );
         expect(referenceIconContainer).not.toBeInTheDocument();
-    }, 60000);
+    }, 35000);
 
     test("renders with correct hovered cslp data attribute", async () => {
         const { container } = render(
@@ -424,25 +431,39 @@ describe("FieldLabelWrapperComponent", () => {
             />
         );
 
+        const fieldLabelWrapper = (await findByTestId(
+            container as HTMLElement,
+            "visual-builder__focused-toolbar__field-label-wrapper",
+            {},
+            { timeout: 20000 }
+        )) as HTMLElement;
+
         await waitFor(
             () => {
-                const fieldLabelWrapper = container.querySelector(
-                    '[data-testid="visual-builder__focused-toolbar__field-label-wrapper"]'
-                );
                 expect(fieldLabelWrapper).toHaveAttribute(
                     "data-hovered-cslp",
                     mockFieldMetadata.cslpValue
                 );
             },
-            { timeout: 25000 }
+            { timeout: 5000 }
         );
-    });
+    }, 30000);
 
-    test("does not render ContentTypeIcon when loading", () => {
+    test("does not render ContentTypeIcon when loading", async () => {
         // Mock the display names to never resolve to simulate loading state
-        vi.mocked(visualBuilderPostMessage!.send).mockImplementation(() => {
-            return new Promise(() => {}); // Never resolves
-        });
+        vi.mocked(visualBuilderPostMessage!.send).mockImplementation(
+            (eventName: string) => {
+                // Only block GET_FIELD_DISPLAY_NAMES, let other calls resolve
+                if (
+                    eventName ===
+                    VisualBuilderPostMessageEvents.GET_FIELD_DISPLAY_NAMES
+                ) {
+                    return new Promise(() => {}); // Never resolves
+                }
+                // Let other calls use default mock behavior
+                return Promise.resolve({});
+            }
+        );
 
         const { container } = render(
             <FieldLabelWrapperComponent
@@ -453,12 +474,20 @@ describe("FieldLabelWrapperComponent", () => {
             />
         );
 
-        // Component renders synchronously, check immediately
-        const contentTypeIcon = container.querySelector(
-            ".visual-builder__content-type-icon"
+        // When loading, component returns LoadingIcon, not the main structure
+        // ContentTypeIcon only renders when dataLoading is false, which won't happen here
+        // So we should see LoadingIcon and NOT see ContentTypeIcon
+        await waitFor(
+            () => {
+                // Component should be in loading state (LoadingIcon visible, ContentTypeIcon not)
+                const contentTypeIcon = container.querySelector(
+                    ".visual-builder__content-type-icon"
+                );
+                expect(contentTypeIcon).not.toBeInTheDocument();
+            },
+            { timeout: 5000 }
         );
-        expect(contentTypeIcon).not.toBeInTheDocument();
-    });
+    }, 15000);
 
     test.skip("renders VariantIndicator when field has variant", async () => {
         const variantFieldMetadata = {
@@ -500,16 +529,20 @@ describe("FieldLabelWrapperComponent", () => {
             />
         );
 
-        await waitFor(
-            () => {
-                const variantIndicator = container.querySelector(
-                    "[data-testid='variant-indicator']"
-                );
-                expect(variantIndicator).not.toBeInTheDocument();
-            },
-            { timeout: 25000 }
+        // Wait for component to load first
+        await findByTestId(
+            container as HTMLElement,
+            "visual-builder__focused-toolbar__field-label-wrapper",
+            {},
+            { timeout: 20000 }
         );
-    });
+
+        // Then check variant indicator is not present
+        const variantIndicator = container.querySelector(
+            "[data-testid='variant-indicator']"
+        );
+        expect(variantIndicator).not.toBeInTheDocument();
+    }, 30000);
 
     test.skip("applies variant CSS classes when field has variant", async () => {
         const variantFieldMetadata = {
@@ -561,16 +594,20 @@ describe("FieldLabelWrapperComponent", () => {
             />
         );
 
+        const fieldLabelWrapper = (await findByTestId(
+            container as HTMLElement,
+            "visual-builder__focused-toolbar__field-label-wrapper",
+            {},
+            { timeout: 20000 }
+        )) as HTMLElement;
+
         await waitFor(
             () => {
-                const fieldLabelWrapper = container.querySelector(
-                    '[data-testid="visual-builder__focused-toolbar__field-label-wrapper"]'
-                );
                 expect(fieldLabelWrapper).not.toHaveClass(
                     "visual-builder__focused-toolbar--variant"
                 );
             },
-            { timeout: 25000 }
+            { timeout: 5000 }
         );
-    });
+    }, 30000);
 });
