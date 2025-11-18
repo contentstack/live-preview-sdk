@@ -45,11 +45,39 @@ vi.mock("../../../utils/visualBuilderPostMessage", async () => {
                     return Promise.resolve({
                         contentTypes,
                     });
-                return Promise.resolve();
+                // Resolve all other calls immediately to avoid async delays
+                return Promise.resolve({});
             }),
         },
     };
 });
+
+// Mock fetchEntryPermissionsAndStageDetails to resolve immediately - this is called during hover
+// and causes delays for html-rte, json-rte, link, and other fields
+vi.mock("../../../utils/fetchEntryPermissionsAndStageDetails", () => ({
+    fetchEntryPermissionsAndStageDetails: vi.fn().mockResolvedValue({
+        acl: {
+            update: {
+                create: true,
+                read: true,
+                update: true,
+                delete: true,
+                publish: true,
+            },
+        },
+        workflowStage: {
+            stage: undefined,
+            permissions: {
+                entry: {
+                    update: true,
+                },
+            },
+        },
+        resolvedVariantPermissions: {
+            update: true,
+        },
+    }),
+}));
 
 // Mock waitForHoverOutline to wait for outline with optimized timeout
 // This speeds up tests while still ensuring the outline is actually present
@@ -72,7 +100,7 @@ vi.mock("../../../../__test__/utils", async () => {
                         throw new Error("Hover outline not found");
                     }
                 },
-                { timeout: 5000, interval: 50 } // Faster polling, shorter timeout for tests
+                { timeout: 2000, interval: 10 } // Optimized: reduced from 5s/50ms to 2s/10ms
             );
         }),
     };
@@ -165,12 +193,15 @@ const MULTIPLE_FIELD_TYPES = [
 
 describe("When an element is hovered in visual builder mode", () => {
     let mousemoveEvent: Event;
+    const fieldSchemaMap = getFieldSchemaMap().all_fields;
 
     beforeAll(() => {
-        FieldSchemaMap.setFieldSchema(
-            "all_fields",
-            getFieldSchemaMap().all_fields
-        );
+        // Pre-set all field schemas in cache to avoid async fetches during hover
+        // This significantly speeds up tests, especially for html-rte, json-rte, link fields
+        FieldSchemaMap.setFieldSchema("all_fields", fieldSchemaMap);
+
+        // Field schemas are already set above - no need for additional caching
+        // The FieldSchemaMap.setFieldSchema call above sets all fields at once
     });
 
     beforeEach(() => {
@@ -220,7 +251,7 @@ describe("When an element is hovered in visual builder mode", () => {
             );
             expect(hoverOutline).toHaveAttribute("style");
 
-            // Wait for cursor icon to be set (not "loading")
+            // Wait for cursor icon to be set (not "loading") - reduced timeout and faster polling
             await waitFor(
                 () => {
                     const customCursor = document.querySelector(
@@ -228,7 +259,7 @@ describe("When an element is hovered in visual builder mode", () => {
                     );
                     expect(customCursor).toHaveAttribute("data-icon", icon);
                 },
-                { timeout: 5000, interval: 50 }
+                { timeout: 2000, interval: 10 } // Reduced from 5s/50ms to 2s/10ms for faster tests
             );
 
             const customCursor = document.querySelector(
@@ -273,7 +304,7 @@ describe("When an element is hovered in visual builder mode", () => {
             );
             expect(hoverOutline).toHaveAttribute("style");
 
-            // Wait for cursor icon to be set (not "loading")
+            // Wait for cursor icon to be set (not "loading") - reduced timeout and faster polling
             await waitFor(
                 () => {
                     const customCursor = document.querySelector(
@@ -281,7 +312,7 @@ describe("When an element is hovered in visual builder mode", () => {
                     );
                     expect(customCursor).toHaveAttribute("data-icon", icon);
                 },
-                { timeout: 5000, interval: 50 }
+                { timeout: 2000, interval: 10 } // Reduced from 5s/50ms to 2s/10ms for faster tests
             );
 
             const customCursor = document.querySelector(
@@ -389,7 +420,7 @@ describe("When an element is hovered in visual builder mode", () => {
                 expect(
                     customCursor?.classList.contains("visible")
                 ).toBeTruthy();
-            }, 60000);
+            });
         }
     );
 });

@@ -320,7 +320,7 @@ describe("FieldLabelWrapperComponent", () => {
             container as HTMLElement,
             DISPLAY_NAMES.mockFieldCslp,
             {},
-            { timeout: 10000, interval: 5 }
+            { timeout: 5000, interval: 5 } // Reduced timeout from 10s to 5s
         );
     });
 
@@ -339,7 +339,7 @@ describe("FieldLabelWrapperComponent", () => {
             container as HTMLElement,
             "visual-builder__field-icon",
             {},
-            { timeout: 10000, interval: 5 }
+            { timeout: 5000, interval: 5 } // Reduced timeout from 10s to 5s
         );
     });
 
@@ -362,7 +362,7 @@ describe("FieldLabelWrapperComponent", () => {
             container as HTMLElement,
             "visual-builder__focused-toolbar__field-label-wrapper",
             {},
-            { timeout: 10000, interval: 5 }
+            { timeout: 5000, interval: 5 } // Reduced timeout from 10s to 5s
         )) as HTMLElement;
 
         // Wait for disabled class to be applied with fast polling (5ms)
@@ -372,7 +372,7 @@ describe("FieldLabelWrapperComponent", () => {
                     "visual-builder__focused-toolbar--field-disabled"
                 );
             },
-            { timeout: 2000, interval: 5 }
+            { timeout: 1000, interval: 5 } // Reduced timeout from 2s to 1s
         );
     });
 
@@ -391,7 +391,7 @@ describe("FieldLabelWrapperComponent", () => {
             container as HTMLElement,
             "visual-builder__focused-toolbar__field-label-wrapper",
             {},
-            { timeout: 10000, interval: 5 }
+            { timeout: 5000, interval: 5 } // Reduced timeout from 10s to 5s
         );
 
         // Wait for isFieldDisabled to be called with fast polling (5ms)
@@ -399,7 +399,7 @@ describe("FieldLabelWrapperComponent", () => {
             () => {
                 expect(isFieldDisabled).toHaveBeenCalled();
             },
-            { timeout: 2000, interval: 5 }
+            { timeout: 1000, interval: 5 } // Reduced timeout from 2s to 1s
         );
 
         expect(isFieldDisabled).toHaveBeenCalledWith(
@@ -476,7 +476,7 @@ describe("FieldLabelWrapperComponent", () => {
                 );
                 expect(contentTypeIcon).not.toBeInTheDocument();
             },
-            { timeout: 5000 }
+            { timeout: 3000, interval: 5 } // Reduced timeout from 5s to 3s with faster polling
         );
     });
 
@@ -501,7 +501,7 @@ describe("FieldLabelWrapperComponent", () => {
                 const button = container.querySelector("button");
                 expect(button).not.toBeDisabled();
             },
-            { timeout: 15000 }
+            { timeout: 5000, interval: 5 } // Reduced timeout from 15s to 5s with faster polling
         );
 
         const variantIndicator = container.querySelector(
@@ -525,7 +525,7 @@ describe("FieldLabelWrapperComponent", () => {
             container as HTMLElement,
             "visual-builder__focused-toolbar__field-label-wrapper",
             {},
-            { timeout: 10000, interval: 5 }
+            { timeout: 5000, interval: 5 } // Reduced timeout from 10s to 5s
         );
 
         // Then check variant indicator is not present
@@ -558,7 +558,7 @@ describe("FieldLabelWrapperComponent", () => {
                 );
                 expect(fieldLabelWrapper).toBeInTheDocument();
             },
-            { timeout: 25000 }
+            { timeout: 5000, interval: 5 } // Reduced timeout from 25s to 5s with faster polling
         );
 
         // Then check for variant class
@@ -571,7 +571,7 @@ describe("FieldLabelWrapperComponent", () => {
                     "visual-builder__focused-toolbar--variant"
                 );
             },
-            { timeout: 5000 }
+            { timeout: 2000, interval: 5 } // Reduced timeout from 5s to 2s with faster polling
         );
     });
 
@@ -589,7 +589,7 @@ describe("FieldLabelWrapperComponent", () => {
             container as HTMLElement,
             "visual-builder__focused-toolbar__field-label-wrapper",
             {},
-            { timeout: 10000, interval: 5 }
+            { timeout: 5000, interval: 5 } // Reduced timeout from 10s to 5s
         )) as HTMLElement;
 
         // Class should be set immediately, no need to wait

@@ -46,7 +46,7 @@ vi.mock("../../../../__test__/utils", async () => {
                         throw new Error("Hover outline not found");
                     }
                 },
-                { timeout: 5000, interval: 50 } // Faster polling, shorter timeout for tests
+                { timeout: 2000, interval: 10 } // Optimized: reduced from 5s/50ms to 2s/10ms
             );
         }),
     };
@@ -139,10 +139,21 @@ describe("When an element is hovered in visual builder mode", () => {
             );
             expect(hoverOutline).toHaveAttribute("style");
 
+            // Wait for cursor icon to be set (not "loading") - optimized timeout
+            const { waitFor } = await import("@testing-library/preact");
+            await waitFor(
+                () => {
+                    const customCursor = document.querySelector(
+                        `[data-testid="visual-builder__cursor"]`
+                    );
+                    expect(customCursor).toHaveAttribute("data-icon", "group");
+                },
+                { timeout: 2000, interval: 10 } // Optimized: reduced timeout and faster polling
+            );
+
             const customCursor = document.querySelector(
                 `[data-testid="visual-builder__cursor"]`
             );
-
             expect(customCursor).toHaveAttribute("data-icon", "group");
             expect(customCursor?.classList.contains("visible")).toBeTruthy();
         });
@@ -167,10 +178,24 @@ describe("When an element is hovered in visual builder mode", () => {
             );
             expect(hoverOutline).toHaveAttribute("style");
 
+            // Wait for cursor icon to be set (not "loading") - optimized timeout
+            const { waitFor } = await import("@testing-library/preact");
+            await waitFor(
+                () => {
+                    const customCursor = document.querySelector(
+                        `[data-testid="visual-builder__cursor"]`
+                    );
+                    expect(customCursor).toHaveAttribute(
+                        "data-icon",
+                        "singleline"
+                    );
+                },
+                { timeout: 2000, interval: 10 } // Optimized: reduced timeout and faster polling
+            );
+
             const customCursor = document.querySelector(
                 `[data-testid="visual-builder__cursor"]`
             );
-
             expect(customCursor).toHaveAttribute("data-icon", "singleline");
             expect(customCursor?.classList.contains("visible")).toBeTruthy();
         });
