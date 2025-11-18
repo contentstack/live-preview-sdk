@@ -29,19 +29,72 @@ vi.mock("../Tooltip", () => ({
     ),
 }));
 
-vi.mock("../../utils/fieldSchemaMap", () => ({
-    FieldSchemaMap: {
-        getFieldSchema: vi.fn().mockImplementation(() => {
-            // Resolve immediately
-            return Promise.resolve({
-                display_name: "Field 0",
-                data_type: "text",
-                field_metadata: {},
-                uid: "test_field",
-            });
-        }),
-    },
-}));
+// Create a shared field schema cache for tests
+const testFieldSchemaCache: Record<string, Record<string, any>> = {};
+
+vi.mock("../../utils/fieldSchemaMap", async (importOriginal) => {
+    const actual =
+        await importOriginal<typeof import("../../utils/fieldSchemaMap")>();
+    return {
+        FieldSchemaMap: {
+            ...actual.FieldSchemaMap,
+            getFieldSchema: vi
+                .fn()
+                .mockImplementation(
+                    (contentTypeUid: string, fieldPath: string) => {
+                        // Check cache first for immediate resolution (synchronous)
+                        if (testFieldSchemaCache[contentTypeUid]?.[fieldPath]) {
+                            // Use Promise.resolve() for immediate resolution
+                            return Promise.resolve(
+                                testFieldSchemaCache[contentTypeUid][fieldPath]
+                            );
+                        }
+                        // Fallback to default mock - resolve immediately
+                        return Promise.resolve({
+                            display_name: "Field 0",
+                            data_type: "text",
+                            field_metadata: {
+                                description: "",
+                                default_value: "",
+                                version: 3,
+                            },
+                            uid: "test_field",
+                        });
+                    }
+                ),
+            setFieldSchema: vi
+                .fn()
+                .mockImplementation(
+                    (
+                        contentTypeUid: string,
+                        schemaMap: Record<string, any>
+                    ) => {
+                        if (!testFieldSchemaCache[contentTypeUid]) {
+                            testFieldSchemaCache[contentTypeUid] = {};
+                        }
+                        Object.assign(
+                            testFieldSchemaCache[contentTypeUid],
+                            schemaMap
+                        );
+                    }
+                ),
+            hasFieldSchema: vi
+                .fn()
+                .mockImplementation(
+                    (contentTypeUid: string, fieldPath: string) => {
+                        return !!testFieldSchemaCache[contentTypeUid]?.[
+                            fieldPath
+                        ];
+                    }
+                ),
+            clear: vi.fn().mockImplementation(() => {
+                Object.keys(testFieldSchemaCache).forEach(
+                    (key) => delete testFieldSchemaCache[key]
+                );
+            }),
+        },
+    };
+});
 
 vi.mock("../../utils/visualBuilderPostMessage", () => ({
     default: {
@@ -83,13 +136,14 @@ vi.mock("../../utils/visualBuilderPostMessage", () => ({
                         }
                     });
                 }
-                // Resolve immediately with all display names
+                // Resolve immediately with all display names (synchronous resolution)
                 return Promise.resolve(result);
             } else if (
                 eventName ===
                     VisualBuilderPostMessageEvents.GET_CONTENT_TYPE_NAME ||
                 eventName === "get-content-type-name"
             ) {
+                // Resolve immediately (synchronous)
                 return Promise.resolve({
                     contentTypeName: "Page CT",
                 });
@@ -97,9 +151,10 @@ vi.mock("../../utils/visualBuilderPostMessage", () => ({
                 eventName === VisualBuilderPostMessageEvents.REFERENCE_MAP ||
                 eventName === "get-reference-map"
             ) {
-                // Return empty object by default (no reference data)
+                // Return empty object by default (no reference data) - resolve immediately
                 return Promise.resolve({});
             }
+            // Resolve immediately for any other event
             return Promise.resolve({});
         }),
     },
@@ -127,27 +182,30 @@ vi.mock("../../../cslp", () => ({
 }));
 
 vi.mock("../../utils/fetchEntryPermissionsAndStageDetails", () => ({
-    fetchEntryPermissionsAndStageDetails: vi.fn().mockResolvedValue({
-        acl: {
-            update: {
-                create: true,
-                read: true,
-                update: true,
-                delete: true,
-                publish: true,
-            },
-        },
-        workflowStage: {
-            stage: undefined,
-            permissions: {
-                entry: {
+    fetchEntryPermissionsAndStageDetails: vi.fn().mockImplementation(() => {
+        // Resolve immediately (synchronously) using Promise.resolve with no delay
+        return Promise.resolve({
+            acl: {
+                update: {
+                    create: true,
+                    read: true,
                     update: true,
+                    delete: true,
+                    publish: true,
                 },
             },
-        },
-        resolvedVariantPermissions: {
-            update: true,
-        },
+            workflowStage: {
+                stage: undefined,
+                permissions: {
+                    entry: {
+                        update: true,
+                    },
+                },
+            },
+            resolvedVariantPermissions: {
+                update: true,
+            },
+        });
     }),
 }));
 
@@ -187,6 +245,27 @@ const PARENT_PATHS = [
     `${pathPrefix}.parentPath3`,
 ];
 
+// Define mockFieldMetadata before describe so it can be used in beforeEach
+const mockFieldMetadata: CslpData = {
+    entry_uid: "mockEntryUid",
+    content_type_uid: "mockContentTypeUid",
+    cslpValue: "mockFieldCslp",
+    locale: "",
+    variant: undefined,
+    fieldPath: "mockFieldPath",
+    fieldPathWithIndex: "",
+    multipleFieldMetadata: {
+        index: 0,
+        parentDetails: {
+            parentPath: "",
+            parentCslpValue: "",
+        },
+    },
+    instance: {
+        fieldPathWithIndex: "",
+    },
+};
+
 describe("FieldLabelWrapperComponent", () => {
     beforeEach(() => {
         // Reset all mocks to their default state before each test
@@ -197,9 +276,17 @@ describe("FieldLabelWrapperComponent", () => {
             isDisabled: false,
             reason: "",
         });
+
+        // Pre-set field schema in cache to avoid async fetch delay
+        // This makes FieldSchemaMap.getFieldSchema resolve immediately from cache
+        FieldSchemaMap.setFieldSchema(mockFieldMetadata.content_type_uid, {
+            [mockFieldMetadata.fieldPath]: singleLineFieldSchema,
+        });
     });
 
     afterEach(() => {
+        // Clean up field schema cache after each test
+        FieldSchemaMap.clear();
         // Clean up DOM after each test to prevent state pollution
         document.body.innerHTML = "";
     });
@@ -208,25 +295,7 @@ describe("FieldLabelWrapperComponent", () => {
         vi.clearAllMocks();
     });
 
-    const mockFieldMetadata: CslpData = {
-        entry_uid: "mockEntryUid",
-        content_type_uid: "mockContentTypeUid",
-        cslpValue: "mockFieldCslp",
-        locale: "",
-        variant: undefined,
-        fieldPath: "mockFieldPath",
-        fieldPathWithIndex: "",
-        multipleFieldMetadata: {
-            index: 0,
-            parentDetails: {
-                parentPath: "",
-                parentCslpValue: "",
-            },
-        },
-        instance: {
-            fieldPathWithIndex: "",
-        },
-    };
+    // mockFieldMetadata is now defined above the describe block
 
     const mockEventDetails: VisualBuilderCslpEventDetails = {
         editableElement: document.createElement("div"),
@@ -246,12 +315,12 @@ describe("FieldLabelWrapperComponent", () => {
             />
         );
 
-        // Use findByText which is optimized for async elements
+        // Use findByText with faster polling (5ms) for quicker detection
         await findByText(
             container as HTMLElement,
             DISPLAY_NAMES.mockFieldCslp,
             {},
-            { timeout: 20000 }
+            { timeout: 10000, interval: 5 }
         );
     });
 
@@ -265,12 +334,12 @@ describe("FieldLabelWrapperComponent", () => {
             />
         );
 
-        // Use findByTestId which is optimized for async elements
+        // Use findByTestId with faster polling (5ms) for quicker detection
         await findByTestId(
             container as HTMLElement,
             "visual-builder__field-icon",
             {},
-            { timeout: 20000 }
+            { timeout: 10000, interval: 5 }
         );
     });
 
@@ -288,22 +357,22 @@ describe("FieldLabelWrapperComponent", () => {
             />
         );
 
-        // Use findByTestId and waitFor for class check
+        // Use findByTestId with faster polling (5ms)
         const fieldLabel = (await findByTestId(
             container as HTMLElement,
             "visual-builder__focused-toolbar__field-label-wrapper",
             {},
-            { timeout: 20000 }
+            { timeout: 10000, interval: 5 }
         )) as HTMLElement;
 
-        // Wait for disabled class to be applied
+        // Wait for disabled class to be applied with fast polling (5ms)
         await waitFor(
             () => {
                 expect(fieldLabel).toHaveClass(
                     "visual-builder__focused-toolbar--field-disabled"
                 );
             },
-            { timeout: 5000 }
+            { timeout: 2000, interval: 5 }
         );
     });
 
@@ -317,29 +386,24 @@ describe("FieldLabelWrapperComponent", () => {
             />
         );
 
-        // Wait for component to mount using findByTestId
+        // Wait for component to mount using findByTestId with faster polling (5ms)
         await findByTestId(
             container as HTMLElement,
             "visual-builder__focused-toolbar__field-label-wrapper",
             {},
-            { timeout: 20000 }
+            { timeout: 10000, interval: 5 }
         );
 
-        // Wait for isFieldDisabled to be called
+        // Wait for isFieldDisabled to be called with fast polling (5ms)
         await waitFor(
             () => {
                 expect(isFieldDisabled).toHaveBeenCalled();
             },
-            { timeout: 5000 }
+            { timeout: 2000, interval: 5 }
         );
 
         expect(isFieldDisabled).toHaveBeenCalledWith(
-            {
-                display_name: "Field 0",
-                data_type: "text",
-                field_metadata: {},
-                uid: "test_field",
-            },
+            singleLineFieldSchema, // Now using the actual schema we pre-set
             mockEventDetails,
             {
                 update: true,
@@ -377,6 +441,7 @@ describe("FieldLabelWrapperComponent", () => {
         // Component returns LoadingIcon when dataLoading=true, so wait for loading to complete
         // Loading completes when displayNames has keys matching allPaths.length
         // For parentPaths=[], allPaths.length=1, so we need 1 display name
+        // Use faster polling interval (5ms) for quicker detection
         await waitFor(
             () => {
                 // Check that main structure is rendered (LoadingIcon is gone)
@@ -389,7 +454,7 @@ describe("FieldLabelWrapperComponent", () => {
                 expect(tooltipWrapper).toBeInTheDocument();
                 expect(fieldLabelWrapper).toBeInTheDocument();
             },
-            { timeout: 25000 }
+            { timeout: 10000, interval: 5 }
         );
     });
 
@@ -404,6 +469,7 @@ describe("FieldLabelWrapperComponent", () => {
         );
 
         // Wait for component to finish loading (dataLoading becomes false)
+        // Use faster polling interval (5ms) for quicker detection
         await waitFor(
             () => {
                 const fieldLabelWrapper = container.querySelector(
@@ -411,7 +477,7 @@ describe("FieldLabelWrapperComponent", () => {
                 );
                 expect(fieldLabelWrapper).toBeInTheDocument();
             },
-            { timeout: 25000 }
+            { timeout: 10000, interval: 5 }
         );
 
         // Then check that reference icon is not rendered
@@ -431,21 +497,19 @@ describe("FieldLabelWrapperComponent", () => {
             />
         );
 
+        // Use faster polling for findByTestId (5ms interval for even faster detection)
         const fieldLabelWrapper = (await findByTestId(
             container as HTMLElement,
             "visual-builder__focused-toolbar__field-label-wrapper",
             {},
-            { timeout: 20000 }
+            { timeout: 10000, interval: 5 }
         )) as HTMLElement;
 
-        await waitFor(
-            () => {
-                expect(fieldLabelWrapper).toHaveAttribute(
-                    "data-hovered-cslp",
-                    mockFieldMetadata.cslpValue
-                );
-            },
-            { timeout: 5000 }
+        // Attribute is set directly from props, so it should be there immediately
+        // No need to wait - just check it's there
+        expect(fieldLabelWrapper).toHaveAttribute(
+            "data-hovered-cslp",
+            mockFieldMetadata.cslpValue
         );
     });
 
@@ -529,12 +593,12 @@ describe("FieldLabelWrapperComponent", () => {
             />
         );
 
-        // Wait for component to load first
+        // Wait for component to load first with faster polling (5ms)
         await findByTestId(
             container as HTMLElement,
             "visual-builder__focused-toolbar__field-label-wrapper",
             {},
-            { timeout: 20000 }
+            { timeout: 10000, interval: 5 }
         );
 
         // Then check variant indicator is not present
@@ -598,16 +662,12 @@ describe("FieldLabelWrapperComponent", () => {
             container as HTMLElement,
             "visual-builder__focused-toolbar__field-label-wrapper",
             {},
-            { timeout: 20000 }
+            { timeout: 10000, interval: 5 }
         )) as HTMLElement;
 
-        await waitFor(
-            () => {
-                expect(fieldLabelWrapper).not.toHaveClass(
-                    "visual-builder__focused-toolbar--variant"
-                );
-            },
-            { timeout: 5000 }
+        // Class should be set immediately, no need to wait
+        expect(fieldLabelWrapper).not.toHaveClass(
+            "visual-builder__focused-toolbar--variant"
         );
     });
 });
