@@ -253,7 +253,7 @@ describe("FieldLabelWrapperComponent", () => {
             {},
             { timeout: 20000 }
         );
-    }, 30000);
+    });
 
     test("displays current field icon", async () => {
         const { container } = render(
@@ -272,7 +272,7 @@ describe("FieldLabelWrapperComponent", () => {
             {},
             { timeout: 20000 }
         );
-    }, 30000);
+    });
 
     test("renders with correct class when field is disabled", async () => {
         vi.mocked(isFieldDisabled).mockReturnValue({
@@ -305,7 +305,7 @@ describe("FieldLabelWrapperComponent", () => {
             },
             { timeout: 5000 }
         );
-    }, 30000);
+    });
 
     test("calls isFieldDisabled with correct arguments", async () => {
         const { container } = render(
@@ -391,7 +391,7 @@ describe("FieldLabelWrapperComponent", () => {
             },
             { timeout: 25000 }
         );
-    }, 35000);
+    });
 
     test("does not render reference icon when isReference is false", async () => {
         const { container } = render(
@@ -419,7 +419,7 @@ describe("FieldLabelWrapperComponent", () => {
             ".visual-builder__reference-icon-container"
         );
         expect(referenceIconContainer).not.toBeInTheDocument();
-    }, 35000);
+    });
 
     test("renders with correct hovered cslp data attribute", async () => {
         const { container } = render(
@@ -447,7 +447,7 @@ describe("FieldLabelWrapperComponent", () => {
             },
             { timeout: 5000 }
         );
-    }, 30000);
+    });
 
     test("does not render ContentTypeIcon when loading", async () => {
         // Mock the display names to never resolve to simulate loading state
@@ -487,7 +487,7 @@ describe("FieldLabelWrapperComponent", () => {
             },
             { timeout: 5000 }
         );
-    }, 15000);
+    });
 
     test.skip("renders VariantIndicator when field has variant", async () => {
         const variantFieldMetadata = {
@@ -542,7 +542,7 @@ describe("FieldLabelWrapperComponent", () => {
             "[data-testid='variant-indicator']"
         );
         expect(variantIndicator).not.toBeInTheDocument();
-    }, 30000);
+    });
 
     test.skip("applies variant CSS classes when field has variant", async () => {
         const variantFieldMetadata = {
@@ -609,5 +609,5 @@ describe("FieldLabelWrapperComponent", () => {
             },
             { timeout: 5000 }
         );
-    }, 30000);
+    });
 });
