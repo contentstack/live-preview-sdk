@@ -1,6 +1,7 @@
 import { render, waitFor } from "@testing-library/preact";
 import FieldLabelWrapperComponent from "../fieldLabelWrapper";
 import { CslpData } from "../../../cslp/types/cslp.types";
+import { asyncRender } from "../../../__test__/utils";
 import { VisualBuilderCslpEventDetails } from "../../types/visualBuilder.types";
 import { singleLineFieldSchema } from "../../../__test__/data/fields";
 import { isFieldDisabled } from "../../utils/isFieldDisabled";
@@ -176,7 +177,7 @@ const PARENT_PATHS = [
     `${pathPrefix}.parentPath3`,
 ];
 
-describe.skip("FieldLabelWrapperComponent", () => {
+describe("FieldLabelWrapperComponent", () => {
     beforeEach(() => {
         // Reset all mocks to their default state before each test
         vi.clearAllMocks();
@@ -383,7 +384,7 @@ describe.skip("FieldLabelWrapperComponent", () => {
             },
             { timeout: 25000 }
         );
-    });
+    }, 60000);
 
     test("does not render reference icon when isReference is false", async () => {
         const { container } = render(
@@ -395,16 +396,23 @@ describe.skip("FieldLabelWrapperComponent", () => {
             />
         );
 
+        // Wait for component to finish loading first
         await waitFor(
             () => {
-                const referenceIconContainer = container.querySelector(
-                    ".visual-builder__reference-icon-container"
+                const fieldLabelWrapper = container.querySelector(
+                    '[data-testid="visual-builder__focused-toolbar__field-label-wrapper"]'
                 );
-                expect(referenceIconContainer).not.toBeInTheDocument();
+                expect(fieldLabelWrapper).toBeInTheDocument();
             },
             { timeout: 25000 }
         );
-    });
+
+        // Then check that reference icon is not rendered
+        const referenceIconContainer = container.querySelector(
+            ".visual-builder__reference-icon-container"
+        );
+        expect(referenceIconContainer).not.toBeInTheDocument();
+    }, 60000);
 
     test("renders with correct hovered cslp data attribute", async () => {
         const { container } = render(
