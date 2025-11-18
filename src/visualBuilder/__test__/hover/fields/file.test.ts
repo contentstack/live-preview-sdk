@@ -47,7 +47,7 @@ vi.mock("../../../../__test__/utils", async () => {
                         throw new Error("Hover outline not found");
                     }
                 },
-                { timeout: 5000, interval: 50 } // Faster polling, shorter timeout for tests
+                { timeout: 2000, interval: 10 } // Optimized: reduced from 5s/50ms to 2s/10ms
             );
         }),
     };
@@ -62,21 +62,43 @@ vi.mock("../../../../utils/index.ts", async () => {
     };
 });
 
+// Mock fetchEntryPermissionsAndStageDetails to resolve immediately - speeds up hover tests
+vi.mock("../../../utils/fetchEntryPermissionsAndStageDetails", () => ({
+    fetchEntryPermissionsAndStageDetails: vi.fn().mockResolvedValue({
+        acl: {
+            update: {
+                create: true,
+                read: true,
+                update: true,
+                delete: true,
+                publish: true,
+            },
+        },
+        workflowStage: {
+            stage: undefined,
+            permissions: {
+                entry: {
+                    update: true,
+                },
+            },
+        },
+        resolvedVariantPermissions: {
+            update: true,
+        },
+    }),
+}));
+
 const convertToPx = (value: number) => {
     return `${value}px`;
 };
 const matchDimensions = (element: HTMLElement, hoverOutline: HTMLElement) => {
     const elementDimensions = element.getBoundingClientRect();
-    // @ts-expect-error - TS doesn't know that style is a CSSStyleDeclaration
-    const hoverOutlineDimensions = hoverOutline?.style
-        ?._values as CSSStyleDeclaration;
-    expect(convertToPx(elementDimensions.x)).toBe(hoverOutlineDimensions.left);
-    expect(convertToPx(elementDimensions.y)).toBe(hoverOutlineDimensions.top);
-    expect(convertToPx(elementDimensions.width)).toBe(
-        hoverOutlineDimensions.width
-    );
+    const hoverOutlineStyle = hoverOutline?.style as CSSStyleDeclaration;
+    expect(convertToPx(elementDimensions.x)).toBe(hoverOutlineStyle.left);
+    expect(convertToPx(elementDimensions.y)).toBe(hoverOutlineStyle.top);
+    expect(convertToPx(elementDimensions.width)).toBe(hoverOutlineStyle.width);
     expect(convertToPx(elementDimensions.height)).toBe(
-        hoverOutlineDimensions.height
+        hoverOutlineStyle.height
     );
 };
 describe("When an element is hovered in visual builder mode", () => {
@@ -174,10 +196,21 @@ describe("When an element is hovered in visual builder mode", () => {
             );
             expect(hoverOutline).toHaveAttribute("style");
 
+            // Wait for cursor icon to be set (not "loading") - optimized timeout
+            const { waitFor } = await import("@testing-library/preact");
+            await waitFor(
+                () => {
+                    const customCursor = document.querySelector(
+                        `[data-testid="visual-builder__cursor"]`
+                    );
+                    expect(customCursor).toHaveAttribute("data-icon", "file");
+                },
+                { timeout: 2000, interval: 10 } // Optimized: reduced timeout and faster polling
+            );
+
             const customCursor = document.querySelector(
                 `[data-testid="visual-builder__cursor"]`
             );
-
             expect(customCursor).toHaveAttribute("data-icon", "file");
             expect(customCursor?.classList.contains("visible")).toBeTruthy();
         });
