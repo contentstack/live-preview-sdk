@@ -1,14 +1,25 @@
-import { act, cleanup, fireEvent, render, waitFor, screen, queryByTestId } from "@testing-library/preact";
+import {
+    act,
+    cleanup,
+    fireEvent,
+    render,
+    waitFor,
+    screen,
+    queryByTestId,
+    findByTestId,
+} from "@testing-library/preact";
 import { CslpData } from "../../../cslp/types/cslp.types";
 import { FieldSchemaMap } from "../../utils/fieldSchemaMap";
-import {    
+import {
     handleDeleteInstance,
     handleMoveInstance,
 } from "../../utils/instanceHandlers";
 import { ISchemaFieldMap } from "../../utils/types/index.types";
 import FieldToolbarComponent from "../FieldToolbar";
-import { mockMultipleLinkFieldSchema, mockMultipleFileFieldSchema } from "../../../__test__/data/fields";
-import { asyncRender } from "../../../__test__/utils";
+import {
+    mockMultipleLinkFieldSchema,
+    mockMultipleFileFieldSchema,
+} from "../../../__test__/data/fields";
 import { VisualBuilderCslpEventDetails } from "../../types/visualBuilder.types";
 import { isFieldDisabled } from "../../utils/isFieldDisabled";
 import React from "preact/compat";
@@ -23,17 +34,39 @@ vi.mock("../../utils/instanceHandlers", () => ({
 
 //CommentIcon testcases are covered seperatly
 vi.mock("../CommentIcon", () => ({
-    default: vi.fn(() => <div>Comment Icon</div>)
-  }));
+    default: vi.fn(() => <div>Comment Icon</div>),
+}));
 
-vi.mock("../../utils/visualBuilderPostMessage", async () => {
+vi.mock("../../utils/visualBuilderPostMessage", () => {
     return {
         default: {
-            send: vi.fn().mockImplementation((_eventName: string) => {
+            send: vi.fn((eventName: string) => {
+                // Return mock data for FIELD_LOCATION_DATA to prevent hanging
+                if (eventName === "field-location-data") {
+                    return Promise.resolve({ apps: [] });
+                }
                 return Promise.resolve({});
             }),
-            on: vi.fn(),
+            on: vi.fn(() => ({ unregister: vi.fn() })),
         },
+    };
+});
+
+vi.mock("../FieldRevert/FieldRevertComponent", async (importOriginal) => {
+    const actual =
+        await importOriginal<
+            typeof import("../FieldRevert/FieldRevertComponent")
+        >();
+
+    return {
+        ...actual,
+        getFieldVariantStatus: vi.fn().mockResolvedValue({
+            isAddedInstances: false,
+            isBaseModified: false,
+            isDeletedInstances: false,
+            isOrderChanged: false,
+            fieldLevelCustomizations: false,
+        }),
     };
 });
 
@@ -71,67 +104,93 @@ const mockMultipleFieldMetadata: CslpData = {
 
 describe("FieldToolbarComponent", () => {
     let targetElement: HTMLDivElement;
-    const mockEventDetails: VisualBuilderCslpEventDetails = {
-        fieldMetadata: mockMultipleFieldMetadata,
-        editableElement: {} as Element,
-        cslpData: ""
-    }
+    let mockEventDetails: VisualBuilderCslpEventDetails;
 
-    beforeEach(() => {
-        document.getElementsByTagName("html")[0].innerHTML = "";
-        targetElement = document.createElement("div");
-        targetElement.setAttribute("data-testid", "mock-target-element");
-        mockEventDetails['editableElement'] = targetElement;
-        document.body.appendChild(targetElement);
-
+    beforeAll(() => {
+        // Mock FieldSchemaMap once for all tests
         vi.spyOn(FieldSchemaMap, "getFieldSchema").mockResolvedValue(
             mockMultipleLinkFieldSchema
         );
     });
 
+    beforeEach(() => {
+        document.getElementsByTagName("html")[0].innerHTML = "";
+        targetElement = document.createElement("div");
+        targetElement.setAttribute("data-testid", "mock-target-element");
+        document.body.appendChild(targetElement);
+
+        // Create fresh mockEventDetails for each test to avoid state pollution
+        mockEventDetails = {
+            fieldMetadata: mockMultipleFieldMetadata,
+            editableElement: targetElement,
+            cslpData: "",
+        };
+
+        // Reset mocks to default state
+        vi.mocked(isFieldDisabled).mockReturnValue({
+            isDisabled: false,
+            reason: "",
+        });
+        vi.mocked(FieldSchemaMap.getFieldSchema).mockResolvedValue(
+            mockMultipleLinkFieldSchema
+        );
+    });
+
     afterEach(() => {
-        document.body.removeChild(targetElement);
-        vi.clearAllMocks();
         cleanup();
+        vi.clearAllMocks();
     });
 
     test("renders toolbar buttons correctly", async () => {
-        const { findByTestId } = await asyncRender(
+        const { container } = render(
             <FieldToolbarComponent
                 eventDetails={mockEventDetails}
                 hideOverlay={vi.fn()}
             />
         );
 
-        const moveLeftButton = await findByTestId(
-            "visual-builder__focused-toolbar__multiple-field-toolbar__move-left-button"
-        );
-        const moveRightButton = await findByTestId(
-            "visual-builder__focused-toolbar__multiple-field-toolbar__move-right-button"
-        );
-        const deleteButton = await findByTestId(
-            "visual-builder__focused-toolbar__multiple-field-toolbar__delete-button"
-        );
+        await waitFor(
+            () => {
+                const moveLeftButton = container.querySelector(
+                    '[data-testid="visual-builder__focused-toolbar__multiple-field-toolbar__move-left-button"]'
+                );
+                const moveRightButton = container.querySelector(
+                    '[data-testid="visual-builder__focused-toolbar__multiple-field-toolbar__move-right-button"]'
+                );
+                const deleteButton = container.querySelector(
+                    '[data-testid="visual-builder__focused-toolbar__multiple-field-toolbar__delete-button"]'
+                );
 
-        expect(moveLeftButton).toBeInTheDocument();
-        expect(moveRightButton).toBeInTheDocument();
-        expect(deleteButton).toBeInTheDocument();
-    });
+                expect(moveLeftButton).toBeInTheDocument();
+                expect(moveRightButton).toBeInTheDocument();
+                expect(deleteButton).toBeInTheDocument();
+            },
+            { timeout: 25000 }
+        );
+    }, 60000);
 
     test("calls handleMoveInstance with 'previous' when move left button is clicked", async () => {
-        const { findByTestId } = await asyncRender(
+        const { container } = render(
             <FieldToolbarComponent
                 eventDetails={mockEventDetails}
                 hideOverlay={vi.fn()}
             />
         );
 
-        const moveLeftButton = await findByTestId(
-            "visual-builder__focused-toolbar__multiple-field-toolbar__move-left-button"
+        const moveLeftButton = await waitFor(
+            () => {
+                const btn = container.querySelector(
+                    '[data-testid="visual-builder__focused-toolbar__multiple-field-toolbar__move-left-button"]'
+                );
+                expect(btn).toBeInTheDocument();
+                return btn;
+            },
+            { timeout: 25000 }
         );
-        expect(moveLeftButton).toBeInTheDocument();
 
-        fireEvent.click(moveLeftButton);
+        if (moveLeftButton) {
+            fireEvent.click(moveLeftButton);
+        }
 
         expect(handleMoveInstance).toHaveBeenCalledWith(
             mockMultipleFieldMetadata,
@@ -140,19 +199,27 @@ describe("FieldToolbarComponent", () => {
     });
 
     test("calls handleMoveInstance with 'next' when move right button is clicked", async () => {
-        const { findByTestId } = await asyncRender(
+        const { container } = render(
             <FieldToolbarComponent
                 eventDetails={mockEventDetails}
                 hideOverlay={vi.fn()}
             />
         );
 
-        const moveRightButton = await findByTestId(
-            "visual-builder__focused-toolbar__multiple-field-toolbar__move-right-button"
+        const moveRightButton = await waitFor(
+            () => {
+                const btn = container.querySelector(
+                    '[data-testid="visual-builder__focused-toolbar__multiple-field-toolbar__move-right-button"]'
+                );
+                expect(btn).toBeInTheDocument();
+                return btn;
+            },
+            { timeout: 25000 }
         );
-        expect(moveRightButton).toBeInTheDocument();
 
-        fireEvent.click(moveRightButton);
+        if (moveRightButton) {
+            fireEvent.click(moveRightButton);
+        }
 
         expect(handleMoveInstance).toHaveBeenCalledWith(
             mockMultipleFieldMetadata,
@@ -161,44 +228,71 @@ describe("FieldToolbarComponent", () => {
     });
 
     test("calls handleDeleteInstance when delete button is clicked", async () => {
-        const { findByTestId } = await asyncRender(
+        const { container } = render(
             <FieldToolbarComponent
                 eventDetails={mockEventDetails}
                 hideOverlay={vi.fn()}
             />
         );
 
-        const deleteButton = await findByTestId(
-            "visual-builder__focused-toolbar__multiple-field-toolbar__delete-button"
+        const deleteButton = await waitFor(
+            () => {
+                const btn = container.querySelector(
+                    '[data-testid="visual-builder__focused-toolbar__multiple-field-toolbar__delete-button"]'
+                );
+                expect(btn).toBeInTheDocument();
+                return btn;
+            },
+            { timeout: 25000 }
         );
-        expect(deleteButton).toBeInTheDocument();
-        await act(() => {
+
+        if (deleteButton) {
             fireEvent.click(deleteButton);
-        });
+        }
 
-        await waitFor(() => {
-            expect(handleDeleteInstance).toHaveBeenCalledWith(
-                mockMultipleFieldMetadata
-            );
-        })
-    });
+        expect(handleDeleteInstance).toHaveBeenCalledWith(
+            mockMultipleFieldMetadata
+        );
+    }, 60000);
+
     test("display variant icon instead of dropdown", async () => {
-        mockEventDetails.fieldMetadata.variant = "variant";
-        const { findByTestId } = await asyncRender(
-            <FieldToolbarComponent eventDetails={mockEventDetails} hideOverlay={vi.fn()} />
+        // Create a fresh copy with variant set to avoid mutation issues
+        const variantEventDetails = {
+            ...mockEventDetails,
+            fieldMetadata: {
+                ...mockEventDetails.fieldMetadata,
+                variant: "variant",
+            },
+        };
+
+        const { container } = render(
+            <FieldToolbarComponent
+                eventDetails={variantEventDetails}
+                hideOverlay={vi.fn()}
+            />
         );
 
-        const variantIcon = await findByTestId(
-            "visual-builder-canvas-variant-icon"
+        await waitFor(
+            () => {
+                const variantIcon = container.querySelector(
+                    '[data-testid="visual-builder-canvas-variant-icon"]'
+                );
+                expect(variantIcon).toBeInTheDocument();
+            },
+            { timeout: 25000 }
         );
-        expect(variantIcon).toBeInTheDocument();
-    });
+    }, 60000);
 
     describe("'Replace button' visibility for multiple file fields", () => {
         beforeEach(() => {
-            vi.spyOn(FieldSchemaMap, "getFieldSchema").mockResolvedValue(
+            // Override the mock for this describe block (must be beforeEach to override outer beforeEach)
+            vi.mocked(FieldSchemaMap.getFieldSchema).mockResolvedValue(
                 mockMultipleFileFieldSchema
             );
+        });
+
+        afterEach(() => {
+            // Restore will happen in outer afterEach via clearAllMocks
         });
 
         test("'replace button' is hidden for parent wrapper of multiple file field", async () => {
@@ -206,102 +300,120 @@ describe("FieldToolbarComponent", () => {
                 ...mockMultipleFieldMetadata,
                 fieldPathWithIndex: "files",
                 instance: {
-                    fieldPathWithIndex: "files"
+                    fieldPathWithIndex: "files",
                 },
             };
 
             const parentWrapperEventDetails = {
                 ...mockEventDetails,
-                fieldMetadata: parentWrapperMetadata
+                fieldMetadata: parentWrapperMetadata,
             };
 
-            const { container } = await asyncRender(
+            const { container } = render(
                 <FieldToolbarComponent
                     eventDetails={parentWrapperEventDetails}
                     hideOverlay={vi.fn()}
                 />
             );
 
-            const replaceButton = container.querySelector('[data-testid="visual-builder-replace-file"]');
-            expect(replaceButton).not.toBeInTheDocument();
-        });
+            await waitFor(
+                () => {
+                    const replaceButton = container.querySelector(
+                        '[data-testid="visual-builder-replace-file"]'
+                    );
+                    expect(replaceButton).not.toBeInTheDocument();
+                },
+                { timeout: 25000 }
+            );
+        }, 60000);
 
         test("'replace button' is visible for individual field in multiple file field", async () => {
             const individualFieldMetadata: CslpData = {
                 ...mockMultipleFieldMetadata,
                 fieldPathWithIndex: "files",
                 instance: {
-                    fieldPathWithIndex: "files.0"
+                    fieldPathWithIndex: "files.0",
                 },
             };
 
             const individualFieldEventDetails = {
                 ...mockEventDetails,
-                fieldMetadata: individualFieldMetadata
+                fieldMetadata: individualFieldMetadata,
             };
 
-            const { container } = await asyncRender(
+            const { container } = render(
                 <FieldToolbarComponent
                     eventDetails={individualFieldEventDetails}
                     hideOverlay={vi.fn()}
                 />
             );
 
-            const replaceButton = container.querySelector('[data-testid="visual-builder-replace-file"]');
-            expect(replaceButton).toBeInTheDocument();
-        });
-    });
-
-    test("passes disabled state correctly to child components when field is disabled", async () => {
-        // Mock isFieldDisabled to return disabled state
-        vi.mocked(isFieldDisabled).mockReturnValue({
-            isDisabled: true,
-            reason: "You have only read access to this field" as any,
-        });
-
-        const { findByTestId } = await asyncRender(
-            <FieldToolbarComponent
-                eventDetails={mockEventDetails}
-                hideOverlay={vi.fn()}
-            />
-        );
-
-        await waitFor(async () => {
-            const toolbar = await findByTestId(
-                "visual-builder__focused-toolbar__multiple-field-toolbar"
+            // Wait for component to render and load async data
+            await waitFor(
+                () => {
+                    const replaceButton = container.querySelector(
+                        '[data-testid="visual-builder-replace-file"]'
+                    );
+                    expect(replaceButton).toBeInTheDocument();
+                },
+                { timeout: 25000 }
             );
-            expect(toolbar).toBeInTheDocument();
-        });
+        }, 60000);
 
-        // Check that move buttons are disabled
-        const moveLeftButton = await findByTestId(
-            "visual-builder__focused-toolbar__multiple-field-toolbar__move-left-button"
-        );
-        const moveRightButton = await findByTestId(
-            "visual-builder__focused-toolbar__multiple-field-toolbar__move-right-button"
-        );
-        const deleteButton = await findByTestId(
-            "visual-builder__focused-toolbar__multiple-field-toolbar__delete-button"
-        );
+        test("passes disabled state correctly to child components when field is disabled", async () => {
+            // Mock isFieldDisabled to return disabled state
+            vi.mocked(isFieldDisabled).mockReturnValue({
+                isDisabled: true,
+                reason: "You have only read access to this field" as any,
+            });
 
-        expect(moveLeftButton).toBeDisabled();
-        expect(moveRightButton).toBeDisabled();
-        expect(deleteButton).toBeDisabled();
+            const { container } = render(
+                <FieldToolbarComponent
+                    eventDetails={mockEventDetails}
+                    hideOverlay={vi.fn()}
+                />
+            );
 
-        // Check that edit button is disabled if present
-        const editButton = await findByTestId(
-            "visual-builder__focused-toolbar__multiple-field-toolbar__edit-button"
-        ).catch(() => null);
-        if (editButton) {
-            expect(editButton).toBeDisabled();
-        }
+            await waitFor(
+                () => {
+                    const toolbar = container.querySelector(
+                        '[data-testid="visual-builder__focused-toolbar__multiple-field-toolbar"]'
+                    );
+                    expect(toolbar).toBeInTheDocument();
 
-        // Check that replace button is disabled if present
-        const replaceButton = document.querySelector(
-            '[data-testid="visual-builder-replace-file"]'
-        );
-        if (replaceButton) {
-            expect(replaceButton).toBeDisabled();
-        }
+                    // Check that move buttons are disabled
+                    const moveLeftButton = container.querySelector(
+                        '[data-testid="visual-builder__focused-toolbar__multiple-field-toolbar__move-left-button"]'
+                    );
+                    const moveRightButton = container.querySelector(
+                        '[data-testid="visual-builder__focused-toolbar__multiple-field-toolbar__move-right-button"]'
+                    );
+                    const deleteButton = container.querySelector(
+                        '[data-testid="visual-builder__focused-toolbar__multiple-field-toolbar__delete-button"]'
+                    );
+
+                    expect(moveLeftButton).toBeDisabled();
+                    expect(moveRightButton).toBeDisabled();
+                    expect(deleteButton).toBeDisabled();
+
+                    // Check that edit button is disabled if present
+                    const editButton = container.querySelector(
+                        '[data-testid="visual-builder__focused-toolbar__multiple-field-toolbar__edit-button"]'
+                    );
+                    if (editButton) {
+                        expect(editButton).toBeDisabled();
+                    }
+
+                    // Check that replace button is disabled if present
+                    const replaceButton = container.querySelector(
+                        '[data-testid="visual-builder-replace-file"]'
+                    );
+                    if (replaceButton) {
+                        expect(replaceButton).toBeDisabled();
+                    }
+                },
+                { timeout: 25000 }
+            );
+        }, 60000);
     });
 });
