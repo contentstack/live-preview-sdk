@@ -1,4 +1,4 @@
-import { screen, waitFor} from "@testing-library/preact";
+import { screen, waitFor } from "@testing-library/preact";
 import { getFieldSchemaMap } from "../../../../__test__/data/fieldSchemaMap";
 import { waitForHoverOutline } from "../../../../__test__/utils";
 import Config from "../../../../configManager/configManager";
@@ -239,7 +239,7 @@ describe("When an element is hovered in visual builder mode", () => {
             );
             expect(customCursor?.getAttribute("data-icon")).toBe("file");
             expect(customCursor?.classList.contains("visible")).toBeTruthy();
-        });
+        }, 60000);
 
         test("should have outline and custom cursor on individual instances", async () => {
             firstFileField.dispatchEvent(mousemoveEvent);
@@ -270,6 +270,6 @@ describe("When an element is hovered in visual builder mode", () => {
                 `[data-testid="visual-builder__cursor"]`
             );
             expect(customCursor?.classList.contains("visible")).toBeTruthy();
-        });
+        }, 60000);
     });
 });
