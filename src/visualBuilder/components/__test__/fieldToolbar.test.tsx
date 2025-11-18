@@ -237,7 +237,7 @@ describe("FieldToolbarComponent", () => {
         expect(handleDeleteInstance).toHaveBeenCalledWith(
             mockMultipleFieldMetadata
         );
-    }, 30000);
+    });
 
     test("display variant icon instead of dropdown", async () => {
         // Create a fresh copy with variant set to avoid mutation issues
