@@ -7,6 +7,7 @@ import {
     screen,
     queryByTestId,
     findByTestId,
+    findAllByTestId,
 } from "@testing-library/preact";
 import { CslpData } from "../../../cslp/types/cslp.types";
 import { FieldSchemaMap } from "../../utils/fieldSchemaMap";
@@ -149,25 +150,26 @@ describe("FieldToolbarComponent", () => {
             />
         );
 
-        await waitFor(
-            () => {
-                const moveLeftButton = container.querySelector(
-                    '[data-testid="visual-builder__focused-toolbar__multiple-field-toolbar__move-left-button"]'
-                );
-                const moveRightButton = container.querySelector(
-                    '[data-testid="visual-builder__focused-toolbar__multiple-field-toolbar__move-right-button"]'
-                );
-                const deleteButton = container.querySelector(
-                    '[data-testid="visual-builder__focused-toolbar__multiple-field-toolbar__delete-button"]'
-                );
-
-                expect(moveLeftButton).toBeInTheDocument();
-                expect(moveRightButton).toBeInTheDocument();
-                expect(deleteButton).toBeInTheDocument();
-            },
-            { timeout: 25000 }
+        // Use findByTestId which is optimized for async elements
+        await findByTestId(
+            container as HTMLElement,
+            "visual-builder__focused-toolbar__multiple-field-toolbar__move-left-button",
+            {},
+            { timeout: 20000 }
         );
-    }, 60000);
+        await findByTestId(
+            container as HTMLElement,
+            "visual-builder__focused-toolbar__multiple-field-toolbar__move-right-button",
+            {},
+            { timeout: 20000 }
+        );
+        await findByTestId(
+            container as HTMLElement,
+            "visual-builder__focused-toolbar__multiple-field-toolbar__delete-button",
+            {},
+            { timeout: 20000 }
+        );
+    }, 30000);
 
     test("calls handleMoveInstance with 'previous' when move left button is clicked", async () => {
         const { container } = render(
@@ -177,26 +179,20 @@ describe("FieldToolbarComponent", () => {
             />
         );
 
-        const moveLeftButton = await waitFor(
-            () => {
-                const btn = container.querySelector(
-                    '[data-testid="visual-builder__focused-toolbar__multiple-field-toolbar__move-left-button"]'
-                );
-                expect(btn).toBeInTheDocument();
-                return btn;
-            },
-            { timeout: 25000 }
-        );
+        const moveLeftButton = (await findByTestId(
+            container as HTMLElement,
+            "visual-builder__focused-toolbar__multiple-field-toolbar__move-left-button",
+            {},
+            { timeout: 20000 }
+        )) as HTMLElement;
 
-        if (moveLeftButton) {
-            fireEvent.click(moveLeftButton);
-        }
+        fireEvent.click(moveLeftButton);
 
         expect(handleMoveInstance).toHaveBeenCalledWith(
             mockMultipleFieldMetadata,
             "previous"
         );
-    });
+    }, 30000);
 
     test("calls handleMoveInstance with 'next' when move right button is clicked", async () => {
         const { container } = render(
@@ -206,26 +202,20 @@ describe("FieldToolbarComponent", () => {
             />
         );
 
-        const moveRightButton = await waitFor(
-            () => {
-                const btn = container.querySelector(
-                    '[data-testid="visual-builder__focused-toolbar__multiple-field-toolbar__move-right-button"]'
-                );
-                expect(btn).toBeInTheDocument();
-                return btn;
-            },
-            { timeout: 25000 }
-        );
+        const moveRightButton = (await findByTestId(
+            container as HTMLElement,
+            "visual-builder__focused-toolbar__multiple-field-toolbar__move-right-button",
+            {},
+            { timeout: 20000 }
+        )) as HTMLElement;
 
-        if (moveRightButton) {
-            fireEvent.click(moveRightButton);
-        }
+        fireEvent.click(moveRightButton);
 
         expect(handleMoveInstance).toHaveBeenCalledWith(
             mockMultipleFieldMetadata,
             "next"
         );
-    });
+    }, 30000);
 
     test("calls handleDeleteInstance when delete button is clicked", async () => {
         const { container } = render(
@@ -235,25 +225,19 @@ describe("FieldToolbarComponent", () => {
             />
         );
 
-        const deleteButton = await waitFor(
-            () => {
-                const btn = container.querySelector(
-                    '[data-testid="visual-builder__focused-toolbar__multiple-field-toolbar__delete-button"]'
-                );
-                expect(btn).toBeInTheDocument();
-                return btn;
-            },
-            { timeout: 25000 }
-        );
+        const deleteButton = (await findByTestId(
+            container as HTMLElement,
+            "visual-builder__focused-toolbar__multiple-field-toolbar__delete-button",
+            {},
+            { timeout: 20000 }
+        )) as HTMLElement;
 
-        if (deleteButton) {
-            fireEvent.click(deleteButton);
-        }
+        fireEvent.click(deleteButton);
 
         expect(handleDeleteInstance).toHaveBeenCalledWith(
             mockMultipleFieldMetadata
         );
-    }, 60000);
+    }, 30000);
 
     test("display variant icon instead of dropdown", async () => {
         // Create a fresh copy with variant set to avoid mutation issues
@@ -272,16 +256,13 @@ describe("FieldToolbarComponent", () => {
             />
         );
 
-        await waitFor(
-            () => {
-                const variantIcon = container.querySelector(
-                    '[data-testid="visual-builder-canvas-variant-icon"]'
-                );
-                expect(variantIcon).toBeInTheDocument();
-            },
-            { timeout: 25000 }
+        await findByTestId(
+            container as HTMLElement,
+            "visual-builder-canvas-variant-icon",
+            {},
+            { timeout: 20000 }
         );
-    }, 60000);
+    }, 30000);
 
     describe("'Replace button' visibility for multiple file fields", () => {
         beforeEach(() => {
