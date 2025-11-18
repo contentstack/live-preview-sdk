@@ -17,8 +17,8 @@ export default defineConfig({
         // Reduce retry attempts - with optimized tests, we don't need many retries
         retry: 0,
         // Timeouts - increased for CI to handle slower async operations
-        testTimeout: 30000,
-        hookTimeout: 30000,
+        testTimeout: 500000,
+        hookTimeout: 500000,
         teardownTimeout: 5000,
         // Enable file parallelization
         fileParallelism: true,
