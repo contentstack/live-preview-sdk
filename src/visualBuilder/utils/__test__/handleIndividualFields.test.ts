@@ -1,11 +1,17 @@
 import { describe, it, expect, vi, beforeEach, Mock } from "vitest";
-import { handleIndividualFields, cleanIndividualFieldResidual } from "../handleIndividualFields";
+import {
+    handleIndividualFields,
+    cleanIndividualFieldResidual,
+} from "../handleIndividualFields";
 import { VisualBuilderCslpEventDetails } from "../../types/visualBuilder.types";
 import { FieldSchemaMap } from "../fieldSchemaMap";
 import { getFieldData } from "../getFieldData";
 import { getFieldType } from "../getFieldType";
 import { isFieldDisabled } from "../isFieldDisabled";
-import { handleAddButtonsForMultiple, removeAddInstanceButtons } from "../multipleElementAddButton";
+import {
+    handleAddButtonsForMultiple,
+    removeAddInstanceButtons,
+} from "../multipleElementAddButton";
 import { VisualBuilderPostMessageEvents } from "../types/postMessage.types";
 import visualBuilderPostMessage from "../visualBuilderPostMessage";
 import { VisualBuilder } from "../..";
@@ -39,16 +45,16 @@ describe("handleIndividualFields", () => {
                 fieldPath: "fieldPath",
                 fieldPathWithIndex: "fieldPathWithIndex",
                 instance: {
-                    fieldPathWithIndex: "fieldPathWithIndex.0"
-                }
+                    fieldPathWithIndex: "fieldPathWithIndex.0",
+                },
             },
-            editableElement: document.createElement("div")
+            editableElement: document.createElement("div"),
         };
 
         elements = {
             visualBuilderContainer: document.createElement("div"),
             resizeObserver: new ResizeObserver(() => {}),
-            lastEditedField: null
+            lastEditedField: null,
         };
 
         vi.clearAllMocks();
@@ -69,30 +75,46 @@ describe("handleIndividualFields", () => {
             await handleIndividualFields(eventDetails, elements);
         });
 
-        expect(FieldSchemaMap.getFieldSchema).toHaveBeenCalledWith("contentTypeUid", "fieldPath");
-        expect(getFieldData).toHaveBeenCalledWith({ content_type_uid: "contentTypeUid", entry_uid: "entryUid", locale: "en-us" }, "fieldPathWithIndex");
+        expect(FieldSchemaMap.getFieldSchema).toHaveBeenCalledWith(
+            "contentTypeUid",
+            "fieldPath"
+        );
+        expect(getFieldData).toHaveBeenCalledWith(
+            {
+                content_type_uid: "contentTypeUid",
+                entry_uid: "entryUid",
+                locale: "en-us",
+            },
+            "fieldPathWithIndex"
+        );
         expect(getFieldType).toHaveBeenCalledWith(fieldSchema);
         expect(isFieldDisabled).toHaveBeenCalledWith(
-          fieldSchema, 
-          eventDetails, 
-          {
-            read: true,
-            update: true,
-            delete: true,
-            publish: true,
-          },
-          {
-            permissions: {
-                entry: {
-                    update: true,
-                },
+            fieldSchema,
+            eventDetails,
+            {
+                update: true,
             },
-            stage: {
-                name: "Unknown"
+            {
+                create: true,
+                read: true,
+                update: true,
+                delete: true,
+                publish: true,
+            },
+            {
+                permissions: {
+                    entry: {
+                        update: true,
+                    },
+                },
+                stage: undefined,
             }
-          }
         );
-        expect(eventDetails.editableElement.getAttribute(VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY)).toBe(fieldType);
+        expect(
+            eventDetails.editableElement.getAttribute(
+                VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
+            )
+        ).toBe(fieldType);
     });
 
     it("should handle multiple fields correctly", async () => {
@@ -112,7 +134,10 @@ describe("handleIndividualFields", () => {
     });
 
     it("should handle inline editing for supported fields", async () => {
-        const fieldSchema = { data_type: FieldDataType.SINGLELINE, multiple: false };
+        const fieldSchema = {
+            data_type: FieldDataType.SINGLELINE,
+            multiple: false,
+        };
         const expectedFieldData = "expectedFieldData";
         eventDetails.editableElement.textContent = expectedFieldData;
         const fieldType = FieldDataType.SINGLELINE;
@@ -125,12 +150,17 @@ describe("handleIndividualFields", () => {
 
         await act(async () => {
             await handleIndividualFields(eventDetails, elements);
-        })
+        });
 
-        expect(eventDetails.editableElement.getAttribute(VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY)).toBe(fieldType);
-        expect(eventDetails.editableElement.getAttribute("contenteditable")).toBe("true");
+        expect(
+            eventDetails.editableElement.getAttribute(
+                VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
+            )
+        ).toBe(fieldType);
+        expect(
+            eventDetails.editableElement.getAttribute("contenteditable")
+        ).toBe("true");
     });
-
 });
 
 describe("cleanIndividualFieldResidual", () => {
@@ -146,7 +176,7 @@ describe("cleanIndividualFieldResidual", () => {
             overlayWrapper: document.createElement("div"),
             visualBuilderContainer: document.createElement("div"),
             focusedToolbar: document.createElement("div"),
-            resizeObserver: new ResizeObserver(() => {})
+            resizeObserver: new ResizeObserver(() => {}),
         };
 
         vi.clearAllMocks();
@@ -154,37 +184,51 @@ describe("cleanIndividualFieldResidual", () => {
 
     it("should clean individual field residuals correctly", () => {
         const previousSelectedEditableDOM = document.createElement("div");
-        VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM = previousSelectedEditableDOM;
+        VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
+            previousSelectedEditableDOM;
 
         cleanIndividualFieldResidual(elements);
 
         expect(removeAddInstanceButtons).toHaveBeenCalled();
-        expect(previousSelectedEditableDOM.getAttribute("contenteditable")).toBeNull();
-        expect(elements.resizeObserver.unobserve).toHaveBeenCalledWith(previousSelectedEditableDOM);
+        expect(
+            previousSelectedEditableDOM.getAttribute("contenteditable")
+        ).toBeNull();
+        expect(elements.resizeObserver.unobserve).toHaveBeenCalledWith(
+            previousSelectedEditableDOM
+        );
     });
 
     it("should clean pseudo editable element correctly", () => {
         const pseudoEditableElement = document.createElement("div");
-        pseudoEditableElement.classList.add("visual-builder__pseudo-editable-element");
+        pseudoEditableElement.classList.add(
+            "visual-builder__pseudo-editable-element"
+        );
         elements.visualBuilderContainer?.appendChild(pseudoEditableElement);
 
         cleanIndividualFieldResidual(elements);
 
-        expect(elements.resizeObserver.unobserve).toHaveBeenCalledWith(pseudoEditableElement);
+        expect(elements.resizeObserver.unobserve).toHaveBeenCalledWith(
+            pseudoEditableElement
+        );
         expect(pseudoEditableElement.parentNode).toBeNull();
     });
-it("should clean focused toolbar correctly", () => {
-    cleanIndividualFieldResidual(elements);
+    it("should clean focused toolbar correctly", () => {
+        cleanIndividualFieldResidual(elements);
 
-    expect(elements.focusedToolbar?.innerHTML).toBe("");
+        expect(elements.focusedToolbar?.innerHTML).toBe("");
 
-    const toolbarEvents = [VisualBuilderPostMessageEvents.DELETE_INSTANCE, VisualBuilderPostMessageEvents.UPDATE_DISCUSSION_ID];
-    toolbarEvents.forEach((event) => {
-        //@ts-expect-error - We are accessing private method here, but it is necessary to clean up the event listeners.
-        if (visualBuilderPostMessage?.requestMessageHandlers?.has(event)) {
+        const toolbarEvents = [
+            VisualBuilderPostMessageEvents.DELETE_INSTANCE,
+            VisualBuilderPostMessageEvents.UPDATE_DISCUSSION_ID,
+        ];
+        toolbarEvents.forEach((event) => {
             //@ts-expect-error - We are accessing private method here, but it is necessary to clean up the event listeners.
-            expect(visualBuilderPostMessage?.unregisterEvent).toHaveBeenCalledWith(event);
-        }
+            if (visualBuilderPostMessage?.requestMessageHandlers?.has(event)) {
+                //@ts-expect-error - We are accessing private method here, but it is necessary to clean up the event listeners.
+                expect(
+                    visualBuilderPostMessage?.unregisterEvent
+                ).toHaveBeenCalledWith(event);
+            }
+        });
     });
-});
 });
