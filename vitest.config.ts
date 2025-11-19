@@ -39,12 +39,14 @@ export default defineConfig({
             // This makes coverage 3x faster by skipping unused files
             all: false,
             clean: false,
+            // Explicitly set coverage output directory
+            reportsDirectory: "./coverage",
             // Use minimal reporters in CI for speed - only what's needed
             reporter: process.env.CI
                 ? ["json-summary", "json"] // Minimal: only json-summary for CI action, json for artifacts
                 : ["text", "html"], // Full reports locally
-            // Skip coverage for files with 0% coverage to speed up reporting
-            reportOnFailure: false,
+            // Generate coverage even on test failures (needed for CI)
+            reportOnFailure: true,
         },
         globals: true,
         setupFiles: "./vitest.setup.ts",

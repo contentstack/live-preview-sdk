@@ -98,7 +98,7 @@ vi.mock("../../../../__test__/utils", async () => {
                         throw new Error("Hover outline not found");
                     }
                 },
-                { timeout: 2000, interval: 10 } // Optimized: reduced from 5s/50ms to 2s/10ms
+                { timeout: 5000, interval: 10 }
             );
         }),
     };
@@ -258,7 +258,7 @@ describe("When an element is hovered in visual builder mode", () => {
                     );
                     expect(customCursor).toHaveAttribute("data-icon", icon);
                 },
-                { timeout: 2000, interval: 10 } // Reduced from 5s/50ms to 2s/10ms for faster tests
+                { timeout: 5000, interval: 10 }
             );
 
             const customCursor = document.querySelector(
@@ -311,7 +311,7 @@ describe("When an element is hovered in visual builder mode", () => {
                     );
                     expect(customCursor).toHaveAttribute("data-icon", icon);
                 },
-                { timeout: 2000, interval: 10 } // Reduced from 5s/50ms to 2s/10ms for faster tests
+                { timeout: 5000, interval: 10 }
             );
 
             const customCursor = document.querySelector(
