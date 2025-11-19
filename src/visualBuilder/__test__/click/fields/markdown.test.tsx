@@ -128,7 +128,7 @@ describe("When an element is clicked in visual builder mode", () => {
 
             // Check that overlay elements exist
             const overlay = document.querySelector(".visual-builder__overlay");
-            expect(overlay).not.toBeNull();
+            expect(overlay!.classList.contains("visible"));
         });
 
         test("should have a field path dropdown", () => {
@@ -219,7 +219,7 @@ describe("When an element is clicked in visual builder mode", () => {
 
             // Check that overlay elements exist
             const overlay = document.querySelector(".visual-builder__overlay");
-            expect(overlay).not.toBeNull();
+            expect(overlay!.classList.contains("visible"));
         });
 
         test("should have a field path dropdown", () => {
