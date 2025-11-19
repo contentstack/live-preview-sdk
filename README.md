@@ -1,3 +1,11 @@
+## Running tests
+
+- `npm test` (CI default) runs `vitest --run`, which enables the profiler output and avoids watch mode.
+- `npm run test:watch` keeps the previous watch experience for local TDD.
+- `npm run test:fast` executes every suite except the heavy visual-builder UI files.
+- `npm run test:ui-heavy` runs only the slow hover/tooling suites so they can be started in parallel CI jobs, as suggested in [BuildPulse’s Vitest guide](https://buildpulse.io/blog/how-to-speed-up-vitest).
+
+> **CI tip:** ensure your workflow step calls `npm test` (or `npx vitest run ...`) so the custom `vitest.reporter.ts` can print the profiling summary; watch mode never calls the reporter’s `onFinished`.
 # Contentstack Live Preview Utils SDK
 
 Contentstack is a headless CMS with an API-first approach. It is a CMS that developers can use to build powerful cross-platform applications in their favorite languages. Build your application frontend, and Contentstack will take care of the rest.
