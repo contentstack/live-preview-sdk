@@ -43,7 +43,7 @@ export const waitForHoverOutline = async () => {
         );
         expect(hoverOutline).not.toBeNull();
     });
-};
+}
 export const waitForBuilderSDKToBeInitialized = async (visualBuilderPostMessage: EventManager | undefined) => {
     await waitFor(() => {
         expect(visualBuilderPostMessage?.send).toBeCalledWith(
@@ -62,7 +62,7 @@ export const triggerAndWaitForClickAction = async (visualBuilderPostMessage: Eve
     })
     if(!skipWaitForFieldType) {
         await waitFor(() => {
-            expect(element).toHaveAttribute("data-cslp-field-type");
+            expect(element).toHaveAttribute("data-cslp-field-type")
         })
     }
 }
@@ -72,7 +72,7 @@ export const waitForToolbaxToBeVisible = async () => {
             ".visual-builder__focused-toolbar__field-label-container"
         );
         expect(toolbar).not.toBeNull();
-    })
+    });
 }
 const defaultRect = {
     left: 10,

@@ -94,25 +94,27 @@ Object.defineProperty(globalThis, "crypto", {
     },
 });
 // Increase the timeout for the test
-describe("Visual builder", () => {
-    beforeAll(() => {
-        FieldSchemaMap.setFieldSchema(
-            "all_fields",
-            getFieldSchemaMap().all_fields
-        );
-        Config.set("mode", 2);
-        vi.spyOn(
-            document.documentElement,
-            "clientWidth",
-            "get"
-        ).mockReturnValue(100);
-        vi.spyOn(
-            document.documentElement,
-            "clientHeight",
-            "get"
-        ).mockReturnValue(100);
-        vi.spyOn(document.body, "scrollHeight", "get").mockReturnValue(100);
-    });
+describe(
+    "Visual builder",
+    () => {
+        beforeAll(() => {
+            FieldSchemaMap.setFieldSchema(
+                "all_fields",
+                getFieldSchemaMap().all_fields
+            );
+            Config.set("mode", 2);
+            vi.spyOn(
+                document.documentElement,
+                "clientWidth",
+                "get"
+            ).mockReturnValue(100);
+            vi.spyOn(
+                document.documentElement,
+                "clientHeight",
+                "get"
+            ).mockReturnValue(100);
+            vi.spyOn(document.body, "scrollHeight", "get").mockReturnValue(100);
+        });
 
     beforeEach(() => {
         vi.clearAllMocks();
@@ -139,7 +141,9 @@ describe("Visual builder", () => {
         );
 
         expect(
-            document.querySelector('[data-testid="visual-builder__cursor"]')
+            document.querySelector(
+                '[data-testid="visual-builder__cursor"]'
+            )
         ).toBeInTheDocument();
         expect(
             document.querySelector(
@@ -159,7 +163,9 @@ describe("Visual builder", () => {
         x.destroy();
     });
 
-    test("should add overlay to DOM when clicked", async () => {
+    test(
+        "should add overlay to DOM when clicked", 
+        async () => {
         const h1Tag = document.createElement("h1");
         h1Tag.textContent = INLINE_EDITABLE_FIELD_VALUE;
         h1Tag.setAttribute(
