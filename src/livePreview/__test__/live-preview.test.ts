@@ -9,7 +9,7 @@ import { getDefaultConfig } from "../../configManager/config.default";
 import Config from "../../configManager/configManager";
 import { PublicLogger } from "../../logger/logger";
 import { ILivePreviewWindowType } from "../../types/types";
-import { addLivePreviewQueryTags } from "../../utils/addLivePreviewQueryTags";
+import { addLivePreviewQueryTags } from '../../utils/addLivePreviewQueryTags';
 import livePreviewPostMessage from "../eventManager/livePreviewEventManager";
 import { LIVE_PREVIEW_POST_MESSAGE_EVENTS } from "../eventManager/livePreviewEventManager.constant";
 import {
@@ -41,6 +41,7 @@ vi.mock("../../visualBuilder/utils/visualBuilderPostMessage", async () => {
         },
     };
 });
+
 
 Object.defineProperty(globalThis, "crypto", {
     value: {
@@ -442,32 +443,23 @@ describe("incoming postMessage", () => {
         vi.spyOn(window.history, "go").mockImplementation(() => {});
 
         // for forward
-        await livePreviewPostMessage?.send(
-            LIVE_PREVIEW_POST_MESSAGE_EVENTS.HISTORY,
-            {
-                type: "forward",
-            } as HistoryLivePreviewPostMessageEventData
-        );
+        await livePreviewPostMessage?.send(LIVE_PREVIEW_POST_MESSAGE_EVENTS.HISTORY, {
+            type: "forward",
+        } as HistoryLivePreviewPostMessageEventData);
 
         expect(window.history.forward).toHaveBeenCalled();
 
         // for back
-        await livePreviewPostMessage?.send(
-            LIVE_PREVIEW_POST_MESSAGE_EVENTS.HISTORY,
-            {
-                type: "backward",
-            } as HistoryLivePreviewPostMessageEventData
-        );
+        await livePreviewPostMessage?.send(LIVE_PREVIEW_POST_MESSAGE_EVENTS.HISTORY, {
+            type: "backward",
+        } as HistoryLivePreviewPostMessageEventData);
 
         expect(window.history.back).toHaveBeenCalled();
 
         // for reload
-        await livePreviewPostMessage?.send(
-            LIVE_PREVIEW_POST_MESSAGE_EVENTS.HISTORY,
-            {
-                type: "reload",
-            } as HistoryLivePreviewPostMessageEventData
-        );
+        await livePreviewPostMessage?.send(LIVE_PREVIEW_POST_MESSAGE_EVENTS.HISTORY, {
+            type: "reload",
+        } as HistoryLivePreviewPostMessageEventData);
 
         expect(window.history.go).toHaveBeenCalled();
     });
@@ -475,9 +467,7 @@ describe("incoming postMessage", () => {
 
 describe("testing window event listeners", () => {
     let addEventListenerMock: any;
-    const sendInitEvent = vi
-        .fn()
-        .mockImplementation(mockLivePreviewInitEventListener);
+    const sendInitEvent = vi.fn().mockImplementation(mockLivePreviewInitEventListener);
     let livePreviewInstance: LivePreview;
 
     beforeEach(() => {
@@ -518,9 +508,7 @@ describe("testing window event listeners", () => {
     });
 
     test("should attach a load event to call requestDataSync if document is not yet loaded", () => {
-        const readyState = vi
-            .spyOn(document, "readyState", "get")
-            .mockReturnValue("loading");
+        const readyState = vi.spyOn(document, "readyState", "get").mockReturnValue("loading");
 
         Config.replace({
             enable: true,
@@ -535,6 +523,7 @@ describe("testing window event listeners", () => {
         readyState.mockRestore();
     });
     test("should handle link click event if ssr is set to true", async () => {
+
         Config.replace({
             enable: true,
             ssr: true,
@@ -546,15 +535,13 @@ describe("testing window event listeners", () => {
 
         document.body.appendChild(targetElement);
         await act(async () => {
-            livePreviewInstance = new LivePreview();
+            livePreviewInstance = new LivePreview(); 
         });
         await waitFor(() => {
             expect(sendInitEvent).toBeCalled();
-        });
+        })
         await waitFor(() => {
-            expect(Config.get().stackDetails.contentTypeUid).toBe(
-                "contentTypeUid"
-            );
+            expect(Config.get().stackDetails.contentTypeUid).toBe("contentTypeUid");
         });
         await act(async () => {
             fireEvent.click(targetElement);
