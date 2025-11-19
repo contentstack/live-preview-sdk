@@ -8,9 +8,21 @@ export default defineConfig({
         },
         environment: "jsdom",
         coverage: {
+            provider: "v8",
+            exclude: [
+                "dist/**",
+                "build/**",
+                "**/*.d.ts",
+                "scripts/**",
+                "tests/**",
+                "**/*.stories.*",
+                "**/*.test.*",
+                "node_modules/**",
+            ],
             all: true,
-            reporter: ["text", "html", "clover", "json", "json-summary"],
-            reportOnFailure: true,
+            reporter: process.env.CI
+                ? ["clover", "html", "text-summary"] // CI-friendly + fast
+                : ["text"], // fastest locally
         },
         globals: true,
         setupFiles: "./vitest.setup.ts",
