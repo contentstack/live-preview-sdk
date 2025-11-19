@@ -508,7 +508,7 @@ describe("testing window event listeners", () => {
     });
 
     test("should attach a load event to call requestDataSync if document is not yet loaded", () => {
-        const readyState = vi.spyOn(document, "readyState", "get").mockReturnValue("loading");
+        const readyState = vi.spyOn(document, 'readyState', 'get').mockReturnValue('loading');
 
         Config.replace({
             enable: true,
@@ -541,8 +541,8 @@ describe("testing window event listeners", () => {
             expect(sendInitEvent).toBeCalled();
         })
         await waitFor(() => {
-            expect(Config.get().stackDetails.contentTypeUid).toBe("contentTypeUid");
-        });
+            expect(Config.get().stackDetails.contentTypeUid).toBe('contentTypeUid');
+        })
         await act(async () => {
             fireEvent.click(targetElement);
         });
