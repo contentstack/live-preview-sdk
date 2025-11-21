@@ -293,12 +293,24 @@ describe("When an element is hovered in visual builder mode", () => {
             );
             expect(hoverOutline).toHaveAttribute("style");
 
+            // Wait for cursor icon to be set (not "loading")
+            await waitFor(
+                () => {
+                    const customCursor = document.querySelector(
+                        `[data-testid="visual-builder__cursor"]`
+                    );
+                    if (!customCursor) throw new Error("Cursor not found");
+                    expect(customCursor.getAttribute("data-icon")).toBe("file");
+                },
+                { timeout: 2000, interval: 10 } // Optimized timeout
+            );
+
             const customCursor = document.querySelector(
                 `[data-testid="visual-builder__cursor"]`
             );
             expect(customCursor?.getAttribute("data-icon")).toBe("file");
             expect(customCursor?.classList.contains("visible")).toBeTruthy();
-        }, 60000);
+        });
 
         test("should have outline and custom cursor on individual instances", async () => {
             firstFileField.dispatchEvent(mousemoveEvent);
@@ -325,10 +337,23 @@ describe("When an element is hovered in visual builder mode", () => {
             ) as HTMLElement;
             expect(hoverOutline).toHaveAttribute("style");
             matchDimensions(firstImageField, hoverOutline);
+            
+            // Wait for cursor icon to be set (not "loading")
+            await waitFor(
+                () => {
+                    const customCursor = document.querySelector(
+                        `[data-testid="visual-builder__cursor"]`
+                    );
+                    if (!customCursor) throw new Error("Cursor not found");
+                    expect(customCursor.classList.contains("visible")).toBeTruthy();
+                },
+                { timeout: 2000, interval: 10 } // Optimized timeout
+            );
+
             const customCursor = document.querySelector(
                 `[data-testid="visual-builder__cursor"]`
             );
             expect(customCursor?.classList.contains("visible")).toBeTruthy();
-        }, 60000);
+        });
     });
 });

@@ -271,13 +271,25 @@ describe("When an element is hovered in visual builder mode", () => {
             );
             expect(hoverOutline).toHaveAttribute("style");
 
+            // Wait for cursor icon to be set (not "loading")
+            const { waitFor } = await import("@testing-library/preact");
+            await waitFor(
+                () => {
+                    const customCursor = document.querySelector(
+                        `[data-testid="visual-builder__cursor"]`
+                    );
+                    if (!customCursor) throw new Error("Cursor not found");
+                    expect(customCursor).toHaveAttribute("data-icon", "group");
+                },
+                { timeout: 2000, interval: 10 } // Optimized timeout
+            );
+
             const customCursor = document.querySelector(
                 `[data-testid="visual-builder__cursor"]`
             );
-
             expect(customCursor).toHaveAttribute("data-icon", "group");
             expect(customCursor?.classList.contains("visible")).toBeTruthy();
-        }, 60000);
+        });
 
         test("should have outline and custom cursor on nested multi line", async () => {
             firstNestedMultiLine.dispatchEvent(mousemoveEvent);
@@ -287,6 +299,19 @@ describe("When an element is hovered in visual builder mode", () => {
                 "[data-testid='visual-builder__hover-outline']"
             );
             expect(hoverOutline).toHaveAttribute("style");
+
+            // Wait for cursor icon to be set (not "loading")
+            const { waitFor } = await import("@testing-library/preact");
+            await waitFor(
+                () => {
+                    const customCursor = document.querySelector(
+                        `[data-testid="visual-builder__cursor"]`
+                    );
+                    if (!customCursor) throw new Error("Cursor not found");
+                    expect(customCursor).toHaveAttribute("data-icon", "multiline");
+                },
+                { timeout: 2000, interval: 10 } // Optimized timeout
+            );
 
             const customCursor = document.querySelector(
                 `[data-testid="visual-builder__cursor"]`

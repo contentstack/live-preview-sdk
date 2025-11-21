@@ -5,9 +5,6 @@ import {
     render,
     waitFor,
     screen,
-    queryByTestId,
-    findByTestId,
-    findAllByTestId,
 } from "@testing-library/preact";
 import { CslpData } from "../../../cslp/types/cslp.types";
 import { FieldSchemaMap } from "../../utils/fieldSchemaMap";
@@ -154,12 +151,17 @@ describe("FieldToolbarComponent", () => {
             />
         );
 
-        const moveLeftButton = (await findByTestId(
-            container as HTMLElement,
-            "visual-builder__focused-toolbar__multiple-field-toolbar__move-left-button",
-            {},
-            { timeout: 5000, interval: 5 } // Reduced timeout from 10s to 5s
-        )) as HTMLElement;
+        // Use queryByTestId + waitFor for faster detection (fails immediately if not found)
+        const moveLeftButton = await waitFor(
+            () => {
+                const button = container.querySelector(
+                    '[data-testid="visual-builder__focused-toolbar__multiple-field-toolbar__move-left-button"]'
+                ) as HTMLElement;
+                if (!button) throw new Error("Button not found");
+                return button;
+            },
+            { timeout: 2000, interval: 10 } // Reduced timeout from 5s to 2s
+        );
 
         fireEvent.click(moveLeftButton);
 
@@ -177,12 +179,17 @@ describe("FieldToolbarComponent", () => {
             />
         );
 
-        const moveRightButton = (await findByTestId(
-            container as HTMLElement,
-            "visual-builder__focused-toolbar__multiple-field-toolbar__move-right-button",
-            {},
-            { timeout: 5000, interval: 5 } // Reduced timeout from 10s to 5s
-        )) as HTMLElement;
+        // Use queryByTestId + waitFor for faster detection
+        const moveRightButton = await waitFor(
+            () => {
+                const button = container.querySelector(
+                    '[data-testid="visual-builder__focused-toolbar__multiple-field-toolbar__move-right-button"]'
+                ) as HTMLElement;
+                if (!button) throw new Error("Button not found");
+                return button;
+            },
+            { timeout: 2000, interval: 10 } // Reduced timeout from 5s to 2s
+        );
 
         fireEvent.click(moveRightButton);
 
@@ -200,12 +207,17 @@ describe("FieldToolbarComponent", () => {
             />
         );
 
-        const deleteButton = (await findByTestId(
-            container as HTMLElement,
-            "visual-builder__focused-toolbar__multiple-field-toolbar__delete-button",
-            {},
-            { timeout: 5000, interval: 5 } // Reduced timeout from 10s to 5s
-        )) as HTMLElement;
+        // Use queryByTestId + waitFor for faster detection
+        const deleteButton = await waitFor(
+            () => {
+                const button = container.querySelector(
+                    '[data-testid="visual-builder__focused-toolbar__multiple-field-toolbar__delete-button"]'
+                ) as HTMLElement;
+                if (!button) throw new Error("Button not found");
+                return button;
+            },
+            { timeout: 2000, interval: 10 } // Reduced timeout from 5s to 2s
+        );
 
         fireEvent.click(deleteButton);
 
@@ -231,11 +243,15 @@ describe("FieldToolbarComponent", () => {
             />
         );
 
-        await findByTestId(
-            container as HTMLElement,
-            "visual-builder-canvas-variant-icon",
-            {},
-            { timeout: 5000, interval: 5 } // Reduced timeout from 10s to 5s
+        await waitFor(
+            () => {
+                const icon = container.querySelector(
+                    '[data-testid="visual-builder-canvas-variant-icon"]'
+                );
+                if (!icon) throw new Error("Variant icon not found");
+                expect(icon).toBeInTheDocument();
+            },
+            { timeout: 2000, interval: 10 } // Reduced timeout from 5s to 2s
         );
     });
 
@@ -272,14 +288,21 @@ describe("FieldToolbarComponent", () => {
                 />
             );
 
+            // Wait for component to render, then check button is not present
             await waitFor(
                 () => {
+                    // Wait for toolbar to render first
+                    const toolbar = container.querySelector(
+                        '[data-testid="visual-builder__focused-toolbar__multiple-field-toolbar"]'
+                    );
+                    if (!toolbar) throw new Error("Toolbar not found");
+                    
                     const replaceButton = container.querySelector(
                         '[data-testid="visual-builder-replace-file"]'
                     );
                     expect(replaceButton).not.toBeInTheDocument();
                 },
-                { timeout: 10000, interval: 5 } // Reduced timeout from 25s to 10s with faster polling
+                { timeout: 2000, interval: 10 } // Reduced timeout from 10s to 2s
             );
         });
 
@@ -310,9 +333,10 @@ describe("FieldToolbarComponent", () => {
                     const replaceButton = container.querySelector(
                         '[data-testid="visual-builder-replace-file"]'
                     );
+                    if (!replaceButton) throw new Error("Replace button not found");
                     expect(replaceButton).toBeInTheDocument();
                 },
-                { timeout: 10000, interval: 5 } // Reduced timeout from 25s to 10s with faster polling
+                { timeout: 2000, interval: 10 } // Reduced timeout from 10s to 2s
             );
         });
 
@@ -335,7 +359,7 @@ describe("FieldToolbarComponent", () => {
                     const toolbar = container.querySelector(
                         '[data-testid="visual-builder__focused-toolbar__multiple-field-toolbar"]'
                     );
-                    expect(toolbar).toBeInTheDocument();
+                    if (!toolbar) throw new Error("Toolbar not found");
 
                     // Check that move buttons are disabled
                     const moveLeftButton = container.querySelector(
@@ -347,6 +371,10 @@ describe("FieldToolbarComponent", () => {
                     const deleteButton = container.querySelector(
                         '[data-testid="visual-builder__focused-toolbar__multiple-field-toolbar__delete-button"]'
                     );
+
+                    if (!moveLeftButton || !moveRightButton || !deleteButton) {
+                        throw new Error("Buttons not found");
+                    }
 
                     expect(moveLeftButton).toBeDisabled();
                     expect(moveRightButton).toBeDisabled();
@@ -368,7 +396,7 @@ describe("FieldToolbarComponent", () => {
                         expect(replaceButton).toBeDisabled();
                     }
                 },
-                { timeout: 10000, interval: 5 } // Reduced timeout from 25s to 10s with faster polling
+                { timeout: 2000, interval: 10 } // Reduced timeout from 10s to 2s
             );
         });
     });
