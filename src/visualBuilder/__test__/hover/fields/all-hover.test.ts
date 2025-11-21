@@ -1,27 +1,21 @@
 /**
- * Consolidated hover tests for all field types
+ * Consolidated hover tests for essential field behavior patterns
  *
- * This file replaces multiple redundant test files that were testing the same scenarios
- * for different field types. All field types follow the same hover behavior pattern:
- * 1. Single field: shows outline and custom cursor with correct icon
+ * Since E2E tests cover field-specific behavior (different icons), this file tests only the core patterns:
+ * 1. Single field: shows outline and custom cursor with icon
  * 2. Multiple field container: shows outline and cursor on container
  * 3. Multiple field instance: shows outline and cursor on individual instances
  *
- * Removed redundant files:
- * - boolean.test.ts (only had single field test)
- * - date.test.ts (only had single field test)
- * - number.test.ts (standard pattern)
- * - markdown.test.ts (standard pattern)
- * - html-rte.test.ts (standard pattern)
- * - json-rte.test.ts (standard pattern)
- * - link.test.ts (standard pattern)
- * - reference.test.ts (standard pattern)
- * - select.test.ts (standard pattern)
+ * All field types follow the same hover behavior - only the icon differs (tested in E2E).
+ *
+ * Removed redundant field-specific tests (E2E covers these):
+ * - boolean.test.ts, date.test.ts, number.test.ts, markdown.test.ts
+ * - html-rte.test.ts, json-rte.test.ts, link.test.ts, reference.test.ts, select.test.ts
  *
  * Kept separate files for unique test cases:
- * - file.test.ts (has URL-specific test for file.url fields)
- * - group.test.ts (has nested field test)
- * - single-line.test.ts (has title field test with specific style assertions)
+ * - file.test.ts (URL-specific test for file.url fields)
+ * - group.test.ts (nested field test)
+ * - single-line.test.ts (title field test with specific style assertions)
  */
 
 import { getFieldSchemaMap } from "../../../../__test__/data/fieldSchemaMap";
@@ -119,75 +113,21 @@ global.ResizeObserver = vi.fn().mockImplementation(() => ({
     disconnect: vi.fn(),
 }));
 
-// Field type configurations for parameterized testing
-// Note: Some field types (boolean, date, markdown) don't have multiple field support or have different CSLP patterns
-// They are only tested as single fields
-const SINGLE_FIELD_TYPES = [
-    {
-        name: "boolean",
-        cslp: "all_fields.bltapikey.en-us.boolean",
-        icon: "boolean",
-    },
-    { name: "date", cslp: "all_fields.bltapikey.en-us.date", icon: "isodate" },
-    {
-        name: "markdown",
-        cslp: "all_fields.bltapikey.en-us.markdown",
-        icon: "markdown_rte",
-    },
-] as const;
+// Test only representative field types - E2E tests cover all field types and their icons
+// Single field (no multiple support) - boolean represents this pattern
+const SINGLE_FIELD = {
+    name: "boolean",
+    cslp: "all_fields.bltapikey.en-us.boolean",
+    icon: "boolean",
+} as const;
 
-const MULTIPLE_FIELD_TYPES = [
-    {
-        name: "number",
-        cslp: "all_fields.bltapikey.en-us.number",
-        icon: "number",
-        multipleCslp: "all_fields.bltapikey.en-us.number_multiple_",
-    },
-    {
-        name: "html-rte",
-        cslp: "all_fields.bltapikey.en-us.rich_text_editor",
-        icon: "html_rte",
-        multipleCslp: "all_fields.bltapikey.en-us.rich_text_editor_multiple_",
-    },
-    {
-        name: "json-rte",
-        cslp: "all_fields.bltapikey.en-us.json_rte",
-        icon: "json_rte",
-        multipleCslp:
-            "all_fields.bltapikey.en-us.json_rich_text_editor_multiple_",
-    },
-    {
-        name: "link",
-        cslp: "all_fields.bltapikey.en-us.link",
-        icon: "link",
-        multipleCslp: "all_fields.bltapikey.en-us.link_multiple_",
-    },
-    {
-        name: "reference",
-        cslp: "all_fields.bltapikey.en-us.reference",
-        icon: "reference",
-        multipleCslp: "all_fields.bltapikey.en-us.reference_multiple_",
-    },
-    {
-        name: "select",
-        cslp: "all_fields.bltapikey.en-us.select",
-        icon: "select",
-        multipleCslp: "all_fields.bltapikey.en-us.select_multiple_",
-    },
-    {
-        name: "single-line",
-        cslp: "all_fields.bltapikey.en-us.single_line",
-        icon: "singleline",
-        multipleCslp:
-            "all_fields.bltapikey.en-us.single_line_textbox_multiple_",
-    },
-    {
-        name: "multi-line",
-        cslp: "all_fields.bltapikey.en-us.multi_line",
-        icon: "multiline",
-        multipleCslp: "all_fields.bltapikey.en-us.multi_line_textbox_multiple_",
-    },
-] as const;
+// Multiple field - select represents this pattern
+const MULTIPLE_FIELD = {
+    name: "select",
+    cslp: "all_fields.bltapikey.en-us.select",
+    icon: "select",
+    multipleCslp: "all_fields.bltapikey.en-us.select_multiple_",
+} as const;
 
 describe("When an element is hovered in visual builder mode", () => {
     let mousemoveEvent: Event;
@@ -221,14 +161,15 @@ describe("When an element is hovered in visual builder mode", () => {
         Config.reset();
     });
 
-    // Parameterized tests for single-only field types (no multiple support)
-    describe.each(SINGLE_FIELD_TYPES)("$name field", ({ cslp, icon }) => {
+    // Test single field pattern (no multiple support)
+    // This represents all single-only fields: boolean, date, markdown, etc.
+    describe(`${SINGLE_FIELD.name} field (represents single field pattern)`, () => {
         let fieldElement: HTMLElement;
         let visualBuilder: VisualBuilder;
 
         beforeEach(() => {
             fieldElement = document.createElement("p");
-            fieldElement.setAttribute("data-cslp", cslp);
+            fieldElement.setAttribute("data-cslp", SINGLE_FIELD.cslp);
             fieldElement.getBoundingClientRect = vi
                 .fn()
                 .mockReturnValue(mockDomRect.singleLeft());
@@ -250,13 +191,16 @@ describe("When an element is hovered in visual builder mode", () => {
             );
             expect(hoverOutline).toHaveAttribute("style");
 
-            // Wait for cursor icon to be set (not "loading") - reduced timeout and faster polling
+            // Wait for cursor icon to be set (not "loading")
             await waitFor(
                 () => {
                     const customCursor = document.querySelector(
                         `[data-testid="visual-builder__cursor"]`
                     );
-                    expect(customCursor).toHaveAttribute("data-icon", icon);
+                    expect(customCursor).toHaveAttribute(
+                        "data-icon",
+                        SINGLE_FIELD.icon
+                    );
                 },
                 { timeout: 5000, interval: 10 }
             );
@@ -264,24 +208,23 @@ describe("When an element is hovered in visual builder mode", () => {
             const customCursor = document.querySelector(
                 `[data-testid="visual-builder__cursor"]`
             );
-            expect(customCursor).toHaveAttribute("data-icon", icon);
+            expect(customCursor).toHaveAttribute(
+                "data-icon",
+                SINGLE_FIELD.icon
+            );
             expect(customCursor?.classList.contains("visible")).toBeTruthy();
         });
     });
 
-    // Parameterized tests for field types with multiple support
-    describe.each(MULTIPLE_FIELD_TYPES)("$name field", ({ cslp, icon }) => {
+    // Test multiple field pattern
+    // This represents all multiple field types: select, html-rte, json-rte, link, reference, etc.
+    describe(`${MULTIPLE_FIELD.name} field (represents multiple field pattern)`, () => {
         let fieldElement: HTMLElement;
         let visualBuilder: VisualBuilder;
 
         beforeEach(() => {
-            // Use div for reference, p for others
-            fieldElement =
-                icon === "reference"
-                    ? document.createElement("div")
-                    : document.createElement("p");
-
-            fieldElement.setAttribute("data-cslp", cslp);
+            fieldElement = document.createElement("p");
+            fieldElement.setAttribute("data-cslp", MULTIPLE_FIELD.cslp);
             fieldElement.getBoundingClientRect = vi
                 .fn()
                 .mockReturnValue(mockDomRect.singleLeft());
@@ -303,13 +246,16 @@ describe("When an element is hovered in visual builder mode", () => {
             );
             expect(hoverOutline).toHaveAttribute("style");
 
-            // Wait for cursor icon to be set (not "loading") - reduced timeout and faster polling
+            // Wait for cursor icon to be set (not "loading")
             await waitFor(
                 () => {
                     const customCursor = document.querySelector(
                         `[data-testid="visual-builder__cursor"]`
                     );
-                    expect(customCursor).toHaveAttribute("data-icon", icon);
+                    expect(customCursor).toHaveAttribute(
+                        "data-icon",
+                        MULTIPLE_FIELD.icon
+                    );
                 },
                 { timeout: 5000, interval: 10 }
             );
@@ -317,109 +263,121 @@ describe("When an element is hovered in visual builder mode", () => {
             const customCursor = document.querySelector(
                 `[data-testid="visual-builder__cursor"]`
             );
-            expect(customCursor).toHaveAttribute("data-icon", icon);
+            expect(customCursor).toHaveAttribute(
+                "data-icon",
+                MULTIPLE_FIELD.icon
+            );
             expect(customCursor?.classList.contains("visible")).toBeTruthy();
         });
     });
 
-    // Parameterized tests for multiple field containers (only for types that support multiple)
-    describe.each(MULTIPLE_FIELD_TYPES)(
-        "$name field (multiple)",
-        ({ multipleCslp, icon }) => {
-            let container: HTMLDivElement;
-            let firstField: HTMLElement;
-            let secondField: HTMLElement;
-            let visualBuilder: VisualBuilder;
+    // Test multiple field container pattern
+    describe(`${MULTIPLE_FIELD.name} field (multiple) - represents multiple container pattern`, () => {
+        let container: HTMLDivElement;
+        let firstField: HTMLElement;
+        let secondField: HTMLElement;
+        let visualBuilder: VisualBuilder;
 
-            beforeEach(() => {
-                container = document.createElement("div");
-                container.setAttribute("data-cslp", multipleCslp);
-                container.getBoundingClientRect = vi
-                    .fn()
-                    .mockReturnValue(mockDomRect.singleHorizontal());
+        beforeEach(() => {
+            container = document.createElement("div");
+            container.setAttribute("data-cslp", MULTIPLE_FIELD.multipleCslp);
+            container.getBoundingClientRect = vi
+                .fn()
+                .mockReturnValue(mockDomRect.singleHorizontal());
 
-                // Use div for reference, p for others
-                const elementType = icon === "reference" ? "div" : "p";
-                firstField = document.createElement(elementType);
-                firstField.setAttribute("data-cslp", `${multipleCslp}.0`);
-                firstField.getBoundingClientRect = vi
-                    .fn()
-                    .mockReturnValue(mockDomRect.singleLeft());
+            firstField = document.createElement("p");
+            firstField.setAttribute(
+                "data-cslp",
+                `${MULTIPLE_FIELD.multipleCslp}.0`
+            );
+            firstField.getBoundingClientRect = vi
+                .fn()
+                .mockReturnValue(mockDomRect.singleLeft());
 
-                secondField = document.createElement(elementType);
-                secondField.setAttribute("data-cslp", `${multipleCslp}.1`);
-                secondField.getBoundingClientRect = vi
-                    .fn()
-                    .mockReturnValue(mockDomRect.singleRight());
+            secondField = document.createElement("p");
+            secondField.setAttribute(
+                "data-cslp",
+                `${MULTIPLE_FIELD.multipleCslp}.1`
+            );
+            secondField.getBoundingClientRect = vi
+                .fn()
+                .mockReturnValue(mockDomRect.singleRight());
 
-                container.appendChild(firstField);
-                container.appendChild(secondField);
-                document.body.appendChild(container);
+            container.appendChild(firstField);
+            container.appendChild(secondField);
+            document.body.appendChild(container);
 
-                visualBuilder = new VisualBuilder();
-            });
+            visualBuilder = new VisualBuilder();
+        });
 
-            afterEach(() => {
-                visualBuilder.destroy();
-            });
+        afterEach(() => {
+            visualBuilder.destroy();
+        });
 
-            test("should have outline and custom cursor on container", async () => {
-                container.dispatchEvent(mousemoveEvent);
-                await waitForHoverOutline();
+        test("should have outline and custom cursor on container", async () => {
+            container.dispatchEvent(mousemoveEvent);
+            await waitForHoverOutline();
 
-                const hoverOutline = document.querySelector(
-                    "[data-testid='visual-builder__hover-outline']"
-                );
-                expect(hoverOutline).toHaveAttribute("style");
+            const hoverOutline = document.querySelector(
+                "[data-testid='visual-builder__hover-outline']"
+            );
+            expect(hoverOutline).toHaveAttribute("style");
 
-                // Wait for cursor icon to be set (not "loading")
-                await waitFor(
-                    () => {
-                        const customCursor = document.querySelector(
-                            `[data-testid="visual-builder__cursor"]`
-                        );
-                        expect(customCursor).toHaveAttribute("data-icon", icon);
-                    },
-                    { timeout: 5000, interval: 50 }
-                );
+            // Wait for cursor icon to be set (not "loading")
+            await waitFor(
+                () => {
+                    const customCursor = document.querySelector(
+                        `[data-testid="visual-builder__cursor"]`
+                    );
+                    expect(customCursor).toHaveAttribute(
+                        "data-icon",
+                        MULTIPLE_FIELD.icon
+                    );
+                },
+                { timeout: 5000, interval: 10 }
+            );
 
-                const customCursor = document.querySelector(
-                    `[data-testid="visual-builder__cursor"]`
-                );
-                expect(customCursor).toHaveAttribute("data-icon", icon);
-                expect(
-                    customCursor?.classList.contains("visible")
-                ).toBeTruthy();
-            });
+            const customCursor = document.querySelector(
+                `[data-testid="visual-builder__cursor"]`
+            );
+            expect(customCursor).toHaveAttribute(
+                "data-icon",
+                MULTIPLE_FIELD.icon
+            );
+            expect(customCursor?.classList.contains("visible")).toBeTruthy();
+        });
 
-            test("should have outline and custom cursor on individual instances", async () => {
-                firstField.dispatchEvent(mousemoveEvent);
-                await waitForHoverOutline();
+        test("should have outline and custom cursor on individual instances", async () => {
+            firstField.dispatchEvent(mousemoveEvent);
+            await waitForHoverOutline();
 
-                const hoverOutline = document.querySelector(
-                    "[data-testid='visual-builder__hover-outline']"
-                );
-                expect(hoverOutline).toHaveAttribute("style");
+            const hoverOutline = document.querySelector(
+                "[data-testid='visual-builder__hover-outline']"
+            );
+            expect(hoverOutline).toHaveAttribute("style");
 
-                // Wait for cursor icon to be set (not "loading")
-                await waitFor(
-                    () => {
-                        const customCursor = document.querySelector(
-                            `[data-testid="visual-builder__cursor"]`
-                        );
-                        expect(customCursor).toHaveAttribute("data-icon", icon);
-                    },
-                    { timeout: 5000, interval: 50 }
-                );
+            // Wait for cursor icon to be set (not "loading")
+            await waitFor(
+                () => {
+                    const customCursor = document.querySelector(
+                        `[data-testid="visual-builder__cursor"]`
+                    );
+                    expect(customCursor).toHaveAttribute(
+                        "data-icon",
+                        MULTIPLE_FIELD.icon
+                    );
+                },
+                { timeout: 5000, interval: 10 }
+            );
 
-                const customCursor = document.querySelector(
-                    `[data-testid="visual-builder__cursor"]`
-                );
-                expect(customCursor).toHaveAttribute("data-icon", icon);
-                expect(
-                    customCursor?.classList.contains("visible")
-                ).toBeTruthy();
-            });
-        }
-    );
+            const customCursor = document.querySelector(
+                `[data-testid="visual-builder__cursor"]`
+            );
+            expect(customCursor).toHaveAttribute(
+                "data-icon",
+                MULTIPLE_FIELD.icon
+            );
+            expect(customCursor?.classList.contains("visible")).toBeTruthy();
+        });
+    });
 });
