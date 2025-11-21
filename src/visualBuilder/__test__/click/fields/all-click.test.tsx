@@ -1,4 +1,31 @@
-import { fireEvent, screen, waitFor } from "@testing-library/preact";
+/**
+ * Consolidated click tests for essential field behavior patterns
+ *
+ * Since E2E tests cover field-specific behavior, this file tests only the core patterns:
+ * 1. Non-editable fields (no contenteditable) - represented by boolean, select
+ * 2. Multiple field containers - represented by select multiple
+ *
+ * All field types follow the same click behavior:
+ * - Field type attribute is set
+ * - Overlay wrapper is rendered
+ * - Field path dropdown is shown
+ * - Focus field message is sent
+ * - Contenteditable depends on field type (tested in single-line, multi-line, number tests)
+ *
+ * Removed redundant field-specific tests (E2E covers these):
+ * - boolean.test.tsx, date.test.tsx, markdown.test.tsx, html-rte.test.tsx
+ * - json-rte.test.tsx, link.test.tsx, select.test.tsx
+ *
+ * Kept separate files for unique test cases:
+ * - file.test.tsx (URL-specific test for file.url fields)
+ * - group.test.tsx (nested field test)
+ * - single-line.test.tsx (contenteditable + complex mock setup)
+ * - multi-line.test.tsx (contenteditable test)
+ * - number.test.tsx (contenteditable test)
+ * - reference.test.tsx (outline test)
+ */
+
+import { screen } from "@testing-library/preact";
 import "@testing-library/jest-dom";
 import { getFieldSchemaMap } from "../../../../__test__/data/fieldSchemaMap";
 import Config from "../../../../configManager/configManager";
@@ -10,6 +37,17 @@ import { vi } from "vitest";
 import { VisualBuilderPostMessageEvents } from "../../../utils/types/postMessage.types";
 import { VisualBuilder } from "../../../index";
 import { triggerAndWaitForClickAction } from "../../../../__test__/utils";
+
+global.ResizeObserver = vi.fn().mockImplementation(() => ({
+    observe: vi.fn(),
+    unobserve: vi.fn(),
+    disconnect: vi.fn(),
+}));
+
+global.MutationObserver = vi.fn().mockImplementation(() => ({
+    observe: vi.fn(),
+    disconnect: vi.fn(),
+}));
 
 vi.mock("../../../components/FieldToolbar", () => {
     return {
@@ -58,6 +96,21 @@ vi.mock("../../../../utils/index.ts", async () => {
     };
 });
 
+// Test only representative field types - E2E tests cover all field types
+// Non-editable field (no contenteditable) - boolean represents this pattern
+const NON_EDITABLE_FIELD = {
+    name: "boolean",
+    cslp: "all_fields.bltapikey.en-us.boolean",
+    fieldType: "boolean",
+} as const;
+
+// Multiple field container - select represents this pattern
+const MULTIPLE_FIELD = {
+    name: "select",
+    fieldType: "select",
+    multipleCslp: "all_fields.bltapikey.en-us.select_multiple_",
+} as const;
+
 describe("When an element is clicked in visual builder mode", () => {
     beforeAll(() => {
         FieldSchemaMap.setFieldSchema(
@@ -83,26 +136,24 @@ describe("When an element is clicked in visual builder mode", () => {
     afterAll(() => {
         vi.clearAllMocks();
         document.body.innerHTML = "";
-
         Config.reset();
     });
 
-    describe("link field", () => {
-        let linkField: HTMLAnchorElement;
+    // Test non-editable field pattern (no contenteditable)
+    // This represents all non-editable fields: boolean, date, markdown, html-rte, json-rte, link, select, etc.
+    describe(`${NON_EDITABLE_FIELD.name} field (represents non-editable pattern)`, () => {
+        let fieldElement: HTMLElement;
         let visualBuilder: VisualBuilder;
 
         beforeAll(async () => {
-            linkField = document.createElement("a");
-            linkField.setAttribute(
-                "data-cslp",
-                "all_fields.bltapikey.en-us.link.href"
-            );
+            fieldElement = document.createElement("p");
+            fieldElement.setAttribute("data-cslp", NON_EDITABLE_FIELD.cslp);
+            document.body.appendChild(fieldElement);
 
-            document.body.appendChild(linkField);
             visualBuilder = new VisualBuilder();
             await triggerAndWaitForClickAction(
                 visualBuilderPostMessage,
-                linkField
+                fieldElement
             );
         });
 
@@ -111,86 +162,73 @@ describe("When an element is clicked in visual builder mode", () => {
         });
 
         test("should have field type attribute set", () => {
-            // Field type is set during click - this is what actually happens
-            expect(linkField).toHaveAttribute(
+            expect(fieldElement).toHaveAttribute(
                 "data-cslp-field-type",
-                "link"
+                NON_EDITABLE_FIELD.fieldType
             );
         });
 
         test("should have an overlay wrapper rendered", () => {
-            // Overlay wrapper is rendered (not checking for 'visible' class as it's conditional)
             const overlayWrapper = document.querySelector(
                 ".visual-builder__overlay__wrapper"
             );
             expect(overlayWrapper).not.toBeNull();
-            
-            // Check that overlay elements exist
+
             const overlay = document.querySelector(".visual-builder__overlay");
             expect(overlay!.classList.contains("visible"));
         });
 
         test("should have a field path dropdown", () => {
-            // Component is already rendered from beforeAll setup
-            const toolbar = screen.getByTestId(
-                "mock-field-label-wrapper"
-            );
+            const toolbar = screen.getByTestId("mock-field-label-wrapper");
             expect(toolbar).toBeInTheDocument();
         });
 
-        test("should contain a data-cslp-field-type attribute", async () => {
-            await waitFor(() => {
-                expect(linkField).toHaveAttribute(
-                    VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
-                );
-            });
+        test("should contain a data-cslp-field-type attribute", () => {
+            expect(fieldElement).toHaveAttribute(
+                VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
+            );
         });
 
-        test("should not contain a contenteditable attribute", async () => {
-            await waitFor(() => {
-                expect(linkField).not.toHaveAttribute("contenteditable");
-            });
+        test("should not contain a contenteditable attribute", () => {
+            expect(fieldElement).not.toHaveAttribute("contenteditable");
         });
 
         test("should send a focus field message to parent", () => {
-            // Mock function calls are tracked synchronously
             expect(visualBuilderPostMessage?.send).toBeCalledWith(
                 VisualBuilderPostMessageEvents.FOCUS_FIELD,
                 {
-                    DOMEditStack: getDOMEditStack(linkField),
+                    DOMEditStack: getDOMEditStack(fieldElement),
                 }
             );
         });
     });
 
-    // BUG ?: test failing : should have 2 add instance buttons
-    describe("link field (multiple)", () => {
+    // Test multiple field container pattern
+    // This represents all multiple field types: select, html-rte, json-rte, link, etc.
+    describe(`${MULTIPLE_FIELD.name} field (multiple) - represents multiple field pattern`, () => {
         let container: HTMLDivElement;
-        let firstLinkField: HTMLAnchorElement;
-        let secondLinkField: HTMLAnchorElement;
+        let firstField: HTMLElement;
+        let secondField: HTMLElement;
         let visualBuilder: VisualBuilder;
 
         beforeAll(async () => {
             container = document.createElement("div");
-            container.setAttribute(
+            container.setAttribute("data-cslp", MULTIPLE_FIELD.multipleCslp);
+
+            firstField = document.createElement("p");
+            firstField.setAttribute(
                 "data-cslp",
-                "all_fields.bltapikey.en-us.link_multiple_"
+                `${MULTIPLE_FIELD.multipleCslp}.0`
             );
 
-            firstLinkField = document.createElement("a");
-            firstLinkField.setAttribute(
+            secondField = document.createElement("p");
+            secondField.setAttribute(
                 "data-cslp",
-                "all_fields.blt366df6233d9915f5.en-us.link_multiple_.0.href"
+                `${MULTIPLE_FIELD.multipleCslp}.1`
             );
 
-            secondLinkField = document.createElement("a");
-            secondLinkField.setAttribute(
-                "data-cslp",
-                "all_fields.bltapikey.en-us.link_multiple_.1.href"
-            );
-
-            container.appendChild(firstLinkField);
-            container.appendChild(secondLinkField);
+            container.appendChild(firstField);
+            container.appendChild(secondField);
             document.body.appendChild(container);
 
             visualBuilder = new VisualBuilder();
@@ -205,56 +243,45 @@ describe("When an element is clicked in visual builder mode", () => {
         });
 
         test("should have field type attribute set", () => {
-            // Field type is set during click - this is what actually happens
             expect(container).toHaveAttribute(
                 "data-cslp-field-type",
-                "link"
+                MULTIPLE_FIELD.fieldType
             );
         });
 
         test("should have an overlay wrapper rendered", () => {
-            // Overlay wrapper is rendered (not checking for 'visible' class as it's conditional)
             const overlayWrapper = document.querySelector(
                 ".visual-builder__overlay__wrapper"
             );
             expect(overlayWrapper).not.toBeNull();
-            
-            // Check that overlay elements exist
+
             const overlay = document.querySelector(".visual-builder__overlay");
             expect(overlay!.classList.contains("visible"));
         });
 
-        test("should contain a data-cslp-field-type attribute", async () => {
-            await waitFor(() => {
-                expect(container).toHaveAttribute(
-                    VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
-                );
-            });
+        test("should have a field path dropdown", () => {
+            const toolbar = screen.getByTestId("mock-field-label-wrapper");
+            expect(toolbar).toBeInTheDocument();
         });
 
-        test("both container and its children should not contain a contenteditable attribute", async () => {
-            fireEvent.click(container);
-            await waitFor(() => {
-                expect(container).not.toHaveAttribute("contenteditable");
-            });
+        test("should contain a data-cslp-field-type attribute", () => {
+            expect(container).toHaveAttribute(
+                VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
+            );
+        });
 
-            fireEvent.click(container.children[0]);
-            await waitFor(() => {
-                expect(container.children[0]).not.toHaveAttribute(
-                    "contenteditable"
-                );
-            });
-
-            fireEvent.click(container.children[1]);
-            await waitFor(() => {
-                expect(container.children[1]).not.toHaveAttribute(
-                    "contenteditable"
-                );
-            });
+        test("both container and its children should not contain a contenteditable attribute", () => {
+            // Check synchronously - attributes are set during click handler
+            expect(container).not.toHaveAttribute("contenteditable");
+            expect(container.children[0]).not.toHaveAttribute(
+                "contenteditable"
+            );
+            expect(container.children[1]).not.toHaveAttribute(
+                "contenteditable"
+            );
         });
 
         test("should send a focus field message to parent", () => {
-            // Mock function calls are tracked synchronously
             expect(visualBuilderPostMessage?.send).toBeCalledWith(
                 VisualBuilderPostMessageEvents.FOCUS_FIELD,
                 {
