@@ -35,9 +35,8 @@ export default defineConfig({
                 "vitest.setup.ts",
                 "src/index.ts", // Entry point, usually not directly tested
             ],
-            // CRITICAL: Set to false - only analyze files that are actually imported/used
-            // This makes coverage 3x faster by skipping unused files
-            all: false,
+            // Note: In Vitest 4, 'all' option was removed - coverage only analyzes imported files by default
+            // This makes coverage faster by skipping unused files
             clean: false,
             // Explicitly set coverage output directory
             reportsDirectory: "./coverage",
@@ -60,15 +59,9 @@ export default defineConfig({
         fileParallelism: true,
         // Use threads pool for better performance on multi-core systems
         pool: "threads",
-        poolOptions: {
-            threads: {
-                // Optimize worker count for CI
-                maxThreads: process.env.CI ? 4 : undefined,
-                minThreads: process.env.CI ? 2 : undefined,
-                // Isolate tests to prevent side effects
-                singleThread: false,
-            },
-        },
+        // Pool options for threads (Vitest 4 structure)
+        // Note: minThreads removed in Vitest 4, only maxThreads is effective
+        maxWorkers: process.env.CI ? 4 : undefined,
         // Set lower threshold to identify slow tests
         slowTestThreshold: 5000,
         // Isolate tests for better parallelization

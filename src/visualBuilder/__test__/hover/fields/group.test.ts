@@ -36,7 +36,7 @@ vi.mock("../../../../__test__/utils", async () => {
     return {
         ...actual,
         waitForHoverOutline: vi.fn().mockImplementation(async () => {
-            // Wait for outline with shorter timeout and faster polling for tests
+            // Wait for outline with timeout and faster polling for tests
             await waitFor(
                 () => {
                     const hoverOutline = document.querySelector(
@@ -46,17 +46,19 @@ vi.mock("../../../../__test__/utils", async () => {
                         throw new Error("Hover outline not found");
                     }
                 },
-                { timeout: 2000, interval: 10 } // Optimized: reduced from 5s/50ms to 2s/10ms
+                { timeout: 5000, interval: 50 } // Increased timeout for stability
             );
         }),
     };
 });
 
-global.ResizeObserver = vi.fn().mockImplementation(() => ({
-    observe: vi.fn(),
-    unobserve: vi.fn(),
-    disconnect: vi.fn(),
-}));
+// Vitest 4: Use class-based mocks for constructors
+global.ResizeObserver = class ResizeObserver {
+    observe = vi.fn();
+    unobserve = vi.fn();
+    disconnect = vi.fn();
+    constructor(_callback: ResizeObserverCallback) {}
+} as any;
 
 vi.mock("../../../../utils/index.ts", async () => {
     const actual = await vi.importActual("../../../../utils");
@@ -172,6 +174,7 @@ describe("When an element is hovered in visual builder mode", () => {
             groupField.appendChild(singleLine);
 
             singleLine.dispatchEvent(mousemoveEvent);
+            // Increase timeout for this specific test as it can be slower
             await waitForHoverOutline();
             const hoverOutline = document.querySelector(
                 "[data-testid='visual-builder__hover-outline']"

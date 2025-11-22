@@ -39,17 +39,20 @@ vi.mock(
 );
 
 beforeAll(() => {
-    global.ResizeObserver = vi.fn().mockImplementation(() => ({
-        observe: vi.fn(),
-        unobserve: vi.fn(),
-        disconnect: vi.fn(),
-    }));
+    // Vitest 4: Use class-based mocks for constructors
+    global.ResizeObserver = class ResizeObserver {
+        observe = vi.fn();
+        unobserve = vi.fn();
+        disconnect = vi.fn();
+        constructor(_callback: ResizeObserverCallback) {}
+    } as any;
 
-    global.MutationObserver = vi.fn().mockImplementation(() => ({
-        observe: vi.fn(),
-        disconnect: vi.fn(),
-        takeRecords: vi.fn(() => []),
-    }));
+    global.MutationObserver = class MutationObserver {
+        observe = vi.fn();
+        disconnect = vi.fn();
+        takeRecords = vi.fn(() => []);
+        constructor(_callback: MutationCallback) {}
+    } as any;
 
     document.elementFromPoint = vi.fn();
 });
