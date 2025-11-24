@@ -2,10 +2,6 @@ import { defineConfig } from "vitest/config";
 
 // https://vitejs.dev/config/
 export default defineConfig({
-    // Enable source maps for better coverage reporting
-    build: {
-        sourcemap: true,
-    },
     test: {
         alias: {
             "react/jsx-dev-runtime": "preact/jsx-runtime",
@@ -13,7 +9,8 @@ export default defineConfig({
         environment: "jsdom",
         coverage: {
             provider: "v8",
-            // Only include source files - this is MUCH faster than all: true
+            // Include all source files - Vitest 4 only analyzes imported files by default
+            // This is faster than analyzing all files (old 'all: true' behavior)
             include: ["src/**/*.{ts,tsx}"],
             exclude: [
                 "dist/**",
@@ -37,9 +34,8 @@ export default defineConfig({
                 "**/rollup.config.*",
                 "vitest.reporter.ts",
                 "vitest.setup.ts",
+                "src/index.ts", // Entry point, usually not directly tested
             ],
-            // Note: In Vitest 4, 'all' option was removed - coverage only analyzes imported files by default
-            // This makes coverage faster by skipping unused files
             clean: false,
             // Explicitly set coverage output directory
             reportsDirectory: "./coverage",
