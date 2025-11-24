@@ -2,6 +2,10 @@ import { defineConfig } from "vitest/config";
 
 // https://vitejs.dev/config/
 export default defineConfig({
+    // Enable source maps for better coverage reporting
+    build: {
+        sourcemap: true,
+    },
     test: {
         alias: {
             "react/jsx-dev-runtime": "preact/jsx-runtime",
@@ -33,7 +37,6 @@ export default defineConfig({
                 "**/rollup.config.*",
                 "vitest.reporter.ts",
                 "vitest.setup.ts",
-                "src/index.ts", // Entry point, usually not directly tested
             ],
             // Note: In Vitest 4, 'all' option was removed - coverage only analyzes imported files by default
             // This makes coverage faster by skipping unused files
