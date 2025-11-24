@@ -107,19 +107,16 @@ describe("When an element is hovered in visual builder mode", () => {
             "all_fields",
             getFieldSchemaMap().all_fields
         );
-        // Vitest 4: Use class-based mocks for constructors
         global.ResizeObserver = class ResizeObserver {
             observe = vi.fn();
             unobserve = vi.fn();
             disconnect = vi.fn();
-            constructor(_callback: ResizeObserverCallback) {}
         } as any;
 
         global.MutationObserver = class MutationObserver {
             observe = vi.fn();
             disconnect = vi.fn();
             takeRecords = vi.fn(() => []);
-            constructor(_callback: MutationCallback) {}
         } as any;
     });
 

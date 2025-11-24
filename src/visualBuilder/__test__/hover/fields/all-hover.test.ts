@@ -107,12 +107,10 @@ vi.mock("../../../../utils/index.ts", async () => {
     };
 });
 
-// Vitest 4: Use class-based mocks for constructors
 global.ResizeObserver = class ResizeObserver {
     observe = vi.fn();
     unobserve = vi.fn();
     disconnect = vi.fn();
-    constructor(_callback: ResizeObserverCallback) {}
 } as any;
 
 // Test only representative field types - E2E tests cover all field types and their icons

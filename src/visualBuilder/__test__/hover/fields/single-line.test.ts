@@ -52,12 +52,10 @@ vi.mock("../../../../__test__/utils", async () => {
     };
 });
 
-// Vitest 4: Use class-based mocks for constructors
 global.ResizeObserver = class ResizeObserver {
     observe = vi.fn();
     unobserve = vi.fn();
     disconnect = vi.fn();
-    constructor(_callback: ResizeObserverCallback) {}
 } as any;
 
 vi.mock("../../../../utils/index.ts", async () => {

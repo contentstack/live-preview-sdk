@@ -22,12 +22,10 @@ Object.defineProperty(globalThis, "crypto", {
     },
 });
 
-// Vitest 4: Use class-based mocks for constructors
 global.ResizeObserver = class ResizeObserver {
     observe = vi.fn();
     unobserve = vi.fn();
     disconnect = vi.fn();
-    constructor(_callback: ResizeObserverCallback) {}
 } as any;
 
 describe("Live Preview HOC init", () => {
