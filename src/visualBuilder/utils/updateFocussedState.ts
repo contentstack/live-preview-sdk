@@ -300,6 +300,9 @@ export function updateFocussedStateOnMutation(
         }
     }
 
+    //TODO: This logic for overlay position is already present in generateOverlay as `addFocusOverlay`.
+    // We should refactor this to use the same logic. Refer "VB-593" branch for more details.
+
     /**
      * Update the focus overlays if they exists.
      */
@@ -386,6 +389,8 @@ export function updateFocussedStateOnMutation(
      * Update the focus toolbar if it exists.
      */
 
+    //TODO: This logic for toolbar position is already present in same file as `positionToolbar`.
+    // We should refactor this to use the same logic. Refer "VB-593" branch for more details.
     if (focusedToolbar) {
         const targetElementRightEdgeOffset =
             window.scrollX + window.innerWidth - selectedElementDimension.left;
