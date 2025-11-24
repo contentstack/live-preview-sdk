@@ -6,7 +6,7 @@ import {
 import { VisualBuilder } from "../..";
 import {
     addFocusOverlay,
-    hideFocusOverlay,
+    hideOverlay,
 } from "../../generators/generateOverlay";
 import { mockGetBoundingClientRect } from "../../../__test__/utils";
 import { act } from "@testing-library/preact";
@@ -17,7 +17,7 @@ import { isFieldDisabled } from "../isFieldDisabled";
 
 vi.mock("../../generators/generateOverlay", () => ({
     addFocusOverlay: vi.fn(),
-    hideFocusOverlay: vi.fn(),
+    hideOverlay: vi.fn(),
 }));
 
 vi.mock("../getEntryPermissionsCached", () => ({
@@ -44,10 +44,10 @@ vi.mock("../../utils/fieldSchemaMap", () => {
     };
 });
 
+
 describe("updateFocussedState", () => {
     beforeEach(() => {
-        let previousSelectedEditableDOM: HTMLElement;
-        previousSelectedEditableDOM = document.createElement("div");
+        const previousSelectedEditableDOM = document.createElement("div");
         previousSelectedEditableDOM.setAttribute(
             "data-cslp",
             "content_type_uid.entry_uid.locale.field_path"
@@ -72,7 +72,7 @@ describe("updateFocussedState", () => {
         expect(result).toBeUndefined();
     });
 
-    it("should hide focus overlay if newPreviousSelectedElement is not found", () => {
+    it("should call hideOverlay if newPreviousSelectedElement is not found", () => {
         const resizeObserverMock = {
             disconnect: vi.fn(),
         } as unknown as ResizeObserver;
@@ -93,7 +93,13 @@ describe("updateFocussedState", () => {
             resizeObserver: resizeObserverMock,
         });
 
-        expect(hideFocusOverlay).toHaveBeenCalled();
+        expect(hideOverlay).toHaveBeenCalledWith({
+            visualBuilderOverlayWrapper: overlayWrapperMock,
+            focusedToolbar: focusedToolbarMock,
+            visualBuilderContainer: visualBuilderContainerMock,
+            resizeObserver: resizeObserverMock,
+            noTrigger: true,
+        });
         spyQuerySelector.mockRestore();
     });
 
@@ -237,8 +243,7 @@ describe("updateFocussedState", () => {
 
 describe("updateFocussedStateOnMutation", () => {
     beforeEach(() => {
-        let previousSelectedEditableDOM: HTMLElement;
-        previousSelectedEditableDOM = document.createElement("div");
+        const previousSelectedEditableDOM = document.createElement("div");
         previousSelectedEditableDOM.setAttribute(
             "data-cslp",
             "content_type_uid.entry_uid.locale.field_path"
@@ -257,7 +262,7 @@ describe("updateFocussedStateOnMutation", () => {
         expect(result).toBeUndefined();
     });
 
-    it("should hide focus overlay if newSelectedElement is not found", () => {
+    it("should call hideOverlay if newSelectedElement is not found", () => {
         const resizeObserverMock = {
             disconnect: vi.fn(),
         } as unknown as ResizeObserver;
@@ -274,7 +279,13 @@ describe("updateFocussedStateOnMutation", () => {
             resizeObserverMock
         );
 
-        expect(hideFocusOverlay).toHaveBeenCalled();
+        expect(hideOverlay).toHaveBeenCalledWith({
+            visualBuilderOverlayWrapper: focusOverlayWrapperMock,
+            focusedToolbar: focusedToolbarMock,
+            visualBuilderContainer: visualBuilderContainerMock,
+            resizeObserver: resizeObserverMock,
+            noTrigger: true,
+        });
     });
 
     it("should update focus outline dimensions", () => {

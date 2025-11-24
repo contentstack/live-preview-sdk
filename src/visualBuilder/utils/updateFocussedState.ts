@@ -3,7 +3,7 @@ import { extractDetailsFromCslp } from "../../cslp";
 import { getAddInstanceButtons } from "../generators/generateAddInstanceButtons";
 import {
     addFocusOverlay,
-    hideFocusOverlay,
+    hideOverlay,
 } from "../generators/generateOverlay";
 import { hideHoverOutline } from "../listeners/mouseHover";
 import {
@@ -120,7 +120,7 @@ export async function updateFocussedState({
         ) ||
         document.querySelector(`[data-cslp="${previousSelectedElementCslp}"]`);
     if (!newPreviousSelectedElement && resizeObserver) {
-        hideFocusOverlay({
+        hideOverlay({
             visualBuilderOverlayWrapper: overlayWrapper,
             focusedToolbar,
             visualBuilderContainer,
@@ -265,7 +265,7 @@ export function updateFocussedStateOnMutation(
             `[data-cslp-unique-id="${selectedElementCslpUniqueId}"]`
         ) || document.querySelector(`[data-cslp="${selectedElementCslp}"]`);
     if (!newSelectedElement && resizeObserver) {
-        hideFocusOverlay({
+        hideOverlay({
             visualBuilderOverlayWrapper: focusOverlayWrapper,
             focusedToolbar,
             visualBuilderContainer,
