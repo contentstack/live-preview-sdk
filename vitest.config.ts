@@ -24,18 +24,13 @@ export default defineConfig({
                 "webpack.config.*",
                 "vitest.config.*",
                 "vitest.setup.*",
-
-                // test files
-                "**/__tests__/**",
-                "**/__test__/**",
-                "**/*.test.*",
             ],
             clean: false,
             reportsDirectory: "./coverage",
             reportOnFailure: true,
             reporter: process.env.CI
                 ? ["json-summary", "json"] // Fast & machine-readable on CI
-                : ["text", "html"], // Human-friendly locally
+                : ["text", "html", "json"], // Human-friendly locally
         },
         globals: true,
         setupFiles: "./vitest.setup.ts",
