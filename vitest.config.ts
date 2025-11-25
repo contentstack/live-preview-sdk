@@ -9,50 +9,41 @@ export default defineConfig({
         environment: "jsdom",
         coverage: {
             provider: "v8",
-            // Include all source files - Vitest 4 only analyzes imported files by default
-            // This is faster than analyzing all files (old 'all: true' behavior)
+            // Vitest 4: only imported files are analyzed, so include full source
             include: ["src/**/*.{ts,tsx}"],
             exclude: [
+                // Output / build
                 "dist/**",
                 "build/**",
                 "coverage/**",
-                "scripts/**",
-                "**/*.d.ts",
-                "node_modules/**",
-                "**/*.types.ts",
-                "**/*.test.*",
-                "**/*.test.tsx",
-                "**/*.mock.*",
-                "**/*.stories.*",
-                "**/__mocks__/**",
+
+                // Tooling & scripts
+                "vite.config.*",
+                "eslint.config.*",
+                "rollup.config.*",
+                "webpack.config.*",
+                "vitest.config.*",
+                "vitest.setup.*",
+
+                // test files
                 "**/__tests__/**",
                 "**/__test__/**",
-                "**/*.config.*",
-                "**/vite.config.*",
-                "**/eslint.config.*",
-                "**/webpack.config.*",
-                "**/rollup.config.*",
-                "vitest.reporter.ts",
-                "vitest.setup.ts",
-                "src/index.ts", // Entry point, usually not directly tested
+                "**/*.test.*",
             ],
             clean: false,
-            // Explicitly set coverage output directory
             reportsDirectory: "./coverage",
-            // Use minimal reporters in CI for speed - only what's needed
-            reporter: process.env.CI
-                ? ["json-summary", "json"] // Minimal: only json-summary for CI action, json for artifacts
-                : ["text", "html"], // Full reports locally
-            // Generate coverage even on test failures (needed for CI)
             reportOnFailure: true,
+            reporter: process.env.CI
+                ? ["json-summary", "json"] // Fast & machine-readable on CI
+                : ["text", "html"], // Human-friendly locally
         },
         globals: true,
         setupFiles: "./vitest.setup.ts",
         // Reduce retry attempts - with optimized tests, we don't need many retries
         retry: 0,
         // Timeouts - increased for CI to handle slower async operations
-        testTimeout: 200000,
-        hookTimeout: 200000,
+        testTimeout: 100000,
+        hookTimeout: 100000,
         teardownTimeout: 5000,
         // Enable file parallelization
         fileParallelism: true,
