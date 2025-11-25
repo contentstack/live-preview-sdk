@@ -106,6 +106,9 @@ describe("useCollabIndicator", () => {
         threadDiv.appendChild(mockButton);
         document.body.appendChild(threadDiv);
 
+        // Mock scrollIntoView for jsdom environment
+        threadDiv.scrollIntoView = vi.fn();
+
         act(() => {
             result.current.buttonRef.current = mockButton;
         });
@@ -177,10 +180,7 @@ describe("useCollabIndicator", () => {
         });
 
         expect(result.current.showPopup).toBe(false);
-        expect(Config.set).toHaveBeenCalledWith(
-            "collab.isFeedbackMode",
-            true
-        );
+        expect(Config.set).toHaveBeenCalledWith("collab.isFeedbackMode", true);
     });
 
     it("should remove parent div when closing popup if it has no threaduid", () => {

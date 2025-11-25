@@ -24,6 +24,7 @@ export default defineConfig({
                 "webpack.config.*",
                 "vitest.config.*",
                 "vitest.setup.*",
+                "src/visualBuilder/components/icons/fields/**",
             ],
             clean: false,
             reportsDirectory: "./coverage",
