@@ -7,6 +7,7 @@ import { VisualBuilderCslpEventDetails } from "../../types/visualBuilder.types";
 import { render } from "preact";
 import { LIVE_PREVIEW_OUTLINE_WIDTH_IN_PX } from "../../utils/constants";
 import React from "preact/compat";
+import { VisualBuilderPostMessageEvents } from "../../utils/types/postMessage.types";
 
 vi.mock("preact", () => ({
     render: vi.fn().mockImplementation((children, container) => {
@@ -20,6 +21,33 @@ vi.mock("../../components/FieldToolbar", () => ({
 
 vi.mock("../../components/fieldLabelWrapper", () => ({
     default: vi.fn().mockImplementation(() => <div>Test</div>),
+}));
+
+vi.mock("../../utils/visualBuilderPostMessage", () => ({
+    default: {
+        send: vi.fn().mockImplementation((eventName: string) => {
+            // Handle all post message requests to prevent unhandled rejections
+            if (
+                eventName ===
+                VisualBuilderPostMessageEvents.GET_FIELD_DISPLAY_NAMES
+            ) {
+                return Promise.resolve({});
+            }
+            if (eventName === VisualBuilderPostMessageEvents.GET_FIELD_SCHEMA) {
+                return Promise.resolve({});
+            }
+            if (
+                eventName === VisualBuilderPostMessageEvents.GET_CONTENT_TYPE_NAME
+            ) {
+                return Promise.resolve({ contentTypeName: "Test Content Type" });
+            }
+            if (eventName === VisualBuilderPostMessageEvents.REFERENCE_MAP) {
+                return Promise.resolve({});
+            }
+            // Default: resolve with empty object for any other event
+            return Promise.resolve({});
+        }),
+    },
 }));
 
 vi.mock("../../utils/fetchEntryPermissionsAndStageDetails", () => ({
