@@ -47,11 +47,11 @@ Object.defineProperty(globalThis, "crypto", {
     },
 });
 
-global.ResizeObserver = class ResizeObserver {
-    observe = vi.fn();
-    unobserve = vi.fn();
-    disconnect = vi.fn();
-} as any;
+global.ResizeObserver = vi.fn().mockImplementation(() => ({
+    observe: vi.fn(),
+    unobserve: vi.fn(),
+    disconnect: vi.fn(),
+}));
 
 describe("When outside the Visual Builder, the Visual Builder", () => {
     beforeAll(() => {

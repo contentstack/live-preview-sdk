@@ -107,6 +107,7 @@ describe("When an element is hovered in visual builder mode", () => {
             "all_fields",
             getFieldSchemaMap().all_fields
         );
+        // Vitest 4: Use class-based mocks for constructors
         global.ResizeObserver = class ResizeObserver {
             observe = vi.fn();
             unobserve = vi.fn();
@@ -338,7 +339,7 @@ describe("When an element is hovered in visual builder mode", () => {
             ) as HTMLElement;
             expect(hoverOutline).toHaveAttribute("style");
             matchDimensions(firstImageField, hoverOutline);
-            
+
             // Wait for cursor icon to be set (not "loading")
             await waitFor(
                 () => {

@@ -3,12 +3,10 @@
  */
 
 import { vi } from "vitest";
-import { EventManager } from "@contentstack/advanced-post-message";
 import { LIVE_PREVIEW_CHANNEL_ID } from "../livePreviewEventManager.constant";
 
 // Mock dependencies
 // Vitest 4: Use class-based mock for constructor with call tracking
-let mockEventManagerInstance: any;
 let constructorCalls: any[] = [];
 
 // Create stable references that persist across module resets
