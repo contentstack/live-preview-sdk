@@ -310,13 +310,6 @@ export default class ProfileReporter implements Reporter {
 
                         // Enhanced error reporting with better formatting
                         if (profile.errorDetails) {
-                            // Show timeout indicator first
-                            if (profile.errorDetails.timeout) {
-                                output.push(
-                                    `   ⏱️  TIMEOUT ERROR - Test exceeded timeout limit`
-                                );
-                            }
-
                             // Show failure location
                             if (profile.errorDetails.line) {
                                 const filePath = profile.file;
@@ -344,49 +337,6 @@ export default class ProfileReporter implements Reporter {
                                         );
                                     }
                                 }
-
-                                // Truncate long messages but keep important parts
-                                if (errorMsg.length > 400) {
-                                    errorMsg =
-                                        errorMsg.substring(0, 400) + "...";
-                                }
-
-                                // Clean up the message (remove file paths for readability)
-                                errorMsg = errorMsg.replace(
-                                    /\([^)]*\/[^/)]+\.test\.ts:\d+:\d+\)/g,
-                                    ""
-                                );
-
-                                output.push(`   💬 Message: ${errorMsg}`);
-                            }
-
-                            // Show relevant stack trace lines (first 6 lines, excluding node_modules)
-                            if (profile.errorDetails.stack) {
-                                const stackLines = profile.errorDetails.stack
-                                    .split("\n")
-                                    .filter(
-                                        (line) =>
-                                            !line.includes("node_modules") &&
-                                            line.trim()
-                                    )
-                                    .slice(0, 6);
-
-                                if (stackLines.length > 0) {
-                                    output.push(`   📚 Stack trace:`);
-                                    stackLines.forEach((line) => {
-                                        // Clean up file paths in stack trace
-                                        const cleanedLine = line
-                                            .replace(
-                                                /\([^)]*\/node_modules\/[^)]+\)/g,
-                                                ""
-                                            )
-                                            .replace(/at\s+/g, "   → ")
-                                            .trim();
-                                        if (cleanedLine) {
-                                            output.push(`      ${cleanedLine}`);
-                                        }
-                                    });
-                                }
                             }
                         } else if (profile.error) {
                             let errorMsg = profile.error;
@@ -400,25 +350,6 @@ export default class ProfileReporter implements Reporter {
                     });
             }
 
-            // Flaky tests (tests that needed retries but eventually passed)
-            const flakyTests = this.profiles.filter(
-                (p) => p.retries > 0 && p.status === "passed"
-            );
-            if (flakyTests.length > 0) {
-                output.push("\n" + "=".repeat(80));
-                output.push("⚠️  FLAKY TESTS (passed after retry):");
-                output.push("-".repeat(80));
-                flakyTests.forEach((profile) => {
-                    const fileName = path.basename(profile.file);
-                    output.push(`📁 ${fileName}`);
-                    output.push(`   Test: ${profile.name}`);
-                    output.push(`   Retries: ${profile.retries}`);
-                    output.push(
-                        `   Duration: ${(profile.duration / 1000).toFixed(2)}s\n`
-                    );
-                });
-            }
-
             output.push("\n" + "=".repeat(80) + "\n");
 
             // Print all output at once
@@ -430,39 +361,6 @@ export default class ProfileReporter implements Reporter {
                 console.log(finalOutput);
             } else {
                 console.log(finalOutput);
-            }
-
-            // Save detailed report to file in CI
-            if (process.env.CI) {
-                const report = {
-                    summary: {
-                        passed,
-                        failed,
-                        skipped,
-                        totalTests: this.profiles.length,
-                        retriedCount: retriedTests.length,
-                        totalDuration,
-                    },
-                    slowestTests: sorted.slice(0, 20),
-                    failedTests: this.profiles.filter(
-                        (p) => p.status === "failed"
-                    ),
-                    flakyTests: flakyTests,
-                    allTests: this.profiles,
-                };
-
-                try {
-                    await fs.writeFile(
-                        "test-profile-report.json",
-                        JSON.stringify(report, null, 2)
-                    );
-                    const saveMessage =
-                        "\n💾 Detailed profile saved to: test-profile-report.json\n";
-                    process.stderr.write(saveMessage);
-                    console.log(saveMessage);
-                } catch (error) {
-                    console.error("Failed to save profile report:", error);
-                }
             }
         } catch (error) {
             console.error("Error in profiling reporter:", error);

@@ -71,33 +71,6 @@ vi.mock("../../../utils/fetchEntryPermissionsAndStageDetails", () => ({
     }),
 }));
 
-// Mock waitForHoverOutline to wait for outline with optimized timeout
-// This speeds up tests while still ensuring the outline is actually present
-vi.mock("../../../../__test__/utils", async () => {
-    const actual = await vi.importActual<
-        typeof import("../../../../__test__/utils")
-    >("../../../../__test__/utils");
-    const { waitFor } = await import("@testing-library/preact");
-
-    return {
-        ...actual,
-        waitForHoverOutline: vi.fn().mockImplementation(async () => {
-            // Wait for outline with shorter timeout and faster polling for tests
-            await waitFor(
-                () => {
-                    const hoverOutline = document.querySelector(
-                        "[data-testid='visual-builder__hover-outline'][style]"
-                    );
-                    if (!hoverOutline) {
-                        throw new Error("Hover outline not found");
-                    }
-                },
-                { timeout: 5000, interval: 10 }
-            );
-        }),
-    };
-});
-
 vi.mock("../../../../utils/index.ts", async () => {
     const actual = await vi.importActual("../../../../utils");
     return {
@@ -153,7 +126,7 @@ describe("When an element is hovered in visual builder mode", () => {
 
     afterEach(async () => {
         // Wait longer for any pending async operations (like fetchEntryPermissionsAndStageDetails) to complete
-        await new Promise((resolve) => setTimeout(resolve, 500));
+        // await new Promise((resolve) => setTimeout(resolve, 500));
         document.getElementsByTagName("html")[0].innerHTML = "";
     });
 

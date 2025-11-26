@@ -272,10 +272,10 @@ describe("hideFocusOverlay", () => {
         fireEvent.click(focusOverlayWrapper);
         expect(focusOverlayWrapper.classList.contains("visible")).toBe(false);
 
-        // Need to wait a tick for async message sending
-        await new Promise((resolve) => setTimeout(resolve, 0));
-
-        expect(visualBuilderPostMessage?.send).toHaveBeenCalled();
+        // Wait for async message sending to complete
+        await waitFor(() => {
+            expect(visualBuilderPostMessage?.send).toHaveBeenCalled();
+        });
 
         expect(visualBuilderPostMessage?.send).toHaveBeenCalledWith(
             VisualBuilderPostMessageEvents.UPDATE_FIELD,
@@ -330,22 +330,5 @@ describe("hideFocusOverlay", () => {
         fireEvent.click(focusOverlayWrapper);
 
         expect(cleanIndividualFieldResidual).toHaveBeenCalledTimes(1);
-    });
-
-    // TODO: This test requires addKeyboardShortcuts() to be set up, which registers the Escape key listener
-    // Skipping for now as the keyboard shortcut infrastructure isn't initialized in this test suite
-    test.skip("should hide the overlay if the escape key is pressed", async () => {
-        expect(focusOverlayWrapper.classList.contains("visible")).toBe(true);
-
-        const escapeEvent = new KeyboardEvent("keydown", {
-            key: "Escape",
-        });
-        window.dispatchEvent(escapeEvent);
-
-        await waitFor(() => {
-            expect(focusOverlayWrapper.classList.contains("visible")).toBe(
-                false
-            );
-        });
     });
 });
