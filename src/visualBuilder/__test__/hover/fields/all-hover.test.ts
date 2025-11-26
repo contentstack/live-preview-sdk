@@ -19,7 +19,10 @@
  */
 
 import { getFieldSchemaMap } from "../../../../__test__/data/fieldSchemaMap";
-import { waitForHoverOutline } from "../../../../__test__/utils";
+import {
+    waitForHoverOutline,
+    waitForCursorIcon,
+} from "../../../../__test__/utils";
 import Config from "../../../../configManager/configManager";
 import { VisualBuilder } from "../../../index";
 import { FieldSchemaMap } from "../../../utils/fieldSchemaMap";
@@ -46,30 +49,33 @@ vi.mock("../../../utils/visualBuilderPostMessage", async () => {
     };
 });
 
-// Mock fetchEntryPermissionsAndStageDetails to resolve immediately - this is called during hover
 // Mock fetchEntryPermissionsAndStageDetails to resolve immediately - speeds up hover tests
-vi.mock("../../../utils/fetchEntryPermissionsAndStageDetails", () => ({
-    fetchEntryPermissionsAndStageDetails: vi.fn().mockResolvedValue({
-        acl: {
-            create: true,
-            read: true,
-            update: true,
-            delete: true,
-            publish: true,
-        },
-        workflowStage: {
-            stage: undefined,
-            permissions: {
-                entry: {
+vi.mock("../../../utils/fetchEntryPermissionsAndStageDetails", () => {
+    return {
+        fetchEntryPermissionsAndStageDetails: vi.fn(() =>
+            Promise.resolve({
+                acl: {
+                    create: true,
+                    read: true,
+                    update: true,
+                    delete: true,
+                    publish: true,
+                },
+                workflowStage: {
+                    stage: undefined,
+                    permissions: {
+                        entry: {
+                            update: true,
+                        },
+                    },
+                },
+                resolvedVariantPermissions: {
                     update: true,
                 },
-            },
-        },
-        resolvedVariantPermissions: {
-            update: true,
-        },
-    }),
-}));
+            })
+        ),
+    };
+});
 
 vi.mock("../../../../utils/index.ts", async () => {
     const actual = await vi.importActual("../../../../utils");
@@ -125,8 +131,6 @@ describe("When an element is hovered in visual builder mode", () => {
     });
 
     afterEach(async () => {
-        // Wait longer for any pending async operations (like fetchEntryPermissionsAndStageDetails) to complete
-        // await new Promise((resolve) => setTimeout(resolve, 500));
         document.getElementsByTagName("html")[0].innerHTML = "";
     });
 
@@ -165,18 +169,7 @@ describe("When an element is hovered in visual builder mode", () => {
             expect(hoverOutline).toHaveAttribute("style");
 
             // Wait for cursor icon to be set (not "loading")
-            await waitFor(
-                () => {
-                    const customCursor = document.querySelector(
-                        `[data-testid="visual-builder__cursor"]`
-                    );
-                    expect(customCursor).toHaveAttribute(
-                        "data-icon",
-                        SINGLE_FIELD.icon
-                    );
-                },
-                { timeout: 5000, interval: 10 }
-            );
+            await waitForCursorIcon(SINGLE_FIELD.icon, { timeout: 5000 });
 
             const customCursor = document.querySelector(
                 `[data-testid="visual-builder__cursor"]`
@@ -220,18 +213,7 @@ describe("When an element is hovered in visual builder mode", () => {
             expect(hoverOutline).toHaveAttribute("style");
 
             // Wait for cursor icon to be set (not "loading")
-            await waitFor(
-                () => {
-                    const customCursor = document.querySelector(
-                        `[data-testid="visual-builder__cursor"]`
-                    );
-                    expect(customCursor).toHaveAttribute(
-                        "data-icon",
-                        MULTIPLE_FIELD.icon
-                    );
-                },
-                { timeout: 5000, interval: 10 }
-            );
+            await waitForCursorIcon(MULTIPLE_FIELD.icon, { timeout: 5000 });
 
             const customCursor = document.querySelector(
                 `[data-testid="visual-builder__cursor"]`
@@ -297,18 +279,7 @@ describe("When an element is hovered in visual builder mode", () => {
             expect(hoverOutline).toHaveAttribute("style");
 
             // Wait for cursor icon to be set (not "loading")
-            await waitFor(
-                () => {
-                    const customCursor = document.querySelector(
-                        `[data-testid="visual-builder__cursor"]`
-                    );
-                    expect(customCursor).toHaveAttribute(
-                        "data-icon",
-                        MULTIPLE_FIELD.icon
-                    );
-                },
-                { timeout: 5000, interval: 10 }
-            );
+            await waitForCursorIcon(MULTIPLE_FIELD.icon, { timeout: 5000 });
 
             const customCursor = document.querySelector(
                 `[data-testid="visual-builder__cursor"]`
@@ -330,18 +301,7 @@ describe("When an element is hovered in visual builder mode", () => {
             expect(hoverOutline).toHaveAttribute("style");
 
             // Wait for cursor icon to be set (not "loading")
-            await waitFor(
-                () => {
-                    const customCursor = document.querySelector(
-                        `[data-testid="visual-builder__cursor"]`
-                    );
-                    expect(customCursor).toHaveAttribute(
-                        "data-icon",
-                        MULTIPLE_FIELD.icon
-                    );
-                },
-                { timeout: 5000, interval: 10 }
-            );
+            await waitForCursorIcon(MULTIPLE_FIELD.icon, { timeout: 5000 });
 
             const customCursor = document.querySelector(
                 `[data-testid="visual-builder__cursor"]`

@@ -6,10 +6,12 @@ import { VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY } from "../../../utils/constant
 import { FieldSchemaMap } from "../../../utils/fieldSchemaMap";
 import { getDOMEditStack } from "../../../utils/getCsDataOfElement";
 import visualBuilderPostMessage from "../../../utils/visualBuilderPostMessage";
-import { vi } from "vitest";
+import { Mock, vi } from "vitest";
 import { VisualBuilderPostMessageEvents } from "../../../utils/types/postMessage.types";
 import { VisualBuilder } from "../../../index";
 import { triggerAndWaitForClickAction } from "../../../../__test__/utils";
+
+const EXAMPLE_STAGE_NAME = "Example Stage";
 
 vi.mock("../../../components/FieldToolbar", () => {
     return {
@@ -99,6 +101,45 @@ describe("When an element is clicked in visual builder mode", () => {
         let visualBuilder: VisualBuilder;
 
         beforeAll(async () => {
+            (visualBuilderPostMessage?.send as Mock).mockImplementation(
+                (eventName: string, args?: any) => {
+                    switch (eventName) {
+                        case VisualBuilderPostMessageEvents.GET_FIELD_DATA:
+                            // Return appropriate field data based on entryPath
+                            if (args?.entryPath?.includes("file.url")) {
+                                return Promise.resolve({
+                                    fieldData: "https://example.com/image.jpg",
+                                });
+                            }
+                            return Promise.resolve({
+                                fieldData: {
+                                    uid: "file-uid",
+                                    url: "https://example.com/image.jpg",
+                                },
+                            });
+                        case VisualBuilderPostMessageEvents.GET_FIELD_DISPLAY_NAMES:
+                            return Promise.resolve({
+                                "all_fields.bltapikey.en-us.file": "File",
+                            });
+                        case VisualBuilderPostMessageEvents.GET_WORKFLOW_STAGE_DETAILS:
+                            return Promise.resolve({
+                                stage: { name: EXAMPLE_STAGE_NAME },
+                                permissions: {
+                                    entry: {
+                                        update: true,
+                                    },
+                                },
+                            });
+                        case VisualBuilderPostMessageEvents.GET_RESOLVED_VARIANT_PERMISSIONS:
+                            return Promise.resolve({
+                                update: true,
+                            });
+                        default:
+                            return Promise.resolve({});
+                    }
+                }
+            );
+
             fileField = document.createElement("p");
             fileField.setAttribute(
                 "data-cslp",
@@ -124,50 +165,18 @@ describe("When an element is clicked in visual builder mode", () => {
             visualBuilder.destroy();
         });
 
-        test("should have field type attribute set", () => {
-            // Field type is set during click - this is what actually happens
-            expect(fileField).toHaveAttribute("data-cslp-field-type", "file");
-        });
-
-        test("should have an overlay wrapper rendered", () => {
-            // Overlay wrapper is rendered (not checking for 'visible' class as it's conditional)
-            const overlayWrapper = document.querySelector(
-                ".visual-builder__overlay__wrapper"
+        // Common tests (field type, overlay, dropdown, focus message, no contenteditable) are covered in all-click.test.tsx
+        // Only testing unique behavior: file.url sub-fields can be clicked
+        test("should handle clicking on file.url sub-field", async () => {
+            // Click on the image field (file.url sub-field)
+            await triggerAndWaitForClickAction(
+                visualBuilderPostMessage,
+                imageField
             );
-            expect(overlayWrapper).not.toBeNull();
 
-            // Check that overlay elements exist
-            const overlay = document.querySelector(".visual-builder__overlay");
-            expect(overlay!.classList.contains("visible"));
-        });
-
-        test("should have a field path dropdown", () => {
-            // Component is already rendered from beforeAll setup
-            const toolbar = screen.getByTestId("mock-field-label-wrapper");
-            expect(toolbar).toBeInTheDocument();
-        });
-
-        test("should contain a data-cslp-field-type attribute", async () => {
-            await waitFor(() => {
-                expect(fileField).toHaveAttribute(
-                    VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
-                );
-            });
-        });
-
-        test("should not contain a contenteditable attribute", async () => {
-            await waitFor(() => {
-                expect(fileField).not.toHaveAttribute("contenteditable");
-            });
-        });
-
-        test("should send a focus field message to parent", () => {
-            // Mock function calls are tracked synchronously
-            expect(visualBuilderPostMessage?.send).toBeCalledWith(
-                VisualBuilderPostMessageEvents.FOCUS_FIELD,
-                {
-                    DOMEditStack: getDOMEditStack(fileField),
-                }
+            // Verify the sub-field also gets the field type attribute
+            expect(imageField).toHaveAttribute(
+                VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
             );
         });
     });
@@ -181,6 +190,57 @@ describe("When an element is clicked in visual builder mode", () => {
         let visualBuilder: VisualBuilder;
 
         beforeAll(async () => {
+            (visualBuilderPostMessage?.send as Mock).mockImplementation(
+                (eventName: string, args?: any) => {
+                    switch (eventName) {
+                        case VisualBuilderPostMessageEvents.GET_FIELD_DATA: {
+                            const values: Record<string, any> = {
+                                file_multiple_: [
+                                    {
+                                        uid: "file-uid-1",
+                                        url: "https://example.com/image1.jpg",
+                                    },
+                                    {
+                                        uid: "file-uid-2",
+                                        url: "https://example.com/image2.jpg",
+                                    },
+                                ],
+                                "file_multiple_.0": {
+                                    uid: "file-uid-1",
+                                    url: "https://example.com/image1.jpg",
+                                },
+                                "file_multiple_.1": {
+                                    uid: "file-uid-2",
+                                    url: "https://example.com/image2.jpg",
+                                },
+                                "file_multiple_.0.url":
+                                    "https://example.com/image1.jpg",
+                                "file_multiple_.1.url":
+                                    "https://example.com/image2.jpg",
+                            };
+                            return Promise.resolve({
+                                fieldData: values[args?.entryPath] || {},
+                            });
+                        }
+                        case VisualBuilderPostMessageEvents.GET_WORKFLOW_STAGE_DETAILS:
+                            return Promise.resolve({
+                                stage: { name: EXAMPLE_STAGE_NAME },
+                                permissions: {
+                                    entry: {
+                                        update: true,
+                                    },
+                                },
+                            });
+                        case VisualBuilderPostMessageEvents.GET_RESOLVED_VARIANT_PERMISSIONS:
+                            return Promise.resolve({
+                                update: true,
+                            });
+                        default:
+                            return Promise.resolve({});
+                    }
+                }
+            );
+
             container = document.createElement("div");
             container.setAttribute(
                 "data-cslp",
@@ -228,65 +288,25 @@ describe("When an element is clicked in visual builder mode", () => {
             visualBuilder.destroy();
         });
 
-        test("should have field type attribute set", () => {
-            // Field type is set during click - this is what actually happens
-            expect(container).toHaveAttribute("data-cslp-field-type", "file");
-        });
-
-        test("should have an overlay wrapper rendered", () => {
-            // Overlay wrapper is rendered (not checking for 'visible' class as it's conditional)
-            const overlayWrapper = document.querySelector(
-                ".visual-builder__overlay__wrapper"
+        // Common tests (field type, overlay, dropdown, focus message, no contenteditable) are covered in all-click.test.tsx
+        // Only testing unique behavior: file.url sub-fields in multiple file fields
+        test("should handle clicking on file.url sub-fields in multiple file fields", async () => {
+            // Click on first image field (file.url sub-field)
+            await triggerAndWaitForClickAction(
+                visualBuilderPostMessage,
+                firstImageField
             );
-            expect(overlayWrapper).not.toBeNull();
+            expect(firstImageField).toHaveAttribute(
+                VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
+            );
 
-            // Check that overlay elements exist
-            const overlay = document.querySelector(".visual-builder__overlay");
-            expect(overlay!.classList.contains("visible"));
-        });
-
-        test("should have a field path dropdown", () => {
-            // Component is already rendered from beforeAll setup
-            const toolbar = screen.getByTestId("mock-field-label-wrapper");
-            expect(toolbar).toBeInTheDocument();
-        });
-
-        test("should contain a data-cslp-field-type attribute", async () => {
-            await waitFor(() => {
-                expect(container).toHaveAttribute(
-                    VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
-                );
-            });
-        });
-
-        test("both container and its children should not contain a contenteditable attribute", async () => {
-            fireEvent.click(container);
-            await waitFor(() => {
-                expect(container).not.toHaveAttribute("contenteditable");
-            });
-
-            fireEvent.click(container.children[0]);
-            await waitFor(() => {
-                expect(container.children[0]).not.toHaveAttribute(
-                    "contenteditable"
-                );
-            });
-
-            fireEvent.click(container.children[1]);
-            await waitFor(() => {
-                expect(container.children[1]).not.toHaveAttribute(
-                    "contenteditable"
-                );
-            });
-        });
-
-        test("should send a focus field message to parent", () => {
-            // Mock function calls are tracked synchronously
-            expect(visualBuilderPostMessage?.send).toBeCalledWith(
-                VisualBuilderPostMessageEvents.FOCUS_FIELD,
-                {
-                    DOMEditStack: getDOMEditStack(container),
-                }
+            // Click on second image field
+            await triggerAndWaitForClickAction(
+                visualBuilderPostMessage,
+                secondImageField
+            );
+            expect(secondImageField).toHaveAttribute(
+                VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
             );
         });
     });

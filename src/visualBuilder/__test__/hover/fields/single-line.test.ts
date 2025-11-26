@@ -41,28 +41,32 @@ vi.mock("../../../../utils/index.ts", async () => {
 });
 
 // Mock fetchEntryPermissionsAndStageDetails to resolve immediately - speeds up hover tests
-vi.mock("../../../utils/fetchEntryPermissionsAndStageDetails", () => ({
-    fetchEntryPermissionsAndStageDetails: vi.fn().mockResolvedValue({
-        acl: {
-            create: true,
-            read: true,
-            update: true,
-            delete: true,
-            publish: true,
-        },
-        workflowStage: {
-            stage: undefined,
-            permissions: {
-                entry: {
+vi.mock("../../../utils/fetchEntryPermissionsAndStageDetails", () => {
+    return {
+        fetchEntryPermissionsAndStageDetails: vi.fn(() =>
+            Promise.resolve({
+                acl: {
+                    create: true,
+                    read: true,
+                    update: true,
+                    delete: true,
+                    publish: true,
+                },
+                workflowStage: {
+                    stage: undefined,
+                    permissions: {
+                        entry: {
+                            update: true,
+                        },
+                    },
+                },
+                resolvedVariantPermissions: {
                     update: true,
                 },
-            },
-        },
-        resolvedVariantPermissions: {
-            update: true,
-        },
-    }),
-}));
+            })
+        ),
+    };
+});
 
 describe("When an element is hovered in visual builder mode", () => {
     let mousemoveEvent: Event;
@@ -83,11 +87,7 @@ describe("When an element is hovered in visual builder mode", () => {
         });
     });
 
-    afterEach(async () => {
-        // Wait longer for any pending async operations (like fetchEntryPermissionsAndStageDetails) to complete
-        // await new Promise((resolve) => setTimeout(resolve, 500));
-        // Don't clear mocks here - it causes unhandled rejections in async code
-        // vi.clearAllMocks();
+    afterEach(() => {
         document.getElementsByTagName("html")[0].innerHTML = "";
     });
 

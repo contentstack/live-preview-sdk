@@ -83,6 +83,44 @@ export const waitForToolbaxToBeVisible = async () => {
         expect(toolbar).not.toBeNull();
     });
 }
+
+export const waitForCursorToBeVisible = async (options?: {
+    timeout?: number;
+    interval?: number;
+}) => {
+    await waitFor(
+        () => {
+            const customCursor = document.querySelector(
+                `[data-testid="visual-builder__cursor"]`
+            );
+            if (!customCursor) throw new Error("Cursor not found");
+            expect(customCursor.classList.contains("visible")).toBeTruthy();
+        },
+        {
+            timeout: options?.timeout ?? 2000, // Default 2s timeout for cursor to be visible
+            interval: options?.interval ?? 10, // Faster polling: 10ms default
+        }
+    );
+};
+
+export const waitForCursorIcon = async (
+    icon: string,
+    options?: { timeout?: number; interval?: number }
+) => {
+    await waitFor(
+        () => {
+            const customCursor = document.querySelector(
+                `[data-testid="visual-builder__cursor"]`
+            );
+            if (!customCursor) throw new Error("Cursor not found");
+            expect(customCursor).toHaveAttribute("data-icon", icon);
+        },
+        {
+            timeout: options?.timeout ?? 2000, // Default 2s timeout for cursor icon
+            interval: options?.interval ?? 10, // Faster polling: 10ms default
+        }
+    );
+};
 const defaultRect = {
     left: 10,
     right: 20,
