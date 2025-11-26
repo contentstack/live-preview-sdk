@@ -38,11 +38,6 @@ describe("useInfiniteScroll", () => {
         vi.clearAllMocks();
     });
 
-    afterEach(async () => {
-        // Wait for any pending async operations (like cancelAnimationFrame callbacks) to complete
-        await new Promise((resolve) => setTimeout(resolve, 500));
-    });
-
     it("does not fetch more when isFetching is true", async () => {
         const loadMore = vi.fn();
         const { container } = render(
