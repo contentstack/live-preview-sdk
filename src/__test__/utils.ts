@@ -36,14 +36,23 @@ export async function sleep(waitTimeInMs = 100): Promise<void> {
     return new Promise((resolve) => setTimeout(resolve, waitTimeInMs));
 }
 
-export const waitForHoverOutline = async () => {
-    await waitFor(() => {
-        const hoverOutline = document.querySelector(
-            "[data-testid='visual-builder__hover-outline'][style]"
-        );
-        expect(hoverOutline).not.toBeNull();
-    });
-}
+export const waitForHoverOutline = async (options?: {
+    timeout?: number;
+    interval?: number;
+}) => {
+    await waitFor(
+        () => {
+            const hoverOutline = document.querySelector(
+                "[data-testid='visual-builder__hover-outline'][style]"
+            );
+            expect(hoverOutline).not.toBeNull();
+        },
+        {
+            timeout: options?.timeout ?? 5000, // Default 5s timeout for hover outline to appear
+            interval: options?.interval ?? 10, // Faster polling: 10ms default
+        }
+    );
+};
 export const waitForBuilderSDKToBeInitialized = async (visualBuilderPostMessage: EventManager | undefined) => {
     await waitFor(() => {
         expect(visualBuilderPostMessage?.send).toBeCalledWith(
