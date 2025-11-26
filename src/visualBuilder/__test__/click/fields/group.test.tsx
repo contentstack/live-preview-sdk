@@ -118,55 +118,26 @@ describe("When an element is clicked in visual builder mode", () => {
             visualBuilder.destroy();
         });
 
-        test("should have field type attribute set", () => {
-            // Field type is set during click - this is what actually happens
-            expect(groupField).toHaveAttribute(
-                "data-cslp-field-type",
-                "group"
+        // Common tests (field type, overlay, dropdown, focus message, no contenteditable) are covered in all-click.test.tsx
+        // Only testing unique behavior: nested fields within group can be clicked
+        test("should handle clicking on nested field within group", async () => {
+            // Create a nested field
+            const nestedField = document.createElement("p");
+            nestedField.setAttribute(
+                "data-cslp",
+                "all_fields.bltapikey.en-us.group.single_line"
             );
-        });
+            groupField.appendChild(nestedField);
 
-        test("should have an overlay wrapper rendered", () => {
-            // Overlay wrapper is rendered (not checking for 'visible' class as it's conditional)
-            const overlayWrapper = document.querySelector(
-                ".visual-builder__overlay__wrapper"
+            // Click on the nested field
+            await triggerAndWaitForClickAction(
+                visualBuilderPostMessage,
+                nestedField
             );
-            expect(overlayWrapper).not.toBeNull();
-            
-            // Check that overlay elements exist
-            const overlay = document.querySelector(".visual-builder__overlay");
-            expect(overlay!.classList.contains("visible"));
-        });
 
-        test("should have a field path dropdown", () => {
-            // Component is already rendered from beforeAll setup
-            const toolbar = screen.getByTestId(
-                "mock-field-label-wrapper"
-            );
-            expect(toolbar).toBeInTheDocument();
-        });
-
-        test("should contain a data-cslp-field-type attribute", async () => {
-            await waitFor(() => {
-                expect(groupField).toHaveAttribute(
-                    VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
-                );
-            });
-        });
-
-        test("should not contain a contenteditable attribute", async () => {
-            await waitFor(() => {
-                expect(groupField).not.toHaveAttribute("contenteditable");
-            });
-        });
-
-        test("should send a focus field message to parent", () => {
-            // Mock function calls are tracked synchronously
-            expect(visualBuilderPostMessage?.send).toBeCalledWith(
-                VisualBuilderPostMessageEvents.FOCUS_FIELD,
-                {
-                    DOMEditStack: getDOMEditStack(groupField),
-                }
+            // Verify the nested field gets the field type attribute
+            expect(nestedField).toHaveAttribute(
+                VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
             );
         });
     });
@@ -221,55 +192,18 @@ describe("When an element is clicked in visual builder mode", () => {
             visualBuilder.destroy();
         });
 
-        test("should have field type attribute set", () => {
-            // Field type is set during click - this is what actually happens
-            expect(container).toHaveAttribute(
-                "data-cslp-field-type",
-                "group"
+        // Common tests (field type, overlay, dropdown, focus message, no contenteditable) are covered in all-click.test.tsx
+        // Only testing unique behavior: nested fields within multiple group fields
+        test("should handle clicking on nested field within multiple group fields", async () => {
+            // Click on the nested multi-line field within the first group
+            await triggerAndWaitForClickAction(
+                visualBuilderPostMessage,
+                firstNestedMultiLine
             );
-        });
 
-        test("should have an overlay wrapper rendered", () => {
-            // Overlay wrapper is rendered (not checking for 'visible' class as it's conditional)
-            const overlayWrapper = document.querySelector(
-                ".visual-builder__overlay__wrapper"
-            );
-            expect(overlayWrapper).not.toBeNull();
-            
-            // Check that overlay elements exist
-            const overlay = document.querySelector(".visual-builder__overlay");
-            expect(overlay!.classList.contains("visible"));
-        });
-
-        test("should have a field path dropdown", () => {
-            // Component is already rendered from beforeAll setup
-            const toolbar = screen.getByTestId(
-                "mock-field-label-wrapper"
-            );
-            expect(toolbar).toBeInTheDocument();
-        });
-
-        test("should contain a data-cslp-field-type attribute", async () => {
-            await waitFor(() => {
-                expect(container).toHaveAttribute(
-                    VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
-                );
-            });
-        });
-
-        test("should not contain a contenteditable attribute", async () => {
-            await waitFor(() => {
-                expect(container).not.toHaveAttribute("contenteditable");
-            });
-        });
-
-        test("should send a focus field message to parent", () => {
-            // Mock function calls are tracked synchronously
-            expect(visualBuilderPostMessage?.send).toBeCalledWith(
-                VisualBuilderPostMessageEvents.FOCUS_FIELD,
-                {
-                    DOMEditStack: getDOMEditStack(container),
-                }
+            // Verify the nested field gets the field type attribute
+            expect(firstNestedMultiLine).toHaveAttribute(
+                VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
             );
         });
     });

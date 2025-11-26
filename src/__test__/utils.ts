@@ -36,14 +36,23 @@ export async function sleep(waitTimeInMs = 100): Promise<void> {
     return new Promise((resolve) => setTimeout(resolve, waitTimeInMs));
 }
 
-export const waitForHoverOutline = async () => {
-    await waitFor(() => {
-        const hoverOutline = document.querySelector(
-            "[data-testid='visual-builder__hover-outline'][style]"
-        );
-        expect(hoverOutline).not.toBeNull();
-    });
-}
+export const waitForHoverOutline = async (options?: {
+    timeout?: number;
+    interval?: number;
+}) => {
+    await waitFor(
+        () => {
+            const hoverOutline = document.querySelector(
+                "[data-testid='visual-builder__hover-outline'][style]"
+            );
+            expect(hoverOutline).not.toBeNull();
+        },
+        {
+            timeout: options?.timeout ?? 5000, // Default 5s timeout for hover outline to appear
+            interval: options?.interval ?? 10, // Faster polling: 10ms default
+        }
+    );
+};
 export const waitForBuilderSDKToBeInitialized = async (visualBuilderPostMessage: EventManager | undefined) => {
     await waitFor(() => {
         expect(visualBuilderPostMessage?.send).toBeCalledWith(
@@ -74,6 +83,44 @@ export const waitForToolbaxToBeVisible = async () => {
         expect(toolbar).not.toBeNull();
     });
 }
+
+export const waitForCursorToBeVisible = async (options?: {
+    timeout?: number;
+    interval?: number;
+}) => {
+    await waitFor(
+        () => {
+            const customCursor = document.querySelector(
+                `[data-testid="visual-builder__cursor"]`
+            );
+            if (!customCursor) throw new Error("Cursor not found");
+            expect(customCursor.classList.contains("visible")).toBeTruthy();
+        },
+        {
+            timeout: options?.timeout ?? 2000, // Default 2s timeout for cursor to be visible
+            interval: options?.interval ?? 10, // Faster polling: 10ms default
+        }
+    );
+};
+
+export const waitForCursorIcon = async (
+    icon: string,
+    options?: { timeout?: number; interval?: number }
+) => {
+    await waitFor(
+        () => {
+            const customCursor = document.querySelector(
+                `[data-testid="visual-builder__cursor"]`
+            );
+            if (!customCursor) throw new Error("Cursor not found");
+            expect(customCursor).toHaveAttribute("data-icon", icon);
+        },
+        {
+            timeout: options?.timeout ?? 2000, // Default 2s timeout for cursor icon
+            interval: options?.interval ?? 10, // Faster polling: 10ms default
+        }
+    );
+};
 const defaultRect = {
     left: 10,
     right: 20,

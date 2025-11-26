@@ -1,10 +1,15 @@
 import { screen, waitFor } from "@testing-library/preact";
 import { getFieldSchemaMap } from "../../../../__test__/data/fieldSchemaMap";
-import { waitForHoverOutline } from "../../../../__test__/utils";
+import {
+    waitForHoverOutline,
+    waitForCursorToBeVisible,
+    waitForCursorIcon,
+} from "../../../../__test__/utils";
 import Config from "../../../../configManager/configManager";
 import { VisualBuilder } from "../../../index";
 import { FieldSchemaMap } from "../../../utils/fieldSchemaMap";
 import { mockDomRect } from "./mockDomRect";
+import("@testing-library/preact");
 
 vi.mock("../../../utils/visualBuilderPostMessage", async () => {
     const { getAllContentTypes } = await vi.importActual<
@@ -26,33 +31,6 @@ vi.mock("../../../utils/visualBuilderPostMessage", async () => {
     };
 });
 
-// Mock waitForHoverOutline to wait for outline with optimized timeout
-// This speeds up tests while still ensuring the outline is actually present
-vi.mock("../../../../__test__/utils", async () => {
-    const actual = await vi.importActual<
-        typeof import("../../../../__test__/utils")
-    >("../../../../__test__/utils");
-    const { waitFor } = await import("@testing-library/preact");
-
-    return {
-        ...actual,
-        waitForHoverOutline: vi.fn().mockImplementation(async () => {
-            // Wait for outline with shorter timeout and faster polling for tests
-            await waitFor(
-                () => {
-                    const hoverOutline = document.querySelector(
-                        "[data-testid='visual-builder__hover-outline'][style]"
-                    );
-                    if (!hoverOutline) {
-                        throw new Error("Hover outline not found");
-                    }
-                },
-                { timeout: 2000, interval: 10 } // Optimized: reduced from 5s/50ms to 2s/10ms
-            );
-        }),
-    };
-});
-
 vi.mock("../../../../utils/index.ts", async () => {
     const actual = await vi.importActual("../../../../utils");
     return {
@@ -62,30 +40,32 @@ vi.mock("../../../../utils/index.ts", async () => {
     };
 });
 
-// Mock fetchEntryPermissionsAndStageDetails to resolve immediately - speeds up hover tests
-vi.mock("../../../utils/fetchEntryPermissionsAndStageDetails", () => ({
-    fetchEntryPermissionsAndStageDetails: vi.fn().mockResolvedValue({
-        acl: {
-            create: true,
-            read: true,
-            update: true,
-            delete: true,
-            publish: true,
-        },
-        workflowStage: {
-            stage: undefined,
-            permissions: {
-                entry: {
+vi.mock("../../../utils/fetchEntryPermissionsAndStageDetails", () => {
+    return {
+        fetchEntryPermissionsAndStageDetails: vi.fn(() =>
+            Promise.resolve({
+                acl: {
+                    create: true,
+                    read: true,
+                    update: true,
+                    delete: true,
+                    publish: true,
+                },
+                workflowStage: {
+                    stage: undefined,
+                    permissions: {
+                        entry: {
+                            update: true,
+                        },
+                    },
+                },
+                resolvedVariantPermissions: {
                     update: true,
                 },
-            },
-        },
-        resolvedVariantPermissions: {
-            update: true,
-        },
-    }),
-}));
-
+            })
+        ),
+    };
+});
 const convertToPx = (value: number) => {
     return `${value}px`;
 };
@@ -133,7 +113,7 @@ describe("When an element is hovered in visual builder mode", () => {
 
     afterEach(async () => {
         // Wait longer for any pending async operations (like fetchEntryPermissionsAndStageDetails) to complete
-        await new Promise((resolve) => setTimeout(resolve, 500));
+        // await new Promise((resolve) => setTimeout(resolve, 500));
         document.getElementsByTagName("html")[0].innerHTML = "";
     });
 
@@ -198,7 +178,6 @@ describe("When an element is hovered in visual builder mode", () => {
             expect(hoverOutline).toHaveAttribute("style");
 
             // Wait for cursor icon to be set (not "loading") - optimized timeout
-            const { waitFor } = await import("@testing-library/preact");
             await waitFor(
                 () => {
                     const customCursor = document.querySelector(
@@ -296,16 +275,7 @@ describe("When an element is hovered in visual builder mode", () => {
             expect(hoverOutline).toHaveAttribute("style");
 
             // Wait for cursor icon to be set (not "loading")
-            await waitFor(
-                () => {
-                    const customCursor = document.querySelector(
-                        `[data-testid="visual-builder__cursor"]`
-                    );
-                    if (!customCursor) throw new Error("Cursor not found");
-                    expect(customCursor.getAttribute("data-icon")).toBe("file");
-                },
-                { timeout: 2000, interval: 10 } // Optimized timeout
-            );
+            await waitForCursorIcon("file");
 
             const customCursor = document.querySelector(
                 `[data-testid="visual-builder__cursor"]`
@@ -341,16 +311,7 @@ describe("When an element is hovered in visual builder mode", () => {
             matchDimensions(firstImageField, hoverOutline);
 
             // Wait for cursor icon to be set (not "loading")
-            await waitFor(
-                () => {
-                    const customCursor = document.querySelector(
-                        `[data-testid="visual-builder__cursor"]`
-                    );
-                    if (!customCursor) throw new Error("Cursor not found");
-                    expect(customCursor.classList.contains("visible")).toBeTruthy();
-                },
-                { timeout: 2000, interval: 10 } // Optimized timeout
-            );
+            await waitForCursorToBeVisible();
 
             const customCursor = document.querySelector(
                 `[data-testid="visual-builder__cursor"]`
