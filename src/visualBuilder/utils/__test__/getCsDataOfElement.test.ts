@@ -217,4 +217,46 @@ describe("getDOMEditStack", () => {
         const editStack = getDOMEditStack(leafEl);
         expect(editStack.length).toBe(2);
     });
+
+    test("get dom edit stack should filter out elements with same prefix", () => {
+        const dom = new JSDOM(`
+            <div data-cslp="page.pageuid.en-us.group">
+                <div data-cslp="page.pageuid.en-us.group.field1">
+                    <div data-cslp="page.pageuid.en-us.group.field1.nested">
+                        <span data-cslp="page.pageuid.en-us.group.field1.nested.leaf">leaf</span>
+                    </div>
+                </div>
+            </div>
+        `).window.document;
+        const leafEl = dom.querySelector(
+            '[data-cslp="page.pageuid.en-us.group.field1.nested.leaf"]'
+        ) as HTMLElement;
+        const editStack = getDOMEditStack(leafEl);
+        // Should only have one entry since all have same prefix (page.pageuid.en-us)
+        expect(editStack.length).toBe(1);
+        expect(editStack[0].content_type_uid).toBe("page");
+        expect(editStack[0].entry_uid).toBe("pageuid");
+    });
+
+    test("get dom edit stack should filter out elements with invalid data-cslp attribute", () => {
+        const dom = new JSDOM(`
+            <div data-cslp="page.pageuid.en-us.group">
+                <div data-cslp>
+                    <div data-cslp="">
+                        <div data-cslp="blog.bloguid.fr-fr.title">
+                            <span data-cslp="blog.bloguid.fr-fr.title.name">name</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `).window.document;
+        const leafEl = dom.querySelector(
+            '[data-cslp="blog.bloguid.fr-fr.title.name"]'
+        ) as HTMLElement;
+        const editStack = getDOMEditStack(leafEl);
+        // Should have two entries (page, blog) - invalid cslp attributes (empty or no value) should be filtered out
+        expect(editStack.length).toBe(2);
+        expect(editStack[0].content_type_uid).toBe("page");
+        expect(editStack[1].content_type_uid).toBe("blog");
+    });
 });

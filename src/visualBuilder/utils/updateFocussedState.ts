@@ -136,6 +136,9 @@ export async function updateFocussedState({
     }
 
     const cslp = editableElement?.getAttribute("data-cslp") || "";
+    if (!cslp) {
+        return;
+    }
     const fieldMetadata = extractDetailsFromCslp(cslp);
 
     hideHoverOutline(visualBuilderContainer);
