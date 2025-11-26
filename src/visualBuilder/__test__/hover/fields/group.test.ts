@@ -1,5 +1,8 @@
 import { getFieldSchemaMap } from "../../../../__test__/data/fieldSchemaMap";
-import { waitForHoverOutline } from "../../../../__test__/utils";
+import {
+    waitForHoverOutline,
+    waitForCursorIcon,
+} from "../../../../__test__/utils";
 import Config from "../../../../configManager/configManager";
 import { FieldSchemaMap } from "../../../utils/fieldSchemaMap";
 import { mockDomRect } from "./mockDomRect";
@@ -37,6 +40,34 @@ vi.mock("../../../../utils/index.ts", async () => {
         __esModule: true,
         ...actual,
         isOpenInBuilder: vi.fn().mockReturnValue(true),
+    };
+});
+
+// Mock fetchEntryPermissionsAndStageDetails to resolve immediately - speeds up hover tests
+vi.mock("../../../utils/fetchEntryPermissionsAndStageDetails", () => {
+    return {
+        fetchEntryPermissionsAndStageDetails: vi.fn(() =>
+            Promise.resolve({
+                acl: {
+                    create: true,
+                    read: true,
+                    update: true,
+                    delete: true,
+                    publish: true,
+                },
+                workflowStage: {
+                    stage: undefined,
+                    permissions: {
+                        entry: {
+                            update: true,
+                        },
+                    },
+                },
+                resolvedVariantPermissions: {
+                    update: true,
+                },
+            })
+        ),
     };
 });
 
@@ -112,17 +143,8 @@ describe("When an element is hovered in visual builder mode", () => {
             );
             expect(hoverOutline).toHaveAttribute("style");
 
-            // Wait for cursor icon to be set (not "loading") - optimized timeout
-            const { waitFor } = await import("@testing-library/preact");
-            await waitFor(
-                () => {
-                    const customCursor = document.querySelector(
-                        `[data-testid="visual-builder__cursor"]`
-                    );
-                    expect(customCursor).toHaveAttribute("data-icon", "group");
-                },
-                { timeout: 2000, interval: 10 } // Optimized: reduced timeout and faster polling
-            );
+            // Wait for cursor icon to be set (not "loading")
+            await waitForCursorIcon("group");
 
             const customCursor = document.querySelector(
                 `[data-testid="visual-builder__cursor"]`
@@ -151,20 +173,8 @@ describe("When an element is hovered in visual builder mode", () => {
             );
             expect(hoverOutline).toHaveAttribute("style");
 
-            // Wait for cursor icon to be set (not "loading") - optimized timeout
-            const { waitFor } = await import("@testing-library/preact");
-            await waitFor(
-                () => {
-                    const customCursor = document.querySelector(
-                        `[data-testid="visual-builder__cursor"]`
-                    );
-                    expect(customCursor).toHaveAttribute(
-                        "data-icon",
-                        "singleline"
-                    );
-                },
-                { timeout: 2000, interval: 10 } // Optimized: reduced timeout and faster polling
-            );
+            // Wait for cursor icon to be set (not "loading")
+            await waitForCursorIcon("singleline");
 
             const customCursor = document.querySelector(
                 `[data-testid="visual-builder__cursor"]`
@@ -245,17 +255,7 @@ describe("When an element is hovered in visual builder mode", () => {
             expect(hoverOutline).toHaveAttribute("style");
 
             // Wait for cursor icon to be set (not "loading")
-            const { waitFor } = await import("@testing-library/preact");
-            await waitFor(
-                () => {
-                    const customCursor = document.querySelector(
-                        `[data-testid="visual-builder__cursor"]`
-                    );
-                    if (!customCursor) throw new Error("Cursor not found");
-                    expect(customCursor).toHaveAttribute("data-icon", "group");
-                },
-                { timeout: 2000, interval: 10 } // Optimized timeout
-            );
+            await waitForCursorIcon("group");
 
             const customCursor = document.querySelector(
                 `[data-testid="visual-builder__cursor"]`
@@ -274,17 +274,7 @@ describe("When an element is hovered in visual builder mode", () => {
             expect(hoverOutline).toHaveAttribute("style");
 
             // Wait for cursor icon to be set (not "loading")
-            const { waitFor } = await import("@testing-library/preact");
-            await waitFor(
-                () => {
-                    const customCursor = document.querySelector(
-                        `[data-testid="visual-builder__cursor"]`
-                    );
-                    if (!customCursor) throw new Error("Cursor not found");
-                    expect(customCursor).toHaveAttribute("data-icon", "multiline");
-                },
-                { timeout: 2000, interval: 10 } // Optimized timeout
-            );
+            await waitForCursorIcon("multiline");
 
             const customCursor = document.querySelector(
                 `[data-testid="visual-builder__cursor"]`
