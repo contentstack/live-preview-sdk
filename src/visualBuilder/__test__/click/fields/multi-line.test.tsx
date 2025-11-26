@@ -140,52 +140,11 @@ describe("When an element is clicked in visual builder mode", () => {
             visualBuilder.destroy();
         });
 
-        test("should have field type attribute set", () => {
-            // Field type is set during click - this is what actually happens
-            expect(multiLineField).toHaveAttribute(
-                "data-cslp-field-type",
-                "multiline"
-            );
-        });
-
-        test("should have an overlay wrapper rendered", () => {
-            // Overlay wrapper is rendered (not checking for 'visible' class as it's conditional)
-            const overlayWrapper = document.querySelector(
-                ".visual-builder__overlay__wrapper"
-            );
-            expect(overlayWrapper).not.toBeNull();
-
-            // Check that overlay elements exist
-            const overlay = document.querySelector(".visual-builder__overlay");
-            expect(overlay!.classList.contains("visible"));
-        });
-
-        test("should have a field path dropdown", () => {
-            // Component is already rendered from beforeAll setup
-            const toolbar = screen.getByTestId("mock-field-label-wrapper");
-            expect(toolbar).toBeInTheDocument();
-        });
-
-        test("should contain a data-cslp-field-type attribute", () => {
-            // Attribute is set synchronously
-            expect(multiLineField).toHaveAttribute(
-                VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
-            );
-        });
-
+        // Common tests (field type, overlay, dropdown, focus message) are covered in all-click.test.tsx
+        // Only testing unique behavior: contenteditable attribute for editable fields
         test("should contain a contenteditable attribute", () => {
             // Attribute is set synchronously
             expect(multiLineField).toHaveAttribute("contenteditable");
-        });
-
-        test("should send a focus field message to parent", () => {
-            // Mock function calls are tracked synchronously
-            expect(visualBuilderPostMessage?.send).toBeCalledWith(
-                VisualBuilderPostMessageEvents.FOCUS_FIELD,
-                {
-                    DOMEditStack: getDOMEditStack(multiLineField),
-                }
-            );
         });
     });
 
@@ -251,12 +210,14 @@ describe("When an element is clicked in visual builder mode", () => {
             container.appendChild(secondMultiLineField);
             document.body.appendChild(container);
 
-            VisualBuilder.VisualBuilderGlobalState.value = {
-                previousSelectedEditableDOM: null,
-                previousHoveredTargetDOM: null,
-                previousEmptyBlockParents: [],
-                audienceMode: false,
-            };
+            // Reset global state for test
+            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
+                null;
+            VisualBuilder.VisualBuilderGlobalState.value.previousHoveredTargetDOM =
+                null;
+            VisualBuilder.VisualBuilderGlobalState.value.previousEmptyBlockParents =
+                [];
+            VisualBuilder.VisualBuilderGlobalState.value.audienceMode = false;
             visualBuilder = new VisualBuilder();
             await triggerAndWaitForClickAction(
                 visualBuilderPostMessage,
@@ -267,42 +228,8 @@ describe("When an element is clicked in visual builder mode", () => {
         afterAll(() => {
             visualBuilder.destroy();
         });
-        test("should have field type attribute set", () => {
-            // Field type is set during click - this is what actually happens
-            expect(container).toHaveAttribute(
-                "data-cslp-field-type",
-                "multiline"
-            );
-        });
-
-        test("should have an overlay wrapper rendered", () => {
-            // Overlay wrapper is rendered (not checking for 'visible' class as it's conditional)
-            const overlayWrapper = document.querySelector(
-                ".visual-builder__overlay__wrapper"
-            );
-            expect(overlayWrapper).not.toBeNull();
-
-            // Check that overlay elements exist
-            const overlay = document.querySelector(".visual-builder__overlay");
-            expect(overlay!.classList.contains("visible"));
-        });
-
-        test("should have a field path dropdown", () => {
-            // Component is already rendered from beforeAll setup
-            const toolbar = screen.getByTestId(
-                "mock-field-label-wrapper"
-            );
-            expect(toolbar).toBeInTheDocument();
-        });
-
-        test("should contain a data-cslp-field-type attribute", async () => {
-            await waitFor(() => {
-                expect(container).toHaveAttribute(
-                    VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
-                );
-            });
-        });
-
+        // Common tests (field type, overlay, dropdown, focus message) are covered in all-click.test.tsx
+        // Only testing unique behavior: contenteditable on children for editable multiple fields
         test("container should not contain a contenteditable attribute but the children can", async () => {
             fireEvent.click(container);
             await waitFor(() => {
@@ -320,17 +247,6 @@ describe("When an element is clicked in visual builder mode", () => {
             await waitFor(() => {
                 expect(container.children[1]).toHaveAttribute(
                     "contenteditable"
-                );
-            });
-        });
-
-        test("should send a focus field message to parent", async () => {
-            await waitFor(() => {
-                expect(visualBuilderPostMessage?.send).toBeCalledWith(
-                    VisualBuilderPostMessageEvents.FOCUS_FIELD,
-                    {
-                        DOMEditStack: getDOMEditStack(container),
-                    }
                 );
             });
         });
