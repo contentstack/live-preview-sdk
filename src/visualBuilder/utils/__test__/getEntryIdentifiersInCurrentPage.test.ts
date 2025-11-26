@@ -52,6 +52,7 @@ describe("getEntryIdentifiersInCurrentPage", () => {
         document.body.innerHTML = `
             <div>
                 <h1 data-cslp="">Empty CSLP</h1>
+                <h2 data-cslp>Empty CSLP</h2>
                 <h1 data-cslp="page.bltf5bb5f8fb088a332.en-us.page_components.0.hero_banner.banner_title">Valid CSLP</h1>
             </div>
         `;
