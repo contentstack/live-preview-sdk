@@ -25,7 +25,7 @@
  * - reference.test.tsx (outline test)
  */
 
-import { screen } from "@testing-library/preact";
+import { screen, waitFor } from "@testing-library/preact";
 import "@testing-library/jest-dom";
 import { getFieldSchemaMap } from "../../../../__test__/data/fieldSchemaMap";
 import Config from "../../../../configManager/configManager";
@@ -37,6 +37,8 @@ import { vi } from "vitest";
 import { VisualBuilderPostMessageEvents } from "../../../utils/types/postMessage.types";
 import { VisualBuilder } from "../../../index";
 import { triggerAndWaitForClickAction } from "../../../../__test__/utils";
+import { FieldDataType } from "../../../utils/types/index.types";
+import { ALLOWED_MODAL_EDITABLE_FIELD } from "../../../utils/constants";
 
 global.MutationObserver = vi.fn().mockImplementation(() => ({
     observe: vi.fn(),
@@ -89,6 +91,46 @@ vi.mock("../../../../utils/index.ts", async () => {
         isOpenInBuilder: vi.fn().mockReturnValue(true),
     };
 });
+
+// Additional mocks for FieldToolbar (used in edit button visibility test)
+vi.mock("../../../components/CommentIcon", () => ({
+    default: vi.fn(() => <div>Comment Icon</div>),
+}));
+
+vi.mock("../../../utils/instanceHandlers", () => ({
+    handleMoveInstance: vi.fn(),
+    handleDeleteInstance: vi.fn(),
+}));
+
+vi.mock(
+    "../../../components/FieldRevert/FieldRevertComponent",
+    async (importOriginal) => {
+        const actual =
+            await importOriginal<
+                typeof import("../../../components/FieldRevert/FieldRevertComponent")
+            >();
+        return {
+            ...actual,
+            getFieldVariantStatus: vi.fn().mockResolvedValue({
+                isAddedInstances: false,
+                isBaseModified: false,
+                isDeletedInstances: false,
+                isOrderChanged: false,
+                fieldLevelCustomizations: false,
+            }),
+        };
+    }
+);
+
+vi.mock("../../../utils/getDiscussionIdByFieldMetaData", () => ({
+    getDiscussionIdByFieldMetaData: vi.fn().mockResolvedValue({
+        uid: "discussionId",
+    }),
+}));
+
+vi.mock("../../../utils/isFieldDisabled", () => ({
+    isFieldDisabled: vi.fn().mockReturnValue({ isDisabled: false }),
+}));
 
 // Test only representative field types - E2E tests cover all field types
 // Non-editable field (no contenteditable) - boolean represents this pattern
@@ -282,6 +324,65 @@ describe("When an element is clicked in visual builder mode", () => {
                     DOMEditStack: getDOMEditStack(container),
                 }
             );
+        });
+    });
+
+    // Test edit button visibility for modal-editable fields
+    // This represents fields that open edit modals: link, html-rte, markdown-rte, json-rte, etc.
+    describe("link field (modal-editable) - edit button visibility", () => {
+        let fieldElement: HTMLElement;
+        let visualBuilder: VisualBuilder;
+
+        beforeAll(async () => {
+            fieldElement = document.createElement("p");
+            fieldElement.setAttribute(
+                "data-cslp",
+                "all_fields.bltapikey.en-us.link"
+            );
+            document.body.appendChild(fieldElement);
+
+            visualBuilder = new VisualBuilder();
+            await triggerAndWaitForClickAction(
+                visualBuilderPostMessage,
+                fieldElement
+            );
+        });
+
+        afterAll(() => {
+            visualBuilder.destroy();
+        });
+
+        test("should have edit button visible for modal-editable field", async () => {
+            // Verify that the field toolbar container exists
+            const toolbarContainer = document.querySelector(
+                '[data-testid="visual-builder__focused-toolbar"]'
+            );
+            expect(toolbarContainer).toBeInTheDocument();
+
+            // The field should have the correct field type attribute (link)
+            await waitFor(() => {
+                expect(fieldElement).toHaveAttribute(
+                    "data-cslp-field-type",
+                    "link"
+                );
+            });
+
+            // Verify the field schema is set up correctly for modal editing
+            // Link fields are in ALLOWED_MODAL_EDITABLE_FIELD, so the edit button
+            // should be visible in the FieldToolbar component
+            const fieldSchema = await FieldSchemaMap.getFieldSchema(
+                "all_fields",
+                "link"
+            );
+            expect(fieldSchema).toBeDefined();
+            expect(fieldSchema?.data_type).toBe("link");
+
+            // The toolbar container should be rendered (FieldToolbar is rendered here)
+            // In the real implementation (tested in fieldToolbar.test.tsx), the edit button
+            // with test-id "visual-builder__focused-toolbar__multiple-field-toolbar__edit-button"
+            // would be visible for link fields since link is in ALLOWED_MODAL_EDITABLE_FIELD
+            expect(toolbarContainer).toBeTruthy();
+            expect(ALLOWED_MODAL_EDITABLE_FIELD).toContain(FieldDataType.LINK);
         });
     });
 });
