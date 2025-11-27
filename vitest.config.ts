@@ -57,9 +57,7 @@ export default defineConfig({
         // Reduce overhead
         css: false,
         // Test reporters: Controls how test execution results are displayed/output
-        reporters: process.env.CI
-            ? ["verbose", "json", "junit", "github-actions"]
-            : ["verbose", "html"],
+        reporters: process.env.CI ? [] : ["verbose", "html"],
         outputFile: {
             json: "./test-results.json",
             junit: "./junit.xml",
