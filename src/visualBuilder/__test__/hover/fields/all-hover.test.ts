@@ -86,12 +86,6 @@ vi.mock("../../../../utils/index.ts", async () => {
     };
 });
 
-global.ResizeObserver = vi.fn().mockImplementation(() => ({
-    observe: vi.fn(),
-    unobserve: vi.fn(),
-    disconnect: vi.fn(),
-}));
-
 // Test only representative field types - E2E tests cover all field types and their icons
 // Single field (no multiple support) - boolean represents this pattern
 const SINGLE_FIELD = {

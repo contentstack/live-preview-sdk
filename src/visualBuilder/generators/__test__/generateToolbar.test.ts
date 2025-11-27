@@ -10,12 +10,6 @@ import { singleLineFieldSchema } from "../../../__test__/data/fields";
 
 const MOCK_CSLP = "all_fields.bltapikey.en-us.single_line";
 
-global.ResizeObserver = vi.fn().mockImplementation(() => ({
-    observe: vi.fn(),
-    unobserve: vi.fn(),
-    disconnect: vi.fn(),
-}));
-
 vi.mock("../../utils/fetchEntryPermissionsAndStageDetails", () => ({
     fetchEntryPermissionsAndStageDetails: async () => ({
         acl: {

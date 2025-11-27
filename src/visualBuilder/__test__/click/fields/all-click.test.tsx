@@ -38,12 +38,6 @@ import { VisualBuilderPostMessageEvents } from "../../../utils/types/postMessage
 import { VisualBuilder } from "../../../index";
 import { triggerAndWaitForClickAction } from "../../../../__test__/utils";
 
-global.ResizeObserver = vi.fn().mockImplementation(() => ({
-    observe: vi.fn(),
-    unobserve: vi.fn(),
-    disconnect: vi.fn(),
-}));
-
 global.MutationObserver = vi.fn().mockImplementation(() => ({
     observe: vi.fn(),
     disconnect: vi.fn(),
