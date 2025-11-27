@@ -28,12 +28,6 @@ vi.mock("../../../utils/visualBuilderPostMessage", async () => {
     };
 });
 
-global.ResizeObserver = vi.fn().mockImplementation(() => ({
-    observe: vi.fn(),
-    unobserve: vi.fn(),
-    disconnect: vi.fn(),
-}));
-
 vi.mock("../../../../utils/index.ts", async () => {
     const actual = await vi.importActual("../../../../utils");
     return {

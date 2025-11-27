@@ -14,17 +14,19 @@ export default defineConfig({
             exclude: [
                 // Output / build
                 "dist/**",
-                "build/**",
-                "coverage/**",
-
-                // Tooling & scripts
-                "vite.config.*",
-                "eslint.config.*",
-                "rollup.config.*",
-                "webpack.config.*",
-                "vitest.config.*",
-                "vitest.setup.*",
-                "src/visualBuilder/components/icons/fields/**",
+                "**/*.d.ts",
+                "node_modules/**",
+                "**/*.types.ts",
+                "**/*.test.*",
+                "**/*.test.tsx",
+                "**/*.mock.*",
+                "**/__mocks__/**",
+                "**/__tests__/**",
+                "**/__test__/**",
+                "**/*.config.*",
+                "**/tsconfig.*",
+                "vitest.reporter.ts",
+                "vitest.setup.ts",
             ],
             clean: false,
             reportsDirectory: "./coverage",
@@ -50,9 +52,7 @@ export default defineConfig({
         // Reduce overhead
         css: false,
         // Test reporters: Controls how test execution results are displayed/output
-        reporters: process.env.CI
-            ? ["verbose", "json", "junit", "github-actions"]
-            : ["verbose", "html", "./vitest.reporter.ts"],
+        reporters: process.env.CI ? ["verbose"] : ["verbose", "html"],
         outputFile: {
             json: "./test-results.json",
             junit: "./junit.xml",

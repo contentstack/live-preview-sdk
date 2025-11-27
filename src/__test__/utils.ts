@@ -53,6 +53,7 @@ export const waitForHoverOutline = async (options?: {
         }
     );
 };
+  
 export const waitForBuilderSDKToBeInitialized = async (visualBuilderPostMessage: EventManager | undefined) => {
     await waitFor(() => {
         expect(visualBuilderPostMessage?.send).toBeCalledWith(
