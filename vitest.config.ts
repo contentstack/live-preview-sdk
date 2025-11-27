@@ -43,8 +43,8 @@ export default defineConfig({
         globals: true,
         setupFiles: "./vitest.setup.ts",
         // Timeouts - increased for CI to handle slower async operations
-        testTimeout: 100000,
-        hookTimeout: 100000,
+        testTimeout: 50000,
+        hookTimeout: 50000,
         teardownTimeout: 5000,
         // Enable file parallelization
         fileParallelism: true,
@@ -57,7 +57,7 @@ export default defineConfig({
         // Reduce overhead
         css: false,
         // Test reporters: Controls how test execution results are displayed/output
-        reporters: process.env.CI ? [] : ["verbose", "html"],
+        reporters: process.env.CI ? ["verbose"] : ["verbose", "html"],
         outputFile: {
             json: "./test-results.json",
             junit: "./junit.xml",
