@@ -36,23 +36,29 @@ export async function sleep(waitTimeInMs = 100): Promise<void> {
     return new Promise((resolve) => setTimeout(resolve, waitTimeInMs));
 }
 
-export const waitForHoverOutline = async (options?: {
-    timeout?: number;
-    interval?: number;
-}) => {
+export const waitForHoverOutline = async (
+    options?: { timeout?: number; interval?: number }
+  ) => {
+    const selector = "[data-testid='visual-builder__hover-outline']";
+  
+    // Query once, reuse on re-check to reduce DOM operations
+    let element: Element | null = null;
+  
     await waitFor(
-        () => {
-            const hoverOutline = document.querySelector(
-                "[data-testid='visual-builder__hover-outline'][style]"
-            );
-            expect(hoverOutline).not.toBeNull();
-        },
-        {
-            timeout: options?.timeout ?? 5000, // Default 5s timeout for hover outline to appear
-            interval: options?.interval ?? 10, // Faster polling: 10ms default
-        }
+      () => {
+        element ||= document.querySelector(selector);
+        expect(element).not.toBeNull();
+  
+        // Check if it is actually visible (style applied)
+        expect(element?.getAttribute("style")).not.toBeNull();
+      },
+      {
+        timeout: options?.timeout ?? 1200,  // Shorter but safe
+        interval: options?.interval ?? 20,  // Less CPU churn but reliable
+      }
     );
-};
+  };
+  
 export const waitForBuilderSDKToBeInitialized = async (visualBuilderPostMessage: EventManager | undefined) => {
     await waitFor(() => {
         expect(visualBuilderPostMessage?.send).toBeCalledWith(
