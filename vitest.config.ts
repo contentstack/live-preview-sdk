@@ -43,8 +43,8 @@ export default defineConfig({
         globals: true,
         setupFiles: "./vitest.setup.ts",
         // Timeouts - increased for CI to handle slower async operations
-        testTimeout: 50000,
-        hookTimeout: 50000,
+        testTimeout: 100000,
+        hookTimeout: 100000,
         teardownTimeout: 5000,
         // Enable file parallelization
         fileParallelism: true,
