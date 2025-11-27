@@ -43,6 +43,16 @@ vi.mock("../../utils/visualBuilderPostMessage", () => {
                 if (eventName === "field-location-data") {
                     return Promise.resolve({ apps: [] });
                 }
+                // Return mock data for get-field-variant-status to speed up variant icon test
+                if (eventName === "get-field-variant-status") {
+                    return Promise.resolve({
+                        isAddedInstances: false,
+                        isBaseModified: false,
+                        isDeletedInstances: false,
+                        isOrderChanged: false,
+                        fieldLevelCustomizations: false,
+                    });
+                }
                 return Promise.resolve({});
             }),
             on: vi.fn(() => ({ unregister: vi.fn() })),
@@ -243,6 +253,8 @@ describe("FieldToolbarComponent", () => {
             />
         );
 
+        // Wait for async operations to complete (fieldSchema and variantStatus)
+        // The icon appears after both FieldSchemaMap.getFieldSchema() and getFieldVariantStatus() complete
         await waitFor(
             () => {
                 const icon = container.querySelector(
@@ -251,7 +263,7 @@ describe("FieldToolbarComponent", () => {
                 if (!icon) throw new Error("Variant icon not found");
                 expect(icon).toBeInTheDocument();
             },
-            { timeout: 2000, interval: 10 } // Reduced timeout from 5s to 2s
+            { timeout: 1000, interval: 10 } // Reduced timeout since mocks resolve immediately
         );
     });
 

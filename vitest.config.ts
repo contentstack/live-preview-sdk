@@ -13,27 +13,19 @@ export default defineConfig({
             include: ["src/**/*.{ts,tsx}"],
             exclude: [
                 "dist/**",
-                "build/**",
-                "coverage/**",
-                "scripts/**",
                 "**/*.d.ts",
                 "node_modules/**",
                 "**/*.types.ts",
                 "**/*.test.*",
                 "**/*.test.tsx",
                 "**/*.mock.*",
-                "**/*.stories.*",
                 "**/__mocks__/**",
                 "**/__tests__/**",
                 "**/__test__/**",
                 "**/*.config.*",
-                "**/vite.config.*",
-                "**/eslint.config.*",
-                "**/webpack.config.*",
-                "**/rollup.config.*",
+                "**/tsconfig.*",
                 "vitest.reporter.ts",
                 "vitest.setup.ts",
-                "src/index.ts", // Entry point, usually not directly tested
             ],
             // CRITICAL: Set to false - only analyze files that are actually imported/used
             // This makes coverage 3x faster by skipping unused files
@@ -67,7 +59,7 @@ export default defineConfig({
         // Test reporters: Controls how test execution results are displayed/output
         reporters: process.env.CI
             ? ["verbose", "json", "junit", "github-actions"]
-            : ["verbose", "html", "./vitest.reporter.ts"],
+            : ["verbose", "html"],
         outputFile: {
             json: "./test-results.json",
             junit: "./junit.xml",
