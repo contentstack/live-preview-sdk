@@ -1,6 +1,8 @@
 import {
     render,
     waitFor,
+    act,
+    findByTestId,
 } from "@testing-library/preact";
 import FieldLabelWrapperComponent from "../fieldLabelWrapper";
 import { CslpData } from "../../../cslp/types/cslp.types";
@@ -313,7 +315,12 @@ describe("FieldLabelWrapperComponent", () => {
             />
         );
 
-        // Use waitFor with querySelector for faster detection
+        // Use act() to ensure React processes all state updates
+        await act(async () => {
+            await new Promise(resolve => setTimeout(resolve, 0));
+        });
+
+        // Use waitFor with shorter timeout since mocks resolve immediately
         await waitFor(
             () => {
                 const text = Array.from(container.querySelectorAll("*")).find(
@@ -322,7 +329,7 @@ describe("FieldLabelWrapperComponent", () => {
                 if (!text) throw new Error("Text not found");
                 expect(text).toBeInTheDocument();
             },
-            { timeout: 2000, interval: 10 } // Reduced timeout from 5s to 2s
+            { timeout: 1000, interval: 10 }
         );
     });
 
@@ -336,17 +343,19 @@ describe("FieldLabelWrapperComponent", () => {
             />
         );
 
-        // Use waitFor with querySelector for faster detection
-        await waitFor(
-            () => {
-                const icon = container.querySelector(
-                    '[data-testid="visual-builder__field-icon"]'
-                );
-                if (!icon) throw new Error("Icon not found");
-                expect(icon).toBeInTheDocument();
-            },
-            { timeout: 2000, interval: 10 } // Reduced timeout from 5s to 2s
+        // Use act() to ensure React processes all state updates
+        await act(async () => {
+            await new Promise(resolve => setTimeout(resolve, 0));
+        });
+
+        // Use findByTestId which is optimized for async queries
+        const icon = await findByTestId(
+            container,
+            "visual-builder__field-icon",
+            {},
+            { timeout: 1000 }
         );
+        expect(icon).toBeInTheDocument();
     });
 
     test("renders with correct class when field is disabled", async () => {
@@ -363,18 +372,20 @@ describe("FieldLabelWrapperComponent", () => {
             />
         );
 
-        // Use waitFor to find element and check class in one go
-        await waitFor(
-            () => {
-                const fieldLabel = container.querySelector(
-                    '[data-testid="visual-builder__focused-toolbar__field-label-wrapper"]'
-                ) as HTMLElement;
-                if (!fieldLabel) throw new Error("Field label not found");
-                expect(fieldLabel).toHaveClass(
-                    "visual-builder__focused-toolbar--field-disabled"
-                );
-            },
-            { timeout: 2000, interval: 10 } // Reduced timeout from 5s+1s to 2s total
+        // Use act() to ensure React processes all state updates
+        await act(async () => {
+            await new Promise(resolve => setTimeout(resolve, 0));
+        });
+
+        // Use findByTestId which is optimized for async queries
+        const fieldLabel = await findByTestId(
+            container,
+            "visual-builder__focused-toolbar__field-label-wrapper",
+            {},
+            { timeout: 1000 }
+        ) as HTMLElement;
+        expect(fieldLabel).toHaveClass(
+            "visual-builder__focused-toolbar--field-disabled"
         );
     });
 
@@ -388,7 +399,12 @@ describe("FieldLabelWrapperComponent", () => {
             />
         );
 
-        // Wait for component to mount and isFieldDisabled to be called in one go
+        // Use act() to ensure React processes all state updates
+        await act(async () => {
+            await new Promise(resolve => setTimeout(resolve, 0));
+        });
+
+        // Wait for component to mount and isFieldDisabled to be called
         await waitFor(
             () => {
                 const fieldLabel = container.querySelector(
@@ -397,7 +413,7 @@ describe("FieldLabelWrapperComponent", () => {
                 if (!fieldLabel) throw new Error("Field label not found");
                 expect(isFieldDisabled).toHaveBeenCalled();
             },
-            { timeout: 2000, interval: 10 } // Reduced timeout from 5s+1s to 2s total
+            { timeout: 1000, interval: 10 }
         );
 
         expect(isFieldDisabled).toHaveBeenCalledWith(
@@ -463,6 +479,11 @@ describe("FieldLabelWrapperComponent", () => {
             />
         );
 
+        // Use act() to ensure React processes all state updates
+        await act(async () => {
+            await new Promise(resolve => setTimeout(resolve, 0));
+        });
+
         // When loading, component returns LoadingIcon, not the main structure
         // ContentTypeIcon only renders when dataLoading is false, which won't happen here
         // So we should see LoadingIcon and NOT see ContentTypeIcon
@@ -474,7 +495,7 @@ describe("FieldLabelWrapperComponent", () => {
                 );
                 expect(contentTypeIcon).not.toBeInTheDocument();
             },
-            { timeout: 3000, interval: 5 } // Reduced timeout from 5s to 3s with faster polling
+            { timeout: 1000, interval: 10 } // Reduced timeout - mocks resolve immediately
         );
     });
 
@@ -518,21 +539,24 @@ describe("FieldLabelWrapperComponent", () => {
             />
         );
 
-        // Wait for component to load and check variant indicator in one go
-        await waitFor(
-            () => {
-                const fieldLabel = container.querySelector(
-                    '[data-testid="visual-builder__focused-toolbar__field-label-wrapper"]'
-                );
-                if (!fieldLabel) throw new Error("Field label not found");
-                
-                const variantIndicator = container.querySelector(
-                    "[data-testid='variant-indicator']"
-                );
-                expect(variantIndicator).not.toBeInTheDocument();
-            },
-            { timeout: 2000, interval: 10 } // Reduced timeout from 5s to 2s
+        // Use act() to ensure React processes all state updates
+        await act(async () => {
+            await new Promise(resolve => setTimeout(resolve, 0));
+        });
+
+        // Wait for component to load and check variant indicator
+        const fieldLabel = await findByTestId(
+            container,
+            "visual-builder__focused-toolbar__field-label-wrapper",
+            {},
+            { timeout: 1000 }
         );
+        expect(fieldLabel).toBeInTheDocument();
+        
+        const variantIndicator = container.querySelector(
+            "[data-testid='variant-indicator']"
+        );
+        expect(variantIndicator).not.toBeInTheDocument();
     });
 
     test.skip("applies variant CSS classes when field has variant", async () => {
@@ -585,18 +609,20 @@ describe("FieldLabelWrapperComponent", () => {
             />
         );
 
-        // Wait for component to render and check class in one go
-        await waitFor(
-            () => {
-                const fieldLabelWrapper = container.querySelector(
-                    '[data-testid="visual-builder__focused-toolbar__field-label-wrapper"]'
-                ) as HTMLElement;
-                if (!fieldLabelWrapper) throw new Error("Field label not found");
-                expect(fieldLabelWrapper).not.toHaveClass(
-                    "visual-builder__focused-toolbar--variant"
-                );
-            },
-            { timeout: 2000, interval: 10 } // Reduced timeout from 5s to 2s
+        // Use act() to ensure React processes all state updates
+        await act(async () => {
+            await new Promise(resolve => setTimeout(resolve, 0));
+        });
+
+        // Use findByTestId which is optimized for async queries
+        const fieldLabelWrapper = await findByTestId(
+            container,
+            "visual-builder__focused-toolbar__field-label-wrapper",
+            {},
+            { timeout: 1000 }
+        ) as HTMLElement;
+        expect(fieldLabelWrapper).not.toHaveClass(
+            "visual-builder__focused-toolbar--variant"
         );
     });
 });

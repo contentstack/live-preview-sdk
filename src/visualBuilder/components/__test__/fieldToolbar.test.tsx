@@ -5,6 +5,7 @@ import {
     render,
     waitFor,
     screen,
+    findByTestId,
 } from "@testing-library/preact";
 import { CslpData } from "../../../cslp/types/cslp.types";
 import { FieldSchemaMap } from "../../utils/fieldSchemaMap";
@@ -115,9 +116,10 @@ describe("FieldToolbarComponent", () => {
     let mockEventDetails: VisualBuilderCslpEventDetails;
 
     beforeAll(() => {
-        // Mock FieldSchemaMap once for all tests
-        vi.spyOn(FieldSchemaMap, "getFieldSchema").mockResolvedValue(
-            mockMultipleLinkFieldSchema
+        // Mock FieldSchemaMap to resolve immediately (synchronously)
+        // This ensures the promise resolves in the same tick, making tests faster
+        vi.spyOn(FieldSchemaMap, "getFieldSchema").mockImplementation(() => 
+            Promise.resolve(mockMultipleLinkFieldSchema)
         );
     });
 
@@ -139,8 +141,9 @@ describe("FieldToolbarComponent", () => {
             isDisabled: false,
             reason: "",
         });
-        vi.mocked(FieldSchemaMap.getFieldSchema).mockResolvedValue(
-            mockMultipleLinkFieldSchema
+        // Ensure mock resolves immediately
+        vi.mocked(FieldSchemaMap.getFieldSchema).mockImplementation(() => 
+            Promise.resolve(mockMultipleLinkFieldSchema)
         );
     });
 
@@ -161,17 +164,19 @@ describe("FieldToolbarComponent", () => {
             />
         );
 
-        // Use queryByTestId + waitFor for faster detection (fails immediately if not found)
-        const moveLeftButton = await waitFor(
-            () => {
-                const button = container.querySelector(
-                    '[data-testid="visual-builder__focused-toolbar__multiple-field-toolbar__move-left-button"]'
-                ) as HTMLElement;
-                if (!button) throw new Error("Button not found");
-                return button;
-            },
-            { timeout: 2000, interval: 10 } // Reduced timeout from 5s to 2s
-        );
+        // Use act() to ensure React processes all state updates from async operations
+        await act(async () => {
+            // Give React a tick to process useEffect and state updates
+            await new Promise(resolve => setTimeout(resolve, 0));
+        });
+
+        // Use findByTestId which is optimized for async queries
+        const moveLeftButton = await findByTestId(
+            container,
+            "visual-builder__focused-toolbar__multiple-field-toolbar__move-left-button",
+            {},
+            { timeout: 1000 }
+        ) as HTMLElement;
 
         fireEvent.click(moveLeftButton);
 
@@ -189,17 +194,17 @@ describe("FieldToolbarComponent", () => {
             />
         );
 
-        // Use queryByTestId + waitFor for faster detection
-        const moveRightButton = await waitFor(
-            () => {
-                const button = container.querySelector(
-                    '[data-testid="visual-builder__focused-toolbar__multiple-field-toolbar__move-right-button"]'
-                ) as HTMLElement;
-                if (!button) throw new Error("Button not found");
-                return button;
-            },
-            { timeout: 2000, interval: 10 } // Reduced timeout from 5s to 2s
-        );
+        // Use act() to ensure React processes all state updates
+        await act(async () => {
+            await new Promise(resolve => setTimeout(resolve, 0));
+        });
+
+        const moveRightButton = await findByTestId(
+            container,
+            "visual-builder__focused-toolbar__multiple-field-toolbar__move-right-button",
+            {},
+            { timeout: 1000 }
+        ) as HTMLElement;
 
         fireEvent.click(moveRightButton);
 
@@ -217,17 +222,17 @@ describe("FieldToolbarComponent", () => {
             />
         );
 
-        // Use queryByTestId + waitFor for faster detection
-        const deleteButton = await waitFor(
-            () => {
-                const button = container.querySelector(
-                    '[data-testid="visual-builder__focused-toolbar__multiple-field-toolbar__delete-button"]'
-                ) as HTMLElement;
-                if (!button) throw new Error("Button not found");
-                return button;
-            },
-            { timeout: 2000, interval: 10 } // Reduced timeout from 5s to 2s
-        );
+        // Use act() to ensure React processes all state updates
+        await act(async () => {
+            await new Promise(resolve => setTimeout(resolve, 0));
+        });
+
+        const deleteButton = await findByTestId(
+            container,
+            "visual-builder__focused-toolbar__multiple-field-toolbar__delete-button",
+            {},
+            { timeout: 1000 }
+        ) as HTMLElement;
 
         fireEvent.click(deleteButton);
 
@@ -253,25 +258,26 @@ describe("FieldToolbarComponent", () => {
             />
         );
 
-        // Wait for async operations to complete (fieldSchema and variantStatus)
-        // The icon appears after both FieldSchemaMap.getFieldSchema() and getFieldVariantStatus() complete
-        await waitFor(
-            () => {
-                const icon = container.querySelector(
-                    '[data-testid="visual-builder-canvas-variant-icon"]'
-                );
-                if (!icon) throw new Error("Variant icon not found");
-                expect(icon).toBeInTheDocument();
-            },
-            { timeout: 1000, interval: 10 } // Reduced timeout since mocks resolve immediately
+        // Use act() to ensure React processes all state updates
+        await act(async () => {
+            await new Promise(resolve => setTimeout(resolve, 0));
+        });
+
+        // Use findByTestId which is optimized for async queries
+        const icon = await findByTestId(
+            container,
+            "visual-builder-canvas-variant-icon",
+            {},
+            { timeout: 1000 }
         );
+        expect(icon).toBeInTheDocument();
     });
 
     describe("'Replace button' visibility for multiple file fields", () => {
         beforeEach(() => {
-            // Override the mock for this describe block (must be beforeEach to override outer beforeEach)
-            vi.mocked(FieldSchemaMap.getFieldSchema).mockResolvedValue(
-                mockMultipleFileFieldSchema
+            // Override the mock for this describe block - resolve immediately
+            vi.mocked(FieldSchemaMap.getFieldSchema).mockImplementation(() => 
+                Promise.resolve(mockMultipleFileFieldSchema)
             );
         });
 
@@ -300,22 +306,24 @@ describe("FieldToolbarComponent", () => {
                 />
             );
 
-            // Wait for component to render, then check button is not present
-            await waitFor(
-                () => {
-                    // Wait for toolbar to render first
-                    const toolbar = container.querySelector(
-                        '[data-testid="visual-builder__focused-toolbar__multiple-field-toolbar"]'
-                    );
-                    if (!toolbar) throw new Error("Toolbar not found");
-                    
-                    const replaceButton = container.querySelector(
-                        '[data-testid="visual-builder-replace-file"]'
-                    );
-                    expect(replaceButton).not.toBeInTheDocument();
-                },
-                { timeout: 2000, interval: 10 } // Reduced timeout from 10s to 2s
+            // Use act() to ensure React processes all state updates
+            await act(async () => {
+                await new Promise(resolve => setTimeout(resolve, 0));
+            });
+
+            // Wait for toolbar to render first, then check button is not present
+            const toolbar = await findByTestId(
+                container,
+                "visual-builder__focused-toolbar__multiple-field-toolbar",
+                {},
+                { timeout: 1000 }
             );
+            expect(toolbar).toBeInTheDocument();
+            
+            const replaceButton = container.querySelector(
+                '[data-testid="visual-builder-replace-file"]'
+            );
+            expect(replaceButton).not.toBeInTheDocument();
         });
 
         test("'replace button' is visible for individual field in multiple file field", async () => {
@@ -339,17 +347,19 @@ describe("FieldToolbarComponent", () => {
                 />
             );
 
-            // Wait for component to render and load async data
-            await waitFor(
-                () => {
-                    const replaceButton = container.querySelector(
-                        '[data-testid="visual-builder-replace-file"]'
-                    );
-                    if (!replaceButton) throw new Error("Replace button not found");
-                    expect(replaceButton).toBeInTheDocument();
-                },
-                { timeout: 2000, interval: 10 } // Reduced timeout from 10s to 2s
+            // Use act() to ensure React processes all state updates
+            await act(async () => {
+                await new Promise(resolve => setTimeout(resolve, 0));
+            });
+
+            // Use findByTestId which is optimized for async queries
+            const replaceButton = await findByTestId(
+                container,
+                "visual-builder-replace-file",
+                {},
+                { timeout: 1000 }
             );
+            expect(replaceButton).toBeInTheDocument();
         });
 
         test("passes disabled state correctly to child components when field is disabled", async () => {
@@ -366,50 +376,52 @@ describe("FieldToolbarComponent", () => {
                 />
             );
 
-            await waitFor(
-                () => {
-                    const toolbar = container.querySelector(
-                        '[data-testid="visual-builder__focused-toolbar__multiple-field-toolbar"]'
-                    );
-                    if (!toolbar) throw new Error("Toolbar not found");
+            // Use act() to ensure React processes all state updates
+            await act(async () => {
+                await new Promise(resolve => setTimeout(resolve, 0));
+            });
 
-                    // Check that move buttons are disabled
-                    const moveLeftButton = container.querySelector(
-                        '[data-testid="visual-builder__focused-toolbar__multiple-field-toolbar__move-left-button"]'
-                    );
-                    const moveRightButton = container.querySelector(
-                        '[data-testid="visual-builder__focused-toolbar__multiple-field-toolbar__move-right-button"]'
-                    );
-                    const deleteButton = container.querySelector(
-                        '[data-testid="visual-builder__focused-toolbar__multiple-field-toolbar__delete-button"]'
-                    );
-
-                    if (!moveLeftButton || !moveRightButton || !deleteButton) {
-                        throw new Error("Buttons not found");
-                    }
-
-                    expect(moveLeftButton).toBeDisabled();
-                    expect(moveRightButton).toBeDisabled();
-                    expect(deleteButton).toBeDisabled();
-
-                    // Check that edit button is disabled if present
-                    const editButton = container.querySelector(
-                        '[data-testid="visual-builder__focused-toolbar__multiple-field-toolbar__edit-button"]'
-                    );
-                    if (editButton) {
-                        expect(editButton).toBeDisabled();
-                    }
-
-                    // Check that replace button is disabled if present
-                    const replaceButton = container.querySelector(
-                        '[data-testid="visual-builder-replace-file"]'
-                    );
-                    if (replaceButton) {
-                        expect(replaceButton).toBeDisabled();
-                    }
-                },
-                { timeout: 2000, interval: 10 } // Reduced timeout from 10s to 2s
+            // Use findByTestId for toolbar, then query for buttons
+            const toolbar = await findByTestId(
+                container,
+                "visual-builder__focused-toolbar__multiple-field-toolbar",
+                {},
+                { timeout: 1000 }
             );
+
+            // Check that move buttons are disabled
+            const moveLeftButton = container.querySelector(
+                '[data-testid="visual-builder__focused-toolbar__multiple-field-toolbar__move-left-button"]'
+            );
+            const moveRightButton = container.querySelector(
+                '[data-testid="visual-builder__focused-toolbar__multiple-field-toolbar__move-right-button"]'
+            );
+            const deleteButton = container.querySelector(
+                '[data-testid="visual-builder__focused-toolbar__multiple-field-toolbar__delete-button"]'
+            );
+
+            expect(moveLeftButton).toBeInTheDocument();
+            expect(moveRightButton).toBeInTheDocument();
+            expect(deleteButton).toBeInTheDocument();
+            expect(moveLeftButton).toBeDisabled();
+            expect(moveRightButton).toBeDisabled();
+            expect(deleteButton).toBeDisabled();
+
+            // Check that edit button is disabled if present
+            const editButton = container.querySelector(
+                '[data-testid="visual-builder__focused-toolbar__multiple-field-toolbar__edit-button"]'
+            );
+            if (editButton) {
+                expect(editButton).toBeDisabled();
+            }
+
+            // Check that replace button is disabled if present
+            const replaceButton = container.querySelector(
+                '[data-testid="visual-builder-replace-file"]'
+            );
+            if (replaceButton) {
+                expect(replaceButton).toBeDisabled();
+            }
         });
     });
 });
