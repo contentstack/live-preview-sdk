@@ -1,9 +1,4 @@
-import {
-    render,
-    waitFor,
-    act,
-    findByTestId,
-} from "@testing-library/preact";
+import { render, waitFor, act, findByTestId } from "@testing-library/preact";
 import FieldLabelWrapperComponent from "../fieldLabelWrapper";
 import { CslpData } from "../../../cslp/types/cslp.types";
 import { asyncRender } from "../../../__test__/utils";
@@ -44,13 +39,14 @@ vi.mock("../../utils/fieldSchemaMap", async (importOriginal) => {
                     (contentTypeUid: string, fieldPath: string) => {
                         // Check cache first for immediate resolution (synchronous)
                         if (testFieldSchemaCache[contentTypeUid]?.[fieldPath]) {
-                            // Use Promise.resolve() for immediate resolution
-                            return Promise.resolve(
-                                testFieldSchemaCache[contentTypeUid][fieldPath]
-                            );
+                            // Return resolved promise immediately - use cached value
+                            const cachedValue =
+                                testFieldSchemaCache[contentTypeUid][fieldPath];
+                            // Use a pre-resolved promise for maximum speed
+                            return Promise.resolve(cachedValue);
                         }
-                        // Fallback to default mock - resolve immediately
-                        return Promise.resolve({
+                        // Fallback to default mock - resolve immediately with cached schema
+                        const defaultSchema = {
                             display_name: "Field 0",
                             data_type: "text",
                             field_metadata: {
@@ -59,7 +55,14 @@ vi.mock("../../utils/fieldSchemaMap", async (importOriginal) => {
                                 version: 3,
                             },
                             uid: "test_field",
-                        });
+                        };
+                        // Cache it for future calls
+                        if (!testFieldSchemaCache[contentTypeUid]) {
+                            testFieldSchemaCache[contentTypeUid] = {};
+                        }
+                        testFieldSchemaCache[contentTypeUid][fieldPath] =
+                            defaultSchema;
+                        return Promise.resolve(defaultSchema);
                     }
                 ),
             setFieldSchema: vi
@@ -69,9 +72,11 @@ vi.mock("../../utils/fieldSchemaMap", async (importOriginal) => {
                         contentTypeUid: string,
                         schemaMap: Record<string, any>
                     ) => {
+                        // Populate cache synchronously for immediate access
                         if (!testFieldSchemaCache[contentTypeUid]) {
                             testFieldSchemaCache[contentTypeUid] = {};
                         }
+                        // Use Object.assign for fast merging
                         Object.assign(
                             testFieldSchemaCache[contentTypeUid],
                             schemaMap
@@ -136,7 +141,7 @@ vi.mock("../../utils/visualBuilderPostMessage", () => ({
                         }
                     });
                 }
-                // Resolve immediately with all display names (synchronous resolution)
+                // Return immediately resolved promise (no delay)
                 return Promise.resolve(result);
             } else if (
                 eventName ===
@@ -216,11 +221,32 @@ vi.mock("../generators/generateCustomCursor", () => ({
     },
 }));
 
+// Create a comprehensive mock that returns all styles the component needs
+// This avoids repeated function calls and expensive style calculations
+// Cache the result so the function returns the same object reference (faster)
+const mockStyles = {
+    "visual-builder__focused-toolbar--variant":
+        "visual-builder__focused-toolbar--variant",
+    "visual-builder__tooltip--persistent":
+        "visual-builder__tooltip--persistent",
+    "visual-builder__custom-tooltip": "visual-builder__custom-tooltip",
+    "visual-builder__focused-toolbar__field-label-wrapper":
+        "visual-builder__focused-toolbar__field-label-wrapper",
+    "visual-builder__focused-toolbar--field-disabled":
+        "visual-builder__focused-toolbar--field-disabled",
+    "visual-builder__focused-toolbar__text":
+        "visual-builder__focused-toolbar__text",
+    "field-label-dropdown-open": "field-label-dropdown-open",
+    "visual-builder__button": "visual-builder__button",
+    "visual-builder__button-loader": "visual-builder__button-loader",
+    "visual-builder__reference-icon-container":
+        "visual-builder__reference-icon-container",
+    "visual-builder__content-type-icon": "visual-builder__content-type-icon",
+};
+
+// Return cached object to avoid object creation overhead
 vi.mock("../visualBuilder.style", () => ({
-    visualBuilderStyles: vi.fn().mockReturnValue({
-        "visual-builder__focused-toolbar--variant":
-            "visual-builder__focused-toolbar--variant",
-    }),
+    visualBuilderStyles: vi.fn(() => mockStyles),
 }));
 
 vi.mock("../VariantIndicator", () => ({
@@ -306,18 +332,22 @@ describe("FieldLabelWrapperComponent", () => {
     const mockGetParentEditable = () => document.createElement("div");
 
     test("renders current field and parent fields correctly", async () => {
-        const { container } = render(
-            <FieldLabelWrapperComponent
-                fieldMetadata={mockFieldMetadata}
-                eventDetails={mockEventDetails}
-                parentPaths={PARENT_PATHS}
-                getParentEditableElement={mockGetParentEditable}
-            />
-        );
-
-        // Use act() to ensure React processes all state updates
+        // Wrap render in act to batch all updates and reduce reconciliation cycles
+        let container!: HTMLElement;
         await act(async () => {
-            await new Promise(resolve => setTimeout(resolve, 0));
+            const result = render(
+                <FieldLabelWrapperComponent
+                    fieldMetadata={mockFieldMetadata}
+                    eventDetails={mockEventDetails}
+                    parentPaths={PARENT_PATHS}
+                    getParentEditableElement={mockGetParentEditable}
+                />
+            );
+            container = result.container as HTMLElement;
+            // Use queueMicrotask for faster resolution than setTimeout
+            await new Promise<void>((resolve) =>
+                queueMicrotask(() => resolve())
+            );
         });
 
         // Use waitFor with shorter timeout since mocks resolve immediately
@@ -334,18 +364,22 @@ describe("FieldLabelWrapperComponent", () => {
     });
 
     test("displays current field icon", async () => {
-        const { container } = render(
-            <FieldLabelWrapperComponent
-                fieldMetadata={mockFieldMetadata}
-                eventDetails={mockEventDetails}
-                parentPaths={[]}
-                getParentEditableElement={mockGetParentEditable}
-            />
-        );
-
-        // Use act() to ensure React processes all state updates
+        // Wrap render in act to batch all updates and reduce reconciliation cycles
+        let container!: HTMLElement;
         await act(async () => {
-            await new Promise(resolve => setTimeout(resolve, 0));
+            const result = render(
+                <FieldLabelWrapperComponent
+                    fieldMetadata={mockFieldMetadata}
+                    eventDetails={mockEventDetails}
+                    parentPaths={[]}
+                    getParentEditableElement={mockGetParentEditable}
+                />
+            );
+            container = result.container as HTMLElement;
+            // Use queueMicrotask for faster resolution than setTimeout
+            await new Promise<void>((resolve) =>
+                queueMicrotask(() => resolve())
+            );
         });
 
         // Use findByTestId which is optimized for async queries
@@ -374,16 +408,16 @@ describe("FieldLabelWrapperComponent", () => {
 
         // Use act() to ensure React processes all state updates
         await act(async () => {
-            await new Promise(resolve => setTimeout(resolve, 0));
+            await new Promise((resolve) => setTimeout(resolve, 0));
         });
 
         // Use findByTestId which is optimized for async queries
-        const fieldLabel = await findByTestId(
+        const fieldLabel = (await findByTestId(
             container,
             "visual-builder__focused-toolbar__field-label-wrapper",
             {},
             { timeout: 1000 }
-        ) as HTMLElement;
+        )) as HTMLElement;
         expect(fieldLabel).toHaveClass(
             "visual-builder__focused-toolbar--field-disabled"
         );
@@ -401,7 +435,7 @@ describe("FieldLabelWrapperComponent", () => {
 
         // Use act() to ensure React processes all state updates
         await act(async () => {
-            await new Promise(resolve => setTimeout(resolve, 0));
+            await new Promise((resolve) => setTimeout(resolve, 0));
         });
 
         // Wait for component to mount and isFieldDisabled to be called
@@ -481,7 +515,7 @@ describe("FieldLabelWrapperComponent", () => {
 
         // Use act() to ensure React processes all state updates
         await act(async () => {
-            await new Promise(resolve => setTimeout(resolve, 0));
+            await new Promise((resolve) => setTimeout(resolve, 0));
         });
 
         // When loading, component returns LoadingIcon, not the main structure
@@ -539,20 +573,17 @@ describe("FieldLabelWrapperComponent", () => {
             />
         );
 
-        // Use act() to ensure React processes all state updates
-        await act(async () => {
-            await new Promise(resolve => setTimeout(resolve, 0));
-        });
-
+        // findByTestId handles act() internally, so we don't need a separate act() call
+        // This eliminates the redundant act() bottleneck
         // Wait for component to load and check variant indicator
         const fieldLabel = await findByTestId(
-            container,
+            container as HTMLElement,
             "visual-builder__focused-toolbar__field-label-wrapper",
             {},
             { timeout: 1000 }
         );
         expect(fieldLabel).toBeInTheDocument();
-        
+
         const variantIndicator = container.querySelector(
             "[data-testid='variant-indicator']"
         );
@@ -611,16 +642,16 @@ describe("FieldLabelWrapperComponent", () => {
 
         // Use act() to ensure React processes all state updates
         await act(async () => {
-            await new Promise(resolve => setTimeout(resolve, 0));
+            await new Promise((resolve) => setTimeout(resolve, 0));
         });
 
         // Use findByTestId which is optimized for async queries
-        const fieldLabelWrapper = await findByTestId(
+        const fieldLabelWrapper = (await findByTestId(
             container,
             "visual-builder__focused-toolbar__field-label-wrapper",
             {},
             { timeout: 1000 }
-        ) as HTMLElement;
+        )) as HTMLElement;
         expect(fieldLabelWrapper).not.toHaveClass(
             "visual-builder__focused-toolbar--variant"
         );
