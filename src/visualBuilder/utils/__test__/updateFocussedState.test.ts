@@ -4,15 +4,13 @@ import {
     updateFocussedStateOnMutation,
 } from "../updateFocussedState";
 import { VisualBuilder } from "../..";
-import {
-    addFocusOverlay,
-    hideOverlay,
-} from "../../generators/generateOverlay";
+import { addFocusOverlay, hideOverlay } from "../../generators/generateOverlay";
 import { mockGetBoundingClientRect } from "../../../__test__/utils";
 import { act } from "@testing-library/preact";
 import { singleLineFieldSchema } from "../../../__test__/data/fields";
 import { fetchEntryPermissionsAndStageDetails } from "../fetchEntryPermissionsAndStageDetails";
 import { isFieldDisabled } from "../isFieldDisabled";
+import { getEntryPermissionsCached } from "../getEntryPermissionsCached";
 
 vi.mock("../../generators/generateOverlay", () => ({
     addFocusOverlay: vi.fn(),
@@ -27,6 +25,10 @@ vi.mock("../../utils/isFieldDisabled", () => ({
     isFieldDisabled: vi.fn().mockReturnValue({ isDisabled: false }),
 }));
 
+vi.mock("../getEntryPermissionsCached", () => ({
+    getEntryPermissionsCached: vi.fn(),
+}));
+
 vi.mock("../../utils/fieldSchemaMap", () => {
     return {
         FieldSchemaMap: {
@@ -39,7 +41,6 @@ vi.mock("../../utils/fieldSchemaMap", () => {
     };
 });
 
-
 describe("updateFocussedState", () => {
     beforeEach(() => {
         const previousSelectedEditableDOM = document.createElement("div");
@@ -50,7 +51,7 @@ describe("updateFocussedState", () => {
         document.body.appendChild(previousSelectedEditableDOM);
         VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
             previousSelectedEditableDOM;
-        
+
         // Set up default mock for fetchEntryPermissionsAndStageDetails for all tests
         vi.mocked(fetchEntryPermissionsAndStageDetails).mockResolvedValue({
             acl: {
@@ -287,12 +288,17 @@ describe("updateFocussedState", () => {
         } as unknown as ResizeObserver;
 
         const previousSelectedEditableDOM = document.createElement("div");
-        previousSelectedEditableDOM.setAttribute("data-cslp", "content_type_uid.entry_uid.locale.field_path");
+        previousSelectedEditableDOM.setAttribute(
+            "data-cslp",
+            "content_type_uid.entry_uid.locale.field_path"
+        );
         document.body.appendChild(previousSelectedEditableDOM);
         VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
             previousSelectedEditableDOM;
 
-        document.querySelector = vi.fn().mockReturnValue(previousSelectedEditableDOM);
+        document.querySelector = vi
+            .fn()
+            .mockReturnValue(previousSelectedEditableDOM);
 
         const result = await updateFocussedState({
             editableElement: editableElementMock,
