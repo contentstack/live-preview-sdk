@@ -194,7 +194,7 @@ describe("When an element is hovered in visual builder mode", () => {
             expect(customCursor?.classList.contains("visible")).toBeTruthy();
         });
 
-        test.only("should have a outline and custom cursor on the url as well", async () => {
+        test("should have a outline and custom cursor on the url as well", async () => {
             const testStartTime = performance.now();
             const dispatchStartTime = performance.now();
             imageField.dispatchEvent(mousemoveEvent);
@@ -349,7 +349,7 @@ describe("When an element is hovered in visual builder mode", () => {
             expect(customCursor?.classList.contains("visible")).toBeTruthy();
         });
 
-        test.only("should have outline and custom cursor on individual instances", async () => {
+        test("should have outline and custom cursor on individual instances", async () => {
             const testStartTime = performance.now();
             const dispatchStartTime = performance.now();
             firstFileField.dispatchEvent(mousemoveEvent);
