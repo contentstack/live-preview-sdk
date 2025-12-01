@@ -707,7 +707,9 @@ describe("removeAddInstanceButtons", () => {
         expect(buttons.length).toBe(0);
     });
 
-    test("should not remove all buttons if forceRemoveAll is false", () => {
+    test.only("should not remove all buttons if forceRemoveAll is false", () => {
+        const testStartTime = performance.now();
+        const buttonGenStartTime = performance.now();
         for (let i = 0; i < 5; i++) {
             const button = generateAddInstanceButton({
                 fieldSchema: singleLineFieldSchema,
@@ -719,6 +721,8 @@ describe("removeAddInstanceButtons", () => {
             });
             visualBuilderContainer.appendChild(button);
         }
+        const buttonGenEndTime = performance.now();
+        console.log(`[TIMING] test - generateAddInstanceButton (5x): ${(buttonGenEndTime - buttonGenStartTime).toFixed(2)}ms`);
 
         // Buttons are appended synchronously
         const buttonsBeforeRemoval = visualBuilderContainer.querySelectorAll(
@@ -727,6 +731,7 @@ describe("removeAddInstanceButtons", () => {
 
         expect(buttonsBeforeRemoval.length).toBe(7);
 
+        const removeStartTime = performance.now();
         removeAddInstanceButtons(
             {
                 visualBuilderContainer: visualBuilderContainer,
@@ -735,11 +740,15 @@ describe("removeAddInstanceButtons", () => {
             },
             false
         );
+        const removeEndTime = performance.now();
+        console.log(`[TIMING] test - removeAddInstanceButtons: ${(removeEndTime - removeStartTime).toFixed(2)}ms`);
 
         const addInstanceButtons = visualBuilderContainer.querySelectorAll(
             `[data-testid="visual-builder-add-instance-button"]`
         );
 
         expect(addInstanceButtons.length).toBe(5);
+        const testEndTime = performance.now();
+        console.log(`[TIMING] test - TOTAL: ${(testEndTime - testStartTime).toFixed(2)}ms`);
     });
 });
