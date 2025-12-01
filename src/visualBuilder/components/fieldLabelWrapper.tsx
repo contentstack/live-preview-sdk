@@ -113,9 +113,11 @@ function FieldLabelWrapperComponent(
             const allPaths = uniqBy(
                 [
                     props.fieldMetadata,
-                    ...props.parentPaths.map((path) => {
-                        return extractDetailsFromCslp(path);
-                    }),
+                    ...props.parentPaths
+                        .filter((path) => path)
+                        .map((path) => {
+                            return extractDetailsFromCslp(path);
+                        }),
                 ],
                 "cslpValue"
             );
@@ -142,12 +144,14 @@ function FieldLabelWrapperComponent(
                 const domAncestor = eventDetails.editableElement.closest(`[data-cslp]:not([data-cslp^="${props.fieldMetadata.content_type_uid}"])`);
                 if(domAncestor) {
                     const domAncestorCslp = domAncestor.getAttribute("data-cslp");
-                    const domAncestorDetails = extractDetailsFromCslp(domAncestorCslp!);
-                    const domAncestorContentTypeUid = domAncestorDetails.content_type_uid;
-                    const domAncestorContentParent = referenceData?.find(data => data.contentTypeUid === domAncestorContentTypeUid);
-                    if(domAncestorContentParent) {
-                        referenceFieldName = domAncestorContentParent.referenceFieldName;
-                        parentContentTypeName = domAncestorContentParent.contentTypeTitle;
+                    if (domAncestorCslp) {
+                        const domAncestorDetails = extractDetailsFromCslp(domAncestorCslp);
+                        const domAncestorContentTypeUid = domAncestorDetails.content_type_uid;
+                        const domAncestorContentParent = referenceData?.find(data => data.contentTypeUid === domAncestorContentTypeUid);
+                        if(domAncestorContentParent) {
+                            referenceFieldName = domAncestorContentParent.referenceFieldName;
+                            parentContentTypeName = domAncestorContentParent.contentTypeTitle;
+                        }
                     }
                 }
             }

@@ -47,4 +47,17 @@ describe("getEntryIdentifiersInCurrentPage", () => {
         expect(entriesInCurrentPage.length).toBe(0);
         expect(entriesInCurrentPage).toEqual([]);
     });
+
+    test("should filter out elements with empty data-cslp attribute and not break", () => {
+        document.body.innerHTML = `
+            <div>
+                <h1 data-cslp="">Empty CSLP</h1>
+                <h2 data-cslp>Empty CSLP</h2>
+                <h1 data-cslp="page.bltf5bb5f8fb088a332.en-us.page_components.0.hero_banner.banner_title">Valid CSLP</h1>
+            </div>
+        `;
+        const { entriesInCurrentPage } = getEntryIdentifiersInCurrentPage();
+        expect(entriesInCurrentPage.length).toBe(1);
+        expect(entriesInCurrentPage[0].entryUid).toBe('bltf5bb5f8fb088a332');
+    });
 });

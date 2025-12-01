@@ -3,7 +3,7 @@ import { extractDetailsFromCslp } from "../../cslp";
 import { getAddInstanceButtons } from "../generators/generateAddInstanceButtons";
 import {
     addFocusOverlay,
-    hideFocusOverlay,
+    hideOverlay,
 } from "../generators/generateOverlay";
 import { hideHoverOutline } from "../listeners/mouseHover";
 import {
@@ -120,7 +120,7 @@ export async function updateFocussedState({
         ) ||
         document.querySelector(`[data-cslp="${previousSelectedElementCslp}"]`);
     if (!newPreviousSelectedElement && resizeObserver) {
-        hideFocusOverlay({
+        hideOverlay({
             visualBuilderOverlayWrapper: overlayWrapper,
             focusedToolbar,
             visualBuilderContainer,
@@ -136,6 +136,9 @@ export async function updateFocussedState({
     }
 
     const cslp = editableElement?.getAttribute("data-cslp") || "";
+    if (!cslp) {
+        return;
+    }
     const fieldMetadata = extractDetailsFromCslp(cslp);
 
     hideHoverOutline(visualBuilderContainer);
@@ -267,7 +270,7 @@ export function updateFocussedStateOnMutation(
             `[data-cslp-unique-id="${selectedElementCslpUniqueId}"]`
         ) || document.querySelector(`[data-cslp="${selectedElementCslp}"]`);
     if (!newSelectedElement && resizeObserver) {
-        hideFocusOverlay({
+        hideOverlay({
             visualBuilderOverlayWrapper: focusOverlayWrapper,
             focusedToolbar,
             visualBuilderContainer,
@@ -301,6 +304,9 @@ export function updateFocussedStateOnMutation(
             focusOutline.style.height = `${selectedElementDimension.height}px`;
         }
     }
+
+    //TODO: This logic for overlay position is already present in generateOverlay as `addFocusOverlay`.
+    // We should refactor this to use the same logic. Refer "VB-593" branch for more details.
 
     /**
      * Update the focus overlays if they exists.
@@ -388,6 +394,8 @@ export function updateFocussedStateOnMutation(
      * Update the focus toolbar if it exists.
      */
 
+    //TODO: This logic for toolbar position is already present in same file as `positionToolbar`.
+    // We should refactor this to use the same logic. Refer "VB-593" branch for more details.
     if (focusedToolbar) {
         const targetElementRightEdgeOffset =
             window.scrollX + window.innerWidth - selectedElementDimension.left;
