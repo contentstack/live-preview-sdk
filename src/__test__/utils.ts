@@ -48,7 +48,7 @@ export const waitForHoverOutline = async (options?: {
             expect(hoverOutline).not.toBeNull();
         },
         {
-            timeout: options?.timeout ?? 5000, // Default 5s timeout for hover outline to appear
+            timeout: options?.timeout ?? 2000, // Reduced from 5s to 2s - mocks resolve immediately
             interval: options?.interval ?? 10, // Faster polling: 10ms default
         }
     );
@@ -117,7 +117,7 @@ export const waitForCursorIcon = async (
             expect(customCursor).toHaveAttribute("data-icon", icon);
         },
         {
-            timeout: options?.timeout ?? 2000, // Default 2s timeout for cursor icon
+            timeout: options?.timeout ?? 1000, // Reduced from 2s to 1s - mocks resolve immediately
             interval: options?.interval ?? 10, // Faster polling: 10ms default
         }
     );
