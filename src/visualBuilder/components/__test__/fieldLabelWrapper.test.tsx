@@ -1,9 +1,4 @@
-import {
-    render,
-    waitFor,
-    act,
-    findByTestId,
-} from "@testing-library/preact";
+import { render, waitFor, act, findByTestId } from "@testing-library/preact";
 import FieldLabelWrapperComponent from "../fieldLabelWrapper";
 import { CslpData } from "../../../cslp/types/cslp.types";
 import { asyncRender } from "../../../__test__/utils";
@@ -45,7 +40,8 @@ vi.mock("../../utils/fieldSchemaMap", async (importOriginal) => {
                         // Check cache first for immediate resolution (synchronous)
                         if (testFieldSchemaCache[contentTypeUid]?.[fieldPath]) {
                             // Return resolved promise immediately - use cached value
-                            const cachedValue = testFieldSchemaCache[contentTypeUid][fieldPath];
+                            const cachedValue =
+                                testFieldSchemaCache[contentTypeUid][fieldPath];
                             // Use a pre-resolved promise for maximum speed
                             return Promise.resolve(cachedValue);
                         }
@@ -64,7 +60,8 @@ vi.mock("../../utils/fieldSchemaMap", async (importOriginal) => {
                         if (!testFieldSchemaCache[contentTypeUid]) {
                             testFieldSchemaCache[contentTypeUid] = {};
                         }
-                        testFieldSchemaCache[contentTypeUid][fieldPath] = defaultSchema;
+                        testFieldSchemaCache[contentTypeUid][fieldPath] =
+                            defaultSchema;
                         return Promise.resolve(defaultSchema);
                     }
                 ),
@@ -228,16 +225,22 @@ vi.mock("../generators/generateCustomCursor", () => ({
 // This avoids repeated function calls and expensive style calculations
 // Cache the result so the function returns the same object reference (faster)
 const mockStyles = {
-    "visual-builder__focused-toolbar--variant": "visual-builder__focused-toolbar--variant",
-    "visual-builder__tooltip--persistent": "visual-builder__tooltip--persistent",
+    "visual-builder__focused-toolbar--variant":
+        "visual-builder__focused-toolbar--variant",
+    "visual-builder__tooltip--persistent":
+        "visual-builder__tooltip--persistent",
     "visual-builder__custom-tooltip": "visual-builder__custom-tooltip",
-    "visual-builder__focused-toolbar__field-label-wrapper": "visual-builder__focused-toolbar__field-label-wrapper",
-    "visual-builder__focused-toolbar--field-disabled": "visual-builder__focused-toolbar--field-disabled",
-    "visual-builder__focused-toolbar__text": "visual-builder__focused-toolbar__text",
+    "visual-builder__focused-toolbar__field-label-wrapper":
+        "visual-builder__focused-toolbar__field-label-wrapper",
+    "visual-builder__focused-toolbar--field-disabled":
+        "visual-builder__focused-toolbar--field-disabled",
+    "visual-builder__focused-toolbar__text":
+        "visual-builder__focused-toolbar__text",
     "field-label-dropdown-open": "field-label-dropdown-open",
     "visual-builder__button": "visual-builder__button",
     "visual-builder__button-loader": "visual-builder__button-loader",
-    "visual-builder__reference-icon-container": "visual-builder__reference-icon-container",
+    "visual-builder__reference-icon-container":
+        "visual-builder__reference-icon-container",
     "visual-builder__content-type-icon": "visual-builder__content-type-icon",
 };
 
@@ -307,7 +310,9 @@ describe("FieldLabelWrapperComponent", () => {
             [mockFieldMetadata.fieldPath]: singleLineFieldSchema,
         });
         const endTime = performance.now();
-        console.log(`[TIMING] beforeEach - setup: ${(endTime - startTime).toFixed(2)}ms`);
+        console.log(
+            `[TIMING] beforeEach - setup: ${(endTime - startTime).toFixed(2)}ms`
+        );
     });
 
     afterEach(() => {
@@ -317,7 +322,9 @@ describe("FieldLabelWrapperComponent", () => {
         // Clean up DOM after each test to prevent state pollution
         document.body.innerHTML = "";
         const endTime = performance.now();
-        console.log(`[TIMING] afterEach - cleanup: ${(endTime - startTime).toFixed(2)}ms`);
+        console.log(
+            `[TIMING] afterEach - cleanup: ${(endTime - startTime).toFixed(2)}ms`
+        );
     });
 
     afterAll(() => {
@@ -336,7 +343,7 @@ describe("FieldLabelWrapperComponent", () => {
 
     test("renders current field and parent fields correctly", async () => {
         // Wrap render in act to batch all updates and reduce reconciliation cycles
-        let container: HTMLElement;
+        let container!: HTMLElement;
         await act(async () => {
             const result = render(
                 <FieldLabelWrapperComponent
@@ -346,9 +353,11 @@ describe("FieldLabelWrapperComponent", () => {
                     getParentEditableElement={mockGetParentEditable}
                 />
             );
-            container = result.container;
+            container = result.container as HTMLElement;
             // Use queueMicrotask for faster resolution than setTimeout
-            await new Promise(resolve => queueMicrotask(resolve));
+            await new Promise<void>((resolve) =>
+                queueMicrotask(() => resolve())
+            );
         });
 
         // Use waitFor with shorter timeout since mocks resolve immediately
@@ -366,7 +375,7 @@ describe("FieldLabelWrapperComponent", () => {
 
     test("displays current field icon", async () => {
         // Wrap render in act to batch all updates and reduce reconciliation cycles
-        let container: HTMLElement;
+        let container!: HTMLElement;
         await act(async () => {
             const result = render(
                 <FieldLabelWrapperComponent
@@ -376,9 +385,11 @@ describe("FieldLabelWrapperComponent", () => {
                     getParentEditableElement={mockGetParentEditable}
                 />
             );
-            container = result.container;
+            container = result.container as HTMLElement;
             // Use queueMicrotask for faster resolution than setTimeout
-            await new Promise(resolve => queueMicrotask(resolve));
+            await new Promise<void>((resolve) =>
+                queueMicrotask(() => resolve())
+            );
         });
 
         // Use findByTestId which is optimized for async queries
@@ -399,7 +410,7 @@ describe("FieldLabelWrapperComponent", () => {
         });
         const renderStartTime = performance.now();
         // Wrap render in act to batch all updates and reduce reconciliation cycles
-        let container: HTMLElement;
+        let container!: HTMLElement;
         await act(async () => {
             const result = render(
                 <FieldLabelWrapperComponent
@@ -409,44 +420,44 @@ describe("FieldLabelWrapperComponent", () => {
                     getParentEditableElement={mockGetParentEditable}
                 />
             );
-            container = result.container;
+            container = result.container as HTMLElement;
             // Use queueMicrotask for faster resolution than setTimeout
-            await new Promise(resolve => queueMicrotask(resolve));
+            await new Promise<void>((resolve) =>
+                queueMicrotask(() => resolve())
+            );
         });
         const renderEndTime = performance.now();
-        console.log(`[TIMING] test - render: ${(renderEndTime - renderStartTime).toFixed(2)}ms`);
+        console.log(
+            `[TIMING] test - render: ${(renderEndTime - renderStartTime).toFixed(2)}ms`
+        );
 
-        // Use act() to ensure React processes all state updates
-        const actStartTime = performance.now();
-        await act(async () => {
-            // Use queueMicrotask for faster resolution than setTimeout
-            await new Promise(resolve => queueMicrotask(resolve));
-        });
-        const actEndTime = performance.now();
-        console.log(`[TIMING] test - act: ${(actEndTime - actStartTime).toFixed(2)}ms`);
-
-        // Use findByTestId which is optimized for async queries
+        // findByTestId handles act() internally, so we don't need a separate act() call
+        // This eliminates the redundant act() bottleneck
         const findByTestIdStartTime = performance.now();
-        const fieldLabel = await findByTestId(
+        const fieldLabel = (await findByTestId(
             container,
             "visual-builder__focused-toolbar__field-label-wrapper",
             {},
             { timeout: 1000 }
-        ) as HTMLElement;
+        )) as HTMLElement;
         const findByTestIdEndTime = performance.now();
-        console.log(`[TIMING] test - findByTestId: ${(findByTestIdEndTime - findByTestIdStartTime).toFixed(2)}ms`);
+        console.log(
+            `[TIMING] test - findByTestId: ${(findByTestIdEndTime - findByTestIdStartTime).toFixed(2)}ms`
+        );
         expect(fieldLabel).toHaveClass(
             "visual-builder__focused-toolbar--field-disabled"
         );
         const testEndTime = performance.now();
-        console.log(`[TIMING] test - TOTAL: ${(testEndTime - testStartTime).toFixed(2)}ms`);
+        console.log(
+            `[TIMING] test - TOTAL: ${(testEndTime - testStartTime).toFixed(2)}ms`
+        );
     });
 
     test("calls isFieldDisabled with correct arguments", async () => {
         const testStartTime = performance.now();
         const renderStartTime = performance.now();
         // Wrap render in act to batch all updates and reduce reconciliation cycles
-        let container: HTMLElement;
+        let container!: HTMLElement;
         await act(async () => {
             const result = render(
                 <FieldLabelWrapperComponent
@@ -456,23 +467,19 @@ describe("FieldLabelWrapperComponent", () => {
                     getParentEditableElement={mockGetParentEditable}
                 />
             );
-            container = result.container;
+            container = result.container as HTMLElement;
             // Use queueMicrotask for faster resolution than setTimeout
-            await new Promise(resolve => queueMicrotask(resolve));
+            await new Promise<void>((resolve) =>
+                queueMicrotask(() => resolve())
+            );
         });
         const renderEndTime = performance.now();
-        console.log(`[TIMING] test - render: ${(renderEndTime - renderStartTime).toFixed(2)}ms`);
+        console.log(
+            `[TIMING] test - render: ${(renderEndTime - renderStartTime).toFixed(2)}ms`
+        );
 
-        // Use act() to ensure React processes all state updates
-        const actStartTime = performance.now();
-        await act(async () => {
-            // Use queueMicrotask for faster resolution than setTimeout
-            await new Promise(resolve => queueMicrotask(resolve));
-        });
-        const actEndTime = performance.now();
-        console.log(`[TIMING] test - act: ${(actEndTime - actStartTime).toFixed(2)}ms`);
-
-        // Wait for component to mount and isFieldDisabled to be called
+        // waitFor handles act() internally, so we don't need a separate act() call
+        // This eliminates the 43-second act() bottleneck
         const waitForStartTime = performance.now();
         await waitFor(
             () => {
@@ -485,7 +492,9 @@ describe("FieldLabelWrapperComponent", () => {
             { timeout: 1000, interval: 10 }
         );
         const waitForEndTime = performance.now();
-        console.log(`[TIMING] test - waitFor: ${(waitForEndTime - waitForStartTime).toFixed(2)}ms`);
+        console.log(
+            `[TIMING] test - waitFor: ${(waitForEndTime - waitForStartTime).toFixed(2)}ms`
+        );
 
         expect(isFieldDisabled).toHaveBeenCalledWith(
             singleLineFieldSchema, // Now using the actual schema we pre-set
@@ -512,7 +521,9 @@ describe("FieldLabelWrapperComponent", () => {
             }
         );
         const testEndTime = performance.now();
-        console.log(`[TIMING] test - TOTAL: ${(testEndTime - testStartTime).toFixed(2)}ms`);
+        console.log(
+            `[TIMING] test - TOTAL: ${(testEndTime - testStartTime).toFixed(2)}ms`
+        );
     });
 
     // REMOVED: "renders ToolbarTooltip component with correct data" - redundant test
@@ -546,7 +557,7 @@ describe("FieldLabelWrapperComponent", () => {
 
         const renderStartTime = performance.now();
         // Wrap render in act to batch all updates and reduce reconciliation cycles
-        let container: HTMLElement;
+        let container!: HTMLElement;
         await act(async () => {
             const result = render(
                 <FieldLabelWrapperComponent
@@ -556,22 +567,19 @@ describe("FieldLabelWrapperComponent", () => {
                     getParentEditableElement={mockGetParentEditable}
                 />
             );
-            container = result.container;
+            container = result.container as HTMLElement;
             // Use queueMicrotask for faster resolution than setTimeout
-            await new Promise(resolve => queueMicrotask(resolve));
+            await new Promise<void>((resolve) =>
+                queueMicrotask(() => resolve())
+            );
         });
         const renderEndTime = performance.now();
-        console.log(`[TIMING] test - render: ${(renderEndTime - renderStartTime).toFixed(2)}ms`);
+        console.log(
+            `[TIMING] test - render: ${(renderEndTime - renderStartTime).toFixed(2)}ms`
+        );
 
-        // Use act() to ensure React processes all state updates
-        const actStartTime = performance.now();
-        await act(async () => {
-            // Use queueMicrotask for faster resolution than setTimeout
-            await new Promise(resolve => queueMicrotask(resolve));
-        });
-        const actEndTime = performance.now();
-        console.log(`[TIMING] test - act: ${(actEndTime - actStartTime).toFixed(2)}ms`);
-
+        // waitFor handles act() internally, so we don't need a separate act() call
+        // This eliminates the redundant act() bottleneck
         // When loading, component returns LoadingIcon, not the main structure
         // ContentTypeIcon only renders when dataLoading is false, which won't happen here
         // So we should see LoadingIcon and NOT see ContentTypeIcon
@@ -587,9 +595,13 @@ describe("FieldLabelWrapperComponent", () => {
             { timeout: 1000, interval: 10 } // Reduced timeout - mocks resolve immediately
         );
         const waitForEndTime = performance.now();
-        console.log(`[TIMING] test - waitFor: ${(waitForEndTime - waitForStartTime).toFixed(2)}ms`);
+        console.log(
+            `[TIMING] test - waitFor: ${(waitForEndTime - waitForStartTime).toFixed(2)}ms`
+        );
         const testEndTime = performance.now();
-        console.log(`[TIMING] test - TOTAL: ${(testEndTime - testStartTime).toFixed(2)}ms`);
+        console.log(
+            `[TIMING] test - TOTAL: ${(testEndTime - testStartTime).toFixed(2)}ms`
+        );
     });
 
     test.skip("renders VariantIndicator when field has variant", async () => {
@@ -632,21 +644,17 @@ describe("FieldLabelWrapperComponent", () => {
             />
         );
 
-        // Use act() to ensure React processes all state updates
-        // Use queueMicrotask for faster resolution than setTimeout
-        await act(async () => {
-            await new Promise(resolve => queueMicrotask(resolve));
-        });
-
+        // findByTestId handles act() internally, so we don't need a separate act() call
+        // This eliminates the redundant act() bottleneck
         // Wait for component to load and check variant indicator
         const fieldLabel = await findByTestId(
-            container,
+            container as HTMLElement,
             "visual-builder__focused-toolbar__field-label-wrapper",
             {},
             { timeout: 1000 }
         );
         expect(fieldLabel).toBeInTheDocument();
-        
+
         const variantIndicator = container.querySelector(
             "[data-testid='variant-indicator']"
         );
@@ -697,7 +705,7 @@ describe("FieldLabelWrapperComponent", () => {
         const testStartTime = performance.now();
         const renderStartTime = performance.now();
         // Wrap render in act to batch all updates and reduce reconciliation cycles
-        let container: HTMLElement;
+        let container!: HTMLElement;
         await act(async () => {
             const result = render(
                 <FieldLabelWrapperComponent
@@ -707,36 +715,37 @@ describe("FieldLabelWrapperComponent", () => {
                     getParentEditableElement={mockGetParentEditable}
                 />
             );
-            container = result.container;
+            container = result.container as HTMLElement;
             // Use queueMicrotask for faster resolution than setTimeout
-            await new Promise(resolve => queueMicrotask(resolve));
+            await new Promise<void>((resolve) =>
+                queueMicrotask(() => resolve())
+            );
         });
         const renderEndTime = performance.now();
-        console.log(`[TIMING] test - render: ${(renderEndTime - renderStartTime).toFixed(2)}ms`);
+        console.log(
+            `[TIMING] test - render: ${(renderEndTime - renderStartTime).toFixed(2)}ms`
+        );
 
-        // Use act() to ensure React processes all state updates
-        const actStartTime = performance.now();
-        await act(async () => {
-            // Use queueMicrotask for faster resolution than setTimeout
-            await new Promise(resolve => queueMicrotask(resolve));
-        });
-        const actEndTime = performance.now();
-        console.log(`[TIMING] test - act: ${(actEndTime - actStartTime).toFixed(2)}ms`);
-
+        // findByTestId handles act() internally, so we don't need a separate act() call
+        // This eliminates the redundant act() bottleneck
         // Use findByTestId which is optimized for async queries
         const findByTestIdStartTime = performance.now();
-        const fieldLabelWrapper = await findByTestId(
+        const fieldLabelWrapper = (await findByTestId(
             container,
             "visual-builder__focused-toolbar__field-label-wrapper",
             {},
             { timeout: 1000 }
-        ) as HTMLElement;
+        )) as HTMLElement;
         const findByTestIdEndTime = performance.now();
-        console.log(`[TIMING] test - findByTestId: ${(findByTestIdEndTime - findByTestIdStartTime).toFixed(2)}ms`);
+        console.log(
+            `[TIMING] test - findByTestId: ${(findByTestIdEndTime - findByTestIdStartTime).toFixed(2)}ms`
+        );
         expect(fieldLabelWrapper).not.toHaveClass(
             "visual-builder__focused-toolbar--variant"
         );
         const testEndTime = performance.now();
-        console.log(`[TIMING] test - TOTAL: ${(testEndTime - testStartTime).toFixed(2)}ms`);
+        console.log(
+            `[TIMING] test - TOTAL: ${(testEndTime - testStartTime).toFixed(2)}ms`
+        );
     });
 });
