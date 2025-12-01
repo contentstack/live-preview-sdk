@@ -148,7 +148,6 @@ describe("When an element is hovered in visual builder mode", () => {
         });
 
         test("should have a outline and custom cursor on the nested single line", async () => {
-            const testStartTime = performance.now();
             const singleLine = document.createElement("p");
             singleLine.setAttribute(
                 "data-cslp",
@@ -260,8 +259,6 @@ describe("When an element is hovered in visual builder mode", () => {
         });
 
         test("should have outline and custom cursor on nested multi line", async () => {
-            const testStartTime = performance.now();
-            const dispatchStartTime = performance.now();
             firstNestedMultiLine.dispatchEvent(mousemoveEvent);
             await waitForHoverOutline();
 

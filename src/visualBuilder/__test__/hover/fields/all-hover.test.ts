@@ -286,8 +286,6 @@ describe("When an element is hovered in visual builder mode", () => {
         });
 
         test("should have outline and custom cursor on individual instances", async () => {
-            const testStartTime = performance.now();
-            const dispatchStartTime = performance.now();
             firstField.dispatchEvent(mousemoveEvent);
             await waitForHoverOutline();
 
