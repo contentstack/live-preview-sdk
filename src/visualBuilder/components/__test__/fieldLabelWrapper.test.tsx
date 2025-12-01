@@ -364,7 +364,7 @@ describe("FieldLabelWrapperComponent", () => {
         expect(icon).toBeInTheDocument();
     });
 
-    test.only("renders with correct class when field is disabled", async () => {
+    test("renders with correct class when field is disabled", async () => {
         const testStartTime = performance.now();
         vi.mocked(isFieldDisabled).mockReturnValue({
             isDisabled: true,
@@ -407,7 +407,7 @@ describe("FieldLabelWrapperComponent", () => {
         console.log(`[TIMING] test - TOTAL: ${(testEndTime - testStartTime).toFixed(2)}ms`);
     });
 
-    test.only("calls isFieldDisabled with correct arguments", async () => {
+    test("calls isFieldDisabled with correct arguments", async () => {
         const testStartTime = performance.now();
         const renderStartTime = performance.now();
         const { container } = render(
@@ -484,7 +484,7 @@ describe("FieldLabelWrapperComponent", () => {
     // This test only checks a single data attribute that's set directly from props.
     // The attribute is already implicitly verified in other tests that check the component renders correctly.
 
-    test.only("does not render ContentTypeIcon when loading", async () => {
+    test("does not render ContentTypeIcon when loading", async () => {
         const testStartTime = performance.now();
         // Mock the display names to never resolve to simulate loading state
         vi.mocked(visualBuilderPostMessage!.send).mockImplementation(
@@ -641,7 +641,7 @@ describe("FieldLabelWrapperComponent", () => {
         );
     });
 
-    test.only("does not apply variant CSS classes when field has no variant", async () => {
+    test("does not apply variant CSS classes when field has no variant", async () => {
         const testStartTime = performance.now();
         const renderStartTime = performance.now();
         const { container } = render(

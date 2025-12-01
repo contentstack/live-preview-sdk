@@ -356,7 +356,7 @@ describe("When an element is hovered in visual builder mode", () => {
             expect(customCursor?.classList.contains("visible")).toBeTruthy();
         });
 
-        test.only("should have outline and custom cursor on individual instances", async () => {
+        test("should have outline and custom cursor on individual instances", async () => {
             const testStartTime = performance.now();
             const dispatchStartTime = performance.now();
             firstField.dispatchEvent(mousemoveEvent);

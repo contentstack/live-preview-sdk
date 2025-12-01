@@ -707,7 +707,7 @@ describe("removeAddInstanceButtons", () => {
         expect(buttons.length).toBe(0);
     });
 
-    test.only("should not remove all buttons if forceRemoveAll is false", () => {
+    test("should not remove all buttons if forceRemoveAll is false", () => {
         const testStartTime = performance.now();
         const buttonGenStartTime = performance.now();
         for (let i = 0; i < 5; i++) {
