@@ -107,25 +107,40 @@ describe("When an element is hovered in visual builder mode", () => {
     const fieldSchemaMap = getFieldSchemaMap().all_fields;
 
     beforeAll(() => {
+        const startTime = performance.now();
         // Pre-set all field schemas in cache to avoid async fetches during hover
         // This significantly speeds up tests, especially for html-rte, json-rte, link fields
         FieldSchemaMap.setFieldSchema("all_fields", fieldSchemaMap);
 
         // Field schemas are already set above - no need for additional caching
         // The FieldSchemaMap.setFieldSchema call above sets all fields at once
+        const endTime = performance.now();
+        console.log(
+            `[TIMING] beforeAll - setFieldSchema: ${(endTime - startTime).toFixed(2)}ms`
+        );
     });
 
     beforeEach(() => {
+        const startTime = performance.now();
         Config.reset();
         Config.set("mode", 2);
         mousemoveEvent = new Event("mousemove", {
             bubbles: true,
             cancelable: true,
         });
+        const endTime = performance.now();
+        console.log(
+            `[TIMING] beforeEach (outer) - Config setup: ${(endTime - startTime).toFixed(2)}ms`
+        );
     });
 
     afterEach(async () => {
+        const startTime = performance.now();
         document.getElementsByTagName("html")[0].innerHTML = "";
+        const endTime = performance.now();
+        console.log(
+            `[TIMING] afterEach (outer) - cleanup: ${(endTime - startTime).toFixed(2)}ms`
+        );
     });
 
     afterAll(() => {
@@ -139,6 +154,7 @@ describe("When an element is hovered in visual builder mode", () => {
         let visualBuilder: VisualBuilder;
 
         beforeEach(() => {
+            const startTime = performance.now();
             fieldElement = document.createElement("p");
             fieldElement.setAttribute("data-cslp", SINGLE_FIELD.cslp);
             fieldElement.getBoundingClientRect = vi
@@ -146,11 +162,29 @@ describe("When an element is hovered in visual builder mode", () => {
                 .mockReturnValue(mockDomRect.singleLeft());
 
             document.body.appendChild(fieldElement);
+            const domSetupTime = performance.now();
+            console.log(
+                `[TIMING] beforeEach (${SINGLE_FIELD.name} field) - DOM setup: ${(domSetupTime - startTime).toFixed(2)}ms`
+            );
+
+            const vbStartTime = performance.now();
             visualBuilder = new VisualBuilder();
+            const vbEndTime = performance.now();
+            console.log(
+                `[TIMING] beforeEach (${SINGLE_FIELD.name} field) - VisualBuilder init: ${(vbEndTime - vbStartTime).toFixed(2)}ms`
+            );
+            console.log(
+                `[TIMING] beforeEach (${SINGLE_FIELD.name} field) - TOTAL: ${(vbEndTime - startTime).toFixed(2)}ms`
+            );
         });
 
         afterEach(() => {
+            const startTime = performance.now();
             visualBuilder.destroy();
+            const endTime = performance.now();
+            console.log(
+                `[TIMING] afterEach (${SINGLE_FIELD.name} field) - VisualBuilder.destroy: ${(endTime - startTime).toFixed(2)}ms`
+            );
         });
 
         test("should have outline and custom cursor", async () => {
@@ -183,6 +217,7 @@ describe("When an element is hovered in visual builder mode", () => {
         let visualBuilder: VisualBuilder;
 
         beforeEach(() => {
+            const startTime = performance.now();
             fieldElement = document.createElement("p");
             fieldElement.setAttribute("data-cslp", MULTIPLE_FIELD.cslp);
             fieldElement.getBoundingClientRect = vi
@@ -190,11 +225,29 @@ describe("When an element is hovered in visual builder mode", () => {
                 .mockReturnValue(mockDomRect.singleLeft());
 
             document.body.appendChild(fieldElement);
+            const domSetupTime = performance.now();
+            console.log(
+                `[TIMING] beforeEach (${MULTIPLE_FIELD.name} field) - DOM setup: ${(domSetupTime - startTime).toFixed(2)}ms`
+            );
+
+            const vbStartTime = performance.now();
             visualBuilder = new VisualBuilder();
+            const vbEndTime = performance.now();
+            console.log(
+                `[TIMING] beforeEach (${MULTIPLE_FIELD.name} field) - VisualBuilder init: ${(vbEndTime - vbStartTime).toFixed(2)}ms`
+            );
+            console.log(
+                `[TIMING] beforeEach (${MULTIPLE_FIELD.name} field) - TOTAL: ${(vbEndTime - startTime).toFixed(2)}ms`
+            );
         });
 
         afterEach(() => {
+            const startTime = performance.now();
             visualBuilder.destroy();
+            const endTime = performance.now();
+            console.log(
+                `[TIMING] afterEach (${MULTIPLE_FIELD.name} field) - VisualBuilder.destroy: ${(endTime - startTime).toFixed(2)}ms`
+            );
         });
 
         test("should have outline and custom cursor", async () => {
@@ -228,6 +281,7 @@ describe("When an element is hovered in visual builder mode", () => {
         let visualBuilder: VisualBuilder;
 
         beforeEach(() => {
+            const startTime = performance.now();
             container = document.createElement("div");
             container.setAttribute("data-cslp", MULTIPLE_FIELD.multipleCslp);
             container.getBoundingClientRect = vi
@@ -255,12 +309,29 @@ describe("When an element is hovered in visual builder mode", () => {
             container.appendChild(firstField);
             container.appendChild(secondField);
             document.body.appendChild(container);
+            const domSetupTime = performance.now();
+            console.log(
+                `[TIMING] beforeEach (${MULTIPLE_FIELD.name} field multiple) - DOM setup: ${(domSetupTime - startTime).toFixed(2)}ms`
+            );
 
+            const vbStartTime = performance.now();
             visualBuilder = new VisualBuilder();
+            const vbEndTime = performance.now();
+            console.log(
+                `[TIMING] beforeEach (${MULTIPLE_FIELD.name} field multiple) - VisualBuilder init: ${(vbEndTime - vbStartTime).toFixed(2)}ms`
+            );
+            console.log(
+                `[TIMING] beforeEach (${MULTIPLE_FIELD.name} field multiple) - TOTAL: ${(vbEndTime - startTime).toFixed(2)}ms`
+            );
         });
 
         afterEach(() => {
+            const startTime = performance.now();
             visualBuilder.destroy();
+            const endTime = performance.now();
+            console.log(
+                `[TIMING] afterEach (${MULTIPLE_FIELD.name} field multiple) - VisualBuilder.destroy: ${(endTime - startTime).toFixed(2)}ms`
+            );
         });
 
         test("should have outline and custom cursor on container", async () => {
@@ -285,9 +356,21 @@ describe("When an element is hovered in visual builder mode", () => {
             expect(customCursor?.classList.contains("visible")).toBeTruthy();
         });
 
-        test("should have outline and custom cursor on individual instances", async () => {
+        test.only("should have outline and custom cursor on individual instances", async () => {
+            const testStartTime = performance.now();
+            const dispatchStartTime = performance.now();
             firstField.dispatchEvent(mousemoveEvent);
+            const dispatchEndTime = performance.now();
+            console.log(
+                `[TIMING] test - dispatchEvent: ${(dispatchEndTime - dispatchStartTime).toFixed(2)}ms`
+            );
+
+            const hoverOutlineStartTime = performance.now();
             await waitForHoverOutline();
+            const hoverOutlineEndTime = performance.now();
+            console.log(
+                `[TIMING] test - waitForHoverOutline: ${(hoverOutlineEndTime - hoverOutlineStartTime).toFixed(2)}ms`
+            );
 
             const hoverOutline = document.querySelector(
                 "[data-testid='visual-builder__hover-outline']"
@@ -295,7 +378,12 @@ describe("When an element is hovered in visual builder mode", () => {
             expect(hoverOutline).toHaveAttribute("style");
 
             // Wait for cursor icon to be set (not "loading")
+            const cursorIconStartTime = performance.now();
             await waitForCursorIcon(MULTIPLE_FIELD.icon, { timeout: 5000 });
+            const cursorIconEndTime = performance.now();
+            console.log(
+                `[TIMING] test - waitForCursorIcon: ${(cursorIconEndTime - cursorIconStartTime).toFixed(2)}ms`
+            );
 
             const customCursor = document.querySelector(
                 `[data-testid="visual-builder__cursor"]`
@@ -305,6 +393,10 @@ describe("When an element is hovered in visual builder mode", () => {
                 MULTIPLE_FIELD.icon
             );
             expect(customCursor?.classList.contains("visible")).toBeTruthy();
+            const testEndTime = performance.now();
+            console.log(
+                `[TIMING] test - TOTAL: ${(testEndTime - testStartTime).toFixed(2)}ms`
+            );
         });
     });
 });
