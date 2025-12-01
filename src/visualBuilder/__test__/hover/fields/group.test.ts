@@ -185,7 +185,7 @@ describe("When an element is hovered in visual builder mode", () => {
             expect(customCursor?.classList.contains("visible")).toBeTruthy();
         });
 
-        test.only("should have a outline and custom cursor on the nested single line", async () => {
+        test("should have a outline and custom cursor on the nested single line", async () => {
             const testStartTime = performance.now();
             const singleLine = document.createElement("p");
             singleLine.setAttribute(
@@ -337,7 +337,7 @@ describe("When an element is hovered in visual builder mode", () => {
             expect(customCursor?.classList.contains("visible")).toBeTruthy();
         });
 
-        test.only("should have outline and custom cursor on nested multi line", async () => {
+        test("should have outline and custom cursor on nested multi line", async () => {
             const testStartTime = performance.now();
             const dispatchStartTime = performance.now();
             firstNestedMultiLine.dispatchEvent(mousemoveEvent);
