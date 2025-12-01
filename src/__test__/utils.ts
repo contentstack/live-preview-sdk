@@ -40,42 +40,71 @@ export const waitForHoverOutline = async (options?: {
     timeout?: number;
     interval?: number;
 }) => {
+    // First, wait for the outline element to exist (faster check)
     await waitFor(
         () => {
             const hoverOutline = document.querySelector(
-                "[data-testid='visual-builder__hover-outline'][style]"
+                "[data-testid='visual-builder__hover-outline']"
             );
             expect(hoverOutline).not.toBeNull();
         },
         {
-            timeout: options?.timeout ?? 2000, // Reduced from 5s to 2s - mocks resolve immediately
-            interval: options?.interval ?? 10, // Faster polling: 10ms default
+            timeout: options?.timeout ?? 2000,
+            interval: options?.interval ?? 5, // Faster polling: 5ms default
+        }
+    );
+
+    // Then wait for style attribute to be set (more specific check)
+    await waitFor(
+        () => {
+            const hoverOutline = document.querySelector(
+                "[data-testid='visual-builder__hover-outline']"
+            ) as HTMLElement;
+            expect(hoverOutline).not.toBeNull();
+            // Check if style has meaningful values (not empty)
+            const hasStyle =
+                hoverOutline?.style &&
+                (hoverOutline.style.top ||
+                    hoverOutline.style.left ||
+                    hoverOutline.style.width ||
+                    hoverOutline.style.height);
+            expect(hasStyle).toBeTruthy();
+        },
+        {
+            timeout: options?.timeout ?? 2000,
+            interval: options?.interval ?? 5, // Faster polling: 5ms default
         }
     );
 };
-  
-export const waitForBuilderSDKToBeInitialized = async (visualBuilderPostMessage: EventManager | undefined) => {
+
+export const waitForBuilderSDKToBeInitialized = async (
+    visualBuilderPostMessage: EventManager | undefined
+) => {
     await waitFor(() => {
         expect(visualBuilderPostMessage?.send).toBeCalledWith(
             VisualBuilderPostMessageEvents.INIT,
             expect.any(Object)
         );
     });
-}
+};
 interface WaitForClickActionOptions {
     skipWaitForFieldType?: boolean;
 }
-export const triggerAndWaitForClickAction = async (visualBuilderPostMessage: EventManager | undefined, element: HTMLElement, {skipWaitForFieldType}: WaitForClickActionOptions = {}) => {
+export const triggerAndWaitForClickAction = async (
+    visualBuilderPostMessage: EventManager | undefined,
+    element: HTMLElement,
+    { skipWaitForFieldType }: WaitForClickActionOptions = {}
+) => {
     await waitForBuilderSDKToBeInitialized(visualBuilderPostMessage);
     await act(async () => {
         await fireEvent.click(element);
-    })
-    if(!skipWaitForFieldType) {
+    });
+    if (!skipWaitForFieldType) {
         await waitFor(() => {
-            expect(element).toHaveAttribute("data-cslp-field-type")
-        })
+            expect(element).toHaveAttribute("data-cslp-field-type");
+        });
     }
-}
+};
 export const waitForToolbaxToBeVisible = async () => {
     await waitFor(() => {
         const toolbar = document.querySelector(
@@ -83,7 +112,7 @@ export const waitForToolbaxToBeVisible = async () => {
         );
         expect(toolbar).not.toBeNull();
     });
-}
+};
 
 export const waitForCursorToBeVisible = async (options?: {
     timeout?: number;
@@ -129,17 +158,24 @@ const defaultRect = {
     bottom: 20,
     width: 10,
     height: 5,
-}
-export const mockGetBoundingClientRect = (element: HTMLElement, rect = defaultRect) => {
-    vi.spyOn(element, "getBoundingClientRect").mockImplementation(() => rect as DOMRect);
-}
+};
+export const mockGetBoundingClientRect = (
+    element: HTMLElement,
+    rect = defaultRect
+) => {
+    vi.spyOn(element, "getBoundingClientRect").mockImplementation(
+        () => rect as DOMRect
+    );
+};
 export const getElementBytestId = (testId: string) => {
     return document.querySelector(`[data-testid="${testId}"]`);
-}
-export const asyncRender: (componentChild: ComponentChild) => ReturnType<typeof render> = async (...args) => {
+};
+export const asyncRender: (
+    componentChild: ComponentChild
+) => ReturnType<typeof render> = async (...args) => {
     let returnValue: ReturnType<typeof render>;
     await act(async () => {
         returnValue = render(...args);
     });
     return returnValue;
-}
+};
