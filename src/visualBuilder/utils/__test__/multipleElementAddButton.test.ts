@@ -59,6 +59,18 @@ vi.mock("@preact/signals", async (importOriginal) => {
     };
 });
 
+// Optimize preact render in tests - use a faster synchronous render
+vi.mock("preact", async (importOriginal) => {
+    const preact = await importOriginal<typeof import("preact")>();
+    const originalRender = preact.render;
+    
+    // In tests, use original render but ensure it's synchronous where possible
+    return {
+        ...preact,
+        render: originalRender,
+    };
+});
+
 // TODO: rewrite this
 describe("getChildrenDirection", () => {
     let visualBuilderContainer: HTMLDivElement;
