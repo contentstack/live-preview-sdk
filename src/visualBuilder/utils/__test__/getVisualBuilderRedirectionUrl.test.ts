@@ -84,4 +84,25 @@ describe('getVisualBuilderRedirectionUrl', () => {
         const result = getVisualBuilderRedirectionUrl();
         expect(result.toString()).toBe('https://app.example.com/#!/stack/12345/visual-builder?branch=main&environment=production&target-url=https%3A%2F%2Fexample.com%2F');
     });
+
+    it('should ignore invalid data-cslp attribute and use locale from config', () => {
+        document.body.innerHTML = '<div data-cslp></div>';
+        Config.get.mockReturnValue({
+            stackDetails: {
+                branch: 'main',
+                apiKey: '12345',
+                environment: 'production',
+                locale: 'en-US'
+            },
+            clientUrlParams: {
+                url: 'https://app.example.com'
+            }
+        });
+
+        const result = getVisualBuilderRedirectionUrl();
+        // Should use locale from config when data-cslp attribute is invalid (empty or no value)
+        expect(result.toString()).toBe('https://app.example.com/#!/stack/12345/visual-builder?branch=main&environment=production&target-url=https%3A%2F%2Fexample.com%2F&locale=en-US');
+        // Should not call extractDetailsFromCslp for invalid cslp
+        expect(extractDetailsFromCslp).not.toHaveBeenCalled();
+    });
 });
