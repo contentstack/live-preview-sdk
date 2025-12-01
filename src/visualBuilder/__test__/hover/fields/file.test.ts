@@ -83,7 +83,6 @@ describe("When an element is hovered in visual builder mode", () => {
     let mousemoveEvent: Event;
 
     beforeAll(() => {
-        const startTime = performance.now();
         FieldSchemaMap.setFieldSchema(
             "all_fields",
             getFieldSchemaMap().all_fields
@@ -93,14 +92,9 @@ describe("When an element is hovered in visual builder mode", () => {
             observe: vi.fn(),
             disconnect: vi.fn(),
         }));
-        const endTime = performance.now();
-        console.log(
-            `[TIMING] beforeAll - setFieldSchema: ${(endTime - startTime).toFixed(2)}ms`
-        );
     });
 
     beforeEach(() => {
-        const startTime = performance.now();
         Config.reset();
         Config.set("mode", 2);
         mousemoveEvent = new Event("mousemove", {
@@ -108,21 +102,12 @@ describe("When an element is hovered in visual builder mode", () => {
             cancelable: true,
         });
         document.getElementsByTagName("html")[0].innerHTML = "";
-        const endTime = performance.now();
-        console.log(
-            `[TIMING] beforeEach (outer) - Config setup: ${(endTime - startTime).toFixed(2)}ms`
-        );
     });
 
     afterEach(async () => {
-        const startTime = performance.now();
         // Wait longer for any pending async operations (like fetchEntryPermissionsAndStageDetails) to complete
         // await new Promise((resolve) => setTimeout(resolve, 500));
         document.getElementsByTagName("html")[0].innerHTML = "";
-        const endTime = performance.now();
-        console.log(
-            `[TIMING] afterEach (outer) - cleanup: ${(endTime - startTime).toFixed(2)}ms`
-        );
     });
 
     afterAll(() => {
@@ -135,7 +120,6 @@ describe("When an element is hovered in visual builder mode", () => {
         let visualBuilder: VisualBuilder;
 
         beforeEach(() => {
-            const startTime = performance.now();
             fileField = document.createElement("p");
             fileField.setAttribute(
                 "data-cslp",
@@ -154,29 +138,12 @@ describe("When an element is hovered in visual builder mode", () => {
 
             document.body.appendChild(fileField);
             document.body.appendChild(imageField);
-            const domSetupTime = performance.now();
-            console.log(
-                `[TIMING] beforeEach (file field) - DOM setup: ${(domSetupTime - startTime).toFixed(2)}ms`
-            );
 
-            const vbStartTime = performance.now();
             visualBuilder = new VisualBuilder();
-            const vbEndTime = performance.now();
-            console.log(
-                `[TIMING] beforeEach (file field) - VisualBuilder init: ${(vbEndTime - vbStartTime).toFixed(2)}ms`
-            );
-            console.log(
-                `[TIMING] beforeEach (file field) - TOTAL: ${(vbEndTime - startTime).toFixed(2)}ms`
-            );
         });
 
         afterEach(() => {
-            const startTime = performance.now();
             visualBuilder.destroy();
-            const endTime = performance.now();
-            console.log(
-                `[TIMING] afterEach (file field) - VisualBuilder.destroy: ${(endTime - startTime).toFixed(2)}ms`
-            );
         });
 
         test("should have outline and custom cursor", async () => {
@@ -198,17 +165,7 @@ describe("When an element is hovered in visual builder mode", () => {
             const testStartTime = performance.now();
             const dispatchStartTime = performance.now();
             imageField.dispatchEvent(mousemoveEvent);
-            const dispatchEndTime = performance.now();
-            console.log(
-                `[TIMING] test - dispatchEvent: ${(dispatchEndTime - dispatchStartTime).toFixed(2)}ms`
-            );
-
-            const hoverOutlineStartTime = performance.now();
             await waitForHoverOutline();
-            const hoverOutlineEndTime = performance.now();
-            console.log(
-                `[TIMING] test - waitForHoverOutline: ${(hoverOutlineEndTime - hoverOutlineStartTime).toFixed(2)}ms`
-            );
 
             const hoverOutline = document.querySelector(
                 "[data-testid='visual-builder__hover-outline']"
@@ -216,7 +173,6 @@ describe("When an element is hovered in visual builder mode", () => {
             expect(hoverOutline).toHaveAttribute("style");
 
             // Wait for cursor icon to be set (not "loading") - optimized timeout
-            const waitForStartTime = performance.now();
             await waitFor(
                 () => {
                     const customCursor = document.querySelector(
@@ -226,20 +182,12 @@ describe("When an element is hovered in visual builder mode", () => {
                 },
                 { timeout: 2000, interval: 10 } // Optimized: reduced timeout and faster polling
             );
-            const waitForEndTime = performance.now();
-            console.log(
-                `[TIMING] test - waitFor cursor: ${(waitForEndTime - waitForStartTime).toFixed(2)}ms`
-            );
 
             const customCursor = document.querySelector(
                 `[data-testid="visual-builder__cursor"]`
             );
             expect(customCursor).toHaveAttribute("data-icon", "file");
             expect(customCursor?.classList.contains("visible")).toBeTruthy();
-            const testEndTime = performance.now();
-            console.log(
-                `[TIMING] test - TOTAL: ${(testEndTime - testStartTime).toFixed(2)}ms`
-            );
         });
     });
 
@@ -252,7 +200,6 @@ describe("When an element is hovered in visual builder mode", () => {
         let visualBuilder: VisualBuilder;
 
         beforeEach(() => {
-            const startTime = performance.now();
             container = document.createElement("div");
             container.setAttribute(
                 "data-cslp",
@@ -306,29 +253,12 @@ describe("When an element is hovered in visual builder mode", () => {
             container.appendChild(firstImageField);
             container.appendChild(secondImageField);
             document.body.appendChild(container);
-            const domSetupTime = performance.now();
-            console.log(
-                `[TIMING] beforeEach (file field multiple) - DOM setup: ${(domSetupTime - startTime).toFixed(2)}ms`
-            );
 
-            const vbStartTime = performance.now();
             visualBuilder = new VisualBuilder();
-            const vbEndTime = performance.now();
-            console.log(
-                `[TIMING] beforeEach (file field multiple) - VisualBuilder init: ${(vbEndTime - vbStartTime).toFixed(2)}ms`
-            );
-            console.log(
-                `[TIMING] beforeEach (file field multiple) - TOTAL: ${(vbEndTime - startTime).toFixed(2)}ms`
-            );
         });
 
         afterEach(() => {
-            const startTime = performance.now();
             visualBuilder.destroy();
-            const endTime = performance.now();
-            console.log(
-                `[TIMING] afterEach (file field multiple) - VisualBuilder.destroy: ${(endTime - startTime).toFixed(2)}ms`
-            );
         });
 
         test("should have outline and custom cursor", async () => {
@@ -353,18 +283,7 @@ describe("When an element is hovered in visual builder mode", () => {
             const testStartTime = performance.now();
             const dispatchStartTime = performance.now();
             firstFileField.dispatchEvent(mousemoveEvent);
-            const dispatchEndTime = performance.now();
-            console.log(
-                `[TIMING] test - dispatchEvent: ${(dispatchEndTime - dispatchStartTime).toFixed(2)}ms`
-            );
-
-            const hoverOutlineStartTime = performance.now();
             await waitForHoverOutline();
-            const hoverOutlineEndTime = performance.now();
-            console.log(
-                `[TIMING] test - waitForHoverOutline: ${(hoverOutlineEndTime - hoverOutlineStartTime).toFixed(2)}ms`
-            );
-
             const hoverOutline = document.querySelector(
                 "[data-testid='visual-builder__hover-outline']"
             ) as HTMLElement;
@@ -377,10 +296,6 @@ describe("When an element is hovered in visual builder mode", () => {
             );
             expect(customCursor?.getAttribute("data-icon")).toBe("file");
             expect(customCursor?.classList.contains("visible")).toBeTruthy();
-            const testEndTime = performance.now();
-            console.log(
-                `[TIMING] test - TOTAL: ${(testEndTime - testStartTime).toFixed(2)}ms`
-            );
         });
 
         test("should have outline and custom cursor on the url", async () => {
