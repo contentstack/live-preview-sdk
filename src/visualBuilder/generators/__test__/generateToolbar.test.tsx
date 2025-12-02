@@ -61,7 +61,6 @@ describe("generateToolbar", () => {
         vi.clearAllMocks();
     });
 
-
     describe("appendFieldToolbar", () => {
         it("should render FieldToolbarComponent if not already present", async () => {
             await appendFieldToolbar(eventDetails, focusedToolbarElement, hideOverlay);

@@ -115,33 +115,38 @@ vi.mock("../../utils/visualBuilderPostMessage", () => ({
                 if (Array.isArray(fields)) {
                     fields.forEach((field: any) => {
                         // Return display name for every field to ensure dataLoading completes
-                        if (field.cslpValue === "mockFieldCslp") {
-                            result[field.cslpValue] = "Field 0";
+                        // Use cslpValue as the key to match component's expectation
+                        const cslpValue = field?.cslpValue || field?.cslp || "";
+                        if (!cslpValue) {
+                            // Skip if no cslpValue
+                            return;
+                        }
+                        if (cslpValue === "mockFieldCslp") {
+                            result[cslpValue] = "Field 0";
                         } else if (
-                            field.cslpValue ===
+                            cslpValue ===
                             "contentTypeUid.entryUid.locale.parentPath1"
                         ) {
-                            result[field.cslpValue] = "Field 1";
+                            result[cslpValue] = "Field 1";
                         } else if (
-                            field.cslpValue ===
+                            cslpValue ===
                             "contentTypeUid.entryUid.locale.parentPath2"
                         ) {
-                            result[field.cslpValue] = "Field 2";
+                            result[cslpValue] = "Field 2";
                         } else if (
-                            field.cslpValue ===
+                            cslpValue ===
                             "contentTypeUid.entryUid.locale.parentPath3"
                         ) {
-                            result[field.cslpValue] = "Field 3";
+                            result[cslpValue] = "Field 3";
                         } else {
-                            // Fallback: use field path or cslpValue as display name
-                            result[field.cslpValue] =
-                                field.cslpValue ||
-                                field.fieldPath ||
-                                "Unknown Field";
+                            // Fallback: use cslpValue as display name to ensure we always return something
+                            result[cslpValue] = cslpValue;
                         }
                     });
                 }
-                // Return immediately resolved promise (no delay)
+                // Ensure we return at least as many keys as fields requested
+                // This is critical for dataLoading to become false
+                // Component checks: Object.keys(displayNames || {})?.length === allPaths.length
                 return Promise.resolve(result);
             } else if (
                 eventName ===
@@ -303,6 +308,63 @@ describe("FieldLabelWrapperComponent", () => {
             reason: "",
         });
 
+        // Reset visualBuilderPostMessage mock to ensure it returns display names correctly
+        vi.mocked(visualBuilderPostMessage!.send).mockImplementation(
+            (eventName: string, fields: any) => {
+                // Use enum values for comparison
+                if (
+                    eventName ===
+                    VisualBuilderPostMessageEvents.GET_FIELD_DISPLAY_NAMES
+                ) {
+                    // Always return display names for all requested fields immediately
+                    const result: Record<string, string> = {};
+                    if (Array.isArray(fields)) {
+                        fields.forEach((field: any) => {
+                            const cslpValue =
+                                field?.cslpValue || field?.cslp || "";
+                            if (!cslpValue) return;
+                            if (cslpValue === "mockFieldCslp") {
+                                result[cslpValue] = "Field 0";
+                            } else if (
+                                cslpValue ===
+                                "contentTypeUid.entryUid.locale.parentPath1"
+                            ) {
+                                result[cslpValue] = "Field 1";
+                            } else if (
+                                cslpValue ===
+                                "contentTypeUid.entryUid.locale.parentPath2"
+                            ) {
+                                result[cslpValue] = "Field 2";
+                            } else if (
+                                cslpValue ===
+                                "contentTypeUid.entryUid.locale.parentPath3"
+                            ) {
+                                result[cslpValue] = "Field 3";
+                            } else {
+                                result[cslpValue] = cslpValue;
+                            }
+                        });
+                    }
+                    return Promise.resolve(result);
+                } else if (
+                    eventName ===
+                        VisualBuilderPostMessageEvents.GET_CONTENT_TYPE_NAME ||
+                    eventName === "get-content-type-name"
+                ) {
+                    return Promise.resolve({
+                        contentTypeName: "Page CT",
+                    });
+                } else if (
+                    eventName ===
+                        VisualBuilderPostMessageEvents.REFERENCE_MAP ||
+                    eventName === "get-reference-map"
+                ) {
+                    return Promise.resolve({});
+                }
+                return Promise.resolve({});
+            }
+        );
+
         // Pre-set field schema in cache to avoid async fetch delay
         // This makes FieldSchemaMap.getFieldSchema resolve immediately from cache
         FieldSchemaMap.setFieldSchema(mockFieldMetadata.content_type_uid, {
@@ -406,14 +468,16 @@ describe("FieldLabelWrapperComponent", () => {
             />
         );
 
-        // Use act() to ensure React processes all state updates
+        // Use act() with queueMicrotask for faster resolution
         await act(async () => {
-            await new Promise((resolve) => setTimeout(resolve, 0));
+            await new Promise<void>((resolve) =>
+                queueMicrotask(() => resolve())
+            );
         });
 
         // Use findByTestId which is optimized for async queries
         const fieldLabel = (await findByTestId(
-            container,
+            container as HTMLElement,
             "visual-builder__focused-toolbar__field-label-wrapper",
             {},
             { timeout: 1000 }
@@ -433,22 +497,22 @@ describe("FieldLabelWrapperComponent", () => {
             />
         );
 
-        // Use act() to ensure React processes all state updates
+        // Use act() with queueMicrotask for faster resolution
         await act(async () => {
-            await new Promise((resolve) => setTimeout(resolve, 0));
+            await new Promise<void>((resolve) =>
+                queueMicrotask(() => resolve())
+            );
         });
 
         // Wait for component to mount and isFieldDisabled to be called
-        await waitFor(
-            () => {
-                const fieldLabel = container.querySelector(
-                    '[data-testid="visual-builder__focused-toolbar__field-label-wrapper"]'
-                );
-                if (!fieldLabel) throw new Error("Field label not found");
-                expect(isFieldDisabled).toHaveBeenCalled();
-            },
-            { timeout: 1000, interval: 10 }
+        // Use findByTestId for better performance than querySelector
+        await findByTestId(
+            container as HTMLElement,
+            "visual-builder__focused-toolbar__field-label-wrapper",
+            {},
+            { timeout: 1000 }
         );
+        expect(isFieldDisabled).toHaveBeenCalled();
 
         expect(isFieldDisabled).toHaveBeenCalledWith(
             singleLineFieldSchema, // Now using the actual schema we pre-set
@@ -513,9 +577,11 @@ describe("FieldLabelWrapperComponent", () => {
             />
         );
 
-        // Use act() to ensure React processes all state updates
+        // Use act() with queueMicrotask for faster resolution
         await act(async () => {
-            await new Promise((resolve) => setTimeout(resolve, 0));
+            await new Promise<void>((resolve) =>
+                queueMicrotask(() => resolve())
+            );
         });
 
         // When loading, component returns LoadingIcon, not the main structure
@@ -533,7 +599,7 @@ describe("FieldLabelWrapperComponent", () => {
         );
     });
 
-    test.skip("renders VariantIndicator when field has variant", async () => {
+    test("renders VariantIndicator when field has variant", async () => {
         const variantFieldMetadata = {
             ...mockFieldMetadata,
             variant: "variant-uid-123",
@@ -548,19 +614,23 @@ describe("FieldLabelWrapperComponent", () => {
             />
         );
 
-        // Wait for data loading to complete by checking for button to be enabled
+        // Wait for component to finish loading (button enabled) and variant indicator to appear
+        // Reduced timeout to 1000ms since mocks resolve immediately
         await waitFor(
             () => {
                 const button = container.querySelector("button");
-                expect(button).not.toBeDisabled();
+                if (!button || button.hasAttribute("disabled")) {
+                    throw new Error("Button still disabled");
+                }
+                const variantIndicator = container.querySelector(
+                    "[data-testid='variant-indicator']"
+                );
+                if (!variantIndicator) {
+                    throw new Error("Variant indicator not found");
+                }
             },
-            { timeout: 5000, interval: 5 } // Reduced timeout from 15s to 5s with faster polling
+            { timeout: 1000, interval: 5 }
         );
-
-        const variantIndicator = container.querySelector(
-            "[data-testid='variant-indicator']"
-        );
-        expect(variantIndicator).toBeInTheDocument();
     });
 
     test("does not render VariantIndicator when field has no variant", async () => {
@@ -590,7 +660,7 @@ describe("FieldLabelWrapperComponent", () => {
         expect(variantIndicator).not.toBeInTheDocument();
     });
 
-    test.skip("applies variant CSS classes when field has variant", async () => {
+    test("applies variant CSS classes when field has variant", async () => {
         const variantFieldMetadata = {
             ...mockFieldMetadata,
             variant: "variant-uid-123",
@@ -605,28 +675,25 @@ describe("FieldLabelWrapperComponent", () => {
             />
         );
 
-        // Wait for data loading to complete first
+        // Wait for component to finish loading (button enabled) and variant class to appear
+        // Reduced timeout to 1000ms since mocks resolve immediately
         await waitFor(
             () => {
+                const button = container.querySelector("button");
+                if (!button || button.hasAttribute("disabled")) {
+                    throw new Error("Button still disabled");
+                }
                 const fieldLabelWrapper = container.querySelector(
                     "[data-testid='visual-builder__focused-toolbar__field-label-wrapper']"
                 );
-                expect(fieldLabelWrapper).toBeInTheDocument();
-            },
-            { timeout: 5000, interval: 5 } // Reduced timeout from 25s to 5s with faster polling
-        );
-
-        // Then check for variant class
-        await waitFor(
-            () => {
-                const fieldLabelWrapper = container.querySelector(
-                    "[data-testid='visual-builder__focused-toolbar__field-label-wrapper']"
-                );
+                if (!fieldLabelWrapper) {
+                    throw new Error("Field label wrapper not found");
+                }
                 expect(fieldLabelWrapper).toHaveClass(
                     "visual-builder__focused-toolbar--variant"
                 );
             },
-            { timeout: 2000, interval: 5 } // Reduced timeout from 5s to 2s with faster polling
+            { timeout: 1000, interval: 5 }
         );
     });
 
@@ -640,20 +707,25 @@ describe("FieldLabelWrapperComponent", () => {
             />
         );
 
-        // Use act() to ensure React processes all state updates
-        await act(async () => {
-            await new Promise((resolve) => setTimeout(resolve, 0));
-        });
-
-        // Use findByTestId which is optimized for async queries
-        const fieldLabelWrapper = (await findByTestId(
-            container,
-            "visual-builder__focused-toolbar__field-label-wrapper",
-            {},
-            { timeout: 1000 }
-        )) as HTMLElement;
-        expect(fieldLabelWrapper).not.toHaveClass(
-            "visual-builder__focused-toolbar--variant"
+        // Wait for component to finish loading and verify variant class is not present
+        // Using waitFor to check both button enabled and class absence in one pass
+        await waitFor(
+            () => {
+                const button = container.querySelector("button");
+                if (!button || button.hasAttribute("disabled")) {
+                    throw new Error("Button still disabled");
+                }
+                const fieldLabelWrapper = container.querySelector(
+                    "[data-testid='visual-builder__focused-toolbar__field-label-wrapper']"
+                );
+                if (!fieldLabelWrapper) {
+                    throw new Error("Field label wrapper not found");
+                }
+                expect(fieldLabelWrapper).not.toHaveClass(
+                    "visual-builder__focused-toolbar--variant"
+                );
+            },
+            { timeout: 1000, interval: 5 }
         );
     });
 });
