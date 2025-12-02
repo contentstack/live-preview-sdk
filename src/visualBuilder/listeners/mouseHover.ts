@@ -104,16 +104,7 @@ async function addOutline(params?: AddOutlineParams): Promise<void> {
     addHoverOutline(editableElement, fieldDisabled || isDisabled, isVariant);
 }
 
-// Reduce debounce delay in test environments for faster test execution
-// In production, 50ms provides smooth UX. In tests, we want immediate feedback.
-// Check for vitest or jest test environment
-const isTestEnv = typeof process !== 'undefined' && (
-    process.env.NODE_ENV === 'test' || 
-    process.env.VITEST === 'true' ||
-    typeof (globalThis as any).vi !== 'undefined'
-);
-const debounceDelay = isTestEnv ? 0 : 50;
-const debouncedAddOutline = debounce(addOutline, debounceDelay, { trailing: true });
+const debouncedAddOutline = debounce(addOutline, 50, { trailing: true });
 export const cancelPendingAddOutline = () => debouncedAddOutline.cancel();
 const showOutline = (params?: AddOutlineParams): Promise<void> | undefined => debouncedAddOutline(params);
 
