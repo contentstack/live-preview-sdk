@@ -1,6 +1,43 @@
 import { afterAll, afterEach, beforeAll, vi } from "vitest";
 import { cleanup } from "@testing-library/preact";
 import "@testing-library/jest-dom/vitest";
+
+// IMPORTANT: vi.mock MUST be at top level - cannot be inside beforeAll or any function
+vi.mock("./src/visualBuilder/utils/getEntryPermissionsCached", () => ({
+    getEntryPermissionsCached: vi.fn().mockResolvedValue({
+        read: true,
+        publish: true,
+        update: true,
+        delete: true,
+    }),
+}));
+
+vi.mock(
+    "./src/visualBuilder/utils/fetchEntryPermissionsAndStageDetails",
+    () => ({
+        fetchEntryPermissionsAndStageDetails: vi.fn().mockResolvedValue({
+            acl: {
+                create: true,
+                read: true,
+                update: true,
+                delete: true,
+                publish: true,
+            },
+            workflowStage: {
+                stage: undefined,
+                permissions: {
+                    entry: {
+                        update: true,
+                    },
+                },
+            },
+            resolvedVariantPermissions: {
+                update: true,
+            },
+        }),
+    })
+);
+
 beforeAll(() => {
     global.ResizeObserver = vi.fn().mockImplementation(() => ({
         observe: vi.fn(),
@@ -11,25 +48,14 @@ beforeAll(() => {
     global.MutationObserver = vi.fn().mockImplementation(() => ({
         observe: vi.fn(),
         disconnect: vi.fn(),
+        takeRecords: vi.fn(() => []),
     }));
 
     document.elementFromPoint = vi.fn();
-
-    vi.mock("./src/visualBuilder/utils/getEntryPermissionsCached", () => {
-        return {
-            getEntryPermissionsCached: vi.fn().mockResolvedValue({
-                read: true,
-                publish: true,
-                update: true,
-                delete: true,
-            }),
-        };
-    });
 });
 
 afterAll(() => {
     cleanup();
-    vi.clearAllMocks();
 });
 
 // const sideEffects = {

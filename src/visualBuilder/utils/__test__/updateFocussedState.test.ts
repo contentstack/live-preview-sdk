@@ -4,32 +4,29 @@ import {
     updateFocussedStateOnMutation,
 } from "../updateFocussedState";
 import { VisualBuilder } from "../..";
-import {
-    addFocusOverlay,
-    hideOverlay,
-} from "../../generators/generateOverlay";
+import { addFocusOverlay, hideOverlay } from "../../generators/generateOverlay";
 import { mockGetBoundingClientRect } from "../../../__test__/utils";
 import { act } from "@testing-library/preact";
 import { singleLineFieldSchema } from "../../../__test__/data/fields";
-import { getEntryPermissionsCached } from "../getEntryPermissionsCached";
-import { getWorkflowStageDetails } from "../getWorkflowStageDetails";
+import { fetchEntryPermissionsAndStageDetails } from "../fetchEntryPermissionsAndStageDetails";
 import { isFieldDisabled } from "../isFieldDisabled";
+import { getEntryPermissionsCached } from "../getEntryPermissionsCached";
 
 vi.mock("../../generators/generateOverlay", () => ({
     addFocusOverlay: vi.fn(),
     hideOverlay: vi.fn(),
 }));
 
-vi.mock("../getEntryPermissionsCached", () => ({
-    getEntryPermissionsCached: vi.fn(),
-}));
-
-vi.mock("../getWorkflowStageDetails", () => ({
-    getWorkflowStageDetails: vi.fn(),
+vi.mock("../fetchEntryPermissionsAndStageDetails", () => ({
+    fetchEntryPermissionsAndStageDetails: vi.fn(),
 }));
 
 vi.mock("../../utils/isFieldDisabled", () => ({
     isFieldDisabled: vi.fn().mockReturnValue({ isDisabled: false }),
+}));
+
+vi.mock("../getEntryPermissionsCached", () => ({
+    getEntryPermissionsCached: vi.fn(),
 }));
 
 vi.mock("../../utils/fieldSchemaMap", () => {
@@ -44,7 +41,6 @@ vi.mock("../../utils/fieldSchemaMap", () => {
     };
 });
 
-
 describe("updateFocussedState", () => {
     beforeEach(() => {
         const previousSelectedEditableDOM = document.createElement("div");
@@ -55,7 +51,28 @@ describe("updateFocussedState", () => {
         document.body.appendChild(previousSelectedEditableDOM);
         VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
             previousSelectedEditableDOM;
-        vi.clearAllMocks();
+
+        // Set up default mock for fetchEntryPermissionsAndStageDetails for all tests
+        vi.mocked(fetchEntryPermissionsAndStageDetails).mockResolvedValue({
+            acl: {
+                create: true,
+                read: true,
+                update: true,
+                delete: true,
+                publish: true,
+            },
+            workflowStage: {
+                permissions: {
+                    entry: {
+                        update: true,
+                    },
+                },
+                stage: undefined,
+            },
+            resolvedVariantPermissions: {
+                update: true,
+            },
+        });
     });
     afterEach(() => {
         document.body.innerHTML = "";
@@ -184,29 +201,29 @@ describe("updateFocussedState", () => {
             disconnect: vi.fn(),
         } as unknown as ResizeObserver;
 
-        const mockEntryPermissions = {
-            create: true,
-            read: true,
-            update: false,
-            delete: true,
-            publish: true,
-        };
-
-        const mockWorkflowStageDetails = {
-            permissions: {
-                entry: {
-                    update: true,
-                },
+        const mockPermissionsResponse = {
+            acl: {
+                create: true,
+                read: true,
+                update: false,
+                delete: true,
+                publish: true,
             },
-            stage: undefined,
+            workflowStage: {
+                permissions: {
+                    entry: {
+                        update: true,
+                    },
+                },
+                stage: undefined,
+            },
+            resolvedVariantPermissions: {
+                update: true,
+            },
         };
 
-        vi.mocked(getEntryPermissionsCached).mockResolvedValue(
-            mockEntryPermissions
-        );
-
-        vi.mocked(getWorkflowStageDetails).mockResolvedValue(
-            mockWorkflowStageDetails
+        vi.mocked(fetchEntryPermissionsAndStageDetails).mockResolvedValue(
+            mockPermissionsResponse
         );
 
         await act(async () => {
@@ -219,10 +236,12 @@ describe("updateFocussedState", () => {
             });
         });
 
-        expect(getEntryPermissionsCached).toHaveBeenCalledWith({
+        expect(fetchEntryPermissionsAndStageDetails).toHaveBeenCalledWith({
             entryUid: "entry_uid",
             contentTypeUid: "content_type_uid",
             locale: "locale",
+            fieldPathWithIndex: "field_path",
+            variantUid: undefined,
         });
 
         expect(isFieldDisabled).toHaveBeenCalledWith(
@@ -233,10 +252,22 @@ describe("updateFocussedState", () => {
             },
             {
                 update: true,
-                error: true
             },
-            mockEntryPermissions,
-            mockWorkflowStageDetails
+            {
+                create: true,
+                read: true,
+                update: false,
+                delete: true,
+                publish: true,
+            },
+            {
+                permissions: {
+                    entry: {
+                        update: true,
+                    },
+                },
+                stage: undefined,
+            }
         );
 
         expect(addFocusOverlay).toHaveBeenCalledWith(
@@ -257,12 +288,17 @@ describe("updateFocussedState", () => {
         } as unknown as ResizeObserver;
 
         const previousSelectedEditableDOM = document.createElement("div");
-        previousSelectedEditableDOM.setAttribute("data-cslp", "content_type_uid.entry_uid.locale.field_path");
+        previousSelectedEditableDOM.setAttribute(
+            "data-cslp",
+            "content_type_uid.entry_uid.locale.field_path"
+        );
         document.body.appendChild(previousSelectedEditableDOM);
         VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
             previousSelectedEditableDOM;
 
-        document.querySelector = vi.fn().mockReturnValue(previousSelectedEditableDOM);
+        document.querySelector = vi
+            .fn()
+            .mockReturnValue(previousSelectedEditableDOM);
 
         const result = await updateFocussedState({
             editableElement: editableElementMock,
