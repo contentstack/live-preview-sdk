@@ -1,15 +1,25 @@
-import { render, waitFor, findByTestId } from "@testing-library/preact";
-import FieldLabelWrapperComponent from "../fieldLabelWrapper";
-import { CslpData } from "../../../cslp/types/cslp.types";
-import { VisualBuilderCslpEventDetails } from "../../types/visualBuilder.types";
-import { singleLineFieldSchema } from "../../../__test__/data/fields";
-import { isFieldDisabled } from "../../utils/isFieldDisabled";
-import { FieldSchemaMap } from "../../utils/fieldSchemaMap";
-import visualBuilderPostMessage from "../../utils/visualBuilderPostMessage";
-import { VisualBuilderPostMessageEvents } from "../../utils/types/postMessage.types";
+import { render, waitFor, act, findByTestId } from "@testing-library/preact";
+import FieldLabelWrapperComponent from "../../fieldLabelWrapper";
+import { VisualBuilderCslpEventDetails } from "../../../types/visualBuilder.types";
+import { singleLineFieldSchema } from "../../../../__test__/data/fields";
+import { isFieldDisabled } from "../../../utils/isFieldDisabled";
+import { FieldSchemaMap } from "../../../utils/fieldSchemaMap";
+import visualBuilderPostMessage from "../../../utils/visualBuilderPostMessage";
+import { VisualBuilderPostMessageEvents } from "../../../utils/types/postMessage.types";
 import React from "preact/compat";
+// Import shared mocks and constants
+import {
+    mockStyles,
+    DISPLAY_NAMES,
+    PARENT_PATHS,
+    mockFieldMetadata,
+    mockEntryPermissionsResponse,
+} from "./fieldLabelWrapper.mocks";
 
-// All mocks - same as main test file
+// Local cache for this test file (can't use imported cache in vi.mock due to hoisting)
+const testFieldSchemaCache: Record<string, Record<string, any>> = {};
+
+// All mocks - inline implementations (can't use imported functions in vi.mock due to hoisting)
 vi.mock("../Tooltip", () => ({
     ToolbarTooltip: ({ children, data, disabled }: any) => (
         <div
@@ -23,11 +33,11 @@ vi.mock("../Tooltip", () => ({
     ),
 }));
 
-const testFieldSchemaCache: Record<string, Record<string, any>> = {};
-
-vi.mock("../../utils/fieldSchemaMap", async (importOriginal) => {
+vi.mock("../../../utils/fieldSchemaMap", async (importOriginal) => {
     const actual =
-        await importOriginal<typeof import("../../utils/fieldSchemaMap")>();
+        await importOriginal<typeof import("../../../utils/fieldSchemaMap")>();
+    // Inline implementation - can't use imported function due to vi.mock hoisting
+    // Using local cache variable defined above
     return {
         FieldSchemaMap: {
             ...actual.FieldSchemaMap,
@@ -36,9 +46,9 @@ vi.mock("../../utils/fieldSchemaMap", async (importOriginal) => {
                 .mockImplementation(
                     (contentTypeUid: string, fieldPath: string) => {
                         if (testFieldSchemaCache[contentTypeUid]?.[fieldPath]) {
-                            const cachedValue =
-                                testFieldSchemaCache[contentTypeUid][fieldPath];
-                            return Promise.resolve(cachedValue);
+                            return Promise.resolve(
+                                testFieldSchemaCache[contentTypeUid][fieldPath]
+                            );
                         }
                         const defaultSchema = {
                             display_name: "Field 0",
@@ -92,9 +102,10 @@ vi.mock("../../utils/fieldSchemaMap", async (importOriginal) => {
     };
 });
 
-vi.mock("../../utils/visualBuilderPostMessage", () => ({
+vi.mock("../../../utils/visualBuilderPostMessage", () => ({
     default: {
         send: vi.fn().mockImplementation((eventName: string, fields: any) => {
+            // Inline implementation - can't use imported function due to vi.mock hoisting
             if (
                 eventName ===
                 VisualBuilderPostMessageEvents.GET_FIELD_DISPLAY_NAMES
@@ -146,9 +157,9 @@ vi.mock("../../utils/visualBuilderPostMessage", () => ({
     },
 }));
 
-vi.mock("../../utils/isFieldDisabled", async (importOriginal) => {
+vi.mock("../../../utils/isFieldDisabled", async (importOriginal) => {
     const actual =
-        await importOriginal<typeof import("../../utils/isFieldDisabled")>();
+        await importOriginal<typeof import("../../../utils/isFieldDisabled")>();
     return {
         ...actual,
         isFieldDisabled: vi
@@ -167,30 +178,9 @@ vi.mock("../../../cslp", () => ({
     }),
 }));
 
-vi.mock("../../utils/fetchEntryPermissionsAndStageDetails", () => ({
+vi.mock("../../../utils/fetchEntryPermissionsAndStageDetails", () => ({
     fetchEntryPermissionsAndStageDetails: vi.fn().mockImplementation(() => {
-        return Promise.resolve({
-            acl: {
-                update: {
-                    create: true,
-                    read: true,
-                    update: true,
-                    delete: true,
-                    publish: true,
-                },
-            },
-            workflowStage: {
-                stage: undefined,
-                permissions: {
-                    entry: {
-                        update: true,
-                    },
-                },
-            },
-            resolvedVariantPermissions: {
-                update: true,
-            },
-        });
+        return Promise.resolve(mockEntryPermissionsResponse);
     }),
 }));
 
@@ -201,65 +191,30 @@ vi.mock("../generators/generateCustomCursor", () => ({
     },
 }));
 
-const mockStyles = {
-    "visual-builder__focused-toolbar--variant":
-        "visual-builder__focused-toolbar--variant",
-    "visual-builder__tooltip--persistent":
-        "visual-builder__tooltip--persistent",
-    "visual-builder__custom-tooltip": "visual-builder__custom-tooltip",
-    "visual-builder__focused-toolbar__field-label-wrapper":
-        "visual-builder__focused-toolbar__field-label-wrapper",
-    "visual-builder__focused-toolbar--field-disabled":
-        "visual-builder__focused-toolbar--field-disabled",
-    "visual-builder__focused-toolbar__text":
-        "visual-builder__focused-toolbar__text",
-    "field-label-dropdown-open": "field-label-dropdown-open",
-    "visual-builder__button": "visual-builder__button",
-    "visual-builder__button-loader": "visual-builder__button-loader",
-    "visual-builder__reference-icon-container":
-        "visual-builder__reference-icon-container",
-    "visual-builder__content-type-icon": "visual-builder__content-type-icon",
-};
-
 vi.mock("../visualBuilder.style", () => ({
     visualBuilderStyles: vi.fn(() => mockStyles),
 }));
 
-vi.mock("../VariantIndicator", () => ({
+vi.mock("../../VariantIndicator", () => ({
     VariantIndicator: () => <div data-testid="variant-indicator">Variant</div>,
 }));
 
-vi.mock("../../utils/errorHandling", () => ({
+vi.mock("../../../utils/errorHandling", () => ({
     hasPostMessageError: vi.fn().mockReturnValue(false),
 }));
 
-const mockFieldMetadata: CslpData = {
-    entry_uid: "mockEntryUid",
-    content_type_uid: "mockContentTypeUid",
-    cslpValue: "mockFieldCslp",
-    locale: "",
-    variant: undefined,
-    fieldPath: "mockFieldPath",
-    fieldPathWithIndex: "",
-    multipleFieldMetadata: {
-        index: 0,
-        parentDetails: {
-            parentPath: "",
-            parentCslpValue: "",
-        },
-    },
-    instance: {
-        fieldPathWithIndex: "",
-    },
-};
-
-describe("FieldLabelWrapperComponent - Variant Tests", () => {
+describe("FieldLabelWrapperComponent - Render Fields", () => {
     beforeEach(() => {
+        // Reset all mocks to their default state before each test
         vi.clearAllMocks();
-        vi.mocked(isFieldDisabled).mockReturnValue({
+
+        // Reset isFieldDisabled to default
+        (isFieldDisabled as any).mockReturnValue({
             isDisabled: false,
             reason: "",
         });
+
+        // Reset visualBuilderPostMessage mock - inline implementation
         vi.mocked(visualBuilderPostMessage!.send).mockImplementation(
             (eventName: string, fields: any) => {
                 if (
@@ -313,19 +268,26 @@ describe("FieldLabelWrapperComponent - Variant Tests", () => {
                 return Promise.resolve({});
             }
         );
+
+        // Pre-set field schema in cache to avoid async fetch delay
+        // This makes FieldSchemaMap.getFieldSchema resolve immediately from cache
         FieldSchemaMap.setFieldSchema(mockFieldMetadata.content_type_uid, {
             [mockFieldMetadata.fieldPath]: singleLineFieldSchema,
         });
     });
 
     afterEach(() => {
+        // Clean up field schema cache after each test
         FieldSchemaMap.clear();
+        // Clean up DOM after each test to prevent state pollution
         document.body.innerHTML = "";
     });
 
     afterAll(() => {
         vi.clearAllMocks();
     });
+
+    // mockFieldMetadata is now defined above the describe block
 
     const mockEventDetails: VisualBuilderCslpEventDetails = {
         editableElement: document.createElement("div"),
@@ -335,125 +297,35 @@ describe("FieldLabelWrapperComponent - Variant Tests", () => {
 
     const mockGetParentEditable = () => document.createElement("div");
 
-    test("renders VariantIndicator when field has variant", async () => {
-        const variantFieldMetadata = {
-            ...mockFieldMetadata,
-            variant: "variant-uid-123",
-        };
+    test("renders current field and parent fields correctly", async () => {
+        // Wrap render in act to batch all updates and reduce reconciliation cycles
+        let container!: HTMLElement;
+        await act(async () => {
+            const result = render(
+                <FieldLabelWrapperComponent
+                    fieldMetadata={mockFieldMetadata}
+                    eventDetails={mockEventDetails}
+                    parentPaths={PARENT_PATHS}
+                    getParentEditableElement={mockGetParentEditable}
+                />
+            );
+            container = result.container as HTMLElement;
+            // Use queueMicrotask for faster resolution than setTimeout
+            await new Promise<void>((resolve) =>
+                queueMicrotask(() => resolve())
+            );
+        });
 
-        const { container } = render(
-            <FieldLabelWrapperComponent
-                fieldMetadata={variantFieldMetadata}
-                eventDetails={mockEventDetails}
-                parentPaths={[]}
-                getParentEditableElement={mockGetParentEditable}
-            />
-        );
-
+        // Use waitFor with shorter timeout since mocks resolve immediately
         await waitFor(
             () => {
-                const button = container.querySelector("button");
-                if (!button || button.hasAttribute("disabled")) {
-                    throw new Error("Button still disabled");
-                }
-                const variantIndicator = container.querySelector(
-                    "[data-testid='variant-indicator']"
+                const text = Array.from(container.querySelectorAll("*")).find(
+                    (el) => el.textContent === DISPLAY_NAMES.mockFieldCslp
                 );
-                if (!variantIndicator) {
-                    throw new Error("Variant indicator not found");
-                }
+                if (!text) throw new Error("Text not found");
+                expect(text).toBeInTheDocument();
             },
-            { timeout: 1000, interval: 5 }
-        );
-    });
-
-    test("does not render VariantIndicator when field has no variant", async () => {
-        const { container } = render(
-            <FieldLabelWrapperComponent
-                fieldMetadata={mockFieldMetadata}
-                eventDetails={mockEventDetails}
-                parentPaths={[]}
-                getParentEditableElement={mockGetParentEditable}
-            />
-        );
-
-        const fieldLabel = await findByTestId(
-            container as HTMLElement,
-            "visual-builder__focused-toolbar__field-label-wrapper",
-            {},
-            { timeout: 1000 }
-        );
-        expect(fieldLabel).toBeInTheDocument();
-
-        const variantIndicator = container.querySelector(
-            "[data-testid='variant-indicator']"
-        );
-        expect(variantIndicator).not.toBeInTheDocument();
-    });
-
-    test("applies variant CSS classes when field has variant", async () => {
-        const variantFieldMetadata = {
-            ...mockFieldMetadata,
-            variant: "variant-uid-123",
-        };
-
-        const { container } = render(
-            <FieldLabelWrapperComponent
-                fieldMetadata={variantFieldMetadata}
-                eventDetails={mockEventDetails}
-                parentPaths={[]}
-                getParentEditableElement={mockGetParentEditable}
-            />
-        );
-
-        await waitFor(
-            () => {
-                const button = container.querySelector("button");
-                if (!button || button.hasAttribute("disabled")) {
-                    throw new Error("Button still disabled");
-                }
-                const fieldLabelWrapper = container.querySelector(
-                    "[data-testid='visual-builder__focused-toolbar__field-label-wrapper']"
-                );
-                if (!fieldLabelWrapper) {
-                    throw new Error("Field label wrapper not found");
-                }
-                expect(fieldLabelWrapper).toHaveClass(
-                    "visual-builder__focused-toolbar--variant"
-                );
-            },
-            { timeout: 1000, interval: 5 }
-        );
-    });
-
-    test("does not apply variant CSS classes when field has no variant", async () => {
-        const { container } = render(
-            <FieldLabelWrapperComponent
-                fieldMetadata={mockFieldMetadata}
-                eventDetails={mockEventDetails}
-                parentPaths={[]}
-                getParentEditableElement={mockGetParentEditable}
-            />
-        );
-
-        await waitFor(
-            () => {
-                const button = container.querySelector("button");
-                if (!button || button.hasAttribute("disabled")) {
-                    throw new Error("Button still disabled");
-                }
-                const fieldLabelWrapper = container.querySelector(
-                    "[data-testid='visual-builder__focused-toolbar__field-label-wrapper']"
-                );
-                if (!fieldLabelWrapper) {
-                    throw new Error("Field label wrapper not found");
-                }
-                expect(fieldLabelWrapper).not.toHaveClass(
-                    "visual-builder__focused-toolbar--variant"
-                );
-            },
-            { timeout: 1000, interval: 5 }
+            { timeout: 1000, interval: 10 }
         );
     });
 });
-

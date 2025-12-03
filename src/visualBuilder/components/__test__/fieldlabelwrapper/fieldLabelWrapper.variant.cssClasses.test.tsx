@@ -1,15 +1,23 @@
-import { render, act, findByTestId } from "@testing-library/preact";
-import FieldLabelWrapperComponent from "../fieldLabelWrapper";
-import { CslpData } from "../../../cslp/types/cslp.types";
-import { VisualBuilderCslpEventDetails } from "../../types/visualBuilder.types";
-import { singleLineFieldSchema } from "../../../__test__/data/fields";
-import { isFieldDisabled } from "../../utils/isFieldDisabled";
-import { FieldSchemaMap } from "../../utils/fieldSchemaMap";
-import visualBuilderPostMessage from "../../utils/visualBuilderPostMessage";
-import { VisualBuilderPostMessageEvents } from "../../utils/types/postMessage.types";
+import { render, waitFor } from "@testing-library/preact";
+import FieldLabelWrapperComponent from "../../fieldLabelWrapper";
+import { VisualBuilderCslpEventDetails } from "../../../types/visualBuilder.types";
+import { singleLineFieldSchema } from "../../../../__test__/data/fields";
+import { isFieldDisabled } from "../../../utils/isFieldDisabled";
+import { FieldSchemaMap } from "../../../utils/fieldSchemaMap";
+import visualBuilderPostMessage from "../../../utils/visualBuilderPostMessage";
+import { VisualBuilderPostMessageEvents } from "../../../utils/types/postMessage.types";
 import React from "preact/compat";
+// Import shared mocks and constants
+import {
+    mockStyles,
+    mockFieldMetadata,
+    mockEntryPermissionsResponse,
+} from "./fieldLabelWrapper.mocks";
 
-// All mocks - same as main test file
+// Local cache for this test file (can't use imported cache in vi.mock due to hoisting)
+const testFieldSchemaCache: Record<string, Record<string, any>> = {};
+
+// All mocks - inline implementations (can't use imported functions in vi.mock due to hoisting)
 vi.mock("../Tooltip", () => ({
     ToolbarTooltip: ({ children, data, disabled }: any) => (
         <div
@@ -23,11 +31,9 @@ vi.mock("../Tooltip", () => ({
     ),
 }));
 
-const testFieldSchemaCache: Record<string, Record<string, any>> = {};
-
-vi.mock("../../utils/fieldSchemaMap", async (importOriginal) => {
+vi.mock("../../../utils/fieldSchemaMap", async (importOriginal) => {
     const actual =
-        await importOriginal<typeof import("../../utils/fieldSchemaMap")>();
+        await importOriginal<typeof import("../../../utils/fieldSchemaMap")>();
     return {
         FieldSchemaMap: {
             ...actual.FieldSchemaMap,
@@ -36,9 +42,9 @@ vi.mock("../../utils/fieldSchemaMap", async (importOriginal) => {
                 .mockImplementation(
                     (contentTypeUid: string, fieldPath: string) => {
                         if (testFieldSchemaCache[contentTypeUid]?.[fieldPath]) {
-                            const cachedValue =
-                                testFieldSchemaCache[contentTypeUid][fieldPath];
-                            return Promise.resolve(cachedValue);
+                            return Promise.resolve(
+                                testFieldSchemaCache[contentTypeUid][fieldPath]
+                            );
                         }
                         const defaultSchema = {
                             display_name: "Field 0",
@@ -92,7 +98,7 @@ vi.mock("../../utils/fieldSchemaMap", async (importOriginal) => {
     };
 });
 
-vi.mock("../../utils/visualBuilderPostMessage", () => ({
+vi.mock("../../../utils/visualBuilderPostMessage", () => ({
     default: {
         send: vi.fn().mockImplementation((eventName: string, fields: any) => {
             if (
@@ -146,9 +152,9 @@ vi.mock("../../utils/visualBuilderPostMessage", () => ({
     },
 }));
 
-vi.mock("../../utils/isFieldDisabled", async (importOriginal) => {
+vi.mock("../../../utils/isFieldDisabled", async (importOriginal) => {
     const actual =
-        await importOriginal<typeof import("../../utils/isFieldDisabled")>();
+        await importOriginal<typeof import("../../../utils/isFieldDisabled")>();
     return {
         ...actual,
         isFieldDisabled: vi
@@ -167,30 +173,9 @@ vi.mock("../../../cslp", () => ({
     }),
 }));
 
-vi.mock("../../utils/fetchEntryPermissionsAndStageDetails", () => ({
+vi.mock("../../../utils/fetchEntryPermissionsAndStageDetails", () => ({
     fetchEntryPermissionsAndStageDetails: vi.fn().mockImplementation(() => {
-        return Promise.resolve({
-            acl: {
-                update: {
-                    create: true,
-                    read: true,
-                    update: true,
-                    delete: true,
-                    publish: true,
-                },
-            },
-            workflowStage: {
-                stage: undefined,
-                permissions: {
-                    entry: {
-                        update: true,
-                    },
-                },
-            },
-            resolvedVariantPermissions: {
-                update: true,
-            },
-        });
+        return Promise.resolve(mockEntryPermissionsResponse);
     }),
 }));
 
@@ -201,62 +186,22 @@ vi.mock("../generators/generateCustomCursor", () => ({
     },
 }));
 
-const mockStyles = {
-    "visual-builder__focused-toolbar--variant":
-        "visual-builder__focused-toolbar--variant",
-    "visual-builder__tooltip--persistent":
-        "visual-builder__tooltip--persistent",
-    "visual-builder__custom-tooltip": "visual-builder__custom-tooltip",
-    "visual-builder__focused-toolbar__field-label-wrapper":
-        "visual-builder__focused-toolbar__field-label-wrapper",
-    "visual-builder__focused-toolbar--field-disabled":
-        "visual-builder__focused-toolbar--field-disabled",
-    "visual-builder__focused-toolbar__text":
-        "visual-builder__focused-toolbar__text",
-    "field-label-dropdown-open": "field-label-dropdown-open",
-    "visual-builder__button": "visual-builder__button",
-    "visual-builder__button-loader": "visual-builder__button-loader",
-    "visual-builder__reference-icon-container":
-        "visual-builder__reference-icon-container",
-    "visual-builder__content-type-icon": "visual-builder__content-type-icon",
-};
-
 vi.mock("../visualBuilder.style", () => ({
     visualBuilderStyles: vi.fn(() => mockStyles),
 }));
 
-vi.mock("../VariantIndicator", () => ({
+vi.mock("../../VariantIndicator", () => ({
     VariantIndicator: () => <div data-testid="variant-indicator">Variant</div>,
 }));
 
-vi.mock("../../utils/errorHandling", () => ({
+vi.mock("../../../utils/errorHandling", () => ({
     hasPostMessageError: vi.fn().mockReturnValue(false),
 }));
 
-const mockFieldMetadata: CslpData = {
-    entry_uid: "mockEntryUid",
-    content_type_uid: "mockContentTypeUid",
-    cslpValue: "mockFieldCslp",
-    locale: "",
-    variant: undefined,
-    fieldPath: "mockFieldPath",
-    fieldPathWithIndex: "",
-    multipleFieldMetadata: {
-        index: 0,
-        parentDetails: {
-            parentPath: "",
-            parentCslpValue: "",
-        },
-    },
-    instance: {
-        fieldPathWithIndex: "",
-    },
-};
-
-describe("FieldLabelWrapperComponent - isFieldDisabled Tests", () => {
+describe("FieldLabelWrapperComponent - Variant CSS Classes", () => {
     beforeEach(() => {
         vi.clearAllMocks();
-        vi.mocked(isFieldDisabled).mockReturnValue({
+        (isFieldDisabled as any).mockReturnValue({
             isDisabled: false,
             reason: "",
         });
@@ -335,54 +280,38 @@ describe("FieldLabelWrapperComponent - isFieldDisabled Tests", () => {
 
     const mockGetParentEditable = () => document.createElement("div");
 
-    test("calls isFieldDisabled with correct arguments", async () => {
+    test("applies variant CSS classes when field has variant", async () => {
+        const variantFieldMetadata = {
+            ...mockFieldMetadata,
+            variant: "variant-uid-123",
+        };
+
         const { container } = render(
             <FieldLabelWrapperComponent
-                fieldMetadata={mockFieldMetadata}
+                fieldMetadata={variantFieldMetadata}
                 eventDetails={mockEventDetails}
                 parentPaths={[]}
                 getParentEditableElement={mockGetParentEditable}
             />
         );
 
-        await act(async () => {
-            await new Promise<void>((resolve) =>
-                queueMicrotask(() => resolve())
-            );
-        });
-
-        await findByTestId(
-            container as HTMLElement,
-            "visual-builder__focused-toolbar__field-label-wrapper",
-            {},
-            { timeout: 1000 }
-        );
-        expect(isFieldDisabled).toHaveBeenCalled();
-
-        expect(isFieldDisabled).toHaveBeenCalledWith(
-            singleLineFieldSchema,
-            mockEventDetails,
-            {
-                update: true,
+        await waitFor(
+            () => {
+                const button = container.querySelector("button");
+                if (!button || button.hasAttribute("disabled")) {
+                    throw new Error("Button still disabled");
+                }
+                const fieldLabelWrapper = container.querySelector(
+                    "[data-testid='visual-builder__focused-toolbar__field-label-wrapper']"
+                );
+                if (!fieldLabelWrapper) {
+                    throw new Error("Field label wrapper not found");
+                }
+                expect(fieldLabelWrapper).toHaveClass(
+                    "visual-builder__focused-toolbar--variant"
+                );
             },
-            {
-                update: {
-                    create: true,
-                    read: true,
-                    update: true,
-                    delete: true,
-                    publish: true,
-                },
-            },
-            {
-                stage: undefined,
-                permissions: {
-                    entry: {
-                        update: true,
-                    },
-                },
-            }
+            { timeout: 1000, interval: 5 }
         );
     });
 });
-
