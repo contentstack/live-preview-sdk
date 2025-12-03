@@ -88,10 +88,11 @@ describe("When an element is hovered in visual builder mode", () => {
             getFieldSchemaMap().all_fields
         );
 
-        global.MutationObserver = vi.fn().mockImplementation(() => ({
-            observe: vi.fn(),
-            disconnect: vi.fn(),
-        }));
+        global.MutationObserver = class MutationObserver {
+            observe = vi.fn();
+            disconnect = vi.fn();
+            takeRecords = vi.fn(() => []);
+        } as any;
     });
 
     beforeEach(() => {

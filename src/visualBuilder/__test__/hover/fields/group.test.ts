@@ -161,6 +161,7 @@ describe("When an element is hovered in visual builder mode", () => {
             groupField.appendChild(singleLine);
 
             singleLine.dispatchEvent(mousemoveEvent);
+            // Increase timeout for this specific test as it can be slower
             await waitForHoverOutline();
             const hoverOutline = document.querySelector(
                 "[data-testid='visual-builder__hover-outline']"

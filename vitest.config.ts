@@ -9,9 +9,10 @@ export default defineConfig({
         environment: "jsdom",
         coverage: {
             provider: "v8",
-            // Only include source files - this is MUCH faster than all: true
+            // Vitest 4: only imported files are analyzed, so include full source
             include: ["src/**/*.{ts,tsx}"],
             exclude: [
+                // Output / build
                 "dist/**",
                 "**/*.d.ts",
                 "node_modules/**",
@@ -27,18 +28,12 @@ export default defineConfig({
                 "vitest.reporter.ts",
                 "vitest.setup.ts",
             ],
-            // CRITICAL: Set to false - only analyze files that are actually imported/used
-            // This makes coverage 3x faster by skipping unused files
-            all: false,
             clean: false,
-            // Explicitly set coverage output directory
             reportsDirectory: "./coverage",
-            // Coverage reporters: Controls what format coverage reports are generated in
-            reporter: process.env.CI
-                ? ["json-summary", "json"] // Minimal: only json-summary for CI action, json for artifacts
-                : ["text", "html"], // Full reports locally
-            // Generate coverage even on test failures (needed for CI)
             reportOnFailure: true,
+            reporter: process.env.CI
+                ? ["json-summary", "json"] // Fast & machine-readable on CI
+                : ["text", "html", "json"], // Human-friendly locally
         },
         globals: true,
         setupFiles: "./vitest.setup.ts",

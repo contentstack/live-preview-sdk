@@ -142,4 +142,88 @@ describe("mouseleave handler changes", () => {
 
         expect(generateToolbarModule.removeFieldToolbar).not.toHaveBeenCalled();
     });
+
+    test("should show custom cursor on mouseenter", () => {
+        addEventListeners({
+            overlayWrapper,
+            visualBuilderContainer,
+            previousSelectedEditableDOM: null,
+            focusedToolbar,
+            resizeObserver,
+            customCursor,
+        });
+
+        const mouseenterEvent = new Event("mouseenter", { bubbles: true });
+        document.documentElement.dispatchEvent(mouseenterEvent);
+
+        expect(mouseHoverModule.showCustomCursor).toHaveBeenCalledWith(
+            customCursor
+        );
+    });
+
+    test("should handle null customCursor on mouseenter", () => {
+        addEventListeners({
+            overlayWrapper,
+            visualBuilderContainer,
+            previousSelectedEditableDOM: null,
+            focusedToolbar,
+            resizeObserver,
+            customCursor: null,
+        });
+
+        const mouseenterEvent = new Event("mouseenter", { bubbles: true });
+        document.documentElement.dispatchEvent(mouseenterEvent);
+
+        expect(mouseHoverModule.showCustomCursor).toHaveBeenCalledWith(null);
+    });
+
+    test("should remove all event listeners when removeEventListeners is called", () => {
+        const removeEventListenerSpy = vi.spyOn(window, "removeEventListener");
+        const docRemoveEventListenerSpy = vi.spyOn(
+            document.documentElement,
+            "removeEventListener"
+        );
+
+        addEventListeners({
+            overlayWrapper,
+            visualBuilderContainer,
+            previousSelectedEditableDOM: null,
+            focusedToolbar,
+            resizeObserver,
+            customCursor,
+        });
+
+        removeEventListeners({
+            overlayWrapper,
+            visualBuilderContainer,
+            previousSelectedEditableDOM: null,
+            focusedToolbar,
+            resizeObserver,
+            customCursor,
+        });
+
+        // Should remove click and mousemove from window
+        expect(removeEventListenerSpy).toHaveBeenCalledWith(
+            "click",
+            expect.any(Function),
+            { capture: true }
+        );
+        expect(removeEventListenerSpy).toHaveBeenCalledWith(
+            "mousemove",
+            expect.any(Function)
+        );
+
+        // Should remove mouseleave and mouseenter from document.documentElement
+        expect(docRemoveEventListenerSpy).toHaveBeenCalledWith(
+            "mouseleave",
+            expect.any(Function)
+        );
+        expect(docRemoveEventListenerSpy).toHaveBeenCalledWith(
+            "mouseenter",
+            expect.any(Function)
+        );
+
+        removeEventListenerSpy.mockRestore();
+        docRemoveEventListenerSpy.mockRestore();
+    });
 });
