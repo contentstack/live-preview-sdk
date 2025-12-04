@@ -240,7 +240,7 @@ export class VisualBuilder {
                         previousEmptyBlockParents: emptyBlockParents,
                     };
                 }
-                if(VisualBuilder.VisualBuilderGlobalState.value.variant && VisualBuilder.VisualBuilderGlobalState.value.highlightVariantFields) {
+                if (VisualBuilder.VisualBuilderGlobalState.value.variant && VisualBuilder.VisualBuilderGlobalState.value.highlightVariantFields) {
                     debounceAddVariantFieldClass(VisualBuilder.VisualBuilderGlobalState.value.variant);
                 }
             },

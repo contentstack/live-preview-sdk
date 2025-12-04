@@ -137,8 +137,8 @@ export function useVariantFieldsPostMessageEvent({ isSSR }: { isSSR: boolean }):
             // This key can change when variant is changed,
             // so clear the field schema cache
             FieldSchemaMap.clear();
-            if(isSSR) {
-                if(selectedVariant) {
+            if (isSSR) {
+                if (selectedVariant) {
                     addVariantFieldClass(selectedVariant);
                 }
             } else {
