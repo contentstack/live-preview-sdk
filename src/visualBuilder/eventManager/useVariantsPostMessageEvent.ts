@@ -193,7 +193,7 @@ export function useVariantFieldsPostMessageEvent({ isSSR }: { isSSR: boolean }):
         VisualBuilderPostMessageEvents.SHOW_VARIANT_FIELDS,
         (event: VariantFieldsEvent) => {
             setHighlightVariantFields(event.data.variant_data.highlightVariantFields);
-            setVariantOrder(event.data.variant_data.variantOrder);
+            setVariantOrder(event.data.variant_data.variantOrder || []);
             removeVariantFieldClass();
             addVariantFieldClass(
                 event.data.variant_data.variant,
