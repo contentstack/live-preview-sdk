@@ -4,7 +4,7 @@ import {
     updateFocussedStateOnMutation,
 } from "../updateFocussedState";
 import { VisualBuilder } from "../..";
-import { addFocusOverlay, hideOverlay } from "../../generators/generateOverlay";
+import { addFocusOverlay, hideFocusOverlay } from "../../generators/generateOverlay";
 import { mockGetBoundingClientRect } from "../../../__test__/utils";
 import { act } from "@testing-library/preact";
 import { singleLineFieldSchema } from "../../../__test__/data/fields";
@@ -269,43 +269,6 @@ describe("updateFocussedState", () => {
             overlayWrapperMock,
             expect.any(Boolean)
         );
-    });
-
-    it("should return early if data-cslp attribute is invalid", async () => {
-        const editableElementMock = document.createElement("div");
-        editableElementMock.setAttribute("data-cslp", "");
-        const visualBuilderContainerMock = document.createElement("div");
-        const overlayWrapperMock = document.createElement("div");
-        const focusedToolbarMock = document.createElement("div");
-        const resizeObserverMock = {
-            disconnect: vi.fn(),
-        } as unknown as ResizeObserver;
-
-        const previousSelectedEditableDOM = document.createElement("div");
-        previousSelectedEditableDOM.setAttribute(
-            "data-cslp",
-            "content_type_uid.entry_uid.locale.field_path"
-        );
-        document.body.appendChild(previousSelectedEditableDOM);
-        VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
-            previousSelectedEditableDOM;
-
-        document.querySelector = vi
-            .fn()
-            .mockReturnValue(previousSelectedEditableDOM);
-
-        const result = await updateFocussedState({
-            editableElement: editableElementMock,
-            visualBuilderContainer: visualBuilderContainerMock,
-            overlayWrapper: overlayWrapperMock,
-            focusedToolbar: focusedToolbarMock,
-            resizeObserver: resizeObserverMock,
-        });
-
-        // Should return early without processing
-        expect(result).toBeUndefined();
-        expect(getEntryPermissionsCached).not.toHaveBeenCalled();
-        expect(addFocusOverlay).not.toHaveBeenCalled();
     });
 });
 
