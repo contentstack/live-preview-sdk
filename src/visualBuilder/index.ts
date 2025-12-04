@@ -67,6 +67,7 @@ interface VisualBuilderGlobalStateImpl {
     locale: string;
     variant: string | null;
     highlightVariantFields: boolean;
+    variantOrder: string[];
     focusElementObserver: MutationObserver | null;
     referenceParentMap: Record<string, string>;
     isFocussed: boolean;
@@ -91,6 +92,7 @@ export class VisualBuilder {
             locale: Config.get().stackDetails.masterLocale || "en-us",
             variant: null,
             highlightVariantFields: false,
+            variantOrder: [],
             focusElementObserver: null,
             referenceParentMap: {},
             isFocussed: false,
@@ -450,6 +452,7 @@ export class VisualBuilder {
             locale: "en-us",
             variant: null,
             highlightVariantFields: false,
+            variantOrder: [],
             focusElementObserver: null,
             referenceParentMap: {},
             isFocussed: false,

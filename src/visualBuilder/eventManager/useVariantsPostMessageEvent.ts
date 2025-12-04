@@ -5,12 +5,14 @@ import { VisualBuilderPostMessageEvents } from "../utils/types/postMessage.types
 import { FieldSchemaMap } from "../utils/fieldSchemaMap";
 import { updateVariantClasses } from "./useRecalculateVariantDataCSLPValues";
 import { debounce } from "lodash-es";
+import { extractDetailsFromCslp } from "../../cslp/cslpdata";
 
 interface VariantFieldsEvent {
     data: {
         variant_data: {
             variant: string;
             highlightVariantFields: boolean;
+            variantOrder: string[];
         };
     };
 }
@@ -36,7 +38,25 @@ interface LocaleEvent {
         locale: string;
     };
 }
-export function addVariantFieldClass(variant_uid: string): void {
+
+function isLowerOrderVariant(variant_uid: string, dataCslp: string, variantOrder: string[]): boolean {
+    if(!variantOrder || variantOrder.length === 0) {
+        return false;
+    }
+    const {variant: cslpVariant} = extractDetailsFromCslp(dataCslp);
+    const indexOfCmsVariant = variantOrder.lastIndexOf(variant_uid);
+    const indexOfCslpVariant = variantOrder.lastIndexOf(cslpVariant || "");
+    if(indexOfCslpVariant < 0) {
+        return false;
+    }
+    return indexOfCslpVariant < indexOfCmsVariant;
+}
+
+
+export function addVariantFieldClass(
+    variant_uid: string,
+    variantOrder: string[]
+): void {
     const highlightVariantFields = VisualBuilder.VisualBuilderGlobalState.value.highlightVariantFields;
     const elements = document.querySelectorAll(`[data-cslp]`);
     elements.forEach((element) => {
@@ -52,7 +72,11 @@ export function addVariantFieldClass(variant_uid: string): void {
             }
         } else if (!dataCslp.startsWith("v2:")) {
             element.classList.add("visual-builder__base-field");
-        } else {
+        } 
+        else if (isLowerOrderVariant(variant_uid, dataCslp, variantOrder)) {
+            element.classList.add("visual-builder__variant-field", "visual-builder__lower-order-variant-field");
+        }
+        else {
             element.classList.add("visual-builder__disabled-variant-field");
         }
     });
@@ -60,7 +84,8 @@ export function addVariantFieldClass(variant_uid: string): void {
 
 export const debounceAddVariantFieldClass = debounce(
     (variant_uid: string): void => {
-        addVariantFieldClass(variant_uid);
+        const variantOrder = VisualBuilder.VisualBuilderGlobalState.value.variantOrder;
+        addVariantFieldClass(variant_uid, variantOrder);
     },
     1000,
     { trailing: true }
@@ -80,14 +105,15 @@ export function removeVariantFieldClass(
         });
     } else {
         const variantAndBaseFieldElements = document.querySelectorAll(
-            ".visual-builder__disabled-variant-field, .visual-builder__variant-field, .visual-builder__base-field"
+            ".visual-builder__disabled-variant-field, .visual-builder__variant-field, .visual-builder__base-field, .visual-builder__lower-order-variant-field" 
         );
         variantAndBaseFieldElements.forEach((element) => {
             element.classList.remove(
                 "visual-builder__disabled-variant-field",
                 "visual-builder__variant-field",
                 visualBuilderStyles()["visual-builder__variant-field-outline"],
-                "visual-builder__base-field"
+                "visual-builder__base-field",
+                "visual-builder__lower-order-variant-field"
             );
         });
     }
@@ -104,6 +130,9 @@ export function setLocale(locale: string): void {
 }
 export function setHighlightVariantFields(highlight: boolean): void {
     VisualBuilder.VisualBuilderGlobalState.value.highlightVariantFields = highlight;
+}
+export function setVariantOrder(variantOrder: string[]): void {
+    VisualBuilder.VisualBuilderGlobalState.value.variantOrder = variantOrder;
 }
 
 interface GetHighlightVariantFieldsStatusResponse {
@@ -139,7 +168,8 @@ export function useVariantFieldsPostMessageEvent({ isSSR }: { isSSR: boolean }):
             FieldSchemaMap.clear();
             if (isSSR) {
                 if (selectedVariant) {
-                    addVariantFieldClass(selectedVariant);
+                    const variantOrder = VisualBuilder.VisualBuilderGlobalState.value.variantOrder;
+                    addVariantFieldClass(selectedVariant, variantOrder);
                 }
             } else {
                 // recalculate and apply classes
@@ -163,8 +193,12 @@ export function useVariantFieldsPostMessageEvent({ isSSR }: { isSSR: boolean }):
         VisualBuilderPostMessageEvents.SHOW_VARIANT_FIELDS,
         (event: VariantFieldsEvent) => {
             setHighlightVariantFields(event.data.variant_data.highlightVariantFields);
+            setVariantOrder(event.data.variant_data.variantOrder);
             removeVariantFieldClass();
-            addVariantFieldClass(event.data.variant_data.variant);
+            addVariantFieldClass(
+                event.data.variant_data.variant,
+                event.data.variant_data.variantOrder
+            );
         }
     );
     visualBuilderPostMessage?.on(
