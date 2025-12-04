@@ -5,7 +5,6 @@
 import { act, fireEvent, waitFor } from "@testing-library/preact";
 import crypto from "crypto";
 import { vi } from "vitest";
-import { sleep } from "../../__test__/utils";
 import { getDefaultConfig } from "../../configManager/config.default";
 import Config from "../../configManager/configManager";
 import { PublicLogger } from "../../logger/logger";
@@ -53,12 +52,6 @@ Object.defineProperty(globalThis, "crypto", {
 const TITLE_CSLP_TAG = "content-type-1.entry-uid-1.en-us.field-title";
 const DESC_CSLP_TAG = "content-type-2.entry-uid-2.en-us.field-description";
 const LINK_CSLP_TAG = "content-type-3.entry-uid-3.en-us.field-link";
-
-global.ResizeObserver = vi.fn().mockImplementation(() => ({
-    observe: vi.fn(),
-    unobserve: vi.fn(),
-    disconnect: vi.fn(),
-}));
 
 describe("cslp tooltip", () => {
     beforeEach(() => {
@@ -349,13 +342,27 @@ describe("incoming postMessage", () => {
         });
 
         livePreviewPostMessage?.destroy({ soft: true });
+
+        // Track when INIT completes
+        let initCompleted = false;
         livePreviewPostMessage?.on(
             LIVE_PREVIEW_POST_MESSAGE_EVENTS.INIT,
-            mockLivePreviewInitEventListener
+            () => {
+                const result = mockLivePreviewInitEventListener();
+                initCompleted = true;
+                return result;
+            }
         );
 
         const livePreview = new LivePreview();
-        await sleep();
+
+        // Wait for INIT event to complete and event listeners to be registered
+        await waitFor(
+            () => {
+                expect(initCompleted).toBe(true);
+            },
+            { timeout: 3000 }
+        );
 
         // set user onChange function
         const userOnChange = vi.fn();
@@ -386,7 +393,13 @@ describe("incoming postMessage", () => {
         }
 
         new LivePreview();
-        await sleep();
+
+        // Wait for async init event to be processed
+        await waitFor(() => {
+            expect(Config.get().stackDetails.contentTypeUid).toBe(
+                "contentTypeUid"
+            );
+        });
 
         expect(Config.get().stackDetails).toMatchObject({
             apiKey: "",
@@ -397,35 +410,51 @@ describe("incoming postMessage", () => {
     });
 
     test("should navigate forward, backward and reload page on history call", async () => {
+        // Track when INIT completes
+        let initCompleted = false;
+        livePreviewPostMessage?.destroy({ soft: true });
+        livePreviewPostMessage?.on(
+            LIVE_PREVIEW_POST_MESSAGE_EVENTS.INIT,
+            () => {
+                const result = mockLivePreviewInitEventListener();
+                initCompleted = true;
+                return result;
+            }
+        );
+
         new LivePreview();
-        await sleep();
+
+        // Wait for INIT to complete and event listeners to be registered
+        await waitFor(
+            () => {
+                expect(initCompleted).toBe(true);
+            },
+            { timeout: 3000 }
+        );
 
         vi.spyOn(window.history, "forward");
         vi.spyOn(window.history, "back");
         vi.spyOn(window.history, "go").mockImplementation(() => {});
 
         // for forward
-        livePreviewPostMessage?.send(LIVE_PREVIEW_POST_MESSAGE_EVENTS.HISTORY, {
+        await livePreviewPostMessage?.send(LIVE_PREVIEW_POST_MESSAGE_EVENTS.HISTORY, {
             type: "forward",
         } as HistoryLivePreviewPostMessageEventData);
-        await sleep(0);
 
         expect(window.history.forward).toHaveBeenCalled();
 
         // for back
-        livePreviewPostMessage?.send(LIVE_PREVIEW_POST_MESSAGE_EVENTS.HISTORY, {
+        await livePreviewPostMessage?.send(LIVE_PREVIEW_POST_MESSAGE_EVENTS.HISTORY, {
             type: "backward",
         } as HistoryLivePreviewPostMessageEventData);
 
-        await sleep(0);
         expect(window.history.back).toHaveBeenCalled();
 
         // for reload
-        livePreviewPostMessage?.send(LIVE_PREVIEW_POST_MESSAGE_EVENTS.HISTORY, {
+        await livePreviewPostMessage?.send(LIVE_PREVIEW_POST_MESSAGE_EVENTS.HISTORY, {
             type: "reload",
         } as HistoryLivePreviewPostMessageEventData);
 
-        await sleep(0);
         expect(window.history.go).toHaveBeenCalled();
     });
 });
