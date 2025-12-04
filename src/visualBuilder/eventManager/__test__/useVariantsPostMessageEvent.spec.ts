@@ -15,6 +15,8 @@ import {
     setVariant,
     setLocale,
     setHighlightVariantFields,
+    getHighlightVariantFieldsStatus,
+    debounceAddVariantFieldClass,
 } from "../../../visualBuilder/eventManager/useVariantsPostMessageEvent";
 import { VisualBuilderPostMessageEvents } from "../../../visualBuilder/utils/types/postMessage.types";
 import { VisualBuilder } from "../../../visualBuilder";
@@ -22,6 +24,7 @@ import { FieldSchemaMap } from "../../../visualBuilder/utils/fieldSchemaMap";
 import { visualBuilderStyles } from "../../../visualBuilder/visualBuilder.style";
 import visualBuilderPostMessage from "../../../visualBuilder/utils/visualBuilderPostMessage";
 import { EventManager } from "@contentstack/advanced-post-message";
+import { updateVariantClasses } from "../../../visualBuilder/eventManager/useRecalculateVariantDataCSLPValues";
 
 const mockVisualBuilderPostMessage =
     visualBuilderPostMessage as MockedObject<EventManager>;
@@ -44,6 +47,12 @@ vi.mock("../../../visualBuilder/utils/fieldSchemaMap", () => {
     };
 });
 
+vi.mock("../../../visualBuilder/eventManager/useRecalculateVariantDataCSLPValues", () => {
+    return {
+        updateVariantClasses: vi.fn(),
+    };
+});
+
 vi.mock("../../../visualBuilder", () => {
     return {
         VisualBuilder: {
@@ -61,11 +70,13 @@ vi.mock("../../../visualBuilder", () => {
 
 // Create a more realistic mock of the CSS modules
 const cssClassMock = "go109692693"; // Match the actual generated class name
+const cssOutlineClassMock = "go109692694";
 
-vi.mock("../../../visualBuilder.style", () => {
+vi.mock("../../visualBuilder.style", () => {
     return {
         visualBuilderStyles: () => ({
             "visual-builder__variant-field": cssClassMock,
+            "visual-builder__variant-field-outline": cssOutlineClassMock,
         }),
     };
 });
@@ -99,7 +110,7 @@ const mockQuerySelectorAll = vi.fn().mockImplementation((selector) => {
     // Return different mocks based on selector
     if (selector === "[data-cslp]") {
         return mockElements;
-    } else if (selector === `.${cssClassMock}`) {
+    } else if (selector === `.${cssOutlineClassMock}`) {
         return mockElements; // For onlyHighlighted=true case
     } else if (
         selector ===
@@ -131,7 +142,7 @@ describe("useVariantFieldsPostMessageEvent", () => {
 
     it("should register all event listeners", () => {
         // Call the function
-        useVariantFieldsPostMessageEvent();
+        useVariantFieldsPostMessageEvent({ isSSR: false });
 
         // Verify event listeners are registered
         expect(mockVisualBuilderPostMessage.on).toHaveBeenCalledWith(
@@ -162,7 +173,7 @@ describe("useVariantFieldsPostMessageEvent", () => {
 
     it("should handle GET_VARIANT_ID event", () => {
         // Register event handlers
-        useVariantFieldsPostMessageEvent();
+        useVariantFieldsPostMessageEvent({ isSSR: false });
 
         // Extract the event handler function
         const call = mockVisualBuilderPostMessage.on.mock.calls.find(
@@ -186,7 +197,7 @@ describe("useVariantFieldsPostMessageEvent", () => {
 
     it("should handle GET_LOCALE event", () => {
         // Register event handlers
-        useVariantFieldsPostMessageEvent();
+        useVariantFieldsPostMessageEvent({ isSSR: false });
 
         // Extract the event handler function
         const call = mockVisualBuilderPostMessage.on.mock.calls.find(
@@ -207,7 +218,7 @@ describe("useVariantFieldsPostMessageEvent", () => {
 
     it("should handle SET_AUDIENCE_MODE event", () => {
         // Register event handlers
-        useVariantFieldsPostMessageEvent();
+        useVariantFieldsPostMessageEvent({ isSSR: false });
 
         // Extract the event handler function
         const call = mockVisualBuilderPostMessage.on.mock.calls.find(
@@ -228,7 +239,7 @@ describe("useVariantFieldsPostMessageEvent", () => {
 
     it("should handle SHOW_VARIANT_FIELDS event", () => {
         // Register event handlers
-        useVariantFieldsPostMessageEvent();
+        useVariantFieldsPostMessageEvent({ isSSR: false });
 
         // Extract the event handler function
         const call = mockVisualBuilderPostMessage.on.mock.calls.find(
@@ -253,16 +264,16 @@ describe("useVariantFieldsPostMessageEvent", () => {
 
         // Verify that classes were added to elements correctly
         expect(mockElements[0].classList.add).toHaveBeenCalledWith(
-            visualBuilderStyles()["visual-builder__variant-field"]
+            "visual-builder__variant-field"
         );
         expect(mockElements[0].classList.add).toHaveBeenCalledWith(
-            "visual-builder__variant-field"
+            visualBuilderStyles()["visual-builder__variant-field-outline"]
         );
     });
 
     it("should handle REMOVE_VARIANT_FIELDS event with onlyHighlighted=true", () => {
         // Register event handlers
-        useVariantFieldsPostMessageEvent();
+        useVariantFieldsPostMessageEvent({ isSSR: false });
 
         // Extract the event handler function
         const call = mockVisualBuilderPostMessage.on.mock.calls.find(
@@ -277,20 +288,20 @@ describe("useVariantFieldsPostMessageEvent", () => {
 
         // Verify querySelectorAll was called with the correct selector
         expect(mockQuerySelectorAll).toHaveBeenCalledWith(
-            `.${visualBuilderStyles()["visual-builder__variant-field"]}`
+            `.${visualBuilderStyles()["visual-builder__variant-field-outline"]}`
         );
 
         // Verify that classes were removed from elements correctly
         mockElements.forEach((element) => {
             expect(element.classList.remove).toHaveBeenCalledWith(
-                visualBuilderStyles()["visual-builder__variant-field"]
+                visualBuilderStyles()["visual-builder__variant-field-outline"]
             );
         });
     });
 
     it("should handle REMOVE_VARIANT_FIELDS event with onlyHighlighted=false", () => {
         // Register event handlers
-        useVariantFieldsPostMessageEvent();
+        useVariantFieldsPostMessageEvent({ isSSR: false });
 
         // Extract the event handler function
         const call = mockVisualBuilderPostMessage.on.mock.calls.find(
@@ -313,7 +324,7 @@ describe("useVariantFieldsPostMessageEvent", () => {
             expect(element.classList.remove).toHaveBeenCalledWith(
                 "visual-builder__disabled-variant-field",
                 "visual-builder__variant-field",
-                visualBuilderStyles()["visual-builder__variant-field"],
+                visualBuilderStyles()["visual-builder__variant-field-outline"],
                 "visual-builder__base-field"
             );
         });
@@ -325,6 +336,13 @@ describe("addVariantFieldClass", () => {
     const originalQuerySelectorAll = document.querySelectorAll;
 
     beforeEach(() => {
+        // // Reset element mocks to track new calls
+        // mockElements.forEach((element) => {
+        //     element.classList.add.mockClear();
+        //     element.classList.remove.mockClear();
+        //     element.getAttribute.mockClear();
+        // });
+
         // Mock document.querySelectorAll
         document.querySelectorAll = mockQuerySelectorAll;
 
@@ -349,10 +367,10 @@ describe("addVariantFieldClass", () => {
         // First element has the variant ID
         expect(mockElements[0].getAttribute).toHaveBeenCalledWith("data-cslp");
         expect(mockElements[0].classList.add).toHaveBeenCalledWith(
-            visualBuilderStyles()["visual-builder__variant-field"]
+            "visual-builder__variant-field"
         );
         expect(mockElements[0].classList.add).toHaveBeenCalledWith(
-            "visual-builder__variant-field"
+            visualBuilderStyles()["visual-builder__variant-field-outline"]
         );
 
         // Second element does not start with 'v2:'
@@ -376,11 +394,11 @@ describe("addVariantFieldClass", () => {
 
         // First element has the variant ID but should not get highlight class
         expect(mockElements[0].getAttribute).toHaveBeenCalledWith("data-cslp");
-        expect(mockElements[0].classList.add).not.toHaveBeenCalledWith(
-            visualBuilderStyles()["visual-builder__variant-field"]
-        );
         expect(mockElements[0].classList.add).toHaveBeenCalledWith(
             "visual-builder__variant-field"
+        );
+        expect(mockElements[0].classList.add).not.toHaveBeenCalledWith(
+            visualBuilderStyles()["visual-builder__variant-field-outline"]
         );
     });
 });
@@ -407,13 +425,13 @@ describe("removeVariantFieldClass", () => {
 
         // Verify querySelectorAll was called with the correct selector
         expect(mockQuerySelectorAll).toHaveBeenCalledWith(
-            `.${visualBuilderStyles()["visual-builder__variant-field"]}`
+            `.${visualBuilderStyles()["visual-builder__variant-field-outline"]}`
         );
 
         // Verify classes were removed
         mockElements.forEach((element) => {
             expect(element.classList.remove).toHaveBeenCalledWith(
-                visualBuilderStyles()["visual-builder__variant-field"]
+                visualBuilderStyles()["visual-builder__variant-field-outline"]
             );
         });
     });
@@ -431,7 +449,7 @@ describe("removeVariantFieldClass", () => {
             expect(element.classList.remove).toHaveBeenCalledWith(
                 "visual-builder__disabled-variant-field",
                 "visual-builder__variant-field",
-                visualBuilderStyles()["visual-builder__variant-field"],
+                visualBuilderStyles()["visual-builder__variant-field-outline"],
                 "visual-builder__base-field"
             );
         });
@@ -503,5 +521,148 @@ describe("State Management Functions", () => {
         expect(VisualBuilder.VisualBuilderGlobalState.value.highlightVariantFields).toBe(
             false
         );
+    });
+});
+
+describe("getHighlightVariantFieldsStatus", () => {
+    beforeEach(() => {
+        vi.clearAllMocks();
+    });
+
+    it("should return highlight status when successful", async () => {
+        const mockResponse = { highlightVariantFields: true };
+        (mockVisualBuilderPostMessage.send as any).mockResolvedValue(mockResponse);
+
+        const result = await getHighlightVariantFieldsStatus();
+
+        expect(mockVisualBuilderPostMessage.send).toHaveBeenCalledWith(
+            VisualBuilderPostMessageEvents.GET_HIGHLIGHT_VARIANT_FIELDS_STATUS
+        );
+        expect(result).toEqual(mockResponse);
+    });
+
+    it("should return default false when response is null", async () => {
+        (mockVisualBuilderPostMessage.send as any).mockResolvedValue(null);
+
+        const result = await getHighlightVariantFieldsStatus();
+
+        expect(result).toEqual({ highlightVariantFields: false });
+    });
+
+    it("should return default false when request fails", async () => {
+        (mockVisualBuilderPostMessage.send as any).mockRejectedValue(
+            new Error("Network error")
+        );
+
+        const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+
+        const result = await getHighlightVariantFieldsStatus();
+
+        expect(result).toEqual({ highlightVariantFields: false });
+        expect(consoleErrorSpy).toHaveBeenCalledWith(
+            "Failed to get highlight variant fields status:",
+            expect.any(Error)
+        );
+
+        consoleErrorSpy.mockRestore();
+    });
+});
+
+describe("debounceAddVariantFieldClass", () => {
+    const originalQuerySelectorAll = document.querySelectorAll;
+
+    beforeEach(() => {
+        document.querySelectorAll = mockQuerySelectorAll;
+        vi.clearAllMocks();
+        vi.useFakeTimers();
+    });
+
+    afterEach(() => {
+        document.querySelectorAll = originalQuerySelectorAll;
+        vi.useRealTimers();
+    });
+
+    it("should debounce addVariantFieldClass calls", () => {
+        const variantUid = "variant-123";
+        VisualBuilder.VisualBuilderGlobalState.value.highlightVariantFields = true;
+
+        // Call multiple times rapidly
+        debounceAddVariantFieldClass(variantUid);
+        debounceAddVariantFieldClass(variantUid);
+        debounceAddVariantFieldClass(variantUid);
+
+        // Should not have been called yet (debounced)
+        expect(mockQuerySelectorAll).not.toHaveBeenCalled();
+
+        // Fast-forward time
+        vi.advanceTimersByTime(1000);
+
+        // Should have been called once (debounced)
+        expect(mockQuerySelectorAll).toHaveBeenCalledTimes(1);
+        expect(mockQuerySelectorAll).toHaveBeenCalledWith("[data-cslp]");
+    });
+});
+
+describe("useVariantFieldsPostMessageEvent SSR handling", () => {
+    const originalQuerySelectorAll = document.querySelectorAll;
+
+    beforeEach(() => {
+        document.querySelectorAll = mockQuerySelectorAll;
+        vi.clearAllMocks();
+    });
+
+    afterEach(() => {
+        document.querySelectorAll = originalQuerySelectorAll;
+    });
+
+    it("should call addVariantFieldClass directly when isSSR is true and variant is provided", () => {
+        useVariantFieldsPostMessageEvent({ isSSR: true });
+
+        const call = mockVisualBuilderPostMessage.on.mock.calls.find(
+            (call: any[]) =>
+                call[0] === VisualBuilderPostMessageEvents.GET_VARIANT_ID
+        );
+        const handler = call ? call[1] : null;
+
+        vi.clearAllMocks();
+        handler!({ data: { variant: "variant-123" } });
+
+        // Should call addVariantFieldClass directly (not updateVariantClasses)
+        expect(mockQuerySelectorAll).toHaveBeenCalledWith("[data-cslp]");
+        expect(updateVariantClasses).not.toHaveBeenCalled();
+    });
+
+    it("should call updateVariantClasses when isSSR is false", () => {
+        useVariantFieldsPostMessageEvent({ isSSR: false });
+
+        const call = mockVisualBuilderPostMessage.on.mock.calls.find(
+            (call: any[]) =>
+                call[0] === VisualBuilderPostMessageEvents.GET_VARIANT_ID
+        );
+        const handler = call ? call[1] : null;
+
+        vi.clearAllMocks();
+        handler!({ data: { variant: "variant-123" } });
+
+        // Should call updateVariantClasses (not addVariantFieldClass directly)
+        expect(updateVariantClasses).toHaveBeenCalled();
+        expect(mockQuerySelectorAll).not.toHaveBeenCalled();
+    });
+
+    it("should not call addVariantFieldClass when isSSR is true but variant is null", () => {
+        useVariantFieldsPostMessageEvent({ isSSR: true });
+
+        const call = mockVisualBuilderPostMessage.on.mock.calls.find(
+            (call: any[]) =>
+                call[0] === VisualBuilderPostMessageEvents.GET_VARIANT_ID
+        );
+        const handler = call ? call[1] : null;
+
+        vi.clearAllMocks();
+        handler!({ data: { variant: null } });
+
+        // Should not call addVariantFieldClass when variant is null
+        expect(mockQuerySelectorAll).not.toHaveBeenCalled();
+        expect(updateVariantClasses).not.toHaveBeenCalled();
     });
 });
