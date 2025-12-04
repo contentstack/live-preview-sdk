@@ -310,9 +310,7 @@ describe("FieldLabelWrapperComponent - isFieldDisabled Tests", () => {
         expect(isFieldDisabled).toHaveBeenCalledWith(
             singleLineFieldSchema,
             mockEventDetails,
-            {
-                update: true,
-            },
+
             {
                 update: {
                     create: true,

@@ -92,9 +92,6 @@ describe("handleIndividualFields", () => {
             fieldSchema,
             eventDetails,
             {
-                update: true,
-            },
-            {
                 create: true,
                 read: true,
                 update: true,
