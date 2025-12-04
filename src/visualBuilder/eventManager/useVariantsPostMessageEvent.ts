@@ -3,6 +3,7 @@ import { visualBuilderStyles } from "../visualBuilder.style";
 import visualBuilderPostMessage from "../utils/visualBuilderPostMessage";
 import { VisualBuilderPostMessageEvents } from "../utils/types/postMessage.types";
 import { FieldSchemaMap } from "../utils/fieldSchemaMap";
+import { updateVariantClasses } from "./useRecalculateVariantDataCSLPValues";
 
 interface VariantFieldsEvent {
     data: {
@@ -34,10 +35,8 @@ interface LocaleEvent {
         locale: string;
     };
 }
-export function addVariantFieldClass(
-    variant_uid: string,
-    highlightVariantFields: boolean
-): void {
+export function addVariantFieldClass(variant_uid: string): void {
+    const highlightVariantFields = VisualBuilder.VisualBuilderGlobalState.value.highlightVariantFields;
     const elements = document.querySelectorAll(`[data-cslp]`);
     elements.forEach((element) => {
         const dataCslp = element.getAttribute("data-cslp");
@@ -94,18 +93,43 @@ export function setVariant(uid: string | null): void {
 export function setLocale(locale: string): void {
     VisualBuilder.VisualBuilderGlobalState.value.locale = locale;
 }
+export function setHighlightVariantFields(highlight: boolean): void {
+    VisualBuilder.VisualBuilderGlobalState.value.highlightVariantFields = highlight;
+}
+
+interface GetHighlightVariantFieldsStatusResponse {
+    highlightVariantFields: boolean;
+}
+export async function getHighlightVariantFieldsStatus(): Promise<GetHighlightVariantFieldsStatusResponse> {
+    try {
+        const result = await visualBuilderPostMessage?.send<GetHighlightVariantFieldsStatusResponse>(
+            VisualBuilderPostMessageEvents.GET_HIGHLIGHT_VARIANT_FIELDS_STATUS
+        );   
+        return result ?? {
+            highlightVariantFields: false,
+        };
+    } catch (error) {
+        console.error("Failed to get highlight variant fields status:", error);
+        return {
+            highlightVariantFields: false,
+        };
+    }
+}
 
 export function useVariantFieldsPostMessageEvent(): void {
     visualBuilderPostMessage?.on(
         VisualBuilderPostMessageEvents.GET_VARIANT_ID,
         (event: VariantEvent) => {
-            setVariant(event.data.variant);
+            const selectedVariant = event.data.variant;
+            setVariant(selectedVariant);
             // clear field schema when variant is changed.
             // this is required as we cache field schema
             // which contain a key isUnlinkedVariant.
             // This key can change when variant is changed,
             // so clear the field schema cache
             FieldSchemaMap.clear();
+            // recalculate and apply classes
+            updateVariantClasses();
         }
     );
     visualBuilderPostMessage?.on(
@@ -123,11 +147,9 @@ export function useVariantFieldsPostMessageEvent(): void {
     visualBuilderPostMessage?.on(
         VisualBuilderPostMessageEvents.SHOW_VARIANT_FIELDS,
         (event: VariantFieldsEvent) => {
+            setHighlightVariantFields(event.data.variant_data.highlightVariantFields);
             removeVariantFieldClass();
-            addVariantFieldClass(
-                event.data.variant_data.variant,
-                event.data.variant_data.highlightVariantFields
-            );
+            addVariantFieldClass(event.data.variant_data.variant);
         }
     );
     visualBuilderPostMessage?.on(

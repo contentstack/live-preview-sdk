@@ -26,7 +26,7 @@ import initUI from "./components";
 import { useDraftFieldsPostMessageEvent } from "./eventManager/useDraftFieldsPostMessageEvent";
 import { useHideFocusOverlayPostMessageEvent } from "./eventManager/useHideFocusOverlayPostMessageEvent";
 import { useScrollToField } from "./eventManager/useScrollToField";
-import { useVariantFieldsPostMessageEvent } from "./eventManager/useVariantsPostMessageEvent";
+import { getHighlightVariantFieldsStatus, setHighlightVariantFields, useVariantFieldsPostMessageEvent } from "./eventManager/useVariantsPostMessageEvent";
 import {
     generateEmptyBlocks,
     removeEmptyBlocks,
@@ -66,6 +66,7 @@ interface VisualBuilderGlobalStateImpl {
     audienceMode: boolean;
     locale: string;
     variant: string | null;
+    highlightVariantFields: boolean;
     focusElementObserver: MutationObserver | null;
     referenceParentMap: Record<string, string>;
     isFocussed: boolean;
@@ -89,6 +90,7 @@ export class VisualBuilder {
             audienceMode: false,
             locale: Config.get().stackDetails.masterLocale || "en-us",
             variant: null,
+            highlightVariantFields: false,
             focusElementObserver: null,
             referenceParentMap: {},
             isFocussed: false,
@@ -363,6 +365,9 @@ export class VisualBuilder {
                         subtree: true,
                     });
 
+                    getHighlightVariantFieldsStatus().then((result) => {
+                        setHighlightVariantFields(result.highlightVariantFields);
+                    });
                     visualBuilderPostMessage?.on(
                         VisualBuilderPostMessageEvents.GET_ALL_ENTRIES_IN_CURRENT_PAGE,
                         getEntryIdentifiersInCurrentPage
@@ -441,6 +446,7 @@ export class VisualBuilder {
             audienceMode: false,
             locale: "en-us",
             variant: null,
+            highlightVariantFields: false,
             focusElementObserver: null,
             referenceParentMap: {},
             isFocussed: false,

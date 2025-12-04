@@ -3,6 +3,7 @@ import livePreviewPostMessage from "../../livePreview/eventManager/livePreviewEv
 import { LIVE_PREVIEW_POST_MESSAGE_EVENTS } from "../../livePreview/eventManager/livePreviewEventManager.constant";
 import { DATA_CSLP_ATTR_SELECTOR } from "../utils/constants";
 import { visualBuilderStyles } from "../visualBuilder.style";
+import { setHighlightVariantFields } from "./useVariantsPostMessageEvent";
 
 const VARIANT_UPDATE_DELAY_MS: Readonly<number> = 8000;
 
@@ -19,15 +20,14 @@ export function useRecalculateVariantDataCSLPValues(): void {
         LIVE_PREVIEW_POST_MESSAGE_EVENTS.VARIANT_PATCH,
         (event) => {
             if (VisualBuilder.VisualBuilderGlobalState.value.audienceMode) {
-                updateVariantClasses(event.data);
+                setHighlightVariantFields(event.data.highlightVariantFields);
+                updateVariantClasses();
             }
         }
     );
 }
-function updateVariantClasses({
-    highlightVariantFields,
-    expectedCSLPValues,
-}: OnAudienceModeVariantPatchUpdate): void {
+export function updateVariantClasses(): void {
+    const highlightVariantFields = VisualBuilder.VisualBuilderGlobalState.value.highlightVariantFields;
     const variant = VisualBuilder.VisualBuilderGlobalState.value.variant;
     const observers: MutationObserver[] = [];
 
@@ -160,6 +160,7 @@ function updateVariantClasses({
         });
 
         observers.push(observer);
+        // TODO: Check if we could add attributeFilter to the observer to only observe the attribute changes for the data-cslp attribute.
         observer.observe(element, {
             attributes: true,
             childList: true, // Observe direct children
