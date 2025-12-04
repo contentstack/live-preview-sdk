@@ -12,7 +12,6 @@ const resolvedVariantPermissions: ResolvedVariantPermissions = {
     update: true,
 };
 
-
 describe("isFieldDisabled", () => {
     it("should return disabled state due to read-only role", () => {
         // @ts-expect-error mocking only required properties
