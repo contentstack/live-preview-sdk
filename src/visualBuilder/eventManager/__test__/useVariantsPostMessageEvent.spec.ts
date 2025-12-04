@@ -14,6 +14,7 @@ import {
     setAudienceMode,
     setVariant,
     setLocale,
+    setHighlightVariantFields,
 } from "../../../visualBuilder/eventManager/useVariantsPostMessageEvent";
 import { VisualBuilderPostMessageEvents } from "../../../visualBuilder/utils/types/postMessage.types";
 import { VisualBuilder } from "../../../visualBuilder";
@@ -51,6 +52,7 @@ vi.mock("../../../visualBuilder", () => {
                     audienceMode: false,
                     variant: null,
                     locale: "en-us",
+                    highlightVariantFields: false,
                 },
             },
         },
@@ -337,9 +339,9 @@ describe("addVariantFieldClass", () => {
 
     it("should add classes to elements correctly based on data-cslp attribute", () => {
         const variantUid = "variant-123";
-        const highlightVariantFields = true;
+        VisualBuilder.VisualBuilderGlobalState.value.highlightVariantFields = true;
 
-        addVariantFieldClass(variantUid, highlightVariantFields);
+        addVariantFieldClass(variantUid);
 
         // Verify querySelectorAll was called with the correct selector
         expect(mockQuerySelectorAll).toHaveBeenCalledWith("[data-cslp]");
@@ -368,9 +370,9 @@ describe("addVariantFieldClass", () => {
 
     it("should not add highlight class when highlightVariantFields is false", () => {
         const variantUid = "variant-123";
-        const highlightVariantFields = false;
+        VisualBuilder.VisualBuilderGlobalState.value.highlightVariantFields = false;
 
-        addVariantFieldClass(variantUid, highlightVariantFields);
+        addVariantFieldClass(variantUid);
 
         // First element has the variant ID but should not get highlight class
         expect(mockElements[0].getAttribute).toHaveBeenCalledWith("data-cslp");
@@ -454,6 +456,7 @@ describe("State Management Functions", () => {
         VisualBuilder.VisualBuilderGlobalState.value.audienceMode = false;
         VisualBuilder.VisualBuilderGlobalState.value.variant = null;
         VisualBuilder.VisualBuilderGlobalState.value.locale = "en-us";
+        VisualBuilder.VisualBuilderGlobalState.value.highlightVariantFields = false;
     });
 
     it("setAudienceMode should update global state", () => {
@@ -487,6 +490,18 @@ describe("State Management Functions", () => {
         setLocale("en-us");
         expect(VisualBuilder.VisualBuilderGlobalState.value.locale).toBe(
             "en-us"
+        );
+    });
+
+    it("setHighlightVariantFields should update global state", () => {
+        setHighlightVariantFields(true);
+        expect(VisualBuilder.VisualBuilderGlobalState.value.highlightVariantFields).toBe(
+            true
+        );
+
+        setHighlightVariantFields(false);
+        expect(VisualBuilder.VisualBuilderGlobalState.value.highlightVariantFields).toBe(
+            false
         );
     });
 });

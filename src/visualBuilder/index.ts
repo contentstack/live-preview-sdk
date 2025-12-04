@@ -26,7 +26,7 @@ import initUI from "./components";
 import { useDraftFieldsPostMessageEvent } from "./eventManager/useDraftFieldsPostMessageEvent";
 import { useHideFocusOverlayPostMessageEvent } from "./eventManager/useHideFocusOverlayPostMessageEvent";
 import { useScrollToField } from "./eventManager/useScrollToField";
-import { getHighlightVariantFieldsStatus, setHighlightVariantFields, useVariantFieldsPostMessageEvent } from "./eventManager/useVariantsPostMessageEvent";
+import { debounceAddVariantFieldClass, getHighlightVariantFieldsStatus, setHighlightVariantFields, useVariantFieldsPostMessageEvent } from "./eventManager/useVariantsPostMessageEvent";
 import {
     generateEmptyBlocks,
     removeEmptyBlocks,
@@ -240,6 +240,9 @@ export class VisualBuilder {
                         previousEmptyBlockParents: emptyBlockParents,
                     };
                 }
+                if(VisualBuilder.VisualBuilderGlobalState.value.variant && VisualBuilder.VisualBuilderGlobalState.value.highlightVariantFields) {
+                    debounceAddVariantFieldClass(VisualBuilder.VisualBuilderGlobalState.value.variant);
+                }
             },
             100,
             { trailing: true }
@@ -403,7 +406,7 @@ export class VisualBuilder {
                     useOnEntryUpdatePostMessageEvent();
                     useRecalculateVariantDataCSLPValues();
                     useDraftFieldsPostMessageEvent();
-                    useVariantFieldsPostMessageEvent();
+                    useVariantFieldsPostMessageEvent({ isSSR: config.ssr ?? false });
                 }
             })
             .catch(() => {

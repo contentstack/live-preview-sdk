@@ -4,6 +4,7 @@ import visualBuilderPostMessage from "../utils/visualBuilderPostMessage";
 import { VisualBuilderPostMessageEvents } from "../utils/types/postMessage.types";
 import { FieldSchemaMap } from "../utils/fieldSchemaMap";
 import { updateVariantClasses } from "./useRecalculateVariantDataCSLPValues";
+import { debounce } from "lodash-es";
 
 interface VariantFieldsEvent {
     data: {
@@ -56,6 +57,14 @@ export function addVariantFieldClass(variant_uid: string): void {
         }
     });
 }
+
+export const debounceAddVariantFieldClass = debounce(
+    (variant_uid: string): void => {
+        addVariantFieldClass(variant_uid);
+    },
+    1000,
+    { trailing: true }
+) as (variant_uid: string) => void;
 
 export function removeVariantFieldClass(
     onlyHighlighted: boolean = false
@@ -116,7 +125,7 @@ export async function getHighlightVariantFieldsStatus(): Promise<GetHighlightVar
     }
 }
 
-export function useVariantFieldsPostMessageEvent(): void {
+export function useVariantFieldsPostMessageEvent({ isSSR }: { isSSR: boolean }): void {
     visualBuilderPostMessage?.on(
         VisualBuilderPostMessageEvents.GET_VARIANT_ID,
         (event: VariantEvent) => {
@@ -128,8 +137,14 @@ export function useVariantFieldsPostMessageEvent(): void {
             // This key can change when variant is changed,
             // so clear the field schema cache
             FieldSchemaMap.clear();
-            // recalculate and apply classes
-            updateVariantClasses();
+            if(isSSR) {
+                if(selectedVariant) {
+                    addVariantFieldClass(selectedVariant);
+                }
+            } else {
+                // recalculate and apply classes
+                updateVariantClasses();
+            }
         }
     );
     visualBuilderPostMessage?.on(
