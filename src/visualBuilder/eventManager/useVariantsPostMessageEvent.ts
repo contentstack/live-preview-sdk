@@ -44,11 +44,12 @@ export function addVariantFieldClass(
         if (!dataCslp) return;
 
         if (dataCslp?.includes(variant_uid)) {
-            highlightVariantFields &&
-                element.classList.add(
-                    visualBuilderStyles()["visual-builder__variant-field"]
-                );
             element.classList.add("visual-builder__variant-field");
+            if (highlightVariantFields) {
+                element.classList.add(
+                    visualBuilderStyles()["visual-builder__variant-field-outline"]
+                );
+            }
         } else if (!dataCslp.startsWith("v2:")) {
             element.classList.add("visual-builder__base-field");
         } else {
@@ -62,11 +63,11 @@ export function removeVariantFieldClass(
 ): void {
     if (onlyHighlighted) {
         const variantElements = document.querySelectorAll(
-            `.${visualBuilderStyles()["visual-builder__variant-field"]}`
+            `.${visualBuilderStyles()["visual-builder__variant-field-outline"]}`
         );
         variantElements.forEach((element) => {
             element.classList.remove(
-                visualBuilderStyles()["visual-builder__variant-field"]
+                visualBuilderStyles()["visual-builder__variant-field-outline"]
             );
         });
     } else {
@@ -77,7 +78,7 @@ export function removeVariantFieldClass(
             element.classList.remove(
                 "visual-builder__disabled-variant-field",
                 "visual-builder__variant-field",
-                visualBuilderStyles()["visual-builder__variant-field"],
+                visualBuilderStyles()["visual-builder__variant-field-outline"],
                 "visual-builder__base-field"
             );
         });

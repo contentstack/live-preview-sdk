@@ -643,7 +643,8 @@ export function visualBuilderStyles() {
         "visual-builder__draft-field": css`
             outline: 2px dashed #eb5646;
         `,
-        "visual-builder__variant-field": css`
+        "visual-builder__variant-field": css``,
+        "visual-builder__variant-field-outline": css`
             outline: 2px solid #bd59fa;
             outline-offset: -2px;
         `,
