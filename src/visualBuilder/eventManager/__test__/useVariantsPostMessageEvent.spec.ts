@@ -338,13 +338,6 @@ describe("addVariantFieldClass", () => {
     const originalQuerySelectorAll = document.querySelectorAll;
 
     beforeEach(() => {
-        // // Reset element mocks to track new calls
-        // mockElements.forEach((element) => {
-        //     element.classList.add.mockClear();
-        //     element.classList.remove.mockClear();
-        //     element.getAttribute.mockClear();
-        // });
-
         // Mock document.querySelectorAll
         document.querySelectorAll = mockQuerySelectorAll;
 
