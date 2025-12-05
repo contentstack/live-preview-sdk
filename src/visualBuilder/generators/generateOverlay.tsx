@@ -177,9 +177,12 @@ export function sendFieldEvent(options: ISendFieldEventParams): void {
                 ? actualEditedElement.innerText
                 : actualEditedElement.textContent;
 
-        const fieldMetadata = extractDetailsFromCslp(
-            previousSelectedEditableDOM.getAttribute("data-cslp") as string
-        );
+        const cslpData = previousSelectedEditableDOM.getAttribute("data-cslp");
+        if (!cslpData) {
+            return;
+        }
+
+        const fieldMetadata = extractDetailsFromCslp(cslpData);
 
         FieldSchemaMap.getFieldSchema(
             fieldMetadata.content_type_uid,

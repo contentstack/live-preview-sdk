@@ -54,7 +54,11 @@ export function getDOMEditStack(ele: Element): CslpData[] {
     const cslpSet: string[] = [];
     let curr: any = ele.closest(`[${DATA_CSLP_ATTR_SELECTOR}]`);
     while (curr) {
-        const cslp = curr.getAttribute(DATA_CSLP_ATTR_SELECTOR)!;
+        const cslp = curr.getAttribute(DATA_CSLP_ATTR_SELECTOR);
+        if (!cslp) {
+            curr = curr.parentElement?.closest(`[${DATA_CSLP_ATTR_SELECTOR}]`);
+            continue;
+        }
         const entryPrefix = getPrefix(cslp);
         const hasSamePrevPrefix = getPrefix(cslpSet.at(0) || "").startsWith(
             entryPrefix
@@ -64,5 +68,5 @@ export function getDOMEditStack(ele: Element): CslpData[] {
         }
         curr = curr.parentElement?.closest(`[${DATA_CSLP_ATTR_SELECTOR}]`);
     }
-    return cslpSet.map((cslp) => extractDetailsFromCslp(cslp));
+    return cslpSet.filter((cslp) => cslp).map((cslp) => extractDetailsFromCslp(cslp));
 }
