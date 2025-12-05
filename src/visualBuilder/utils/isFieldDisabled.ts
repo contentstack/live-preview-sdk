@@ -6,13 +6,17 @@ import { EntryPermissions } from "./getEntryPermissions";
 import { WorkflowStageDetails } from "./getWorkflowStageDetails";
 import { ResolvedVariantPermissions } from "./getResolvedVariantPermissions";
 
-const DisableReason = {
+export const DisableReason = {
     ReadOnly: "You have only read access to this field",
     LocalizedEntry: "Editing this field is restricted in localized entries",
     ResolvedVariantPermissions: "This field does not exist in the selected variant",
     UnlinkedVariant:
-        "This field is not editable as it is not linked to the selected variant",
-    AudienceMode: "To edit an experience, open the Audience widget and click the Edit icon.",
+        "This field is not editable as it is not linked to the selected variant.",
+    CanLinkVariant: "Click here to link a variant",
+    UnderlinedAndClickableWord: "here",
+    CannotLinkVariant: "Contact your stack admin or owner to link it.",
+    AudienceMode:
+        "To edit an experience, open the Audience widget and click the Edit icon.",
     DisabledVariant:
         "This field is not editable as it doesn't match the selected variant",
     UnlocalizedVariant: "This field is not editable as it is not localized",
@@ -42,8 +46,11 @@ const getDisableReason = (
         return DisableReason.LocalizedEntry;
     if (flags.updateRestrictDueToUnlocalizedVariant)
         return DisableReason.UnlocalizedVariant;
-    if (flags.updateRestrictDueToUnlinkVariant)
-        return DisableReason.UnlinkedVariant;
+    if (flags.updateRestrictDueToUnlinkVariant) {
+        return flags.canLinkVariant
+            ? `${DisableReason.UnlinkedVariant} ${DisableReason.CanLinkVariant} `
+            : `${DisableReason.UnlinkedVariant} ${DisableReason.CannotLinkVariant}`;
+    }
     if (flags.updateRestrictDueToAudienceMode)
         return DisableReason.AudienceMode;
     if (flags.updateRestrictDueToDisabledVariant)
@@ -89,6 +96,7 @@ export const isFieldDisabled = (
         updateRestrictDueToUnlinkVariant: Boolean(
             fieldSchemaMap?.field_metadata?.isUnlinkedVariant
         ),
+        canLinkVariant: Boolean(fieldSchemaMap?.field_metadata?.canLinkVariant),
         updateRestrictDueToUnlocalizedVariant: Boolean(
             variant && fieldMetadata.locale !== cmsLocale
         ),

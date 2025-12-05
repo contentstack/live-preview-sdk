@@ -4,7 +4,7 @@ import { extractDetailsFromCslp } from "../../cslp";
 import { CslpData } from "../../cslp/types/cslp.types";
 import { VisualBuilderCslpEventDetails } from "../types/visualBuilder.types";
 import { FieldSchemaMap } from "../utils/fieldSchemaMap";
-import { isFieldDisabled } from "../utils/isFieldDisabled";
+import { DisableReason, isFieldDisabled } from "../utils/isFieldDisabled";
 import visualBuilderPostMessage from "../utils/visualBuilderPostMessage";
 import { CaretIcon, CaretRightIcon, InfoIcon } from "./icons";
 import { LoadingIcon } from "./icons/loading";
@@ -18,6 +18,8 @@ import { ContentTypeIcon } from "./icons";
 import { ToolbarTooltip } from "./Tooltip";
 import { fetchEntryPermissionsAndStageDetails } from "../utils/fetchEntryPermissionsAndStageDetails";
 import { VariantIndicator } from "./VariantIndicator";
+import { handleRevalidateFieldData } from "../eventManager/useRevalidateFieldDataPostMessageEvent";
+import { RESULT_TYPES } from "../utils/constants";
 
 interface ReferenceParentMap {
     [entryUid: string]: {
@@ -131,7 +133,7 @@ function FieldLabelWrapperComponent(
                 getReferenceParentMap()
             ]);
             const entryUid = props.fieldMetadata.entry_uid;
-            
+
             const referenceData = referenceParentMap[entryUid];
             const isReference = !!referenceData;
 
@@ -177,6 +179,38 @@ function FieldLabelWrapperComponent(
                 entryWorkflowStageDetails,
             );
 
+            const handleLinkVariant = async () => {
+                try {
+                    if (fieldSchema.field_metadata?.canLinkVariant) {
+                        const result = await visualBuilderPostMessage?.send<{
+                            type: typeof RESULT_TYPES.SUCCESS | typeof RESULT_TYPES.ERROR;
+                            message: string;
+                        }>(
+                            VisualBuilderPostMessageEvents.OPEN_LINK_VARIANT_MODAL,
+                            {
+                                contentTypeUid:
+                                    props.fieldMetadata.content_type_uid,
+                            }
+                        );
+
+                        // If the modal was closed or linking failed, do nothing
+                        if (!result || result.type === RESULT_TYPES.ERROR) {
+                            return;
+                        }
+
+                        // If linking was successful and requires revalidation, revalidate
+                        if (result.type === RESULT_TYPES.SUCCESS) {
+                            await handleRevalidateFieldData();
+                        }
+                    }
+                } catch (error) {
+                    console.error(
+                        "Error in link variant modal flow:",
+                        error
+                    );
+                }
+            };
+
             const currentFieldDisplayName =
                 displayNames?.[props.fieldMetadata.cslpValue] ??
                 fieldSchema.display_name;
@@ -194,8 +228,30 @@ function FieldLabelWrapperComponent(
                                 "visual-builder__tooltip--persistent"
                             ]
                         )}
-                        data-tooltip={reason}
+                        data-tooltip={!reason?.includes(DisableReason.CanLinkVariant)
+                                ? reason
+                            : undefined}
                     >
+                        {reason
+                            .includes(DisableReason.CanLinkVariant) && (
+                            <div
+                                className={visualBuilderStyles()["visual-builder__custom-tooltip"]}
+                                onClick={handleLinkVariant}
+                            >
+                                {(() => {
+                                    const [before, after] = reason.split(
+                                        DisableReason.UnderlinedAndClickableWord
+                                    );
+                                    return (
+                                        <>
+                                            {before}
+                                            <span style={{ textDecoration: "underline" }}>{DisableReason.UnderlinedAndClickableWord}</span>
+                                            {after}
+                                        </>
+                                    );
+                                })()}
+                            </div>
+                        )}
                         <InfoIcon />
                     </div>
                 ) : hasParentPaths ? (
@@ -309,11 +365,11 @@ function FieldLabelWrapperComponent(
                     >
                         {
                             currentField.isReference && !dataLoading && !error ? 
-                            <div 
-                            className={classNames(
-                                "visual-builder__reference-icon-container",
+                            <div
+                                className={classNames(
+                                    "visual-builder__reference-icon-container",
                                 visualBuilderStyles()["visual-builder__reference-icon-container"]
-                            )}
+                                )}
                             >
                                 <div
                                     className={classNames(
