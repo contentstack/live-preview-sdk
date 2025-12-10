@@ -51,12 +51,13 @@ export async function appendFieldToolbar(
         ) && !isHover
     )
         return;
-    const { acl: entryPermissions, workflowStage: entryWorkflowStageDetails } =
+    const { acl: entryPermissions, workflowStage: entryWorkflowStageDetails, resolvedVariantPermissions } =
         await fetchEntryPermissionsAndStageDetails({
             entryUid: eventDetails.fieldMetadata.entry_uid,
             contentTypeUid: eventDetails.fieldMetadata.content_type_uid,
             locale: eventDetails.fieldMetadata.locale,
             variantUid: eventDetails.fieldMetadata.variant,
+            fieldPathWithIndex: eventDetails.fieldMetadata.fieldPathWithIndex,
         });
     const wrapper = document.createDocumentFragment();
     render(
@@ -66,6 +67,7 @@ export async function appendFieldToolbar(
             isVariant={isVariant}
             entryPermissions={entryPermissions}
             entryWorkflowStageDetails={entryWorkflowStageDetails}
+            resolvedVariantPermissions={resolvedVariantPermissions}
         />,
         wrapper
     );

@@ -1,5 +1,51 @@
 # Changelog
 
+## [v4.1.3](https://github.com/contentstack/live-preview-sdk/compare/v4.1.2...v4.1.3)
+
+> 5 December 2025
+
+### General Changes
+
+- vitest 3 - stage (Karan Gandhi - [#532](https://github.com/contentstack/live-preview-sdk/pull/532))
+- v4.1.2 (Hitesh Shetty - [#523](https://github.com/contentstack/live-preview-sdk/pull/523))
+
+### New Features
+
+- feat: test cases added (Karan Gandhi - [41495ff](https://github.com/contentstack/live-preview-sdk/commit/41495ffa6f32f83a042ab5beffb9d7ad6eddd15e))
+- feat: adding post messages to link unlinked ct to variant group (Karan Gandhi - [d91505a](https://github.com/contentstack/live-preview-sdk/commit/d91505a74cf2c60ed146500900ea9254d938ca34))
+- feat: added resolved variants permission handling logic (csAyushDubey - [15c8f04](https://github.com/contentstack/live-preview-sdk/commit/15c8f04508cc072c846aebf7185b72f1bc179036))
+- feat: added variant order handling logic (csAyushDubey - [47a6f29](https://github.com/contentstack/live-preview-sdk/commit/47a6f2966c0aca90629fc5bcd5ec2f0579384525))
+
+### Fixes
+
+- fix: removing revalidate post message (Karan Gandhi - [0a02de0](https://github.com/contentstack/live-preview-sdk/commit/0a02de027a505ab248c7341eb5af24cf92e970e2))
+- fix: string and focus unfocus on variant link (Karan Gandhi - [8d76bf5](https://github.com/contentstack/live-preview-sdk/commit/8d76bf52829b0c1323f60412f96d05689f300753))
+- fix: handle invalid data-cslp attributes across multiple components to prevent errors (hiteshshetty-dev - [ba91cb0](https://github.com/contentstack/live-preview-sdk/commit/ba91cb0472d0903a1d21b7fc546181f3d6924bb5))
+- fix: changes requested (Karan Gandhi - [fcccd50](https://github.com/contentstack/live-preview-sdk/commit/fcccd5026ce11fd1a5b4ed5f8f9a304685e68c9e))
+- fix: remove console (Karan Gandhi - [7b21215](https://github.com/contentstack/live-preview-sdk/commit/7b212153cd4510f284bb2ee63943729a0deca1d3))
+- fix: formatting removed (Karan Gandhi - [01a4528](https://github.com/contentstack/live-preview-sdk/commit/01a4528f0333c8a2b516ec96191213e8e59fc6dd))
+- fix: addressed changes (Karan Gandhi - [db41af6](https://github.com/contentstack/live-preview-sdk/commit/db41af6aa73283a18aa85566f32f8ee454c81664))
+- fix: partial state clear when DOM is not visible during mutuation and resize checks (hiteshshetty-dev - [74e6e5b](https://github.com/contentstack/live-preview-sdk/commit/74e6e5bc3e3445a25c823b3e5f5dd7c56490e16c))
+- fix: object freeze (Karan Gandhi - [0c8b714](https://github.com/contentstack/live-preview-sdk/commit/0c8b7148ec7edcda235990347bb48d7ada92b822))
+- fix: tests (csAyushDubey - [9ee8f8e](https://github.com/contentstack/live-preview-sdk/commit/9ee8f8e8a3e27d3b3fd9aee0dbbfc5df0f8d9b57))
+- fix: requested changes done (Karan Gandhi - [ea83fa4](https://github.com/contentstack/live-preview-sdk/commit/ea83fa4a9559da1cdc0f84d745acdbbd3f63fab3))
+- fix: handle empty data-cslp attributes in getEntryIdentifiersInCurrentPage function (hiteshshetty-dev - [34b7e42](https://github.com/contentstack/live-preview-sdk/commit/34b7e42fb5b720008acde17a2071a09ebc9abdc2))
+- fix: tests (csAyushDubey - [0dc07d6](https://github.com/contentstack/live-preview-sdk/commit/0dc07d6c706723510ee5ce02893d92ad5b4a2fc2))
+- fix: response of postmessage changed (Karan Gandhi - [8d60b64](https://github.com/contentstack/live-preview-sdk/commit/8d60b642a794392744bfcc203ba041538fade69e))
+- fix: updated console (Karan Gandhi - [9c012d7](https://github.com/contentstack/live-preview-sdk/commit/9c012d7739337258db067383bd207fe98dae22c5))
+- fix: added removal for class (csAyushDubey - [f3d83b7](https://github.com/contentstack/live-preview-sdk/commit/f3d83b7eea482fb111be858e1ffcdeee28ac65c4))
+- fix: lowercase (Karan Gandhi - [3d9ea50](https://github.com/contentstack/live-preview-sdk/commit/3d9ea50df086eac0f0466e076062453c40db884f))
+
+### Chores And Housekeeping
+
+- chore: add TODOs for overlay and toolbar position logic to consolidate with existing methods (hiteshshetty-dev - [48e6c69](https://github.com/contentstack/live-preview-sdk/commit/48e6c6951453503f8bbd87dea61d21c82da162bb))
+- chore: update live-preview-utils to version 4.1.2 in README (hiteshshetty-dev - [dfa1c7c](https://github.com/contentstack/live-preview-sdk/commit/dfa1c7cff4dcc4bb0c587a52c47572e74063caf7))
+
+### Changes to Test Assests
+
+- test: added test cases (csAyushDubey - [1ba0b65](https://github.com/contentstack/live-preview-sdk/commit/1ba0b65d89c654507c0a704c9209245138dd7919))
+- test: add additional header element to getEntryIdentifiersInCurrentPage test case (hiteshshetty-dev - [b1da67e](https://github.com/contentstack/live-preview-sdk/commit/b1da67ed571b054e4e701d5e0cce2945559c95b5))
+
 ## [v4.1.2](https://github.com/contentstack/live-preview-sdk/compare/v4.1.1...v4.1.2)
 
 > 10 November 2025

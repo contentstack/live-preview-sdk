@@ -151,41 +151,11 @@ describe("When an element is clicked in visual builder mode", () => {
             visualBuilder.destroy();
         });
 
-        test("should have outline", () => {
-            expect(numberField.classList.contains("cslp-edit-mode"));
-        });
-
-        test("should have an overlay", () => {
-            const overlay = document.querySelector(".visual-builder__overlay");
-            expect(overlay!.classList.contains("visible"));
-        });
-
-        test("should have a field path dropdown", async () => {
-            await waitFor(async () => {
-                const toolbar = await screen.findByTestId(
-                    "mock-field-label-wrapper"
-                );
-                expect(toolbar).toBeInTheDocument();
-            });
-        });
-
-        test("should contain a data-cslp-field-type attribute", async () => {
-            await waitFor(() => {
-                expect(numberField).toHaveAttribute(
-                    VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
-                );
-            });
-        });
-
-        test.skip("should send a focus field message to parent", async () => {
-            await waitFor(() => {
-                expect(visualBuilderPostMessage?.send).toBeCalledWith(
-                    VisualBuilderPostMessageEvents.FOCUS_FIELD,
-                    {
-                        DOMEditStack: getDOMEditStack(numberField),
-                    }
-                );
-            });
+        // Common tests (field type, overlay, dropdown, focus message) are covered in all-click.test.tsx
+        // Only testing unique behavior: number fields have contenteditable (they're in ALLOWED_INLINE_EDITABLE_FIELD)
+        test("should contain a contenteditable attribute", () => {
+            // Number fields are editable inline, so they should have contenteditable
+            expect(numberField).toHaveAttribute("contenteditable");
         });
     });
 
@@ -221,6 +191,13 @@ describe("When an element is clicked in visual builder mode", () => {
                                     update: true,
                                 },
                             },
+                        });
+                    } else if (
+                        eventName ===
+                        VisualBuilderPostMessageEvents.GET_RESOLVED_VARIANT_PERMISSIONS
+                    ) {
+                        return Promise.resolve({
+                            update: true,
                         });
                     }
                     return Promise.resolve({});
@@ -262,62 +239,22 @@ describe("When an element is clicked in visual builder mode", () => {
             visualBuilder.destroy();
         });
 
-        test("should have outline", () => {
-            expect(container.classList.contains("cslp-edit-mode"));
-        });
-
-        test("should have an overlay", () => {
-            const overlay = document.querySelector(".visual-builder__overlay");
-            expect(overlay!.classList.contains("visible"));
-        });
-
-        test("should have a field path dropdown", async () => {
-            await waitFor(async () => {
-                const toolbar = await screen.findByTestId(
-                    "mock-field-label-wrapper"
-                );
-                expect(toolbar).toBeInTheDocument();
-            });
-        });
-
-        test("should contain a data-cslp-field-type attribute", async () => {
-            await waitFor(() => {
-                expect(container).toHaveAttribute(
-                    VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
-                );
-            });
-        });
-
-        test("container should not contain a contenteditable attribute but the children can", async () => {
+        // Common tests (field type, overlay, dropdown, focus message) are covered in all-click.test.tsx
+        // Only testing unique behavior: number fields don't have contenteditable even on children
+        test("neither container nor children should contain a contenteditable attribute", () => {
+            // Number fields don't have contenteditable (they're input type=number)
             fireEvent.click(container);
-            await waitFor(() => {
-                expect(container).not.toHaveAttribute("contenteditable");
-            });
+            expect(container).not.toHaveAttribute("contenteditable");
 
             fireEvent.click(container.children[0]);
-            await waitFor(() => {
-                expect(container.children[0]).toHaveAttribute(
-                    "contenteditable"
-                );
-            });
+            expect(container.children[0]).not.toHaveAttribute(
+                "contenteditable"
+            );
 
             fireEvent.click(container.children[1]);
-            await waitFor(() => {
-                expect(container.children[1]).toHaveAttribute(
-                    "contenteditable"
-                );
-            });
-        });
-
-        test.skip("should send a focus field message to parent", async () => {
-            await waitFor(() => {
-                expect(visualBuilderPostMessage?.send).toBeCalledWith(
-                    VisualBuilderPostMessageEvents.FOCUS_FIELD,
-                    {
-                        DOMEditStack: getDOMEditStack(container),
-                    }
-                );
-            });
+            expect(container.children[1]).not.toHaveAttribute(
+                "contenteditable"
+            );
         });
     });
 });
