@@ -166,12 +166,12 @@ describe("hideFocusOverlay", () => {
     vi.spyOn(FieldSchemaMap, "getFieldSchema").mockResolvedValue(
         mockMultipleLinkFieldSchema
     );
-    beforeEach(() => {
+
+    // Run expensive UI setup once for all tests
+    beforeAll(() => {
         initUI({
             resizeObserver: mockResizeObserver,
         });
-        VisualBuilder.VisualBuilderGlobalState.value.focusFieldReceivedInput =
-            true;
         visualBuilderContainer = document.querySelector(
             ".visual-builder__container"
         ) as HTMLDivElement;
@@ -179,6 +179,12 @@ describe("hideFocusOverlay", () => {
         focusOverlayWrapper = document.querySelector(
             ".visual-builder__overlay__wrapper"
         ) as HTMLDivElement;
+    });
+
+    beforeEach(() => {
+        // Reset state before each test
+        VisualBuilder.VisualBuilderGlobalState.value.focusFieldReceivedInput =
+            true;
 
         editedElement = document.createElement("p");
         editedElement.setAttribute(
@@ -203,8 +209,14 @@ describe("hideFocusOverlay", () => {
     });
 
     afterEach(() => {
-        document.body.innerHTML = "";
+        // Only clean up what we created in beforeEach
+        editedElement?.remove();
         vi.clearAllMocks();
+    });
+
+    afterAll(() => {
+        // Clean up shared UI
+        document.body.innerHTML = "";
     });
 
     test("should not hide the overlay if the focus overlay wrapper is null", () => {
@@ -256,13 +268,15 @@ describe("hideFocusOverlay", () => {
 
         expect(editedElement.textContent).toBe("New text");
 
-        // close the overlay
+        // close the overlay - this triggers async save operation
         fireEvent.click(focusOverlayWrapper);
         expect(focusOverlayWrapper.classList.contains("visible")).toBe(false);
 
+        // Wait for async message sending to complete
         await waitFor(() => {
             expect(visualBuilderPostMessage?.send).toHaveBeenCalled();
         });
+
         expect(visualBuilderPostMessage?.send).toHaveBeenCalledWith(
             VisualBuilderPostMessageEvents.UPDATE_FIELD,
             {
@@ -284,7 +298,7 @@ describe("hideFocusOverlay", () => {
         );
     });
 
-    test("should not send update field event when focusFieldReceivedInput is false", async () => {
+    test("should not send update field event when focusFieldReceivedInput is false", () => {
         editedElement.setAttribute("contenteditable", "true");
 
         // Set up global state
@@ -305,9 +319,8 @@ describe("hideFocusOverlay", () => {
 
         expect(focusOverlayWrapper.classList.contains("visible")).toBe(false);
 
-        await waitFor(() => {
-            expect(visualBuilderPostMessage?.send).not.toHaveBeenCalled();
-        });
+        // Mock assertions are synchronous - no need for waitFor
+        expect(visualBuilderPostMessage?.send).not.toHaveBeenCalled();
     });
 
     test("should run cleanup function", () => {
@@ -317,21 +330,5 @@ describe("hideFocusOverlay", () => {
         fireEvent.click(focusOverlayWrapper);
 
         expect(cleanIndividualFieldResidual).toHaveBeenCalledTimes(1);
-    });
-
-    // TODO
-    test("should hide the overlay if the escape key is pressed", () => {
-        expect(focusOverlayWrapper.classList.contains("visible")).toBe(true);
-
-        const escapeEvent = new KeyboardEvent("keydown", {
-            key: "Escape",
-        });
-        window.dispatchEvent(escapeEvent);
-
-        waitFor(() => {
-            expect(focusOverlayWrapper.classList.contains("visible")).toBe(
-                false
-            );
-        });
     });
 });

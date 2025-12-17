@@ -3,12 +3,14 @@ import { visualBuilderStyles } from "../visualBuilder.style";
 import visualBuilderPostMessage from "../utils/visualBuilderPostMessage";
 import { VisualBuilderPostMessageEvents } from "../utils/types/postMessage.types";
 import { FieldSchemaMap } from "../utils/fieldSchemaMap";
+import { extractDetailsFromCslp } from "../../cslp/cslpdata";
 
 interface VariantFieldsEvent {
     data: {
         variant_data: {
             variant: string;
             highlightVariantFields: boolean;
+            variantOrder: string[];
         };
     };
 }
@@ -34,9 +36,24 @@ interface LocaleEvent {
         locale: string;
     };
 }
+
+function isLowerOrderVariant(variant_uid: string, dataCslp: string, variantOrder: string[]): boolean {
+    if(!variantOrder || variantOrder.length === 0) {
+        return false;
+    }
+    const {variant: cslpVariant} = extractDetailsFromCslp(dataCslp);
+    const indexOfCmsVariant = variantOrder.lastIndexOf(variant_uid);
+    const indexOfCslpVariant = variantOrder.lastIndexOf(cslpVariant || "");
+    if(indexOfCslpVariant < 0) {
+        return false;
+    }
+    return indexOfCslpVariant < indexOfCmsVariant;
+}
+
 export function addVariantFieldClass(
     variant_uid: string,
-    highlightVariantFields: boolean
+    highlightVariantFields: boolean,
+    variantOrder: string[]
 ): void {
     const elements = document.querySelectorAll(`[data-cslp]`);
     elements.forEach((element) => {
@@ -51,7 +68,11 @@ export function addVariantFieldClass(
             element.classList.add("visual-builder__variant-field");
         } else if (!dataCslp.startsWith("v2:")) {
             element.classList.add("visual-builder__base-field");
-        } else {
+        } 
+        else if (isLowerOrderVariant(variant_uid, dataCslp, variantOrder)) {
+            element.classList.add("visual-builder__variant-field", "visual-builder__lower-order-variant-field");
+        }
+        else {
             element.classList.add("visual-builder__disabled-variant-field");
         }
     });
@@ -71,14 +92,15 @@ export function removeVariantFieldClass(
         });
     } else {
         const variantAndBaseFieldElements = document.querySelectorAll(
-            ".visual-builder__disabled-variant-field, .visual-builder__variant-field, .visual-builder__base-field"
+            ".visual-builder__disabled-variant-field, .visual-builder__variant-field, .visual-builder__base-field, .visual-builder__lower-order-variant-field" 
         );
         variantAndBaseFieldElements.forEach((element) => {
             element.classList.remove(
                 "visual-builder__disabled-variant-field",
                 "visual-builder__variant-field",
                 visualBuilderStyles()["visual-builder__variant-field"],
-                "visual-builder__base-field"
+                "visual-builder__base-field",
+                "visual-builder__lower-order-variant-field"
             );
         });
     }
@@ -125,7 +147,8 @@ export function useVariantFieldsPostMessageEvent(): void {
             removeVariantFieldClass();
             addVariantFieldClass(
                 event.data.variant_data.variant,
-                event.data.variant_data.highlightVariantFields
+                event.data.variant_data.highlightVariantFields,
+                event.data.variant_data.variantOrder
             );
         }
     );

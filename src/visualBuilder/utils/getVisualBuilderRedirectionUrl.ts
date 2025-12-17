@@ -22,16 +22,18 @@ export default function getVisualBuilderRedirectionUrl(): URL {
 
     // get the locale from the data cslp attribute
     const elementWithDataCslp = document.querySelector(`[data-cslp]`);
+    let localeToUse = locale;
 
     if (elementWithDataCslp) {
-        const cslpData = elementWithDataCslp.getAttribute(
-            "data-cslp"
-        ) as string;
-        const { locale } = extractDetailsFromCslp(cslpData);
+        const cslpData = elementWithDataCslp.getAttribute("data-cslp");
+        if (cslpData) {
+            const { locale: cslpLocale } = extractDetailsFromCslp(cslpData);
+            localeToUse = cslpLocale;
+        }
+    }
 
-        searchParams.set("locale", locale);
-    } else if (locale) {
-        searchParams.set("locale", locale);
+    if (localeToUse) {
+        searchParams.set("locale", localeToUse);
     }
 
     const completeURL = new URL(

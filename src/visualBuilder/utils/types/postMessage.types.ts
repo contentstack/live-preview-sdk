@@ -9,6 +9,7 @@ export enum VisualBuilderPostMessageEvents {
     TOGGLE_FORM = "toggle-quick-form",
     GET_FIELD_SCHEMA = "get-field-schema",
     GET_FIELD_DATA = "get-field-data",
+    OPEN_LINK_VARIANT_MODAL = "open-link-variant-modal",
     GET_FIELD_PATH_WITH_UID = "get-field-path-with-uid",
     GET_FIELD_DISPLAY_NAMES = "get-field-display-names",
     MOUSE_CLICK = "mouse-click",
@@ -31,6 +32,7 @@ export enum VisualBuilderPostMessageEvents {
     GET_PERMISSIONS = "get-permissions",
     GET_WORKFLOW_STAGE_DETAILS = "get-workflow-stage-details",
     CHECK_FIELD_LOCK_STATUS = "check-field-lock-status",
+    GET_RESOLVED_VARIANT_PERMISSIONS = "get-resolved-variant-permissions",
 
     // FROM visual builder
     GET_ALL_ENTRIES_IN_CURRENT_PAGE = "get-entries-in-current-page",

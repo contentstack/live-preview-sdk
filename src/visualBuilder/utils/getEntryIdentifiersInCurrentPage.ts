@@ -14,9 +14,9 @@ export function getEntryIdentifiersInCurrentPage(): EntryIdentifiers {
     );
     const uniqueEntriesMap = new Map<string, { entryUid: string, contentTypeUid: string, locale: string}>();
     elementsWithCslp.forEach((element) => {
-        const cslpData = extractDetailsFromCslp(
-            element.getAttribute("data-cslp") as string
-        );
+        const cslpValue = element.getAttribute("data-cslp");
+        if (!cslpValue) return;
+        const cslpData = extractDetailsFromCslp(cslpValue);
         uniqueEntriesMap.set(cslpData.entry_uid, 
             { 
                 entryUid: cslpData.entry_uid, 

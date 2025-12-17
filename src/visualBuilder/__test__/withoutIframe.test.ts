@@ -39,19 +39,13 @@ vi.mock("../../utils/index.ts", async () => {
 });
 
 import visualBuilderPostMessage from "../utils/visualBuilderPostMessage";
-import { act, fireEvent, waitFor, screen } from "@testing-library/preact";
+import { fireEvent, waitFor, screen } from "@testing-library/preact";
 
 Object.defineProperty(globalThis, "crypto", {
     value: {
         getRandomValues: (arr: Array<any>) => crypto.randomBytes(arr.length),
     },
 });
-
-global.ResizeObserver = vi.fn().mockImplementation(() => ({
-    observe: vi.fn(),
-    unobserve: vi.fn(),
-    disconnect: vi.fn(),
-}));
 
 describe("When outside the Visual Builder, the Visual Builder", () => {
     beforeAll(() => {
@@ -85,9 +79,7 @@ describe("When outside the Visual Builder, the Visual Builder", () => {
         new VisualBuilder();
 
         await waitForBuilderSDKToBeInitialized(visualBuilderPostMessage);
-        await act(async () => {
-            await fireEvent.click(h1);
-        });
+        await fireEvent.click(h1);
 
         expect(h1.getAttribute("contenteditable")).toBe(null);
     });

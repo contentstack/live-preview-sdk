@@ -594,6 +594,37 @@ export function visualBuilderStyles() {
             &:after {
                 display: block;
             }
+
+            &:has(.visual-builder__custom-tooltip):before,
+            &:has(.visual-builder__custom-tooltip):after {
+                display: none;
+            }
+        `,
+        "visual-builder__custom-tooltip": css`
+            position: absolute;
+            bottom: 20px;
+            margin-bottom: 24px;
+            padding: 12px;
+            border-radius: 4px;
+            width: max-content;
+            max-width: 200px;
+            color: #fff;
+            font-family: Inter;
+            font-size: 0.75rem;
+            font-style: normal;
+            font-weight: 400;
+            line-height: 132%; /* 0.99rem */
+            letter-spacing: 0.015rem;
+            background: #767676;
+
+            &:after {
+                content: "";
+                position: absolute;
+                bottom: -10px;
+                left: 10px;
+                border: 10px solid #000;
+                border-color: #767676 transparent transparent transparent;
+            }
         `,
         "visual-builder__empty-block": css`
             width: 100%;
