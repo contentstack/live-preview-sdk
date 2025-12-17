@@ -32,6 +32,7 @@ export enum VisualBuilderPostMessageEvents {
     GET_PERMISSIONS = "get-permissions",
     GET_WORKFLOW_STAGE_DETAILS = "get-workflow-stage-details",
     CHECK_FIELD_LOCK_STATUS = "check-field-lock-status",
+    UNLOCK_FIELD = "unlock-field",
     GET_RESOLVED_VARIANT_PERMISSIONS = "get-resolved-variant-permissions",
 
     // FROM visual builder

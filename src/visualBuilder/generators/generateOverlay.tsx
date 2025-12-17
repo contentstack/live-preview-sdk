@@ -109,6 +109,14 @@ export function hideFocusOverlay(elements: HideOverlayParams): void {
     } = elements;
 
     if (visualBuilderOverlayWrapper) {
+        const previousSelectedEditableDOM =
+            VisualBuilder.VisualBuilderGlobalState.value
+                .previousSelectedEditableDOM;
+
+        if (previousSelectedEditableDOM) {
+            sendUnlockFieldEvent(previousSelectedEditableDOM);
+        }
+
         visualBuilderOverlayWrapper.classList.remove("visible");
 
         // Cleanup overlay styles: Top, Right, Bottom, Left & Outline
@@ -128,7 +136,7 @@ export function hideFocusOverlay(elements: HideOverlayParams): void {
                 eventType: VisualBuilderPostMessageEvents.UPDATE_FIELD,
             });
         } else if (noTrigger) {
-            const { previousSelectedEditableDOM, focusFieldValue } =
+            const { focusFieldValue } =
                 VisualBuilder.VisualBuilderGlobalState.value || {};
             if (
                 previousSelectedEditableDOM &&
@@ -208,6 +216,38 @@ export function sendFieldEvent(options: ISendFieldEventParams): void {
                 });
             });
     }
+}
+
+export function sendUnlockFieldEvent(editableElement: Element | null): void {
+    if (!editableElement) {
+        return;
+    }
+
+    const cslpData = editableElement.getAttribute("data-cslp");
+    if (!cslpData) {
+        return;
+    }
+
+    const isLocked =
+        editableElement.getAttribute("data-field-locked") === "true";
+    if (!isLocked) {
+        return;
+    }
+
+    const fieldMetadata = extractDetailsFromCslp(cslpData);
+
+    visualBuilderPostMessage?.send(
+        VisualBuilderPostMessageEvents.UNLOCK_FIELD,
+        {
+            fieldMetadata: {
+                content_type_uid: fieldMetadata.content_type_uid,
+                entry_uid: fieldMetadata.entry_uid,
+                fieldPath: fieldMetadata.fieldPath,
+                locale: fieldMetadata.locale,
+                variant: fieldMetadata.variant,
+            },
+        }
+    );
 }
 interface HideOverlayParams
     extends Pick<

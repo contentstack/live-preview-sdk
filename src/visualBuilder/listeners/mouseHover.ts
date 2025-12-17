@@ -90,25 +90,30 @@ async function addOutline(params?: AddOutlineParams): Promise<void> {
     } = params;
     if (!editableElement) return;
     const isVariant = !!fieldMetadata.variant;
-    addHoverOutline(
-        editableElement as HTMLElement,
-        fieldDisabled,
-        isVariant,
-        isLocked
-    );
     const fieldSchema = await FieldSchemaMap.getFieldSchema(
         content_type_uid,
         fieldPath
     );
-    if (!fieldSchema) return;
-    const { acl: entryAcl, workflowStage: entryWorkflowStageDetails, resolvedVariantPermissions } =
-        await fetchEntryPermissionsAndStageDetails({
-            entryUid: fieldMetadata.entry_uid,
-            contentTypeUid: fieldMetadata.content_type_uid,
-            locale: fieldMetadata.locale,
-            variantUid: fieldMetadata.variant,
-            fieldPathWithIndex: fieldMetadata.fieldPathWithIndex,
-        });
+    if (!fieldSchema) {
+        addHoverOutline(
+            editableElement as HTMLElement,
+            fieldDisabled,
+            isVariant,
+            isLocked
+        );
+        return;
+    }
+    const {
+        acl: entryAcl,
+        workflowStage: entryWorkflowStageDetails,
+        resolvedVariantPermissions,
+    } = await fetchEntryPermissionsAndStageDetails({
+        entryUid: fieldMetadata.entry_uid,
+        contentTypeUid: fieldMetadata.content_type_uid,
+        locale: fieldMetadata.locale,
+        variantUid: fieldMetadata.variant,
+        fieldPathWithIndex: fieldMetadata.fieldPathWithIndex,
+    });
     const { isDisabled } = isFieldDisabled(
         fieldSchema,
         eventDetails,
@@ -117,8 +122,9 @@ async function addOutline(params?: AddOutlineParams): Promise<void> {
         entryWorkflowStageDetails
     );
     const currentIsLocked =
-        isLocked ||
-        editableElement.getAttribute("data-field-locked") === "true";
+        isLocked !== undefined
+            ? isLocked
+            : editableElement.getAttribute("data-field-locked") === "true";
     addHoverOutline(
         editableElement,
         fieldDisabled || isDisabled,
@@ -189,7 +195,7 @@ export function showCustomCursor(customCursor: HTMLDivElement | null): void {
 }
 
 const debouncedRenderHoverToolbar = debounce(
-    async (params: HandleBuilderInteractionParams) => {
+    async (params: HandleBuilderInteractionParams & { isLocked?: boolean }) => {
         const eventDetails = getCsDataOfElement(params.event);
         if (
             !eventDetails ||
@@ -202,6 +208,7 @@ const debouncedRenderHoverToolbar = debounce(
 
         appendFieldPathDropdown(eventDetails, params.focusedToolbar, {
             isHover: true,
+            isLocked: params.isLocked || false,
         });
     },
     50,
@@ -209,7 +216,7 @@ const debouncedRenderHoverToolbar = debounce(
 );
 
 export const showHoverToolbar = async (
-    params: HandleBuilderInteractionParams
+    params: HandleBuilderInteractionParams & { isLocked?: boolean }
 ) => await debouncedRenderHoverToolbar(params);
 
 export const cancelPendingHoverToolbar = () =>
@@ -251,16 +258,33 @@ const throttledMouseHover = throttle(async (params: HandleMouseHoverParams) => {
         return;
     }
 
-    //check the field is locked by auto draft
-    removeAllLockedFieldStyling();
     if (!eventDetails?.editableElement) {
+        removeAllLockedFieldStyling();
         return;
     }
-    await checkAndApplyFieldLockStatus(
-        eventDetails?.editableElement,
-        eventDetails.fieldMetadata,
-        "hover"
-    );
+    const currentEditableElement = eventDetails.editableElement;
+    const previousHoveredTargetDOM =
+        VisualBuilder.VisualBuilderGlobalState.value.previousHoveredTargetDOM;
+
+    if (previousHoveredTargetDOM !== currentEditableElement) {
+        removeAllLockedFieldStyling(currentEditableElement);
+    }
+
+    const currentlyLocked =
+        currentEditableElement.getAttribute("data-field-locked") === "true";
+    let isLocked = currentlyLocked;
+
+    if (
+        previousHoveredTargetDOM !== currentEditableElement ||
+        !currentlyLocked
+    ) {
+        const lockStatusResult = await checkAndApplyFieldLockStatus(
+            currentEditableElement,
+            eventDetails.fieldMetadata,
+            "hover"
+        );
+        isLocked = lockStatusResult.isLocked;
+    }
 
     if (!eventDetails) {
         if (
@@ -381,8 +405,6 @@ const throttledMouseHover = throttle(async (params: HandleMouseHoverParams) => {
         !editableElement.classList.contains(VB_EmptyBlockParentClass) &&
         !editableElement.classList.contains("visual-builder__empty-block")
     ) {
-        const isLocked =
-            editableElement.getAttribute("data-field-locked") === "true";
         showOutline({
             editableElement,
             eventDetails,
@@ -403,6 +425,7 @@ const throttledMouseHover = throttle(async (params: HandleMouseHoverParams) => {
                         .previousSelectedEditableDOM,
                 focusedToolbar: params.focusedToolbar,
                 resizeObserver: params.resizeObserver,
+                isLocked,
             });
         }
     }
@@ -434,14 +457,17 @@ async function generateCursor({
     if (!fieldSchema) {
         return;
     }
-    const { acl: entryAcl, workflowStage: entryWorkflowStageDetails, resolvedVariantPermissions } =
-        await fetchEntryPermissionsAndStageDetails({
-            entryUid: fieldMetadata.entry_uid,
-            contentTypeUid: fieldMetadata.content_type_uid,
-            locale: fieldMetadata.locale,
-            variantUid: fieldMetadata.variant,
-            fieldPathWithIndex: fieldMetadata.fieldPathWithIndex,
-        });
+    const {
+        acl: entryAcl,
+        workflowStage: entryWorkflowStageDetails,
+        resolvedVariantPermissions,
+    } = await fetchEntryPermissionsAndStageDetails({
+        entryUid: fieldMetadata.entry_uid,
+        contentTypeUid: fieldMetadata.content_type_uid,
+        locale: fieldMetadata.locale,
+        variantUid: fieldMetadata.variant,
+        fieldPathWithIndex: fieldMetadata.fieldPathWithIndex,
+    });
     const { isDisabled: fieldDisabled } = isFieldDisabled(
         fieldSchema,
         eventDetails,
@@ -463,7 +489,7 @@ const handleMouseHover = async (
 
 export const cancelPendingMouseHover = () => throttledMouseHover.cancel();
 
-export function removeAllLockedFieldStyling(): void {
+export function removeAllLockedFieldStyling(currentElement?: Element): void {
     const lockedElements = document.querySelectorAll(
         '[data-field-locked="true"]'
     );
@@ -472,14 +498,14 @@ export function removeAllLockedFieldStyling(): void {
             .previousSelectedEditableDOM;
 
     lockedElements.forEach((element) => {
-        if (element !== currentlyFocused) {
+        if (element !== currentlyFocused && element !== currentElement) {
             removeLockedFieldStyling(element);
             enableFieldEditing(element);
         }
     });
 }
 
-async function checkAndApplyFieldLockStatus(
+export async function checkAndApplyFieldLockStatus(
     editableElement: Element,
     fieldMetadata: CslpData,
     type: "hover" | "click"
@@ -500,11 +526,13 @@ async function checkAndApplyFieldLockStatus(
         )) as { isLocked?: boolean } | undefined;
 
         const isLocked = response?.isLocked || false;
+        const currentlyLocked =
+            editableElement.getAttribute("data-field-locked") === "true";
 
-        if (isLocked) {
+        if (isLocked && !currentlyLocked) {
             applyLockedFieldStyling(editableElement);
             preventFieldEditing(editableElement);
-        } else {
+        } else if (!isLocked && currentlyLocked) {
             removeLockedFieldStyling(editableElement);
             enableFieldEditing(editableElement);
         }
@@ -518,16 +546,28 @@ async function checkAndApplyFieldLockStatus(
 
 function applyLockedFieldStyling(element: Element): void {
     const htmlElement = element as HTMLElement;
-    htmlElement.style.border = "2px solid #9ca3af";
-    htmlElement.style.pointerEvents = "none";
-    htmlElement.setAttribute("data-field-locked", "true");
+    if (htmlElement.style.border !== "2px solid #9ca3af") {
+        htmlElement.style.border = "2px solid #9ca3af";
+    }
+    if (htmlElement.style.pointerEvents !== "none") {
+        htmlElement.style.pointerEvents = "none";
+    }
+    if (htmlElement.getAttribute("data-field-locked") !== "true") {
+        htmlElement.setAttribute("data-field-locked", "true");
+    }
 }
 
 function removeLockedFieldStyling(element: Element): void {
     const htmlElement = element as HTMLElement;
-    htmlElement.style.border = "";
-    htmlElement.style.pointerEvents = "";
-    htmlElement.removeAttribute("data-field-locked");
+    if (htmlElement.style.border !== "") {
+        htmlElement.style.border = "";
+    }
+    if (htmlElement.style.pointerEvents !== "") {
+        htmlElement.style.pointerEvents = "";
+    }
+    if (htmlElement.hasAttribute("data-field-locked")) {
+        htmlElement.removeAttribute("data-field-locked");
+    }
 }
 
 function preventFieldEditing(element: Element): void {

@@ -10,7 +10,11 @@ import {
 
 import { appendFocusedToolbar } from "../generators/generateToolbar";
 
-import { addFocusOverlay, hideOverlay } from "../generators/generateOverlay";
+import {
+    addFocusOverlay,
+    hideOverlay,
+    sendUnlockFieldEvent,
+} from "../generators/generateOverlay";
 
 import visualBuilderPostMessage from "../utils/visualBuilderPostMessage";
 
@@ -32,6 +36,7 @@ import { fixSvgXPath } from "../utils/collabUtils";
 import { v4 as uuidV4 } from "uuid";
 import { CslpData } from "../../cslp/types/cslp.types";
 import { fetchEntryPermissionsAndStageDetails } from "../utils/fetchEntryPermissionsAndStageDetails";
+import { checkAndApplyFieldLockStatus } from "./mouseHover";
 
 export type HandleBuilderInteractionParams = Omit<
     EventListenerHandlerParams,
@@ -173,8 +178,24 @@ export async function handleBuilderInteraction(
 
     const { editableElement, fieldMetadata } = eventDetails;
 
+    const previousSelectedEditableDOM =
+        VisualBuilder.VisualBuilderGlobalState.value
+            .previousSelectedEditableDOM;
+
+    if (
+        previousSelectedEditableDOM &&
+        previousSelectedEditableDOM !== editableElement
+    ) {
+        sendUnlockFieldEvent(previousSelectedEditableDOM);
+    }
+
     const isFieldLocked = await checkFieldLockStatus(fieldMetadata);
     if (isFieldLocked) {
+        await checkAndApplyFieldLockStatus(
+            editableElement,
+            fieldMetadata,
+            "click"
+        );
         return;
     }
 
@@ -322,14 +343,17 @@ async function handleFieldSchemaAndIndividualFields(
         content_type_uid,
         fieldPath
     );
-    const { acl: entryAcl, workflowStage: entryWorkflowStageDetails, resolvedVariantPermissions } =
-        await fetchEntryPermissionsAndStageDetails({
-            entryUid: entry_uid,
-            contentTypeUid: content_type_uid,
-            locale,
-            variantUid,
-            fieldPathWithIndex,
-        });
+    const {
+        acl: entryAcl,
+        workflowStage: entryWorkflowStageDetails,
+        resolvedVariantPermissions,
+    } = await fetchEntryPermissionsAndStageDetails({
+        entryUid: entry_uid,
+        contentTypeUid: content_type_uid,
+        locale,
+        variantUid,
+        fieldPathWithIndex,
+    });
 
     if (fieldSchema) {
         const { isDisabled } = isFieldDisabled(

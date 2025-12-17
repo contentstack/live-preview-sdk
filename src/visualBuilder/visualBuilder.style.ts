@@ -681,7 +681,7 @@ export function visualBuilderStyles() {
             outline: 2px dashed #bd59fa;
         `,
         "visual-builder__hover-outline--locked": css`
-            outline: 2px dashed #9ca3af;
+            outline: 2px solid #9ca3af;
         `,
         "visual-builder__default-cursor--disabled": css`
             cursor: none;
