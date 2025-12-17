@@ -17,6 +17,7 @@ vi.mock("../mouseHover", () => ({
     hideCustomCursor: vi.fn(),
     hideHoverOutline: vi.fn(),
     showCustomCursor: vi.fn(),
+    removeAllLockedFieldStyling: vi.fn(),
 }));
 
 vi.mock("../../generators/generateToolbar", () => ({
