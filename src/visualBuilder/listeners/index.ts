@@ -8,6 +8,7 @@ import handleMouseHover, {
     hideCustomCursor,
     hideHoverOutline,
     showCustomCursor,
+    removeAllLockedFieldStyling,
 } from "./mouseHover";
 import EventListenerHandlerParams from "./types";
 
@@ -47,10 +48,14 @@ const eventHandlers = {
         cancelPendingMouseHover();
         cancelPendingHoverToolbar();
         cancelPendingAddOutline();
-        
+
         hideCustomCursor(params.customCursor);
         hideHoverOutline(params.visualBuilderContainer);
-        if(!VisualBuilder?.VisualBuilderGlobalState?.value?.isFocussed && params?.focusedToolbar) {
+        removeAllLockedFieldStyling();
+        if (
+            !VisualBuilder?.VisualBuilderGlobalState?.value?.isFocussed &&
+            params?.focusedToolbar
+        ) {
             removeFieldToolbar(params.focusedToolbar);
         }
     },

@@ -18,12 +18,18 @@ import { appendFieldPathDropdown } from "../generators/generateToolbar";
 import { VisualBuilderCslpEventDetails } from "../types/visualBuilder.types";
 import { CslpData } from "../../cslp/types/cslp.types";
 import { fetchEntryPermissionsAndStageDetails } from "../utils/fetchEntryPermissionsAndStageDetails";
+import visualBuilderPostMessage from "../utils/visualBuilderPostMessage";
+import { VisualBuilderPostMessageEvents } from "../utils/types/postMessage.types";
 
 const config = Config.get();
 export interface HandleMouseHoverParams
     extends Pick<
         EventListenerHandlerParams,
-        "event" | "overlayWrapper" | "visualBuilderContainer" | "focusedToolbar" | "resizeObserver"
+        | "event"
+        | "overlayWrapper"
+        | "visualBuilderContainer"
+        | "focusedToolbar"
+        | "resizeObserver"
     > {
     customCursor: HTMLDivElement | null;
 }
@@ -35,6 +41,7 @@ interface AddOutlineParams {
     fieldPath: string;
     fieldDisabled?: boolean;
     fieldMetadata: CslpData;
+    isLocked?: boolean;
 }
 
 function resetCustomCursor(customCursor: HTMLDivElement | null): void {
@@ -79,10 +86,16 @@ async function addOutline(params?: AddOutlineParams): Promise<void> {
         fieldPath,
         fieldMetadata,
         fieldDisabled,
+        isLocked,
     } = params;
     if (!editableElement) return;
     const isVariant = !!fieldMetadata.variant;
-    addHoverOutline(editableElement as HTMLElement, fieldDisabled, isVariant);
+    addHoverOutline(
+        editableElement as HTMLElement,
+        fieldDisabled,
+        isVariant,
+        isLocked
+    );
     const fieldSchema = await FieldSchemaMap.getFieldSchema(
         content_type_uid,
         fieldPath
@@ -101,12 +114,21 @@ async function addOutline(params?: AddOutlineParams): Promise<void> {
         entryAcl,
         entryWorkflowStageDetails
     );
-    addHoverOutline(editableElement, fieldDisabled || isDisabled, isVariant);
+    const currentIsLocked =
+        isLocked ||
+        editableElement.getAttribute("data-field-locked") === "true";
+    addHoverOutline(
+        editableElement,
+        fieldDisabled || isDisabled,
+        isVariant,
+        currentIsLocked
+    );
 }
 
 const debouncedAddOutline = debounce(addOutline, 50, { trailing: true });
 export const cancelPendingAddOutline = () => debouncedAddOutline.cancel();
-const showOutline = (params?: AddOutlineParams): Promise<void> | undefined => debouncedAddOutline(params);
+const showOutline = (params?: AddOutlineParams): Promise<void> | undefined =>
+    debouncedAddOutline(params);
 
 function hideDefaultCursor(): void {
     if (
@@ -164,25 +186,32 @@ export function showCustomCursor(customCursor: HTMLDivElement | null): void {
     customCursor?.classList.add("visible");
 }
 
-const debouncedRenderHoverToolbar = debounce(async (params: HandleBuilderInteractionParams) => {
-    const eventDetails = getCsDataOfElement(params.event);
-    if (
-        !eventDetails ||
-        !params.overlayWrapper ||
-        !params.visualBuilderContainer ||
-        !params.focusedToolbar
-    ) {
-        return;
-    }
+const debouncedRenderHoverToolbar = debounce(
+    async (params: HandleBuilderInteractionParams) => {
+        const eventDetails = getCsDataOfElement(params.event);
+        if (
+            !eventDetails ||
+            !params.overlayWrapper ||
+            !params.visualBuilderContainer ||
+            !params.focusedToolbar
+        ) {
+            return;
+        }
 
-    appendFieldPathDropdown(eventDetails, params.focusedToolbar, {
-        isHover: true
-    });
-}, 50, { trailing: true });
+        appendFieldPathDropdown(eventDetails, params.focusedToolbar, {
+            isHover: true,
+        });
+    },
+    50,
+    { trailing: true }
+);
 
-export const showHoverToolbar = async (params: HandleBuilderInteractionParams) => await debouncedRenderHoverToolbar(params);
+export const showHoverToolbar = async (
+    params: HandleBuilderInteractionParams
+) => await debouncedRenderHoverToolbar(params);
 
-export const cancelPendingHoverToolbar = () => debouncedRenderHoverToolbar.cancel();
+export const cancelPendingHoverToolbar = () =>
+    debouncedRenderHoverToolbar.cancel();
 
 function isOverlay(target: HTMLElement): boolean {
     return target.classList.contains("visual-builder__overlay");
@@ -195,11 +224,20 @@ function isContentEditable(target: HTMLElement): boolean {
 }
 
 function isFieldPathDropdown(target: HTMLElement): boolean {
-    return target.classList.contains("visual-builder__focused-toolbar__field-label-wrapper") || target.classList.contains("visual-builder__focused-toolbar__field-label-wrapper__current-field");
+    return (
+        target.classList.contains(
+            "visual-builder__focused-toolbar__field-label-wrapper"
+        ) ||
+        target.classList.contains(
+            "visual-builder__focused-toolbar__field-label-wrapper__current-field"
+        )
+    );
 }
 
 function isFieldPathParent(target: HTMLElement): boolean {
-    return target.classList.contains("visual-builder__focused-toolbar__field-label-wrapper__parent-field");
+    return target.classList.contains(
+        "visual-builder__focused-toolbar__field-label-wrapper__parent-field"
+    );
 }
 
 const throttledMouseHover = throttle(async (params: HandleMouseHoverParams) => {
@@ -210,6 +248,18 @@ const throttledMouseHover = throttle(async (params: HandleMouseHoverParams) => {
         hideCustomCursor(params.customCursor);
         return;
     }
+
+    //check the field is locked by auto draft
+    removeAllLockedFieldStyling();
+    if (!eventDetails?.editableElement) {
+        return;
+    }
+    await checkAndApplyFieldLockStatus(
+        eventDetails?.editableElement,
+        eventDetails.fieldMetadata,
+        "hover"
+    );
+
     if (!eventDetails) {
         if (
             eventTarget &&
@@ -329,15 +379,19 @@ const throttledMouseHover = throttle(async (params: HandleMouseHoverParams) => {
         !editableElement.classList.contains(VB_EmptyBlockParentClass) &&
         !editableElement.classList.contains("visual-builder__empty-block")
     ) {
+        const isLocked =
+            editableElement.getAttribute("data-field-locked") === "true";
         showOutline({
             editableElement,
             eventDetails,
             content_type_uid,
             fieldPath,
             fieldMetadata,
+            isLocked,
         });
-        const isFocussed= VisualBuilder.VisualBuilderGlobalState.value.isFocussed;
-        if(!isFocussed) {
+        const isFocussed =
+            VisualBuilder.VisualBuilderGlobalState.value.isFocussed;
+        if (!isFocussed) {
             showHoverToolbar({
                 event: params.event,
                 overlayWrapper: params.overlayWrapper,
@@ -345,10 +399,9 @@ const throttledMouseHover = throttle(async (params: HandleMouseHoverParams) => {
                 previousSelectedEditableDOM:
                     VisualBuilder.VisualBuilderGlobalState.value
                         .previousSelectedEditableDOM,
-                    focusedToolbar: params.focusedToolbar,
-                    resizeObserver: params.resizeObserver,
-                }
-            );
+                focusedToolbar: params.focusedToolbar,
+                resizeObserver: params.resizeObserver,
+            });
         }
     }
 
@@ -405,5 +458,102 @@ const handleMouseHover = async (
 ): Promise<void> => await throttledMouseHover(params);
 
 export const cancelPendingMouseHover = () => throttledMouseHover.cancel();
+
+export function removeAllLockedFieldStyling(): void {
+    const lockedElements = document.querySelectorAll(
+        '[data-field-locked="true"]'
+    );
+    const currentlyFocused =
+        VisualBuilder.VisualBuilderGlobalState.value
+            .previousSelectedEditableDOM;
+
+    lockedElements.forEach((element) => {
+        if (element !== currentlyFocused) {
+            removeLockedFieldStyling(element);
+            enableFieldEditing(element);
+        }
+    });
+}
+
+async function checkAndApplyFieldLockStatus(
+    editableElement: Element,
+    fieldMetadata: CslpData,
+    type: "hover" | "click"
+): Promise<{ isLocked: boolean; editableElement: Element | undefined }> {
+    try {
+        const response = (await visualBuilderPostMessage?.send(
+            VisualBuilderPostMessageEvents.CHECK_FIELD_LOCK_STATUS,
+            {
+                fieldMetadata: {
+                    content_type_uid: fieldMetadata.content_type_uid,
+                    entry_uid: fieldMetadata.entry_uid,
+                    fieldPath: fieldMetadata.fieldPath,
+                    locale: fieldMetadata.locale,
+                    variant: fieldMetadata.variant,
+                },
+                type,
+            }
+        )) as { isLocked?: boolean } | undefined;
+
+        const isLocked = response?.isLocked || false;
+
+        if (isLocked) {
+            applyLockedFieldStyling(editableElement);
+            preventFieldEditing(editableElement);
+        } else {
+            removeLockedFieldStyling(editableElement);
+            enableFieldEditing(editableElement);
+        }
+
+        return { isLocked, editableElement };
+    } catch (error) {
+        console.warn("Failed to check field lock status:", error);
+        return { isLocked: false, editableElement };
+    }
+}
+
+function applyLockedFieldStyling(element: Element): void {
+    const htmlElement = element as HTMLElement;
+    htmlElement.style.border = "2px solid #9ca3af";
+    htmlElement.style.pointerEvents = "none";
+    htmlElement.setAttribute("data-field-locked", "true");
+}
+
+function removeLockedFieldStyling(element: Element): void {
+    const htmlElement = element as HTMLElement;
+    htmlElement.style.border = "";
+    htmlElement.style.pointerEvents = "";
+    htmlElement.removeAttribute("data-field-locked");
+}
+
+function preventFieldEditing(element: Element): void {
+    const htmlElement = element as HTMLElement;
+    if (htmlElement.hasAttribute("contenteditable")) {
+        htmlElement.setAttribute("contenteditable", "false");
+        htmlElement.setAttribute("data-original-contenteditable", "true");
+    }
+
+    const inputs = htmlElement.querySelectorAll("input, textarea, select");
+    inputs.forEach((input) => {
+        (input as HTMLInputElement).disabled = true;
+        input.setAttribute("data-was-disabled-by-lock", "true");
+    });
+}
+
+function enableFieldEditing(element: Element): void {
+    const htmlElement = element as HTMLElement;
+    if (htmlElement.hasAttribute("data-original-contenteditable")) {
+        htmlElement.setAttribute("contenteditable", "true");
+        htmlElement.removeAttribute("data-original-contenteditable");
+    }
+
+    const inputs = htmlElement.querySelectorAll(
+        "input[data-was-disabled-by-lock], textarea[data-was-disabled-by-lock], select[data-was-disabled-by-lock]"
+    );
+    inputs.forEach((input) => {
+        (input as HTMLInputElement).disabled = false;
+        input.removeAttribute("data-was-disabled-by-lock");
+    });
+}
 
 export default handleMouseHover;

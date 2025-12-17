@@ -300,10 +300,10 @@ export function visualBuilderStyles() {
             border-style: solid;
             align-content: center;
             text-align: center;
-            border-color: #BD59FA;
+            border-color: #bd59fa;
 
             svg {
-                color: #BD59FA;
+                color: #bd59fa;
             }
         `,
         "visual-builder__focused-toolbar": css`
@@ -335,6 +335,14 @@ export function visualBuilderStyles() {
                 padding-right: 3px;
                 height: 16px;
             }
+        `,
+        "visual-builder__lock-icon": css`
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 4px;
+            height: 16px;
+            width: 16px;
         `,
         "visual-builder__focused-toolbar__field-label-wrapper__parent-field": css`
             pointer-events: none;
@@ -530,11 +538,15 @@ export function visualBuilderStyles() {
                 background: #909090;
             }
         `,
+        "visual-builder__focused-toolbar--field-locked": css`
+            .visual-builder__focused-toolbar__field-label-wrapper__current-field {
+                background: #9ca3af;
+            }
+        `,
         "visual-builder__focused-toolbar--variant": css`
             .visual-builder__focused-toolbar__field-label-wrapper__current-field {
-                background: #BD59FA;
+                background: #bd59fa;
             }
-
         `,
         "visual-builder__cursor-disabled": css`
             .visual-builder__cursor-icon {
@@ -635,7 +647,10 @@ export function visualBuilderStyles() {
             outline: 2px dashed #909090;
         `,
         "visual-builder__hover-outline--variant": css`
-            outline: 2px dashed #BD59FA;
+            outline: 2px dashed #bd59fa;
+        `,
+        "visual-builder__hover-outline--locked": css`
+            outline: 2px dashed #9ca3af;
         `,
         "visual-builder__default-cursor--disabled": css`
             cursor: none;

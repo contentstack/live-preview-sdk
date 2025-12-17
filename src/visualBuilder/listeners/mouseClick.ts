@@ -172,6 +172,12 @@ export async function handleBuilderInteraction(
     }
 
     const { editableElement, fieldMetadata } = eventDetails;
+
+    const isFieldLocked = await checkFieldLockStatus(fieldMetadata);
+    if (isFieldLocked) {
+        return;
+    }
+
     const variantStatus = await getFieldVariantStatus(fieldMetadata);
     const isVariant = variantStatus
         ? Object.values(variantStatus).some((value) => value === true)
@@ -371,6 +377,29 @@ function observeEditableElementChanges(
     VisualBuilder.VisualBuilderGlobalState.value.focusElementObserver =
         focusElementObserver;
     focusElementObserver.observe(editableElement, { attributes: true });
+}
+
+async function checkFieldLockStatus(fieldMetadata: CslpData): Promise<boolean> {
+    try {
+        const response = (await visualBuilderPostMessage?.send(
+            VisualBuilderPostMessageEvents.CHECK_FIELD_LOCK_STATUS,
+            {
+                fieldMetadata: {
+                    content_type_uid: fieldMetadata.content_type_uid,
+                    entry_uid: fieldMetadata.entry_uid,
+                    fieldPath: fieldMetadata.fieldPath,
+                    locale: fieldMetadata.locale,
+                    variant: fieldMetadata.variant,
+                },
+                type: "click",
+            }
+        )) as { isLocked?: boolean } | undefined;
+
+        return response?.isLocked || false;
+    } catch (error) {
+        console.warn("Failed to check field lock status:", error);
+        return false;
+    }
 }
 
 export default handleBuilderInteraction;

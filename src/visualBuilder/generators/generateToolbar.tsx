@@ -132,6 +132,7 @@ export function appendFieldPathDropdown(
     focusedToolbarElement.style.top = `${adjustedDistanceFromTop}px`;
 
     const parentPaths = collectParentCSLPPaths(targetElement, 2);
+    const isLocked = targetElement.getAttribute("data-field-locked") === "true";
 
     const wrapper = document.createDocumentFragment();
     render(
@@ -139,6 +140,7 @@ export function appendFieldPathDropdown(
             fieldMetadata={fieldMetadata}
             eventDetails={eventDetails}
             parentPaths={parentPaths}
+            isLocked={isLocked}
             getParentEditableElement={(cslp: string) => {
                 const parentElement = targetElement.closest(
                     `[${DATA_CSLP_ATTR_SELECTOR}="${cslp}"]`

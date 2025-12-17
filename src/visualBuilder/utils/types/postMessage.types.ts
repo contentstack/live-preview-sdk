@@ -30,6 +30,7 @@ export enum VisualBuilderPostMessageEvents {
     FIELD_LOCATION_SELECTED_APP = "field-location-selected-app",
     GET_PERMISSIONS = "get-permissions",
     GET_WORKFLOW_STAGE_DETAILS = "get-workflow-stage-details",
+    CHECK_FIELD_LOCK_STATUS = "check-field-lock-status",
 
     // FROM visual builder
     GET_ALL_ENTRIES_IN_CURRENT_PAGE = "get-entries-in-current-page",
