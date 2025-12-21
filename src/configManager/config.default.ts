@@ -16,6 +16,10 @@ export function getUserInitData(): IInitData {
             position: "top",
             includeByQueryParameter: true,
         },
+        editInVisualBuilderButton: {
+            enable: true,
+            position: "bottom-right"
+        },
 
         mode: "preview",
 
@@ -49,6 +53,10 @@ export function getDefaultConfig(): IConfig {
             exclude: [],
             position: "top",
             includeByQueryParameter: true,
+        },
+        editInVisualBuilderButton: {
+            enable: true,
+            position: "bottom-right"
         },
 
         hash: "",
@@ -86,6 +94,21 @@ export function getDefaultConfig(): IConfig {
 
         elements: {
             highlightedElement: null,
+        },
+        collab: {
+            enable: false,
+            fromShare: false,
+            pauseFeedback: false,
+            isFeedbackMode: false,
+            inviteMetadata: {
+                currentUser: {
+                    email: "",
+                    uid: "",
+                },
+                users: [],
+                inviteUid: "",
+            },
+            payload: [],
         },
     };
 }

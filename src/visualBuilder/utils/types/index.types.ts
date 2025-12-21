@@ -17,6 +17,7 @@ export type ISchemaFieldMap = (
     field_metadata?: {
         updateRestrict?: boolean;
         isUnlinkedVariant?: boolean;
+        canLinkVariant?: boolean;
     };
 };
 
@@ -54,4 +55,10 @@ export enum FieldDataType {
     FILE = "file",
     GLOBAL_FIELD = "global_field",
     TAXONOMY = "taxonomy",
+}
+
+export interface VisualBuilderEditContext {
+    visualBuilderContainer: HTMLDivElement;
+    resizeObserver: ResizeObserver;
+    lastEditedField: Element | null;
 }

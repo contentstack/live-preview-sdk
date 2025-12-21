@@ -1,3 +1,4 @@
+import { ICollabConfig } from "../visualBuilder/types/collab.types";
 export declare interface IEditEntrySearchParams {
     hash?: string;
     entry_uid?: string;
@@ -59,6 +60,7 @@ export enum ILivePreviewModeConfig {
 
 export enum ILivePreviewWindowType {
     PREVIEW = "preview",
+    PREVIEW_SHARE = "preview-share",
     BUILDER = "builder",
     INDEPENDENT = "independent",
 }
@@ -79,11 +81,24 @@ export declare interface IConfig {
     windowType: ILivePreviewWindowType;
     hash: string;
     editButton: IConfigEditButton;
+    editInVisualBuilderButton: IConfigEditInVisualBuilderButton;
     mode: ILivePreviewModeConfig;
     elements: {
         highlightedElement: HTMLElement | null;
     };
+    collab: ICollabConfig["collab"];
 }
+
+
+export declare interface IConfigEditInVisualBuilderButton {
+    enable: boolean;
+    position?:
+        | "top-left"
+        | "top-right"
+        | "bottom-left"
+        | "bottom-right"
+}
+
 
 export declare interface IConfigEditButton {
     enable: boolean;
@@ -115,6 +130,7 @@ export declare interface IInitData {
     clientUrlParams: Partial<Omit<IClientUrlParams, "url">>;
     stackSdk: IStackSdk;
     editButton: IConfigEditButton;
+    editInVisualBuilderButton: IConfigEditInVisualBuilderButton;
     mode: ILivePreviewMode;
 }
 
@@ -190,4 +206,18 @@ export interface IVisualBuilderInitEvent {
     stackDetails: {
         masterLocale: string;
     };
+    collab?: ICollabConfig["collab"];
 }
+
+export type IExportedConfig = Pick<
+    IConfig,
+    | "ssr"
+    | "enable"
+    | "cleanCslpOnProduction"
+    | "stackDetails"
+    | "clientUrlParams"
+    | "windowType"
+    | "hash"
+    | "editButton"
+    | "mode"
+>;

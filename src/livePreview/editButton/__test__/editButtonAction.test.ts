@@ -9,7 +9,7 @@ import livePreviewPostMessage from "../../eventManager/livePreviewEventManager";
 import { LIVE_PREVIEW_POST_MESSAGE_EVENTS } from "../../eventManager/livePreviewEventManager.constant";
 import { LivePreviewEditButton } from "../editButton";
 import LivePreview from "../../live-preview";
-import { fireEvent, prettyDOM, waitFor } from "@testing-library/preact";
+import { act } from "@testing-library/preact";
 
 Object.defineProperty(globalThis, "crypto", {
     value: {
@@ -22,12 +22,6 @@ const VARIANT_TITLE_CSLP_TAG =
     "v2:content-type-1.entry-uid-1_variant-uid-1.en-us.field-title";
 const DESC_CSLP_TAG = "content-type-2.entry-uid-2.en-us.field-description";
 const LINK_CSLP_TAG = "content-type-3.entry-uid-3.en-us.field-link";
-
-global.ResizeObserver = vi.fn().mockImplementation(() => ({
-    observe: vi.fn(),
-    unobserve: vi.fn(),
-    disconnect: vi.fn(),
-}));
 
 describe("cslp tooltip", () => {
     beforeEach(() => {
@@ -595,7 +589,7 @@ describe("cslp tooltip", () => {
         locationSpy.mockRestore();
     });
 
-    test.skip("should re-render the edit button tooltip if not already available even when edit button is enabled", async () => {
+    test("should re-render the edit button tooltip if not already available even when edit button is enabled", async () => {
         Config.replace({
             enable: true,
             editButton: {
@@ -622,12 +616,14 @@ describe("cslp tooltip", () => {
             bubbles: true,
         });
 
-        titlePara?.dispatchEvent(hoverEvent);
+        await act(async () => {
+            titlePara?.dispatchEvent(hoverEvent);
+        })
 
-        expect(tooltip?.getAttribute("current-data-cslp")).toBe(TITLE_CSLP_TAG);
+        expect(document.getElementById('cslp-tooltip')).toHaveAttribute('current-data-cslp', TITLE_CSLP_TAG);
 
         descPara?.dispatchEvent(hoverEvent);
 
-        expect(tooltip?.getAttribute("current-data-cslp")).toBe(DESC_CSLP_TAG);
+        expect(document.getElementById('cslp-tooltip')).toHaveAttribute('current-data-cslp', DESC_CSLP_TAG);
     });
 });

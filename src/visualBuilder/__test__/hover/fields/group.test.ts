@@ -1,5 +1,8 @@
 import { getFieldSchemaMap } from "../../../../__test__/data/fieldSchemaMap";
-import { sleep, waitForHoverOutline } from "../../../../__test__/utils";
+import {
+    waitForHoverOutline,
+    waitForCursorIcon,
+} from "../../../../__test__/utils";
 import Config from "../../../../configManager/configManager";
 import { FieldSchemaMap } from "../../../utils/fieldSchemaMap";
 import { mockDomRect } from "./mockDomRect";
@@ -25,11 +28,42 @@ vi.mock("../../../utils/visualBuilderPostMessage", async () => {
     };
 });
 
-global.ResizeObserver = vi.fn().mockImplementation(() => ({
-    observe: vi.fn(),
-    unobserve: vi.fn(),
-    disconnect: vi.fn(),
-}));
+vi.mock("../../../../utils/index.ts", async () => {
+    const actual = await vi.importActual("../../../../utils");
+    return {
+        __esModule: true,
+        ...actual,
+        isOpenInBuilder: vi.fn().mockReturnValue(true),
+    };
+});
+
+// Mock fetchEntryPermissionsAndStageDetails to resolve immediately - speeds up hover tests
+vi.mock("../../../utils/fetchEntryPermissionsAndStageDetails", () => {
+    return {
+        fetchEntryPermissionsAndStageDetails: vi.fn(() =>
+            Promise.resolve({
+                acl: {
+                    create: true,
+                    read: true,
+                    update: true,
+                    delete: true,
+                    publish: true,
+                },
+                workflowStage: {
+                    stage: undefined,
+                    permissions: {
+                        entry: {
+                            update: true,
+                        },
+                    },
+                },
+                resolvedVariantPermissions: {
+                    update: true,
+                },
+            })
+        ),
+    };
+});
 
 describe("When an element is hovered in visual builder mode", () => {
     let mousemoveEvent: Event;
@@ -98,17 +132,18 @@ describe("When an element is hovered in visual builder mode", () => {
         test("should have outline and custom cursor", async () => {
             groupField.dispatchEvent(mousemoveEvent);
             await waitForHoverOutline();
-            expect(groupField).toMatchSnapshot();
             const hoverOutline = document.querySelector(
                 "[data-testid='visual-builder__hover-outline']"
             );
-            expect(hoverOutline).toMatchSnapshot();
+            expect(hoverOutline).toHaveAttribute("style");
+
+            // Wait for cursor icon to be set (not "loading")
+            await waitForCursorIcon("group");
 
             const customCursor = document.querySelector(
                 `[data-testid="visual-builder__cursor"]`
             );
-
-            expect(customCursor).toMatchSnapshot();
+            expect(customCursor).toHaveAttribute("data-icon", "group");
             expect(customCursor?.classList.contains("visible")).toBeTruthy();
         });
 
@@ -127,17 +162,18 @@ describe("When an element is hovered in visual builder mode", () => {
 
             singleLine.dispatchEvent(mousemoveEvent);
             await waitForHoverOutline();
-            expect(singleLine).toMatchSnapshot();
             const hoverOutline = document.querySelector(
                 "[data-testid='visual-builder__hover-outline']"
             );
-            expect(hoverOutline).toMatchSnapshot();
+            expect(hoverOutline).toHaveAttribute("style");
+
+            // Wait for cursor icon to be set (not "loading")
+            await waitForCursorIcon("singleline");
 
             const customCursor = document.querySelector(
                 `[data-testid="visual-builder__cursor"]`
             );
-
-            expect(customCursor).toMatchSnapshot();
+            expect(customCursor).toHaveAttribute("data-icon", "singleline");
             expect(customCursor?.classList.contains("visible")).toBeTruthy();
         });
     });
@@ -204,31 +240,41 @@ describe("When an element is hovered in visual builder mode", () => {
             visualBuilder.destroy();
         });
 
-        test("should have outline and custom cursor", async () => {
+        test("should have outline and custom cursor on container", async () => {
             container.dispatchEvent(mousemoveEvent);
             await waitForHoverOutline();
-            expect(container).toMatchSnapshot();
             const hoverOutline = document.querySelector(
                 "[data-testid='visual-builder__hover-outline']"
             );
-            expect(hoverOutline).toMatchSnapshot();
+            expect(hoverOutline).toHaveAttribute("style");
+
+            // Wait for cursor icon to be set (not "loading")
+            await waitForCursorIcon("group");
 
             const customCursor = document.querySelector(
                 `[data-testid="visual-builder__cursor"]`
             );
-
-            expect(customCursor).toMatchSnapshot();
+            expect(customCursor).toHaveAttribute("data-icon", "group");
             expect(customCursor?.classList.contains("visible")).toBeTruthy();
         });
 
-        test.skip("should have outline on the nested field", async () => {
+        test("should have outline and custom cursor on nested multi line", async () => {
             firstNestedMultiLine.dispatchEvent(mousemoveEvent);
             await waitForHoverOutline();
-            expect(firstNestedMultiLine).toMatchSnapshot();
+
             const hoverOutline = document.querySelector(
                 "[data-testid='visual-builder__hover-outline']"
             );
-            expect(hoverOutline).toMatchSnapshot();
+            expect(hoverOutline).toHaveAttribute("style");
+
+            // Wait for cursor icon to be set (not "loading")
+            await waitForCursorIcon("multiline");
+
+            const customCursor = document.querySelector(
+                `[data-testid="visual-builder__cursor"]`
+            );
+            expect(customCursor).toHaveAttribute("data-icon", "multiline");
+            expect(customCursor?.classList.contains("visible")).toBeTruthy();
         });
     });
 });

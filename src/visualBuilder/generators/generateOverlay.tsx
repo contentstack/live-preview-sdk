@@ -8,7 +8,6 @@ import EventListenerHandlerParams from "../listeners/types";
 import { FieldSchemaMap } from "../utils/fieldSchemaMap";
 import { FieldDataType } from "../utils/types/index.types";
 import { getFieldType } from "../utils/getFieldType";
-import { CslpData } from "../../cslp/types/cslp.types";
 import { getMultilinePlaintext } from "../utils/getMultilinePlaintext";
 import { showAllHiddenHighlightedCommentIcons } from "./generateHighlightedComment";
 
@@ -119,12 +118,16 @@ export function hideFocusOverlay(elements: HideOverlayParams): void {
             }
         });
 
-        if (!noTrigger) {
+        if (
+            !noTrigger &&
+            // send update when focussed field has received input
+            VisualBuilder.VisualBuilderGlobalState.value.focusFieldReceivedInput
+        ) {
             sendFieldEvent({
                 visualBuilderContainer,
                 eventType: VisualBuilderPostMessageEvents.UPDATE_FIELD,
             });
-        } else {
+        } else if (noTrigger) {
             const { previousSelectedEditableDOM, focusFieldValue } =
                 VisualBuilder.VisualBuilderGlobalState.value || {};
             if (
@@ -136,6 +139,8 @@ export function hideFocusOverlay(elements: HideOverlayParams): void {
             }
         }
         VisualBuilder.VisualBuilderGlobalState.value.focusFieldValue = null;
+        VisualBuilder.VisualBuilderGlobalState.value.focusFieldReceivedInput =
+            false;
         cleanIndividualFieldResidual({
             overlayWrapper: visualBuilderOverlayWrapper,
             visualBuilderContainer: visualBuilderContainer,
@@ -172,9 +177,12 @@ export function sendFieldEvent(options: ISendFieldEventParams): void {
                 ? actualEditedElement.innerText
                 : actualEditedElement.textContent;
 
-        const fieldMetadata = extractDetailsFromCslp(
-            previousSelectedEditableDOM.getAttribute("data-cslp") as string
-        );
+        const cslpData = previousSelectedEditableDOM.getAttribute("data-cslp");
+        if (!cslpData) {
+            return;
+        }
+
+        const fieldMetadata = extractDetailsFromCslp(cslpData);
 
         FieldSchemaMap.getFieldSchema(
             fieldMetadata.content_type_uid,
@@ -211,6 +219,14 @@ interface HideOverlayParams
 }
 
 export function hideOverlay(params: HideOverlayParams): void {
+    VisualBuilder.VisualBuilderGlobalState.value.isFocussed = false;
+    const focusElementObserver =
+        VisualBuilder.VisualBuilderGlobalState.value.focusElementObserver;
+    if (focusElementObserver) {
+        focusElementObserver.disconnect();
+        VisualBuilder.VisualBuilderGlobalState.value.focusElementObserver =
+            null;
+    }
     hideFocusOverlay({
         visualBuilderContainer: params.visualBuilderContainer,
         visualBuilderOverlayWrapper: params.visualBuilderOverlayWrapper,

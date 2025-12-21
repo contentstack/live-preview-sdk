@@ -17,7 +17,7 @@
         "skipLibCheck": true ,
         "forceConsistentCasingInFileNames": true ,
         "jsx": "react-jsx",
-        "module": "ESNext"
+        "module": "ESNext",
     },
     "include": ["src"]
 }

@@ -1,41 +1,29 @@
 import { PublicLogger } from "../logger/logger";
-
+import { addLivePreviewQueryTags } from "./addLivePreviewQueryTags";
 export function hasWindow(): boolean {
     return typeof window !== "undefined";
 }
-export function addLivePreviewQueryTags(link: string): string {
-    try {
-        const docUrl: URL = new URL(document.location.href);
-        const newUrl: URL = new URL(link);
-        const livePreviewHash: string | null =
-            docUrl.searchParams.get("live_preview");
-        const ctUid: string | null =
-            docUrl.searchParams.get("content_type_uid");
-        const entryUid: string | null = docUrl.searchParams.get("entry_uid");
-        if (livePreviewHash && ctUid && entryUid) {
-            newUrl.searchParams.set("live_preview", livePreviewHash);
-            newUrl.searchParams.set("content_type_uid", ctUid);
-            newUrl.searchParams.set("entry_uid", entryUid);
-        }
-        return newUrl.href;
-    } catch (error) {
-        PublicLogger.error("Error while adding live preview to URL");
-        return link;
-    }
-}
+export { addLivePreviewQueryTags };
 export function addParamsToUrl() {
     // Setting the query params to all the click events related to current domain
     window.addEventListener("click", (event: any) => {
-        const target: any = event.target;
-        const targetHref: string | any = target.href;
+        const clickedElement = event.target;
+        const anchorElement = clickedElement.closest('a');
+        
+        // Only proceed if the clicked element is either an anchor or a direct/indirect child of an anchor
+        if (!anchorElement || !anchorElement.contains(clickedElement)) {
+            return;
+        }
+
+        const targetHref: string | any = anchorElement.href;
         const docOrigin: string = document.location.origin;
         if (
             targetHref &&
             targetHref.includes(docOrigin) &&
             !targetHref.includes("live_preview")
         ) {
-            const newUrl = addLivePreviewQueryTags(target.href);
-            event.target.href = newUrl || target.href;
+            const newUrl = addLivePreviewQueryTags(targetHref);
+            anchorElement.href = newUrl || targetHref;
         }
     });
 }
@@ -44,6 +32,25 @@ export function isOpeningInTimeline(): boolean {
         const urlParams = new URLSearchParams(window.location.search);
         const previewTimestamp = urlParams.get("preview_timestamp");
         return !!previewTimestamp;
+    }
+    return false;
+}
+
+export function isOpenInBuilder(): boolean {
+    if (hasWindow()) {
+        const urlParams = new URLSearchParams(window.location.search);
+        const builder = urlParams.get("builder");
+        return !!builder;
+    }
+    return false;
+}
+
+
+export function isOpenInPreviewShare(): boolean {
+    if (hasWindow()) {
+        const urlParams = new URLSearchParams(window.location.search);
+        const previewShare = urlParams.get("preview_share");
+        return !!previewShare;
     }
     return false;
 }

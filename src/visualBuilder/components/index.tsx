@@ -2,6 +2,7 @@ import { render } from "preact";
 import VisualBuilderComponent from "./VisualBuilder";
 import { visualBuilderStyles } from "../visualBuilder.style";
 import React from "preact/compat";
+import { isOpenInBuilder , isOpenInPreviewShare} from "../../utils";
 
 interface InitUIParams {
     resizeObserver: ResizeObserver;
@@ -11,7 +12,11 @@ function initUI(props: InitUIParams): void {
     const visualBuilderDOM = document.querySelector(
         `.visual-builder__container`
     );
-    if (!visualBuilderDOM) {
+
+    const isInBuilder = isOpenInBuilder();
+    const isInPreviewShare = isOpenInPreviewShare();
+
+    if (!visualBuilderDOM && (isInBuilder || isInPreviewShare)) {
         const visualBuilderContainer = document.createElement("div");
         visualBuilderContainer.classList.add(
             visualBuilderStyles()["visual-builder__container"],

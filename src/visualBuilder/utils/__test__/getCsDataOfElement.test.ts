@@ -170,4 +170,93 @@ describe("getDOMEditStack", () => {
             expect(edit.locale).toBe(stack[idx].locale);
         });
     });
+    test("get dom edit stack should provide only one stack even if one of the parent is variant", () => {
+        const stack = [
+            {
+                ct: "page",
+                uid: "pageuid",
+                locale: "pagelocale",
+                fieldPath: "group",
+            },
+            {
+                ct: "blog",
+                uid: "blogpostuid",
+                locale: "bloglocale",
+                fieldPath: "blogs",
+                variant: "variant",
+            },
+            {
+                ct: "blog",
+                uid: "blogpostuid",
+                locale: "bloglocale",
+                fieldPath: "author.name",
+            },
+        ];
+        const getCSLP = ({ ct, uid, locale, fieldPath, variant = "" }: any) => {
+            if (variant) {
+                return `v2:${ct}.${uid}_${variant}.${locale}.${fieldPath}`;
+            }
+            return `${ct}.${uid}.${locale}.${fieldPath}`;
+        };
+        const dom = new JSDOM(`
+            <div data-cslp="${getCSLP(stack[0])}">
+                <div class='empty_el'>
+                    <span data-cslp="${getCSLP(stack[1])}">
+                        <span data-cslp="${getCSLP(stack[1])}.0">
+                            <span data-cslp="${getCSLP(
+                                stack[2]
+                            )}">author name</stack>
+                        </span>
+                    </span>
+                </div>
+            </div>
+        `).window.document;
+        const leafEl = dom.querySelector(
+            `[data-cslp="${getCSLP(stack[2])}"]`
+        ) as HTMLElement;
+        const editStack = getDOMEditStack(leafEl);
+        expect(editStack.length).toBe(2);
+    });
+
+    test("get dom edit stack should filter out elements with same prefix", () => {
+        const dom = new JSDOM(`
+            <div data-cslp="page.pageuid.en-us.group">
+                <div data-cslp="page.pageuid.en-us.group.field1">
+                    <div data-cslp="page.pageuid.en-us.group.field1.nested">
+                        <span data-cslp="page.pageuid.en-us.group.field1.nested.leaf">leaf</span>
+                    </div>
+                </div>
+            </div>
+        `).window.document;
+        const leafEl = dom.querySelector(
+            '[data-cslp="page.pageuid.en-us.group.field1.nested.leaf"]'
+        ) as HTMLElement;
+        const editStack = getDOMEditStack(leafEl);
+        // Should only have one entry since all have same prefix (page.pageuid.en-us)
+        expect(editStack.length).toBe(1);
+        expect(editStack[0].content_type_uid).toBe("page");
+        expect(editStack[0].entry_uid).toBe("pageuid");
+    });
+
+    test("get dom edit stack should filter out elements with invalid data-cslp attribute", () => {
+        const dom = new JSDOM(`
+            <div data-cslp="page.pageuid.en-us.group">
+                <div data-cslp>
+                    <div data-cslp="">
+                        <div data-cslp="blog.bloguid.fr-fr.title">
+                            <span data-cslp="blog.bloguid.fr-fr.title.name">name</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `).window.document;
+        const leafEl = dom.querySelector(
+            '[data-cslp="blog.bloguid.fr-fr.title.name"]'
+        ) as HTMLElement;
+        const editStack = getDOMEditStack(leafEl);
+        // Should have two entries (page, blog) - invalid cslp attributes (empty or no value) should be filtered out
+        expect(editStack.length).toBe(2);
+        expect(editStack[0].content_type_uid).toBe("page");
+        expect(editStack[1].content_type_uid).toBe("blog");
+    });
 });
