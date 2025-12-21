@@ -6,10 +6,12 @@ import { VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY } from "../../../utils/constant
 import { FieldSchemaMap } from "../../../utils/fieldSchemaMap";
 import { getDOMEditStack } from "../../../utils/getCsDataOfElement";
 import visualBuilderPostMessage from "../../../utils/visualBuilderPostMessage";
-import { vi } from "vitest";
+import { Mock, vi } from "vitest";
 import { VisualBuilderPostMessageEvents } from "../../../utils/types/postMessage.types";
 import { VisualBuilder } from "../../../index";
 import { triggerAndWaitForClickAction } from "../../../../__test__/utils";
+
+const EXAMPLE_STAGE_NAME = "Example Stage";
 
 vi.mock("../../../components/FieldToolbar", () => {
     return {
@@ -46,6 +48,15 @@ vi.mock("../../../utils/visualBuilderPostMessage", async () => {
             }),
             on: vi.fn(),
         },
+    };
+});
+
+vi.mock("../../../../utils/index.ts", async () => {
+    const actual = await vi.importActual("../../../../utils");
+    return {
+        __esModule: true,
+        ...actual,
+        isOpenInBuilder: vi.fn().mockReturnValue(true),
     };
 });
 
@@ -90,6 +101,45 @@ describe("When an element is clicked in visual builder mode", () => {
         let visualBuilder: VisualBuilder;
 
         beforeAll(async () => {
+            (visualBuilderPostMessage?.send as Mock).mockImplementation(
+                (eventName: string, args?: any) => {
+                    switch (eventName) {
+                        case VisualBuilderPostMessageEvents.GET_FIELD_DATA:
+                            // Return appropriate field data based on entryPath
+                            if (args?.entryPath?.includes("file.url")) {
+                                return Promise.resolve({
+                                    fieldData: "https://example.com/image.jpg",
+                                });
+                            }
+                            return Promise.resolve({
+                                fieldData: {
+                                    uid: "file-uid",
+                                    url: "https://example.com/image.jpg",
+                                },
+                            });
+                        case VisualBuilderPostMessageEvents.GET_FIELD_DISPLAY_NAMES:
+                            return Promise.resolve({
+                                "all_fields.bltapikey.en-us.file": "File",
+                            });
+                        case VisualBuilderPostMessageEvents.GET_WORKFLOW_STAGE_DETAILS:
+                            return Promise.resolve({
+                                stage: { name: EXAMPLE_STAGE_NAME },
+                                permissions: {
+                                    entry: {
+                                        update: true,
+                                    },
+                                },
+                            });
+                        case VisualBuilderPostMessageEvents.GET_RESOLVED_VARIANT_PERMISSIONS:
+                            return Promise.resolve({
+                                update: true,
+                            });
+                        default:
+                            return Promise.resolve({});
+                    }
+                }
+            );
+
             fileField = document.createElement("p");
             fileField.setAttribute(
                 "data-cslp",
@@ -105,83 +155,29 @@ describe("When an element is clicked in visual builder mode", () => {
             document.body.appendChild(fileField);
             document.body.appendChild(imageField);
             visualBuilder = new VisualBuilder();
-            await triggerAndWaitForClickAction(visualBuilderPostMessage, fileField);
+            await triggerAndWaitForClickAction(
+                visualBuilderPostMessage,
+                fileField
+            );
         });
 
         afterAll(() => {
             visualBuilder.destroy();
         });
 
-        test("should have outline", () => {
-            expect(fileField.classList.contains("cslp-edit-mode"));
-        });
-
-        test("should have an overlay", () => {
-            const overlay = document.querySelector(".visual-builder__overlay");
-            expect(overlay!.classList.contains("visible"));
-        });
-
-        test.skip("should have a field path dropdown", () => {
-            const toolbar = document.querySelector(
-                ".visual-builder__focused-toolbar__field-label-wrapper__current-field"
-            );
-            expect(toolbar).toBeInTheDocument();
-        });
-
-        // TODO should be a test of FieldToolbar
-        test.skip("should not have a multi field toolbar with button group", async () => {
-
-            const multiFieldToolbar = document.querySelector(
-                ".visual-builder__focused-toolbar__multiple-field-toolbar"
+        // Common tests (field type, overlay, dropdown, focus message, no contenteditable) are covered in all-click.test.tsx
+        // Only testing unique behavior: file.url sub-fields can be clicked
+        test("should handle clicking on file.url sub-field", async () => {
+            // Click on the image field (file.url sub-field)
+            await triggerAndWaitForClickAction(
+                visualBuilderPostMessage,
+                imageField
             );
 
-            const buttonGroup = document.querySelector(
-                ".visual-builder__focused-toolbar__button-group"
+            // Verify the sub-field also gets the field type attribute
+            expect(imageField).toHaveAttribute(
+                VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
             );
-
-            expect(multiFieldToolbar).not.toBeInTheDocument();
-            expect(buttonGroup).not.toBeInTheDocument();
-        });
-
-        test.skip("should have a field path dropdown", () => {
-            const toolbar = document.querySelector(
-                ".visual-builder__focused-toolbar__field-label-wrapper__current-field"
-            );
-            expect(toolbar).toBeInTheDocument();
-        });
-
-        // TODO should be a test of FieldToolbar
-        test.skip("should have a replace asset button", async () => {
-            const replaceButton = document.querySelector(
-                ".visual-builder__replace-button"
-            );
-
-            expect(replaceButton).toBeInTheDocument();
-        });
-
-        test("should contain a data-cslp-field-type attribute", async () => {
-            await waitFor(() => {
-                expect(fileField).toHaveAttribute(
-                    VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
-                );
-            });
-        });
-
-        test("should not contain a contenteditable attribute", async () => {
-            await waitFor(() => {
-                expect(fileField).not.toHaveAttribute("contenteditable");
-            });
-        });
-
-        test("should send a focus field message to parent", async () => {
-            await waitFor(() => {
-                expect(visualBuilderPostMessage?.send).toBeCalledWith(
-                    VisualBuilderPostMessageEvents.FOCUS_FIELD,
-                    {
-                        DOMEditStack: getDOMEditStack(fileField),
-                    }
-                );
-            });
         });
     });
 
@@ -194,6 +190,57 @@ describe("When an element is clicked in visual builder mode", () => {
         let visualBuilder: VisualBuilder;
 
         beforeAll(async () => {
+            (visualBuilderPostMessage?.send as Mock).mockImplementation(
+                (eventName: string, args?: any) => {
+                    switch (eventName) {
+                        case VisualBuilderPostMessageEvents.GET_FIELD_DATA: {
+                            const values: Record<string, any> = {
+                                file_multiple_: [
+                                    {
+                                        uid: "file-uid-1",
+                                        url: "https://example.com/image1.jpg",
+                                    },
+                                    {
+                                        uid: "file-uid-2",
+                                        url: "https://example.com/image2.jpg",
+                                    },
+                                ],
+                                "file_multiple_.0": {
+                                    uid: "file-uid-1",
+                                    url: "https://example.com/image1.jpg",
+                                },
+                                "file_multiple_.1": {
+                                    uid: "file-uid-2",
+                                    url: "https://example.com/image2.jpg",
+                                },
+                                "file_multiple_.0.url":
+                                    "https://example.com/image1.jpg",
+                                "file_multiple_.1.url":
+                                    "https://example.com/image2.jpg",
+                            };
+                            return Promise.resolve({
+                                fieldData: values[args?.entryPath] || {},
+                            });
+                        }
+                        case VisualBuilderPostMessageEvents.GET_WORKFLOW_STAGE_DETAILS:
+                            return Promise.resolve({
+                                stage: { name: EXAMPLE_STAGE_NAME },
+                                permissions: {
+                                    entry: {
+                                        update: true,
+                                    },
+                                },
+                            });
+                        case VisualBuilderPostMessageEvents.GET_RESOLVED_VARIANT_PERMISSIONS:
+                            return Promise.resolve({
+                                update: true,
+                            });
+                        default:
+                            return Promise.resolve({});
+                    }
+                }
+            );
+
             container = document.createElement("div");
             container.setAttribute(
                 "data-cslp",
@@ -231,127 +278,36 @@ describe("When an element is clicked in visual builder mode", () => {
             document.body.appendChild(container);
 
             visualBuilder = new VisualBuilder();
-            await triggerAndWaitForClickAction(visualBuilderPostMessage, container);
+            await triggerAndWaitForClickAction(
+                visualBuilderPostMessage,
+                container
+            );
         });
 
         afterAll(() => {
             visualBuilder.destroy();
         });
 
-        test("should have outline", () => {
-            expect(container.classList.contains("cslp-edit-mode"));
-        });
-
-        test("should have an overlay", () => {
-            const overlay = document.querySelector(".visual-builder__overlay");
-            expect(overlay!.classList.contains("visible"));
-        });
-
-        test.skip("should have a field path dropdown", () => {
-            const toolbar = document.querySelector(
-                ".visual-builder__focused-toolbar__field-label-wrapper__current-field"
+        // Common tests (field type, overlay, dropdown, focus message, no contenteditable) are covered in all-click.test.tsx
+        // Only testing unique behavior: file.url sub-fields in multiple file fields
+        test("should handle clicking on file.url sub-fields in multiple file fields", async () => {
+            // Click on first image field (file.url sub-field)
+            await triggerAndWaitForClickAction(
+                visualBuilderPostMessage,
+                firstImageField
             );
-            expect(toolbar).toBeInTheDocument();
-        });
-
-        // TODO should be a test of FieldToolbar
-        test.skip("children should have a replace asset button", async () => {
-            const child1 = document.querySelector(
-                "[data-cslp='all_fields.bltapikey.en-us.file_multiple_.0.url']"
-            );
-            const child2 = document.querySelector(
-                "[data-cslp='all_fields.bltapikey.en-us.file_multiple_.1.url']"
+            expect(firstImageField).toHaveAttribute(
+                VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
             );
 
-            await waitFor(() => {
-                child1!.dispatchEvent(mouseClickEvent);
-            });
-
-            let replaceButton = document.querySelector(
-                ".visual-builder__replace-button"
+            // Click on second image field
+            await triggerAndWaitForClickAction(
+                visualBuilderPostMessage,
+                secondImageField
             );
-
-            expect(replaceButton).toBeInTheDocument();
-
-            await waitFor(() => {
-                child2!.dispatchEvent(mouseClickEvent);
-            });
-
-            replaceButton = document.querySelector(
-                ".visual-builder__replace-button"
+            expect(secondImageField).toHaveAttribute(
+                VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
             );
-
-            expect(replaceButton).toBeInTheDocument();
-        });
-
-        test.skip("should have a multi field toolbar with button group", async () => {
-
-            const multiFieldToolbar = document.querySelector(
-                ".visual-builder__focused-toolbar__multiple-field-toolbar"
-            );
-
-            const buttonGroup = document.querySelector(
-                ".visual-builder__focused-toolbar__button-group"
-            );
-
-            expect(multiFieldToolbar).toBeInTheDocument();
-            expect(buttonGroup).toBeInTheDocument();
-        });
-
-        test.skip("should have 2 add instance buttons", async () => {
-            fireEvent.click(container.children[0]);
-            await waitFor(() => {
-                expect(container.children[0]).toHaveAttribute(
-                    VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
-                );
-            });
-
-            await waitFor(() => {
-                const addInstanceButtons = screen.getAllByTestId(
-                    "visual-builder-add-instance-button"
-                );
-                expect(addInstanceButtons.length).toBe(2);
-            });
-        });
-
-        test("should contain a data-cslp-field-type attribute", async () => {
-            await waitFor(() => {
-                expect(container).toHaveAttribute(
-                    VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
-                );
-            });
-        });
-
-        test("both container and its children should not contain a contenteditable attribute", async () => {
-            fireEvent.click(container);
-            await waitFor(() => {
-                expect(container).not.toHaveAttribute("contenteditable");
-            });
-
-            fireEvent.click(container.children[0]);
-            await waitFor(() => {
-                expect(container.children[0]).not.toHaveAttribute(
-                    "contenteditable"
-                );
-            });
-
-            fireEvent.click(container.children[1]);
-            await waitFor(() => {
-                expect(container.children[1]).not.toHaveAttribute(
-                    "contenteditable"
-                );
-            });
-        });
-
-        test("should send a focus field message to parent", async () => {
-            await waitFor(() => {
-                expect(visualBuilderPostMessage?.send).toBeCalledWith(
-                    VisualBuilderPostMessageEvents.FOCUS_FIELD,
-                    {
-                        DOMEditStack: getDOMEditStack(container),
-                    }
-                );
-            });
         });
     });
 });

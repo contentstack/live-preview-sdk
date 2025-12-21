@@ -1,10 +1,9 @@
+import { cloneDeep, isEmpty, pick } from "lodash-es";
 import { v4 as uuidv4 } from "uuid";
-
-import { isEmpty } from "lodash-es";
 import { getUserInitData } from "../configManager/config.default";
 import Config, { updateConfigFromUrl } from "../configManager/configManager";
-import { VisualBuilder } from "../visualBuilder";
 import LivePreview from "../livePreview/live-preview";
+import { handlePageTraversal } from "../livePreview/onPageTraversal";
 import { removeFromOnChangeSubscribers } from "../livePreview/removeFromOnChangeSubscribers";
 import {
     OnEntryChangeCallback,
@@ -14,9 +13,9 @@ import {
     OnEntryChangeUnsubscribeParameters,
 } from "../livePreview/types/onEntryChangeCallback.type";
 import { PublicLogger } from "../logger/logger";
-import type { IInitData } from "../types/types";
-import { handlePageTraversal } from "../livePreview/onPageTraversal";
 import { handleWebCompare } from "../timeline/compare/compare";
+import type { IExportedConfig, IInitData } from "../types/types";
+import { VisualBuilder } from "../visualBuilder";
 
 class ContentstackLivePreview {
     private static previewConstructors:
@@ -69,6 +68,26 @@ class ContentstackLivePreview {
             updateConfigFromUrl(); // check if we could extract from the URL
         }
         return Config.get().hash;
+    }
+
+    static get config(): IExportedConfig {
+        if (!ContentstackLivePreview.isInitialized()) {
+            updateConfigFromUrl(); // check if we could extract from the URL
+        }
+        const config = Config.get();
+        const clonedConfig = cloneDeep(config);
+        const configToShare = pick(clonedConfig, [
+            'ssr',
+            'enable',
+            'cleanCslpOnProduction',
+            'stackDetails',
+            'clientUrlParams',
+            'windowType',
+            'hash',
+            'editButton',
+            'mode',
+        ]);
+        return configToShare;
     }
 
     private static isInitialized(): boolean {
@@ -133,7 +152,18 @@ class ContentstackLivePreview {
                 onChangeCallback;
         }
 
-        if (!skipInitialRender) {
+        const searchParams =
+            typeof window !== "undefined"
+                ? new URLSearchParams(window.location.search)
+                : null;
+        const hasLivePreviewHash =
+            searchParams && searchParams.has("live_preview");
+        const isBuilder = searchParams && searchParams.has("builder");
+        const shouldCallCallback = hasLivePreviewHash && isBuilder;
+        // calling onChangeCallback when live_preview search parameter
+        // is present because we don't send the initial client-data-send
+        //  message in visual builder
+        if (!skipInitialRender || shouldCallCallback) {
             onChangeCallback();
         }
 

@@ -39,10 +39,13 @@ export default class LivePreview {
 
         if (config.enable) {
             if (
-                typeof document !== undefined &&
-                document.readyState === "complete"
+                typeof document !== undefined
             ) {
-                this.requestDataSync();
+                if(document.readyState === "interactive" || document.readyState === "complete"){
+                    this.requestDataSync();
+                } else {
+                    document.addEventListener("DOMContentLoaded", this.requestDataSync);
+                }
             } else {
                 window.addEventListener("load", this.requestDataSync);
             }

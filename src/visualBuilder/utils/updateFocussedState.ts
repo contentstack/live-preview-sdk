@@ -3,7 +3,7 @@ import { extractDetailsFromCslp } from "../../cslp";
 import { getAddInstanceButtons } from "../generators/generateAddInstanceButtons";
 import {
     addFocusOverlay,
-    hideFocusOverlay,
+    hideOverlay,
 } from "../generators/generateOverlay";
 import { hideHoverOutline } from "../listeners/mouseHover";
 import {
@@ -12,9 +12,11 @@ import {
     TOOLBAR_EDGE_BUFFER,
     TOP_EDGE_BUFFER,
 } from "./constants";
+import { FieldSchemaMap } from "./fieldSchemaMap";
 import getChildrenDirection from "./getChildrenDirection";
 import { getPsuedoEditableElementStyles } from "./getPsuedoEditableStylesElement";
-import getStyleOfAnElement from "./getStyleOfAnElement";
+import { isFieldDisabled } from "./isFieldDisabled";
+import { fetchEntryPermissionsAndStageDetails } from "./fetchEntryPermissionsAndStageDetails";
 
 interface ToolbarPositionParams {
     focusedToolbar: HTMLElement | null;
@@ -80,7 +82,7 @@ function positionToolbar({
  * create new elements, it just updates the existing ones whenever possible.
  * NOTE: breakdown this function into multiple functions when the need arises
  */
-export function updateFocussedState({
+export async function updateFocussedState({
     editableElement,
     visualBuilderContainer,
     overlayWrapper,
@@ -92,7 +94,7 @@ export function updateFocussedState({
     overlayWrapper: HTMLDivElement | null;
     focusedToolbar: HTMLDivElement | null;
     resizeObserver: ResizeObserver | null;
-}): void {
+}): Promise<void> {
     let previousSelectedEditableDOM =
         VisualBuilder.VisualBuilderGlobalState.value
             .previousSelectedEditableDOM;
@@ -105,13 +107,20 @@ export function updateFocussedState({
         return;
     }
 
+    // prefer data-cslp-unique-id when available else use data-cslp.
+    // unique ID is added on click when multiple elements with same
+    // data-cslp are found.
     const previousSelectedElementCslp =
-        previousSelectedEditableDOM?.getAttribute("data-cslp");
-    const newPreviousSelectedElement = document.querySelector(
-        `[data-cslp="${previousSelectedElementCslp}"]`
-    );
+        editableElement?.getAttribute("data-cslp") || "";
+    const previousSelectedElementCslpUniqueId =
+        previousSelectedEditableDOM?.getAttribute("data-cslp-unique-id");
+    const newPreviousSelectedElement =
+        document.querySelector(
+            `[data-cslp-unique-id="${previousSelectedElementCslpUniqueId}"]`
+        ) ||
+        document.querySelector(`[data-cslp="${previousSelectedElementCslp}"]`);
     if (!newPreviousSelectedElement && resizeObserver) {
-        hideFocusOverlay({
+        hideOverlay({
             visualBuilderOverlayWrapper: overlayWrapper,
             focusedToolbar,
             visualBuilderContainer,
@@ -126,8 +135,36 @@ export function updateFocussedState({
             previousSelectedEditableDOM;
     }
 
+    const cslp = editableElement?.getAttribute("data-cslp") || "";
+    if (!cslp) {
+        return;
+    }
+    const fieldMetadata = extractDetailsFromCslp(cslp);
+
     hideHoverOutline(visualBuilderContainer);
-    addFocusOverlay(previousSelectedEditableDOM, overlayWrapper);
+
+    // in every case, this function will bring cached values
+    // and this should be quick
+    const fieldSchema = await FieldSchemaMap.getFieldSchema(
+        fieldMetadata.content_type_uid,
+        fieldMetadata.fieldPath
+    );
+    const { acl: entryAcl, workflowStage: entryWorkflowStageDetails, resolvedVariantPermissions } =
+        await fetchEntryPermissionsAndStageDetails({
+            entryUid: fieldMetadata.entry_uid,
+            contentTypeUid: fieldMetadata.content_type_uid,
+            locale: fieldMetadata.locale,
+            variantUid: fieldMetadata.variant,
+            fieldPathWithIndex: fieldMetadata.fieldPathWithIndex,
+        });
+    const { isDisabled } = isFieldDisabled(
+        fieldSchema,
+        { editableElement, fieldMetadata },
+        resolvedVariantPermissions,
+        entryAcl,
+        entryWorkflowStageDetails
+    );
+    addFocusOverlay(previousSelectedEditableDOM, overlayWrapper, isDisabled);
 
     // update psuedo editable element if present
     const psuedoEditableElement = visualBuilderContainer.querySelector(
@@ -147,9 +184,6 @@ export function updateFocussedState({
         // when creating the pseudo editable element, so make the psuedo visible
         psuedoEditableElement.style.visibility = "visible";
     }
-
-    const cslp = editableElement?.getAttribute("data-cslp") || "";
-    const fieldMetadata = extractDetailsFromCslp(cslp);
 
     const targetElementDimension = editableElement.getBoundingClientRect();
     if (targetElementDimension.width && targetElementDimension.height) {
@@ -228,11 +262,15 @@ export function updateFocussedStateOnMutation(
     if (!selectedElement) return;
 
     const selectedElementCslp = selectedElement?.getAttribute("data-cslp");
-    const newSelectedElement = document.querySelector(
-        `[data-cslp="${selectedElementCslp}"]`
+    const selectedElementCslpUniqueId = selectedElement?.getAttribute(
+        "data-cslp-unique-id"
     );
+    const newSelectedElement =
+        document.querySelector(
+            `[data-cslp-unique-id="${selectedElementCslpUniqueId}"]`
+        ) || document.querySelector(`[data-cslp="${selectedElementCslp}"]`);
     if (!newSelectedElement && resizeObserver) {
-        hideFocusOverlay({
+        hideOverlay({
             visualBuilderOverlayWrapper: focusOverlayWrapper,
             focusedToolbar,
             visualBuilderContainer,
@@ -266,6 +304,9 @@ export function updateFocussedStateOnMutation(
             focusOutline.style.height = `${selectedElementDimension.height}px`;
         }
     }
+
+    //TODO: This logic for overlay position is already present in generateOverlay as `addFocusOverlay`.
+    // We should refactor this to use the same logic. Refer "VB-593" branch for more details.
 
     /**
      * Update the focus overlays if they exists.
@@ -353,6 +394,8 @@ export function updateFocussedStateOnMutation(
      * Update the focus toolbar if it exists.
      */
 
+    //TODO: This logic for toolbar position is already present in same file as `positionToolbar`.
+    // We should refactor this to use the same logic. Refer "VB-593" branch for more details.
     if (focusedToolbar) {
         const targetElementRightEdgeOffset =
             window.scrollX + window.innerWidth - selectedElementDimension.left;

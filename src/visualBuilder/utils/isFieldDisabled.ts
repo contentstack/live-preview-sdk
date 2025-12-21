@@ -1,55 +1,102 @@
-import { VisualBuilderCslpEventDetails } from "../types/visualBuilder.types";
 import Config from "../../configManager/configManager";
 import { ISchemaFieldMap } from "./types/index.types";
 import { VisualBuilder } from "..";
 import { FieldDetails } from "../components/FieldToolbar";
+import { EntryPermissions } from "./getEntryPermissions";
+import { WorkflowStageDetails } from "./getWorkflowStageDetails";
+import { ResolvedVariantPermissions } from "./getResolvedVariantPermissions";
 
-enum DisableReason {
-    ReadOnly = "You have only read access to this field",
-    LocalizedEntry = "Editing this field is restricted in localized entries",
-    UnlinkedVariant = "This field is not editable as it is not linked to the selected variant",
-    AudienceMode = "Open an Experience from Audience widget to start editing",
-    DisabledVariant = "This field is not editable as it doesn't match the selected variant",
-    UnlocalizedVariant = "This field is not editable as it is not localized",
-    None = "",
-}
+export const DisableReason = {
+    ReadOnly: "You have only read access to this field",
+    LocalizedEntry: "Editing this field is restricted in localized entries",
+    ResolvedVariantPermissions: "This field does not exist in the selected variant",
+    UnlinkedVariant:
+        "This field is not editable as it is not linked to the selected variant.",
+    CanLinkVariant: "Click here to link a variant",
+    UnderlinedAndClickableWord: "here",
+    CannotLinkVariant: "Contact your stack admin or owner to link it.",
+    AudienceMode:
+        "To edit an experience, open the Audience widget and click the Edit icon.",
+    DisabledVariant:
+        "This field is not editable as it doesn't match the selected variant",
+    UnlocalizedVariant: "This field is not editable as it is not localized",
+    None: "",
+    EntryUpdateRestricted: "You do not have permission to edit this entry",
+    WorkflowStagePermission: ({ stageName }: { stageName: string }) =>
+        `You do not have Edit access to this entry on the '${stageName}' workflow stage`,
+    EntryUpdateRestrictedRoleAndWorkflowStage: ({
+        stageName,
+    }: {
+        stageName: string;
+    }) =>
+        `Editing is restricted for your role or by the rules for the '${stageName}' stage. Contact your admin for edit access.`,
+} as const;
 
 interface FieldDisableState {
     isDisabled: boolean;
-    reason: DisableReason;
+    reason: string;
 }
 
-const getDisableReason = (flags: Record<string, boolean>): DisableReason => {
+const getDisableReason = (
+    flags: Record<string, boolean>,
+    params?: Record<string, any>
+) => {
     if (flags.updateRestrictDueToRole) return DisableReason.ReadOnly;
     if (flags.updateRestrictDueToNonLocalizableFields)
         return DisableReason.LocalizedEntry;
     if (flags.updateRestrictDueToUnlocalizedVariant)
         return DisableReason.UnlocalizedVariant;
-    if (flags.updateRestrictDueToUnlinkVariant)
-        return DisableReason.UnlinkedVariant;
+    if (flags.updateRestrictDueToUnlinkVariant) {
+        return flags.canLinkVariant
+            ? `${DisableReason.UnlinkedVariant} ${DisableReason.CanLinkVariant} `
+            : `${DisableReason.UnlinkedVariant} ${DisableReason.CannotLinkVariant}`;
+    }
     if (flags.updateRestrictDueToAudienceMode)
         return DisableReason.AudienceMode;
     if (flags.updateRestrictDueToDisabledVariant)
         return DisableReason.DisabledVariant;
+    if (
+        flags.updateRestrictDueToEntryUpdateRestriction &&
+        flags.updateRestrictDueToWorkflowStagePermission
+    ) {
+        return DisableReason.EntryUpdateRestrictedRoleAndWorkflowStage({
+            stageName: params?.stageName ? params.stageName : "Unknown",
+        });
+    }
+    if (flags.updateRestrictDueToEntryUpdateRestriction) {
+        return DisableReason.EntryUpdateRestricted;
+    }
+    if (flags.updateRestrictDueToWorkflowStagePermission) {
+        return DisableReason.WorkflowStagePermission({
+            stageName: params?.stageName ? params.stageName : "Unknown",
+        });
+    }
+    if(flags.updateRestrictDueToResolvedVariantPermissions) {
+        return DisableReason.ResolvedVariantPermissions;
+    }
     return DisableReason.None;
 };
 
 export const isFieldDisabled = (
     fieldSchemaMap: ISchemaFieldMap,
-    eventFieldDetails: FieldDetails
+    eventFieldDetails: FieldDetails,
+    resolvedVariantPermissions?: ResolvedVariantPermissions,
+    entryPermissions?: EntryPermissions,
+    entryWorkflowStageDetails?: WorkflowStageDetails,
 ): FieldDisableState => {
     const { editableElement, fieldMetadata } = eventFieldDetails;
     const masterLocale = Config.get().stackDetails.masterLocale || "en-us";
     const { locale: cmsLocale, variant } =
         VisualBuilder.VisualBuilderGlobalState.value;
 
-    const flags = {
+    const flags: Record<string, boolean> = {
         updateRestrictDueToRole: Boolean(
             fieldSchemaMap?.field_metadata?.updateRestrict
         ),
         updateRestrictDueToUnlinkVariant: Boolean(
             fieldSchemaMap?.field_metadata?.isUnlinkedVariant
         ),
+        canLinkVariant: Boolean(fieldSchemaMap?.field_metadata?.canLinkVariant),
         updateRestrictDueToUnlocalizedVariant: Boolean(
             variant && fieldMetadata.locale !== cmsLocale
         ),
@@ -57,9 +104,30 @@ export const isFieldDisabled = (
             fieldSchemaMap?.non_localizable &&
                 masterLocale !== fieldMetadata.locale
         ),
+        updateRestrictDueToResolvedVariantPermissions: resolvedVariantPermissions ? Boolean(
+            !resolvedVariantPermissions.update
+        ) : false,
         updateRestrictDueToAudienceMode: false,
         updateRestrictDueToDisabledVariant: false,
     };
+
+    if (entryPermissions && !entryPermissions.update) {
+        flags.updateRestrictDueToEntryUpdateRestriction = true;
+    }
+
+    if (
+        entryWorkflowStageDetails &&
+        !entryWorkflowStageDetails.permissions.entry.update
+    ) {
+        flags.updateRestrictDueToWorkflowStagePermission = true;
+    }
+
+    if(VisualBuilder.VisualBuilderGlobalState.value.audienceMode
+        && editableElement.classList.contains("visual-builder__lower-order-variant-field")) {
+        // If resolvedVariantPermissions errors out for any reason, we need to disable editing
+        // for lower order (priority) variant fields with updateRestrictDueToDisabledVariant's message
+        flags.updateRestrictDueToDisabledVariant = resolvedVariantPermissions ? !!resolvedVariantPermissions.error : false;
+    }
 
     if (
         VisualBuilder.VisualBuilderGlobalState.value.audienceMode &&
@@ -78,7 +146,9 @@ export const isFieldDisabled = (
     }
 
     const isDisabled = Object.values(flags).some(Boolean);
-    const reason = getDisableReason(flags);
+    const reason = getDisableReason(flags, {
+        stageName: entryWorkflowStageDetails?.stage?.name,
+    });
 
     return { isDisabled, reason };
 };

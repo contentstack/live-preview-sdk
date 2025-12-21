@@ -91,9 +91,19 @@ export class FieldSchemaMap {
     }
 
     /**
+     * Clears the field schemas for a specific content type.
+     * @param contentTypeUid The unique identifier of the content type.
+     */
+    static clearContentTypeSchema(contentTypeUid: string): void {
+        delete FieldSchemaMap.fieldSchema[contentTypeUid];
+        delete FieldSchemaMap.fieldSchemaPromise[contentTypeUid];
+    }
+
+    /**
      * Clears the field schema cache.
      */
     static clear(): void {
         FieldSchemaMap.fieldSchema = {};
+        FieldSchemaMap.fieldSchemaPromise = {};
     }
 }

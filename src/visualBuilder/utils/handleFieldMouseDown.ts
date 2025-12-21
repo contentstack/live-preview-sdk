@@ -8,6 +8,7 @@ import {
 import { FieldDataType } from "./types/index.types";
 import { VisualBuilderPostMessageEvents } from "./types/postMessage.types";
 import { insertSpaceAtCursor } from "./insertSpaceAtCursor";
+import { VisualBuilder } from "..";
 
 export function handleFieldInput(e: Event): void {
     const event = e as InputEvent;
@@ -15,10 +16,23 @@ export function handleFieldInput(e: Event): void {
     const fieldType = targetElement.getAttribute(
         VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
     ) as FieldDataType | null;
+
+    const previousLastEditedElement = document.querySelector("[data-cs-last-edited]");
+    if (previousLastEditedElement !== targetElement) {
+        previousLastEditedElement?.removeAttribute("data-cs-last-edited");
+        targetElement.setAttribute("data-cs-last-edited", "true");
+    }
     if (
         event.type === "input" &&
         ALLOWED_INLINE_EDITABLE_FIELD.includes(fieldType as FieldDataType)
     ) {
+        if (
+            !VisualBuilder.VisualBuilderGlobalState.value
+                .focusFieldReceivedInput
+        ) {
+            VisualBuilder.VisualBuilderGlobalState.value.focusFieldReceivedInput =
+                true;
+        }
         throttledFieldSync();
     }
 }
@@ -44,7 +58,15 @@ export function handleFieldKeyDown(e: Event): void {
         VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
     ) as FieldDataType | null;
 
-    if (targetElement.tagName === "BUTTON") {
+    if (
+        event
+            .composedPath()
+            .some(
+                (element) =>
+                    element instanceof Element && element.tagName === "BUTTON"
+            )
+    ) {
+        // custom space handling when a button is involved
         handleKeyDownOnButton(event);
     }
     if (fieldType === FieldDataType.NUMBER) {
@@ -56,11 +78,12 @@ export function handleFieldKeyDown(e: Event): void {
 
 // spaces do not work inside a button content-editable
 // this adds a space and moves the cursor ahead, the
-// button press event is also prevented
+// button press event is also prevented, finally syncs the field
 function handleKeyDownOnButton(e: KeyboardEvent) {
     if (e.code === "Space" && e.target) {
         e.preventDefault();
         insertSpaceAtCursor(e.target as HTMLElement);
+        throttledFieldSync();
     }
 }
 

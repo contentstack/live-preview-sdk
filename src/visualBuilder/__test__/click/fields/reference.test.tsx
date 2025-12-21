@@ -9,7 +9,11 @@ import visualBuilderPostMessage from "../../../utils/visualBuilderPostMessage";
 import { vi } from "vitest";
 import { VisualBuilderPostMessageEvents } from "../../../utils/types/postMessage.types";
 import { VisualBuilder } from "../../../index";
-import { triggerAndWaitForClickAction } from "../../../../__test__/utils";
+import {
+    mockGetBoundingClientRect,
+    sleep,
+    triggerAndWaitForClickAction,
+} from "../../../../__test__/utils";
 
 vi.mock("../../../components/FieldToolbar", () => {
     return {
@@ -49,8 +53,16 @@ vi.mock("../../../utils/visualBuilderPostMessage", async () => {
     };
 });
 
-describe("When an element is clicked in visual builder mode", () => {
+vi.mock("../../../../utils/index.ts", async () => {
+    const actual = await vi.importActual("../../../../utils");
+    return {
+        __esModule: true,
+        ...actual,
+        isOpenInBuilder: vi.fn().mockReturnValue(true),
+    };
+});
 
+describe("When an element is clicked in visual builder mode", () => {
     beforeAll(async () => {
         FieldSchemaMap.setFieldSchema(
             "all_fields",
@@ -89,58 +101,34 @@ describe("When an element is clicked in visual builder mode", () => {
                 "data-cslp",
                 "all_fields.bltapikey.en-us.reference"
             );
+            mockGetBoundingClientRect(referenceField);
             document.body.appendChild(referenceField);
 
             visualBuilder = new VisualBuilder();
-            await triggerAndWaitForClickAction(visualBuilderPostMessage, referenceField)
+            await triggerAndWaitForClickAction(
+                visualBuilderPostMessage,
+                referenceField
+            );
         });
 
         afterAll(() => {
             visualBuilder.destroy();
         });
 
-        test("should have outline", () => {
+        // Common tests (field type, overlay, dropdown, focus message, no contenteditable) are covered in all-click.test.tsx
+        // Only testing unique behavior: reference fields have a specific outline style
+        test("should have outline", async () => {
             const hoverOutline = document.querySelector(
-                "[data-testid='visual-builder__hover-outline']"
+                "[data-testid='visual-builder__overlay--outline']"
             );
-            expect(hoverOutline).toMatchSnapshot();
-        });
+            await waitFor(() => {
+                expect(hoverOutline).toHaveAttribute("style");
+            });
 
-        test("should have an overlay", () => {
-            const overlay = document.querySelector(".visual-builder__overlay");
-            expect(overlay!.classList.contains("visible"));
-        });
-
-        test.skip("should have a field path dropdown", () => {
-            const toolbar = document.querySelector(
-                ".visual-builder__focused-toolbar__field-label-wrapper__current-field"
+            expect(hoverOutline).toHaveAttribute(
+                "style",
+                "top: 10px; height: 5px; width: 10px; left: 10px; outline-color: rgb(113, 92, 221);"
             );
-            expect(toolbar).toBeInTheDocument();
-        });
-
-        test("should contain a data-cslp-field-type attribute", async () => {
-            await waitFor(() => {
-                expect(referenceField).toHaveAttribute(
-                    VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
-                );
-            });
-        });
-
-        test("should not contain a contenteditable attribute", async () => {
-            await waitFor(() => {
-                expect(referenceField).not.toHaveAttribute("contenteditable");
-            });
-        });
-
-        test("should send a focus field message to parent", async () => {
-            await waitFor(() => {
-                expect(visualBuilderPostMessage?.send).toBeCalledWith(
-                    VisualBuilderPostMessageEvents.FOCUS_FIELD,
-                    {
-                        DOMEditStack: getDOMEditStack(referenceField),
-                    }
-                );
-            });
         });
     });
 
@@ -169,105 +157,35 @@ describe("When an element is clicked in visual builder mode", () => {
                 "all_fields.bltapikey.en-us.reference_multiple_.1"
             );
 
+            mockGetBoundingClientRect(container);
             container.appendChild(firstReferenceField);
             container.appendChild(secondReferenceField);
             document.body.appendChild(container);
 
             visualBuilder = new VisualBuilder();
-            await triggerAndWaitForClickAction(visualBuilderPostMessage, container);
+            await triggerAndWaitForClickAction(
+                visualBuilderPostMessage,
+                container
+            );
         });
 
         afterAll(() => {
             visualBuilder.destroy();
         });
 
-        test("should have outline", () => {
+        // Common tests (field type, overlay, dropdown, focus message, no contenteditable) are covered in all-click.test.tsx
+        // Only testing unique behavior: reference fields have a specific outline style
+        test("should have outline", async () => {
             const hoverOutline = document.querySelector(
-                "[data-testid='visual-builder__hover-outline']"
+                "[data-testid='visual-builder__overlay--outline']"
             );
-            expect(hoverOutline).toMatchSnapshot();
-        });
-
-        test("should have an overlay", () => {
-            const overlay = document.querySelector(".visual-builder__overlay");
-            expect(overlay!.classList.contains("visible"));
-        });
-
-        test.skip("should have a field path dropdown", () => {
-            const toolbar = document.querySelector(
-                ".visual-builder__focused-toolbar__field-label-wrapper__current-field"
+            await waitFor(() => {
+                expect(hoverOutline).toHaveAttribute("style");
+            });
+            expect(hoverOutline).toHaveAttribute(
+                "style",
+                "top: 10px; height: 5px; width: 10px; left: 10px; outline-color: rgb(113, 92, 221);"
             );
-            expect(toolbar).toBeInTheDocument();
-        });
-
-        // TODO should be a test of FieldToolbar
-        test.skip("should have a multi field toolbar with button group", async () => {
-            const multiFieldToolbar = document.querySelector(
-                ".visual-builder__focused-toolbar__multiple-field-toolbar"
-            );
-
-            const buttonGroup = document.querySelector(
-                ".visual-builder__focused-toolbar__button-group"
-            );
-
-            expect(multiFieldToolbar).toBeInTheDocument();
-            expect(buttonGroup).toBeInTheDocument();
-        });
-
-        test.skip("should have 2 add instance buttons", async () => {
-            fireEvent.click(container.children[0]);
-            await waitFor(() => {
-                expect(container.children[0]).toHaveAttribute(
-                    VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
-                );
-            });
-
-            await waitFor(() => {
-                const addInstanceButtons = screen.getAllByTestId(
-                    "visual-builder-add-instance-button"
-                );
-                expect(addInstanceButtons.length).toBe(2);
-            });
-        });
-
-        test("should contain a data-cslp-field-type attribute", async () => {
-            await waitFor(() => {
-                expect(container).toHaveAttribute(
-                    VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
-                );
-            });
-        });
-
-        test("both container and its children should not contain a contenteditable attribute", async () => {
-            fireEvent.click(container);
-            await waitFor(() => {
-                expect(container).not.toHaveAttribute("contenteditable");
-            });
-
-            fireEvent.click(container.children[0]);
-            await waitFor(() => {
-                expect(container.children[0]).not.toHaveAttribute(
-                    "contenteditable"
-                );
-            });
-
-            fireEvent.click(container.children[1]);
-            await waitFor(() => {
-                expect(container.children[1]).not.toHaveAttribute(
-                    "contenteditable"
-                );
-            });
-        });
-
-        test("should send a focus field message to parent", async () => {
-            await waitFor(() => {
-                expect(visualBuilderPostMessage?.send).toBeCalledWith(
-                    VisualBuilderPostMessageEvents.FOCUS_FIELD,
-                    {
-                        DOMEditStack: getDOMEditStack(container),
-                    }
-                );
-            });
         });
     });
 });

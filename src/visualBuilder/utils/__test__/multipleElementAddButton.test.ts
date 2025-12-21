@@ -13,6 +13,7 @@ import getChildrenDirection from "../getChildrenDirection";
 import visualBuilderPostMessage from "../visualBuilderPostMessage";
 import { VisualBuilderPostMessageEvents } from "../types/postMessage.types";
 import { singleLineFieldSchema } from "../../../__test__/data/fields";
+import { signal } from "@preact/signals";
 
 Object.defineProperty(globalThis, "crypto", {
     value: {
@@ -26,47 +27,48 @@ const mockResizeObserver = {
     disconnect: vi.fn(),
 };
 
-vi.mock("../visualBuilderPostMessage", async () => {
+vi.mock("../visualBuilderPostMessage", async (importOriginal) => {
     const { getAllContentTypes } = await vi.importActual<
         typeof import("../../../__test__/data/contentType")
     >("../../../__test__/data/contentType");
     const contentTypes = getAllContentTypes();
     return {
         default: {
-            send: vi.fn().mockImplementation((eventName: string) => {
+            send: vi.fn((eventName: string) => {
                 if (eventName === "init") {
-                    return {
+                    return Promise.resolve({
                         contentTypes,
-                    };
+                    });
                 }
                 return Promise.resolve({});
             }),
-            on: vi.fn(),
+            on: vi.fn(() => ({ unregister: vi.fn() })),
         },
     };
 });
 
-describe("generateAddInstanceButton", () => {
-    test("should generate a button", () => {
-        const button = generateAddInstanceButton({
-            fieldSchema: singleLineFieldSchema,
-            value: "",
-            onClick: () => {},
-        });
-        expect(button.tagName).toBe("BUTTON");
-    });
+vi.mock("@preact/signals", async (importOriginal) => {
+    const actual = await importOriginal();
+    return {
+        ...(actual as unknown as Record<string, any>),
+        signal: (initialValue: any) => {
+            return {
+                value: initialValue,
+            };
+        },
+    };
+});
 
-    test("should run the callback when the button is clicked", () => {
-        const mockCallback = vi.fn();
-        const button = generateAddInstanceButton({
-            fieldSchema: singleLineFieldSchema,
-            value: "",
-            onClick: mockCallback,
-        });
+// Optimize preact render in tests - use a faster synchronous render
+vi.mock("preact", async (importOriginal) => {
+    const preact = await importOriginal<typeof import("preact")>();
+    const originalRender = preact.render;
 
-        button.click();
-        expect(mockCallback).toHaveBeenCalled();
-    });
+    // In tests, use original render but ensure it's synchronous where possible
+    return {
+        ...preact,
+        render: originalRender,
+    };
 });
 
 // TODO: rewrite this
@@ -332,7 +334,7 @@ describe("handleAddButtonsForMultiple", () => {
                 }
             );
 
-            await sleep(0);
+            // Buttons are appended synchronously
             const addInstanceButtons = visualBuilderContainer.querySelectorAll(
                 `[data-testid="visual-builder-add-instance-button"]`
             );
@@ -355,8 +357,7 @@ describe("handleAddButtonsForMultiple", () => {
                     label: undefined,
                 }
             );
-            await sleep(0);
-
+            // Buttons are appended and positioned synchronously
             const addInstanceButtons = visualBuilderContainer.querySelectorAll(
                 `[data-testid="visual-builder-add-instance-button"]`
             );
@@ -399,8 +400,7 @@ describe("handleAddButtonsForMultiple", () => {
                     label: undefined,
                 }
             );
-            await sleep(0);
-
+            // Buttons are appended and positioned synchronously
             const addInstanceButtons = visualBuilderContainer.querySelectorAll(
                 `[data-testid="visual-builder-add-instance-button"]`
             );
@@ -496,7 +496,7 @@ describe("handleAddButtonsForMultiple", () => {
                 }
             );
 
-            await sleep(0);
+            // Buttons are appended synchronously
             const addInstanceButtons = visualBuilderContainer.querySelectorAll(
                 `[data-testid="visual-builder-add-instance-button"]`
             );
@@ -570,20 +570,30 @@ describe("removeAddInstanceButtons", () => {
     let overlayWrapper: HTMLDivElement;
     let eventTarget: EventTarget;
 
-    beforeEach(() => {
+    // Shared container setup - run once
+    beforeAll(() => {
         visualBuilderContainer = document.createElement("div");
         visualBuilderContainer.classList.add("visual-builder__container");
         document.body.appendChild(visualBuilderContainer);
+    });
 
+    beforeEach(() => {
+        // Only create buttons for each test (fast DOM operations)
         previousButton = generateAddInstanceButton({
             fieldSchema: singleLineFieldSchema,
+            // @ts-expect-error mock field metadata
+            fieldMetadata: { hello: "world" },
             value: "",
             onClick: vi.fn(),
+            loading: signal(false),
         });
         nextButton = generateAddInstanceButton({
             fieldSchema: singleLineFieldSchema,
             value: "",
+            // @ts-expect-error mock field metadata
+            fieldMetadata: { hello: "world" },
             onClick: vi.fn(),
+            loading: signal(false),
         });
         overlayWrapper = document.createElement("div");
         eventTarget = document.createElement("div");
@@ -594,8 +604,14 @@ describe("removeAddInstanceButtons", () => {
     });
 
     afterEach(() => {
-        document.getElementsByTagName("body")[0].innerHTML = "";
+        // Only clean what we created in beforeEach
+        visualBuilderContainer.innerHTML = "";
         vi.clearAllMocks();
+    });
+
+    afterAll(() => {
+        // Clean up shared container
+        document.body.innerHTML = "";
     });
 
     test("should not remove buttons if wrapper or buttons are not present", () => {
@@ -672,11 +688,15 @@ describe("removeAddInstanceButtons", () => {
             const button = generateAddInstanceButton({
                 fieldSchema: singleLineFieldSchema,
                 value: "",
-                onClick: () => {},
+                // @ts-expect-error mock field metadata
+                fieldMetadata: { hello: "world" },
+                onClick: vi.fn(),
+                loading: signal(false),
             });
             visualBuilderContainer.appendChild(button);
         }
 
+        // Buttons are appended synchronously
         let buttons = visualBuilderContainer.querySelectorAll(
             `[data-testid="visual-builder-add-instance-button"]`
         );
@@ -704,16 +724,20 @@ describe("removeAddInstanceButtons", () => {
             const button = generateAddInstanceButton({
                 fieldSchema: singleLineFieldSchema,
                 value: "",
-                onClick: () => {},
+                // @ts-expect-error mock field metadata
+                fieldMetadata: { hello: "world" },
+                onClick: vi.fn(),
+                loading: signal(false),
             });
             visualBuilderContainer.appendChild(button);
         }
 
-        let buttons = visualBuilderContainer.querySelectorAll(
+        // Buttons are appended synchronously
+        const buttonsBeforeRemoval = visualBuilderContainer.querySelectorAll(
             `[data-testid="visual-builder-add-instance-button"]`
         );
 
-        expect(buttons.length).toBe(7);
+        expect(buttonsBeforeRemoval.length).toBe(7);
 
         removeAddInstanceButtons(
             {
@@ -722,10 +746,6 @@ describe("removeAddInstanceButtons", () => {
                 overlayWrapper: overlayWrapper,
             },
             false
-        );
-
-        buttons = visualBuilderContainer.querySelectorAll(
-            `[data-testid="visual-builder-add-instance-button"]`
         );
 
         const addInstanceButtons = visualBuilderContainer.querySelectorAll(

@@ -1,6 +1,10 @@
 import { VisualBuilder } from "..";
+import { removeFieldToolbar } from "../generators/generateToolbar";
 import handleBuilderInteraction from "./mouseClick";
 import handleMouseHover, {
+    cancelPendingAddOutline,
+    cancelPendingHoverToolbar,
+    cancelPendingMouseHover,
     hideCustomCursor,
     hideHoverOutline,
     showCustomCursor,
@@ -35,11 +39,20 @@ const eventHandlers = {
             overlayWrapper: params.overlayWrapper,
             visualBuilderContainer: params.visualBuilderContainer,
             customCursor: params.customCursor,
+            resizeObserver: params.resizeObserver,
+            focusedToolbar: params.focusedToolbar,
         });
     },
     mouseleave: (params: AddEventListenersParams) => () => {
+        cancelPendingMouseHover();
+        cancelPendingHoverToolbar();
+        cancelPendingAddOutline();
+        
         hideCustomCursor(params.customCursor);
         hideHoverOutline(params.visualBuilderContainer);
+        if(!VisualBuilder?.VisualBuilderGlobalState?.value?.isFocussed && params?.focusedToolbar) {
+            removeFieldToolbar(params.focusedToolbar);
+        }
     },
     mouseenter: (params: AddEventListenersParams) => () => {
         showCustomCursor(params.customCursor);
@@ -55,7 +68,7 @@ export function addEventListeners(params: AddEventListenersParams): void {
     eventListenersMap.set("click", clickHandler as EventListener);
     eventListenersMap.set("mousemove", mousemoveHandler as EventListener);
     eventListenersMap.set("mouseleave", mouseleaveHandler);
-    eventListenersMap.set("mouseenter", mouseenterHandler);
+    eventListenersMap.set("mouseenter", mouseenterHandler as EventListener);
 
     window.addEventListener("click", clickHandler, { capture: true });
     window.addEventListener("mousemove", mousemoveHandler);

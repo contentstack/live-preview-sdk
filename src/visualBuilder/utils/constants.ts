@@ -16,6 +16,17 @@ export const TOOLBAR_EDGE_BUFFER = 8;
 
 export const DATA_CSLP_ATTR_SELECTOR = "data-cslp";
 
+export const RESULT_TYPES = Object.freeze({
+    SUCCESS: "success",
+    ERROR: "error",
+});
+
+export const WORKFLOW_STAGES = Object.freeze({
+    REVIEW: "Review Stage",
+    FINAL_REVIEW: "Final Review",
+    UNKNOWN: "Unknown",
+});
+
 /**
  * The field that can be directly modified using contenteditable=true.
  * This includes all text fields like title and numbers.
@@ -48,3 +59,6 @@ export const DEFAULT_MULTIPLE_FIELDS: FieldDataType[] = [
 ];
 
 export const unicodeNonBreakingSpace = "\u00A0";
+
+export const mentionLimit = 20;
+export const maxMessageLength = 500;

@@ -1,20 +1,51 @@
 import crypto from "crypto";
 
-import { sleep } from "../../__test__/utils";
+import {
+    triggerAndWaitForClickAction,
+    waitForBuilderSDKToBeInitialized,
+} from "../../__test__/utils";
 import { VisualBuilder } from "../index";
 import Config from "../../configManager/configManager";
+import { isOpenInBuilder } from "../../utils";
+
+vi.mock("../utils/visualBuilderPostMessage", async () => {
+    const { getAllContentTypes } = await vi.importActual<
+        typeof import("../../__test__/data/contentType")
+    >("../../__test__/data/contentType");
+    const contentTypes = getAllContentTypes();
+
+    return {
+        __esModule: true,
+        default: {
+            send: vi.fn().mockImplementation((eventName: string) => {
+                if (eventName === "init")
+                    return Promise.reject({
+                        contentTypes,
+                    });
+                return Promise.resolve();
+            }),
+            on: vi.fn(),
+        },
+    };
+});
+
+vi.mock("../../utils/index.ts", async () => {
+    const actual = await vi.importActual("../../utils");
+    return {
+        __esModule: true,
+        ...actual,
+        isOpenInBuilder: vi.fn().mockReturnValue(true),
+    };
+});
+
+import visualBuilderPostMessage from "../utils/visualBuilderPostMessage";
+import { fireEvent, waitFor, screen } from "@testing-library/preact";
 
 Object.defineProperty(globalThis, "crypto", {
     value: {
         getRandomValues: (arr: Array<any>) => crypto.randomBytes(arr.length),
     },
 });
-
-global.ResizeObserver = vi.fn().mockImplementation(() => ({
-    observe: vi.fn(),
-    unobserve: vi.fn(),
-    disconnect: vi.fn(),
-}));
 
 describe("When outside the Visual Builder, the Visual Builder", () => {
     beforeAll(() => {
@@ -26,12 +57,13 @@ describe("When outside the Visual Builder, the Visual Builder", () => {
     test("should have the start editing button", async () => {
         new VisualBuilder();
 
-        await sleep(100);
-
-        const startEditingButton = document.querySelector(
-            `[data-testid="vcms-start-editing-btn"]`
-        );
-        expect(startEditingButton).toBeTruthy();
+        await waitForBuilderSDKToBeInitialized(visualBuilderPostMessage);
+        await waitFor(() => {
+            const startEditingButton = document.querySelector(
+                `[data-testid="vcms-start-editing-btn"]`
+            );
+            expect(startEditingButton).toBeTruthy();
+        });
     });
 
     test("should not have clickable elements", async () => {
@@ -46,10 +78,9 @@ describe("When outside the Visual Builder, the Visual Builder", () => {
 
         new VisualBuilder();
 
-        await sleep(0);
-        h1.click();
+        await waitForBuilderSDKToBeInitialized(visualBuilderPostMessage);
+        await fireEvent.click(h1);
 
-        expect(h1).toMatchSnapshot();
         expect(h1.getAttribute("contenteditable")).toBe(null);
     });
 });

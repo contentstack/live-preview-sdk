@@ -1,9 +1,9 @@
 import { CslpData } from "../../cslp/types/cslp.types";
+import { CslpData as CslpDataUtil } from "../../utils/cslpdata";
 import getChildrenDirection from "../utils/getChildrenDirection";
 import {
     ALLOWED_MODAL_EDITABLE_FIELD,
     ALLOWED_REPLACE_FIELDS,
-    DEFAULT_MULTIPLE_FIELDS,
 } from "../utils/constants";
 import { getFieldType } from "../utils/getFieldType";
 import {
@@ -24,7 +24,7 @@ import { fieldIcons } from "./icons/fields";
 import classNames from "classnames";
 import { visualBuilderStyles } from "../visualBuilder.style";
 import CommentIcon from "./CommentIcon";
-import React, { useEffect, useState } from "preact/compat";
+import React, { useEffect, useState, useRef } from "preact/compat";
 import { FieldSchemaMap } from "../utils/fieldSchemaMap";
 import { isFieldDisabled } from "../utils/isFieldDisabled";
 import { IReferenceContentTypeSchema } from "../../cms/types/contentTypeSchema.types";
@@ -34,10 +34,16 @@ import { getDOMEditStack } from "../utils/getCsDataOfElement";
 import { VariantIcon } from "./icons/variant";
 import {
     BASE_VARIANT_STATUS,
-    FieldRevertComponent,
     getFieldVariantStatus,
     IVariantStatus,
+    VariantRevertDropdown,
 } from "./FieldRevert/FieldRevertComponent";
+import { LoadingIcon } from "./icons/loading";
+import { EntryPermissions } from "../utils/getEntryPermissions";
+import { FieldLocationAppList } from "./FieldLocationAppList";
+import { FieldLocationIcon } from "./FieldLocationIcon";
+import { WorkflowStageDetails } from "../utils/getWorkflowStageDetails";
+import { ResolvedVariantPermissions } from "../utils/getResolvedVariantPermissions";
 
 export type FieldDetails = Pick<
     VisualBuilderCslpEventDetails,
@@ -49,6 +55,10 @@ const TOOLTIP_TOP_EDGE_BUFFER = 96;
 interface MultipleFieldToolbarProps {
     eventDetails: VisualBuilderCslpEventDetails;
     hideOverlay: () => void;
+    isVariant?: boolean;
+    entryPermissions?: EntryPermissions | undefined;
+    entryWorkflowStageDetails?: WorkflowStageDetails | undefined;
+    resolvedVariantPermissions?: ResolvedVariantPermissions | undefined;
 }
 
 function handleReplaceAsset(fieldMetadata: CslpData) {
@@ -91,33 +101,41 @@ function handleEdit(fieldMetadata: CslpData) {
 }
 
 function handleFormFieldFocus(eventDetails: VisualBuilderCslpEventDetails) {
-    const { editableElement, fieldMetadata, cslpData } = eventDetails;
-    visualBuilderPostMessage
-        ?.send(VisualBuilderPostMessageEvents.TOGGLE_FORM, {
-            fieldMetadata,
-            cslpData,
-        })
-        .then(() => {
-            visualBuilderPostMessage?.send(
-                VisualBuilderPostMessageEvents.FOCUS_FIELD,
-                {
-                    DOMEditStack: getDOMEditStack(editableElement),
-                }
-            );
-        });
+    const { editableElement } = eventDetails;
+    return visualBuilderPostMessage?.send(
+        VisualBuilderPostMessageEvents.FOCUS_FIELD,
+        {
+            DOMEditStack: getDOMEditStack(editableElement),
+            toggleVisibility: true,
+        }
+    );
 }
 
 function FieldToolbarComponent(
     props: MultipleFieldToolbarProps
 ): JSX.Element | null {
-    const { eventDetails } = props;
+    const {
+        eventDetails,
+        isVariant: isVariantOrParentOfVariant,
+        entryPermissions,
+        entryWorkflowStageDetails,
+        resolvedVariantPermissions,
+    } = props;
     const { fieldMetadata, editableElement: targetElement } = eventDetails;
+    const [isFormLoading, setIsFormLoading] = useState(false);
+    const [fieldLocationData, setFieldLocationData] = useState<any>(null);
+    const [displayAllApps, setDisplayAllApps] = useState(false);
+    const moreButtonRef = useRef<HTMLButtonElement>(null);
+    const toolbarRef = useRef<HTMLDivElement>(null);
+    const [appListPosition, setAppListPosition] = useState<"left" | "right">(
+        "right"
+    );
 
     const parentPath =
         fieldMetadata?.multipleFieldMetadata?.parentDetails?.parentCslpValue ||
         "";
+    const isVariant = !!fieldMetadata?.variant || isVariantOrParentOfVariant;
     const direction = getChildrenDirection(targetElement, parentPath);
-    const isVariant = !!fieldMetadata?.variant;
     const [fieldSchema, setFieldSchema] = useState<ISchemaFieldMap | null>(
         null
     );
@@ -132,21 +150,23 @@ function FieldToolbarComponent(
     let Icon = null;
     let fieldType = null;
     let isWholeMultipleField = false;
+    const APP_LIST_MIN_WIDTH = 230;
 
+    let disableFieldActions = false;
     if (fieldSchema) {
-        const { isDisabled } = isFieldDisabled(fieldSchema, {
-            editableElement: targetElement,
-            fieldMetadata,
-        });
-
-        // field is disabled, no actions needed
-        if (isDisabled) {
-            return null;
-        }
+        const { isDisabled } = isFieldDisabled(
+            fieldSchema,
+            {
+                editableElement: targetElement,
+                fieldMetadata,
+            },
+            resolvedVariantPermissions,
+            entryPermissions,
+            entryWorkflowStageDetails,
+        );
+        disableFieldActions = isDisabled;
 
         fieldType = getFieldType(fieldSchema);
-        isModalEditable = ALLOWED_MODAL_EDITABLE_FIELD.includes(fieldType);
-        isReplaceAllowed = ALLOWED_REPLACE_FIELDS.includes(fieldType);
 
         Icon = fieldIcons[fieldType];
 
@@ -168,16 +188,44 @@ function FieldToolbarComponent(
                 fieldMetadata.instance.fieldPathWithIndex ||
                 fieldMetadata.multipleFieldMetadata?.index === -1);
 
-        if (
-            DEFAULT_MULTIPLE_FIELDS.includes(fieldType) &&
-            isWholeMultipleField
-        ) {
-            return null;
-        }
+        isModalEditable = ALLOWED_MODAL_EDITABLE_FIELD.includes(fieldType) && !isWholeMultipleField;
+
+        isReplaceAllowed =
+            ALLOWED_REPLACE_FIELDS.includes(fieldType) && !isWholeMultipleField;
+        // if (
+        //     DEFAULT_MULTIPLE_FIELDS.includes(fieldType) &&
+        //     isWholeMultipleField &&
+        //      !isVariant
+        // ) {
+        //     return null;
+        // }
     }
+
+    const domEditStack=getDOMEditStack(eventDetails.editableElement) as CslpDataUtil[]
+
 
     const invertTooltipPosition =
         targetElement.getBoundingClientRect().top <= TOOLTIP_TOP_EDGE_BUFFER;
+
+    const handleMoreIconClick = () => {
+        if (toolbarRef.current) {
+            const rect = toolbarRef.current.getBoundingClientRect();
+            const spaceRight = window.innerWidth - rect.right;
+            const spaceLeft = rect.left;
+            let position = "";
+
+            if (spaceRight < APP_LIST_MIN_WIDTH) {
+                position = "left";
+            } else if (spaceRight > APP_LIST_MIN_WIDTH) {
+                position = "right";
+            } else {
+                position = spaceRight > spaceLeft ? "right" : "left";
+            }
+            setAppListPosition(position as "left" | "right");
+        }
+
+        setDisplayAllApps(!displayAllApps);
+    };
 
     const editButton = Icon ? (
         <button
@@ -202,6 +250,7 @@ function FieldToolbarComponent(
                 e.stopPropagation();
                 handleEdit(fieldMetadata);
             }}
+            disabled={disableFieldActions}
         >
             <Icon />
         </button>
@@ -233,6 +282,7 @@ function FieldToolbarComponent(
                     return;
                 }
             }}
+            disabled={disableFieldActions}
         >
             <ReplaceAssetIcon />
         </button>
@@ -249,15 +299,29 @@ function FieldToolbarComponent(
                     "visual-builder__tooltip--bottom": invertTooltipPosition,
                     [visualBuilderStyles()["visual-builder__tooltip--bottom"]]:
                         invertTooltipPosition,
+                },
+                {
+                    [visualBuilderStyles()[
+                        "visual-builder__button--comment-loader"
+                    ]]: isFormLoading,
+                    "visual-builder__button--comment-loader": isFormLoading,
                 }
             )}
             data-tooltip={"Form"}
             data-testid={`visual-builder-form`}
-            onClick={(e) => {
-                handleFormFieldFocus(eventDetails);
+            onClick={async (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setIsFormLoading(true);
+                try {
+                    await handleFormFieldFocus(eventDetails);
+                } finally {
+                    setIsFormLoading(false);
+                }
             }}
+            disabled={isFormLoading}
         >
-            <FormIcon />
+            {isFormLoading ? <LoadingIcon /> : <FormIcon />}
         </button>
     );
 
@@ -292,6 +356,8 @@ function FieldToolbarComponent(
         </button>
     );
 
+    // TODO sibling count is incorrect for this purpose
+
     const totalElementCount = targetElement?.parentNode?.childElementCount ?? 1;
     const indexOfElement = fieldMetadata?.multipleFieldMetadata?.index;
 
@@ -325,10 +391,27 @@ function FieldToolbarComponent(
                 }
             }
         );
+
         return () => {
             event?.unregister();
         };
     }, []);
+
+    useEffect(() => {
+        const fetchFieldLocationData = async () => {
+            try {
+                const event = await visualBuilderPostMessage?.send(VisualBuilderPostMessageEvents.FIELD_LOCATION_DATA, {
+                    domEditStack: getDOMEditStack(eventDetails.editableElement)
+                });
+               
+                setFieldLocationData(event)
+            } catch (error) {
+                console.error('Error fetching field location data:', error);
+            }
+        };
+
+        fetchFieldLocationData();
+    }, [eventDetails.editableElement]);
 
     const multipleFieldToolbarButtonClasses = classNames(
         "visual-builder__button visual-builder__button--secondary",
@@ -349,15 +432,6 @@ function FieldToolbarComponent(
                 visualBuilderStyles()["visual-builder__field-toolbar-container"]
             )}
         >
-            {isVariant && (
-                <FieldRevertComponent
-                    fieldDataName={fieldMetadata.fieldPathWithIndex}
-                    fieldMetadata={fieldMetadata}
-                    variantStatus={fieldVariantStatus}
-                    isOpen={isOpenVariantRevert}
-                    closeDropdown={closeVariantDropdown}
-                />
-            )}
             <div
                 className={classNames(
                     "visual-builder__focused-toolbar__multiple-field-toolbar",
@@ -376,7 +450,18 @@ function FieldToolbarComponent(
                     )}
                 >
                     <>
-                        {isVariant ? variantButton : null}
+                        {isVariant ? (
+                            <VariantRevertDropdown
+                                fieldDataName={fieldMetadata.fieldPathWithIndex}
+                                fieldMetadata={fieldMetadata}
+                                variantStatus={fieldVariantStatus}
+                                isOpen={isOpenVariantRevert}
+                                closeDropdown={closeVariantDropdown}
+                                invertTooltipPosition={invertTooltipPosition}
+                                toggleVariantDropdown={toggleVariantDropdown}
+                                disabled={disableFieldActions}
+                            />
+                        ) : null}
                         {isMultiple && !isWholeMultipleField ? (
                             <>
                                 <button
@@ -397,7 +482,9 @@ function FieldToolbarComponent(
                                             "previous"
                                         );
                                     }}
-                                    disabled={disableMoveLeft}
+                                    disabled={
+                                        disableFieldActions || disableMoveLeft
+                                    }
                                 >
                                     <MoveLeftIcon
                                         className={classNames({
@@ -407,7 +494,10 @@ function FieldToolbarComponent(
                                                 "visual-builder__rotate--90"
                                             ]]: direction === "vertical",
                                         })}
-                                        disabled={disableMoveLeft}
+                                        disabled={
+                                            disableFieldActions ||
+                                            disableMoveLeft
+                                        }
                                     />
                                 </button>
 
@@ -429,7 +519,9 @@ function FieldToolbarComponent(
                                             "next"
                                         );
                                     }}
-                                    disabled={disableMoveRight}
+                                    disabled={
+                                        disableFieldActions || disableMoveRight
+                                    }
                                 >
                                     <MoveRightIcon
                                         className={classNames({
@@ -439,7 +531,10 @@ function FieldToolbarComponent(
                                                 "visual-builder__rotate--90"
                                             ]]: direction === "vertical",
                                         })}
-                                        disabled={disableMoveRight}
+                                        disabled={
+                                            disableFieldActions ||
+                                            disableMoveRight
+                                        }
                                     />
                                 </button>
 
@@ -458,6 +553,7 @@ function FieldToolbarComponent(
                                         e.stopPropagation();
                                         handleDeleteInstance(fieldMetadata);
                                     }}
+                                    disabled={disableFieldActions}
                                 >
                                     <DeleteIcon />
                                 </button>
@@ -478,9 +574,30 @@ function FieldToolbarComponent(
                                 ) : null}
                             </>
                         )}
+
+                        <FieldLocationIcon
+                            fieldLocationData={fieldLocationData}
+                            multipleFieldToolbarButtonClasses={
+                                multipleFieldToolbarButtonClasses
+                            }
+                            handleMoreIconClick={handleMoreIconClick}
+                            moreButtonRef={moreButtonRef}
+                            toolbarRef={toolbarRef}
+                            domEditStack={domEditStack}
+                        />
                     </>
                 </div>
             </div>
+            {displayAllApps && (
+                <FieldLocationAppList
+                    toolbarRef={toolbarRef}
+                    apps={fieldLocationData?.apps || ([] as any[])}
+                    position={appListPosition}
+                    domEditStack={domEditStack}
+                    setDisplayAllApps={setDisplayAllApps}
+                    displayAllApps={displayAllApps}
+                />
+            )}
         </div>
     );
 }
