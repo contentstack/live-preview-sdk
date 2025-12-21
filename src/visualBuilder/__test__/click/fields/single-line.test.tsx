@@ -10,7 +10,8 @@ import { Mock, vi } from "vitest";
 import { VisualBuilderPostMessageEvents } from "../../../utils/types/postMessage.types";
 import { VisualBuilder } from "../../../index";
 import { triggerAndWaitForClickAction } from "../../../../__test__/utils";
-import { act } from "preact/test-utils";
+
+const EXAMPLE_STAGE_NAME = "Example Stage";
 
 const VALUES = {
     singleLine: "Single line",
@@ -55,8 +56,16 @@ vi.mock("../../../utils/visualBuilderPostMessage", async () => {
     };
 });
 
-describe("When an element is clicked in visual builder mode", () => {
+vi.mock("../../../../utils/index.ts", async () => {
+    const actual = await vi.importActual("../../../../utils");
+    return {
+        __esModule: true,
+        ...actual,
+        isOpenInBuilder: vi.fn().mockReturnValue(true),
+    };
+});
 
+describe("When an element is clicked in visual builder mode", () => {
     beforeAll(() => {
         FieldSchemaMap.setFieldSchema(
             "all_fields",
@@ -91,23 +100,32 @@ describe("When an element is clicked in visual builder mode", () => {
         beforeAll(async () => {
             (visualBuilderPostMessage?.send as Mock).mockImplementation(
                 (eventName: string) => {
-                    if (
-                        eventName ===
-                        VisualBuilderPostMessageEvents.GET_FIELD_DATA
-                    ) {
-                        return Promise.resolve({
-                            fieldData: VALUES.singleLine,
-                        });
-                    } else if (
-                        eventName ===
-                        VisualBuilderPostMessageEvents.GET_FIELD_DISPLAY_NAMES
-                    ) {
-                        return Promise.resolve({
-                            "all_fields.bltapikey.en-us.single_line":
-                                "Single Line",
-                        });
+                    switch (eventName) {
+                        case VisualBuilderPostMessageEvents.GET_FIELD_DATA:
+                            return Promise.resolve({
+                                fieldData: VALUES.singleLine,
+                            });
+                        case VisualBuilderPostMessageEvents.GET_FIELD_DISPLAY_NAMES:
+                            return Promise.resolve({
+                                "all_fields.bltapikey.en-us.single_line":
+                                    "Single Line",
+                            });
+                        case VisualBuilderPostMessageEvents.GET_WORKFLOW_STAGE_DETAILS:
+                            return Promise.resolve({
+                                stage: { name: EXAMPLE_STAGE_NAME },
+                                permissions: {
+                                    entry: {
+                                        update: true,
+                                    },
+                                },
+                            });
+                        case VisualBuilderPostMessageEvents.GET_RESOLVED_VARIANT_PERMISSIONS:
+                            return Promise.resolve({
+                                update: true,
+                            });
+                        default:
+                            return Promise.resolve({});
                     }
-                    return Promise.resolve({});
                 }
             );
 
@@ -134,54 +152,21 @@ describe("When an element is clicked in visual builder mode", () => {
                 audienceMode: false,
             };
             visualBuilder = new VisualBuilder();
-            await triggerAndWaitForClickAction(visualBuilderPostMessage, singleLineField);
+            await triggerAndWaitForClickAction(
+                visualBuilderPostMessage,
+                singleLineField
+            );
         });
 
         afterAll(() => {
             visualBuilder.destroy();
-        })
-
-        test("should have outline", () => {
-            expect(singleLineField.classList.contains("cslp-edit-mode"));
         });
 
-        test("should have an overlay", () => {
-            const overlay = document.querySelector(".visual-builder__overlay");
-            expect(overlay!.classList.contains("visible"));
-        });
-
-        test.skip("should have a field path dropdown", async () => {
-            await waitFor(async () => {
-                const fieldLabel = screen.getByTestId(
-                    "mock-field-label-wrapper"
-                );
-                expect(fieldLabel).toBeInTheDocument();
-            });
-        });
-
-        test("should contain a data-cslp-field-type attribute", async () => {
-            await waitFor(() =>
-                expect(singleLineField).toHaveAttribute(
-                    VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
-                )
-            );
-        });
-
-        test("should contain a contenteditable attribute", async () => {
-            await waitFor(() => {
-                expect(singleLineField).toHaveAttribute("contenteditable");
-            });
-        });
-
-        test("should send a focus field message to parent", async () => {
-            await waitFor(() => {
-                expect(visualBuilderPostMessage?.send).toBeCalledWith(
-                    VisualBuilderPostMessageEvents.FOCUS_FIELD,
-                    {
-                        DOMEditStack: getDOMEditStack(singleLineField),
-                    }
-                );
-            });
+        // Common tests (field type, overlay, dropdown, focus message) are covered in all-click.test.tsx
+        // Only testing unique behavior: contenteditable attribute for editable fields
+        test("should contain a contenteditable attribute", () => {
+            // Attribute is set synchronously during click handler
+            expect(singleLineField).toHaveAttribute("contenteditable");
         });
     });
 
@@ -194,23 +179,39 @@ describe("When an element is clicked in visual builder mode", () => {
         beforeAll(async () => {
             (visualBuilderPostMessage?.send as Mock).mockImplementation(
                 (eventName: string, args) => {
-                    if (
-                        eventName ===
-                        VisualBuilderPostMessageEvents.GET_FIELD_DATA
-                    ) {
-                        const values: Record<string, any> = {
-                            single_line_textbox_multiple_: ["Hello", "world"],
-                            "single_line_textbox_multiple_.0": "Hello",
-                            "single_line_textbox_multiple_.1": "world",
-                        };
-                        return Promise.resolve({
-                            fieldData: values[args.entryPath],
-                        });
+                    switch (eventName) {
+                        case VisualBuilderPostMessageEvents.GET_FIELD_DATA: {
+                            const values: Record<string, any> = {
+                                single_line_textbox_multiple_: [
+                                    "Hello",
+                                    "world",
+                                ],
+                                "single_line_textbox_multiple_.0": "Hello",
+                                "single_line_textbox_multiple_.1": "world",
+                            };
+                            return Promise.resolve({
+                                fieldData: values[args.entryPath],
+                            });
+                        }
+                        case VisualBuilderPostMessageEvents.GET_WORKFLOW_STAGE_DETAILS:
+                            return Promise.resolve({
+                                stage: { name: EXAMPLE_STAGE_NAME },
+                                permissions: {
+                                    entry: {
+                                        update: true,
+                                    },
+                                },
+                            });
+                        case VisualBuilderPostMessageEvents.GET_RESOLVED_VARIANT_PERMISSIONS:
+                            return Promise.resolve({
+                                update: true,
+                            });
+                        default:
+                            return Promise.resolve({});
                     }
-                    return Promise.resolve({});
                 }
             );
-        
+
             container = document.createElement("div");
             container.setAttribute(
                 "data-cslp",
@@ -243,58 +244,23 @@ describe("When an element is clicked in visual builder mode", () => {
                 audienceMode: false,
             };
             visualBuilder = new VisualBuilder();
-            await triggerAndWaitForClickAction(visualBuilderPostMessage, container);
+            await triggerAndWaitForClickAction(
+                visualBuilderPostMessage,
+                container
+            );
         });
 
         afterAll(() => {
             visualBuilder.destroy();
         });
 
-        test("should have outline", () => {
-            expect(container.classList.contains("cslp-edit-mode"));
-        });
-
-        test("should have an overlay", () => {
-            const overlay = document.querySelector(".visual-builder__overlay");
-            expect(overlay!.classList.contains("visible"));
-        });
-
-        test.skip("should have a field path dropdown", async () => {
-            await waitFor(async () => {
-                const toolbar = await screen.findByTestId(
-                    "mock-field-label-wrapper"
-                );
-                expect(toolbar).toBeInTheDocument();
-            });
-        });
-
-        // TODO should be a test of FieldToolbar
-        test.skip("should have a multi field toolbar with button group", async () => {
-            const multiFieldToolbar = document.querySelector(
-                ".visual-builder__focused-toolbar__multiple-field-toolbar"
-            );
-
-            const buttonGroup = document.querySelector(
-                ".visual-builder__focused-toolbar__button-group"
-            );
-
-            expect(multiFieldToolbar).toBeInTheDocument();
-            expect(buttonGroup).toBeInTheDocument();
-        });
-
-        test("should contain a data-cslp-field-type attribute", async () => {
-            await waitFor(() => {
-                expect(container).toHaveAttribute(
-                    VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
-                );
-            });
-        });
-
+        // Common tests (field type, overlay, dropdown, focus message) are covered in all-click.test.tsx
+        // Only testing unique behavior: contenteditable on children for editable multiple fields
         test("container should not contain a contenteditable attribute but the children can", async () => {
-            await waitFor(() => {
-                expect(container).not.toHaveAttribute("contenteditable");
-            });
+            // Container contenteditable check is synchronous
+            expect(container).not.toHaveAttribute("contenteditable");
 
+            // Child contenteditable is set asynchronously after click
             fireEvent.click(container.children[0]);
             await waitFor(() => {
                 expect(container.children[0]).toHaveAttribute(
@@ -306,32 +272,6 @@ describe("When an element is clicked in visual builder mode", () => {
             await waitFor(() => {
                 expect(container.children[1]).toHaveAttribute(
                     "contenteditable"
-                );
-            });
-        });
-
-        test.skip("should have 2 add instance buttons", async () => {
-            await waitFor(() => {
-                expect(container.children[0]).toHaveAttribute(
-                    VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
-                );
-            });
-
-            await waitFor(() => {
-                const addInstanceButtons = screen.getAllByTestId(
-                    "visual-builder-add-instance-button"
-                );
-                expect(addInstanceButtons.length).toBe(2);
-            });
-        });
-
-        test("should send a focus field message to parent", async () => {
-            await waitFor(() => {
-                expect(visualBuilderPostMessage?.send).toBeCalledWith(
-                    VisualBuilderPostMessageEvents.FOCUS_FIELD,
-                    {
-                        DOMEditStack: getDOMEditStack(container),
-                    }
                 );
             });
         });

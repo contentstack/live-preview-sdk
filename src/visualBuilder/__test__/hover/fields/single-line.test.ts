@@ -25,11 +25,42 @@ vi.mock("../../../utils/visualBuilderPostMessage", async () => {
     };
 });
 
-global.ResizeObserver = vi.fn().mockImplementation(() => ({
-    observe: vi.fn(),
-    unobserve: vi.fn(),
-    disconnect: vi.fn(),
-}));
+vi.mock("../../../../utils/index.ts", async () => {
+    const actual = await vi.importActual("../../../../utils");
+    return {
+        __esModule: true,
+        ...actual,
+        isOpenInBuilder: vi.fn().mockReturnValue(true),
+    };
+});
+
+// Mock fetchEntryPermissionsAndStageDetails to resolve immediately - speeds up hover tests
+vi.mock("../../../utils/fetchEntryPermissionsAndStageDetails", () => {
+    return {
+        fetchEntryPermissionsAndStageDetails: vi.fn(() =>
+            Promise.resolve({
+                acl: {
+                    create: true,
+                    read: true,
+                    update: true,
+                    delete: true,
+                    publish: true,
+                },
+                workflowStage: {
+                    stage: undefined,
+                    permissions: {
+                        entry: {
+                            update: true,
+                        },
+                    },
+                },
+                resolvedVariantPermissions: {
+                    update: true,
+                },
+            })
+        ),
+    };
+});
 
 describe("When an element is hovered in visual builder mode", () => {
     let mousemoveEvent: Event;
@@ -51,7 +82,6 @@ describe("When an element is hovered in visual builder mode", () => {
     });
 
     afterEach(() => {
-        vi.clearAllMocks();
         document.getElementsByTagName("html")[0].innerHTML = "";
     });
 
@@ -84,136 +114,22 @@ describe("When an element is hovered in visual builder mode", () => {
         test("should have outline and custom cursor", async () => {
             titleField.dispatchEvent(mousemoveEvent);
             await waitForHoverOutline();
-            expect(titleField).toMatchSnapshot();
+            expect(titleField).not.toHaveAttribute("style");
             const hoverOutline = screen.getByTestId(
                 "visual-builder__hover-outline"
             );
-            expect(hoverOutline).toMatchSnapshot();
+            expect(hoverOutline).toHaveStyle(
+                "top: 51px; left: 51px; width: 27.7734375px; height: 20.3984375px;"
+            );
 
             const customCursor = document.querySelector(
                 `[data-testid="visual-builder__cursor"]`
             );
-
-            expect(customCursor).toMatchSnapshot();
+            expect(customCursor).toHaveAttribute("data-icon", "singleline");
             expect(customCursor?.classList.contains("visible")).toBeTruthy();
         });
     });
 
-    describe("single line field", () => {
-        let singleLineField: HTMLParagraphElement;
-        let visualBuilder: VisualBuilder;
-
-        beforeEach(() => {
-            singleLineField = document.createElement("p");
-            singleLineField.setAttribute(
-                "data-cslp",
-                "all_fields.bltapikey.en-us.single_line"
-            );
-            singleLineField.getBoundingClientRect = vi
-                .fn()
-                .mockReturnValue(mockDomRect.singleLeft());
-            document.body.appendChild(singleLineField);
-
-            visualBuilder = new VisualBuilder();
-        });
-
-        afterEach(() => {
-            visualBuilder.destroy();
-        });
-
-        test("should have outline and custom cursor", async () => {
-            singleLineField.dispatchEvent(mousemoveEvent);
-            await waitForHoverOutline();
-            expect(singleLineField).toMatchSnapshot();
-            expect(singleLineField.classList.contains("cslp-edit-mode"));
-
-            const customCursor = document.querySelector(
-                `[data-testid="visual-builder__cursor"]`
-            );
-
-            expect(customCursor).toMatchSnapshot();
-            expect(customCursor?.classList.contains("visible")).toBeTruthy();
-        });
-    });
-
-    describe("single line field (multiple)", () => {
-        let container: HTMLDivElement;
-        let firstSingleLineField: HTMLParagraphElement;
-        let secondSingleLineField: HTMLParagraphElement;
-        let visualBuilder: VisualBuilder;
-
-        beforeEach(() => {
-            container = document.createElement("div");
-            container.setAttribute(
-                "data-cslp",
-                "all_fields.bltapikey.en-us.single_line_textbox_multiple_"
-            );
-            container.getBoundingClientRect = vi
-                .fn()
-                .mockReturnValue(mockDomRect.singleHorizontal());
-
-            firstSingleLineField = document.createElement("p");
-            firstSingleLineField.setAttribute(
-                "data-cslp",
-                "all_fields.bltapikey.en-us.single_line_textbox_multiple_.0"
-            );
-            firstSingleLineField.getBoundingClientRect = vi
-                .fn()
-                .mockReturnValue(mockDomRect.singleLeft());
-
-            secondSingleLineField = document.createElement("p");
-            secondSingleLineField.setAttribute(
-                "data-cslp",
-                "all_fields.bltapikey.en-us.single_line_textbox_multiple_.1"
-            );
-            secondSingleLineField.getBoundingClientRect = vi
-                .fn()
-                .mockReturnValue(mockDomRect.singleRight());
-
-            container.appendChild(firstSingleLineField);
-            container.appendChild(secondSingleLineField);
-            document.body.appendChild(container);
-
-            visualBuilder = new VisualBuilder();
-        });
-
-        afterEach(() => {
-            visualBuilder.destroy();
-        });
-
-        test("should have outline and custom cursor", async () => {
-            container.dispatchEvent(mousemoveEvent);
-            await waitForHoverOutline();
-            expect(container).toMatchSnapshot();
-
-            const hoverOutline = document.querySelector(
-                "[data-testid='visual-builder__hover-outline']"
-            );
-            expect(hoverOutline).toMatchSnapshot();
-
-            const customCursor = document.querySelector(
-                `[data-testid="visual-builder__cursor"]`
-            );
-
-            expect(customCursor).toMatchSnapshot();
-            expect(customCursor?.classList.contains("visible")).toBeTruthy();
-        });
-
-        test("should have outline and custom cursor on individual instances", async () => {
-            firstSingleLineField.dispatchEvent(mousemoveEvent);
-            await waitForHoverOutline();
-            expect(firstSingleLineField).toMatchSnapshot();
-            const hoverOutline = document.querySelector(
-                "[data-testid='visual-builder__hover-outline']"
-            );
-            expect(hoverOutline).toMatchSnapshot();
-
-            const customCursor = document.querySelector(
-                `[data-testid="visual-builder__cursor"]`
-            );
-
-            expect(customCursor).toMatchSnapshot();
-            expect(customCursor?.classList.contains("visible")).toBeTruthy();
-        });
-    });
+    // NOTE: Standard single-line field tests (single and multiple) are now in consolidated-hover.test.ts
+    // This file only contains the unique "title field" test which checks specific style values
 });

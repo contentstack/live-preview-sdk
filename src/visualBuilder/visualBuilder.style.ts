@@ -15,7 +15,7 @@ const tooltipBaseStyle = `
         width: max-content;
         max-width: 200px;
         color: #fff;
-        font-family: Inter;
+        font-family: Inter, sans-serif;
         font-size: 0.75rem;
         font-style: normal;
         font-weight: 400;
@@ -64,6 +64,48 @@ export function visualBuilderStyles() {
                 cursor: none;
             }
         `,
+        "tooltip-container": css`
+            position: absolute;
+            background-color: #767676;
+            color: white;
+            padding: 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            line-height: 1.4;
+            z-index: 1000;
+            pointer-events: none;
+            max-width: 250px;
+            text-align: center;
+        `,
+        "tooltip-arrow": css`
+            position: absolute;
+            background: #767676;
+            width: 8px;
+            height: 8px;
+            transform: rotate(45deg);
+        `,
+        "toolbar-tooltip-content": css`
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        `,
+        "toolbar-tooltip-content-item": css`
+            display: flex;
+            align-items: center;
+            justify-content: start;
+            gap: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+
+            p {
+                margin: 0;
+                color: #fff;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                max-width: 100%;
+            }
+        `,
         "visual-builder__overlay__wrapper": css`
             position: absolute;
             top: 0;
@@ -78,6 +120,13 @@ export function visualBuilderStyles() {
             &.visible {
                 visibility: visible;
             }
+        `,
+        "visual-builder__empty-block-plus-icon": css`
+            font-size: 22px;
+            font-weight: 300;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         `,
         "visual-builder__overlay--outline": css`
             position: absolute;
@@ -111,7 +160,7 @@ export function visualBuilderStyles() {
             color: #6c5ce7;
             overflow: hidden;
 
-            z-index: 2147483647 !important;
+            z-index: 2147483646 !important;
 
             display: grid;
             grid-template-columns: min-content 0fr;
@@ -148,12 +197,17 @@ export function visualBuilderStyles() {
             overflow: hidden;
             text-overflow: ellipsis;
         `,
+        "visual-builder__add-button--loading": css`
+            cursor: wait;
+            /* we have not-allowed on disabled, so we need this */
+            &:disabled {
+                cursor: wait;
+            }
+        `,
         "visual-builder__start-editing-btn": css`
             z-index: 1000;
             text-decoration: none;
             position: fixed;
-            bottom: 30px;
-            right: 30px;
             box-shadow:
                 0px 4px 15px 0px rgba(108, 92, 231, 0.2),
                 0px 3px 14px 3px rgba(0, 0, 0, 0.12),
@@ -184,7 +238,7 @@ export function visualBuilderStyles() {
                 color: #fff;
                 /* Body/P1 Bold */
                 font-size: 1rem;
-                font-family: Inter;
+                font-family: Inter, sans-serif;
                 font-weight: 600;
                 line-height: 150%;
                 letter-spacing: 0.01rem;
@@ -194,12 +248,28 @@ export function visualBuilderStyles() {
             & > svg {
                 color: #fff;
                 font-size: 1rem;
-                font-family: Inter;
+                font-family: Inter, sans-serif;
                 font-weight: 600;
                 line-height: 150%;
                 letter-spacing: 0.01rem;
                 text-transform: capitalize;
             }
+        `,
+        "visual-builder__start-editing-btn__bottom-right": css`
+            bottom: 30px;
+            right: 30px;
+        `,
+        "visual-builder__start-editing-btn__bottom-left": css`
+            bottom: 30px;
+            left: 30px;
+        `,
+        "visual-builder__start-editing-btn__top-right": css`
+            top: 30px;
+            right: 30px;
+        `,
+        "visual-builder__start-editing-btn__top-left": css`
+            top: 30px;
+            left: 30px;
         `,
         "visual-builder__cursor-icon": css`
             height: 40px;
@@ -220,6 +290,21 @@ export function visualBuilderStyles() {
         `,
         "visual-builder__cursor-icon--loader": css`
             animation: visual-builder__spinner 1s linear infinite;
+        `,
+        "visual-builder__variant-indicator": css`
+            height: calc(100% - 1px);
+            aspect-ratio: 1;
+            background: white;
+            border-radius: 2px;
+            border-width: 2px;
+            border-style: solid;
+            align-content: center;
+            text-align: center;
+            border-color: #BD59FA;
+
+            svg {
+                color: #BD59FA;
+            }
         `,
         "visual-builder__focused-toolbar": css`
             position: absolute;
@@ -277,10 +362,11 @@ export function visualBuilderStyles() {
             display: flex;
             flex-direction: column-reverse;
             position: relative;
+            margin-right: 0.5rem;
         `,
         "visual-builder__focused-toolbar__field-label-container": css`
             display: flex;
-            column-gap: 0.5rem;
+            height: 1.75rem;
             align-items: center;
         `,
         "visual-builder__button": css`
@@ -299,6 +385,15 @@ export function visualBuilderStyles() {
                 border-color 0.15s ease-in-out,
                 box-shadow 0.15s ease-in-out;
             // vertical-align: middle;
+            &:disabled {
+                cursor: not-allowed;
+                svg {
+                    fill: #999;
+                    path {
+                        fill: #999;
+                    }
+                }
+            }
         `,
         "visual-builder__button--primary": css`
             background-color: #6c5ce7;
@@ -334,6 +429,7 @@ export function visualBuilderStyles() {
             }
         `,
         "visual-builder__button--comment-loader": css`
+            cursor: wait !important;
             svg.loader {
                 height: 16px;
                 width: 16px;
@@ -347,7 +443,30 @@ export function visualBuilderStyles() {
             svg {
                 height: 16px;
                 width: 16px;
-                margin-right: 5px;
+                margin-right: 3px;
+            }
+        `,
+        "visual-builder__content-type-icon": css`
+            svg {
+                height: 16px;
+                width: 16px;
+                margin-right: 3px;
+            }
+        `,
+        "visual-builder__caret-right-icon": css`
+            svg {
+                height: 16px;
+                width: 16px;
+            }
+        `,
+        "visual-builder__reference-icon-container": css`
+            display: flex;
+            align-items: center;
+
+            .visual-builder__field-icon {
+                svg {
+                    margin-right: 0px;
+                }
             }
         `,
         "visual-builder__focused-toolbar__button-group": css`
@@ -363,7 +482,7 @@ export function visualBuilderStyles() {
                 gap: 8px;
             }
 
-            .visual-builder__button:hover {
+            .visual-builder__button:enabled:hover {
                 background-color: #f5f5f5;
 
                 svg {
@@ -409,6 +528,11 @@ export function visualBuilderStyles() {
             cursor: not-allowed;
             .visual-builder__focused-toolbar__field-label-wrapper__current-field {
                 background: #909090;
+            }
+        `,
+        "visual-builder__focused-toolbar--variant": css`
+            .visual-builder__focused-toolbar__field-label-wrapper__current-field {
+                background: #BD59FA;
             }
         `,
         "visual-builder__cursor-disabled": css`
@@ -457,6 +581,37 @@ export function visualBuilderStyles() {
             &:after {
                 display: block;
             }
+
+            &:has(.visual-builder__custom-tooltip):before,
+            &:has(.visual-builder__custom-tooltip):after {
+                display: none;
+            }
+        `,
+        "visual-builder__custom-tooltip": css`
+            position: absolute;
+            bottom: 20px;
+            margin-bottom: 24px;
+            padding: 12px;
+            border-radius: 4px;
+            width: max-content;
+            max-width: 200px;
+            color: #fff;
+            font-family: Inter;
+            font-size: 0.75rem;
+            font-style: normal;
+            font-weight: 400;
+            line-height: 132%; /* 0.99rem */
+            letter-spacing: 0.015rem;
+            background: #767676;
+
+            &:after {
+                content: "";
+                position: absolute;
+                bottom: -10px;
+                left: 10px;
+                border: 10px solid #000;
+                border-color: #767676 transparent transparent transparent;
+            }
         `,
         "visual-builder__empty-block": css`
             width: 100%;
@@ -470,10 +625,13 @@ export function visualBuilderStyles() {
         `,
         "visual-builder__empty-block-title": css`
             font-size: 0.95rem;
-            font-family: Inter;
+            font-family: Inter, sans-serif;
             font-weight: 400;
             line-height: 100%;
             color: #647696;
+        `,
+        "visual-builder__empty-block-field-name": css`
+            font-weight: 700;
         `,
         "visual-builder__empty-block-add-button": css`
             height: 32px;
@@ -481,19 +639,21 @@ export function visualBuilderStyles() {
             background: #f9f8ff;
             border-color: #6c5ce7;
             border-width: 1px;
-            padding: 8px 16px 8px 16px;
+            padding: 0 16px;
             font-size: 0.9rem;
-            font-family: Inter;
+            font-family: Inter, sans-serif;
             font-weight: 600;
             color: #6c5ce7;
-            padding-block: 0px;
             letter-spacing: 0.01rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
         `,
         "visual-builder__hover-outline": css`
             position: absolute;
             outline: 2px dashed #6c5ce7;
             transition: var(--outline-transition);
-            z-index: 2147483647 !important;
+            z-index: 2147483646 !important;
         `,
         "visual-builder__hover-outline--hidden": css`
             visibility: hidden;
@@ -504,6 +664,9 @@ export function visualBuilderStyles() {
         "visual-builder__hover-outline--disabled": css`
             outline: 2px dashed #909090;
         `,
+        "visual-builder__hover-outline--variant": css`
+            outline: 2px dashed #BD59FA;
+        `,
         "visual-builder__default-cursor--disabled": css`
             cursor: none;
         `,
@@ -512,6 +675,7 @@ export function visualBuilderStyles() {
         `,
         "visual-builder__variant-field": css`
             outline: 2px solid #bd59fa;
+            outline-offset: -2px;
         `,
         "visual-builder__pseudo-editable-element": css`
             z-index: 99999 !important;
@@ -587,6 +751,8 @@ export function visualBuilderStyles() {
         `,
         "variant-field-revert-component__dropdown-content": css`
             position: absolute;
+            top: -12px;
+            left: -4px;
             background-color: #ffffff;
             min-width: max-content;
             box-shadow:
@@ -600,6 +766,7 @@ export function visualBuilderStyles() {
         `,
         "variant-field-revert-component__dropdown-content__list-item": css`
             color: black;
+            font-weight: 400;
             padding: 9.6px 16px;
             text-decoration: none;
             display: block;
@@ -628,6 +795,7 @@ export function visualBuilderStyles() {
             display: flex;
             flex-direction: column-reverse;
             z-index: 2147483647 !important;
+            position: relative;
         `,
         "visual-builder__variant-button": css`
             display: flex;
@@ -640,6 +808,107 @@ export function visualBuilderStyles() {
                 fill: #475161;
             }
         `,
+        "visual-builder__field-location-icons-container": css`
+            display: flex;
+            gap: 0.25rem;
+            align-items: center;
+            justify-content: center;
+            margin-left: 0.25rem;
+        `,
+        "visual-builder__field-location-icons-container__divider": css`
+            height: 32px !important;
+            width: 1px;
+            border-radius: 2px;
+            background-color: #8a8f99;
+        `,
+        "visual-builder__field-location-icons-container__app-icon": css`
+            width: 24px;
+            height: 24px;
+            object-fit: cover;
+        `,
+        "visual-builder__field-location-app-list": css`
+            position: absolute;
+            top: 0;
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            z-index: 1000;
+            min-width: 230px;
+            max-height: 250px;
+            min-height: 250px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        `,
+        "visual-builder__field-location-app-list--left": css`
+            right: 100%;
+            margin-right: 8px;
+        `,
+        "visual-builder__field-location-app-list--right": css`
+            left: 100%;
+            margin-left: 8px;
+        `,
+        "visual-builder__field-location-app-list__search-container": css`
+            display: flex;
+            align-items: center;
+            padding: 10px 16px 0px 16px;
+            border: none;
+            border-bottom: 1px solid #f0f0f0;
+        `,
+        "visual-builder__field-location-app-list__search-input": css`
+            width: 100%;
+            padding: 10px 12px;
+            font-size: 14px;
+            outline: none;
+            box-sizing: border-box;
+            border: none;
+        `,
+        "visual-builder__field-location-app-list__search-icon": css`
+            width: 14px;
+            height: 14px;
+        `,
+        "visual-builder__field-location-app-list__content": css`
+            flex: 1;
+            overflow-y: auto;
+        `,
+        "visual-builder__field-location-app-list__no-results": css`
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            width: 100%;
+            text-align: center;
+        `,
+        "visual-builder__field-location-app-list__no-results-text": css`
+            color: #373b40;
+            font-weight: 400;
+        `,
+        "visual-builder__field-location-app-list__item": css`
+            display: flex;
+            align-items: center;
+            padding: 10px 16px;
+            cursor: pointer;
+            font-size: 14px;
+        `,
+        "visual-builder__field-location-app-list__item-icon-container": css`
+            width: 24px;
+            height: 24px;
+            margin-right: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        `,
+        "visual-builder__field-location-app-list__item-icon": css`
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            object-fit: cover;
+        `,
+        "visual-builder__field-location-app-list__item-title": css`
+            color: #373b40;
+            font-weight: 400;
+        `,
     };
 }
 
@@ -649,7 +918,7 @@ export const VisualBuilderGlobalStyles = `
        [data-cslp] [contenteditable="true"] {
             outline: none;
         }
-        
+
         @keyframes visual-builder__spinner {
             0% {
                 transform: rotate(0deg);

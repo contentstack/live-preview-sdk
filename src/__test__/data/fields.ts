@@ -35,3 +35,18 @@ export const mockMultipleLinkFieldSchema: ISchemaFieldMap = {
     non_localizable: false,
     unique: false,
 };
+
+export const mockMultipleFileFieldSchema: ISchemaFieldMap = {
+    data_type: "file",
+    display_name: "File",
+    uid: "file",
+    extensions: [],
+    field_metadata: {
+        description: "",
+        rich_text_type: "standard"
+    },
+    mandatory: false,
+    multiple: true,
+    non_localizable: false,
+    unique: false,
+};

@@ -1,4 +1,4 @@
-import { act, findByTestId, fireEvent, waitFor } from "@testing-library/preact";
+import { act, fireEvent } from "@testing-library/preact";
 import { getFieldSchemaMap } from "../../../__test__/data/fieldSchemaMap";
 import { CslpData } from "../../../cslp/types/cslp.types";
 import { VisualBuilderCslpEventDetails } from "../../types/visualBuilder.types";
@@ -7,14 +7,29 @@ import { appendFieldPathDropdown } from "../generateToolbar";
 import visualBuilderPostMessage from "../../utils/visualBuilderPostMessage";
 import { VisualBuilderPostMessageEvents } from "../../utils/types/postMessage.types";
 import { singleLineFieldSchema } from "../../../__test__/data/fields";
-import { sleep } from "../../../__test__/utils";
 
 const MOCK_CSLP = "all_fields.bltapikey.en-us.single_line";
 
-global.ResizeObserver = vi.fn().mockImplementation(() => ({
-    observe: vi.fn(),
-    unobserve: vi.fn(),
-    disconnect: vi.fn(),
+vi.mock("../../utils/fetchEntryPermissionsAndStageDetails", () => ({
+    fetchEntryPermissionsAndStageDetails: async () => ({
+        acl: {
+            update: {
+                create: true,
+                read: true,
+                update: true,
+                delete: true,
+                publish: true,
+            },
+        },
+        workflowStage: {
+            stage: undefined,
+            permissions: {
+                entry: {
+                    update: true,
+                },
+            },
+        },
+    }),
 }));
 
 describe("appendFieldPathDropdown", () => {
@@ -45,11 +60,15 @@ describe("appendFieldPathDropdown", () => {
         });
     });
 
-    beforeEach(() => {
+    beforeAll(() => {
         FieldSchemaMap.setFieldSchema(
             "all_fields",
             getFieldSchemaMap().all_fields
         );
+    });
+
+    beforeEach(() => {
+        document.body.innerHTML = "";
 
         singleLineField = document.createElement("p");
         singleLineField.setAttribute("data-cslp", MOCK_CSLP);
@@ -89,11 +108,9 @@ describe("appendFieldPathDropdown", () => {
         };
     });
 
-    test("should not do anything if tooltip is already present", async () => {
+    test("should not do anything if tooltip is already present", () => {
         focusedToolbar.classList.add("visual-builder__tooltip--persistent");
-        await act(() => {
-            appendFieldPathDropdown(mockEventDetails, focusedToolbar);
-        })
+        appendFieldPathDropdown(mockEventDetails, focusedToolbar);
 
         const fieldLabelWrapper = focusedToolbar.querySelector(
             ".visual-builder__focused-toolbar__field-label-wrapper"
@@ -105,63 +122,21 @@ describe("appendFieldPathDropdown", () => {
         );
     });
 
-    // TODO I don't think this test is relevant anymore,
-    // but I don't exactly know what it's testing
-    test.skip("should click the closest parent if focused toolbar is a parent field", async () => {
-        focusedToolbar.classList.add(
-            "visual-builder__focused-toolbar__field-label-wrapper__parent-field"
-        );
-        focusedToolbar.setAttribute("data-target-cslp", "test-cslp");
-
-        const parentElement = document.createElement("div");
-        parentElement.classList.add("test-parent");
-        parentElement.setAttribute("data-cslp", "test-cslp");
-
-        const targetElement = document.createElement("div");
-        parentElement.setAttribute("data-target-cslp", "test-cslp");
-        parentElement.appendChild(targetElement);
-
-        mockEventDetails.editableElement = parentElement;
-
-        const mockOnClick = vi.fn();
-        parentElement.click = mockOnClick;
-
+    test("should close the field label dropdown if open", () => {
         appendFieldPathDropdown(mockEventDetails, focusedToolbar);
 
         const fieldLabelWrapper = focusedToolbar.querySelector(
-            ".visual-builder__focused-toolbar__field-label-wrapper"
-        );
+            '[data-testid="visual-builder__focused-toolbar__field-label-wrapper"]'
+        ) as HTMLElement;
 
-        fireEvent.click(focusedToolbar);
-
-        expect(fieldLabelWrapper?.classList.toString()).toMatch(
-            "visual-builder__focused-toolbar__field-label-wrapper"
-        );
-
-        expect(mockOnClick).toBeCalled();
-    });
-
-    test("should close the field label dropdown if open", async () => {
-        await act(() => {
-            appendFieldPathDropdown(mockEventDetails, focusedToolbar);
-        })
-
-        const fieldLabelWrapper = await findByTestId(
-            focusedToolbar,
-            "visual-builder__focused-toolbar__field-label-wrapper"
-        );
-
+        expect(fieldLabelWrapper).toBeTruthy();
         fireEvent.click(fieldLabelWrapper);
 
-        await waitFor(() => {
-            expect(fieldLabelWrapper).toHaveClass("field-label-dropdown-open");
-        });
+        expect(fieldLabelWrapper).toHaveClass("field-label-dropdown-open");
     });
 
-    test("should open the field label dropdown if closed", async () => {
-        await act(() => {
-            appendFieldPathDropdown(mockEventDetails, focusedToolbar);
-        })
+    test("should open the field label dropdown if closed", () => {
+        appendFieldPathDropdown(mockEventDetails, focusedToolbar);
 
         const fieldLabelWrapper = focusedToolbar.querySelector(
             ".visual-builder__focused-toolbar__field-label-wrapper"
@@ -176,7 +151,7 @@ describe("appendFieldPathDropdown", () => {
         fireEvent.click(focusedToolbar);
 
         expect(fieldLabelWrapper?.classList.toString()).toBe(
-            "visual-builder__focused-toolbar__field-label-wrapper go3399023040"
+            "visual-builder__focused-toolbar__field-label-wrapper go3061601331"
         );
     });
 });

@@ -5,13 +5,21 @@ import {
     VisualBuilderGlobalStyles,
 } from "../visualBuilder.style";
 import React from "preact/compat";
+import { isOpenInBuilder , isOpenInPreviewShare} from "../../utils";
 
 interface VisualBuilderProps {
     visualBuilderContainer: HTMLDivElement | null;
     resizeObserver: ResizeObserver;
 }
 
-function VisualBuilderComponent(props: VisualBuilderProps): JSX.Element {
+function VisualBuilderComponent(props: VisualBuilderProps): JSX.Element | null {
+    const isInBuilder = isOpenInBuilder();
+    const isInPreviewShare = isOpenInPreviewShare();
+
+    if (!isInBuilder && !isInPreviewShare) {
+        return null;
+    }
+
     return (
         <>
             {/* For some reason, goober's glob and createGlobalStyle were not working in this case. */}

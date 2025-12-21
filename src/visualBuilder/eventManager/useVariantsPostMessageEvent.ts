@@ -2,12 +2,15 @@ import { VisualBuilder } from "..";
 import { visualBuilderStyles } from "../visualBuilder.style";
 import visualBuilderPostMessage from "../utils/visualBuilderPostMessage";
 import { VisualBuilderPostMessageEvents } from "../utils/types/postMessage.types";
+import { FieldSchemaMap } from "../utils/fieldSchemaMap";
+import { extractDetailsFromCslp } from "../../cslp/cslpdata";
 
 interface VariantFieldsEvent {
     data: {
         variant_data: {
             variant: string;
             highlightVariantFields: boolean;
+            variantOrder: string[];
         };
     };
 }
@@ -33,9 +36,24 @@ interface LocaleEvent {
         locale: string;
     };
 }
-function addVariantFieldClass(
+
+function isLowerOrderVariant(variant_uid: string, dataCslp: string, variantOrder: string[]): boolean {
+    if(!variantOrder || variantOrder.length === 0) {
+        return false;
+    }
+    const {variant: cslpVariant} = extractDetailsFromCslp(dataCslp);
+    const indexOfCmsVariant = variantOrder.lastIndexOf(variant_uid);
+    const indexOfCslpVariant = variantOrder.lastIndexOf(cslpVariant || "");
+    if(indexOfCslpVariant < 0) {
+        return false;
+    }
+    return indexOfCslpVariant < indexOfCmsVariant;
+}
+
+export function addVariantFieldClass(
     variant_uid: string,
-    highlightVariantFields: boolean
+    highlightVariantFields: boolean,
+    variantOrder: string[]
 ): void {
     const elements = document.querySelectorAll(`[data-cslp]`);
     elements.forEach((element) => {
@@ -50,13 +68,19 @@ function addVariantFieldClass(
             element.classList.add("visual-builder__variant-field");
         } else if (!dataCslp.startsWith("v2:")) {
             element.classList.add("visual-builder__base-field");
-        } else {
+        } 
+        else if (isLowerOrderVariant(variant_uid, dataCslp, variantOrder)) {
+            element.classList.add("visual-builder__variant-field", "visual-builder__lower-order-variant-field");
+        }
+        else {
             element.classList.add("visual-builder__disabled-variant-field");
         }
     });
 }
 
-function removeVariantFieldClass(onlyHighlighted: boolean = false): void {
+export function removeVariantFieldClass(
+    onlyHighlighted: boolean = false
+): void {
     if (onlyHighlighted) {
         const variantElements = document.querySelectorAll(
             `.${visualBuilderStyles()["visual-builder__variant-field"]}`
@@ -68,26 +92,27 @@ function removeVariantFieldClass(onlyHighlighted: boolean = false): void {
         });
     } else {
         const variantAndBaseFieldElements = document.querySelectorAll(
-            ".visual-builder__disabled-variant-field, .visual-builder__variant-field, .visual-builder__base-field"
+            ".visual-builder__disabled-variant-field, .visual-builder__variant-field, .visual-builder__base-field, .visual-builder__lower-order-variant-field" 
         );
         variantAndBaseFieldElements.forEach((element) => {
             element.classList.remove(
                 "visual-builder__disabled-variant-field",
                 "visual-builder__variant-field",
                 visualBuilderStyles()["visual-builder__variant-field"],
-                "visual-builder__base-field"
+                "visual-builder__base-field",
+                "visual-builder__lower-order-variant-field"
             );
         });
     }
 }
 
-function setAudienceMode(mode: boolean): void {
+export function setAudienceMode(mode: boolean): void {
     VisualBuilder.VisualBuilderGlobalState.value.audienceMode = mode;
 }
-function setVariant(uid: string | null): void {
+export function setVariant(uid: string | null): void {
     VisualBuilder.VisualBuilderGlobalState.value.variant = uid;
 }
-function setLocale(locale: string): void {
+export function setLocale(locale: string): void {
     VisualBuilder.VisualBuilderGlobalState.value.locale = locale;
 }
 
@@ -96,6 +121,12 @@ export function useVariantFieldsPostMessageEvent(): void {
         VisualBuilderPostMessageEvents.GET_VARIANT_ID,
         (event: VariantEvent) => {
             setVariant(event.data.variant);
+            // clear field schema when variant is changed.
+            // this is required as we cache field schema
+            // which contain a key isUnlinkedVariant.
+            // This key can change when variant is changed,
+            // so clear the field schema cache
+            FieldSchemaMap.clear();
         }
     );
     visualBuilderPostMessage?.on(
@@ -116,7 +147,8 @@ export function useVariantFieldsPostMessageEvent(): void {
             removeVariantFieldClass();
             addVariantFieldClass(
                 event.data.variant_data.variant,
-                event.data.variant_data.highlightVariantFields
+                event.data.variant_data.highlightVariantFields,
+                event.data.variant_data.variantOrder
             );
         }
     );
