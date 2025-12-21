@@ -1,14 +1,6 @@
-import { debounce, throttle } from "lodash-es";
 import { VisualBuilder } from "..";
-import {
-    generatePseudoEditableElement,
-    isEllipsisActive,
-} from "../generators/generatePseudoEditableField";
 import { VisualBuilderCslpEventDetails } from "../types/visualBuilder.types";
-import {
-    ALLOWED_INLINE_EDITABLE_FIELD,
-    VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY,
-} from "./constants";
+import { VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY } from "./constants";
 import { FieldSchemaMap } from "./fieldSchemaMap";
 import { getFieldData } from "./getFieldData";
 import { getFieldType } from "./getFieldType";
@@ -18,11 +10,12 @@ import {
     handleAddButtonsForMultiple,
     removeAddInstanceButtons,
 } from "./multipleElementAddButton";
-import { updateFocussedState } from "./updateFocussedState";
-import { FieldDataType, ISchemaFieldMap } from "./types/index.types";
-import { getMultilinePlaintext } from "./getMultilinePlaintext";
-import { VisualBuilderPostMessageEvents } from "./types/postMessage.types";
-import visualBuilderPostMessage from "./visualBuilderPostMessage";
+import { isFieldMultiple } from "./isFieldMultiple";
+import { handleInlineEditableField } from "./handleInlineEditableField";
+import { VisualBuilderEditContext } from "./types/index.types";
+import { pasteAsPlainText } from "./pasteAsPlainText";
+import { removeFieldToolbar } from "../generators/generateToolbar";
+import { fetchEntryPermissionsAndStageDetails } from "./fetchEntryPermissionsAndStageDetails";
 
 /**
  * It handles all the fields based on their data type and its "multiple" property.
@@ -31,11 +24,7 @@ import visualBuilderPostMessage from "./visualBuilderPostMessage";
  */
 export async function handleIndividualFields(
     eventDetails: VisualBuilderCslpEventDetails,
-    elements: {
-        visualBuilderContainer: HTMLDivElement;
-        resizeObserver: ResizeObserver;
-        lastEditedField: Element | null;
-    }
+    elements: VisualBuilderEditContext
 ): Promise<void> {
     const { fieldMetadata, editableElement } = eventDetails;
     const { visualBuilderContainer, lastEditedField, resizeObserver } =
@@ -44,6 +33,7 @@ export async function handleIndividualFields(
         content_type_uid,
         entry_uid,
         locale,
+        variant,
         fieldPath,
         fieldPathWithIndex,
     } = fieldMetadata;
@@ -58,7 +48,21 @@ export async function handleIndividualFields(
 
     const fieldType = getFieldType(fieldSchema);
 
-    const { isDisabled: disabled } = isFieldDisabled(fieldSchema, eventDetails);
+    const { acl: entryAcl, workflowStage: entryWorkflowStageDetails, resolvedVariantPermissions } =
+        await fetchEntryPermissionsAndStageDetails({
+            entryUid: entry_uid,
+            contentTypeUid: content_type_uid,
+            locale,
+            variantUid: variant,
+            fieldPathWithIndex,
+        });
+    const { isDisabled: disabled } = isFieldDisabled(
+        fieldSchema,
+        eventDetails,
+        resolvedVariantPermissions,
+        entryAcl,
+        entryWorkflowStageDetails
+    );
 
     editableElement.setAttribute(
         VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY,
@@ -88,152 +92,19 @@ export async function handleIndividualFields(
                 }
             );
         }
-    } 
-
-    !disabled && handleInlineEditing();
-
-    /**
-     * Handles inline editing for supported fields.
-     */
-    function handleInlineEditing() {
-
-        if (!ALLOWED_INLINE_EDITABLE_FIELD.includes(fieldType)) return;
-
-        // Instances of ALLOWED_INLINE_EDITABLE_FIELD will always have index at last
-        const index = Number(fieldMetadata.instance.fieldPathWithIndex.split('.').at(-1));
-        const isInstance = Number.isFinite(index);
-
-        // CASE 1: Handle inline editing for multiple field
-        if(isFieldMultiple(fieldSchema)) {
-            let expectedFieldInstanceData = null;
-            if(Array.isArray(expectedFieldData)) {
-                // CASE: Selected element is the multiple field itself.
-                // Inline Editing not allowed on field, only allowed on instance.
-                // (We recieve unreliable `multipleFieldMetadata` in this case)
-                if(!isInstance) {
-                    return;
-                }
-
-                // CASE: Value does not exist for the provided instance's index
-                if(index >= expectedFieldData.length) {
-                    // TODO: What should be the behavior here?
-                }
-                else {
-                    expectedFieldInstanceData = expectedFieldData.at(index);
-                }
-            }
-            // CASE: ContentType's Field changed from single to multiple, while Entry's Field still single.
-            else {
-                expectedFieldInstanceData = expectedFieldData;
-            }
-
-            enableInlineEditing(expectedFieldInstanceData);     
-        }
-        // CASE 2: Handle inline editing for a single field
-        else {
-            let expectedFieldInstanceData = null;
-            // CASE: ContentType's Field changed from multiple to single, while Entry's Field still multiple.
-            if(isInstance) {
-                if(index !== 0) {
-                    // TODO: Handle this with UX
-                    // Let user know, CSLP is invalid due to change in Content Type
-                    return;
-                }
-                expectedFieldInstanceData = Array.isArray(expectedFieldData) ? expectedFieldData.at(0) : expectedFieldData;
-            }
-            enableInlineEditing(expectedFieldInstanceData ?? expectedFieldData);
-        }
-
-        function enableInlineEditing(expectedFieldData: any) {
-
-            let actualEditableField = editableElement as HTMLElement;
-
-            VisualBuilder.VisualBuilderGlobalState.value.focusFieldValue =
-                actualEditableField?.innerText;
-
-            const elementComputedDisplay =
-                window.getComputedStyle(actualEditableField).display;
-
-            let textContent =
-                (editableElement as HTMLElement).innerText ||
-                editableElement.textContent ||
-                "";
-
-            if (fieldType === FieldDataType.MULTILINE) {
-                textContent = getMultilinePlaintext(actualEditableField);
-                actualEditableField.addEventListener("paste", pasteAsPlainText);
-            }
-            const expectedTextContent = expectedFieldData;
-            if (
-                (expectedTextContent && textContent !== expectedTextContent) ||
-                isEllipsisActive(editableElement as HTMLElement)
-            ) {
-                
-                // TODO: Testing will be done in the E2E.
-                const pseudoEditableField = generatePseudoEditableElement(
-                    { editableElement: editableElement as HTMLElement },
-                    { textContent: expectedFieldData }
-                );
-
-                (editableElement as HTMLElement).style.visibility = "hidden";
-
-                // set field type attribute to the pseudo editable field
-                // ensures proper keydown handling similar to the actual editable field
-                pseudoEditableField.setAttribute(
-                    VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY,
-                    fieldType
-                );
-                visualBuilderContainer.appendChild(pseudoEditableField);
-                actualEditableField = pseudoEditableField;
-
-                if (fieldType === FieldDataType.MULTILINE)
-                    actualEditableField.addEventListener(
-                        "paste",
-                        pasteAsPlainText
-                    );
-
-                // we will unobserve this in hideOverlay
-                elements.resizeObserver.observe(pseudoEditableField);
-            } else if (elementComputedDisplay === "inline") {
-                // if the editable field is inline
-                const onInlineElementInput = throttle(() => {
-                    const overlayWrapper = visualBuilderContainer.querySelector(
-                        ".visual-builder__overlay__wrapper"
-                    ) as HTMLDivElement;
-                    const focusedToolbar = visualBuilderContainer.querySelector(
-                        ".visual-builder__focused-toolbar"
-                    ) as HTMLDivElement;
-                    updateFocussedState({
-                        editableElement: actualEditableField,
-                        visualBuilderContainer,
-                        overlayWrapper,
-                        focusedToolbar,
-                        resizeObserver,
-                    });
-                }, 200);
-                actualEditableField.addEventListener(
-                    "input",
-                    onInlineElementInput
-                );
-            }
-
-            actualEditableField.setAttribute("contenteditable", "true");
-            actualEditableField.addEventListener("input", handleFieldInput);
-            actualEditableField.addEventListener("keydown", handleFieldKeyDown);
-            // focus on the contenteditable element to start accepting input
-            actualEditableField.focus();
-
-            return;
-        }
     }
-}
 
-function isFieldMultiple(fieldSchema: ISchemaFieldMap): boolean {
-    return fieldSchema &&
-    (fieldSchema.multiple ||
-        (fieldSchema.data_type === "reference" &&
-            // @ts-ignore
-            fieldSchema.field_metadata.ref_multiple));
+    if (disabled) {
+        return;
+    }
+    handleInlineEditableField({
+        fieldType,
+        fieldSchema,
+        fieldMetadata,
+        expectedFieldData,
+        editableElement: editableElement as HTMLElement,
+        elements,
+    });
 }
 
 export function cleanIndividualFieldResidual(elements: {
@@ -294,25 +165,6 @@ export function cleanIndividualFieldResidual(elements: {
     }
 
     if (focusedToolbar) {
-        focusedToolbar.innerHTML = "";
-        const toolbarEvents = [VisualBuilderPostMessageEvents.DELETE_INSTANCE, VisualBuilderPostMessageEvents.UPDATE_DISCUSSION_ID]
-        toolbarEvents.forEach((event) => {
-            //@ts-expect-error - We are accessing private method here, but it is necessary to clean up the event listeners.
-            visualBuilderPostMessage?.unregisterEvent?.(event);
-        });
+        removeFieldToolbar(focusedToolbar);
     }
 }
-
-const pasteAsPlainText = debounce(
-    (e: Event) => {
-        e.preventDefault();
-        const clipboardData = (e as ClipboardEvent).clipboardData;
-        document.execCommand(
-            "inserttext",
-            false,
-            clipboardData?.getData("text/plain")
-        );
-    },
-    100,
-    { leading: true }
-);

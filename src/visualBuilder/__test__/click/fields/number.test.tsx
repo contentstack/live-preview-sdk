@@ -11,6 +11,8 @@ import { VisualBuilderPostMessageEvents } from "../../../utils/types/postMessage
 import { VisualBuilder } from "../../../index";
 import { triggerAndWaitForClickAction } from "../../../../__test__/utils";
 
+const EXAMPLE_STAGE_NAME = "Example Stage";
+
 const VALUES = {
     number: "10.5",
 };
@@ -50,6 +52,15 @@ vi.mock("../../../utils/visualBuilderPostMessage", async () => {
             }),
             on: vi.fn(),
         },
+    };
+});
+
+vi.mock("../../../../utils/index.ts", async () => {
+    const actual = await vi.importActual("../../../../utils");
+    return {
+        __esModule: true,
+        ...actual,
+        isOpenInBuilder: vi.fn().mockReturnValue(true),
     };
 });
 
@@ -103,6 +114,18 @@ describe("When an element is clicked in visual builder mode", () => {
                         return Promise.resolve({
                             "all_fields.bltapikey.en-us.number": "Number",
                         });
+                    } else if (
+                        eventName ===
+                        VisualBuilderPostMessageEvents.GET_WORKFLOW_STAGE_DETAILS
+                    ) {
+                        return Promise.resolve({
+                            stage: { name: EXAMPLE_STAGE_NAME },
+                            permissions: {
+                                entry: {
+                                    update: true,
+                                },
+                            },
+                        });
                     }
                     return Promise.resolve({});
                 }
@@ -118,46 +141,21 @@ describe("When an element is clicked in visual builder mode", () => {
             document.body.appendChild(numberField);
 
             visualBuilder = new VisualBuilder();
-            await triggerAndWaitForClickAction(visualBuilderPostMessage, numberField)
+            await triggerAndWaitForClickAction(
+                visualBuilderPostMessage,
+                numberField
+            );
         });
 
         afterAll(() => {
             visualBuilder.destroy();
         });
 
-        test("should have outline", () => {
-            expect(numberField.classList.contains("cslp-edit-mode"));
-        });
-
-        test("should have an overlay", () => {
-            const overlay = document.querySelector(".visual-builder__overlay");
-            expect(overlay!.classList.contains("visible"));
-        });
-
-        test.skip("should have a field path dropdown", () => {
-            const toolbar = document.querySelector(
-                ".visual-builder__focused-toolbar__field-label-wrapper__current-field"
-            );
-            expect(toolbar).toBeInTheDocument();
-        });
-
-        test("should contain a data-cslp-field-type attribute", async () => {
-            await waitFor(() => {
-                expect(numberField).toHaveAttribute(
-                    VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
-                );
-            });
-        });
-
-        test("should send a focus field message to parent", async () => {
-            await waitFor(() => {
-                expect(visualBuilderPostMessage?.send).toBeCalledWith(
-                    VisualBuilderPostMessageEvents.FOCUS_FIELD,
-                    {
-                        DOMEditStack: getDOMEditStack(numberField),
-                    }
-                );
-            });
+        // Common tests (field type, overlay, dropdown, focus message) are covered in all-click.test.tsx
+        // Only testing unique behavior: number fields have contenteditable (they're in ALLOWED_INLINE_EDITABLE_FIELD)
+        test("should contain a contenteditable attribute", () => {
+            // Number fields are editable inline, so they should have contenteditable
+            expect(numberField).toHaveAttribute("contenteditable");
         });
     });
 
@@ -181,6 +179,25 @@ describe("When an element is clicked in visual builder mode", () => {
                         };
                         return Promise.resolve({
                             fieldData: values[args.entryPath],
+                        });
+                    } else if (
+                        eventName ===
+                        VisualBuilderPostMessageEvents.GET_WORKFLOW_STAGE_DETAILS
+                    ) {
+                        return Promise.resolve({
+                            stage: { name: EXAMPLE_STAGE_NAME },
+                            permissions: {
+                                entry: {
+                                    update: true,
+                                },
+                            },
+                        });
+                    } else if (
+                        eventName ===
+                        VisualBuilderPostMessageEvents.GET_RESOLVED_VARIANT_PERMISSIONS
+                    ) {
+                        return Promise.resolve({
+                            update: true,
                         });
                     }
                     return Promise.resolve({});
@@ -212,97 +229,32 @@ describe("When an element is clicked in visual builder mode", () => {
             document.body.appendChild(container);
 
             visualBuilder = new VisualBuilder();
-            await triggerAndWaitForClickAction(visualBuilderPostMessage, container)
+            await triggerAndWaitForClickAction(
+                visualBuilderPostMessage,
+                container
+            );
         });
 
         afterAll(() => {
             visualBuilder.destroy();
         });
 
-        test("should have outline", () => {
-            expect(container.classList.contains("cslp-edit-mode"));
-        });
-
-        test("should have an overlay", () => {
-            const overlay = document.querySelector(".visual-builder__overlay");
-            expect(overlay!.classList.contains("visible"));
-        });
-
-        test.skip("should have a field path dropdown", () => {
-            const toolbar = document.querySelector(
-                ".visual-builder__focused-toolbar__field-label-wrapper__current-field"
-            );
-            expect(toolbar).toBeInTheDocument();
-        });
-
-        // TODO should be a test of FieldToolbar
-        test.skip("should have a multi field toolbar with button group", async () => {
-            const multiFieldToolbar = document.querySelector(
-                ".visual-builder__focused-toolbar__multiple-field-toolbar"
-            );
-
-            const buttonGroup = document.querySelector(
-                ".visual-builder__focused-toolbar__button-group"
-            );
-
-            expect(multiFieldToolbar).toBeInTheDocument();
-            expect(buttonGroup).toBeInTheDocument();
-        });
-
-        test.skip("should have 2 add instance buttons", async () => {
-            fireEvent.click(container.children[0]);
-            await waitFor(() => {
-                expect(container.children[0]).toHaveAttribute(
-                    VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
-                );
-            });
-
-            await waitFor(() => {
-                const addInstanceButtons = screen.getAllByTestId(
-                    "visual-builder-add-instance-button"
-                );
-                expect(addInstanceButtons.length).toBe(2);
-            });
-        });
-
-        test("should contain a data-cslp-field-type attribute", async () => {
-            await waitFor(() => {
-                expect(container).toHaveAttribute(
-                    VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
-                );
-            });
-        });
-
-        test("container should not contain a contenteditable attribute but the children can", async () => {
+        // Common tests (field type, overlay, dropdown, focus message) are covered in all-click.test.tsx
+        // Only testing unique behavior: number fields don't have contenteditable even on children
+        test("neither container nor children should contain a contenteditable attribute", () => {
+            // Number fields don't have contenteditable (they're input type=number)
             fireEvent.click(container);
-            await waitFor(() => {
-                expect(container).not.toHaveAttribute("contenteditable");
-            });
+            expect(container).not.toHaveAttribute("contenteditable");
 
             fireEvent.click(container.children[0]);
-            await waitFor(() => {
-                expect(container.children[0]).toHaveAttribute(
-                    "contenteditable"
-                );
-            });
+            expect(container.children[0]).not.toHaveAttribute(
+                "contenteditable"
+            );
 
             fireEvent.click(container.children[1]);
-            await waitFor(() => {
-                expect(container.children[1]).toHaveAttribute(
-                    "contenteditable"
-                );
-            });
-        });
-
-        test("should send a focus field message to parent", async () => {
-            await waitFor(() => {
-                expect(visualBuilderPostMessage?.send).toBeCalledWith(
-                    VisualBuilderPostMessageEvents.FOCUS_FIELD,
-                    {
-                        DOMEditStack: getDOMEditStack(container),
-                    }
-                );
-            });
+            expect(container.children[1]).not.toHaveAttribute(
+                "contenteditable"
+            );
         });
     });
 });

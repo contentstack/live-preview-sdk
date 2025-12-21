@@ -5,12 +5,11 @@
 import { act, fireEvent, waitFor } from "@testing-library/preact";
 import crypto from "crypto";
 import { vi } from "vitest";
-import { sleep } from "../../__test__/utils";
 import { getDefaultConfig } from "../../configManager/config.default";
 import Config from "../../configManager/configManager";
 import { PublicLogger } from "../../logger/logger";
 import { ILivePreviewWindowType } from "../../types/types";
-import * as utils from "../../utils";
+import { addLivePreviewQueryTags } from '../../utils/addLivePreviewQueryTags';
 import livePreviewPostMessage from "../eventManager/livePreviewEventManager";
 import { LIVE_PREVIEW_POST_MESSAGE_EVENTS } from "../eventManager/livePreviewEventManager.constant";
 import {
@@ -20,6 +19,9 @@ import {
 import LivePreview from "../live-preview";
 import { mockLivePreviewInitEventListener } from "./mock";
 
+vi.mock("../../utils/addLivePreviewQueryTags", () => ({
+    addLivePreviewQueryTags: vi.fn(),
+}));
 vi.mock("../../visualBuilder/utils/visualBuilderPostMessage", async () => {
     const { getAllContentTypes } = await vi.importActual<
         typeof import("../../__test__/data/contentType")
@@ -50,12 +52,6 @@ Object.defineProperty(globalThis, "crypto", {
 const TITLE_CSLP_TAG = "content-type-1.entry-uid-1.en-us.field-title";
 const DESC_CSLP_TAG = "content-type-2.entry-uid-2.en-us.field-description";
 const LINK_CSLP_TAG = "content-type-3.entry-uid-3.en-us.field-link";
-
-global.ResizeObserver = vi.fn().mockImplementation(() => ({
-    observe: vi.fn(),
-    unobserve: vi.fn(),
-    disconnect: vi.fn(),
-}));
 
 describe("cslp tooltip", () => {
     beforeEach(() => {
@@ -346,13 +342,27 @@ describe("incoming postMessage", () => {
         });
 
         livePreviewPostMessage?.destroy({ soft: true });
+
+        // Track when INIT completes
+        let initCompleted = false;
         livePreviewPostMessage?.on(
             LIVE_PREVIEW_POST_MESSAGE_EVENTS.INIT,
-            mockLivePreviewInitEventListener
+            () => {
+                const result = mockLivePreviewInitEventListener();
+                initCompleted = true;
+                return result;
+            }
         );
 
         const livePreview = new LivePreview();
-        await sleep();
+
+        // Wait for INIT event to complete and event listeners to be registered
+        await waitFor(
+            () => {
+                expect(initCompleted).toBe(true);
+            },
+            { timeout: 3000 }
+        );
 
         // set user onChange function
         const userOnChange = vi.fn();
@@ -383,7 +393,13 @@ describe("incoming postMessage", () => {
         }
 
         new LivePreview();
-        await sleep();
+
+        // Wait for async init event to be processed
+        await waitFor(() => {
+            expect(Config.get().stackDetails.contentTypeUid).toBe(
+                "contentTypeUid"
+            );
+        });
 
         expect(Config.get().stackDetails).toMatchObject({
             apiKey: "",
@@ -394,42 +410,58 @@ describe("incoming postMessage", () => {
     });
 
     test("should navigate forward, backward and reload page on history call", async () => {
+        // Track when INIT completes
+        let initCompleted = false;
+        livePreviewPostMessage?.destroy({ soft: true });
+        livePreviewPostMessage?.on(
+            LIVE_PREVIEW_POST_MESSAGE_EVENTS.INIT,
+            () => {
+                const result = mockLivePreviewInitEventListener();
+                initCompleted = true;
+                return result;
+            }
+        );
+
         new LivePreview();
-        await sleep();
+
+        // Wait for INIT to complete and event listeners to be registered
+        await waitFor(
+            () => {
+                expect(initCompleted).toBe(true);
+            },
+            { timeout: 3000 }
+        );
 
         vi.spyOn(window.history, "forward");
         vi.spyOn(window.history, "back");
         vi.spyOn(window.history, "go").mockImplementation(() => {});
 
         // for forward
-        livePreviewPostMessage?.send(LIVE_PREVIEW_POST_MESSAGE_EVENTS.HISTORY, {
+        await livePreviewPostMessage?.send(LIVE_PREVIEW_POST_MESSAGE_EVENTS.HISTORY, {
             type: "forward",
         } as HistoryLivePreviewPostMessageEventData);
-        await sleep(0);
 
         expect(window.history.forward).toHaveBeenCalled();
 
         // for back
-        livePreviewPostMessage?.send(LIVE_PREVIEW_POST_MESSAGE_EVENTS.HISTORY, {
+        await livePreviewPostMessage?.send(LIVE_PREVIEW_POST_MESSAGE_EVENTS.HISTORY, {
             type: "backward",
         } as HistoryLivePreviewPostMessageEventData);
 
-        await sleep(0);
         expect(window.history.back).toHaveBeenCalled();
 
         // for reload
-        livePreviewPostMessage?.send(LIVE_PREVIEW_POST_MESSAGE_EVENTS.HISTORY, {
+        await livePreviewPostMessage?.send(LIVE_PREVIEW_POST_MESSAGE_EVENTS.HISTORY, {
             type: "reload",
         } as HistoryLivePreviewPostMessageEventData);
 
-        await sleep(0);
         expect(window.history.go).toHaveBeenCalled();
     });
 });
 
 describe("testing window event listeners", () => {
     let addEventListenerMock: any;
-    let sendInitEvent: any;
+    const sendInitEvent = vi.fn().mockImplementation(mockLivePreviewInitEventListener);
     let livePreviewInstance: LivePreview;
 
     beforeEach(() => {
@@ -437,7 +469,7 @@ describe("testing window event listeners", () => {
         livePreviewPostMessage?.destroy({ soft: true });
         livePreviewPostMessage?.on(
             LIVE_PREVIEW_POST_MESSAGE_EVENTS.INIT,
-            mockLivePreviewInitEventListener
+            sendInitEvent
         );
 
         const titlePara = document.createElement("h3");
@@ -457,13 +489,10 @@ describe("testing window event listeners", () => {
         document.body.appendChild(descPara);
         document.body.appendChild(linkPara);
 
-        Config.set("windowType", ILivePreviewWindowType.PREVIEW);
-
-        addEventListenerMock = vi.spyOn(window, "addEventListener");
+        addEventListenerMock = vi.spyOn(document, "addEventListener");
     });
 
     afterEach(() => {
-        vi.restoreAllMocks();
         document.getElementsByTagName("html")[0].innerHTML = "";
     });
 
@@ -473,11 +502,7 @@ describe("testing window event listeners", () => {
     });
 
     test("should attach a load event to call requestDataSync if document is not yet loaded", () => {
-        Object.defineProperty(document, "readyState", {
-            get() {
-                return "loading";
-            },
-        });
+        const readyState = vi.spyOn(document, 'readyState', 'get').mockReturnValue('loading');
 
         Config.replace({
             enable: true,
@@ -486,16 +511,17 @@ describe("testing window event listeners", () => {
         livePreviewInstance = new LivePreview();
 
         expect(addEventListenerMock).toBeCalledWith(
-            "load",
+            "DOMContentLoaded",
             expect.any(Function)
         );
+        readyState.mockRestore();
     });
-    //TODO: fix this test
-    test.skip("should handle link click event if ssr is set to true", async () => {
-        vi.spyOn(utils, "addLivePreviewQueryTags");
+    test("should handle link click event if ssr is set to true", async () => {
+
         Config.replace({
             enable: true,
             ssr: true,
+            debug: true,
         });
 
         const targetElement = document.createElement("a");
@@ -503,14 +529,17 @@ describe("testing window event listeners", () => {
 
         document.body.appendChild(targetElement);
         await act(async () => {
-            livePreviewInstance = new LivePreview();
+            livePreviewInstance = new LivePreview(); 
         });
+        await waitFor(() => {
+            expect(sendInitEvent).toBeCalled();
+        })
         await waitFor(() => {
             expect(Config.get().stackDetails.contentTypeUid).toBe('contentTypeUid');
         })
         await act(async () => {
             fireEvent.click(targetElement);
         });
-        expect(utils.addLivePreviewQueryTags).toBeCalled();
+        expect(addLivePreviewQueryTags).toBeCalled();
     });
 });

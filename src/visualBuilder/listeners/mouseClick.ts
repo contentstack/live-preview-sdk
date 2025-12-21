@@ -21,11 +21,22 @@ import { FieldSchemaMap } from "../utils/fieldSchemaMap";
 import { isFieldDisabled } from "../utils/isFieldDisabled";
 import EventListenerHandlerParams from "./types";
 import { toggleHighlightedCommentIconDisplay } from "../generators/generateHighlightedComment";
+import { VB_EmptyBlockParentClass } from "../..";
+import { getFieldVariantStatus } from "../components/FieldRevert/FieldRevertComponent";
+import getXPath from "get-xpath";
+import Config from "../../configManager/configManager";
+import { generateThread } from "../generators/generateThread";
+import { isCollabThread } from "../generators/generateThread";
+import { toggleCollabPopup } from "../generators/generateThread";
+import { fixSvgXPath } from "../utils/collabUtils";
+import { v4 as uuidV4 } from "uuid";
+import { CslpData } from "../../cslp/types/cslp.types";
+import { fetchEntryPermissionsAndStageDetails } from "../utils/fetchEntryPermissionsAndStageDetails";
 
-type HandleBuilderInteractionParams = Omit<
+export type HandleBuilderInteractionParams = Omit<
     EventListenerHandlerParams,
     "eventDetails" | "customCursor"
->;
+> & { reEvaluate?: boolean };
 
 type AddFocusOverlayParams = Pick<
     EventListenerHandlerParams,
@@ -35,7 +46,11 @@ type AddFocusOverlayParams = Pick<
 type AddFocusedToolbarParams = Pick<
     EventListenerHandlerParams,
     "eventDetails" | "focusedToolbar"
-> & { hideOverlay: () => void };
+> & {
+    hideOverlay: () => void;
+    isVariant: boolean;
+    options?: { isHover?: boolean };
+};
 
 function addOverlay(params: AddFocusOverlayParams) {
     if (!params.overlayWrapper || !params.editableElement) return;
@@ -53,10 +68,16 @@ export function addFocusedToolbar(params: AddFocusedToolbarParams): void {
 
     if (!editableElement || !params.focusedToolbar) return;
 
-    appendFocusedToolbar(params.eventDetails, params.focusedToolbar, params.hideOverlay);
+    appendFocusedToolbar(
+        params.eventDetails,
+        params.focusedToolbar,
+        params.hideOverlay,
+        params.isVariant,
+        params.options
+    );
 }
 
-async function handleBuilderInteraction(
+export async function handleBuilderInteraction(
     params: HandleBuilderInteractionParams
 ): Promise<void> {
     const eventTarget = params.event.target as HTMLElement | null;
@@ -66,6 +87,35 @@ async function handleBuilderInteraction(
         (eventTarget.hasAttribute("data-cslp") ||
             eventTarget.closest("[data-cslp]"));
 
+    // if multiple elements with the same cslp element are found,
+    // assign a unique ID to each element which we can use to identify
+    // them in updateFocussedState and other places where we
+    // would have queried the element by data-cslp
+    const duplicates = document.querySelectorAll(
+        `[data-cslp="${eventTarget?.getAttribute("data-cslp")}"]`
+    );
+    if (duplicates.length > 1) {
+        duplicates.forEach((ele) => {
+            if (!ele.hasAttribute("data-cslp-unique-id")) {
+                const uniqueId = `cslp-${uuidV4()}`;
+                ele.setAttribute("data-cslp-unique-id", uniqueId);
+            }
+        });
+    }
+
+    // if the target element is a studio-ui element, return
+    // this is currently used for the "Edit in Studio" button
+    if (eventTarget?.getAttribute("data-studio-ui") === "true") {
+        return;
+    }
+
+    if (params.event.altKey) {
+        if (isAnchorElement) {
+            params.event.preventDefault();
+            params.event.stopPropagation();
+        }
+        return;
+    }
     // prevent default behavior for anchor elements and elements with cslp attribute
     if (
         isAnchorElement ||
@@ -75,15 +125,44 @@ async function handleBuilderInteraction(
         params.event.stopPropagation();
     }
 
+    const config = Config.get();
+
+    if (config?.collab.enable === true) {
+        if (config?.collab.pauseFeedback) return;
+        const xpath = fixSvgXPath(getXPath(eventTarget));
+        if (!eventTarget) return;
+
+        const rect = eventTarget.getBoundingClientRect();
+        const relativeX = (params.event.clientX - rect.left) / rect.width;
+        const relativeY = (params.event.clientY - rect.top) / rect.height;
+
+        if (!isCollabThread(eventTarget)) {
+            params.event.preventDefault();
+            params.event.stopPropagation();
+        }
+
+        if (isCollabThread(eventTarget)) {
+            Config.set("collab.isFeedbackMode", false);
+        } else if (config?.collab.isFeedbackMode) {
+            generateThread(
+                { xpath, relativeX, relativeY },
+                {
+                    isNewThread: true,
+                    updateConfig: true,
+                }
+            );
+        } else {
+            toggleCollabPopup({ threadUid: "", action: "close" });
+            Config.set("collab.isFeedbackMode", true);
+        }
+        return;
+    }
+
     const eventDetails = getCsDataOfElement(params.event);
-    visualBuilderPostMessage
-        ?.send(VisualBuilderPostMessageEvents.MOUSE_CLICK, {
-            cslpData: eventDetails?.cslpData,
-            fieldMetadata: eventDetails?.fieldMetadata,
-        })
-        .catch((err) => {
-            console.warn("Error while sending post message", err);
-        });
+
+    // Send mouse click post message
+    sendMouseClickPostMessage(eventDetails);
+
     if (
         !eventDetails ||
         !params.overlayWrapper ||
@@ -91,29 +170,18 @@ async function handleBuilderInteraction(
     ) {
         return;
     }
+
     const { editableElement, fieldMetadata } = eventDetails;
+    const variantStatus = await getFieldVariantStatus(fieldMetadata);
+    const isVariant = variantStatus
+        ? Object.values(variantStatus).some((value) => value === true)
+        : false;
 
-    if (
-        VisualBuilder.VisualBuilderGlobalState.value
-            .previousSelectedEditableDOM &&
-        VisualBuilder.VisualBuilderGlobalState.value
-            .previousSelectedEditableDOM !== editableElement
-    ) {
-        cleanIndividualFieldResidual({
-            overlayWrapper: params.overlayWrapper,
-            visualBuilderContainer: params.visualBuilderContainer,
-            focusedToolbar: params.focusedToolbar,
-            resizeObserver: params.resizeObserver,
-        });
-    }
+    // Clean residuals if necessary
+    cleanResidualsIfNeeded(params, editableElement);
 
-    // if the selected element is our empty block element, return
-    if (
-        editableElement.classList.contains(
-            "visual-builder__empty-block-parent"
-        ) ||
-        editableElement.classList.contains("visual-builder__empty-block")
-    ) {
+    // Return if the selected element is an empty block
+    if (isEmptyBlockElement(editableElement)) {
         return;
     }
 
@@ -125,8 +193,7 @@ async function handleBuilderInteraction(
         VisualBuilder.VisualBuilderGlobalState.value
             .previousSelectedEditableDOM;
     if (
-        previousSelectedElement &&
-        previousSelectedElement === editableElement
+        isSameSelectedElement(previousSelectedElement, editableElement, params)
     ) {
         return;
     }
@@ -134,6 +201,82 @@ async function handleBuilderInteraction(
     VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
         editableElement;
 
+    // Add overlay and focused toolbar
+    addOverlayAndToolbar(params, eventDetails, editableElement, isVariant);
+
+    const { cslpValue } = fieldMetadata;
+
+    toggleHighlightedCommentIconDisplay(cslpValue, false);
+
+    // Handle field schema and individual fields
+    await handleFieldSchemaAndIndividualFields(
+        params,
+        eventDetails,
+        fieldMetadata,
+        editableElement,
+        previousSelectedElement
+    );
+
+    // Observe changes to the editable element
+    observeEditableElementChanges(params, editableElement);
+}
+
+function sendMouseClickPostMessage(eventDetails: any) {
+    visualBuilderPostMessage
+        ?.send(VisualBuilderPostMessageEvents.MOUSE_CLICK, {
+            cslpData: eventDetails?.cslpData,
+            fieldMetadata: eventDetails?.fieldMetadata,
+        })
+        .catch((err) => {
+            console.warn("Error while sending post message", err);
+        });
+}
+function cleanResidualsIfNeeded(
+    params: HandleBuilderInteractionParams,
+    editableElement: Element
+) {
+    const previousSelectedElement =
+        VisualBuilder.VisualBuilderGlobalState.value
+            .previousSelectedEditableDOM;
+    if (
+        (previousSelectedElement &&
+            previousSelectedElement !== editableElement) ||
+        params.reEvaluate
+    ) {
+        cleanIndividualFieldResidual({
+            overlayWrapper: params.overlayWrapper!,
+            visualBuilderContainer: params.visualBuilderContainer,
+            focusedToolbar: params.focusedToolbar,
+            resizeObserver: params.resizeObserver,
+        });
+    }
+}
+function isEmptyBlockElement(editableElement: Element): boolean {
+    return (
+        editableElement.classList.contains(VB_EmptyBlockParentClass) ||
+        editableElement.classList.contains("visual-builder__empty-block")
+    );
+}
+
+function isSameSelectedElement(
+    previousSelectedElement: Element | null,
+    editableElement: Element,
+    params: HandleBuilderInteractionParams
+): boolean {
+    return !!(
+        previousSelectedElement &&
+        previousSelectedElement === editableElement &&
+        !params.reEvaluate
+    );
+}
+
+function addOverlayAndToolbar(
+    params: HandleBuilderInteractionParams,
+    eventDetails: any,
+    editableElement: Element,
+    isVariant: boolean
+) {
+    VisualBuilder.VisualBuilderGlobalState.value.isFocussed = true;
     addOverlay({
         overlayWrapper: params.overlayWrapper,
         resizeObserver: params.resizeObserver,
@@ -150,21 +293,46 @@ async function handleBuilderInteraction(
                 focusedToolbar: params.focusedToolbar,
                 resizeObserver: params.resizeObserver,
             });
-        }
+        },
+        isVariant,
     });
-
-    const { content_type_uid, fieldPath, cslpValue } = fieldMetadata;
-
-    toggleHighlightedCommentIconDisplay(cslpValue, false);
-
+}
+async function handleFieldSchemaAndIndividualFields(
+    params: HandleBuilderInteractionParams,
+    eventDetails: any,
+    fieldMetadata: CslpData,
+    editableElement: Element,
+    previousSelectedElement: Element | null
+) {
+    const {
+        content_type_uid,
+        entry_uid,
+        fieldPath,
+        locale,
+        variant: variantUid,
+        fieldPathWithIndex,
+    } = fieldMetadata;
     const fieldSchema = await FieldSchemaMap.getFieldSchema(
         content_type_uid,
         fieldPath
     );
+    const { acl: entryAcl, workflowStage: entryWorkflowStageDetails, resolvedVariantPermissions } =
+        await fetchEntryPermissionsAndStageDetails({
+            entryUid: entry_uid,
+            contentTypeUid: content_type_uid,
+            locale,
+            variantUid,
+            fieldPathWithIndex,
+        });
 
     if (fieldSchema) {
-        // after field schema is available re-add disabled overlay
-        const { isDisabled } = isFieldDisabled(fieldSchema, eventDetails);
+        const { isDisabled } = isFieldDisabled(
+            fieldSchema,
+            eventDetails,
+            resolvedVariantPermissions,
+            entryAcl,
+            entryWorkflowStageDetails
+        );
         if (isDisabled) {
             addOverlay({
                 overlayWrapper: params.overlayWrapper,
@@ -175,37 +343,37 @@ async function handleBuilderInteraction(
         }
     }
 
-    // This is most probably redundant code, as the handleIndividualFields function
-    // takes care of this
-    // TODO: Remove this
-    // if (
-    //     fieldSchema.data_type === "block" ||
-    //     fieldSchema.multiple ||
-    //     (fieldSchema.data_type === "reference" &&
-    //         // @ts-ignore
-    //         fieldSchema.field_metadata.ref_multiple)
-    // ) {
-    //     handleAddButtonsForMultiple(eventDetails, {
-    //         editableElement: editableElement,
-    //         visualBuilderContainer: params.visualBuilderContainer,
-    //         resizeObserver: params.resizeObserver,
-    //     });
-    // } else {
-    //     removeAddInstanceButtons({
-    //         eventTarget: params.event.target,
-    //         visualBuilderContainer: params.visualBuilderContainer,
-    //         overlayWrapper: params.overlayWrapper,
-    //     });
-    // }
     visualBuilderPostMessage?.send(VisualBuilderPostMessageEvents.FOCUS_FIELD, {
         DOMEditStack: getDOMEditStack(editableElement),
     });
 
     await handleIndividualFields(eventDetails, {
-        visualBuilderContainer: params.visualBuilderContainer,
+        visualBuilderContainer: params.visualBuilderContainer!,
         resizeObserver: params.resizeObserver,
         lastEditedField: previousSelectedElement,
     });
+}
+function observeEditableElementChanges(
+    params: HandleBuilderInteractionParams,
+    editableElement: Element
+) {
+    const focusElementObserver = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+            if (
+                mutation.type === "attributes" &&
+                mutation.attributeName === "data-cslp"
+            ) {
+                focusElementObserver?.disconnect();
+                VisualBuilder.VisualBuilderGlobalState.value.focusElementObserver =
+                    null;
+                handleBuilderInteraction({ ...params, reEvaluate: true });
+            }
+        });
+    });
+
+    VisualBuilder.VisualBuilderGlobalState.value.focusElementObserver =
+        focusElementObserver;
+    focusElementObserver.observe(editableElement, { attributes: true });
 }
 
 export default handleBuilderInteraction;

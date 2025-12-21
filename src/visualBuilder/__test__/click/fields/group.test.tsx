@@ -49,6 +49,15 @@ vi.mock("../../../utils/visualBuilderPostMessage", async () => {
     };
 });
 
+vi.mock("../../../../utils/index.ts", async () => {
+    const actual = await vi.importActual("../../../../utils");
+    return {
+        __esModule: true,
+        ...actual,
+        isOpenInBuilder: vi.fn().mockReturnValue(true),
+    };
+});
+
 describe("When an element is clicked in visual builder mode", () => {
     let mouseClickEvent: Event;
 
@@ -98,7 +107,10 @@ describe("When an element is clicked in visual builder mode", () => {
             document.body.appendChild(groupField);
 
             visualBuilder = new VisualBuilder();
-            await triggerAndWaitForClickAction(visualBuilderPostMessage, groupField);
+            await triggerAndWaitForClickAction(
+                visualBuilderPostMessage,
+                groupField
+            );
         });
 
         afterAll(() => {
@@ -106,45 +118,27 @@ describe("When an element is clicked in visual builder mode", () => {
             visualBuilder.destroy();
         });
 
-        test("should have outline", () => {
-            expect(groupField.classList.contains("cslp-edit-mode"));
-        });
-
-        test("should have an overlay", () => {
-            const overlay = document.querySelector(".visual-builder__overlay");
-            expect(overlay!.classList.contains("visible"));
-        });
-
-        test.skip("should have a field path dropdown", () => {
-            const toolbar = document.querySelector(
-                ".visual-builder__focused-toolbar__field-label-wrapper__current-field"
+        // Common tests (field type, overlay, dropdown, focus message, no contenteditable) are covered in all-click.test.tsx
+        // Only testing unique behavior: nested fields within group can be clicked
+        test("should handle clicking on nested field within group", async () => {
+            // Create a nested field
+            const nestedField = document.createElement("p");
+            nestedField.setAttribute(
+                "data-cslp",
+                "all_fields.bltapikey.en-us.group.single_line"
             );
-            expect(toolbar).toBeInTheDocument();
-        });
+            groupField.appendChild(nestedField);
 
-        test("should contain a data-cslp-field-type attribute", async () => {
-            await waitFor(() => {
-                expect(groupField).toHaveAttribute(
-                    VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
-                );
-            });
-        });
+            // Click on the nested field
+            await triggerAndWaitForClickAction(
+                visualBuilderPostMessage,
+                nestedField
+            );
 
-        test("should not contain a contenteditable attribute", async () => {
-            await waitFor(() => {
-                expect(groupField).not.toHaveAttribute("contenteditable");
-            });
-        });
-
-        test("should send a focus field message to parent", async () => {
-            await waitFor(() => {
-                expect(visualBuilderPostMessage?.send).toBeCalledWith(
-                    VisualBuilderPostMessageEvents.FOCUS_FIELD,
-                    {
-                        DOMEditStack: getDOMEditStack(groupField),
-                    }
-                );
-            });
+            // Verify the nested field gets the field type attribute
+            expect(nestedField).toHaveAttribute(
+                VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
+            );
         });
     });
 
@@ -188,82 +182,29 @@ describe("When an element is clicked in visual builder mode", () => {
             document.body.appendChild(container);
 
             visualBuilder = new VisualBuilder();
-            await triggerAndWaitForClickAction(visualBuilderPostMessage, container);
+            await triggerAndWaitForClickAction(
+                visualBuilderPostMessage,
+                container
+            );
         });
 
         afterAll(() => {
             visualBuilder.destroy();
         });
 
-        test("should have outline", () => {
-            expect(container.classList.contains("cslp-edit-mode"));
-        });
-
-        test("should have an overlay", () => {
-            const overlay = document.querySelector(".visual-builder__overlay");
-            expect(overlay!.classList.contains("visible"));
-        });
-
-        test.skip("should have a field path dropdown", () => {
-            const toolbar = document.querySelector(
-                ".visual-builder__focused-toolbar__field-label-wrapper__current-field"
-            );
-            expect(toolbar).toBeInTheDocument();
-        });
-
-        // TODO should be a test of FieldToolbar
-        test.skip("should have a multi field toolbar with button group", async () => {
-            const multiFieldToolbar = document.querySelector(
-                ".visual-builder__focused-toolbar__multiple-field-toolbar"
+        // Common tests (field type, overlay, dropdown, focus message, no contenteditable) are covered in all-click.test.tsx
+        // Only testing unique behavior: nested fields within multiple group fields
+        test("should handle clicking on nested field within multiple group fields", async () => {
+            // Click on the nested multi-line field within the first group
+            await triggerAndWaitForClickAction(
+                visualBuilderPostMessage,
+                firstNestedMultiLine
             );
 
-            const buttonGroup = document.querySelector(
-                ".visual-builder__focused-toolbar__button-group"
+            // Verify the nested field gets the field type attribute
+            expect(firstNestedMultiLine).toHaveAttribute(
+                VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
             );
-
-            expect(multiFieldToolbar).toBeInTheDocument();
-            expect(buttonGroup).toBeInTheDocument();
-        });
-
-        test.skip("should have 2 add instance buttons", async () => {
-            fireEvent.click(container.children[0]);
-            await waitFor(() => {
-                expect(container.children[0]).toHaveAttribute(
-                    VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
-                );
-            });
-
-            await waitFor(() => {
-                const addInstanceButtons = screen.getAllByTestId(
-                    "visual-builder-add-instance-button"
-                );
-                expect(addInstanceButtons.length).toBe(2);
-            });
-        });
-
-        test("should contain a data-cslp-field-type attribute", async () => {
-            await waitFor(() => {
-                expect(container).toHaveAttribute(
-                    VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY
-                );
-            });
-        });
-
-        test("should not contain a contenteditable attribute", async () => {
-            await waitFor(() => {
-                expect(container).not.toHaveAttribute("contenteditable");
-            });
-        });
-
-        test("should send a focus field message to parent", async () => {
-            await waitFor(() => {
-                expect(visualBuilderPostMessage?.send).toBeCalledWith(
-                    VisualBuilderPostMessageEvents.FOCUS_FIELD,
-                    {
-                        DOMEditStack: getDOMEditStack(container),
-                    }
-                );
-            });
         });
     });
 });

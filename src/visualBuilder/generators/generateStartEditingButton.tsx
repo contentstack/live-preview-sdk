@@ -5,21 +5,25 @@ import StartEditingButtonComponent from "../components/startEditingButton";
 /**
  * Generates a start editing button for the visual builder.
  *
- * @param visualBuilderContainer - The HTMLDivElement that wraps the visual builder.
- * @returns The generated HTMLAnchorElement representing the start editing button, or undefined if the visualBuilderContainer is null.
+ * @returns The generated HTMLAnchorElement representing the start editing button, or undefined if the button cannot be created.
  */
-export function generateStartEditingButton(
-    visualBuilderContainer: HTMLDivElement | null
-): HTMLAnchorElement | undefined {
-    if (!visualBuilderContainer) {
-        PublicLogger.warn("Visual builder overlay not found.");
-        return;
+export function generateStartEditingButton(): HTMLAnchorElement | undefined {
+    const existingButton = document.querySelector(
+        ".visual-builder__start-editing-btn"
+    ) as HTMLAnchorElement;
+
+    if (existingButton) {
+        return existingButton;
     }
 
     const wrapper = document.createDocumentFragment();
     render(<StartEditingButtonComponent />, wrapper);
 
-    visualBuilderContainer?.appendChild(wrapper);
+    if (wrapper.children.length === 0) {
+        return undefined;
+    }
+
+    document.body.appendChild(wrapper);
 
     const startEditingButton = document.querySelector(
         ".visual-builder__start-editing-btn"
