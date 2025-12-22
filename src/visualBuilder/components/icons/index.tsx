@@ -358,3 +358,23 @@ export function CaretRightIcon(): JSX.Element {
         
     )
 }
+
+export function LockIcon(): JSX.Element {
+    return (
+        <svg
+            data-testid="visual-builder__lock-icon"
+            width="16"
+            height="16"
+            viewBox="0 0 16 16"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+        >
+            <path
+                fill-rule="evenodd"
+                clip-rule="evenodd"
+                d="M5.5 6.5V5.5C5.5 3.567 7.067 2 9 2C10.933 2 12.5 3.567 12.5 5.5V6.5C13.0523 6.5 13.5 6.94772 13.5 7.5V12.5C13.5 13.0523 13.0523 13.5 12.5 13.5H5.5C4.94772 13.5 4.5 13.0523 4.5 12.5V7.5C4.5 6.94772 4.94772 6.5 5.5 6.5ZM6.5 5.5V6.5H11.5V5.5C11.5 4.39543 10.6046 3.5 9 3.5C7.39543 3.5 6.5 4.39543 6.5 5.5ZM5.5 7.5V12.5H12.5V7.5H5.5Z"
+                fill="white"
+            />
+        </svg>
+    );
+}

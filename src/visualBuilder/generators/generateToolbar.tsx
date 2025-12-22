@@ -24,7 +24,7 @@ export function appendFocusedToolbar(
     }
 ): void {
     appendFieldPathDropdown(eventDetails, focusedToolbarElement, options);
-    if(options?.isHover) {
+    if (options?.isHover) {
         return;
     }
     appendFieldToolbar(
@@ -79,9 +79,10 @@ export function appendFieldPathDropdown(
     focusedToolbarElement: HTMLDivElement,
     options?: {
         isHover?: boolean;
+        isLocked?: boolean;
     }
 ): void {
-    const { isHover } = options || {};
+    const { isHover, isLocked: providedIsLocked } = options || {};
     const fieldLabelWrapper = document.querySelector(
         ".visual-builder__focused-toolbar__field-label-wrapper"
     ) as HTMLDivElement | null;
@@ -134,6 +135,10 @@ export function appendFieldPathDropdown(
     focusedToolbarElement.style.top = `${adjustedDistanceFromTop}px`;
 
     const parentPaths = collectParentCSLPPaths(targetElement, 2);
+    const isLocked =
+        providedIsLocked !== undefined
+            ? providedIsLocked
+            : targetElement.getAttribute("data-field-locked") === "true";
 
     const wrapper = document.createDocumentFragment();
     render(
@@ -141,6 +146,7 @@ export function appendFieldPathDropdown(
             fieldMetadata={fieldMetadata}
             eventDetails={eventDetails}
             parentPaths={parentPaths}
+            isLocked={isLocked}
             getParentEditableElement={(cslp: string) => {
                 const parentElement = targetElement.closest(
                     `[${DATA_CSLP_ATTR_SELECTOR}="${cslp}"]`

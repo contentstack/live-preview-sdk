@@ -9,7 +9,8 @@ import { visualBuilderStyles } from "../visualBuilder.style";
 export function addHoverOutline(
     targetElement: Element,
     disabled?: boolean,
-    isVariant?: boolean
+    isVariant?: boolean,
+    isLocked?: boolean
 ): void {
     const targetElementDimension = targetElement.getBoundingClientRect();
 
@@ -22,13 +23,29 @@ export function addHoverOutline(
             visualBuilderStyles()["visual-builder__hover-outline--hidden"]
         );
 
-        if (disabled) {
+        if (isLocked) {
+            hoverOutline.classList.add(
+                visualBuilderStyles()["visual-builder__hover-outline--locked"]
+            );
+            hoverOutline.classList.remove(
+                visualBuilderStyles()["visual-builder__hover-outline--disabled"]
+            );
+            hoverOutline.classList.remove(
+                visualBuilderStyles()["visual-builder__hover-outline--variant"]
+            );
+        } else if (disabled) {
             hoverOutline.classList.add(
                 visualBuilderStyles()["visual-builder__hover-outline--disabled"]
+            );
+            hoverOutline.classList.remove(
+                visualBuilderStyles()["visual-builder__hover-outline--locked"]
             );
         } else {
             hoverOutline.classList.remove(
                 visualBuilderStyles()["visual-builder__hover-outline--disabled"]
+            );
+            hoverOutline.classList.remove(
+                visualBuilderStyles()["visual-builder__hover-outline--locked"]
             );
             if (isVariant) {
                 hoverOutline.classList.add(

@@ -6,7 +6,7 @@ import { VisualBuilderCslpEventDetails } from "../types/visualBuilder.types";
 import { FieldSchemaMap } from "../utils/fieldSchemaMap";
 import { DisableReason, isFieldDisabled } from "../utils/isFieldDisabled";
 import visualBuilderPostMessage from "../utils/visualBuilderPostMessage";
-import { CaretIcon, CaretRightIcon, InfoIcon } from "./icons";
+import { CaretIcon, CaretRightIcon, InfoIcon, LockIcon } from "./icons";
 import { LoadingIcon } from "./icons/loading";
 import { FieldTypeIconsMap, getFieldIcon } from "../generators/generateCustomCursor";
 import { uniqBy } from "lodash-es";
@@ -64,6 +64,7 @@ interface FieldLabelWrapperProps {
     fieldMetadata: CslpData;
     eventDetails: VisualBuilderCslpEventDetails;
     parentPaths: string[];
+    isLocked?: boolean;
     getParentEditableElement: (cslp: string) => HTMLElement | null;
 }
 
@@ -339,6 +340,15 @@ function FieldLabelWrapperComponent(
                             [visualBuilderStyles()[
                                 "visual-builder__focused-toolbar--variant"
                             ]]: currentField.isVariant,
+                        },
+                        {
+                            "visual-builder__focused-toolbar--field-locked":
+                                props.isLocked,
+                        },
+                        {
+                            [visualBuilderStyles()[
+                                "visual-builder__focused-toolbar--field-locked"
+                            ]]: props.isLocked,
                         }
                     )}
                     onClick={() => setIsDropdownOpen((prev) => !prev)}
@@ -428,6 +438,19 @@ function FieldLabelWrapperComponent(
                                 data-testid="visual-builder__focused-toolbar__text"
                             >
                                 {currentField.text}
+                            </div>
+                        ) : null}
+                        {props.isLocked ? (
+                            <div
+                                className={classNames(
+                                    "visual-builder__lock-icon",
+                                    visualBuilderStyles()[
+                                        "visual-builder__lock-icon"
+                                    ]
+                                )}
+                                data-testid="visual-builder__lock-icon"
+                            >
+                                <LockIcon />
                             </div>
                         ) : null}
                         {getCurrentFieldIcon()}
