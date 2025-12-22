@@ -409,7 +409,7 @@ function observeEditableElementChanges(
 async function checkFieldLockStatus(fieldMetadata: CslpData): Promise<boolean> {
     try {
         const response = (await visualBuilderPostMessage?.send(
-            VisualBuilderPostMessageEvents.CHECK_FIELD_LOCK_STATUS,
+            VisualBuilderPostMessageEvents.CHECK_OR_ACQUIRE_FIELD_LOCK,
             {
                 fieldMetadata: {
                     content_type_uid: fieldMetadata.content_type_uid,

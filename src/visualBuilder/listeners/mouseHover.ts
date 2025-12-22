@@ -122,9 +122,8 @@ async function addOutline(params?: AddOutlineParams): Promise<void> {
         entryWorkflowStageDetails
     );
     const currentIsLocked =
-        isLocked !== undefined
-            ? isLocked
-            : editableElement.getAttribute("data-field-locked") === "true";
+        isLocked ??
+        editableElement.getAttribute("data-field-locked") === "true";
     addHoverOutline(
         editableElement,
         fieldDisabled || isDisabled,
@@ -512,7 +511,7 @@ export async function checkAndApplyFieldLockStatus(
 ): Promise<{ isLocked: boolean; editableElement: Element | undefined }> {
     try {
         const response = (await visualBuilderPostMessage?.send(
-            VisualBuilderPostMessageEvents.CHECK_FIELD_LOCK_STATUS,
+            VisualBuilderPostMessageEvents.CHECK_OR_ACQUIRE_FIELD_LOCK,
             {
                 fieldMetadata: {
                     content_type_uid: fieldMetadata.content_type_uid,
