@@ -85,7 +85,7 @@
         "url": "https://github.com/contentstack/live-preview-sdk.git"
     },
     "dependencies": {
-        "@preact/signals": "^2.0.0",
+        "@preact/signals": "^2.5.1",
         "@preact/compat": "^18.3.1",
         "@floating-ui/dom": "^1.7.2",
         "classnames": "^2.5.1",
