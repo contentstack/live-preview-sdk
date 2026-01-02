@@ -4,7 +4,10 @@ import {
     updateFocussedStateOnMutation,
 } from "../updateFocussedState";
 import { VisualBuilder } from "../..";
-import { addFocusOverlay, hideOverlay } from "../../generators/generateOverlay";
+import {
+    addFocusOverlay,
+    hideOverlay,
+} from "../../generators/generateOverlay";
 import { mockGetBoundingClientRect } from "../../../__test__/utils";
 import { act } from "@testing-library/preact";
 import { singleLineFieldSchema } from "../../../__test__/data/fields";
@@ -73,6 +76,7 @@ describe("updateFocussedState", () => {
                 update: true,
             },
         });
+        vi.clearAllMocks();
     });
     afterEach(() => {
         document.body.innerHTML = "";
