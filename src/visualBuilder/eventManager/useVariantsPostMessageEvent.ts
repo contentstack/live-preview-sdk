@@ -199,6 +199,7 @@ export function useVariantFieldsPostMessageEvent({ isSSR }: { isSSR: boolean }):
     visualBuilderPostMessage?.on(
         VisualBuilderPostMessageEvents.REMOVE_VARIANT_FIELDS,
         (event: RemoveVariantFieldsEvent) => {
+            setHighlightVariantFields(false);
             removeVariantFieldClass(event?.data?.onlyHighlighted);
         }
     );
