@@ -22,12 +22,6 @@ Object.defineProperty(globalThis, "crypto", {
     },
 });
 
-global.ResizeObserver = vi.fn().mockImplementation(() => ({
-    observe: vi.fn(),
-    unobserve: vi.fn(),
-    disconnect: vi.fn(),
-}));
-
 describe("Live Preview HOC init", () => {
     beforeEach(() => {
         Config.reset();
