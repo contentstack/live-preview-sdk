@@ -54,9 +54,9 @@ function isLowerOrderVariant(variant_uid: string, dataCslp: string, variantOrder
 
 
 export function addVariantFieldClass(
-    variant_uid: string,
-    variantOrder: string[]
+    variant_uid: string
 ): void {
+    const variantOrder = VisualBuilder.VisualBuilderGlobalState.value.variantOrder;
     const highlightVariantFields = VisualBuilder.VisualBuilderGlobalState.value.highlightVariantFields;
     const elements = document.querySelectorAll(`[data-cslp]`);
     elements.forEach((element) => {
@@ -83,10 +83,7 @@ export function addVariantFieldClass(
 }
 
 export const debounceAddVariantFieldClass = debounce(
-    (variant_uid: string): void => {
-        const variantOrder = VisualBuilder.VisualBuilderGlobalState.value.variantOrder;
-        addVariantFieldClass(variant_uid, variantOrder);
-    },
+    addVariantFieldClass,
     1000,
     { trailing: true }
 ) as (variant_uid: string) => void;
@@ -168,8 +165,7 @@ export function useVariantFieldsPostMessageEvent({ isSSR }: { isSSR: boolean }):
             FieldSchemaMap.clear();
             if (isSSR) {
                 if (selectedVariant) {
-                    const variantOrder = VisualBuilder.VisualBuilderGlobalState.value.variantOrder;
-                    addVariantFieldClass(selectedVariant, variantOrder);
+                    addVariantFieldClass(selectedVariant);
                 }
             } else {
                 // recalculate and apply classes
@@ -196,8 +192,7 @@ export function useVariantFieldsPostMessageEvent({ isSSR }: { isSSR: boolean }):
             setVariantOrder(event.data.variant_data.variantOrder || []);
             removeVariantFieldClass();
             addVariantFieldClass(
-                event.data.variant_data.variant,
-                event.data.variant_data.variantOrder
+                event.data.variant_data.variant
             );
         }
     );
