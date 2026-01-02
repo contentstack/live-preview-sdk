@@ -92,7 +92,7 @@
         "dayjs": "^1.11.13",
         "deepsignal": "^1.5.0",
         "goober": "^2.1.16",
-        "dompurify": "^3.2.3",
+        "dompurify": "^3.3.1",
         "get-xpath": "^3.2.0",
         "lodash-es": "^4.17.21",
         "mustache": "^4.2.0",
