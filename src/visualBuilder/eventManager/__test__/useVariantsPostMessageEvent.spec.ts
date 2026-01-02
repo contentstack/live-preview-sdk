@@ -7,6 +7,20 @@ import {
     afterEach,
     MockedObject,
 } from "vitest";
+
+const { debounce } = vi.hoisted(() => {
+    return {
+        debounce: vi.fn((fn: any, _delay: number, _options?: any) => {
+            return fn;
+        }),
+    };
+});
+vi.mock("lodash-es", () => {
+    return {
+        ...vi.importActual("lodash-es"),
+        debounce: debounce,
+    };
+});
 import {
     useVariantFieldsPostMessageEvent,
     addVariantFieldClass,
@@ -16,7 +30,6 @@ import {
     setLocale,
     setHighlightVariantFields,
     getHighlightVariantFieldsStatus,
-    debounceAddVariantFieldClass,
 } from "../../../visualBuilder/eventManager/useVariantsPostMessageEvent";
 import { VisualBuilderPostMessageEvents } from "../../../visualBuilder/utils/types/postMessage.types";
 import { VisualBuilder } from "../../../visualBuilder";
@@ -123,6 +136,12 @@ const mockQuerySelectorAll = vi.fn().mockImplementation((selector) => {
     return [];
 });
 
+describe("debounceAddVariantFieldClass", () => {
+    // Moved to the top of the file to ensure it is mocks are not cleared before the test is run
+    it("should debounce addVariantFieldClass calls", () => {
+        expect(debounce).toHaveBeenCalledWith(addVariantFieldClass, 1000, { trailing: true });
+    });
+});
 describe("useVariantFieldsPostMessageEvent", () => {
     // Store original document.querySelectorAll
     const originalQuerySelectorAll = document.querySelectorAll;
@@ -568,40 +587,6 @@ describe("getHighlightVariantFieldsStatus", () => {
     });
 });
 
-describe("debounceAddVariantFieldClass", () => {
-    const originalQuerySelectorAll = document.querySelectorAll;
-
-    beforeEach(() => {
-        document.querySelectorAll = mockQuerySelectorAll;
-        vi.clearAllMocks();
-        vi.useFakeTimers();
-    });
-
-    afterEach(() => {
-        document.querySelectorAll = originalQuerySelectorAll;
-        vi.useRealTimers();
-    });
-
-    it("should debounce addVariantFieldClass calls", () => {
-        const variantUid = "variant-123";
-        VisualBuilder.VisualBuilderGlobalState.value.highlightVariantFields = true;
-
-        // Call multiple times rapidly
-        debounceAddVariantFieldClass(variantUid);
-        debounceAddVariantFieldClass(variantUid);
-        debounceAddVariantFieldClass(variantUid);
-
-        // Should not have been called yet (debounced)
-        expect(mockQuerySelectorAll).not.toHaveBeenCalled();
-
-        // Fast-forward time
-        vi.advanceTimersByTime(1000);
-
-        // Should have been called once (debounced)
-        expect(mockQuerySelectorAll).toHaveBeenCalledTimes(1);
-        expect(mockQuerySelectorAll).toHaveBeenCalledWith("[data-cslp]");
-    });
-});
 
 describe("useVariantFieldsPostMessageEvent SSR handling", () => {
     const originalQuerySelectorAll = document.querySelectorAll;

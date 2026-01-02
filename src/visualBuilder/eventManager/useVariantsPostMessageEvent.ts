@@ -59,9 +59,7 @@ export function addVariantFieldClass(variant_uid: string): void {
 }
 
 export const debounceAddVariantFieldClass = debounce(
-    (variant_uid: string): void => {
-        addVariantFieldClass(variant_uid);
-    },
+    addVariantFieldClass,
     1000,
     { trailing: true }
 ) as (variant_uid: string) => void;
