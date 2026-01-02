@@ -11,6 +11,7 @@ import { ResolvedVariantPermissions } from "../getResolvedVariantPermissions";
 const resolvedVariantPermissions: ResolvedVariantPermissions = {
     update: true,
 };
+import { WORKFLOW_STAGES } from "../constants";
 
 describe("isFieldDisabled", () => {
     it("should return disabled state due to read-only role", () => {
