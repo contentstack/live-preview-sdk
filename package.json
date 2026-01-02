@@ -97,7 +97,7 @@
         "lodash-es": "^4.17.21",
         "mustache": "^4.2.0",
         "preact": "^10.27.2",
-        "uuid": "^11.0.3"
+        "uuid": "^11.1.0"
     },
     "optionalDependencies": {
         "@rollup/rollup-linux-x64-gnu": "4.9.5"
