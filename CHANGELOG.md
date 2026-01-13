@@ -1,5 +1,50 @@
 # Changelog
 
+## [v4.2.0](https://github.com/contentstack/live-preview-sdk/compare/v4.1.4...v4.2.0)
+
+> 6 January 2026
+
+## [v4.1.4](https://github.com/contentstack/live-preview-sdk/compare/v4.1.3...v4.1.4)
+
+> 6 January 2026
+
+### General Changes
+
+- Update license copyright year(s) (Hitesh Shetty - [#542](https://github.com/contentstack/live-preview-sdk/pull/542))
+- [Snyk] Upgrade @preact/signals from 1.3.0 to 2.0.0 (Ayush Dubey - [#326](https://github.com/contentstack/live-preview-sdk/pull/326))
+- [Snyk] Upgrade uuid from 8.3.2 to 11.0.3 (Ayush Dubey - [#324](https://github.com/contentstack/live-preview-sdk/pull/324))
+- [Snyk] Upgrade goober from 2.1.14 to 2.1.16 (Ayush Dubey - [#327](https://github.com/contentstack/live-preview-sdk/pull/327))
+- [Snyk] Upgrade @preact/compat from 17.1.2 to 18.3.1 (Ayush Dubey - [#328](https://github.com/contentstack/live-preview-sdk/pull/328))
+- v4.1.3 (Hitesh Shetty - [#534](https://github.com/contentstack/live-preview-sdk/pull/534))
+
+### New Features
+
+- feat: upgrade uuid from 8.3.2 to 11.0.3 (snyk-bot - [7a017a9](https://github.com/contentstack/live-preview-sdk/commit/7a017a955c81abb94666afc475305ccff0634660))
+- feat: upgrade @preact/compat from 17.1.2 to 18.3.1 (snyk-bot - [d71ee68](https://github.com/contentstack/live-preview-sdk/commit/d71ee68181a7594f83a3aab763d51e9288f791f2))
+- feat: upgrade @preact/signals from 1.3.0 to 2.0.0 (snyk-bot - [2cadb78](https://github.com/contentstack/live-preview-sdk/commit/2cadb7818ce74f4bc195605fac6398ce6361c331))
+
+### Fixes
+
+- fix: audit (Karan Gandhi - [87d63ec](https://github.com/contentstack/live-preview-sdk/commit/87d63ec86ef6e3cc18ee7532356c34ff50cf8932))
+- fix: upgrade goober from 2.1.14 to 2.1.16 (snyk-bot - [d629f6c](https://github.com/contentstack/live-preview-sdk/commit/d629f6c649dadcb0d4ff630edd5b9798af45435c))
+- fix: code owners (Karan Gandhi - [8e8c10b](https://github.com/contentstack/live-preview-sdk/commit/8e8c10bb6ec636dc9259d4eb1080c47762bd2cdd))
+
+### Chores And Housekeeping
+
+- chore: update package-lock.json to upgrade uuid to 11.0.3 (hiteshshetty-dev - [f5044a9](https://github.com/contentstack/live-preview-sdk/commit/f5044a9ab8d923dca1a2ab405fa5f2711da23450))
+- chore: update copyright year in README.md to 2026 (hiteshshetty-dev - [89f196f](https://github.com/contentstack/live-preview-sdk/commit/89f196fa530c8e70e227238e69c9b6a72308f566))
+- chore: package lock update (csAyushDubey - [ccc2020](https://github.com/contentstack/live-preview-sdk/commit/ccc2020fb42f562fb8bcbd58cf4e09b6afe89b27))
+- chore: bump live-preview-utils version to 4.1.3 (hiteshshetty-dev - [c1ba6fd](https://github.com/contentstack/live-preview-sdk/commit/c1ba6fd3d0e8ddcad37a29daa74919fa305d30d5))
+
+### Documentation Changes
+
+- docs(license): update copyright year(s) (github-actions - [b56c650](https://github.com/contentstack/live-preview-sdk/commit/b56c65077f5648c5030feb6b57bb84cf323d53c1))
+
+### General Changes
+
+- Update README.md (Aravind Kumar - [92713da](https://github.com/contentstack/live-preview-sdk/commit/92713da4ef515465c1f531f52048d27d4b908387))
+- Merge pull request #536 from contentstack/audit-fix (Karan Gandhi - [0bae6d3](https://github.com/contentstack/live-preview-sdk/commit/0bae6d3fb0ffc7a815fc7b6f33d12538e8d74c01))
+
 ## [v4.1.3](https://github.com/contentstack/live-preview-sdk/compare/v4.1.2...v4.1.3)
 
 > 5 December 2025
