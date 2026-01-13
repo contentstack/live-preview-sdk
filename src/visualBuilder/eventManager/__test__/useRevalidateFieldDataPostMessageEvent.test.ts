@@ -2,7 +2,7 @@ import { vi, describe, it, expect, beforeEach, afterEach } from "vitest";
 import { VisualBuilder } from "../..";
 import { FieldSchemaMap } from "../../utils/fieldSchemaMap";
 import { handleRevalidateFieldData } from "../useRevalidateFieldDataPostMessageEvent";
-
+import * as cslpdata from "../../../cslp";
 // Mock dependencies
 vi.mock("../../utils/fieldSchemaMap", () => ({
     FieldSchemaMap: {
@@ -11,9 +11,7 @@ vi.mock("../../utils/fieldSchemaMap", () => ({
     },
 }));
 
-vi.mock("../../../cslp", () => ({
-    extractDetailsFromCslp: vi.fn(),
-}));
+vi.spyOn(cslpdata, "extractDetailsFromCslp");
 
 vi.mock("../../generators/generateOverlay", () => ({
     hideFocusOverlay: vi.fn(),
