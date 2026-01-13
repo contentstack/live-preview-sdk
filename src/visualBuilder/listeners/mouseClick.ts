@@ -7,6 +7,7 @@ import {
     getCsDataOfElement,
     getDOMEditStack,
 } from "../utils/getCsDataOfElement";
+import { isValidCslp } from "../../cslp";
 
 import { appendFocusedToolbar } from "../generators/generateToolbar";
 
@@ -91,16 +92,19 @@ export async function handleBuilderInteraction(
     // assign a unique ID to each element which we can use to identify
     // them in updateFocussedState and other places where we
     // would have queried the element by data-cslp
-    const duplicates = document.querySelectorAll(
-        `[data-cslp="${eventTarget?.getAttribute("data-cslp")}"]`
-    );
-    if (duplicates.length > 1) {
-        duplicates.forEach((ele) => {
-            if (!ele.hasAttribute("data-cslp-unique-id")) {
-                const uniqueId = `cslp-${uuidV4()}`;
-                ele.setAttribute("data-cslp-unique-id", uniqueId);
-            }
-        });
+    const eventTargetCslp = eventTarget?.getAttribute("data-cslp");
+    if (isValidCslp(eventTargetCslp)) {
+        const duplicates = document.querySelectorAll(
+            `[data-cslp="${eventTargetCslp}"]`
+        );
+        if (duplicates.length > 1) {
+            duplicates.forEach((ele) => {
+                if (!ele.hasAttribute("data-cslp-unique-id")) {
+                    const uniqueId = `cslp-${uuidV4()}`;
+                    ele.setAttribute("data-cslp-unique-id", uniqueId);
+                }
+            });
+        }
     }
 
     // if the target element is a studio-ui element, return

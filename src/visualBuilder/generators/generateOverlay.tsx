@@ -1,4 +1,4 @@
-import { extractDetailsFromCslp } from "../../cslp/cslpdata";
+import { extractDetailsFromCslp, isValidCslp } from "../../cslp/cslpdata";
 import { cleanIndividualFieldResidual } from "../utils/handleIndividualFields";
 import visualBuilderPostMessage from "../utils/visualBuilderPostMessage";
 import { VisualBuilderPostMessageEvents } from "../utils/types/postMessage.types";
@@ -178,7 +178,7 @@ export function sendFieldEvent(options: ISendFieldEventParams): void {
                 : actualEditedElement.textContent;
 
         const cslpData = previousSelectedEditableDOM.getAttribute("data-cslp");
-        if (!cslpData) {
+        if (!isValidCslp(cslpData)) {
             return;
         }
 

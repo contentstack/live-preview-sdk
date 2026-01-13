@@ -3,6 +3,7 @@ import livePreviewPostMessage from "../../livePreview/eventManager/livePreviewEv
 import { LIVE_PREVIEW_POST_MESSAGE_EVENTS } from "../../livePreview/eventManager/livePreviewEventManager.constant";
 import { DATA_CSLP_ATTR_SELECTOR } from "../utils/constants";
 import { visualBuilderStyles } from "../visualBuilder.style";
+import { isValidCslp } from "../../cslp/cslpdata";
 
 const VARIANT_UPDATE_DELAY_MS: Readonly<number> = 8000;
 
@@ -37,7 +38,7 @@ function updateVariantClasses({
         dataCslp: string,
         observer?: MutationObserver
     ) => {
-        if (!dataCslp) return;
+        if (!isValidCslp(dataCslp)) return;
 
         if (
             dataCslp.startsWith("v2:") &&
@@ -87,7 +88,7 @@ function updateVariantClasses({
     const addElementClasses = (element: HTMLElement) => {
         const dataCslp = element.getAttribute(DATA_CSLP_ATTR_SELECTOR);
 
-        if (!dataCslp) {
+        if (!isValidCslp(dataCslp)) {
             //recursive call for child nodes
             element.childNodes.forEach((child) => {
                 if (child instanceof HTMLElement) {

@@ -1,5 +1,5 @@
 import Config from "../../configManager/configManager";
-import { extractDetailsFromCslp } from "../../cslp";
+import { extractDetailsFromCslp, isValidCslp } from "../../cslp";
 
 /**
  * Returns the redirection URL for the Visual builder.
@@ -26,7 +26,7 @@ export default function getVisualBuilderRedirectionUrl(): URL {
 
     if (elementWithDataCslp) {
         const cslpData = elementWithDataCslp.getAttribute("data-cslp");
-        if (cslpData) {
+        if (isValidCslp(cslpData)) {
             const { locale: cslpLocale } = extractDetailsFromCslp(cslpData);
             localeToUse = cslpLocale;
         }
