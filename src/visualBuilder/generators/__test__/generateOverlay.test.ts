@@ -4,7 +4,7 @@ import { VisualBuilder } from "../..";
 import { VisualBuilderPostMessageEvents } from "../../utils/types/postMessage.types";
 import visualBuilderPostMessage from "../../utils/visualBuilderPostMessage";
 import { FieldSchemaMap } from "../../utils/fieldSchemaMap";
-import { extractDetailsFromCslp } from "../../../cslp/cslpdata";
+import * as cslpdata from "../../../cslp/cslpdata";
 
 vi.mock("../../utils/visualBuilderPostMessage", () => ({
     default: {
@@ -21,9 +21,7 @@ vi.mock("../../utils/fieldSchemaMap", () => ({
     },
 }));
 
-vi.mock("../../../cslp/cslpdata", () => ({
-    extractDetailsFromCslp: vi.fn(),
-}));
+vi.spyOn(cslpdata, "extractDetailsFromCslp");
 
 describe("sendFieldEvent", () => {
     let previousSelectedEditableDOM: HTMLElement;
@@ -55,7 +53,7 @@ describe("sendFieldEvent", () => {
             eventType: VisualBuilderPostMessageEvents.UPDATE_FIELD,
         });
 
-        expect(extractDetailsFromCslp).not.toHaveBeenCalled();
+        expect(cslpdata.extractDetailsFromCslp).not.toHaveBeenCalled();
         expect(FieldSchemaMap.getFieldSchema).not.toHaveBeenCalled();
         expect(visualBuilderPostMessage?.send).not.toHaveBeenCalled();
     });

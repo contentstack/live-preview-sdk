@@ -121,6 +121,9 @@ describe("useVariantFieldsPostMessageEvent", () => {
 
         // Reset mocks
         vi.clearAllMocks();
+        
+        // Mock isValidCslp to return true for test data (after clearAllMocks)
+        vi.spyOn(cslpdata, "isValidCslp").mockReturnValue(true);
     });
 
     afterEach(() => {
@@ -330,6 +333,9 @@ describe("addVariantFieldClass", () => {
 
         // Reset mocks
         vi.clearAllMocks();
+        
+        // Mock isValidCslp to return true for test data
+        vi.spyOn(cslpdata, "isValidCslp").mockReturnValue(true);
     });
 
     afterEach(() => {
@@ -391,6 +397,7 @@ describe("addVariantFieldClass", () => {
                 variant: cslpValue.split(":")[1]
             }
         });
+        
         const variantUid = "variant-456";
         const highlightVariantFields = false;
         const variantOrder = ["variant-123", "variant-456"];

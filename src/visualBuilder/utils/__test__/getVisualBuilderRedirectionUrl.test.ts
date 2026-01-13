@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import getVisualBuilderRedirectionUrl from '../getVisualBuilderRedirectionUrl';
 import Config from '../../../configManager/configManager';
-import { extractDetailsFromCslp } from '../../../cslp';
+import { extractDetailsFromCslp, isValidCslp } from '../../../cslp';
 
 vi.mock('../../../configManager/configManager');
 vi.mock('../../../cslp');
@@ -61,6 +61,7 @@ describe('getVisualBuilderRedirectionUrl', () => {
             }
         });
 
+        isValidCslp.mockReturnValue(true);
         extractDetailsFromCslp.mockReturnValue({ locale: 'fr-FR' });
 
         const result = getVisualBuilderRedirectionUrl();
@@ -98,6 +99,8 @@ describe('getVisualBuilderRedirectionUrl', () => {
                 url: 'https://app.example.com'
             }
         });
+
+        isValidCslp.mockReturnValue(false);
 
         const result = getVisualBuilderRedirectionUrl();
         // Should use locale from config when data-cslp attribute is invalid (empty or no value)
