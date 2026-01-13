@@ -5,6 +5,7 @@ import { FieldDetails } from "../../components/FieldToolbar";
 import Config from "../../../configManager/configManager";
 import { VisualBuilder } from "../..";
 import { EntryPermissions } from "../getEntryPermissions";
+import { WORKFLOW_STAGES } from "../constants";
 import { ResolvedVariantPermissions } from "../getResolvedVariantPermissions";
 
 const resolvedVariantPermissions: ResolvedVariantPermissions = {

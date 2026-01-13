@@ -47,6 +47,7 @@ export enum VisualBuilderPostMessageEvents {
     REMOVE_HIGHLIGHTED_COMMENTS = "remove-highlighted-comments",
     GET_VARIANT_ID = "get-variant-id",
     GET_LOCALE = "get-locale",
+    GET_HIGHLIGHT_VARIANT_FIELDS_STATUS = "get-highlight-variant-fields-status",
     SEND_VARIANT_AND_LOCALE = "send-variant-and-locale",
     GET_CONTENT_TYPE_NAME = "get-content-type-name",
     REFERENCE_MAP = "get-reference-map",
