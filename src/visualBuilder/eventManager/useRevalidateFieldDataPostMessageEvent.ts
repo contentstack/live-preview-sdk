@@ -1,5 +1,5 @@
 import { VisualBuilder } from "..";
-import { extractDetailsFromCslp } from "../../cslp";
+import { extractDetailsFromCslp, isValidCslp } from "../../cslp";
 import { FieldSchemaMap } from "../utils/fieldSchemaMap";
 import { hideFocusOverlay } from "../generators/generateOverlay";
 import { handleBuilderInteraction } from "../listeners/mouseClick";
@@ -32,7 +32,7 @@ export async function handleRevalidateFieldData(): Promise<void> {
 
         if (targetElement) {
             const cslp = targetElement.getAttribute("data-cslp");
-            if (cslp) {
+            if (isValidCslp(cslp)) {
                 const fieldMetadata = extractDetailsFromCslp(cslp);
 
                 // Try to revalidate specific field schema and data
@@ -51,7 +51,7 @@ export async function handleRevalidateFieldData(): Promise<void> {
         window.location.reload();
     } finally {
         // Step 3: Refocus the element if we had one focused before
-        if (shouldRefocus && elementCslp) {
+        if (shouldRefocus && isValidCslp(elementCslp)) {
             await refocusElement(elementCslp, elementCslpUniqueId);
         }
     }

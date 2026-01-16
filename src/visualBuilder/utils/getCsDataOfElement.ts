@@ -1,6 +1,6 @@
 import { CslpData } from "../../cslp/types/cslp.types";
 import { VisualBuilderCslpEventDetails } from "../types/visualBuilder.types";
-import { extractDetailsFromCslp } from "../../cslp/cslpdata";
+import { extractDetailsFromCslp, isValidCslp } from "../../cslp/cslpdata";
 import { DATA_CSLP_ATTR_SELECTOR } from "./constants";
 
 /**
@@ -23,7 +23,7 @@ export function getCsDataOfElement(
         return;
     }
     const cslpData = editableElement.getAttribute("data-cslp");
-    if (!cslpData) {
+    if (!isValidCslp(cslpData)) {
         return;
     }
     const fieldMetadata = extractDetailsFromCslp(cslpData);
@@ -55,7 +55,7 @@ export function getDOMEditStack(ele: Element): CslpData[] {
     let curr: any = ele.closest(`[${DATA_CSLP_ATTR_SELECTOR}]`);
     while (curr) {
         const cslp = curr.getAttribute(DATA_CSLP_ATTR_SELECTOR);
-        if (!cslp) {
+        if (!isValidCslp(cslp)) {
             curr = curr.parentElement?.closest(`[${DATA_CSLP_ATTR_SELECTOR}]`);
             continue;
         }
@@ -68,5 +68,5 @@ export function getDOMEditStack(ele: Element): CslpData[] {
         }
         curr = curr.parentElement?.closest(`[${DATA_CSLP_ATTR_SELECTOR}]`);
     }
-    return cslpSet.filter((cslp) => cslp).map((cslp) => extractDetailsFromCslp(cslp));
+    return cslpSet.filter(isValidCslp).map((cslp) => extractDetailsFromCslp(cslp));
 }

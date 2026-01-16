@@ -1,6 +1,7 @@
 import timelinePostMessage from "../timelinePostMessage/timelinePostMessage";
 import { timelinePostMessageEvents } from "../timelinePostMessage/timelinePostMessage.constant";
 import { compareGlobalStyles } from "./compare.style";
+import { isValidCslp } from "../../cslp/cslpdata";
 
 const voidElements = new Set([
     "area",
@@ -64,7 +65,8 @@ export function handleWebCompare() {
             );
             const map: Record<string, string> = {};
             for (const element of elements) {
-                const cslp = element.getAttribute("data-cslp")!;
+                const cslp = element.getAttribute("data-cslp");
+                if (!isValidCslp(cslp)) continue;
                 if (
                     element.hasAttributes() &&
                     voidElements.has(element.tagName.toLowerCase())
@@ -101,8 +103,8 @@ export function handleWebCompare() {
             document.querySelectorAll(LEAF_CSLP_SELECTOR)
         );
         for (const element of elements) {
-            const path = element.getAttribute("data-cslp")!;
-            if (!diff[path]) continue;
+            const path = element.getAttribute("data-cslp");
+            if (!isValidCslp(path) || !diff[path]) continue;
 
             if (voidElements.has(element.tagName.toLowerCase())) {
                 element.classList.add(`cs-compare__void--${operation}`);

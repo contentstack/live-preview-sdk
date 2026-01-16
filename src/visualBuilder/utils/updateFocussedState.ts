@@ -1,5 +1,5 @@
 import { VisualBuilder } from "..";
-import { extractDetailsFromCslp } from "../../cslp";
+import { extractDetailsFromCslp, isValidCslp } from "../../cslp";
 import { getAddInstanceButtons } from "../generators/generateAddInstanceButtons";
 import {
     addFocusOverlay,
@@ -136,7 +136,7 @@ export async function updateFocussedState({
     }
 
     const cslp = editableElement?.getAttribute("data-cslp") || "";
-    if (!cslp) {
+    if (!isValidCslp(cslp)) {
         return;
     }
     const fieldMetadata = extractDetailsFromCslp(cslp);
