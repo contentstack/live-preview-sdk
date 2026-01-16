@@ -96,7 +96,7 @@
         "goober": "^2.1.16",
         "lodash-es": "^4.17.21",
         "mustache": "^4.2.0",
-        "preact": "^10.27.2",
+        "preact": "^10.28.2",
         "uuid": "^11.0.3"
     },
     "optionalDependencies": {
