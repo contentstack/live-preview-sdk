@@ -598,7 +598,7 @@ describe("cslp tooltip", () => {
         });
         new LivePreview();
 
-        let tooltip = document.querySelector(
+        const tooltip = document.querySelector(
             "[data-test-id='cs-cslp-tooltip']"
         );
         const tooltipParent = tooltip?.parentNode;

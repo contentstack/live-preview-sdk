@@ -105,7 +105,8 @@ describe("Live Preview HOC init", () => {
         expect(livePreviewPostMessageSpy).toHaveBeenCalledTimes(1);
         expect(visualBuilderPostMessageSpy).toHaveBeenCalledWith('init', { isSSR: true, href: 'http://localhost:3000/' });
         expect(visualBuilderPostMessageSpy).toHaveBeenCalledWith('send-variant-and-locale');
-        expect(visualBuilderPostMessageSpy).toHaveBeenCalledTimes(2);
+        expect(visualBuilderPostMessageSpy).toHaveBeenCalledWith('get-highlight-variant-fields-status');
+        expect(visualBuilderPostMessageSpy).toHaveBeenCalledTimes(3);
     });
 
     test("should return the existing live preview instance if it is already initialized", async () => {
