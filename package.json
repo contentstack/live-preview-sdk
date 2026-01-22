@@ -85,18 +85,18 @@
         "url": "https://github.com/contentstack/live-preview-sdk.git"
     },
     "dependencies": {
-        "@preact/signals": "^2.0.0",
-        "@preact/compat": "^18.3.1",
         "@floating-ui/dom": "^1.7.2",
+        "@preact/compat": "^18.3.1",
+        "@preact/signals": "^2.0.0",
         "classnames": "^2.5.1",
         "dayjs": "^1.11.13",
         "deepsignal": "^1.5.0",
-        "goober": "^2.1.16",
         "dompurify": "^3.2.3",
         "get-xpath": "^3.2.0",
+        "goober": "^2.1.16",
         "lodash-es": "^4.17.21",
         "mustache": "^4.2.0",
-        "preact": "^10.27.2",
+        "preact": "^10.28.2",
         "uuid": "^11.0.3"
     },
     "optionalDependencies": {

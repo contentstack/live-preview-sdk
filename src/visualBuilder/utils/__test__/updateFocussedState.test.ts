@@ -44,7 +44,6 @@ vi.mock("../../utils/fieldSchemaMap", () => {
     };
 });
 
-
 describe("updateFocussedState", () => {
     beforeEach(() => {
         const previousSelectedEditableDOM = document.createElement("div");
@@ -293,12 +292,17 @@ describe("updateFocussedState", () => {
         } as unknown as ResizeObserver;
 
         const previousSelectedEditableDOM = document.createElement("div");
-        previousSelectedEditableDOM.setAttribute("data-cslp", "content_type_uid.entry_uid.locale.field_path");
+        previousSelectedEditableDOM.setAttribute(
+            "data-cslp",
+            "content_type_uid.entry_uid.locale.field_path"
+        );
         document.body.appendChild(previousSelectedEditableDOM);
         VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
             previousSelectedEditableDOM;
 
-        document.querySelector = vi.fn().mockReturnValue(previousSelectedEditableDOM);
+        document.querySelector = vi
+            .fn()
+            .mockReturnValue(previousSelectedEditableDOM);
 
         const result = await updateFocussedState({
             editableElement: editableElementMock,

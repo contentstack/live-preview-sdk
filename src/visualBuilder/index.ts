@@ -26,7 +26,7 @@ import initUI from "./components";
 import { useDraftFieldsPostMessageEvent } from "./eventManager/useDraftFieldsPostMessageEvent";
 import { useHideFocusOverlayPostMessageEvent } from "./eventManager/useHideFocusOverlayPostMessageEvent";
 import { useScrollToField } from "./eventManager/useScrollToField";
-import { useVariantFieldsPostMessageEvent } from "./eventManager/useVariantsPostMessageEvent";
+import { debounceAddVariantFieldClass, getHighlightVariantFieldsStatus, setHighlightVariantFields, useVariantFieldsPostMessageEvent } from "./eventManager/useVariantsPostMessageEvent";
 import {
     generateEmptyBlocks,
     removeEmptyBlocks,
@@ -66,6 +66,8 @@ interface VisualBuilderGlobalStateImpl {
     audienceMode: boolean;
     locale: string;
     variant: string | null;
+    highlightVariantFields: boolean;
+    variantOrder: string[];
     focusElementObserver: MutationObserver | null;
     referenceParentMap: Record<string, string>;
     isFocussed: boolean;
@@ -89,6 +91,8 @@ export class VisualBuilder {
             audienceMode: false,
             locale: Config.get().stackDetails.masterLocale || "en-us",
             variant: null,
+            highlightVariantFields: false,
+            variantOrder: [],
             focusElementObserver: null,
             referenceParentMap: {},
             isFocussed: false,
@@ -238,6 +242,9 @@ export class VisualBuilder {
                         previousEmptyBlockParents: emptyBlockParents,
                     };
                 }
+                if (VisualBuilder.VisualBuilderGlobalState.value.variant && VisualBuilder.VisualBuilderGlobalState.value.highlightVariantFields) {
+                    debounceAddVariantFieldClass(VisualBuilder.VisualBuilderGlobalState.value.variant);
+                }
             },
             100,
             { trailing: true }
@@ -363,6 +370,9 @@ export class VisualBuilder {
                         subtree: true,
                     });
 
+                    getHighlightVariantFieldsStatus().then((result) => {
+                        setHighlightVariantFields(result.highlightVariantFields);
+                    });
                     visualBuilderPostMessage?.on(
                         VisualBuilderPostMessageEvents.GET_ALL_ENTRIES_IN_CURRENT_PAGE,
                         getEntryIdentifiersInCurrentPage
@@ -398,7 +408,7 @@ export class VisualBuilder {
                     useOnEntryUpdatePostMessageEvent();
                     useRecalculateVariantDataCSLPValues();
                     useDraftFieldsPostMessageEvent();
-                    useVariantFieldsPostMessageEvent();
+                    useVariantFieldsPostMessageEvent({ isSSR: config.ssr ?? false });
                 }
             })
             .catch(() => {
@@ -441,6 +451,8 @@ export class VisualBuilder {
             audienceMode: false,
             locale: "en-us",
             variant: null,
+            highlightVariantFields: false,
+            variantOrder: [],
             focusElementObserver: null,
             referenceParentMap: {},
             isFocussed: false,
