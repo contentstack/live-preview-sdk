@@ -94,7 +94,7 @@
         "dompurify": "^3.2.3",
         "get-xpath": "^3.2.0",
         "goober": "^2.1.16",
-        "lodash-es": "^4.17.21",
+        "lodash-es": "^4.17.23",
         "mustache": "^4.2.0",
         "preact": "^10.28.2",
         "uuid": "^11.0.3"
