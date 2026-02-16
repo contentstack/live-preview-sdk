@@ -27,7 +27,7 @@ describe('getVisualBuilderRedirectionUrl', () => {
         });
 
         const result = getVisualBuilderRedirectionUrl();
-        expect(result.toString()).toBe('https://app.example.com/#!/stack/12345/visual-builder?branch=main&environment=production&target-url=https%3A%2F%2Fexample.com%2F&locale=en-US');
+        expect(result.toString()).toBe('https://app.example.com/#!/stack/12345/visual-editor?branch=main&environment=production&target-url=https%3A%2F%2Fexample.com%2F&locale=en-US');
     });
 
     it('should return the correct URL without branch and environment', () => {
@@ -44,7 +44,7 @@ describe('getVisualBuilderRedirectionUrl', () => {
         });
 
         const result = getVisualBuilderRedirectionUrl();
-        expect(result.toString()).toBe('https://app.example.com/#!/stack/12345/visual-builder?target-url=https%3A%2F%2Fexample.com%2F&locale=en-US');
+        expect(result.toString()).toBe('https://app.example.com/#!/stack/12345/visual-editor?target-url=https%3A%2F%2Fexample.com%2F&locale=en-US');
     });
 
     it('should use locale from data-cslp attribute if present', () => {
@@ -65,7 +65,7 @@ describe('getVisualBuilderRedirectionUrl', () => {
         extractDetailsFromCslp.mockReturnValue({ locale: 'fr-FR' });
 
         const result = getVisualBuilderRedirectionUrl();
-        expect(result.toString()).toBe('https://app.example.com/#!/stack/12345/visual-builder?branch=main&environment=production&target-url=https%3A%2F%2Fexample.com%2F&locale=fr-FR');
+        expect(result.toString()).toBe('https://app.example.com/#!/stack/12345/visual-editor?branch=main&environment=production&target-url=https%3A%2F%2Fexample.com%2F&locale=fr-FR');
     });
 
     it('should return the correct URL without locale', () => {
@@ -83,7 +83,7 @@ describe('getVisualBuilderRedirectionUrl', () => {
         });
 
         const result = getVisualBuilderRedirectionUrl();
-        expect(result.toString()).toBe('https://app.example.com/#!/stack/12345/visual-builder?branch=main&environment=production&target-url=https%3A%2F%2Fexample.com%2F');
+        expect(result.toString()).toBe('https://app.example.com/#!/stack/12345/visual-editor?branch=main&environment=production&target-url=https%3A%2F%2Fexample.com%2F');
     });
 
     it('should ignore invalid data-cslp attribute and use locale from config', () => {
@@ -104,7 +104,7 @@ describe('getVisualBuilderRedirectionUrl', () => {
 
         const result = getVisualBuilderRedirectionUrl();
         // Should use locale from config when data-cslp attribute is invalid (empty or no value)
-        expect(result.toString()).toBe('https://app.example.com/#!/stack/12345/visual-builder?branch=main&environment=production&target-url=https%3A%2F%2Fexample.com%2F&locale=en-US');
+        expect(result.toString()).toBe('https://app.example.com/#!/stack/12345/visual-editor?branch=main&environment=production&target-url=https%3A%2F%2Fexample.com%2F&locale=en-US');
         // Should not call extractDetailsFromCslp for invalid cslp
         expect(extractDetailsFromCslp).not.toHaveBeenCalled();
     });
