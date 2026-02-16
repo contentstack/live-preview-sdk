@@ -37,7 +37,7 @@ export default function getVisualBuilderRedirectionUrl(): URL {
     }
 
     const completeURL = new URL(
-        `/#!/stack/${apiKey}/visual-builder?${searchParams.toString()}`,
+        `/#!/stack/${apiKey}/visual-editor?${searchParams.toString()}`,
         appUrl
     );
     return completeURL;
