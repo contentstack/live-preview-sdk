@@ -119,17 +119,29 @@ export function useOnEntryUpdatePostMessageEvent(): void {
 }
 
 export function sendInitializeLivePreviewPostMessageEvent(): void {
+    const config = Config.get();
+    const initConfig: {
+        shouldReload: boolean;
+        href: string;
+        sdkVersion: string | undefined;
+        mode: number;
+        enableLivePreviewOutsideIframe?: boolean;
+    } = {
+        shouldReload: config.ssr,
+        href: window.location.href,
+        sdkVersion: process?.env?.PACKAGE_VERSION,
+        mode: config.mode,
+    };
+
+    if (config.enableLivePreviewOutsideIframe !== undefined) {
+        initConfig.enableLivePreviewOutsideIframe = config.enableLivePreviewOutsideIframe;
+    }
+
     livePreviewPostMessage
         ?.send<LivePreviewInitEventResponse>(
             LIVE_PREVIEW_POST_MESSAGE_EVENTS.INIT,
             {
-                config: {
-                    shouldReload: Config.get().ssr,
-                    href: window.location.href,
-                    sdkVersion: process?.env?.PACKAGE_VERSION,
-                    mode: Config.get().mode,
-                    enableLivePreviewOutsideIframe: Config.get().enableLivePreviewOutsideIframe,
-                },
+                config: initConfig,
             }
         )
         .then((data) => {
