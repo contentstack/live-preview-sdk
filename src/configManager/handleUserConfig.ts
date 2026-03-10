@@ -124,7 +124,6 @@ export const handleInitData = (initData: Partial<IInitData>): void => {
     Config.set(
         "enableLivePreviewOutsideIframe",
         initData.enableLivePreviewOutsideIframe ??
-            stackSdk.live_preview?.enableLivePreviewOutsideIframe ??
             config.enableLivePreviewOutsideIframe
     );
 
