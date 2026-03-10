@@ -432,6 +432,23 @@ describe("postMessageEvent.hooks", () => {
             });
         });
 
+        it("should omit enableLivePreviewOutsideIframe in INIT payload when config is unset", async () => {
+            mockConfig = {
+                ssr: true,
+                mode: 1,
+                enableLivePreviewOutsideIframe: undefined,
+            };
+            (Config.get as any).mockReturnValue(mockConfig);
+
+            await sendInitializeLivePreviewPostMessageEvent();
+            await Promise.resolve();
+
+            const initPayload = (livePreviewPostMessage?.send as any).mock.calls.at(-1)?.[1];
+            expect(initPayload.config).not.toHaveProperty(
+                "enableLivePreviewOutsideIframe"
+            );
+        });
+
         it("should include enableLivePreviewOutsideIframe=false in INIT payload", async () => {
             mockConfig = {
                 ssr: true, // avoid timers

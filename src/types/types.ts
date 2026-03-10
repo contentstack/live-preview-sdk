@@ -87,7 +87,7 @@ export declare interface IConfig {
         highlightedElement: HTMLElement | null;
     };
     collab: ICollabConfig["collab"];
-    enableLivePreviewOutsideIframe: boolean;
+    enableLivePreviewOutsideIframe: boolean | undefined;
 }
 
 
@@ -133,7 +133,7 @@ export declare interface IInitData {
     editButton: IConfigEditButton;
     editInVisualBuilderButton: IConfigEditInVisualBuilderButton;
     mode: ILivePreviewMode;
-    enableLivePreviewOutsideIframe: boolean; // default: false
+    enableLivePreviewOutsideIframe: boolean | undefined; // default: undefined
 }
 
 // type PickPartial<T, K extends keyof T> = Partial<Pick<T, K>> & Omit<T, K>;

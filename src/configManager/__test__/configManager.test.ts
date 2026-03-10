@@ -91,14 +91,14 @@ describe("Config", () => {
 });
 
 describe("config default flags", () => {
-    test("enableLivePreviewOutsideIframe defaults to false in getDefaultConfig", () => {
+    test("enableLivePreviewOutsideIframe defaults to undefined in getDefaultConfig", () => {
         const defaultConfig = getDefaultConfig();
-        expect(defaultConfig.enableLivePreviewOutsideIframe).toBe(false);
+        expect(defaultConfig.enableLivePreviewOutsideIframe).toBeUndefined();
     });
 
-    test("enableLivePreviewOutsideIframe defaults to false in getUserInitData", () => {
+    test("enableLivePreviewOutsideIframe defaults to undefined in getUserInitData", () => {
         const initData = getUserInitData();
-        expect(initData.enableLivePreviewOutsideIframe).toBe(false);
+        expect(initData.enableLivePreviewOutsideIframe).toBeUndefined();
     });
 });
 

@@ -423,10 +423,10 @@ describe("handleInitData() - enableLivePreviewOutsideIframe", () => {
         Config.reset();
     });
 
-    test("should default to false when not provided", () => {
+    test("should default to undefined when not provided", () => {
         const initData: Partial<IInitData> = {};
         handleInitData(initData);
-        expect(config.enableLivePreviewOutsideIframe).toBe(false);
+        expect(config.enableLivePreviewOutsideIframe).toBeUndefined();
     });
 
     test("should set to true when provided as true", () => {

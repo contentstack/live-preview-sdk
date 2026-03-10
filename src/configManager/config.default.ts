@@ -39,7 +39,7 @@ export function getUserInitData(): IInitData {
             environment: "",
         },
         runScriptsOnUpdate: false,
-        enableLivePreviewOutsideIframe: false,
+        enableLivePreviewOutsideIframe: undefined,
     };
 }
 
@@ -111,6 +111,6 @@ export function getDefaultConfig(): IConfig {
             },
             payload: [],
         },
-        enableLivePreviewOutsideIframe: false,
+        enableLivePreviewOutsideIframe: undefined,
     };
 }
