@@ -17,6 +17,16 @@
                 "default": "./dist/modern/index.cjs"
             }
         },
+        "./purged": {
+            "import": {
+                "types": "./dist/modern/index.purged.d.ts",
+                "default": "./dist/modern/index.purged.js"
+            },
+            "require": {
+                "types": "./dist/modern/index.purged.d.cts",
+                "default": "./dist/modern/index.purged.cjs"
+            }
+        },
         "./package.json": "./package.json"
     },
     "files": [
