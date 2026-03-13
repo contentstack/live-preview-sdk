@@ -1,5 +1,5 @@
 import Config, { updateConfigFromUrl } from "../configManager";
-import { getDefaultConfig } from "../config.default";
+import { getDefaultConfig, getUserInitData } from "../config.default";
 import { DeepSignal } from "deepsignal";
 import { IConfig } from "../../types/types";
 
@@ -87,6 +87,18 @@ describe("Config", () => {
                 apiKey: "api-key",
             },
         });
+    });
+});
+
+describe("config default flags", () => {
+    test("enableLivePreviewOutsideIframe defaults to undefined in getDefaultConfig", () => {
+        const defaultConfig = getDefaultConfig();
+        expect(defaultConfig.enableLivePreviewOutsideIframe).toBeUndefined();
+    });
+
+    test("enableLivePreviewOutsideIframe defaults to undefined in getUserInitData", () => {
+        const initData = getUserInitData();
+        expect(initData.enableLivePreviewOutsideIframe).toBeUndefined();
     });
 });
 
