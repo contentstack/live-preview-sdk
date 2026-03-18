@@ -1,6 +1,7 @@
 import { hydrate } from "preact";
+import React from "preact/compat";
 import { EmptyBlock } from "../components/emptyBlock";
-import { extractDetailsFromCslp } from "../../cslp";
+import { extractDetailsFromCslp, isValidCslp } from "../../cslp";
 import { FieldSchemaMap } from "../utils/fieldSchemaMap";
 
 export async function generateEmptyBlocks(
@@ -8,7 +9,7 @@ export async function generateEmptyBlocks(
 ): Promise<void> {
     for (const emptyBlockParent of emptyBlockParents) {
         const cslpData = emptyBlockParent.getAttribute("data-cslp");
-        if (!cslpData) {
+        if (!isValidCslp(cslpData)) {
             return;
         }
         const fieldMetadata = extractDetailsFromCslp(cslpData);

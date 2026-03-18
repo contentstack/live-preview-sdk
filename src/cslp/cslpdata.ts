@@ -9,6 +9,76 @@ import { DeepSignal } from "deepsignal";
 import { cslpTagStyles } from "../livePreview/editButton/editButton.style";
 
 /**
+ * Validates that the required CSLP parts (content_type_uid, entry_uid/entry_uid_variant_uid, locale) are non-empty.
+ * @param parts The array of parts from splitting the CSLP string by "."
+ * @returns `true` if all required parts (first 3) are non-empty, `false` otherwise.
+ */
+function areRequiredPartsNonEmpty(parts: string[]): boolean {
+    // Check that we have at least 3 parts
+    if (parts.length < 3) {
+        return false;
+    }
+    // Verify that content_type_uid (parts[0]), entry_uid/entry_uid_variant_uid (parts[1]), and locale (parts[2]) are all non-empty
+    return parts[0].length > 0 && parts[1].length > 0 && parts[2].length > 0;
+}
+
+/**
+ * Validates if a CSLP value string is valid.
+ * 
+ * Supports two formats:
+ * - **v1 format**: `content_type_uid.entry_uid.locale[.field_path]` (requires at least 3 parts)
+ * - **v2 format**: `v2:content_type_uid.entry_uid_variant_uid.locale[.field_path]` 
+ *   (requires at least 3 parts, entry_uid_variant_uid must contain underscore separating entry_uid and variant_uid)
+ * 
+ * @param cslpValue The CSLP value string to validate (can be null or undefined).
+ * @returns Type predicate: `true` if the CSLP value is valid (narrows type to `string`), `false` otherwise.
+ * 
+ * @example
+ * Valid v1 format
+ * isValidCslp("page.entry123.en-us") -> true
+ * isValidCslp("page.entry123.en-us.title") -> true
+ * 
+ * Valid v2 format
+ * isValidCslp("v2:page.entry123_variant456.en-us") -> true
+ * isValidCslp("v2:page.entry123_variant456.en-us.title") -> true
+ * 
+ * Invalid cases
+ * isValidCslp(null) -> false
+ * isValidCslp("invalid") -> false (less than 3 parts)
+ * isValidCslp("v2:page.entry123.en-us") -> false (missing underscore in entry_uid_variant_uid)
+ */
+export function isValidCslp(
+    cslpValue: string | null | undefined
+): cslpValue is string {
+    // Return false for null, undefined, or empty string
+    if (!cslpValue) {
+        return false;
+    }
+
+    // Check for v2 format (starts with "v2:")
+    if (cslpValue.startsWith("v2:")) {
+        const dataAfterPrefix = cslpValue.substring(3); // Remove "v2:" prefix
+        const parts = dataAfterPrefix.split(".");
+        // v2 format requires at least 3 parts: content_type_uid.entry_uid_variant_uid.locale
+        // Verify that content_type_uid, entry_uid_variant_uid, and locale are all non-empty
+        if (!areRequiredPartsNonEmpty(parts)) {
+            return false;
+        }
+        // Verify that entry_uid_variant_uid (second part) contains both entry_uid and variant_uid separated by at least one underscore
+        const entryUidVariantUid = parts[1];
+        const entryVariantParts = entryUidVariantUid.split("_");
+        // Check that we have at least 2 parts (entry_uid and variant_uid) and all parts are non-empty
+        return entryVariantParts.length >= 2 && entryVariantParts.every((part) => part.length > 0);
+    }
+
+    // v1 format (default, no prefix)
+    const parts = cslpValue.split(".");
+    // v1 format requires at least 3 parts: content_type_uid.entry_uid.locale
+    // Verify that content_type_uid, entry_uid, and locale are all non-empty
+    return areRequiredPartsNonEmpty(parts);
+}
+
+/**
  * Extracts details from a CSLP value string.
  * @param cslpValue The CSLP value string to extract details from.
  * @returns An object containing the extracted details.
@@ -163,7 +233,7 @@ export function addCslpOutline(
 
         const cslpTag = element.getAttribute("data-cslp");
 
-        if (trigger && cslpTag) {
+        if (trigger && isValidCslp(cslpTag)) {
             if (elements.highlightedElement)
                 elements.highlightedElement.classList.remove(
                     cslpTagStyles()["cslp-edit-mode"]

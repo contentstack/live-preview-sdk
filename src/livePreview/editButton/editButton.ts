@@ -1,7 +1,7 @@
 import { effect } from "@preact/signals";
 import { inIframe, isOpeningInNewTab } from "../../common/inIframe";
 import Config from "../../configManager/configManager";
-import { addCslpOutline, extractDetailsFromCslp } from "../../cslp";
+import { addCslpOutline, extractDetailsFromCslp, isValidCslp } from "../../cslp";
 import { cslpTagStyles } from "./editButton.style";
 import { PublicLogger } from "../../logger/logger";
 import {
@@ -439,7 +439,7 @@ export class LivePreviewEditButton {
 
         const cslpTag = this.tooltip.getAttribute("current-data-cslp");
 
-        if (cslpTag) {
+        if (isValidCslp(cslpTag)) {
             const {
                 content_type_uid,
                 entry_uid,
