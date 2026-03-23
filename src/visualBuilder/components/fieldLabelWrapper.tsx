@@ -1,6 +1,6 @@
 import classNames from "classnames";
 import React, { useEffect, useState } from "preact/compat";
-import { extractDetailsFromCslp } from "../../cslp";
+import { extractDetailsFromCslp, isValidCslp } from "../../cslp";
 import { CslpData } from "../../cslp/types/cslp.types";
 import { VisualBuilderCslpEventDetails } from "../types/visualBuilder.types";
 import { FieldSchemaMap } from "../utils/fieldSchemaMap";
@@ -144,7 +144,7 @@ function FieldLabelWrapperComponent(
                 const domAncestor = eventDetails.editableElement.closest(`[data-cslp]:not([data-cslp^="${props.fieldMetadata.content_type_uid}"])`);
                 if(domAncestor) {
                     const domAncestorCslp = domAncestor.getAttribute("data-cslp");
-                    if (domAncestorCslp) {
+                    if (isValidCslp(domAncestorCslp)) {
                         const domAncestorDetails = extractDetailsFromCslp(domAncestorCslp);
                         const domAncestorContentTypeUid = domAncestorDetails.content_type_uid;
                         const domAncestorContentParent = referenceData?.find(data => data.contentTypeUid === domAncestorContentTypeUid);
