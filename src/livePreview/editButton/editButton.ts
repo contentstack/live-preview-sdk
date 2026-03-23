@@ -570,6 +570,12 @@ effect(function handleWindowTypeChange() {
     // we need to specify when to run this effect.
     // here, we run it when the value of windowType changes
     if (typeof window === "undefined") return;
+    if (
+        typeof process !== "undefined" &&
+        (process?.env?.PURGE_PREVIEW_SDK === "true" ||
+            process?.env?.REACT_APP_PURGE_PREVIEW_SDK === "true")
+    )
+        return;
     Config.get().windowType;
     if (LivePreviewEditButton && !isOpeningInTimeline()) {
         toggleEditButtonElement();
