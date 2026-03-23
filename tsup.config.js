@@ -11,7 +11,7 @@ export default defineConfig([
     }),
 ])
 
-function modernConfig(opts) {
+export function modernConfig(opts) {
     return {
         entry: opts.entry,
         define: {

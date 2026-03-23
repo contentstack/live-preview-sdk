@@ -5,7 +5,7 @@ import { VisualBuilderPostMessageEvents } from "../utils/types/postMessage.types
 import { FieldSchemaMap } from "../utils/fieldSchemaMap";
 import { updateVariantClasses } from "./useRecalculateVariantDataCSLPValues";
 import { debounce } from "lodash-es";
-import { extractDetailsFromCslp } from "../../cslp/cslpdata";
+import { extractDetailsFromCslp, isValidCslp } from "../../cslp/cslpdata";
 
 interface VariantFieldsEvent {
     data: {
@@ -61,7 +61,7 @@ export function addVariantFieldClass(
     const elements = document.querySelectorAll(`[data-cslp]`);
     elements.forEach((element) => {
         const dataCslp = element.getAttribute("data-cslp");
-        if (!dataCslp) return;
+        if (!isValidCslp(dataCslp)) return;
 
         if (dataCslp?.includes(variant_uid)) {
             element.classList.add("visual-builder__variant-field");

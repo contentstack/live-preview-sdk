@@ -4,6 +4,7 @@ import HighlightedCommentIcon from "../components/HighlightedCommentIcon";
 import { css } from "goober";
 import React from "preact/compat";
 import { IHighlightCommentData } from "../eventManager/useHighlightCommentIcon";
+import { isValidCslp } from "../../cslp";
 
 /**
  * Inserts highlighted comment icons based on an array of paths.
@@ -24,7 +25,7 @@ export function highlightCommentIconOnCanvas(
         const cslpValue = data?.fieldMetadata?.cslpValue;
 
         // Check if the cslpValue is already in the Object
-        if (!cslpValue || uniquePaths[cslpValue]) {
+        if (!isValidCslp(cslpValue) || uniquePaths[cslpValue]) {
             return; // Skip if the value is not unique
         }
 

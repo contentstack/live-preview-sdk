@@ -1,4 +1,4 @@
-import { extractDetailsFromCslp } from "../../cslp/cslpdata";
+import { extractDetailsFromCslp, isValidCslp } from "../../cslp/cslpdata";
 
 type EntryIdentifiers = {
     entriesInCurrentPage: {
@@ -15,7 +15,7 @@ export function getEntryIdentifiersInCurrentPage(): EntryIdentifiers {
     const uniqueEntriesMap = new Map<string, { entryUid: string, contentTypeUid: string, locale: string}>();
     elementsWithCslp.forEach((element) => {
         const cslpValue = element.getAttribute("data-cslp");
-        if (!cslpValue) return;
+        if (!isValidCslp(cslpValue)) return;
         const cslpData = extractDetailsFromCslp(cslpValue);
         uniqueEntriesMap.set(cslpData.entry_uid, 
             { 
