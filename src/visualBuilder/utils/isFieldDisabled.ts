@@ -30,16 +30,26 @@ export const DisableReason = {
         stageName: string;
     }) =>
         `Editing is restricted for your role or by the rules for the '${stageName}' stage. Contact your admin for edit access.`,
+    WorkflowStageRequestEdit: ({ stageName }: { stageName: string }) =>
+        `You do not have the edit access to this entry on the '${stageName}' workflow stage.`,
+    WorkflowStageRequestPending: ({ stageName }: { stageName: string }) =>
+        `You do not have the edit access to this entry on the '${stageName}' workflow stage. Your request has been sent and is awaiting approval.`,
 } as const;
 
-interface FieldDisableState {
+export interface FieldDisableState {
     isDisabled: boolean;
     reason: string;
+    /** Canvas: workflow stage lock with request-edit UX (see fieldLabelWrapper). */
+    workflowRequestUi?: "request" | "pending";
 }
 
 const getDisableReason = (
     flags: Record<string, boolean>,
-    params?: Record<string, any>
+    params?: {
+        stageName?: string;
+        entryWorkflowStageDetails?: WorkflowStageDetails;
+        entryPermissions?: EntryPermissions;
+    },
 ) => {
     if (flags.updateRestrictDueToRole) return DisableReason.ReadOnly;
     if (flags.updateRestrictDueToNonLocalizableFields)
@@ -67,8 +77,29 @@ const getDisableReason = (
         return DisableReason.EntryUpdateRestricted;
     }
     if (flags.updateRestrictDueToWorkflowStagePermission) {
+        const stageName = params?.stageName ? params.stageName : "Unknown";
+        const req = params?.entryWorkflowStageDetails?.requestEditAccess;
+        const entryAllowsUpdate =
+            params?.entryPermissions == null ||
+            params.entryPermissions.update === true;
+        if (
+            entryAllowsUpdate &&
+            !flags.updateRestrictDueToEntryUpdateRestriction &&
+            req
+        ) {
+            if (req.hasPending) {
+                return DisableReason.WorkflowStageRequestPending({
+                    stageName,
+                });
+            }
+            if (req.canRequest) {
+                return DisableReason.WorkflowStageRequestEdit({
+                    stageName,
+                });
+            }
+        }
         return DisableReason.WorkflowStagePermission({
-            stageName: params?.stageName ? params.stageName : "Unknown",
+            stageName,
         });
     }
     if(flags.updateRestrictDueToResolvedVariantPermissions) {
@@ -148,7 +179,24 @@ export const isFieldDisabled = (
     const isDisabled = Object.values(flags).some(Boolean);
     const reason = getDisableReason(flags, {
         stageName: entryWorkflowStageDetails?.stage?.name,
+        entryWorkflowStageDetails,
+        entryPermissions,
     });
 
-    return { isDisabled, reason };
+    let workflowRequestUi: "request" | "pending" | undefined;
+    if (
+        flags.updateRestrictDueToWorkflowStagePermission &&
+        !flags.updateRestrictDueToEntryUpdateRestriction &&
+        (entryPermissions == null || entryPermissions.update === true) &&
+        entryWorkflowStageDetails?.requestEditAccess
+    ) {
+        const req = entryWorkflowStageDetails.requestEditAccess;
+        if (req.hasPending) {
+            workflowRequestUi = "pending";
+        } else if (req.canRequest) {
+            workflowRequestUi = "request";
+        }
+    }
+
+    return { isDisabled, reason, workflowRequestUi };
 };

@@ -20,6 +20,11 @@ export const mockStyles = {
     "visual-builder__tooltip--persistent":
         "visual-builder__tooltip--persistent",
     "visual-builder__custom-tooltip": "visual-builder__custom-tooltip",
+    "visual-builder__custom-tooltip--below": "visual-builder__custom-tooltip--below",
+    "visual-builder__custom-tooltip--workflow-access":
+        "visual-builder__custom-tooltip--workflow-access",
+    "visual-builder__tooltip--persistent--below":
+        "visual-builder__tooltip--persistent--below",
     "visual-builder__focused-toolbar__field-label-wrapper":
         "visual-builder__focused-toolbar__field-label-wrapper",
     "visual-builder__focused-toolbar--field-disabled":
