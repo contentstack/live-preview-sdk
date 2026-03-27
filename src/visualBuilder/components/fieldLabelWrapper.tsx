@@ -171,13 +171,37 @@ function FieldLabelWrapperComponent(
                     variantUid: props.fieldMetadata.variant,
                     fieldPathWithIndex: props.fieldMetadata.fieldPathWithIndex,
                 });
-            const { isDisabled: fieldDisabled, reason } = isFieldDisabled(
+            const {
+                isDisabled: fieldDisabled,
+                reason,
+                workflowRequestUi,
+            } = isFieldDisabled(
                 fieldSchema,
                 eventDetails,
                 resolvedVariantPermissions,
                 entryAcl,
                 entryWorkflowStageDetails,
             );
+
+            const handleRequestEditAccess = async () => {
+                try {
+                    await visualBuilderPostMessage?.send(
+                        VisualBuilderPostMessageEvents.OPEN_REQUEST_EDIT_ACCESS,
+                        {
+                            entryUid: props.fieldMetadata.entry_uid,
+                            contentTypeUid:
+                                props.fieldMetadata.content_type_uid,
+                            locale: props.fieldMetadata.locale,
+                            variantUid: props.fieldMetadata.variant,
+                        }
+                    );
+                } catch (error) {
+                    console.error(
+                        "Error opening request edit access flow:",
+                        error
+                    );
+                }
+            };
 
             const handleLinkVariant = async () => {
                 try {
@@ -218,6 +242,11 @@ function FieldLabelWrapperComponent(
             const hasParentPaths = !!props?.parentPaths?.length;
             const isVariant = props.fieldMetadata.variant ? true : false;
 
+            const usePlainDataTooltip =
+                reason &&
+                !reason.includes(DisableReason.CanLinkVariant) &&
+                workflowRequestUi == null;
+
             setCurrentField({
                 text: currentFieldDisplayName,
                 contentTypeName: contentTypeName ?? "",
@@ -228,12 +257,11 @@ function FieldLabelWrapperComponent(
                                 "visual-builder__tooltip--persistent"
                             ]
                         )}
-                        data-tooltip={!reason?.includes(DisableReason.CanLinkVariant)
-                                ? reason
-                            : undefined}
+                        data-tooltip={
+                            usePlainDataTooltip ? reason : undefined
+                        }
                     >
-                        {reason
-                            .includes(DisableReason.CanLinkVariant) && (
+                        {reason?.includes(DisableReason.CanLinkVariant) && (
                             <div
                                 className={visualBuilderStyles()["visual-builder__custom-tooltip"]}
                                 onClick={handleLinkVariant}
@@ -252,6 +280,51 @@ function FieldLabelWrapperComponent(
                                 })()}
                             </div>
                         )}
+                        {workflowRequestUi === "request" && reason ? (
+                            <div
+                                className={
+                                    visualBuilderStyles()[
+                                        "visual-builder__custom-tooltip"
+                                    ]
+                                }
+                            >
+                                <span>{reason}</span>{" "}
+                                <span
+                                    role="button"
+                                    tabIndex={0}
+                                    style={{
+                                        textDecoration: "underline",
+                                        cursor: "pointer",
+                                    }}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        void handleRequestEditAccess();
+                                    }}
+                                    onKeyDown={(e) => {
+                                        if (
+                                            e.key === "Enter" ||
+                                            e.key === " "
+                                        ) {
+                                            e.preventDefault();
+                                            void handleRequestEditAccess();
+                                        }
+                                    }}
+                                >
+                                    Request Edit Access
+                                </span>
+                            </div>
+                        ) : null}
+                        {workflowRequestUi === "pending" && reason ? (
+                            <div
+                                className={
+                                    visualBuilderStyles()[
+                                        "visual-builder__custom-tooltip"
+                                    ]
+                                }
+                            >
+                                {reason}
+                            </div>
+                        ) : null}
                         <InfoIcon />
                     </div>
                 ) : hasParentPaths ? (

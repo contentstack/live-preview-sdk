@@ -11,7 +11,6 @@ import { ResolvedVariantPermissions } from "../getResolvedVariantPermissions";
 const resolvedVariantPermissions: ResolvedVariantPermissions = {
     update: true,
 };
-import { WORKFLOW_STAGES } from "../constants";
 
 describe("isFieldDisabled", () => {
     it("should return disabled state due to read-only role", () => {
@@ -562,6 +561,147 @@ describe("isFieldDisabled", () => {
             );
             expect(result.isDisabled).toBe(false);
             expect(result.reason).toBe(DisableReason.None);
+        });
+
+        it("should return request-edit workflow message when workflow denies update and requestEditAccess.canRequest", () => {
+            const fieldSchemaMap: ISchemaFieldMap = {};
+            const eventFieldDetails: FieldDetails = {
+                editableElement: document.createElement("div"),
+                // @ts-expect-error mocking only required properties
+                fieldMetadata: {
+                    locale: "en-us",
+                },
+            };
+            const entryPermissions: EntryPermissions = {
+                update: true,
+                create: true,
+                read: true,
+                delete: true,
+                publish: true,
+            };
+            const workflowStageDetails = {
+                stage: {
+                    name: "Review Stage",
+                },
+                permissions: {
+                    entry: {
+                        update: false,
+                    },
+                },
+                requestEditAccess: {
+                    canRequest: true,
+                    hasPending: false,
+                },
+            };
+
+            const result = isFieldDisabled(
+                fieldSchemaMap,
+                eventFieldDetails,
+                resolvedVariantPermissions,
+                entryPermissions,
+                workflowStageDetails
+            );
+            expect(result.isDisabled).toBe(true);
+            expect(result.reason).toBe(
+                DisableReason.WorkflowStageRequestEdit({
+                    stageName: WORKFLOW_STAGES.REVIEW,
+                })
+            );
+            expect(result.workflowRequestUi).toBe("request");
+        });
+
+        it("should return pending workflow message when requestEditAccess.hasPending", () => {
+            const fieldSchemaMap: ISchemaFieldMap = {};
+            const eventFieldDetails: FieldDetails = {
+                editableElement: document.createElement("div"),
+                // @ts-expect-error mocking only required properties
+                fieldMetadata: {
+                    locale: "en-us",
+                },
+            };
+            const entryPermissions: EntryPermissions = {
+                update: true,
+                create: true,
+                read: true,
+                delete: true,
+                publish: true,
+            };
+            const workflowStageDetails = {
+                stage: {
+                    name: "Review Stage",
+                },
+                permissions: {
+                    entry: {
+                        update: false,
+                    },
+                },
+                requestEditAccess: {
+                    canRequest: false,
+                    hasPending: true,
+                },
+            };
+
+            const result = isFieldDisabled(
+                fieldSchemaMap,
+                eventFieldDetails,
+                resolvedVariantPermissions,
+                entryPermissions,
+                workflowStageDetails
+            );
+            expect(result.isDisabled).toBe(true);
+            expect(result.reason).toBe(
+                DisableReason.WorkflowStageRequestPending({
+                    stageName: WORKFLOW_STAGES.REVIEW,
+                })
+            );
+            expect(result.workflowRequestUi).toBe("pending");
+        });
+
+        it("should fall back to workflow stage message when requestEditAccess is locked for all", () => {
+            const fieldSchemaMap: ISchemaFieldMap = {};
+            const eventFieldDetails: FieldDetails = {
+                editableElement: document.createElement("div"),
+                // @ts-expect-error mocking only required properties
+                fieldMetadata: {
+                    locale: "en-us",
+                },
+            };
+            const entryPermissions: EntryPermissions = {
+                update: true,
+                create: true,
+                read: true,
+                delete: true,
+                publish: true,
+            };
+            const workflowStageDetails = {
+                stage: {
+                    name: "Review Stage",
+                },
+                permissions: {
+                    entry: {
+                        update: false,
+                    },
+                },
+                requestEditAccess: {
+                    canRequest: false,
+                    hasPending: false,
+                },
+            };
+
+            const result = isFieldDisabled(
+                fieldSchemaMap,
+                eventFieldDetails,
+                resolvedVariantPermissions,
+                entryPermissions,
+                workflowStageDetails
+            );
+            expect(result.isDisabled).toBe(true);
+            expect(result.reason).toBe(
+                DisableReason.WorkflowStagePermission({
+                    stageName: WORKFLOW_STAGES.REVIEW,
+                })
+            );
+            expect(result.workflowRequestUi).toBeUndefined();
         });
     });
 });
