@@ -587,6 +587,22 @@ export function visualBuilderStyles() {
                 display: none;
             }
         `,
+        /** When the field label is near the top of the viewport, show the tooltip below the icon. */
+        "visual-builder__tooltip--persistent--below": css`
+            &:before {
+                bottom: -66px;
+                margin-bottom: 0;
+                margin-top: 0;
+                top: auto;
+            }
+
+            &:after {
+                bottom: -13px;
+                margin-top: 0;
+                top: auto;
+                transform: rotate(180deg);
+            }
+        `,
         "visual-builder__custom-tooltip": css`
             position: absolute;
             bottom: 20px;
@@ -611,6 +627,16 @@ export function visualBuilderStyles() {
                 left: 10px;
                 border: 10px solid #000;
                 border-color: #767676 transparent transparent transparent;
+            }
+        `,
+        "visual-builder__custom-tooltip--below": css`
+            bottom: auto;
+            top: 100%;
+            margin-bottom: 0;
+            margin-top: 8px;
+
+            &:after {
+                content: none;
             }
         `,
         "visual-builder__empty-block": css`
