@@ -116,6 +116,15 @@ function FieldLabelDisabledIcon(
             visualBuilderStyles()["visual-builder__custom-tooltip--below"]
     );
 
+    const workflowAccessTooltipClass = classNames(
+        visualBuilderStyles()["visual-builder__custom-tooltip"],
+        showTooltipBelow &&
+            visualBuilderStyles()["visual-builder__custom-tooltip--below"],
+        visualBuilderStyles()[
+            "visual-builder__custom-tooltip--workflow-access"
+        ]
+    );
+
     return (
         <div
             ref={wrapRef}
@@ -148,7 +157,7 @@ function FieldLabelDisabledIcon(
                 </div>
             ) : null}
             {workflowRequestUi === "request" && reason ? (
-                <div className={customTooltipClass}>
+                <div className={workflowAccessTooltipClass}>
                     <span>{reason}</span>{" "}
                     <span
                         role="button"
@@ -173,7 +182,7 @@ function FieldLabelDisabledIcon(
                 </div>
             ) : null}
             {workflowRequestUi === "pending" && reason ? (
-                <div className={customTooltipClass}>{reason}</div>
+                <div className={workflowAccessTooltipClass}>{reason}</div>
             ) : null}
             <InfoIcon />
         </div>

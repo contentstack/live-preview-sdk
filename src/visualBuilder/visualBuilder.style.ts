@@ -639,6 +639,10 @@ export function visualBuilderStyles() {
                 content: none;
             }
         `,
+        /** Wider cap for workflow request / pending copy — must follow base `.visual-builder__custom-tooltip` so max-width wins over 200px. */
+        "visual-builder__custom-tooltip--workflow-access": css`
+            max-width: 325px;
+        `,
         "visual-builder__empty-block": css`
             width: 100%;
             height: 100%;
