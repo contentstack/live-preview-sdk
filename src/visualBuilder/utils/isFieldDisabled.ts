@@ -177,11 +177,24 @@ export const isFieldDisabled = (
     }
 
     const isDisabled = Object.values(flags).some(Boolean);
-    const reason = getDisableReason(flags, {
-        stageName: entryWorkflowStageDetails?.stage?.name,
-        entryWorkflowStageDetails,
-        entryPermissions,
-    });
+
+    const getDisableReasonParams: {
+        stageName?: string;
+        entryWorkflowStageDetails?: WorkflowStageDetails;
+        entryPermissions?: EntryPermissions;
+    } = {};
+    if (entryWorkflowStageDetails?.stage?.name !== undefined) {
+        getDisableReasonParams.stageName = entryWorkflowStageDetails.stage.name;
+    }
+    if (entryWorkflowStageDetails !== undefined) {
+        getDisableReasonParams.entryWorkflowStageDetails =
+            entryWorkflowStageDetails;
+    }
+    if (entryPermissions !== undefined) {
+        getDisableReasonParams.entryPermissions = entryPermissions;
+    }
+
+    const reason = getDisableReason(flags, getDisableReasonParams);
 
     let workflowRequestUi: "request" | "pending" | undefined;
     if (
@@ -198,5 +211,7 @@ export const isFieldDisabled = (
         }
     }
 
-    return { isDisabled, reason, workflowRequestUi };
+    return workflowRequestUi !== undefined
+        ? { isDisabled, reason, workflowRequestUi }
+        : { isDisabled, reason };
 };
