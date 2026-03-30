@@ -11,7 +11,6 @@ const MUSTACHE_MAIN_DIR = './main.mustache';
 */
 const DATA = {
   packageVersion: packageJson.version,
-  currentYear: new Date().getFullYear(),
 };
 function generateReadMe() {
   
