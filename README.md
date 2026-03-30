@@ -3,7 +3,7 @@
 [![npm](https://img.shields.io/npm/v/@contentstack/live-preview-utils.svg)](https://www.npmjs.com/package/@contentstack/live-preview-utils)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-The **Live Preview Utils** package runs in your website and opens a communication channel between the page (often inside a Contentstack preview iframe) and the platform. It powers live content updates, edit controls, and Visual Builder UI in the preview surface via messaging—not a replacement for the Contentstack delivery SDKs, but the client bridge for preview and builder experiences.
+The **Live Preview Utils** package runs in your website and opens a communication channel between the page (often inside a Contentstack preview iframe) and the platform. It powers live content updates, edit controls, and Visual Editor UI in the preview surface via messaging—not a replacement for the Contentstack delivery SDKs, but the client bridge for preview and Visual Editor experiences.
 
 See how [Live Preview](https://www.contentstack.com/docs/content-managers/author-content/about-live-preview), [Timeline](https://www.contentstack.com/docs/content-managers/timeline/preview-content-across-a-timeline), and [Visual Editor](https://www.contentstack.com/docs/content-managers/visual-editor/about-visual-editor) work in Contentstack for editors and content managers.
 
@@ -11,7 +11,7 @@ See how [Live Preview](https://www.contentstack.com/docs/content-managers/author
 
 - **Live Preview** — Preview entries in the stack while your site loads inside the preview panel.
 - **Timeline** — Time-based preview (how the site looks on future dates). Your integration pattern is the same as Live Preview from the app’s perspective; the parent context is still a preview iframe. In code, `config.windowType` can reflect a preview context that includes Timeline ([see `config` / `windowType`](docs/live-preview-configs.md#config)).
-- **Visual Builder** — WYSIWYG editing with the site in an iframe. Use `mode: "builder"` so “Start Editing” targets Visual Builder; the SDK still works when the same site is opened in Live Preview ([`mode`](docs/live-preview-configs.md#mode)).
+- **Visual Editor** — WYSIWYG editing with the site in an iframe. Use `mode: "builder"` so “Start Editing” targets Visual Editor; the SDK still works when the same site is opened in Live Preview ([`mode`](docs/live-preview-configs.md#mode)).
 - **Composable Studio** — [Contentstack Studio](https://www.contentstack.com/docs/studio) is the visual composition experience for building experiences from components and content. Use this package when your front end needs the same live preview and stack-driven editing hooks as in Live Preview; follow Studio and Live Preview setup docs together for your stack.
 
 **Integrators:** In hosted preview, the platform loads your site in an iframe; this SDK talks to the parent window. When you open the site outside Contentstack (`windowType: independent`), behavior follows the [config](docs/live-preview-configs.md#config) rules in the reference doc.
@@ -70,7 +70,7 @@ Full tables and examples: **[docs/live-preview-configs.md](docs/live-preview-con
 - [`ssr`](docs/live-preview-configs.md#ssr)
 - [`mode`](docs/live-preview-configs.md#mode) (`preview` vs `builder`)
 - [`editButton`](docs/live-preview-configs.md#editbutton)
-- [`editInVisualBuilderButton`](docs/live-preview-configs.md#editinvisualbuilderbutton) (Start Editing outside Visual Builder)
+- [`editInVisualBuilderButton`](docs/live-preview-configs.md#editinvisualbuilderbutton) (Start Editing outside Visual Editor)
 - [`cleanCslpOnProduction`](docs/live-preview-configs.md#cleancslponproduction)
 - [`stackDetails`](docs/live-preview-configs.md#stackdetails) ([`apiKey`](docs/live-preview-configs.md#apikey), [`environment`](docs/live-preview-configs.md#environment))
 - [`clientUrlParams`](docs/live-preview-configs.md#clienturlparams) — [NA](docs/live-preview-configs.md#na-config) / [EU](docs/live-preview-configs.md#eu-config)
@@ -81,7 +81,7 @@ Full tables and examples: **[docs/live-preview-configs.md](docs/live-preview-con
 - [`onLiveEdit`](docs/live-preview-configs.md#onliveeditcallback---void)
 - [`onEntryChange`](docs/live-preview-configs.md#onentrychangecallback---void)
 - [`hash`](docs/live-preview-configs.md#hash)
-- [`config`](docs/live-preview-configs.md#config) (includes `windowType`: Live Preview / Timeline preview, Visual Builder, or independent)
+- [`config`](docs/live-preview-configs.md#config) (includes `windowType`: Live Preview / Timeline preview, Visual Editor, or independent)
 
 The [configs table of contents](docs/live-preview-configs.md#contentstack-live-preview-utils-sdk-configs) also lists `setConfigFromParams` and `getGatsbyDataFormat` for deeper workflows.
 
@@ -110,7 +110,7 @@ The [configs table of contents](docs/live-preview-configs.md#contentstack-live-p
 - [Implementing Live Preview (course)](https://www.contentstack.com/academy/courses/implementing-live-preview)
 - [Contentstack Live Preview under the hood](https://www.contentstack.com/academy/content/contentstack-live-preview-under-the-hood)
 - [Understanding Timeline](https://www.contentstack.com/academy/content/understanding-timeline)
-- [Understanding Visual Builder](https://www.contentstack.com/academy/content/understanding-visual-builder)
+- [Understanding Visual Editor](https://www.contentstack.com/academy/content/understanding-visual-builder)
 
 ## Advanced: stripping the SDK at build time
 
