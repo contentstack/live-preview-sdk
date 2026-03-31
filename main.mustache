@@ -5,7 +5,7 @@
 
 The **Live Preview Utils** package runs in your website and opens a communication channel between the page (often inside a Contentstack preview iframe) and the platform. It powers live content updates, edit controls, and Visual Editor UI in the preview surface via messaging—not a replacement for the Contentstack delivery SDKs, but the client bridge for preview and Visual Editor experiences.
 
-See how [Live Preview](https://www.contentstack.com/docs/content-managers/author-content/about-live-preview), [Timeline](https://www.contentstack.com/docs/content-managers/timeline/preview-content-across-a-timeline), and [Visual Editor](https://www.contentstack.com/docs/content-managers/visual-editor/about-visual-editor) work in Contentstack for editors and content managers.
+See how [Live Preview](https://www.contentstack.com/docs/content-managers/author-content/about-live-preview), [Timeline](https://www.contentstack.com/docs/content-managers/timeline/preview-content-across-a-timeline), [Visual Editor](https://www.contentstack.com/docs/content-managers/visual-editor/about-visual-editor), and [Studio](https://www.contentstack.com/docs/studio) work in Contentstack for editors and content managers.
 
 ## Where this SDK runs
 
@@ -46,12 +46,12 @@ Pin the version to match your app (update `{{packageVersion}}` when you upgrade)
 
 ## Quick start
 
-[`init`](docs/live-preview-configs.md#initconfig-iconfig) returns a `Promise` that resolves to `{ livePreview, visualBuilder }`. Calling `init` again returns the existing instance and logs a warning.
+[`init`](docs/live-preview-configs.md#initconfig-iconfig) returns a `Promise` that resolves when the SDK is ready. Call it once; subsequent calls reuse the same in-memory instance and log a warning. **Use the static APIs** in [docs/live-preview-configs.md](docs/live-preview-configs.md) (for example [`onLiveEdit`](docs/live-preview-configs.md#onliveeditcallback---void), [`hash`](docs/live-preview-configs.md#hash), [`config`](docs/live-preview-configs.md#config))—we do not recommend destructuring or otherwise using the value returned from `init`.
 
 ```javascript
 import ContentstackLivePreview from "@contentstack/live-preview-utils";
 
-const { livePreview, visualBuilder } = await ContentstackLivePreview.init({
+await ContentstackLivePreview.init({
   stackDetails: {
     apiKey: "your-stack-api-key",
   },
