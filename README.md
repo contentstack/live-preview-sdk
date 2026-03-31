@@ -33,7 +33,7 @@ Pin the version to match your app (update `4.3.0` when you upgrade):
 <script type="module" crossorigin="anonymous">
   import ContentstackLivePreview from "https://esm.sh/@contentstack/live-preview-utils@4.3.0";
 
-  await ContentstackLivePreview.init({
+  ContentstackLivePreview.init({
     stackDetails: {
       apiKey: "your-stack-api-key",
     },
@@ -46,17 +46,21 @@ Pin the version to match your app (update `4.3.0` when you upgrade):
 
 ## Quick start
 
-[`init`](docs/live-preview-configs.md#initconfig-iconfig) returns a `Promise` that resolves when the SDK is ready. Call it once; subsequent calls reuse the same in-memory instance and log a warning. **Use the static APIs** in [docs/live-preview-configs.md](docs/live-preview-configs.md) (for example [`onLiveEdit`](docs/live-preview-configs.md#onliveeditcallback---void), [`hash`](docs/live-preview-configs.md#hash), [`config`](docs/live-preview-configs.md#config))—we do not recommend destructuring or otherwise using the value returned from `init`.
+Since the Live Preview Utils SDK is responsible for communication, you only need to initialize it.
+
+Use the following command to initialize the SDK:
 
 ```javascript
 import ContentstackLivePreview from "@contentstack/live-preview-utils";
 
-await ContentstackLivePreview.init({
+ContentstackLivePreview.init({
   stackDetails: {
     apiKey: "your-stack-api-key",
   },
 });
 ```
+
+See the [`init` configuration properties](docs/live-preview-configs.md#initconfig-iconfig) in **[docs/live-preview-configs.md](docs/live-preview-configs.md)** for every option you can pass to `init`.
 
 ## Configuration
 
