@@ -10,11 +10,9 @@ See how [Live Preview](https://www.contentstack.com/docs/content-managers/author
 ## Where this SDK runs
 
 - **Live Preview** — Preview entries in the stack while your site loads inside the preview panel.
-- **Timeline** — Time-based preview (how the site looks on future dates). Your integration pattern is the same as Live Preview from the app’s perspective; the parent context is still a preview iframe. In code, `config.windowType` can reflect a preview context that includes Timeline ([see `config` / `windowType`](docs/live-preview-configs.md#config)).
+- **Timeline** — Time-based preview (how the site looks on future dates and scheduled updates). Use the same Live Preview setup on your site; see the Timeline docs below for stack-side behavior.
 - **Visual Editor** — WYSIWYG editing with the site in an iframe. Use `mode: "builder"` so “Start Editing” targets Visual Editor; the SDK still works when the same site is opened in Live Preview ([`mode`](docs/live-preview-configs.md#mode)).
-- **Studio** — [Contentstack Studio](https://www.contentstack.com/docs/studio) is the visual composition experience for building experiences from components and content. Use this package when your front end needs the same live preview and stack-driven editing hooks as in Live Preview; follow Studio and Live Preview setup docs together for your stack.
-
-**Integrators:** In hosted preview, the platform loads your site in an iframe; this SDK talks to the parent window. When you open the site outside Contentstack (`windowType: independent`), behavior follows the [config](docs/live-preview-configs.md#config) rules in the reference doc.
+- **Studio** — [Contentstack Studio](https://www.contentstack.com/docs/studio) is Contentstack’s visual experience builder: you structure pages from reusable components, bind CMS data, and manage compositions. It is designed to work with [Live Preview and Visual Editor](https://www.contentstack.com/docs/studio/live-preview-and-visual-editing-with-studio) on your connected site (layout in Studio, real-time preview, then field-level edits in Visual Editor).
 
 ## Requirements
 
