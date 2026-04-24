@@ -669,4 +669,62 @@ describe("useVariantFieldsPostMessageEvent SSR handling", () => {
         expect(mockQuerySelectorAll).not.toHaveBeenCalled();
         expect(updateVariantClasses).not.toHaveBeenCalled();
     });
+
+    it("sends REQUEST_DISCUSSION_HIGHLIGHTS immediately when isSSR is true and variant is provided", () => {
+        useVariantFieldsPostMessageEvent({ isSSR: true });
+
+        const call = mockVisualBuilderPostMessage.on.mock.calls.find(
+            (call: any[]) =>
+                call[0] === VisualBuilderPostMessageEvents.GET_VARIANT_ID
+        );
+        const handler = call ? call[1] : null;
+
+        vi.clearAllMocks();
+        handler!({ data: { variant: "variant-123" } });
+
+        // SSR DOM is already in its final state — the observer would never
+        // fire, so we must ask the visual editor for a fresh highlight list.
+        expect(mockVisualBuilderPostMessage.send).toHaveBeenCalledWith(
+            VisualBuilderPostMessageEvents.REQUEST_DISCUSSION_HIGHLIGHTS
+        );
+    });
+
+    it("sends REQUEST_DISCUSSION_HIGHLIGHTS immediately when isSSR is true even if variant is null", () => {
+        useVariantFieldsPostMessageEvent({ isSSR: true });
+
+        const call = mockVisualBuilderPostMessage.on.mock.calls.find(
+            (call: any[]) =>
+                call[0] === VisualBuilderPostMessageEvents.GET_VARIANT_ID
+        );
+        const handler = call ? call[1] : null;
+
+        vi.clearAllMocks();
+        handler!({ data: { variant: null } });
+
+        // Switching back to base is still a CSLP-relevant change — VB needs to
+        // re-compute and re-send highlights against the new (base) CSLPs.
+        expect(mockVisualBuilderPostMessage.send).toHaveBeenCalledWith(
+            VisualBuilderPostMessageEvents.REQUEST_DISCUSSION_HIGHLIGHTS
+        );
+    });
+
+    it("does not send REQUEST_DISCUSSION_HIGHLIGHTS directly when isSSR is false (observer handles it)", () => {
+        useVariantFieldsPostMessageEvent({ isSSR: false });
+
+        const call = mockVisualBuilderPostMessage.on.mock.calls.find(
+            (call: any[]) =>
+                call[0] === VisualBuilderPostMessageEvents.GET_VARIANT_ID
+        );
+        const handler = call ? call[1] : null;
+
+        vi.clearAllMocks();
+        handler!({ data: { variant: "variant-123" } });
+
+        // For CSR apps the event is emitted by the MutationObserver inside
+        // updateVariantClasses, not synchronously from the handler.
+        expect(mockVisualBuilderPostMessage.send).not.toHaveBeenCalledWith(
+            VisualBuilderPostMessageEvents.REQUEST_DISCUSSION_HIGHLIGHTS
+        );
+        expect(updateVariantClasses).toHaveBeenCalled();
+    });
 });
