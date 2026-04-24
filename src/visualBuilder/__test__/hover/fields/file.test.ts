@@ -1,4 +1,5 @@
 import { screen, waitFor } from "@testing-library/preact";
+import { constructibleMutationObserver } from "../../../../__test__/domObserverMocks";
 import { getFieldSchemaMap } from "../../../../__test__/data/fieldSchemaMap";
 import {
     waitForHoverOutline,
@@ -88,10 +89,7 @@ describe("When an element is hovered in visual builder mode", () => {
             getFieldSchemaMap().all_fields
         );
 
-        global.MutationObserver = vi.fn().mockImplementation(() => ({
-            observe: vi.fn(),
-            disconnect: vi.fn(),
-        }));
+        global.MutationObserver = constructibleMutationObserver;
     });
 
     beforeEach(() => {
