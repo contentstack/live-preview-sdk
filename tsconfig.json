@@ -6,7 +6,7 @@
         "declaration": true ,
         "declarationMap": true ,
         "lib": ["DOM", "DOM.Iterable", "ES2022"],
-        "types": ["vitest/globals"],
+        "types": ["vitest/globals", "node"],
         "sourceMap": true ,
         "outDir": "./dist" ,
         "rootDir": "." ,
