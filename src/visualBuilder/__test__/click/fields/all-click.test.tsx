@@ -27,6 +27,7 @@
 
 import { screen, waitFor } from "@testing-library/preact";
 import "@testing-library/jest-dom";
+import { constructibleMutationObserver } from "../../../../__test__/domObserverMocks";
 import { getFieldSchemaMap } from "../../../../__test__/data/fieldSchemaMap";
 import Config from "../../../../configManager/configManager";
 import { VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY } from "../../../utils/constants";
@@ -40,10 +41,7 @@ import { triggerAndWaitForClickAction } from "../../../../__test__/utils";
 import { FieldDataType } from "../../../utils/types/index.types";
 import { ALLOWED_MODAL_EDITABLE_FIELD } from "../../../utils/constants";
 
-global.MutationObserver = vi.fn().mockImplementation(() => ({
-    observe: vi.fn(),
-    disconnect: vi.fn(),
-}));
+global.MutationObserver = constructibleMutationObserver;
 
 vi.mock("../../../components/FieldToolbar", () => {
     return {
