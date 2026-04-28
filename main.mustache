@@ -1,60 +1,126 @@
-# Contentstack Live Preview Utils SDK
+# @contentstack/live-preview-utils
 
-Contentstack is a headless CMS with an API-first approach. It is a CMS that developers can use to build powerful cross-platform applications in their favorite languages. Build your application frontend, and Contentstack will take care of the rest.
+[![npm](https://img.shields.io/npm/v/@contentstack/live-preview-utils.svg)](https://www.npmjs.com/package/@contentstack/live-preview-utils)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-Contentstack provides the Live Preview Utils SDK to establish a communication channel between the various Contentstack SDKs and your website, transmitting live changes to the preview pane. [Read More](https://www.contentstack.com/docs/content-managers/live-preview/).
+The **Live Preview Utils** package runs on your website and establishes a communication channel between the page and Contentstack. This enables live content updates, edit controls, and Visual Editor UI within the preview surface.
 
-# Installation
+This SDK is not a replacement for Contentstack delivery SDKs. Instead, it acts as a client-side bridge for preview and Visual Editor functionality.
 
-To install the package via npm, use the following command:
+## Where this SDK runs
+
+The SDK works across multiple Contentstack preview and editing experiences:
+
+- [**Live Preview**](https://www.contentstack.com/docs/content-managers/author-content/about-live-preview): Preview entries while your site loads inside the preview panel.
+- [**Timeline**](https://www.contentstack.com/docs/content-managers/timeline/about-timeline): Preview how your site appears across future dates and scheduled updates using the same Live Preview setup.
+- [**Visual Editor**](https://www.contentstack.com/docs/content-managers/visual-editor/about-visual-editor): Enable WYSIWYG editing with your site inside an iframe. Use [`mode: "builder"`](docs/live-preview-configs.md#mode) so “Start Editing” targets Visual Editor; the SDK still works when the same site is opened in Live Preview.
+- [**Studio**](https://www.contentstack.com/docs/studio/about-studio): Use alongside Studio to structure pages from reusable components, bind CMS data, and preview changes in real time. It is designed to work with [Live Preview and Visual Editor](https://www.contentstack.com/docs/studio/live-preview-and-visual-editing-with-studio) on your connected site.
+
+## Requirements
+
+- **Browser:** Initialize only on the client (`window` must exist). Avoid calling `init` during server-side rendering.
+- **SSR vs CSR:** Defaults assume SSR-friendly behavior. For **client-side rendering**, pass [`stackSdk`](docs/live-preview-configs.md#stacksdk) and set [`ssr: false`](docs/live-preview-configs.md#ssr) as described in the config reference.
+
+## Installation
 
 ```bash
 npm install @contentstack/live-preview-utils
 ```
 
-Alternatively, if you want to include the package directly in your website HTML code, use the following command:
+### Load from a CDN (advanced)
+
+Pin the version to match your app (update `{{packageVersion}}` when you upgrade):
 
 ```html
-<script type='module' crossorigin="anonymous">
-     import ContentstackLivePreview from 'https://esm.sh/@contentstack/live-preview-utils@{{packageVersion}}';
+<script type="module" crossorigin="anonymous">
+  import ContentstackLivePreview from "https://esm.sh/@contentstack/live-preview-utils@{{packageVersion}}";
 
-     ContentstackLivePreview.init({
-        stackDetails: {
-            apiKey: "your-stack-api-key",
-        },
-    });
+  ContentstackLivePreview.init({
+    stackDetails: {
+      apiKey: "your-stack-api-key",
+    },
+  });
 </script>
 ```
-> [!NOTE]
-> This step involves incorporating the package into your HTML code and initializing it, eliminating the need for re-initialization in the subsequent step.
 
+> [!TIP]
+> If you initialize the SDK using this snippet, do not initialize it again in your app bundle on the same page.
 
-# Initializing the SDK
+## Quick start
 
-### Live Preview Utils
-
-Since the Live Preview Utils SDK is responsible for communication, you need to only initialize it.
-Use the following command to initialize the SDK:
+Initialize the SDK to enable communication between your site and Contentstack:
 
 ```javascript
 import ContentstackLivePreview from "@contentstack/live-preview-utils";
 
 ContentstackLivePreview.init({
-    stackDetails: {
-        apiKey: "your-stack-api-key",
-    },
+  stackDetails: {
+    apiKey: "your-stack-api-key",
+  },
 });
 ```
 
+See the [`init` configuration properties](docs/live-preview-configs.md#initconfig-iconfig) in **[docs/live-preview-configs.md](docs/live-preview-configs.md)** for every option you can pass to `init`.
 
-# License
+## Configuration
 
-MIT License
+You can configure the SDK using the following options:
 
-Copyright © 2021-{{currentYear}} [Contentstack](https://www.contentstack.com/). All Rights Reserved
+- [`enable`](docs/live-preview-configs.md#enable)
+- [`ssr`](docs/live-preview-configs.md#ssr)
+- [`mode`](docs/live-preview-configs.md#mode) (`preview` vs `builder`)
+- [`editButton`](docs/live-preview-configs.md#editbutton)
+- [`editInVisualBuilderButton`](docs/live-preview-configs.md#editinvisualbuilderbutton) (Start Editing outside Visual Editor)
+- [`cleanCslpOnProduction`](docs/live-preview-configs.md#cleancslponproduction)
+- [`stackDetails`](docs/live-preview-configs.md#stackdetails) ([`apiKey`](docs/live-preview-configs.md#apikey), [`environment`](docs/live-preview-configs.md#environment))
+- [`clientUrlParams`](docs/live-preview-configs.md#clienturlparams) — [NA](docs/live-preview-configs.md#na-config) / [EU](docs/live-preview-configs.md#eu-config)
+- [`stackSdk`](docs/live-preview-configs.md#stacksdk)
 
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+Full tables and examples: **[docs/live-preview-configs.md](docs/live-preview-configs.md)**.
 
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+### Methods and properties
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+- [`onLiveEdit`](docs/live-preview-configs.md#onliveeditcallback---void): Trigger actions on live edits
+- [`onEntryChange`](docs/live-preview-configs.md#onentrychangecallback---void): Listen for entry updates
+- [`hash`](docs/live-preview-configs.md#hash): Access preview state identifier
+- [`config`](docs/live-preview-configs.md#config): Includes runtime context (for example Live Preview / Timeline preview, Visual Editor, or independent)
+
+The [configs table of contents](docs/live-preview-configs.md#contentstack-live-preview-utils-sdk-configs) also lists `setConfigFromParams` and `getGatsbyDataFormat` for deeper workflows.
+
+## Advanced: stripping the SDK at build time
+
+Set `PURGE_PREVIEW_SDK` or `REACT_APP_PURGE_PREVIEW_SDK` to `"true"` during build to exclude preview code from production bundles.
+
+**Note:** This reduces bundle size by replacing the SDK with a lightweight stub in production.
+
+## Resources
+
+- **Source:** [github.com/contentstack/live-preview-sdk](https://github.com/contentstack/live-preview-sdk)
+- **Typed API (local):** `npm run docs`
+
+## Documentation and learning
+
+### Developers
+
+- [Set up Live Preview for your website](https://www.contentstack.com/docs/developers/set-up-live-preview/set-up-live-preview-for-your-website)
+- [How Live Preview works](https://www.contentstack.com/docs/developers/set-up-live-preview/how-live-preview-works)
+- [Preview API](https://www.contentstack.com/docs/developers/set-up-timeline/preview-api)
+- [Set up Timeline for your website](https://www.contentstack.com/docs/developers/set-up-timeline/set-up-timeline-for-your-website)
+
+### Content managers
+
+- [About Live Preview](https://www.contentstack.com/docs/content-managers/author-content/about-live-preview)
+- [Preview content across a Timeline](https://www.contentstack.com/docs/content-managers/timeline/preview-content-across-a-timeline)
+- [About Visual Editor](https://www.contentstack.com/docs/content-managers/visual-editor/about-visual-editor)
+
+### Studio
+
+- [Studio](https://www.contentstack.com/docs/studio)
+- [Get started with Studio](https://www.contentstack.com/docs/studio/get-started-with-studio)
+
+### Academy
+
+- [Implementing Live Preview (course)](https://www.contentstack.com/academy/courses/implementing-live-preview)
+- [Contentstack Live Preview under the hood](https://www.contentstack.com/academy/content/contentstack-live-preview-under-the-hood)
+- [Understanding Timeline](https://www.contentstack.com/academy/content/understanding-timeline)
+- [Understanding Visual Editor](https://www.contentstack.com/academy/content/understanding-visual-builder)
