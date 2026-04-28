@@ -1,6 +1,7 @@
 import { afterAll, afterEach, beforeAll, vi } from "vitest";
 import { cleanup } from "@testing-library/preact";
 import "@testing-library/jest-dom/vitest";
+import { installGlobalObserverMocks } from "./src/__test__/domObserverMocks";
 
 // IMPORTANT: vi.mock MUST be at top level - cannot be inside beforeAll or any function
 vi.mock("./src/visualBuilder/utils/getEntryPermissionsCached", () => ({
@@ -39,17 +40,7 @@ vi.mock(
 );
 
 beforeAll(() => {
-    global.ResizeObserver = vi.fn().mockImplementation(() => ({
-        observe: vi.fn(),
-        unobserve: vi.fn(),
-        disconnect: vi.fn(),
-    }));
-
-    global.MutationObserver = vi.fn().mockImplementation(() => ({
-        observe: vi.fn(),
-        disconnect: vi.fn(),
-        takeRecords: vi.fn(() => []),
-    }));
+    installGlobalObserverMocks();
 
     document.elementFromPoint = vi.fn();
 });

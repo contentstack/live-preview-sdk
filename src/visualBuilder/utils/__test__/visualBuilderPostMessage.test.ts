@@ -5,7 +5,9 @@ import { VISUAL_BUILDER_CHANNEL_ID } from "../constants";
 
 vi.mock('@contentstack/advanced-post-message', () => {
     return {
-        EventManager: vi.fn()
+        EventManager: vi.fn(function () {
+            return { on: vi.fn(), send: vi.fn() };
+        }),
     };
 });
 
@@ -27,8 +29,10 @@ describe('visualBuilderPostMessage', () => {
     });
 
     it('should initialize EventManager if window is defined', async () => {
-        const mockEventManagerInstance = {};
-        EventManager.mockImplementation(() => mockEventManagerInstance);
+        const mockEventManagerInstance = { on: vi.fn(), send: vi.fn() };
+        vi.mocked(EventManager).mockImplementation(function () {
+            return mockEventManagerInstance;
+        });
         const module = await import('../visualBuilderPostMessage');
 
         expect(EventManager).toHaveBeenCalledWith(VISUAL_BUILDER_CHANNEL_ID, {

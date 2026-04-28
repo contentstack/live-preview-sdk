@@ -60,7 +60,7 @@ class LightLivePreviewHoC {
     }
 
     static getSdkVersion(): string {
-        return process?.env?.PACKAGE_VERSION!;
+        return (typeof process !== "undefined" ? process?.env?.PACKAGE_VERSION : undefined) ?? "";
     }
 }
 
