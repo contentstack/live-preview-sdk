@@ -167,18 +167,12 @@ export function useVariantFieldsPostMessageEvent({ isSSR }: { isSSR: boolean }):
                 if (selectedVariant) {
                     addVariantFieldClass(selectedVariant);
                 }
-                // SSR DOM is already in its final state (no async re-render) —
-                // the MutationObserver in updateVariantClasses will never fire,
-                // so ask the visual editor to re-send discussion highlights now
-                // that the classes are applied against the final CSLP values.
+                // SSR DOM is final; observer never fires, request directly.
                 visualBuilderPostMessage?.send(
                     VisualBuilderPostMessageEvents.REQUEST_DISCUSSION_HIGHLIGHTS
                 );
             } else {
-                // For CSR apps the framework re-renders asynchronously after
-                // receiving the new variant, mutating data-cslp attributes.
-                // updateVariantClasses installs a MutationObserver that emits
-                // REQUEST_DISCUSSION_HIGHLIGHTS once those mutations settle.
+                // CSR: observer in updateVariantClasses requests on settle.
                 updateVariantClasses();
             }
         }

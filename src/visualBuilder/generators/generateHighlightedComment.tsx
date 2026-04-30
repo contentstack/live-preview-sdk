@@ -96,10 +96,7 @@ export function updateHighlightedCommentIconPosition() {
                     icon.style.top = `${top - highlighCommentOffset}px`; // Adjust based on the target element's top
                     icon.style.left = `${left - highlighCommentOffset}px`; // Adjust based on the target element's left
                 } else {
-                    // Target element is gone (e.g. data-cslp mutated after a
-                    // variant switch). Remove the orphaned icon instead of
-                    // silently leaving it drifted — the visual editor will
-                    // re-mount a fresh set via REQUEST_DISCUSSION_HIGHLIGHTS.
+                    // Target gone — drop the orphan icon.
                     icon.remove();
                 }
             }

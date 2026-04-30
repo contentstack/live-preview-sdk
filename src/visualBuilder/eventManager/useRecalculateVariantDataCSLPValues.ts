@@ -7,12 +7,17 @@ import { isValidCslp } from "../../cslp/cslpdata";
 import { setHighlightVariantFields } from "./useVariantsPostMessageEvent";
 import visualBuilderPostMessage from "../utils/visualBuilderPostMessage";
 import { VisualBuilderPostMessageEvents } from "../utils/types/postMessage.types";
+import { debounce } from "lodash-es";
 
 const VARIANT_UPDATE_DELAY_MS: Readonly<number> = 8000;
-// Debounce window after the last observed mutation before asking the visual
-// editor to re-send discussion highlights. Short enough to feel responsive;
-// long enough to coalesce a burst of mutations into a single request.
-const DISCUSSION_HIGHLIGHTS_DEBOUNCE_MS: Readonly<number> = 200;
+
+// Coalesce a burst of data-cslp mutations into a single request to the
+// visual editor.
+const requestDiscussionHighlights = debounce(() => {
+    visualBuilderPostMessage?.send(
+        VisualBuilderPostMessageEvents.REQUEST_DISCUSSION_HIGHLIGHTS
+    );
+}, 200);
 
 type OnAudienceModeVariantPatchUpdate = {
     highlightVariantFields: boolean;
@@ -37,21 +42,6 @@ export function updateVariantClasses(): void {
     const highlightVariantFields = VisualBuilder.VisualBuilderGlobalState.value.highlightVariantFields;
     const variant = VisualBuilder.VisualBuilderGlobalState.value.variant;
     const observers: MutationObserver[] = [];
-
-    // Ask the visual editor to re-send discussion highlights once the current
-    // burst of data-cslp mutations has settled. The VB owns the field-path list
-    // (it can be per-variant) so the iframe cannot re-mount comment icons on
-    // its own — it can only request a refresh.
-    let highlightsRequestTimer: ReturnType<typeof setTimeout> | null = null;
-    const requestDiscussionHighlights = () => {
-        if (highlightsRequestTimer !== null) clearTimeout(highlightsRequestTimer);
-        highlightsRequestTimer = setTimeout(() => {
-            highlightsRequestTimer = null;
-            visualBuilderPostMessage?.send(
-                VisualBuilderPostMessageEvents.REQUEST_DISCUSSION_HIGHLIGHTS
-            );
-        }, DISCUSSION_HIGHLIGHTS_DEBOUNCE_MS);
-    };
 
     // Helper function to update element classes
     const updateElementClasses = (
