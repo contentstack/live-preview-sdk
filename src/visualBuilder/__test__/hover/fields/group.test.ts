@@ -22,7 +22,7 @@ vi.mock("../../../utils/visualBuilderPostMessage", async () => {
                     return Promise.resolve({
                         contentTypes,
                     });
-                return Promise.resolve();
+                return Promise.resolve({});
             }),
         },
     };

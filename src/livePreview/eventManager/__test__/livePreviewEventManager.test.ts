@@ -6,9 +6,11 @@ import { vi } from "vitest";
 import { EventManager } from "@contentstack/advanced-post-message";
 import { LIVE_PREVIEW_CHANNEL_ID } from "../livePreviewEventManager.constant";
 
-// Mock dependencies
+// Mock dependencies — must be constructible (`new EventManager()`) (Vitest 4)
 vi.mock("@contentstack/advanced-post-message", () => ({
-    EventManager: vi.fn(),
+    EventManager: vi.fn(function (this: unknown) {
+        return { on: vi.fn(), send: vi.fn() };
+    }),
 }));
 
 vi.mock("../../../common/inIframe", () => ({
@@ -31,7 +33,9 @@ describe("livePreviewEventManager", () => {
             on: vi.fn(),
             send: vi.fn(),
         };
-        (EventManager as any).mockImplementation(() => mockEventManager);
+        (EventManager as any).mockImplementation(function () {
+            return mockEventManager;
+        });
         
         // Store original window
         originalWindow = global.window;
@@ -209,14 +213,21 @@ describe("livePreviewEventManager", () => {
             });
 
             it("should handle when EventManager constructor throws", async () => {
-                (EventManager as any).mockImplementation(() => {
+                (EventManager as any).mockImplementation(function () {
                     throw new Error("EventManager constructor error");
                 });
 
-                // Should not crash the module initialization
-                expect(async () => {
-                    await import("../livePreviewEventManager");
-                }).not.toThrow();
+                // `new EventManager` runs while the module loads, so a throwing constructor
+                // fails module evaluation and `import()` gets a *rejected* promise.
+                //
+                // We use `rejects.toThrow` (and await it), not `expect(() => import).not.toThrow()`:
+                // the latter only catches synchronous throws; async failures become promise
+                // rejections, which the old pattern missed and could surface as unhandled
+                // rejections (e.g. under Vitest 4). This matches actual runtime behavior, not
+                // a reversed expectation: the module does not catch the error internally.
+                await expect(
+                    import("../livePreviewEventManager")
+                ).rejects.toThrow("EventManager constructor error");
             });
         });
     });
