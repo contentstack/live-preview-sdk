@@ -167,8 +167,12 @@ export function useVariantFieldsPostMessageEvent({ isSSR }: { isSSR: boolean }):
                 if (selectedVariant) {
                     addVariantFieldClass(selectedVariant);
                 }
+                // SSR DOM is final; observer never fires, request directly.
+                visualBuilderPostMessage?.send(
+                    VisualBuilderPostMessageEvents.REQUEST_DISCUSSION_HIGHLIGHTS
+                );
             } else {
-                // recalculate and apply classes
+                // CSR: observer in updateVariantClasses requests on settle.
                 updateVariantClasses();
             }
         }

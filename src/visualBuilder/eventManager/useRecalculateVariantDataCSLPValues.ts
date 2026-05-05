@@ -5,8 +5,19 @@ import { DATA_CSLP_ATTR_SELECTOR } from "../utils/constants";
 import { visualBuilderStyles } from "../visualBuilder.style";
 import { isValidCslp } from "../../cslp/cslpdata";
 import { setHighlightVariantFields } from "./useVariantsPostMessageEvent";
+import visualBuilderPostMessage from "../utils/visualBuilderPostMessage";
+import { VisualBuilderPostMessageEvents } from "../utils/types/postMessage.types";
+import { debounce } from "lodash-es";
 
 const VARIANT_UPDATE_DELAY_MS: Readonly<number> = 8000;
+
+// Coalesce a burst of data-cslp mutations into a single request to the
+// visual editor.
+const requestDiscussionHighlights = debounce(() => {
+    visualBuilderPostMessage?.send(
+        VisualBuilderPostMessageEvents.REQUEST_DISCUSSION_HIGHLIGHTS
+    );
+}, 200);
 
 type OnAudienceModeVariantPatchUpdate = {
     highlightVariantFields: boolean;
@@ -156,6 +167,7 @@ export function updateVariantClasses(): void {
                         DATA_CSLP_ATTR_SELECTOR
                     );
                     updateElementClasses(element, dataCslp || "", observer);
+                    requestDiscussionHighlights();
                 }
             });
         });
