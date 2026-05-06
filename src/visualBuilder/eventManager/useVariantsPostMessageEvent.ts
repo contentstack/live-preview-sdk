@@ -174,6 +174,9 @@ export function useVariantFieldsPostMessageEvent({ isSSR }: { isSSR: boolean }):
             } else {
                 // CSR: observer in updateVariantClasses requests on settle.
                 updateVariantClasses();
+                visualBuilderPostMessage?.send(
+                    VisualBuilderPostMessageEvents.REQUEST_DISCUSSION_HIGHLIGHTS
+                );
             }
         }
     );
