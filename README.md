@@ -29,11 +29,11 @@ npm install @contentstack/live-preview-utils
 
 ### Load from a CDN (advanced)
 
-Pin the version to match your app (update `4.4.0` when you upgrade):
+Pin the version to match your app (update `4.4.1` when you upgrade):
 
 ```html
 <script type="module" crossorigin="anonymous">
-  import ContentstackLivePreview from "https://esm.sh/@contentstack/live-preview-utils@4.4.0";
+  import ContentstackLivePreview from "https://esm.sh/@contentstack/live-preview-utils@4.4.1";
 
   ContentstackLivePreview.init({
     stackDetails: {

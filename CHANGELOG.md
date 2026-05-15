@@ -1,16 +1,62 @@
 # Changelog
 
-## [v4.4.0](https://github.com/contentstack/live-preview-sdk/compare/v4.4.0...v4.4.0)
+## [v4.4.1](https://github.com/contentstack/live-preview-sdk/compare/v4.4.0...v4.4.1)
 
-> 2 April 2026
+> 28 April 2026
 
-## [v4.4.0](https://github.com/contentstack/live-preview-sdk/compare/v4.3.1...v4.4.0)
+### New Features
 
-> 2 April 2026
+- feat: vb to ve (Karan Gandhi - [#554](https://github.com/contentstack/live-preview-sdk/pull/554))
+- feat: implement isValidCslp function for CSLP value validation (Hitesh Shetty - [#547](https://github.com/contentstack/live-preview-sdk/pull/547))
 
-## [v4.3.1](https://github.com/contentstack/live-preview-sdk/compare/v4.3.0...v4.3.1)
+### Chores And Housekeeping
 
-> 2 April 2026
+- chore: update vitest from v3 to v4 and its related dependencies (Hitesh Shetty - [#586](https://github.com/contentstack/live-preview-sdk/pull/586))
+
+### General Changes
+
+- Fix 20 april snyk fixes 2 develop v4 sync (Aditya Pachauri - [#585](https://github.com/contentstack/live-preview-sdk/pull/585))
+- Vp 1721 fix known issues (Kirtesh Suthar - [#581](https://github.com/contentstack/live-preview-sdk/pull/581))
+- Vp 444 stag sync 2 (Aditya Pachauri - [#562](https://github.com/contentstack/live-preview-sdk/pull/562))
+-  Optimize Development Build Performance (Hitesh Shetty - [#548](https://github.com/contentstack/live-preview-sdk/pull/548))
+- Add support for Variant highlights (Hitesh Shetty - [#533](https://github.com/contentstack/live-preview-sdk/pull/533))
+
+### New Features
+
+- feat: implement isValidCslp function for CSLP value validation and add corresponding tests (hiteshshetty-dev - [03964af](https://github.com/contentstack/live-preview-sdk/commit/03964afb67a548c7cc0be75a9b4e8ad14c866008))
+
+### Fixes
+
+- fix: bump vitest from v3 to v4 and other dependencies related to it (Kirtesh Suthar - [0862fe0](https://github.com/contentstack/live-preview-sdk/commit/0862fe07ab7d0a7f0bcc25620eaab60f64becec0))
+- fix: upgrade @contentstack/advanced-post-message to version 0.0.5 (hitesh-shetty-cstk - [774c1c4](https://github.com/contentstack/live-preview-sdk/commit/774c1c480451b509260b8b4338987947c8d62c45))
+- fix(snyk-fixes): snyk fixed (Aditya Pachauri - [3daafbe](https://github.com/contentstack/live-preview-sdk/commit/3daafbe3d7a8b084bf4b47c9934389da6ee2761c))
+
+### Chores And Housekeeping
+
+- chore: apply lint fixes to README.md (hitesh-shetty-cstk - [167e6d1](https://github.com/contentstack/live-preview-sdk/commit/167e6d1a24e5bd9b17f43d96a9671b25e60ab4d6))
+- chore: update uuid to version 14.0.0 and add vite override (Kirtesh Suthar - [ece4aef](https://github.com/contentstack/live-preview-sdk/commit/ece4aefce7dc6a996d432853791942980db13ccb))
+- chore: audit fix (Karan Gandhi - [48e0c35](https://github.com/contentstack/live-preview-sdk/commit/48e0c35672caa4f54204003de6422830fa1379de))
+- chore: lodash bump (Kirtesh Suthar - [c340241](https://github.com/contentstack/live-preview-sdk/commit/c34024178dcd5522399364fd75d1b5f33f58c35d))
+- chore: lodash-es version upgrade (csAyushDubey - [f96d848](https://github.com/contentstack/live-preview-sdk/commit/f96d8485cb97745698ecb55e3f695701f8c271fb))
+- chore: update tsup configuration to ignore legacy build & dts during dev mode (hiteshshetty-dev - [db0fa6a](https://github.com/contentstack/live-preview-sdk/commit/db0fa6a8d289f22a3dc6fd2ee745b9ae60b85d0f))
+- chore: update doc for dev build mode (hiteshshetty-dev - [45d85f4](https://github.com/contentstack/live-preview-sdk/commit/45d85f4107dd6bbaefdf771ae50ff08068f925ea))
+- chore: upgrade tsup to latest version (hiteshshetty-dev - [52665c4](https://github.com/contentstack/live-preview-sdk/commit/52665c47ba54ccfeac31ca109789ff9f0a8e80e6))
+- chore: make husky pre-push hook executable (Kirtesh Suthar - [2cd613c](https://github.com/contentstack/live-preview-sdk/commit/2cd613c28ee24855da2b1fc3914b07d0fb526713))
+- chore: version bump (csAyushDubey - [2103266](https://github.com/contentstack/live-preview-sdk/commit/2103266fed8763285f5ea8e82a429a3b40015600))
+
+### Changes to Test Assests
+
+- test: enhance tests by mocking isValidCslp function in variant-related test cases (hiteshshetty-dev - [b1db0fc](https://github.com/contentstack/live-preview-sdk/commit/b1db0fce990b258d1cdf58ce29089b8edc49b7ad))
+- test: mock extractDetailsFromCslp function in useRevalidateFieldDataPostMessageEvent tests (hiteshshetty-dev - [ad42ec1](https://github.com/contentstack/live-preview-sdk/commit/ad42ec1ae9268562dbcfbd4b09f7b36c83cf2768))
+
+### General Changes
+
+- Merge origin/stage_v4 into stage_v4 — resolve version conflicts (4.3.0 → 4.4.0) (hitesh-shetty-cstk - [be798e3](https://github.com/contentstack/live-preview-sdk/commit/be798e30c2c82f57488407477482cd3e5273751f))
+- Merge pull request #565 from contentstack/develop_v4 (Karan Bhavesh Gandhi - [c8fc00d](https://github.com/contentstack/live-preview-sdk/commit/c8fc00ddf53681e2bd5c08ad6d61799b236728ca))
+
+## [v4.4.0](https://github.com/contentstack/live-preview-sdk/compare/v4.3.0...v4.4.0)
+
+> 6 April 2026
 
 ### New Features
 
@@ -55,6 +101,7 @@
 
 ### General Changes
 
+- Merge pull request #578 from contentstack/stage_v4 (Karan Bhavesh Gandhi - [7dbe992](https://github.com/contentstack/live-preview-sdk/commit/7dbe99233ad3920834147de9f67d63c8bd2895fc))
 - Merge pull request #576 from contentstack/develop_v4 (Karan Bhavesh Gandhi - [2501855](https://github.com/contentstack/live-preview-sdk/commit/25018553092688922b523e70ac60a6a0363cec15))
 - Merge pull request #577 from contentstack/VP-1133/purge-flag-4 (Karan Bhavesh Gandhi - [a621121](https://github.com/contentstack/live-preview-sdk/commit/a621121d15a2b518d75e39dbba996ba585439003))
 
