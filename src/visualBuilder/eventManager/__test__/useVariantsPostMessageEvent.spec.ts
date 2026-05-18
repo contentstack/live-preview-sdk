@@ -708,7 +708,7 @@ describe("useVariantFieldsPostMessageEvent SSR handling", () => {
         );
     });
 
-    it("does not send REQUEST_DISCUSSION_HIGHLIGHTS directly when isSSR is false (observer handles it)", () => {
+    it("sends REQUEST_DISCUSSION_HIGHLIGHTS and calls updateVariantClasses when isSSR is false", () => {
         useVariantFieldsPostMessageEvent({ isSSR: false });
 
         const call = mockVisualBuilderPostMessage.on.mock.calls.find(
@@ -720,9 +720,10 @@ describe("useVariantFieldsPostMessageEvent SSR handling", () => {
         vi.clearAllMocks();
         handler!({ data: { variant: "variant-123" } });
 
-        // For CSR apps the event is emitted by the MutationObserver inside
-        // updateVariantClasses, not synchronously from the handler.
-        expect(mockVisualBuilderPostMessage.send).not.toHaveBeenCalledWith(
+        // CSR path: handler triggers updateVariantClasses (observer settles
+        // CSLPs) and also sends the request as a safety net so VB recomputes
+        // highlights against the new variant.
+        expect(mockVisualBuilderPostMessage.send).toHaveBeenCalledWith(
             VisualBuilderPostMessageEvents.REQUEST_DISCUSSION_HIGHLIGHTS
         );
         expect(updateVariantClasses).toHaveBeenCalled();
