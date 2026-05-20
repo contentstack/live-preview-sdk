@@ -114,12 +114,18 @@ export const handleInitData = (initData: Partial<IInitData>): void => {
             initData.editInVisualBuilderButton?.enable ??
             stackSdk.live_preview?.editInVisualBuilderButton?.enable ??
             config.editInVisualBuilderButton.enable,
-        position:  
+        position:
             initData.editInVisualBuilderButton?.position ??
             stackSdk.live_preview?.position ??
             config.editInVisualBuilderButton.position ??
             "bottom-right",
     })
+
+    Config.set("overlayPropagation", {
+        enable:
+            initData.overlayPropagation?.enable ??
+            config.overlayPropagation.enable,
+    });
 
     Config.set(
         "enableLivePreviewOutsideIframe",

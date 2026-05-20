@@ -145,6 +145,33 @@ The editInVisualBuilderButton object contains two keys:
     The user can place the "Start Editing" button in four predefined positions 
     top-left, top-right, bottom-left, and bottom-right.
 
+### `overlayPropagation`
+
+The `overlayPropagation` object enables Visual Builder hover/click detection to pierce through sibling elements that visually overlap a `data-cslp` field but intercept the mouse event before it reaches the field. This is an opt-in fallback intended for apps where unrelated DOM elements (for example, empty CSS-grid spacer cells in a multi-column layout) sit on top of `data-cslp` containers and block the SDK from detecting the field on hover or click.
+
+When the flag is **enabled** and `event.target.closest("[data-cslp]")` returns `null`, the SDK falls back to `document.elementsFromPoint(clientX, clientY)` and selects the topmost element in that stack that carries a `data-cslp` attribute. When the flag is **disabled** (default), behavior is unchanged.
+
+> **Note:** This flag currently affects the **Visual Builder** hover/click pipeline only. Equivalent support for the standalone Live Preview Edit button (the floating Edit button outside Visual Builder) is tracked separately.
+
+The `overlayPropagation` object contains one key:
+
+1. #### `enable`
+    | type    | default | optional |
+    | ------- | ------- | -------- |
+    | boolean | false   | yes      |
+
+    Set to `true` to activate the `elementsFromPoint` fallback for hover and click detection. The fallback runs only when the standard `closest("[data-cslp]")` lookup returns `null`, so there is no performance impact on the normal path.
+
+**For example:**
+```ts
+ContentstackLivePreview.init({
+    ...
+    overlayPropagation: {
+        enable: true,
+    }
+});
+```
+
 ### `cleanCslpOnProduction`
 
 | type    | default | optional |
