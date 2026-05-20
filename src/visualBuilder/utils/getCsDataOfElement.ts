@@ -2,12 +2,20 @@ import { CslpData } from "../../cslp/types/cslp.types";
 import { VisualBuilderCslpEventDetails } from "../types/visualBuilder.types";
 import { extractDetailsFromCslp, isValidCslp } from "../../cslp/cslpdata";
 import { DATA_CSLP_ATTR_SELECTOR } from "./constants";
+import Config from "../../configManager/configManager";
 
 /**
  * Returns the CSLP data of the closest ancestor element with a `data-cslp` attribute
  * to the target element of a mouse event.
+ *
+ * When `overlayPropagation.enable` is `true` and the target element has no
+ * `data-cslp` ancestor, falls back to `document.elementsFromPoint()` so the
+ * lookup can pierce sibling elements (e.g. empty CSS-grid spacer cells) that
+ * visually overlap a `data-cslp` field but would otherwise intercept the
+ * mouse event.
+ *
  * @param event - The mouse event.
- * @returns The CSLP data of the closest ancestor element with a `data-cslp` attribute,
+ * @returns The CSLP data of the resolved element with a `data-cslp` attribute,
  * along with metadata and schema information for the corresponding field.
  */
 export function getCsDataOfElement(
@@ -17,7 +25,17 @@ export function getCsDataOfElement(
     if (!targetElement) {
         return;
     }
-    const editableElement = targetElement.closest("[data-cslp]");
+    let editableElement: Element | null =
+        targetElement.closest("[data-cslp]");
+
+    if (!editableElement && Config.get().overlayPropagation.enable) {
+        const stack = document.elementsFromPoint(
+            event.clientX,
+            event.clientY
+        );
+        editableElement =
+            stack.find((el) => el.hasAttribute("data-cslp")) ?? null;
+    }
 
     if (!editableElement) {
         return;
