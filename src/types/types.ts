@@ -82,6 +82,7 @@ export declare interface IConfig {
     hash: string;
     editButton: IConfigEditButton;
     editInVisualBuilderButton: IConfigEditInVisualBuilderButton;
+    overlayPropagation: IConfigOverlayPropagation;
     mode: ILivePreviewModeConfig;
     elements: {
         highlightedElement: HTMLElement | null;
@@ -98,6 +99,19 @@ export declare interface IConfigEditInVisualBuilderButton {
         | "top-right"
         | "bottom-left"
         | "bottom-right"
+}
+
+export declare interface IConfigOverlayPropagation {
+    /**
+     * When `true`, Visual Builder hover/click detection falls back to
+     * `document.elementsFromPoint()` if the immediate `event.target` has no
+     * ancestor with `data-cslp`. This allows the SDK to pierce sibling
+     * elements (e.g. empty CSS-grid spacer cells) that visually overlap a
+     * `data-cslp` field and would otherwise intercept the mouse event.
+     *
+     * @default false
+     */
+    enable: boolean;
 }
 
 
@@ -132,6 +146,7 @@ export declare interface IInitData {
     stackSdk: IStackSdk;
     editButton: IConfigEditButton;
     editInVisualBuilderButton: IConfigEditInVisualBuilderButton;
+    overlayPropagation: IConfigOverlayPropagation;
     mode: ILivePreviewMode;
     enableLivePreviewOutsideIframe: boolean | undefined; // default: undefined
 }

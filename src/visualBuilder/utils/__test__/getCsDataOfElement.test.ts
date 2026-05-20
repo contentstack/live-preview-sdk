@@ -1,5 +1,6 @@
 import { getCsDataOfElement, getDOMEditStack } from "../getCsDataOfElement";
 import { JSDOM } from "jsdom";
+import Config from "../../../configManager/configManager";
 
 describe("getCsDataOfElement", () => {
     let targetElement: Element;
@@ -119,6 +120,92 @@ describe("getCsDataOfElement", () => {
                 multipleFieldMetadata: { parentDetails: null, index: -1 },
                 instance: { fieldPathWithIndex: "title" },
             },
+        });
+    });
+
+    describe("overlayPropagation fallback", () => {
+        let blocker: HTMLDivElement;
+        let cslpEl: HTMLDivElement;
+        let overlayEvent: MouseEvent;
+
+        beforeEach(() => {
+            document.body.innerHTML = "";
+            Config.set("overlayPropagation", { enable: false });
+
+            // sibling layout: blocker overlaps cslpEl visually
+            cslpEl = document.createElement("div");
+            cslpEl.setAttribute(
+                "data-cslp",
+                "all_fields.bltentryuid.en-us.title"
+            );
+            blocker = document.createElement("div");
+
+            document.body.appendChild(cslpEl);
+            document.body.appendChild(blocker);
+
+            overlayEvent = new MouseEvent("mousemove", {
+                bubbles: true,
+                cancelable: true,
+                clientX: 100,
+                clientY: 100,
+            });
+            // mousemove target = blocker (no data-cslp ancestor)
+            Object.defineProperty(overlayEvent, "target", {
+                value: blocker,
+                writable: false,
+            });
+        });
+
+        afterEach(() => {
+            Config.set("overlayPropagation", { enable: false });
+            vi.clearAllMocks();
+        });
+
+        test("returns undefined when overlayPropagation is disabled (default)", () => {
+            (document.elementsFromPoint as ReturnType<typeof vi.fn>)
+                .mockReturnValue([blocker, cslpEl]);
+
+            const result = getCsDataOfElement(overlayEvent);
+
+            expect(result).toBeUndefined();
+            // fallback path must not run when flag is off
+            expect(document.elementsFromPoint).not.toHaveBeenCalled();
+        });
+
+        test("falls back to elementsFromPoint when overlayPropagation is enabled and resolves the underlying cslp element", () => {
+            Config.set("overlayPropagation", { enable: true });
+            (document.elementsFromPoint as ReturnType<typeof vi.fn>)
+                .mockReturnValue([blocker, cslpEl]);
+
+            const result = getCsDataOfElement(overlayEvent);
+
+            expect(document.elementsFromPoint).toHaveBeenCalledWith(100, 100);
+            expect(result).toEqual({
+                editableElement: cslpEl,
+                cslpData: "all_fields.bltentryuid.en-us.title",
+                fieldMetadata: {
+                    entry_uid: "bltentryuid",
+                    content_type_uid: "all_fields",
+                    locale: "en-us",
+                    cslpValue: "all_fields.bltentryuid.en-us.title",
+                    fieldPath: "title",
+                    fieldPathWithIndex: "title",
+                    multipleFieldMetadata: { parentDetails: null, index: -1 },
+                    instance: { fieldPathWithIndex: "title" },
+                },
+            });
+        });
+
+        test("returns undefined when fallback is enabled but no element under the cursor has data-cslp", () => {
+            Config.set("overlayPropagation", { enable: true });
+            const otherBlocker = document.createElement("div");
+            (document.elementsFromPoint as ReturnType<typeof vi.fn>)
+                .mockReturnValue([blocker, otherBlocker]);
+
+            const result = getCsDataOfElement(overlayEvent);
+
+            expect(document.elementsFromPoint).toHaveBeenCalledWith(100, 100);
+            expect(result).toBeUndefined();
         });
     });
 });
