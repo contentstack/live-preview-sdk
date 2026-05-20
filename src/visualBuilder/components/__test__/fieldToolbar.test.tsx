@@ -18,6 +18,8 @@ import FieldToolbarComponent from "../FieldToolbar";
 import {
     mockMultipleLinkFieldSchema,
     mockMultipleFileFieldSchema,
+    mockMultipleCustomFieldSchema,
+    mockSingleCustomFieldSchema,
 } from "../../../__test__/data/fields";
 import { VisualBuilderCslpEventDetails } from "../../types/visualBuilder.types";
 import { isFieldDisabled } from "../../utils/isFieldDisabled";
@@ -352,6 +354,119 @@ describe("FieldToolbarComponent", () => {
             expect(
                 container.querySelector('[data-testid="vb-field-location-icon"]')
             ).not.toBeInTheDocument();
+        });
+    });
+
+    describe("Custom field multiple — toolbar visibility", () => {
+        const customFieldInstanceMetadata: CslpData = {
+            ...mockMultipleFieldMetadata,
+            fieldPathWithIndex: "custom_field",
+            multipleFieldMetadata: {
+                index: 0,
+                parentDetails: {
+                    parentPath: "custom_field",
+                    parentCslpValue: "entry.ct.en-us",
+                },
+            },
+            instance: { fieldPathWithIndex: "custom_field.0" },
+        };
+
+        const customFieldWholeMetadata: CslpData = {
+            ...mockMultipleFieldMetadata,
+            fieldPathWithIndex: "custom_field",
+            instance: { fieldPathWithIndex: "custom_field" },
+        };
+
+        test("renders nothing for a multiple custom field instance", async () => {
+            vi.mocked(FieldSchemaMap.getFieldSchema).mockImplementation(() =>
+                Promise.resolve(mockMultipleCustomFieldSchema)
+            );
+
+            const { container } = render(
+                <FieldToolbarComponent
+                    eventDetails={{
+                        ...mockEventDetails,
+                        fieldMetadata: customFieldInstanceMetadata,
+                    }}
+                    hideOverlay={vi.fn()}
+                />
+            );
+
+            await act(async () => {
+                await new Promise((r) => setTimeout(r, 0));
+            });
+
+            expect(
+                container.querySelector(
+                    '[data-testid="visual-builder__focused-toolbar__multiple-field-toolbar"]'
+                )
+            ).not.toBeInTheDocument();
+        });
+
+        test("shows edit button for a multiple custom field whole-field selection", async () => {
+            vi.mocked(FieldSchemaMap.getFieldSchema).mockImplementation(() =>
+                Promise.resolve(mockMultipleCustomFieldSchema)
+            );
+
+            const { container } = render(
+                <FieldToolbarComponent
+                    eventDetails={{
+                        ...mockEventDetails,
+                        fieldMetadata: customFieldWholeMetadata,
+                    }}
+                    hideOverlay={vi.fn()}
+                />
+            );
+
+            await act(async () => {
+                await new Promise((r) => setTimeout(r, 0));
+            });
+
+            const editButton = await findByTestId(
+                container,
+                "visual-builder__focused-toolbar__multiple-field-toolbar__edit-button",
+                {},
+                { timeout: 1000 }
+            );
+            expect(editButton).toBeInTheDocument();
+        });
+
+        test("shows edit button for a single (non-multiple) custom field", async () => {
+            vi.mocked(FieldSchemaMap.getFieldSchema).mockImplementation(() =>
+                Promise.resolve(mockSingleCustomFieldSchema)
+            );
+
+            const singleCustomFieldMetadata: CslpData = {
+                ...mockMultipleFieldMetadata,
+                fieldPathWithIndex: "custom_field",
+                multipleFieldMetadata: {
+                    index: -1,
+                    parentDetails: null,
+                },
+                instance: { fieldPathWithIndex: "custom_field" },
+            };
+
+            const { container } = render(
+                <FieldToolbarComponent
+                    eventDetails={{
+                        ...mockEventDetails,
+                        fieldMetadata: singleCustomFieldMetadata,
+                    }}
+                    hideOverlay={vi.fn()}
+                />
+            );
+
+            await act(async () => {
+                await new Promise((r) => setTimeout(r, 0));
+            });
+
+            const editButton = await findByTestId(
+                container,
+                "visual-builder__focused-toolbar__multiple-field-toolbar__edit-button",
+                {},
+                { timeout: 1000 }
+            );
+            expect(editButton).toBeInTheDocument();
         });
     });
 
