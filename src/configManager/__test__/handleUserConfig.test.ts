@@ -409,6 +409,69 @@ describe("handleInitData()", () => {
             expect(config.editButton.includeByQueryParameter).toBe(false);
         });
     });
+
+    describe("handleInitData() - overlayPropagation configuration", () => {
+        let config: DeepSignal<IConfig>;
+
+        beforeEach(() => {
+            Config.reset();
+            config = Config.get();
+        });
+
+        afterAll(() => {
+            Config.reset();
+        });
+
+        test("should default overlayPropagation.enable to false when not provided", () => {
+            handleInitData({});
+            expect(config.overlayPropagation.enable).toBe(false);
+        });
+
+        test("should set overlayPropagation.enable from initData when true", () => {
+            const initData: Partial<IInitData> = {
+                overlayPropagation: { enable: true },
+            };
+
+            handleInitData(initData);
+            expect(config.overlayPropagation.enable).toBe(true);
+        });
+
+        test("should keep overlayPropagation.enable false when initData sets it false explicitly", () => {
+            const initData: Partial<IInitData> = {
+                overlayPropagation: { enable: false },
+            };
+
+            handleInitData(initData);
+            expect(config.overlayPropagation.enable).toBe(false);
+        });
+
+        test("should set overlayPropagation.enable from stackSdk when initData does not provide it", () => {
+            const initData: Partial<IInitData> = {
+                stackSdk: {
+                    live_preview: {
+                        overlayPropagation: { enable: true },
+                    },
+                } as any,
+            };
+
+            handleInitData(initData);
+            expect(config.overlayPropagation.enable).toBe(true);
+        });
+
+        test("initData overlayPropagation takes precedence over stackSdk", () => {
+            const initData: Partial<IInitData> = {
+                overlayPropagation: { enable: false },
+                stackSdk: {
+                    live_preview: {
+                        overlayPropagation: { enable: true },
+                    },
+                } as any,
+            };
+
+            handleInitData(initData);
+            expect(config.overlayPropagation.enable).toBe(false);
+        });
+    });
 });
 
 describe("handleInitData() - enableLivePreviewOutsideIframe", () => {

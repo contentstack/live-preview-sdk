@@ -78,8 +78,8 @@ export function useOnEntryUpdatePostMessageEvent(): void {
                             window.location.reload();
                         } else {
                             live_preview = event.data.hash;
-                            content_type_uid = event.data.content_type_uid || stackDetails.$contentTypeUid?.toString() || "";
-                            entry_uid = event.data.entry_uid || stackDetails.$entryUid?.toString() || "";
+                            content_type_uid = event.data.content_type_uid || stackDetails.contentTypeUid?.toString() || "";
+                            entry_uid = event.data.entry_uid || stackDetails.entryUid?.toString() || "";
                             // Set missing params and redirect
                             url.searchParams.set("live_preview", live_preview);
                             if (content_type_uid) {
@@ -169,7 +169,11 @@ export function sendInitializeLivePreviewPostMessageEvent(): void {
                 //     "init message did not contain contentTypeUid or entryUid."
                 // );
             }
-            if (Config.get().ssr || isOpeningInTimeline() || isOpeningInNewTab()) {
+            if (
+                Config.get().ssr ||
+                isOpeningInTimeline() ||
+                isOpeningInNewTab()
+            ) {
                 addParamsToUrl();
             }
             Config.set("windowType", windowType);

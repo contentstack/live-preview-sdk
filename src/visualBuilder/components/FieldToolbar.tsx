@@ -44,6 +44,7 @@ import { FieldLocationAppList } from "./FieldLocationAppList";
 import { FieldLocationIcon } from "./FieldLocationIcon";
 import { WorkflowStageDetails } from "../utils/getWorkflowStageDetails";
 import { ResolvedVariantPermissions } from "../utils/getResolvedVariantPermissions";
+import { isCustomFieldMultipleInstance as checkIsCustomFieldMultipleInstance } from "../utils/isCustomFieldMultipleInstance";
 
 export type FieldDetails = Pick<
     VisualBuilderCslpEventDetails,
@@ -153,6 +154,8 @@ function FieldToolbarComponent(
     const APP_LIST_MIN_WIDTH = 230;
 
     let disableFieldActions = false;
+    let isCustomFieldMultipleInstance = false;
+    let isCustomFieldWholeMultiple = false;
     if (fieldSchema) {
         const { isDisabled } = isFieldDisabled(
             fieldSchema,
@@ -188,7 +191,15 @@ function FieldToolbarComponent(
                 fieldMetadata.instance.fieldPathWithIndex ||
                 fieldMetadata.multipleFieldMetadata?.index === -1);
 
-        isModalEditable = ALLOWED_MODAL_EDITABLE_FIELD.includes(fieldType) && !isWholeMultipleField;
+        isCustomFieldMultipleInstance = checkIsCustomFieldMultipleInstance(fieldSchema, fieldMetadata);
+        isCustomFieldWholeMultiple =
+            fieldType === FieldDataType.CUSTOM_FIELD && isMultiple && isWholeMultipleField;
+
+        if (isCustomFieldWholeMultiple) {
+            isModalEditable = true;
+        } else {
+            isModalEditable = ALLOWED_MODAL_EDITABLE_FIELD.includes(fieldType) && !isWholeMultipleField;
+        }
 
         isReplaceAllowed =
             ALLOWED_REPLACE_FIELDS.includes(fieldType) && !isWholeMultipleField;
@@ -425,6 +436,27 @@ function FieldToolbarComponent(
         }
     );
 
+    if (isCustomFieldMultipleInstance) {
+        return (
+            <div
+                className={classNames(
+                    "visual-builder__field-toolbar-container",
+                    visualBuilderStyles()["visual-builder__field-toolbar-container"]
+                )}
+            >
+                <div
+                    className={classNames(
+                        "visual-builder__custom-field-instance-message",
+                        visualBuilderStyles()["visual-builder__custom-field-instance-message"]
+                    )}
+                    data-testid="visual-builder__custom-field-instance-message"
+                >
+                    You're on a custom field item. Select the entire custom field to edit or manage it.
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div
             className={classNames(
@@ -563,7 +595,7 @@ function FieldToolbarComponent(
                                 {isModalEditable ? editButton : null}
                                 {isReplaceAllowed ? replaceButton : null}
                                 {formButton}
-                                {fieldSchema ? (
+                                {fieldSchema && !disableFieldActions ? (
                                     <CommentIcon
                                         fieldMetadata={fieldMetadata}
                                         fieldSchema={fieldSchema}
@@ -575,16 +607,18 @@ function FieldToolbarComponent(
                             </>
                         )}
 
-                        <FieldLocationIcon
-                            fieldLocationData={fieldLocationData}
-                            multipleFieldToolbarButtonClasses={
-                                multipleFieldToolbarButtonClasses
-                            }
-                            handleMoreIconClick={handleMoreIconClick}
-                            moreButtonRef={moreButtonRef}
-                            toolbarRef={toolbarRef}
-                            domEditStack={domEditStack}
-                        />
+                        {!disableFieldActions && (
+                            <FieldLocationIcon
+                                fieldLocationData={fieldLocationData}
+                                multipleFieldToolbarButtonClasses={
+                                    multipleFieldToolbarButtonClasses
+                                }
+                                handleMoreIconClick={handleMoreIconClick}
+                                moreButtonRef={moreButtonRef}
+                                toolbarRef={toolbarRef}
+                                domEditStack={domEditStack}
+                            />
+                        )}
                     </>
                 </div>
             </div>

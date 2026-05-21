@@ -45,11 +45,8 @@ export async function appendFieldToolbar(
     }
 ): Promise<void> {
     const { isHover } = options || {};
-    if (
-        focusedToolbarElement.querySelector(
-            ".visual-builder__focused-toolbar__multiple-field-toolbar"
-        ) && !isHover
-    )
+    const toolbarSelector = ".visual-builder__focused-toolbar__multiple-field-toolbar";
+    if (focusedToolbarElement.querySelector(toolbarSelector) && !isHover)
         return;
     const { acl: entryPermissions, workflowStage: entryWorkflowStageDetails, resolvedVariantPermissions } =
         await fetchEntryPermissionsAndStageDetails({
@@ -59,6 +56,10 @@ export async function appendFieldToolbar(
             variantUid: eventDetails.fieldMetadata.variant,
             fieldPathWithIndex: eventDetails.fieldMetadata.fieldPathWithIndex,
         });
+    // Re-check after the async gap: a concurrent call (e.g. reEvaluate) may have
+    // already appended while fetchEntryPermissionsAndStageDetails was in-flight.
+    if (focusedToolbarElement.querySelector(toolbarSelector) && !isHover)
+        return;
     const wrapper = document.createDocumentFragment();
     render(
         <FieldToolbarComponent

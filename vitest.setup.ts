@@ -43,6 +43,7 @@ beforeAll(() => {
     installGlobalObserverMocks();
 
     document.elementFromPoint = vi.fn();
+    document.elementsFromPoint = vi.fn().mockReturnValue([]);
 });
 
 afterAll(() => {

@@ -20,6 +20,9 @@ export function getUserInitData(): IInitData {
             enable: true,
             position: "bottom-right"
         },
+        overlayPropagation: {
+            enable: false,
+        },
 
         mode: "preview",
 
@@ -58,6 +61,9 @@ export function getDefaultConfig(): IConfig {
         editInVisualBuilderButton: {
             enable: true,
             position: "bottom-right"
+        },
+        overlayPropagation: {
+            enable: false,
         },
 
         hash: "",
