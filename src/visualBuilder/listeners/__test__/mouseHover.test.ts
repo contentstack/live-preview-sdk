@@ -102,7 +102,7 @@ function makeElement(): HTMLElement {
     return el;
 }
 
-function makeEventDetails(editableElement: HTMLElement) {
+function makeEventDetails(editableElement: HTMLElement, cslpValue = "all_fields.entry1.en-us.title") {
     return {
         editableElement,
         fieldMetadata: {
@@ -111,6 +111,7 @@ function makeEventDetails(editableElement: HTMLElement) {
             locale: "en-us",
             fieldPath: "title",
             fieldPathWithIndex: "title",
+            cslpValue,
             variant: undefined,
         },
     };
@@ -142,9 +143,29 @@ describe("mouseHover — custom field multiple instance suppression", () => {
         vi.mocked(FieldSchemaMap.hasFieldSchema).mockReturnValue(true);
     });
 
-    it("resets cursor and skips outline for custom field multiple instance", async () => {
+    it("dispatches mousemove on whole-field element for custom field multiple instance", async () => {
         vi.mocked(isCustomFieldMultipleInstance).mockReturnValue(true);
-        mockedGetCsDataOfElement.mockReturnValue(makeEventDetails(editableElement) as any);
+        editableElement.setAttribute("data-cslp", "all_fields.entry1.en-us.title.0");
+        mockedGetCsDataOfElement.mockReturnValue(makeEventDetails(editableElement, "all_fields.entry1.en-us.title.0") as any);
+
+        // nest instance inside whole-field so closest() traversal finds the parent
+        const wholeFieldEl = document.createElement("div");
+        wholeFieldEl.setAttribute("data-cslp", "all_fields.entry1.en-us.title");
+        wholeFieldEl.appendChild(editableElement);
+        document.body.appendChild(wholeFieldEl);
+        const dispatchSpy = vi.spyOn(wholeFieldEl, "dispatchEvent");
+
+        await handleMouseHover(makeParams(editableElement, customCursor));
+
+        expect(dispatchSpy).toHaveBeenCalledWith(expect.any(MouseEvent));
+        expect(addHoverOutline).not.toHaveBeenCalled();
+    });
+
+    it("resets cursor when whole-field element not found in DOM", async () => {
+        vi.mocked(isCustomFieldMultipleInstance).mockReturnValue(true);
+        editableElement.setAttribute("data-cslp", "all_fields.entry1.en-us.title.0");
+        mockedGetCsDataOfElement.mockReturnValue(makeEventDetails(editableElement, "all_fields.entry1.en-us.title.0") as any);
+        // no whole-field ancestor in DOM — closest() returns null
 
         await handleMouseHover(makeParams(editableElement, customCursor));
 

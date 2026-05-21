@@ -160,14 +160,33 @@ describe("handleBuilderInteraction — custom field multiple instance suppressio
         vi.mocked(FieldSchemaMap.getFieldSchema).mockResolvedValue({ data_type: "text", field_metadata: {} } as any);
     });
 
-    it("returns early without overlay or toolbar for custom field multiple instance", async () => {
+    it("redirects click to whole-field parent for custom field multiple instance", async () => {
         vi.mocked(isCustomFieldMultipleInstance).mockReturnValue(true);
         vi.mocked(getCsDataOfElement).mockReturnValue(makeEventDetails(editableElement) as any);
+
+        // nest instance inside whole-field so closest() traversal finds the parent
+        const wholeFieldEl = document.createElement("div");
+        wholeFieldEl.setAttribute("data-cslp", "ct.entry1.en-us.field");
+        wholeFieldEl.appendChild(editableElement);
+        document.body.appendChild(wholeFieldEl);
+
+        const dispatchSpy = vi.spyOn(wholeFieldEl, "dispatchEvent");
+
+        await handleBuilderInteraction(makeParams(editableElement));
+
+        expect(dispatchSpy).toHaveBeenCalledWith(expect.any(MouseEvent));
+        expect(addFocusOverlay).not.toHaveBeenCalled();
+        expect(VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM).toBeNull();
+    });
+
+    it("returns early without redirect when whole-field element not found in DOM", async () => {
+        vi.mocked(isCustomFieldMultipleInstance).mockReturnValue(true);
+        vi.mocked(getCsDataOfElement).mockReturnValue(makeEventDetails(editableElement) as any);
+        // no whole-field element in DOM
 
         await handleBuilderInteraction(makeParams(editableElement));
 
         expect(addFocusOverlay).not.toHaveBeenCalled();
-        expect(handleIndividualFields).not.toHaveBeenCalled();
         expect(VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM).toBeNull();
     });
 

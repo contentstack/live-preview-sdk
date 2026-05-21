@@ -34,6 +34,7 @@ import { v4 as uuidV4 } from "uuid";
 import { CslpData } from "../../cslp/types/cslp.types";
 import { fetchEntryPermissionsAndStageDetails } from "../utils/fetchEntryPermissionsAndStageDetails";
 import { isCustomFieldMultipleInstance } from "../utils/isCustomFieldMultipleInstance";
+import { getParentCslp, getWholeFieldElement } from "../utils/getWholeFieldElement";
 
 export type HandleBuilderInteractionParams = Omit<
     EventListenerHandlerParams,
@@ -178,11 +179,28 @@ export async function handleBuilderInteraction(
 
     const { editableElement, fieldMetadata } = eventDetails;
 
-    // Suppress click interaction for multiple custom field instances (cached schema only)
+    // Redirect click on multiple custom field instance to its whole-field parent (cached schema only)
     const { content_type_uid, fieldPath } = fieldMetadata;
     if (FieldSchemaMap.hasFieldSchema(content_type_uid, fieldPath)) {
         const fieldSchemaForCheck = await FieldSchemaMap.getFieldSchema(content_type_uid, fieldPath);
         if (fieldSchemaForCheck && isCustomFieldMultipleInstance(fieldSchemaForCheck, fieldMetadata)) {
+            const parentCslp = getParentCslp(fieldMetadata.cslpValue);
+            const wholeFieldElement = getWholeFieldElement(editableElement, parentCslp);
+            if (wholeFieldElement) {
+                wholeFieldElement.dispatchEvent(
+                    new MouseEvent("click", {
+                        bubbles: true,
+                        cancelable: true,
+                        clientX: params.event.clientX,
+                        clientY: params.event.clientY,
+                    })
+                );
+            } else if (config.debug) {
+                console.debug(
+                    "[Visual Builder] Custom field multiple instance: whole-field parent not found in DOM for CSLP",
+                    parentCslp
+                );
+            }
             return;
         }
     }

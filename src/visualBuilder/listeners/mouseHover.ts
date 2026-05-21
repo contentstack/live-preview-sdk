@@ -19,6 +19,7 @@ import { VisualBuilderCslpEventDetails } from "../types/visualBuilder.types";
 import { CslpData } from "../../cslp/types/cslp.types";
 import { fetchEntryPermissionsAndStageDetails } from "../utils/fetchEntryPermissionsAndStageDetails";
 import { isCustomFieldMultipleInstance } from "../utils/isCustomFieldMultipleInstance";
+import { getParentCslp, getWholeFieldElement } from "../utils/getWholeFieldElement";
 
 const config = Config.get();
 export interface HandleMouseHoverParams
@@ -265,8 +266,27 @@ const throttledMouseHover = throttle(async (params: HandleMouseHoverParams) => {
     if (FieldSchemaMap.hasFieldSchema(content_type_uid, fieldPath)) {
         const fieldSchema = await FieldSchemaMap.getFieldSchema(content_type_uid, fieldPath);
         if (fieldSchema && isCustomFieldMultipleInstance(fieldSchema, fieldMetadata)) {
-            resetCustomCursor(params.customCursor);
-            handleCursorPosition(params.event, params.customCursor);
+            const parentCslp = getParentCslp(fieldMetadata.cslpValue);
+            const wholeFieldElement = getWholeFieldElement(editableElement, parentCslp);
+            if (wholeFieldElement) {
+                wholeFieldElement.dispatchEvent(
+                    new MouseEvent("mousemove", {
+                        bubbles: true,
+                        cancelable: true,
+                        clientX: params.event.clientX,
+                        clientY: params.event.clientY,
+                    })
+                );
+            } else {
+                if (config.debug) {
+                    console.debug(
+                        "[Visual Builder] Custom field multiple instance: whole-field parent not found in DOM for CSLP",
+                        parentCslp
+                    );
+                }
+                resetCustomCursor(params.customCursor);
+                handleCursorPosition(params.event, params.customCursor);
+            }
             return;
         }
     }
