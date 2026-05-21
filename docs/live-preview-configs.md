@@ -147,14 +147,11 @@ The editInVisualBuilderButton object contains two keys:
 
 ### `overlayPropagation`
 
-The `overlayPropagation` object enables hover/click detection to pierce through sibling elements that visually overlap a `data-cslp` field but intercept the mouse event before it reaches the field. This is an opt-in fallback intended for apps where unrelated DOM elements (for example, empty CSS-grid spacer cells in a multi-column layout) sit on top of `data-cslp` containers and block the SDK from detecting the field on hover or click.
+Use this option when hovering or clicking on a field in your app does nothing — no outline appears and the Edit button doesn't show up. This typically happens when another element (such as a navigation overlay, image layer, or layout spacer) sits on top of the field and captures the mouse event instead.
 
-When the flag is **enabled** and the standard event path contains no `data-cslp` element, the SDK falls back to `document.elementsFromPoint(clientX, clientY)` and selects the topmost element in that stack that carries a `data-cslp` attribute. When the flag is **disabled** (default), behavior is unchanged.
+Enabling `overlayPropagation` tells the SDK to look through stacked elements at the cursor position to find the field underneath. It works in both Visual Builder and the standalone Live Preview Edit button.
 
-This flag covers both pipelines:
-
-- **Visual Builder** — hover outline and click-to-focus detection (`getCsDataOfElement`)
-- **Standalone Live Preview Edit button** — the floating Edit button outside Visual Builder (`addCslpOutline`); a companion throttled `mousemove` listener ensures the button tracks the cursor while it moves within a blocking overlay
+> **When to enable:** Only turn this on if you notice fields that are invisible to hover/click in your specific app layout. It is off by default.
 
 The `overlayPropagation` object contains one key:
 
@@ -163,7 +160,7 @@ The `overlayPropagation` object contains one key:
     | ------- | ------- | -------- |
     | boolean | false   | yes      |
 
-    Set to `true` to activate the `elementsFromPoint` fallback for hover and click detection. The fallback runs only when the standard `closest("[data-cslp]")` lookup returns `null`, so there is no performance impact on the normal path.
+    Set to `true` to allow the SDK to detect fields that are visually covered by other elements.
 
 **For example:**
 ```ts
