@@ -302,7 +302,7 @@ export class LivePreviewEditButton {
             if (Config.get().overlayPropagation?.enable) {
                 this.overlayMouseMoveHandler = throttle(
                     this.addEditStyleOnHover,
-                    100
+                    200
                 );
                 window.addEventListener(
                     "mousemove",
