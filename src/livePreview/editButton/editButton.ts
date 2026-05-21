@@ -1,3 +1,4 @@
+import { throttle } from "lodash-es";
 import { effect } from "@preact/signals";
 import { inIframe, isOpeningInNewTab } from "../../common/inIframe";
 import Config from "../../configManager/configManager";
@@ -281,6 +282,7 @@ export class LivePreviewEditButton {
         singular: null,
         multiple: null,
     };
+    private overlayMouseMoveHandler: ((e: MouseEvent) => void) | null = null;
     static livePreviewEditButton: LivePreviewEditButton | null = null;
 
     constructor() {
@@ -297,6 +299,17 @@ export class LivePreviewEditButton {
 
             window.addEventListener("scroll", this.updateTooltipPosition);
             window.addEventListener("mouseover", this.addEditStyleOnHover);
+
+            if (Config.get().overlayPropagation?.enable) {
+                this.overlayMouseMoveHandler = throttle(
+                    this.addEditStyleOnHover,
+                    100
+                );
+                window.addEventListener(
+                    "mousemove",
+                    this.overlayMouseMoveHandler
+                );
+            }
         }
     }
 
@@ -562,6 +575,13 @@ export class LivePreviewEditButton {
     destroy(): void {
         window.removeEventListener("scroll", this.updateTooltipPosition);
         window.removeEventListener("mouseover", this.addEditStyleOnHover);
+        if (this.overlayMouseMoveHandler) {
+            window.removeEventListener(
+                "mousemove",
+                this.overlayMouseMoveHandler
+            );
+            this.overlayMouseMoveHandler = null;
+        }
         this.tooltip?.remove();
     }
 }
