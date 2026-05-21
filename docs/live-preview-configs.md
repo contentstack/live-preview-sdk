@@ -147,11 +147,14 @@ The editInVisualBuilderButton object contains two keys:
 
 ### `overlayPropagation`
 
-The `overlayPropagation` object enables Visual Builder hover/click detection to pierce through sibling elements that visually overlap a `data-cslp` field but intercept the mouse event before it reaches the field. This is an opt-in fallback intended for apps where unrelated DOM elements (for example, empty CSS-grid spacer cells in a multi-column layout) sit on top of `data-cslp` containers and block the SDK from detecting the field on hover or click.
+The `overlayPropagation` object enables hover/click detection to pierce through sibling elements that visually overlap a `data-cslp` field but intercept the mouse event before it reaches the field. This is an opt-in fallback intended for apps where unrelated DOM elements (for example, empty CSS-grid spacer cells in a multi-column layout) sit on top of `data-cslp` containers and block the SDK from detecting the field on hover or click.
 
-When the flag is **enabled** and `event.target.closest("[data-cslp]")` returns `null`, the SDK falls back to `document.elementsFromPoint(clientX, clientY)` and selects the topmost element in that stack that carries a `data-cslp` attribute. When the flag is **disabled** (default), behavior is unchanged.
+When the flag is **enabled** and the standard event path contains no `data-cslp` element, the SDK falls back to `document.elementsFromPoint(clientX, clientY)` and selects the topmost element in that stack that carries a `data-cslp` attribute. When the flag is **disabled** (default), behavior is unchanged.
 
-> **Note:** This flag currently affects the **Visual Builder** hover/click pipeline only. Equivalent support for the standalone Live Preview Edit button (the floating Edit button outside Visual Builder) is tracked separately.
+This flag covers both pipelines:
+
+- **Visual Builder** — hover outline and click-to-focus detection (`getCsDataOfElement`)
+- **Standalone Live Preview Edit button** — the floating Edit button outside Visual Builder (`addCslpOutline`); a companion throttled `mousemove` listener ensures the button tracks the cursor while it moves within a blocking overlay
 
 The `overlayPropagation` object contains one key:
 

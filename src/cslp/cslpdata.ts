@@ -214,6 +214,23 @@ function getMultipleFieldMetadata(
  * @param e - The MouseEvent object representing the click event.
  * @param callback - An optional callback function that will be called with the CSLP tag and highlighted element as arguments.
  */
+function highlightCslpElement(
+    element: HTMLElement,
+    cslpTag: string,
+    elements: ReturnType<typeof Config.get>["elements"],
+    callback?: (args: { cslpTag: string; highlightedElement: HTMLElement }) => void
+): void {
+    if (elements.highlightedElement)
+        elements.highlightedElement.classList.remove(
+            cslpTagStyles()["cslp-edit-mode"]
+        );
+    element.classList.add(cslpTagStyles()["cslp-edit-mode"]);
+    const updatedElements = elements;
+    updatedElements.highlightedElement = element as DeepSignal<HTMLElement>;
+    Config.set("elements", updatedElements);
+    callback?.({ cslpTag, highlightedElement: element });
+}
+
 export function addCslpOutline(
     e: MouseEvent,
     callback?: (args: {
@@ -234,25 +251,26 @@ export function addCslpOutline(
         const cslpTag = element.getAttribute("data-cslp");
 
         if (trigger && isValidCslp(cslpTag)) {
-            if (elements.highlightedElement)
-                elements.highlightedElement.classList.remove(
-                    cslpTagStyles()["cslp-edit-mode"]
-                );
-            element.classList.add(cslpTagStyles()["cslp-edit-mode"]);
-
-            const updatedElements = elements;
-            updatedElements.highlightedElement =
-                element as DeepSignal<HTMLElement>;
-            Config.set("elements", updatedElements);
-
-            callback?.({
-                cslpTag: cslpTag,
-                highlightedElement: element,
-            });
-
+            highlightCslpElement(element, cslpTag, elements, callback);
             trigger = false;
         } else if (!trigger) {
             element.classList.remove(cslpTagStyles()["cslp-edit-mode"]);
+        }
+    }
+
+    // composedPath() misses elements that are visually under a sibling overlay;
+    // fall back to elementsFromPoint so the Edit button can still find the field.
+    if (trigger && Config.get().overlayPropagation?.enable) {
+        const pointElements = document.elementsFromPoint(e.clientX, e.clientY);
+        for (const el of pointElements) {
+            const element = el as HTMLElement;
+            if (element.nodeName === "BODY") break;
+            if (typeof element?.getAttribute !== "function") continue;
+            const cslpTag = element.getAttribute("data-cslp");
+            if (isValidCslp(cslpTag)) {
+                highlightCslpElement(element, cslpTag, elements, callback);
+                break;
+            }
         }
     }
 }
