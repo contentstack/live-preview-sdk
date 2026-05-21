@@ -1,6 +1,6 @@
 # Changelog
 
-## [v4.4.1](https://github.com/contentstack/live-preview-sdk/compare/v4.4.1...v4.4.1)
+## [v4.4.2](https://github.com/contentstack/live-preview-sdk/compare/v4.4.1...v4.4.2)
 
 > 21 May 2026
 
@@ -21,6 +21,7 @@
 
 ### Chores And Housekeeping
 
+- chore: update CHANGELOG for release v4.4.1 and document recent fixes and changes (hitesh-shetty-cstk - [57dc9b8](https://github.com/contentstack/live-preview-sdk/commit/57dc9b89e6aae7805e16b1c088a367d942f57717))
 - chore: update package-lock.json from npm audit fix (hitesh-shetty-cstk - [7686285](https://github.com/contentstack/live-preview-sdk/commit/7686285a4f73af2226051afa38ac8e5f9fb9a143))
 
 ### General Changes
