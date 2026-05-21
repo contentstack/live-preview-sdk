@@ -18,6 +18,7 @@ import {
     sendInitializeLivePreviewPostMessageEvent,
 } from "../postMessageEvent.hooks";
 import { isOpeningInNewTab } from "../../../common/inIframe";
+import { ILivePreviewWindowType } from "../../../types/types";
 
 // Mock dependencies
 vi.mock("../../../configManager/configManager", () => ({
@@ -202,6 +203,70 @@ describe("postMessageEvent.hooks", () => {
                 expect(mockWindow.location.reload).not.toHaveBeenCalled();
                 expect(mockOnChange).not.toHaveBeenCalled();
             });
+
+            describe("SSR + missing URL params → redirect", () => {
+                it("should set all params and redirect when URL has no params and event data has content_type_uid and entry_uid", () => {
+                    mockConfig.ssr = true;
+                    mockConfig.stackDetails = {};
+                    (Config.get as any).mockReturnValue(mockConfig);
+                    mockWindow.location.href = "https://example.com";
+
+                    const eventData: OnChangeLivePreviewPostMessageEventData = {
+                        hash: "new-hash",
+                        content_type_uid: "blog",
+                        entry_uid: "entry-123",
+                    };
+
+                    const callback = mockWindow._eventCallbacks[LIVE_PREVIEW_POST_MESSAGE_EVENTS.ON_CHANGE];
+                    callback({ data: eventData });
+
+                    const redirectUrl = new URL(mockWindow.location.href);
+                    expect(redirectUrl.searchParams.get("live_preview")).toBe("new-hash");
+                    expect(redirectUrl.searchParams.get("content_type_uid")).toBe("blog");
+                    expect(redirectUrl.searchParams.get("entry_uid")).toBe("entry-123");
+                    expect(mockWindow.location.reload).not.toHaveBeenCalled();
+                });
+
+                it("should redirect without content_type_uid param when event data does not provide it", () => {
+                    mockConfig.ssr = true;
+                    mockConfig.stackDetails = {};
+                    (Config.get as any).mockReturnValue(mockConfig);
+                    mockWindow.location.href = "https://example.com";
+
+                    const eventData: OnChangeLivePreviewPostMessageEventData = {
+                        hash: "new-hash",
+                        entry_uid: "entry-123",
+                    };
+
+                    const callback = mockWindow._eventCallbacks[LIVE_PREVIEW_POST_MESSAGE_EVENTS.ON_CHANGE];
+                    callback({ data: eventData });
+
+                    const redirectUrl = new URL(mockWindow.location.href);
+                    expect(redirectUrl.searchParams.get("live_preview")).toBe("new-hash");
+                    expect(redirectUrl.searchParams.has("content_type_uid")).toBe(false);
+                    expect(redirectUrl.searchParams.get("entry_uid")).toBe("entry-123");
+                });
+
+                it("should redirect without entry_uid param when event data does not provide it", () => {
+                    mockConfig.ssr = true;
+                    mockConfig.stackDetails = {};
+                    (Config.get as any).mockReturnValue(mockConfig);
+                    mockWindow.location.href = "https://example.com";
+
+                    const eventData: OnChangeLivePreviewPostMessageEventData = {
+                        hash: "new-hash",
+                        content_type_uid: "blog",
+                    };
+
+                    const callback = mockWindow._eventCallbacks[LIVE_PREVIEW_POST_MESSAGE_EVENTS.ON_CHANGE];
+                    callback({ data: eventData });
+
+                    const redirectUrl = new URL(mockWindow.location.href);
+                    expect(redirectUrl.searchParams.get("live_preview")).toBe("new-hash");
+                    expect(redirectUrl.searchParams.get("content_type_uid")).toBe("blog");
+                    expect(redirectUrl.searchParams.has("entry_uid")).toBe(false);
+                });
+            });
         });
 
         describe("HASH_CHANGE event type", () => {
@@ -304,7 +369,7 @@ describe("postMessageEvent.hooks", () => {
             it("should log error and return when window is not defined", () => {
                 // Mock isOpeningInNewTab to return true so we enter the if block
                 (isOpeningInNewTab as any).mockReturnValue(true);
-                
+
                 // Mock window as undefined
                 Object.defineProperty(global, "window", {
                     value: undefined,
@@ -362,6 +427,65 @@ describe("postMessageEvent.hooks", () => {
                     "Error handling live preview update:",
                     expect.any(Error)
                 );
+            });
+        });
+
+        describe("when NOT opening in new tab", () => {
+            it("should not reload when ssr is true, no event_type, and not opening in new tab", () => {
+                (isOpeningInNewTab as any).mockReturnValue(false);
+                mockConfig.ssr = true;
+                (Config.get as any).mockReturnValue(mockConfig);
+
+                const eventData: OnChangeLivePreviewPostMessageEventData = {
+                    hash: "test-hash",
+                };
+
+                const callback = mockWindow._eventCallbacks[LIVE_PREVIEW_POST_MESSAGE_EVENTS.ON_CHANGE];
+                callback({ data: eventData });
+
+                expect(setConfigFromParams).toHaveBeenCalledWith({ live_preview: "test-hash" });
+                expect(mockWindow.location.reload).not.toHaveBeenCalled();
+                expect(mockOnChange).not.toHaveBeenCalled();
+            });
+
+            it("should not call pushState when HASH_CHANGE and not opening in new tab", () => {
+                (isOpeningInNewTab as any).mockReturnValue(false);
+                mockConfig.ssr = false;
+                (Config.get as any).mockReturnValue(mockConfig);
+
+                const eventData: OnChangeLivePreviewPostMessageEventData = {
+                    hash: "new-hash",
+                    _metadata: {
+                        event_type: OnChangeLivePreviewPostMessageEventTypes.HASH_CHANGE,
+                    },
+                };
+
+                const callback = mockWindow._eventCallbacks[LIVE_PREVIEW_POST_MESSAGE_EVENTS.ON_CHANGE];
+                callback({ data: eventData });
+
+                expect(setConfigFromParams).toHaveBeenCalledWith({ live_preview: "new-hash" });
+                expect(mockWindow.history.pushState).not.toHaveBeenCalled();
+            });
+
+            it("should not navigate when URL_CHANGE with url and not opening in new tab", () => {
+                (isOpeningInNewTab as any).mockReturnValue(false);
+                const originalHref = mockWindow.location.href;
+                mockConfig.ssr = false;
+                (Config.get as any).mockReturnValue(mockConfig);
+
+                const eventData: OnChangeLivePreviewPostMessageEventData = {
+                    hash: "test-hash",
+                    url: "https://newdomain.com/page",
+                    _metadata: {
+                        event_type: OnChangeLivePreviewPostMessageEventTypes.URL_CHANGE,
+                    },
+                };
+
+                const callback = mockWindow._eventCallbacks[LIVE_PREVIEW_POST_MESSAGE_EVENTS.ON_CHANGE];
+                callback({ data: eventData });
+
+                expect(setConfigFromParams).toHaveBeenCalledWith({ live_preview: "test-hash" });
+                expect(mockWindow.location.href).toBe(originalHref);
             });
         });
     });
@@ -490,6 +614,73 @@ describe("postMessageEvent.hooks", () => {
                     }),
                 })
             );
+        });
+
+        it("should call setConfigFromParams with content_type_uid and entry_uid when INIT response provides them", async () => {
+            mockConfig = {
+                ssr: true,
+                mode: 1,
+            };
+            (Config.get as any).mockReturnValue(mockConfig);
+            (livePreviewPostMessage as any).send.mockResolvedValue({
+                windowType: ILivePreviewWindowType.PREVIEW,
+                contentTypeUid: "blog",
+                entryUid: "entry-123",
+            });
+
+            await sendInitializeLivePreviewPostMessageEvent();
+            await Promise.resolve();
+
+            expect(setConfigFromParams).toHaveBeenCalledWith({
+                content_type_uid: "blog",
+                entry_uid: "entry-123",
+            });
+        });
+
+        it("should return early and skip post-init setup when windowType is BUILDER", async () => {
+            mockConfig = {
+                ssr: true,
+                mode: 1,
+                windowType: ILivePreviewWindowType.BUILDER,
+            };
+            (Config.get as any).mockReturnValue(mockConfig);
+            (livePreviewPostMessage as any).send.mockResolvedValue({
+                windowType: ILivePreviewWindowType.BUILDER,
+                contentTypeUid: "blog",
+                entryUid: "entry-123",
+            });
+
+            await sendInitializeLivePreviewPostMessageEvent();
+            await Promise.resolve();
+
+            expect(setConfigFromParams).not.toHaveBeenCalled();
+            expect(Config.set).not.toHaveBeenCalled();
+        });
+
+        it("should start CHECK_ENTRY_PAGE interval when ssr is false", async () => {
+            vi.useFakeTimers();
+            try {
+                mockConfig = {
+                    ssr: false,
+                    mode: 1,
+                };
+                (Config.get as any).mockReturnValue(mockConfig);
+                (livePreviewPostMessage as any).send.mockResolvedValue({
+                    windowType: ILivePreviewWindowType.PREVIEW,
+                });
+
+                await sendInitializeLivePreviewPostMessageEvent();
+                await Promise.resolve();
+
+                vi.advanceTimersByTime(1500);
+
+                expect(livePreviewPostMessage?.send).toHaveBeenCalledWith(
+                    LIVE_PREVIEW_POST_MESSAGE_EVENTS.CHECK_ENTRY_PAGE,
+                    { href: "https://example.com" }
+                );
+            } finally {
+                vi.useRealTimers();
+            }
         });
     });
 });
