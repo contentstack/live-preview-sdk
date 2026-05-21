@@ -59,4 +59,10 @@ export enum VisualBuilderPostMessageEvents {
     COLLAB_THREAD_REOPEN = "collab-thread-reopen",
     COLLAB_THREAD_HIGHLIGHT = "collab-thread-highlight",
     TOGGLE_SCROLL = "toggle-scroll",
+    PAGE_CONTEXT = "page-context",
+}
+
+export interface IPageContextPostMessageEvent {
+    entryUid: string;
+    contentTypeUid: string;
 }

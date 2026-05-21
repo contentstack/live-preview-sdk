@@ -1,5 +1,6 @@
 import { cloneDeep, isEmpty, pick } from "lodash-es";
 import { v4 as uuidv4 } from "uuid";
+import { inIframe } from "../common/inIframe";
 import { getUserInitData } from "../configManager/config.default";
 import Config, { updateConfigFromUrl } from "../configManager/configManager";
 import LivePreview from "../livePreview/live-preview";
@@ -16,6 +17,11 @@ import { PublicLogger } from "../logger/logger";
 import { handleWebCompare } from "../timeline/compare/compare";
 import type { IExportedConfig, IInitData } from "../types/types";
 import { VisualBuilder } from "../visualBuilder";
+import visualBuilderPostMessage from "../visualBuilder/utils/visualBuilderPostMessage";
+import {
+    IPageContextPostMessageEvent,
+    VisualBuilderPostMessageEvents,
+} from "../visualBuilder/utils/types/postMessage.types";
 
 class ContentstackLivePreview {
     private static previewConstructors:
@@ -245,6 +251,34 @@ class ContentstackLivePreview {
         ContentstackLivePreview.previewConstructors.livePreview.unsubscribeOnEntryChange(
             callback
         );
+    }
+
+    /**
+     * Sets the page-level entry context for the current page.
+     * Used by the Visual Builder "Start Editing" button to know which entry
+     * the current page is rendering, enabling accurate VB navigation.
+     *
+     * Place this call alongside your existing `addEditableTags` call — both
+     * reference the same `entry` object so there is no extra lookup.
+     *
+     * @example
+     * ```js
+     * // In your page component / useEffect
+     * Utils.addEditableTags(entry, "blog_post", true, "en-us");
+     * ContentstackLivePreview.setPageContext({ entryUid: entry.uid, contentTypeUid: "blog_post" });
+     * ```
+     */
+    static setPageContext(context: { entryUid: string; contentTypeUid: string }): void {
+        Config.set("pageContext", context);
+        // init() fires before async data fetching, so the INIT post-message has no
+        // entry context in CSR apps. Send it now so VB can update its current entry.
+        // Only send when inside an iframe — skip when the site opens in a plain browser tab.
+        if (inIframe()) {
+            visualBuilderPostMessage?.send<IPageContextPostMessageEvent>(
+                VisualBuilderPostMessageEvents.PAGE_CONTEXT,
+                { entryUid: context.entryUid, contentTypeUid: context.contentTypeUid }
+            );
+        }
     }
 
     /**
