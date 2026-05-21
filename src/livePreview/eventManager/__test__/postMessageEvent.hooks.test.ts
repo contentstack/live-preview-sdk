@@ -659,26 +659,28 @@ describe("postMessageEvent.hooks", () => {
 
         it("should start CHECK_ENTRY_PAGE interval when ssr is false", async () => {
             vi.useFakeTimers();
-            mockConfig = {
-                ssr: false,
-                mode: 1,
-            };
-            (Config.get as any).mockReturnValue(mockConfig);
-            (livePreviewPostMessage as any).send.mockResolvedValue({
-                windowType: ILivePreviewWindowType.PREVIEW,
-            });
+            try {
+                mockConfig = {
+                    ssr: false,
+                    mode: 1,
+                };
+                (Config.get as any).mockReturnValue(mockConfig);
+                (livePreviewPostMessage as any).send.mockResolvedValue({
+                    windowType: ILivePreviewWindowType.PREVIEW,
+                });
 
-            await sendInitializeLivePreviewPostMessageEvent();
-            await Promise.resolve();
+                await sendInitializeLivePreviewPostMessageEvent();
+                await Promise.resolve();
 
-            vi.advanceTimersByTime(1500);
+                vi.advanceTimersByTime(1500);
 
-            expect(livePreviewPostMessage?.send).toHaveBeenCalledWith(
-                LIVE_PREVIEW_POST_MESSAGE_EVENTS.CHECK_ENTRY_PAGE,
-                { href: "https://example.com" }
-            );
-
-            vi.useRealTimers();
+                expect(livePreviewPostMessage?.send).toHaveBeenCalledWith(
+                    LIVE_PREVIEW_POST_MESSAGE_EVENTS.CHECK_ENTRY_PAGE,
+                    { href: "https://example.com" }
+                );
+            } finally {
+                vi.useRealTimers();
+            }
         });
     });
 });
