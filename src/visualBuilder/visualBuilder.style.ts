@@ -828,6 +828,18 @@ export function visualBuilderStyles() {
             z-index: 2147483647 !important;
             position: relative;
         `,
+        "visual-builder__custom-field-instance-message": css`
+            display: flex;
+            align-items: center;
+            height: 40px;
+            padding: 0 12px;
+            background: #fff;
+            border-radius: 4px;
+            box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.15);
+            font-size: 12px;
+            color: #475161;
+            white-space: nowrap;
+        `,
         "visual-builder__variant-button": css`
             display: flex;
             min-width: 3rem !important;

@@ -1,4 +1,5 @@
-import { extractDetailsFromCslp, isValidCslp } from "../cslpdata";
+import { addCslpOutline, extractDetailsFromCslp, isValidCslp } from "../cslpdata";
+import Config from "../../configManager/configManager";
 
 describe("isValidCslp", () => {
     describe("valid cases", () => {
@@ -215,5 +216,69 @@ describe("extractDetailsFromCslp", () => {
             }
         };
         expect(extractDetailsFromCslp(cslpValue)).toEqual(expected);
+    });
+});
+
+describe("addCslpOutline — overlayPropagation fallback", () => {
+    const CSLP = "ct.entry.en-us.field";
+
+    function makeEvent(x = 10, y = 10, target?: HTMLElement): MouseEvent {
+        return {
+            composedPath: () => (target ? [target, document.body] : [document.body]),
+            clientX: x,
+            clientY: y,
+        } as unknown as MouseEvent;
+    }
+
+    beforeEach(() => {
+        Config.reset();
+        document.body.innerHTML = "";
+    });
+
+    afterEach(() => {
+        Config.reset();
+        vi.restoreAllMocks();
+    });
+
+    test("does NOT call elementsFromPoint when flag is off and composedPath finds element", () => {
+        const el = document.createElement("div");
+        el.setAttribute("data-cslp", CSLP);
+        document.body.appendChild(el);
+        const spy = vi.spyOn(document, "elementsFromPoint");
+
+        Config.set("overlayPropagation", { enable: false });
+        addCslpOutline(makeEvent(10, 10, el));
+
+        expect(spy).not.toHaveBeenCalled();
+    });
+
+    test("calls elementsFromPoint fallback when flag is ON and composedPath misses cslp", () => {
+        const el = document.createElement("div");
+        el.setAttribute("data-cslp", CSLP);
+        document.body.appendChild(el);
+
+        Config.set("overlayPropagation", { enable: true });
+        vi.spyOn(document, "elementsFromPoint").mockReturnValue([el]);
+
+        const callback = vi.fn();
+        addCslpOutline(makeEvent(10, 10), callback);
+
+        expect(document.elementsFromPoint).toHaveBeenCalledWith(10, 10);
+        expect(callback).toHaveBeenCalledWith(
+            expect.objectContaining({ cslpTag: CSLP, highlightedElement: el })
+        );
+    });
+
+    test("fallback finds no cslp element — callback not called", () => {
+        const blocker = document.createElement("div");
+        document.body.appendChild(blocker);
+
+        Config.set("overlayPropagation", { enable: true });
+        vi.spyOn(document, "elementsFromPoint").mockReturnValue([blocker]);
+
+        const callback = vi.fn();
+        addCslpOutline(makeEvent(10, 10), callback);
+
+        expect(callback).not.toHaveBeenCalled();
     });
 });
