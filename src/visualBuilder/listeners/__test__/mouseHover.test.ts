@@ -82,11 +82,18 @@ vi.mock("../../utils/getFieldType", () => ({
     getFieldType: vi.fn().mockReturnValue("singleline"),
 }));
 
+vi.mock("../../utils/isCustomFieldMultipleInstance", () => ({
+    isCustomFieldMultipleInstance: vi.fn().mockReturnValue(false),
+}));
+
 const { getCsDataOfElement } = await import("../../utils/getCsDataOfElement");
 const mockedGetCsDataOfElement = vi.mocked(getCsDataOfElement);
 const mockedFetchEntryPermissions = vi.mocked(
     fetchEntryPermissionsModule.fetchEntryPermissionsAndStageDetails
 );
+const { addHoverOutline } = await import("../../generators/generateHoverOutline");
+const { generateCustomCursor } = await import("../../generators/generateCustomCursor");
+const { isCustomFieldMultipleInstance } = await import("../../utils/isCustomFieldMultipleInstance");
 
 function makeElement(): HTMLElement {
     const el = document.createElement("div");
@@ -119,6 +126,54 @@ function makeParams(editableElement: HTMLElement, customCursor: HTMLDivElement) 
         customCursor,
     };
 }
+
+describe("mouseHover — custom field multiple instance suppression", () => {
+    let editableElement: HTMLElement;
+    let customCursor: HTMLDivElement;
+
+    beforeEach(() => {
+        vi.clearAllMocks();
+        document.body.innerHTML = "";
+        editableElement = makeElement();
+        customCursor = document.createElement("div");
+        VisualBuilder.VisualBuilderGlobalState.value.previousHoveredTargetDOM = null;
+        VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM = null;
+        VisualBuilder.VisualBuilderGlobalState.value.isFocussed = false;
+        vi.mocked(FieldSchemaMap.hasFieldSchema).mockReturnValue(true);
+    });
+
+    it("resets cursor and skips outline for custom field multiple instance", async () => {
+        vi.mocked(isCustomFieldMultipleInstance).mockReturnValue(true);
+        mockedGetCsDataOfElement.mockReturnValue(makeEventDetails(editableElement) as any);
+
+        await handleMouseHover(makeParams(editableElement, customCursor));
+
+        expect(addHoverOutline).not.toHaveBeenCalled();
+        expect(vi.mocked(generateCustomCursor)).toHaveBeenCalledWith(
+            expect.objectContaining({ fieldType: "empty" })
+        );
+    });
+
+    it("shows outline normally when isCustomFieldMultipleInstance returns false", async () => {
+        vi.mocked(isCustomFieldMultipleInstance).mockReturnValue(false);
+        mockedGetCsDataOfElement.mockReturnValue(makeEventDetails(editableElement) as any);
+
+        await handleMouseHover(makeParams(editableElement, customCursor));
+
+        expect(addHoverOutline).toHaveBeenCalled();
+    });
+
+    it("does not suppress when schema is not yet cached (hasFieldSchema returns false)", async () => {
+        vi.mocked(FieldSchemaMap.hasFieldSchema).mockReturnValue(false);
+        vi.mocked(isCustomFieldMultipleInstance).mockReturnValue(true);
+        mockedGetCsDataOfElement.mockReturnValue(makeEventDetails(editableElement) as any);
+
+        await handleMouseHover(makeParams(editableElement, customCursor));
+
+        expect(isCustomFieldMultipleInstance).not.toHaveBeenCalled();
+        expect(addHoverOutline).toHaveBeenCalled();
+    });
+});
 
 describe("mouseHover — generateCursor same-element guard", () => {
     let editableElement: HTMLElement;

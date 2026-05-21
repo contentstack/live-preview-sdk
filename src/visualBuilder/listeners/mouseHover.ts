@@ -18,6 +18,7 @@ import { appendFieldPathDropdown } from "../generators/generateToolbar";
 import { VisualBuilderCslpEventDetails } from "../types/visualBuilder.types";
 import { CslpData } from "../../cslp/types/cslp.types";
 import { fetchEntryPermissionsAndStageDetails } from "../utils/fetchEntryPermissionsAndStageDetails";
+import { isCustomFieldMultipleInstance } from "../utils/isCustomFieldMultipleInstance";
 
 const config = Config.get();
 export interface HandleMouseHoverParams
@@ -260,6 +261,15 @@ const throttledMouseHover = throttle(async (params: HandleMouseHoverParams) => {
 
     const { editableElement, fieldMetadata } = eventDetails;
     const { content_type_uid, fieldPath } = fieldMetadata;
+
+    if (FieldSchemaMap.hasFieldSchema(content_type_uid, fieldPath)) {
+        const fieldSchema = await FieldSchemaMap.getFieldSchema(content_type_uid, fieldPath);
+        if (fieldSchema && isCustomFieldMultipleInstance(fieldSchema, fieldMetadata)) {
+            resetCustomCursor(params.customCursor);
+            handleCursorPosition(params.event, params.customCursor);
+            return;
+        }
+    }
 
     if (
         VisualBuilder.VisualBuilderGlobalState.value

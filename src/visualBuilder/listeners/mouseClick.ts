@@ -33,6 +33,7 @@ import { fixSvgXPath } from "../utils/collabUtils";
 import { v4 as uuidV4 } from "uuid";
 import { CslpData } from "../../cslp/types/cslp.types";
 import { fetchEntryPermissionsAndStageDetails } from "../utils/fetchEntryPermissionsAndStageDetails";
+import { isCustomFieldMultipleInstance } from "../utils/isCustomFieldMultipleInstance";
 
 export type HandleBuilderInteractionParams = Omit<
     EventListenerHandlerParams,
@@ -176,6 +177,16 @@ export async function handleBuilderInteraction(
     }
 
     const { editableElement, fieldMetadata } = eventDetails;
+
+    // Suppress click interaction for multiple custom field instances (cached schema only)
+    const { content_type_uid, fieldPath } = fieldMetadata;
+    if (FieldSchemaMap.hasFieldSchema(content_type_uid, fieldPath)) {
+        const fieldSchemaForCheck = await FieldSchemaMap.getFieldSchema(content_type_uid, fieldPath);
+        if (fieldSchemaForCheck && isCustomFieldMultipleInstance(fieldSchemaForCheck, fieldMetadata)) {
+            return;
+        }
+    }
+
     const variantStatus = await getFieldVariantStatus(fieldMetadata);
     const isVariant = variantStatus
         ? Object.values(variantStatus).some((value) => value === true)
