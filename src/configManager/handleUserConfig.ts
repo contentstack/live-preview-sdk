@@ -124,6 +124,7 @@ export const handleInitData = (initData: Partial<IInitData>): void => {
     Config.set("overlayPropagation", {
         enable:
             initData.overlayPropagation?.enable ??
+            stackSdk.live_preview?.overlayPropagation?.enable ??
             config.overlayPropagation.enable,
     });
 

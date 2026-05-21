@@ -444,6 +444,33 @@ describe("handleInitData()", () => {
             handleInitData(initData);
             expect(config.overlayPropagation.enable).toBe(false);
         });
+
+        test("should set overlayPropagation.enable from stackSdk when initData does not provide it", () => {
+            const initData: Partial<IInitData> = {
+                stackSdk: {
+                    live_preview: {
+                        overlayPropagation: { enable: true },
+                    },
+                } as any,
+            };
+
+            handleInitData(initData);
+            expect(config.overlayPropagation.enable).toBe(true);
+        });
+
+        test("initData overlayPropagation takes precedence over stackSdk", () => {
+            const initData: Partial<IInitData> = {
+                overlayPropagation: { enable: false },
+                stackSdk: {
+                    live_preview: {
+                        overlayPropagation: { enable: true },
+                    },
+                } as any,
+            };
+
+            handleInitData(initData);
+            expect(config.overlayPropagation.enable).toBe(false);
+        });
     });
 });
 
