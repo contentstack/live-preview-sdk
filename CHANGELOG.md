@@ -1,8 +1,35 @@
 # Changelog
 
+## [v4.4.1](https://github.com/contentstack/live-preview-sdk/compare/v4.4.1...v4.4.1)
+
+> 21 May 2026
+
+### Fixes
+
+- fix(hover): guard generateCursor to fire only on new element hover (Hitesh Shetty - [#590](https://github.com/contentstack/live-preview-sdk/pull/590))
+- fix(VB-1541): hide field extension and comment icons on update-restricted fields (Sahil Chalke - [#589](https://github.com/contentstack/live-preview-sdk/pull/589))
+- fix(security): bump dompurify from ^3.4.0 to ^3.4.1 (Hitesh Shetty - [#588](https://github.com/contentstack/live-preview-sdk/pull/588))
+
+### Fixes
+
+- fix(discussions): pull comment highlights after iframe DOM settles (REQUEST_DISCUSSION_HIGHLIGHTS) (Karan Gandhi - [f03cee9](https://github.com/contentstack/live-preview-sdk/commit/f03cee9e9b24d1f9ab41be25b392367e03c72355))
+- fix: debounce (Karan Gandhi - [ab5941f](https://github.com/contentstack/live-preview-sdk/commit/ab5941f359423620d3a9a171e2921b42b5d1a582))
+- fix(toolbar): re-check DOM guard after async gap in appendFieldToolbar (hitesh-shetty-cstk - [7a94fbc](https://github.com/contentstack/live-preview-sdk/commit/7a94fbcf9fb283c30cb7571ede8fc093a628d43f))
+- fix: test fixes (Karan Gandhi - [b9fb2bb](https://github.com/contentstack/live-preview-sdk/commit/b9fb2bba20ed038114455ca7378e597793d46238))
+- fix: update ws package version to 8.20.1 and add license information (hitesh-shetty-cstk - [677c505](https://github.com/contentstack/live-preview-sdk/commit/677c5058407dcab655b7dd1cc188170241bd742c))
+- fix: comment (Karan Gandhi - [be274f1](https://github.com/contentstack/live-preview-sdk/commit/be274f1750ed33fef37ea5dbfdc7ce089dbacb1d))
+
+### Chores And Housekeeping
+
+- chore: update package-lock.json from npm audit fix (hitesh-shetty-cstk - [7686285](https://github.com/contentstack/live-preview-sdk/commit/7686285a4f73af2226051afa38ac8e5f9fb9a143))
+
+### General Changes
+
+- Merge pull request #583 from contentstack/fix/discussion-comment-variant-cslp-highlight (Karan Bhavesh Gandhi - [76f205f](https://github.com/contentstack/live-preview-sdk/commit/76f205f200429c8d5a14bec72c5eebdd869a8c0b))
+
 ## [v4.4.1](https://github.com/contentstack/live-preview-sdk/compare/v4.4.0...v4.4.1)
 
-> 28 April 2026
+> 4 May 2026
 
 ### New Features
 
@@ -15,6 +42,7 @@
 
 ### General Changes
 
+- release: 4.4.1 (Hitesh Shetty - [#587](https://github.com/contentstack/live-preview-sdk/pull/587))
 - Fix 20 april snyk fixes 2 develop v4 sync (Aditya Pachauri - [#585](https://github.com/contentstack/live-preview-sdk/pull/585))
 - Vp 1721 fix known issues (Kirtesh Suthar - [#581](https://github.com/contentstack/live-preview-sdk/pull/581))
 - Vp 444 stag sync 2 (Aditya Pachauri - [#562](https://github.com/contentstack/live-preview-sdk/pull/562))
@@ -37,12 +65,16 @@
 - chore: update uuid to version 14.0.0 and add vite override (Kirtesh Suthar - [ece4aef](https://github.com/contentstack/live-preview-sdk/commit/ece4aefce7dc6a996d432853791942980db13ccb))
 - chore: audit fix (Karan Gandhi - [48e0c35](https://github.com/contentstack/live-preview-sdk/commit/48e0c35672caa4f54204003de6422830fa1379de))
 - chore: lodash bump (Kirtesh Suthar - [c340241](https://github.com/contentstack/live-preview-sdk/commit/c34024178dcd5522399364fd75d1b5f33f58c35d))
-- chore: lodash-es version upgrade (csAyushDubey - [f96d848](https://github.com/contentstack/live-preview-sdk/commit/f96d8485cb97745698ecb55e3f695701f8c271fb))
 - chore: update tsup configuration to ignore legacy build & dts during dev mode (hiteshshetty-dev - [db0fa6a](https://github.com/contentstack/live-preview-sdk/commit/db0fa6a8d289f22a3dc6fd2ee745b9ae60b85d0f))
 - chore: update doc for dev build mode (hiteshshetty-dev - [45d85f4](https://github.com/contentstack/live-preview-sdk/commit/45d85f4107dd6bbaefdf771ae50ff08068f925ea))
 - chore: upgrade tsup to latest version (hiteshshetty-dev - [52665c4](https://github.com/contentstack/live-preview-sdk/commit/52665c47ba54ccfeac31ca109789ff9f0a8e80e6))
-- chore: make husky pre-push hook executable (Kirtesh Suthar - [2cd613c](https://github.com/contentstack/live-preview-sdk/commit/2cd613c28ee24855da2b1fc3914b07d0fb526713))
 - chore: version bump (csAyushDubey - [2103266](https://github.com/contentstack/live-preview-sdk/commit/2103266fed8763285f5ea8e82a429a3b40015600))
+- chore: make husky pre-push hook executable (Kirtesh Suthar - [2cd613c](https://github.com/contentstack/live-preview-sdk/commit/2cd613c28ee24855da2b1fc3914b07d0fb526713))
+- chore: lodash-es version upgrade (csAyushDubey - [f96d848](https://github.com/contentstack/live-preview-sdk/commit/f96d8485cb97745698ecb55e3f695701f8c271fb))
+
+### Documentation Changes
+
+- docs: update CDN version reference to 4.4.1 in README (hitesh-shetty-cstk - [e5e0106](https://github.com/contentstack/live-preview-sdk/commit/e5e010658633a5bce7ed8721c453fb87b28d513a))
 
 ### Changes to Test Assests
 
