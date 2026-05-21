@@ -563,7 +563,7 @@ function FieldToolbarComponent(
                                 {isModalEditable ? editButton : null}
                                 {isReplaceAllowed ? replaceButton : null}
                                 {formButton}
-                                {fieldSchema ? (
+                                {fieldSchema && !disableFieldActions ? (
                                     <CommentIcon
                                         fieldMetadata={fieldMetadata}
                                         fieldSchema={fieldSchema}
@@ -575,16 +575,18 @@ function FieldToolbarComponent(
                             </>
                         )}
 
-                        <FieldLocationIcon
-                            fieldLocationData={fieldLocationData}
-                            multipleFieldToolbarButtonClasses={
-                                multipleFieldToolbarButtonClasses
-                            }
-                            handleMoreIconClick={handleMoreIconClick}
-                            moreButtonRef={moreButtonRef}
-                            toolbarRef={toolbarRef}
-                            domEditStack={domEditStack}
-                        />
+                        {!disableFieldActions && (
+                            <FieldLocationIcon
+                                fieldLocationData={fieldLocationData}
+                                multipleFieldToolbarButtonClasses={
+                                    multipleFieldToolbarButtonClasses
+                                }
+                                handleMoreIconClick={handleMoreIconClick}
+                                moreButtonRef={moreButtonRef}
+                                toolbarRef={toolbarRef}
+                                domEditStack={domEditStack}
+                            />
+                        )}
                     </>
                 </div>
             </div>

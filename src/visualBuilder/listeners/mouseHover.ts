@@ -317,11 +317,17 @@ const throttledMouseHover = throttle(async (params: HandleMouseHoverParams) => {
             });
         }
 
-        // we can generate the cursor asynchronously
-        generateCursor({
-            eventDetails,
-            customCursor: params.customCursor,
-        });
+        // only re-generate cursor when moving onto a new element — avoids
+        // firing fetchEntryPermissionsAndStageDetails on every 10ms tick
+        if (
+            VisualBuilder.VisualBuilderGlobalState.value
+                .previousHoveredTargetDOM !== editableElement
+        ) {
+            generateCursor({
+                eventDetails,
+                customCursor: params.customCursor,
+            });
+        }
 
         handleCursorPosition(params.event, params.customCursor);
         showCustomCursor(params.customCursor);
