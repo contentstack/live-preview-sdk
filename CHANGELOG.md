@@ -1,11 +1,12 @@
 # Changelog
 
-## [v4.4.2](https://github.com/contentstack/live-preview-sdk/compare/v4.4.1...v4.4.2)
+## [v4.4.2](https://github.com/contentstack/live-preview-sdk/compare/v4.4.2...v4.4.2)
 
 > 21 May 2026
 
 ### Fixes
 
+- fix: update CDN version to 4.4.2 in README (hitesh-shetty-cstk - [11bf951](https://github.com/contentstack/live-preview-sdk/commit/11bf9511a5deb7fb009ba9c01310504755a5f17c))
 - fix(hover): guard generateCursor to fire only on new element hover (Hitesh Shetty - [#590](https://github.com/contentstack/live-preview-sdk/pull/590))
 - fix(VB-1541): hide field extension and comment icons on update-restricted fields (Sahil Chalke - [#589](https://github.com/contentstack/live-preview-sdk/pull/589))
 - fix(security): bump dompurify from ^3.4.0 to ^3.4.1 (Hitesh Shetty - [#588](https://github.com/contentstack/live-preview-sdk/pull/588))
