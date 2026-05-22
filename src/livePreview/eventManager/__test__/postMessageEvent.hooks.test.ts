@@ -266,6 +266,26 @@ describe("postMessageEvent.hooks", () => {
                     expect(redirectUrl.searchParams.get("content_type_uid")).toBe("blog");
                     expect(redirectUrl.searchParams.has("entry_uid")).toBe(false);
                 });
+
+                it("should use stackDetails.contentTypeUid and entryUid as fallback when event data omits them", () => {
+                    mockConfig.ssr = true;
+                    mockConfig.stackDetails = { contentTypeUid: "fallback-ct", entryUid: "fallback-entry" };
+                    (Config.get as any).mockReturnValue(mockConfig);
+                    mockWindow.location.href = "https://example.com";
+
+                    const eventData: OnChangeLivePreviewPostMessageEventData = {
+                        hash: "h",
+                    };
+
+                    const callback = mockWindow._eventCallbacks[LIVE_PREVIEW_POST_MESSAGE_EVENTS.ON_CHANGE];
+                    callback({ data: eventData });
+
+                    const redirectUrl = new URL(mockWindow.location.href);
+                    expect(redirectUrl.searchParams.get("live_preview")).toBe("h");
+                    expect(redirectUrl.searchParams.get("content_type_uid")).toBe("fallback-ct");
+                    expect(redirectUrl.searchParams.get("entry_uid")).toBe("fallback-entry");
+                    expect(mockWindow.location.reload).not.toHaveBeenCalled();
+                });
             });
         });
 
@@ -682,5 +702,6 @@ describe("postMessageEvent.hooks", () => {
                 vi.useRealTimers();
             }
         });
+
     });
 });
