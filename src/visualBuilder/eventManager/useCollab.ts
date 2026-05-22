@@ -127,7 +127,7 @@ export const useCollab = () => {
             if (data?.data?.updateConfig) {
                 Config.set("collab.isFeedbackMode", true);
             }
-            if (threadUids.length > 0) {
+            if (threadUids?.length > 0) {
                 threadUids.forEach((threadUid) => {
                     removeCollabIcon(threadUid);
                 });
@@ -138,9 +138,9 @@ export const useCollab = () => {
     const collabThreadReopen = visualBuilderPostMessage?.on(
         VisualBuilderPostMessageEvents.COLLAB_THREAD_REOPEN,
         (data: OnEvent<IThreadReopen>) => {
-            const thread = data.data.thread;
+            const thread = data?.data?.thread;
 
-            if (!config?.collab?.enable) return;
+            if (!config?.collab?.enable || !thread) return;
 
             const result = generateThread(thread, {
                 hidden: Boolean(config?.collab?.pauseFeedback),
@@ -157,8 +157,8 @@ export const useCollab = () => {
     const collabThreadHighlight = visualBuilderPostMessage?.on(
         VisualBuilderPostMessageEvents.COLLAB_THREAD_HIGHLIGHT,
         (data: OnEvent<IThreadIdentifier>) => {
-            const { threadUid } = data.data;
-            if (!config?.collab?.enable || config?.collab?.pauseFeedback)
+            const threadUid = data?.data?.threadUid;
+            if (!config?.collab?.enable || config?.collab?.pauseFeedback || !threadUid)
                 return;
 
             HighlightThread(threadUid);
