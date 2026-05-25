@@ -1,4 +1,4 @@
-import { isOpeningInNewTab } from "../../common/inIframe";
+import { inVisualEditor, isOpeningInNewTab } from "../../common/inIframe";
 import Config, { setConfigFromParams } from "../../configManager/configManager";
 import { PublicLogger } from "../../logger/logger";
 import { ILivePreviewWindowType } from "../../types/types";
@@ -151,8 +151,11 @@ export function sendInitializeLivePreviewPostMessageEvent(): void {
                 windowType = ILivePreviewWindowType.PREVIEW,
             } = data || {};
 
-            // TODO: This is a fix for the issue where we were calling sending init in the builder
-            // Let's remove this condition when we fix it.
+            if(inVisualEditor()){
+                return;
+            }
+
+            // TODO: the upper condition will the handle the visual editor init double firing issue so later we can remove this once verified
             if (Config?.get()?.windowType && Config.get().windowType === ILivePreviewWindowType.BUILDER) {
                 return;
             }
