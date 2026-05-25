@@ -2,7 +2,7 @@ import livePreviewPostMessage from "./eventManager/livePreviewEventManager";
 import { LIVE_PREVIEW_POST_MESSAGE_EVENTS } from "./eventManager/livePreviewEventManager.constant";
 
 export function handlePageTraversal(): void {
-    window.addEventListener("unload", () => {
+    window.addEventListener("pagehide", () => {
         const targetURL = (document.activeElement as HTMLAnchorElement).href;
         if (targetURL) {
             livePreviewPostMessage?.send(
