@@ -321,11 +321,20 @@ describe("FieldToolbarComponent", () => {
             ).toBeInTheDocument();
         });
 
-        test("hides CommentIcon and FieldLocationIcon when field is disabled (update restrict)", async () => {
+        test("hides CommentIcon and FieldLocationIcon when field is read-restricted", async () => {
             vi.mocked(isFieldDisabled).mockReturnValue({
-                isDisabled: true,
-                reason: "You have only read access to this field" as any,
+                isDisabled: false,
+                reason: "" as any,
             });
+            vi.mocked(FieldSchemaMap.getFieldSchema).mockImplementation(() =>
+                Promise.resolve({
+                    ...mockMultipleLinkFieldSchema,
+                    field_metadata: {
+                        ...mockMultipleLinkFieldSchema.field_metadata,
+                        readRestrict: true,
+                    },
+                } as ISchemaFieldMap)
+            );
 
             const { container } = render(
                 <FieldToolbarComponent

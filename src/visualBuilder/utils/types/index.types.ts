@@ -15,6 +15,7 @@ export type ISchemaFieldMap = (
     non_localizable?: boolean;
     multiple?: boolean;
     field_metadata?: {
+        readRestrict?: boolean;
         updateRestrict?: boolean;
         isUnlinkedVariant?: boolean;
         canLinkVariant?: boolean;
