@@ -44,6 +44,7 @@ vi.mock("../livePreviewEventManager", () => ({
 
 vi.mock("../../../common/inIframe", () => ({
     isOpeningInNewTab: vi.fn(),
+    inVisualEditor: vi.fn(() => false),
 }));
 
 vi.mock("../../../utils", () => ({
