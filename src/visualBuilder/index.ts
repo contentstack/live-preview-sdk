@@ -26,6 +26,7 @@ import initUI from "./components";
 import { useDraftFieldsPostMessageEvent } from "./eventManager/useDraftFieldsPostMessageEvent";
 import { useHideFocusOverlayPostMessageEvent } from "./eventManager/useHideFocusOverlayPostMessageEvent";
 import { useScrollToField } from "./eventManager/useScrollToField";
+import { useScrollToHashAnchor } from "./eventManager/useScrollToHashAnchor";
 import { debounceAddVariantFieldClass, getHighlightVariantFieldsStatus, setHighlightVariantFields, useVariantFieldsPostMessageEvent } from "./eventManager/useVariantsPostMessageEvent";
 import {
     generateEmptyBlocks,
@@ -363,6 +364,7 @@ export class VisualBuilder {
                         resizeObserver: this.resizeObserver,
                     });
                     useScrollToField();
+                    useScrollToHashAnchor();
                     useHighlightCommentIcon();
 
                     this.mutationObserver.observe(document.body, {
@@ -396,7 +398,7 @@ export class VisualBuilder {
                     );
 
 
-                    
+
                     useHideFocusOverlayPostMessageEvent({
                         overlayWrapper: this.overlayWrapper,
                         visualBuilderContainer: this.visualBuilderContainer,
