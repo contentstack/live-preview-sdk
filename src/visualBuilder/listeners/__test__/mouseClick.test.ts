@@ -73,11 +73,15 @@ vi.mock("../../components/FieldRevert/FieldRevertComponent", () => ({
 
 vi.mock("get-xpath", () => ({ default: vi.fn().mockReturnValue("/div") }));
 
-vi.mock("../../configManager/configManager", () => ({
+const hoistedConfigMocks = vi.hoisted(() => ({
+    configGet: vi.fn().mockReturnValue({
+        collab: { enable: false, isFeedbackMode: false, pauseFeedback: false },
+    }),
+}));
+
+vi.mock("../../../configManager/configManager", () => ({
     default: {
-        get: vi.fn().mockReturnValue({
-            collab: { enable: false, isFeedbackMode: false, pauseFeedback: false },
-        }),
+        get: hoistedConfigMocks.configGet,
         set: vi.fn(),
     },
 }));
@@ -110,6 +114,7 @@ const { getCsDataOfElement } = await import("../../utils/getCsDataOfElement");
 const { addFocusOverlay } = await import("../../generators/generateOverlay");
 const { handleIndividualFields } = await import("../../utils/handleIndividualFields");
 const { isCustomFieldMultipleInstance } = await import("../../utils/isCustomFieldMultipleInstance");
+const { generateThread, toggleCollabPopup } = await import("../../generators/generateThread");
 
 function makeEditableElement(): HTMLElement {
     const el = document.createElement("div");
@@ -208,5 +213,40 @@ describe("handleBuilderInteraction — custom field multiple instance suppressio
 
         expect(isCustomFieldMultipleInstance).not.toHaveBeenCalled();
         expect(addFocusOverlay).toHaveBeenCalled();
+    });
+});
+
+describe("handleBuilderInteraction — pauseFeedback guard", () => {
+    let editableElement: HTMLElement;
+
+    beforeEach(() => {
+        vi.clearAllMocks();
+        document.body.innerHTML = "";
+        editableElement = makeEditableElement();
+        VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM = null;
+        VisualBuilder.VisualBuilderGlobalState.value.isFocussed = false;
+    });
+
+    it("should return early without processing click when collab is enabled and pauseFeedback is true", async () => {
+        hoistedConfigMocks.configGet.mockReturnValue({
+            collab: { enable: true, pauseFeedback: true, isFeedbackMode: true },
+        });
+
+        await handleBuilderInteraction(makeParams(editableElement));
+
+        expect(getCsDataOfElement).not.toHaveBeenCalled();
+        expect(generateThread).not.toHaveBeenCalled();
+        expect(toggleCollabPopup).not.toHaveBeenCalled();
+        expect(addFocusOverlay).not.toHaveBeenCalled();
+    });
+
+    it("should call generateThread when collab is enabled and pauseFeedback is false", async () => {
+        hoistedConfigMocks.configGet.mockReturnValue({
+            collab: { enable: true, pauseFeedback: false, isFeedbackMode: true },
+        });
+
+        await handleBuilderInteraction(makeParams(editableElement));
+
+        expect(generateThread).toHaveBeenCalled();
     });
 });
