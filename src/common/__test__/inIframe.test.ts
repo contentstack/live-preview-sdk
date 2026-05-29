@@ -1,4 +1,7 @@
-import { inIframe } from "../inIframe";
+import { inIframe, isOpeningInNewTab } from "../inIframe";
+import { hasWindow } from "../../utils";
+
+vi.mock("../../utils", () => ({ hasWindow: vi.fn() }));
 
 describe("inIframe", () => {
     let windowSpy: any;
@@ -37,5 +40,41 @@ describe("inIframe", () => {
         });
 
         expect(inIframe()).toBe(true);
+    });
+});
+
+describe("isOpeningInNewTab", () => {
+    let windowSpy: any;
+
+    beforeEach(() => {
+        vi.mocked(hasWindow).mockReturnValue(true);
+        windowSpy = vi.spyOn(window, "window", "get");
+    });
+
+    afterEach(() => {
+        windowSpy.mockRestore();
+        vi.mocked(hasWindow).mockReset();
+    });
+
+    test("should return true when window.opener is truthy", () => {
+        windowSpy.mockReturnValue({ opener: {} });
+        expect(isOpeningInNewTab()).toBe(true);
+    });
+
+    test("should return false when window.opener is null", () => {
+        windowSpy.mockReturnValue({ opener: null });
+        expect(isOpeningInNewTab()).toBe(false);
+    });
+
+    test("should return false when hasWindow returns false", () => {
+        vi.mocked(hasWindow).mockReturnValue(false);
+        expect(isOpeningInNewTab()).toBe(false);
+    });
+
+    test("should return false when accessing window throws", () => {
+        windowSpy.mockImplementation(() => {
+            throw new Error("Test error");
+        });
+        expect(isOpeningInNewTab()).toBe(false);
     });
 });

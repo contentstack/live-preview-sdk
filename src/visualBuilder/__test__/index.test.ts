@@ -15,6 +15,9 @@ import { VisualBuilderPostMessageEvents } from "../utils/types/postMessage.types
 import { VisualBuilder } from "../index";
 import visualBuilderPostMessage from "../utils/visualBuilderPostMessage";
 import { Mock } from "vitest";
+import { ILivePreviewModeConfig } from "../../types/types";
+import * as kbModule from "../listeners/keyboardShortcuts";
+import * as variantModule from "../eventManager/useVariantsPostMessageEvent";
 
 const INLINE_EDITABLE_FIELD_VALUE = "Hello World";
 
@@ -191,5 +194,48 @@ describe(
         });
 
         x.destroy();
+    });
+
+    describe("VisualBuilder init — early return conditions", () => {
+        afterEach(() => {
+            Config.set("mode", 2);
+            Config.set("enable", true);
+        });
+
+        test("should not send init postMessage when enable is false", () => {
+            Config.set("enable", false);
+            new VisualBuilder();
+            expect(visualBuilderPostMessage.send).not.toHaveBeenCalledWith(
+                "init",
+                expect.anything()
+            );
+        });
+
+        test("should not send init postMessage when mode is below BUILDER", () => {
+            Config.set("mode", ILivePreviewModeConfig.PREVIEW);
+            new VisualBuilder();
+            expect(visualBuilderPostMessage.send).not.toHaveBeenCalledWith(
+                "init",
+                expect.anything()
+            );
+        });
+
+        test("should call addKeyboardShortcuts and getHighlightVariantFieldsStatus when windowType is BUILDER", async () => {
+            Config.set("mode", 2);
+            const kbSpy = vi
+                .spyOn(kbModule, "addKeyboardShortcuts")
+                .mockImplementation(() => {});
+            const highlightSpy = vi
+                .spyOn(variantModule, "getHighlightVariantFieldsStatus")
+                .mockResolvedValue({ highlightVariantFields: false });
+
+            const vb = new VisualBuilder();
+            await waitForBuilderSDKToBeInitialized(visualBuilderPostMessage);
+            await waitFor(() => {
+                expect(kbSpy).toHaveBeenCalled();
+            });
+            expect(highlightSpy).toHaveBeenCalled();
+            vb.destroy();
+        });
     });
 });

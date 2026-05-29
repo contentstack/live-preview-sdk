@@ -627,3 +627,62 @@ describe("cslp tooltip", () => {
         expect(document.getElementById('cslp-tooltip')).toHaveAttribute('current-data-cslp', DESC_CSLP_TAG);
     });
 });
+
+describe("LivePreviewEditButton — overlayPropagation mousemove listener", () => {
+    beforeEach(() => {
+        Config.reset();
+        document.body.innerHTML = "";
+        Config.set("editButton", {
+            enable: true,
+            exclude: [],
+            position: "top",
+            includeByQueryParameter: true,
+        });
+        Config.set("windowType", ILivePreviewWindowType.PREVIEW);
+    });
+
+    afterEach(() => {
+        LivePreviewEditButton.livePreviewEditButton?.destroy();
+        LivePreviewEditButton.livePreviewEditButton = null;
+        document.body.innerHTML = "";
+        Config.reset();
+        vi.restoreAllMocks();
+    });
+
+    test("does NOT add mousemove listener when overlayPropagation is disabled", () => {
+        Config.set("overlayPropagation", { enable: false });
+        const addSpy = vi.spyOn(window, "addEventListener");
+
+        new LivePreviewEditButton();
+
+        const mousemoveCalls = addSpy.mock.calls.filter(
+            ([event]) => event === "mousemove"
+        );
+        expect(mousemoveCalls).toHaveLength(0);
+    });
+
+    test("adds mousemove listener when overlayPropagation is enabled", () => {
+        Config.set("overlayPropagation", { enable: true });
+        const addSpy = vi.spyOn(window, "addEventListener");
+
+        new LivePreviewEditButton();
+
+        const mousemoveCalls = addSpy.mock.calls.filter(
+            ([event]) => event === "mousemove"
+        );
+        expect(mousemoveCalls).toHaveLength(1);
+    });
+
+    test("removes mousemove listener on destroy", () => {
+        Config.set("overlayPropagation", { enable: true });
+        const removeSpy = vi.spyOn(window, "removeEventListener");
+
+        const btn = new LivePreviewEditButton();
+        btn.destroy();
+
+        const mousemoveCalls = removeSpy.mock.calls.filter(
+            ([event]) => event === "mousemove"
+        );
+        expect(mousemoveCalls).toHaveLength(1);
+    });
+});
