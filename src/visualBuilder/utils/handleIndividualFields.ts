@@ -13,6 +13,7 @@ import {
 import { isFieldMultiple } from "./isFieldMultiple";
 import { handleInlineEditableField } from "./handleInlineEditableField";
 import { VisualBuilderEditContext } from "./types/index.types";
+import { isCustomFieldMultipleInstance } from "./isCustomFieldMultipleInstance";
 import { pasteAsPlainText } from "./pasteAsPlainText";
 import { removeFieldToolbar } from "../generators/generateToolbar";
 import { fetchEntryPermissionsAndStageDetails } from "./fetchEntryPermissionsAndStageDetails";
@@ -70,7 +71,7 @@ export async function handleIndividualFields(
     );
 
     if (isFieldMultiple(fieldSchema)) {
-        if (lastEditedField !== editableElement) {
+        if (!isCustomFieldMultipleInstance(fieldSchema, fieldMetadata) && lastEditedField !== editableElement) {
             const addButtonLabel =
                 fieldSchema.data_type === "blocks"
                     ? // ? `Add ${fieldSchema.display_name ?? "Modular Block"}`

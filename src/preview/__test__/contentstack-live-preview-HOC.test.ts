@@ -120,6 +120,19 @@ describe("Live Preview HOC init", () => {
             "You have already initialized the Live Preview SDK. So, any subsequent initialization returns the existing SDK instance."
         );
     });
+
+    test("should not send INIT postMessage when enable is false", () => {
+        if (!livePreviewPostMessage) {
+            throw new Error("livePreviewPostMessage is unavailable");
+        }
+
+        const livePreviewPostMessageSpy = vi.spyOn(livePreviewPostMessage, "send");
+
+        // no await needed — LivePreview constructor runs synchronously when document.readyState is "complete" in jsdom
+        ContentstackLivePreview.init({ enable: false });
+
+        expect(livePreviewPostMessageSpy).not.toHaveBeenCalled();
+    });
 });
 
 describe("Live Preview HOC config", () => {

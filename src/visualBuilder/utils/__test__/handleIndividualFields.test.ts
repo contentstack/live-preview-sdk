@@ -133,6 +133,31 @@ describe("handleIndividualFields", () => {
         expect(handleAddButtonsForMultiple).toHaveBeenCalled();
     });
 
+    it("should NOT call handleAddButtonsForMultiple for a multiple custom field instance", async () => {
+        const fieldSchema = {
+            extension_uid: "test_ext",
+            field_metadata: { extension: true },
+            data_type: "number",
+            multiple: true,
+        };
+        const isDisabled = { isDisabled: false };
+
+        (FieldSchemaMap.getFieldSchema as Mock).mockResolvedValue(fieldSchema);
+        (getFieldData as Mock).mockResolvedValue([]);
+        (getFieldType as Mock).mockReturnValue(FieldDataType.CUSTOM_FIELD);
+        (isFieldDisabled as Mock).mockReturnValue(isDisabled);
+
+        // Instance: different paths + valid index
+        eventDetails.fieldMetadata.multipleFieldMetadata = {
+            index: 0,
+            parentDetails: { parentPath: "fieldPath", parentCslpValue: "" },
+        };
+
+        await handleIndividualFields(eventDetails, elements);
+
+        expect(handleAddButtonsForMultiple).not.toHaveBeenCalled();
+    });
+
     it("should handle inline editing for supported fields", async () => {
         const fieldSchema = {
             data_type: FieldDataType.SINGLELINE,

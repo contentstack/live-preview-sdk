@@ -1,12 +1,55 @@
 # Changelog
 
-## [v4.4.2](https://github.com/contentstack/live-preview-sdk/compare/v4.4.2...v4.4.2)
+## [v4.4.3](https://github.com/contentstack/live-preview-sdk/compare/v4.4.2...v4.4.3)
+
+> 29 May 2026
+
+### New Features
+
+- feat(VB-1583): restrict toolbar actions for multiple custom field instances (Hitesh Shetty - [#593](https://github.com/contentstack/live-preview-sdk/pull/593))
+
+### Fixes
+
+- fix: added changes of new tab init related remaining code (Mridul Sharma - [#597](https://github.com/contentstack/live-preview-sdk/pull/597))
+
+### Changes to Test Assests
+
+- test: added test cases of useCollab / preview share (Mridul Sharma - [#595](https://github.com/contentstack/live-preview-sdk/pull/595))
+- test: added unit test cases fo visual builder specific to mode (Mridul Sharma - [#592](https://github.com/contentstack/live-preview-sdk/pull/592))
+- test: added test cases for post message hook (Mridul Sharma - [#591](https://github.com/contentstack/live-preview-sdk/pull/591))
+
+### General Changes
+
+- release: 4.4.2 (Hitesh Shetty - [#596](https://github.com/contentstack/live-preview-sdk/pull/596))
+
+### New Features
+
+- feat(VB-1583): suppress hover and click interactions for multiple custom field instances (hitesh-shetty-cstk - [8119684](https://github.com/contentstack/live-preview-sdk/commit/81196845e2c01b3ca023ddae575cb3d67d21bd4f))
+- feat(VB-1623): extend overlayPropagation to standalone Live Preview Edit button (hitesh-shetty-cstk - [f402b41](https://github.com/contentstack/live-preview-sdk/commit/f402b41b69454a59a9a6c143b698d06d5ab1459f))
+- feat(visual-builder): add overlayPropagation init flag for cslp hover/click (hitesh-shetty-cstk - [aa57ba9](https://github.com/contentstack/live-preview-sdk/commit/aa57ba951081a2726122fa9d0fd489a65bb7bdee))
+- feat(VB-1623): extend overlayPropagation to standalone Live Preview Edit button (hitesh-shetty-cstk - [be27497](https://github.com/contentstack/live-preview-sdk/commit/be27497b69e7a08f95c5ec96ffddf11e22b35029))
+
+### Fixes
+
+- fix(isCustomFieldMultipleInstance): handle optional chaining for instance fieldPathWithIndex (hitesh-shetty-cstk - [f0219d7](https://github.com/contentstack/live-preview-sdk/commit/f0219d72b31c8e06b2a93185a20cde791a157667))
+- fix: update CDN version to 4.4.2 in README (hitesh-shetty-cstk - [892a9c8](https://github.com/contentstack/live-preview-sdk/commit/892a9c8ba169a02830a311394a9a2a88a39d6c76))
+- fix(editButton): increase throttle delay for overlay mouse move handler (hitesh-shetty-cstk - [55532b2](https://github.com/contentstack/live-preview-sdk/commit/55532b22a7c1a9ba47538a23945c3b25a0c83fdd))
+
+### Documentation Changes
+
+- docs: clarify overlayPropagation functionality for hover/click detection (hitesh-shetty-cstk - [e88aee3](https://github.com/contentstack/live-preview-sdk/commit/e88aee3602a03e093751178bc10c5ce85e694e20))
+- docs(main.mustache): add overlayPropagation entry to config list (hitesh-shetty-cstk - [b30f41f](https://github.com/contentstack/live-preview-sdk/commit/b30f41f6b1bb86a36bc5ea2bfcc3d76cb3061e43))
+
+### Refactoring and Updates
+
+- refactor(VB-1583): redirect custom field instances to whole-field parent via closest() (hitesh-shetty-cstk - [15f10ed](https://github.com/contentstack/live-preview-sdk/commit/15f10ed90ad0b95759833d549659cc12ab38ffc6))
+
+## [v4.4.2](https://github.com/contentstack/live-preview-sdk/compare/v4.4.1...v4.4.2)
 
 > 21 May 2026
 
 ### Fixes
 
-- fix: update CDN version to 4.4.2 in README (hitesh-shetty-cstk - [11bf951](https://github.com/contentstack/live-preview-sdk/commit/11bf9511a5deb7fb009ba9c01310504755a5f17c))
 - fix(hover): guard generateCursor to fire only on new element hover (Hitesh Shetty - [#590](https://github.com/contentstack/live-preview-sdk/pull/590))
 - fix(VB-1541): hide field extension and comment icons on update-restricted fields (Sahil Chalke - [#589](https://github.com/contentstack/live-preview-sdk/pull/589))
 - fix(security): bump dompurify from ^3.4.0 to ^3.4.1 (Hitesh Shetty - [#588](https://github.com/contentstack/live-preview-sdk/pull/588))

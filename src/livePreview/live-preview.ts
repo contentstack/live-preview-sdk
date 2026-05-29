@@ -56,10 +56,14 @@ export default class LivePreview {
             // render the hover outline only when edit button enable
 
             if (
-                !isOpeningInTimeline() && 
+                !isOpeningInTimeline() &&
                 (config.editButton.enable ||
                 config.mode >= ILivePreviewModeConfig.BUILDER)
             ) {
+                // Destroy any instance created by the module-load effect before
+                // config was applied, so this init-time construction gets the
+                // correct config (including overlayPropagation).
+                LivePreviewEditButton.livePreviewEditButton?.destroy();
                 LivePreviewEditButton.livePreviewEditButton =
                     new LivePreviewEditButton();
             }
