@@ -3,7 +3,7 @@
  */
 
 import { vi } from "vitest";
-import Config, { setConfigFromParams } from "../../../configManager/configManager";
+import Config, { syncToStackSdk } from "../../../configManager/configManager";
 import { PublicLogger } from "../../../logger/logger";
 import livePreviewPostMessage from "../livePreviewEventManager";
 import { LIVE_PREVIEW_POST_MESSAGE_EVENTS } from "../livePreviewEventManager.constant";
@@ -26,7 +26,7 @@ vi.mock("../../../configManager/configManager", () => ({
         get: vi.fn(),
         set: vi.fn(),
     },
-    setConfigFromParams: vi.fn(),
+    syncToStackSdk: vi.fn(),
 }));
 
 vi.mock("../../../logger/logger", () => ({
@@ -44,6 +44,7 @@ vi.mock("../livePreviewEventManager", () => ({
 
 vi.mock("../../../common/inIframe", () => ({
     isOpeningInNewTab: vi.fn(),
+    inVisualEditor: vi.fn(() => false),
 }));
 
 vi.mock("../../../utils", () => ({
@@ -138,9 +139,8 @@ describe("postMessageEvent.hooks", () => {
                 const callback = mockWindow._eventCallbacks[LIVE_PREVIEW_POST_MESSAGE_EVENTS.ON_CHANGE];
                 callback({ data: eventData });
 
-                expect(setConfigFromParams).toHaveBeenCalledWith({
-                    live_preview: "test-hash",
-                });
+                expect(Config.set).toHaveBeenCalledWith("hash", "test-hash");
+                expect(syncToStackSdk).toHaveBeenCalledWith({ hash: "test-hash" });
                 expect(mockOnChange).toHaveBeenCalled();
             });
 
@@ -155,9 +155,8 @@ describe("postMessageEvent.hooks", () => {
                 const callback = mockWindow._eventCallbacks[LIVE_PREVIEW_POST_MESSAGE_EVENTS.ON_CHANGE];
                 callback({ data: eventData });
 
-                expect(setConfigFromParams).toHaveBeenCalledWith({
-                    live_preview: "test-hash",
-                });
+                expect(Config.set).toHaveBeenCalledWith("hash", "test-hash");
+                expect(syncToStackSdk).toHaveBeenCalledWith({ hash: "test-hash" });
                 expect(mockOnChange).not.toHaveBeenCalled();
             });
         });
@@ -179,9 +178,8 @@ describe("postMessageEvent.hooks", () => {
                 const callback = mockWindow._eventCallbacks[LIVE_PREVIEW_POST_MESSAGE_EVENTS.ON_CHANGE];
                 callback({ data: eventData });
 
-                expect(setConfigFromParams).toHaveBeenCalledWith({
-                    live_preview: "test-hash",
-                });
+                expect(Config.set).toHaveBeenCalledWith("hash", "test-hash");
+                expect(syncToStackSdk).toHaveBeenCalledWith({ hash: "test-hash" });
                 expect(mockWindow.location.reload).toHaveBeenCalled();
                 expect(mockOnChange).not.toHaveBeenCalled();
             });
@@ -197,9 +195,8 @@ describe("postMessageEvent.hooks", () => {
                 const callback = mockWindow._eventCallbacks[LIVE_PREVIEW_POST_MESSAGE_EVENTS.ON_CHANGE];
                 callback({ data: eventData });
 
-                expect(setConfigFromParams).toHaveBeenCalledWith({
-                    live_preview: "test-hash",
-                });
+                expect(Config.set).toHaveBeenCalledWith("hash", "test-hash");
+                expect(syncToStackSdk).toHaveBeenCalledWith({ hash: "test-hash" });
                 expect(mockWindow.location.reload).not.toHaveBeenCalled();
                 expect(mockOnChange).not.toHaveBeenCalled();
             });
@@ -307,9 +304,8 @@ describe("postMessageEvent.hooks", () => {
                 const callback = mockWindow._eventCallbacks[LIVE_PREVIEW_POST_MESSAGE_EVENTS.ON_CHANGE];
                 callback({ data: eventData });
 
-                expect(setConfigFromParams).toHaveBeenCalledWith({
-                    live_preview: "new-hash-value",
-                });
+                expect(Config.set).toHaveBeenCalledWith("hash", "new-hash-value");
+                expect(syncToStackSdk).toHaveBeenCalledWith({ hash: "new-hash-value" });
                 expect(mockWindow.history.pushState).toHaveBeenCalledWith(
                     {},
                     "",
@@ -330,9 +326,8 @@ describe("postMessageEvent.hooks", () => {
                 const callback = mockWindow._eventCallbacks[LIVE_PREVIEW_POST_MESSAGE_EVENTS.ON_CHANGE];
                 callback({ data: eventData });
 
-                expect(setConfigFromParams).toHaveBeenCalledWith({
-                    live_preview: "updated-hash",
-                });
+                expect(Config.set).toHaveBeenCalledWith("hash", "updated-hash");
+                expect(syncToStackSdk).toHaveBeenCalledWith({ hash: "updated-hash" });
                 expect(mockWindow.history.pushState).toHaveBeenCalledWith(
                     {},
                     "",
@@ -360,9 +355,8 @@ describe("postMessageEvent.hooks", () => {
                 const callback = mockWindow._eventCallbacks[LIVE_PREVIEW_POST_MESSAGE_EVENTS.ON_CHANGE];
                 callback({ data: eventData });
 
-                expect(setConfigFromParams).toHaveBeenCalledWith({
-                    live_preview: "test-hash",
-                });
+                expect(Config.set).toHaveBeenCalledWith("hash", "test-hash");
+                expect(syncToStackSdk).toHaveBeenCalledWith({ hash: "test-hash" });
                 expect(mockWindow.location.href).toBe("https://newdomain.com/new-page");
             });
 
@@ -378,9 +372,8 @@ describe("postMessageEvent.hooks", () => {
                 const callback = mockWindow._eventCallbacks[LIVE_PREVIEW_POST_MESSAGE_EVENTS.ON_CHANGE];
                 callback({ data: eventData });
 
-                expect(setConfigFromParams).toHaveBeenCalledWith({
-                    live_preview: "test-hash",
-                });
+                expect(Config.set).toHaveBeenCalledWith("hash", "test-hash");
+                expect(syncToStackSdk).toHaveBeenCalledWith({ hash: "test-hash" });
                 expect(mockWindow.location.href).toBe(originalHref);
             });
         });
@@ -431,9 +424,9 @@ describe("postMessageEvent.hooks", () => {
                 );
             });
 
-            it("should handle errors when setConfigFromParams throws", () => {
-                (setConfigFromParams as any).mockImplementation(() => {
-                    throw new Error("setConfigFromParams error");
+            it("should handle errors when syncToStackSdk throws", () => {
+                (syncToStackSdk as any).mockImplementation(() => {
+                    throw new Error("syncToStackSdk error");
                 });
 
                 const eventData: OnChangeLivePreviewPostMessageEventData = {
@@ -463,7 +456,8 @@ describe("postMessageEvent.hooks", () => {
                 const callback = mockWindow._eventCallbacks[LIVE_PREVIEW_POST_MESSAGE_EVENTS.ON_CHANGE];
                 callback({ data: eventData });
 
-                expect(setConfigFromParams).toHaveBeenCalledWith({ live_preview: "test-hash" });
+                expect(Config.set).toHaveBeenCalledWith("hash", "test-hash");
+                expect(syncToStackSdk).toHaveBeenCalledWith({ hash: "test-hash" });
                 expect(mockWindow.location.reload).not.toHaveBeenCalled();
                 expect(mockOnChange).not.toHaveBeenCalled();
             });
@@ -483,7 +477,8 @@ describe("postMessageEvent.hooks", () => {
                 const callback = mockWindow._eventCallbacks[LIVE_PREVIEW_POST_MESSAGE_EVENTS.ON_CHANGE];
                 callback({ data: eventData });
 
-                expect(setConfigFromParams).toHaveBeenCalledWith({ live_preview: "new-hash" });
+                expect(Config.set).toHaveBeenCalledWith("hash", "new-hash");
+                expect(syncToStackSdk).toHaveBeenCalledWith({ hash: "new-hash" });
                 expect(mockWindow.history.pushState).not.toHaveBeenCalled();
             });
 
@@ -504,7 +499,8 @@ describe("postMessageEvent.hooks", () => {
                 const callback = mockWindow._eventCallbacks[LIVE_PREVIEW_POST_MESSAGE_EVENTS.ON_CHANGE];
                 callback({ data: eventData });
 
-                expect(setConfigFromParams).toHaveBeenCalledWith({ live_preview: "test-hash" });
+                expect(Config.set).toHaveBeenCalledWith("hash", "test-hash");
+                expect(syncToStackSdk).toHaveBeenCalledWith({ hash: "test-hash" });
                 expect(mockWindow.location.href).toBe(originalHref);
             });
         });
@@ -636,7 +632,7 @@ describe("postMessageEvent.hooks", () => {
             );
         });
 
-        it("should call setConfigFromParams with content_type_uid and entry_uid when INIT response provides them", async () => {
+        it("should sync contentTypeUid and entryUid to Config and stackSdk when INIT response provides them", async () => {
             mockConfig = {
                 ssr: true,
                 mode: 1,
@@ -651,10 +647,9 @@ describe("postMessageEvent.hooks", () => {
             await sendInitializeLivePreviewPostMessageEvent();
             await Promise.resolve();
 
-            expect(setConfigFromParams).toHaveBeenCalledWith({
-                content_type_uid: "blog",
-                entry_uid: "entry-123",
-            });
+            expect(Config.set).toHaveBeenCalledWith("stackDetails.contentTypeUid", "blog");
+            expect(Config.set).toHaveBeenCalledWith("stackDetails.entryUid", "entry-123");
+            expect(syncToStackSdk).toHaveBeenCalledWith({ contentTypeUid: "blog", entryUid: "entry-123" });
         });
 
         it("should return early and skip post-init setup when windowType is BUILDER", async () => {
@@ -673,8 +668,9 @@ describe("postMessageEvent.hooks", () => {
             await sendInitializeLivePreviewPostMessageEvent();
             await Promise.resolve();
 
-            expect(setConfigFromParams).not.toHaveBeenCalled();
-            expect(Config.set).not.toHaveBeenCalled();
+            expect(syncToStackSdk).not.toHaveBeenCalled();
+            expect(Config.set).not.toHaveBeenCalledWith("stackDetails.contentTypeUid", expect.anything());
+            expect(Config.set).not.toHaveBeenCalledWith("stackDetails.entryUid", expect.anything());
         });
 
         it("should start CHECK_ENTRY_PAGE interval when ssr is false", async () => {
