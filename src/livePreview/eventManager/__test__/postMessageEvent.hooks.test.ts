@@ -17,7 +17,8 @@ import {
     useHistoryPostMessageEvent,
     sendInitializeLivePreviewPostMessageEvent,
 } from "../postMessageEvent.hooks";
-import { isOpeningInNewTab } from "../../../common/inIframe";
+import { isOpeningInNewTab, inVisualEditor } from "../../../common/inIframe";
+import { addParamsToUrl } from "../../../utils";
 import { ILivePreviewWindowType } from "../../../types/types";
 
 // Mock dependencies
@@ -671,6 +672,31 @@ describe("postMessageEvent.hooks", () => {
             expect(syncToStackSdk).not.toHaveBeenCalled();
             expect(Config.set).not.toHaveBeenCalledWith("stackDetails.contentTypeUid", expect.anything());
             expect(Config.set).not.toHaveBeenCalledWith("stackDetails.entryUid", expect.anything());
+        });
+
+        it("should return early and skip post-init setup when inVisualEditor is true", async () => {
+            mockConfig = {
+                ssr: true,
+                mode: 1,
+            };
+            (Config.get as any).mockReturnValue(mockConfig);
+            (livePreviewPostMessage as any).send.mockResolvedValue({
+                windowType: ILivePreviewWindowType.PREVIEW,
+                contentTypeUid: "blog",
+                entryUid: "entry-123",
+            });
+            (inVisualEditor as any).mockReturnValueOnce(true);
+
+            await sendInitializeLivePreviewPostMessageEvent();
+            await Promise.resolve();
+
+            expect(setConfigFromParams).not.toHaveBeenCalled();
+            expect(Config.set).not.toHaveBeenCalled();
+            expect(addParamsToUrl).not.toHaveBeenCalled();
+            expect(livePreviewPostMessage?.on).not.toHaveBeenCalledWith(
+                LIVE_PREVIEW_POST_MESSAGE_EVENTS.ON_CHANGE,
+                expect.any(Function),
+            );
         });
 
         it("should start CHECK_ENTRY_PAGE interval when ssr is false", async () => {
