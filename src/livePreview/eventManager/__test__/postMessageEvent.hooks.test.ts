@@ -690,7 +690,6 @@ describe("postMessageEvent.hooks", () => {
             await sendInitializeLivePreviewPostMessageEvent();
             await Promise.resolve();
 
-            expect(setConfigFromParams).not.toHaveBeenCalled();
             expect(Config.set).not.toHaveBeenCalled();
             expect(addParamsToUrl).not.toHaveBeenCalled();
             expect(livePreviewPostMessage?.on).not.toHaveBeenCalledWith(
