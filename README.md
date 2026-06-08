@@ -29,11 +29,11 @@ npm install @contentstack/live-preview-utils
 
 ### Load from a CDN (advanced)
 
-Pin the version to match your app (update `4.4.1` when you upgrade):
+Pin the version to match your app (update `4.4.2` when you upgrade):
 
 ```html
 <script type="module" crossorigin="anonymous">
-  import ContentstackLivePreview from "https://esm.sh/@contentstack/live-preview-utils@4.4.1";
+  import ContentstackLivePreview from "https://esm.sh/@contentstack/live-preview-utils@4.4.2";
 
   ContentstackLivePreview.init({
     stackDetails: {
@@ -71,6 +71,7 @@ You can configure the SDK using the following options:
 - [`mode`](docs/live-preview-configs.md#mode) (`preview` vs `builder`)
 - [`editButton`](docs/live-preview-configs.md#editbutton)
 - [`editInVisualBuilderButton`](docs/live-preview-configs.md#editinvisualbuilderbutton) (Start Editing outside Visual Editor)
+- [`overlayPropagation`](docs/live-preview-configs.md#overlaypropagation) (opt-in fallback to pierce blocking sibling overlays during hover/click detection)
 - [`cleanCslpOnProduction`](docs/live-preview-configs.md#cleancslponproduction)
 - [`stackDetails`](docs/live-preview-configs.md#stackdetails) ([`apiKey`](docs/live-preview-configs.md#apikey), [`environment`](docs/live-preview-configs.md#environment))
 - [`clientUrlParams`](docs/live-preview-configs.md#clienturlparams) — [NA](docs/live-preview-configs.md#na-config) / [EU](docs/live-preview-configs.md#eu-config)

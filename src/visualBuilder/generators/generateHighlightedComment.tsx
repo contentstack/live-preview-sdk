@@ -95,6 +95,9 @@ export function updateHighlightedCommentIconPosition() {
                     // Update the position of the icon container
                     icon.style.top = `${top - highlighCommentOffset}px`; // Adjust based on the target element's top
                     icon.style.left = `${left - highlighCommentOffset}px`; // Adjust based on the target element's left
+                } else {
+                    // Target gone — drop the orphan icon.
+                    icon.remove();
                 }
             }
         }

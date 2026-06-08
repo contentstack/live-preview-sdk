@@ -60,6 +60,7 @@ export enum VisualBuilderPostMessageEvents {
     COLLAB_THREAD_HIGHLIGHT = "collab-thread-highlight",
     TOGGLE_SCROLL = "toggle-scroll",
     PAGE_CONTEXT = "page-context",
+    REQUEST_DISCUSSION_HIGHLIGHTS = "request-discussion-highlights",
 }
 
 export interface IPageContextPostMessageEvent {

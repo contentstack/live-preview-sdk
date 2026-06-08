@@ -18,6 +18,8 @@ import FieldToolbarComponent from "../FieldToolbar";
 import {
     mockMultipleLinkFieldSchema,
     mockMultipleFileFieldSchema,
+    mockMultipleCustomFieldSchema,
+    mockSingleCustomFieldSchema,
 } from "../../../__test__/data/fields";
 import { VisualBuilderCslpEventDetails } from "../../types/visualBuilder.types";
 import { isFieldDisabled } from "../../utils/isFieldDisabled";
@@ -33,7 +35,13 @@ vi.mock("../../utils/instanceHandlers", () => ({
 
 //CommentIcon testcases are covered seperatly
 vi.mock("../CommentIcon", () => ({
-    default: vi.fn(() => <div>Comment Icon</div>),
+    default: vi.fn(() => <div data-testid="vb-comment-icon">Comment Icon</div>),
+}));
+
+vi.mock("../FieldLocationIcon", () => ({
+    FieldLocationIcon: vi.fn(() => (
+        <div data-testid="vb-field-location-icon">Field Location Icon</div>
+    )),
 }));
 
 vi.mock("../../utils/visualBuilderPostMessage", () => {
@@ -271,6 +279,204 @@ describe("FieldToolbarComponent", () => {
             { timeout: 1000 }
         );
         expect(icon).toBeInTheDocument();
+    });
+
+    describe("CommentIcon and FieldLocationIcon visibility on restricted fields", () => {
+        const wholeMultiMetadata: CslpData = {
+            ...mockMultipleFieldMetadata,
+            fieldPathWithIndex: "group.link",
+            instance: { fieldPathWithIndex: "group.link" },
+        };
+
+        test("renders CommentIcon and FieldLocationIcon when field is not disabled", async () => {
+            vi.mocked(isFieldDisabled).mockReturnValue({
+                isDisabled: false,
+                reason: "" as any,
+            });
+
+            const { container } = render(
+                <FieldToolbarComponent
+                    eventDetails={{
+                        ...mockEventDetails,
+                        fieldMetadata: wholeMultiMetadata,
+                    }}
+                    hideOverlay={vi.fn()}
+                />
+            );
+
+            await act(async () => {
+                await new Promise((r) => setTimeout(r, 0));
+            });
+
+            expect(
+                await findByTestId(
+                    container,
+                    "vb-comment-icon",
+                    {},
+                    { timeout: 1000 }
+                )
+            ).toBeInTheDocument();
+            expect(
+                container.querySelector('[data-testid="vb-field-location-icon"]')
+            ).toBeInTheDocument();
+        });
+
+        test("hides CommentIcon and FieldLocationIcon when field is disabled (update restrict)", async () => {
+            vi.mocked(isFieldDisabled).mockReturnValue({
+                isDisabled: true,
+                reason: "You have only read access to this field" as any,
+            });
+
+            const { container } = render(
+                <FieldToolbarComponent
+                    eventDetails={{
+                        ...mockEventDetails,
+                        fieldMetadata: wholeMultiMetadata,
+                    }}
+                    hideOverlay={vi.fn()}
+                />
+            );
+
+            await act(async () => {
+                await new Promise((r) => setTimeout(r, 0));
+            });
+
+            await findByTestId(
+                container,
+                "visual-builder__focused-toolbar__multiple-field-toolbar",
+                {},
+                { timeout: 1000 }
+            );
+
+            expect(
+                container.querySelector('[data-testid="vb-comment-icon"]')
+            ).not.toBeInTheDocument();
+            expect(
+                container.querySelector('[data-testid="vb-field-location-icon"]')
+            ).not.toBeInTheDocument();
+        });
+    });
+
+    describe("Custom field multiple — toolbar visibility", () => {
+        const customFieldInstanceMetadata: CslpData = {
+            ...mockMultipleFieldMetadata,
+            fieldPathWithIndex: "custom_field",
+            multipleFieldMetadata: {
+                index: 0,
+                parentDetails: {
+                    parentPath: "custom_field",
+                    parentCslpValue: "entry.ct.en-us",
+                },
+            },
+            instance: { fieldPathWithIndex: "custom_field.0" },
+        };
+
+        const customFieldWholeMetadata: CslpData = {
+            ...mockMultipleFieldMetadata,
+            fieldPathWithIndex: "custom_field",
+            instance: { fieldPathWithIndex: "custom_field" },
+        };
+
+        test("renders info message for a multiple custom field instance", async () => {
+            vi.mocked(FieldSchemaMap.getFieldSchema).mockImplementation(() =>
+                Promise.resolve(mockMultipleCustomFieldSchema)
+            );
+
+            const { container } = render(
+                <FieldToolbarComponent
+                    eventDetails={{
+                        ...mockEventDetails,
+                        fieldMetadata: customFieldInstanceMetadata,
+                    }}
+                    hideOverlay={vi.fn()}
+                />
+            );
+
+            await act(async () => {
+                await new Promise((r) => setTimeout(r, 0));
+            });
+
+            expect(
+                await findByTestId(
+                    container,
+                    "visual-builder__custom-field-instance-message",
+                    {},
+                    { timeout: 1000 }
+                )
+            ).toBeInTheDocument();
+
+            expect(
+                container.querySelector(
+                    '[data-testid="visual-builder__focused-toolbar__multiple-field-toolbar"]'
+                )
+            ).not.toBeInTheDocument();
+        });
+
+        test("shows edit button for a multiple custom field whole-field selection", async () => {
+            vi.mocked(FieldSchemaMap.getFieldSchema).mockImplementation(() =>
+                Promise.resolve(mockMultipleCustomFieldSchema)
+            );
+
+            const { container } = render(
+                <FieldToolbarComponent
+                    eventDetails={{
+                        ...mockEventDetails,
+                        fieldMetadata: customFieldWholeMetadata,
+                    }}
+                    hideOverlay={vi.fn()}
+                />
+            );
+
+            await act(async () => {
+                await new Promise((r) => setTimeout(r, 0));
+            });
+
+            const editButton = await findByTestId(
+                container,
+                "visual-builder__focused-toolbar__multiple-field-toolbar__edit-button",
+                {},
+                { timeout: 1000 }
+            );
+            expect(editButton).toBeInTheDocument();
+        });
+
+        test("shows edit button for a single (non-multiple) custom field", async () => {
+            vi.mocked(FieldSchemaMap.getFieldSchema).mockImplementation(() =>
+                Promise.resolve(mockSingleCustomFieldSchema)
+            );
+
+            const singleCustomFieldMetadata: CslpData = {
+                ...mockMultipleFieldMetadata,
+                fieldPathWithIndex: "custom_field",
+                multipleFieldMetadata: {
+                    index: -1,
+                    parentDetails: null,
+                },
+                instance: { fieldPathWithIndex: "custom_field" },
+            };
+
+            const { container } = render(
+                <FieldToolbarComponent
+                    eventDetails={{
+                        ...mockEventDetails,
+                        fieldMetadata: singleCustomFieldMetadata,
+                    }}
+                    hideOverlay={vi.fn()}
+                />
+            );
+
+            await act(async () => {
+                await new Promise((r) => setTimeout(r, 0));
+            });
+
+            const editButton = await findByTestId(
+                container,
+                "visual-builder__focused-toolbar__multiple-field-toolbar__edit-button",
+                {},
+                { timeout: 1000 }
+            );
+            expect(editButton).toBeInTheDocument();
+        });
     });
 
     describe("'Replace button' visibility for multiple file fields", () => {

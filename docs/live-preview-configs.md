@@ -145,6 +145,33 @@ The editInVisualBuilderButton object contains two keys:
     The user can place the "Start Editing" button in four predefined positions 
     top-left, top-right, bottom-left, and bottom-right.
 
+### `overlayPropagation`
+
+Use this option when hovering or clicking on a field in your app does nothing — no outline appears and the Edit button doesn't show up. This typically happens when another element (such as a navigation overlay, image layer, or layout spacer) sits on top of the field and captures the mouse event instead.
+
+Enabling `overlayPropagation` tells the SDK to look through stacked elements at the cursor position to find the field underneath. It works in both Visual Builder and the standalone Live Preview Edit button.
+
+> **When to enable:** Only turn this on if you notice fields that are invisible to hover/click in your specific app layout. It is off by default.
+
+The `overlayPropagation` object contains one key:
+
+1. #### `enable`
+    | type    | default | optional |
+    | ------- | ------- | -------- |
+    | boolean | false   | yes      |
+
+    Set to `true` to allow the SDK to detect fields that are visually covered by other elements.
+
+**For example:**
+```ts
+ContentstackLivePreview.init({
+    ...
+    overlayPropagation: {
+        enable: true,
+    }
+});
+```
+
 ### `cleanCslpOnProduction`
 
 | type    | default | optional |

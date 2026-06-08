@@ -50,3 +50,29 @@ export const mockMultipleFileFieldSchema: ISchemaFieldMap = {
     non_localizable: false,
     unique: false,
 };
+
+export const mockMultipleCustomFieldSchema: ISchemaFieldMap = {
+    extension_uid: "test_extension_uid",
+    field_metadata: { extension: true },
+    config: {},
+    data_type: "number",
+    display_name: "Custom Field",
+    uid: "custom_field",
+    mandatory: false,
+    multiple: true,
+    non_localizable: false,
+    unique: false,
+} as unknown as ISchemaFieldMap;
+
+export const mockSingleCustomFieldSchema: ISchemaFieldMap = {
+    extension_uid: "test_extension_uid",
+    field_metadata: { extension: true },
+    config: {},
+    data_type: "number",
+    display_name: "Custom Field",
+    uid: "custom_field",
+    mandatory: false,
+    multiple: false,
+    non_localizable: false,
+    unique: false,
+} as unknown as ISchemaFieldMap;

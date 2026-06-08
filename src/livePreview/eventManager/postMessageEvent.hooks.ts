@@ -1,5 +1,5 @@
-import { isOpeningInNewTab } from "../../common/inIframe";
-import Config, { setConfigFromParams } from "../../configManager/configManager";
+import { inVisualEditor, isOpeningInNewTab } from "../../common/inIframe";
+import Config, { syncToStackSdk } from "../../configManager/configManager";
 import { PublicLogger } from "../../logger/logger";
 import { ILivePreviewWindowType } from "../../types/types";
 import { addParamsToUrl, isOpeningInTimeline } from "../../utils";
@@ -52,9 +52,11 @@ export function useOnEntryUpdatePostMessageEvent(): void {
             try {
                 const { ssr, onChange, stackDetails } = Config.get();
                 const event_type = event.data._metadata?.event_type;
-                setConfigFromParams({
-                    live_preview: event.data.hash,
-                });
+                // hash is typed as required string, guard is a safety net
+                if (event.data.hash) {
+                    Config.set("hash", event.data.hash);
+                    syncToStackSdk({ hash: event.data.hash });
+                }
 
                 // This section will run when there is a change in the entry and the website is CSR
                 if (!ssr && !event_type) {
@@ -78,8 +80,8 @@ export function useOnEntryUpdatePostMessageEvent(): void {
                             window.location.reload();
                         } else {
                             live_preview = event.data.hash;
-                            content_type_uid = event.data.content_type_uid || stackDetails.$contentTypeUid?.toString() || "";
-                            entry_uid = event.data.entry_uid || stackDetails.$entryUid?.toString() || "";
+                            content_type_uid = event.data.content_type_uid || stackDetails.contentTypeUid?.toString() || "";
+                            entry_uid = event.data.entry_uid || stackDetails.entryUid?.toString() || "";
                             // Set missing params and redirect
                             url.searchParams.set("live_preview", live_preview);
                             if (content_type_uid) {
@@ -151,25 +153,31 @@ export function sendInitializeLivePreviewPostMessageEvent(): void {
                 windowType = ILivePreviewWindowType.PREVIEW,
             } = data || {};
 
-            // TODO: This is a fix for the issue where we were calling sending init in the builder
-            // Let's remove this condition when we fix it.
+            if(inVisualEditor()){
+                return;
+            }
+
+            // TODO: the upper condition will the handle the visual editor init double firing issue so later we can remove this once verified
             if (Config?.get()?.windowType && Config.get().windowType === ILivePreviewWindowType.BUILDER) {
                 return;
             }
 
             if (contentTypeUid && entryUid) {
-                // TODO: we should not use this function. Instead we should have sideEffect run automatically when we set the config.
-                setConfigFromParams({
-                    content_type_uid: contentTypeUid,
-                    entry_uid: entryUid,
-                });
+                // Sync is explicit here intentionally: auto-effects via deepsignal would go blind when Config.reset() is called.
+                Config.set("stackDetails.contentTypeUid", contentTypeUid);
+                Config.set("stackDetails.entryUid", entryUid);
+                syncToStackSdk({ contentTypeUid, entryUid });
             } else {
                 // TODO: add debug logs that runs conditionally
                 // PublicLogger.debug(
                 //     "init message did not contain contentTypeUid or entryUid."
                 // );
             }
-            if (Config.get().ssr || isOpeningInTimeline() || isOpeningInNewTab()) {
+            if (
+                Config.get().ssr ||
+                isOpeningInTimeline() ||
+                isOpeningInNewTab()
+            ) {
                 addParamsToUrl();
             }
             Config.set("windowType", windowType);
