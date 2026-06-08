@@ -156,6 +156,7 @@ function FieldToolbarComponent(
     let disableFieldActions = false;
     let isCustomFieldMultipleInstance = false;
     let isCustomFieldWholeMultiple = false;
+    let isFieldReadRestricted = false;
     if (fieldSchema) {
         const { isDisabled } = isFieldDisabled(
             fieldSchema,
@@ -168,6 +169,7 @@ function FieldToolbarComponent(
             entryWorkflowStageDetails,
         );
         disableFieldActions = isDisabled;
+        isFieldReadRestricted = !!fieldSchema.field_metadata?.readRestrict;
 
         fieldType = getFieldType(fieldSchema);
 
@@ -595,7 +597,7 @@ function FieldToolbarComponent(
                                 {isModalEditable ? editButton : null}
                                 {isReplaceAllowed ? replaceButton : null}
                                 {formButton}
-                                {fieldSchema && !disableFieldActions ? (
+                                {fieldSchema && !isFieldReadRestricted ? (
                                     <CommentIcon
                                         fieldMetadata={fieldMetadata}
                                         fieldSchema={fieldSchema}
@@ -607,7 +609,7 @@ function FieldToolbarComponent(
                             </>
                         )}
 
-                        {!disableFieldActions && (
+                        {!isFieldReadRestricted && (
                             <FieldLocationIcon
                                 fieldLocationData={fieldLocationData}
                                 multipleFieldToolbarButtonClasses={
