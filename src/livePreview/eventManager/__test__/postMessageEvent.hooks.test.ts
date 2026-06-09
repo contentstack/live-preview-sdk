@@ -690,6 +690,7 @@ describe("postMessageEvent.hooks", () => {
             await sendInitializeLivePreviewPostMessageEvent();
             await Promise.resolve();
 
+            expect(syncToStackSdk).not.toHaveBeenCalled();
             expect(Config.set).not.toHaveBeenCalled();
             expect(addParamsToUrl).not.toHaveBeenCalled();
             expect(livePreviewPostMessage?.on).not.toHaveBeenCalledWith(
