@@ -14,6 +14,7 @@ import { LIVE_PREVIEW_POST_MESSAGE_EVENTS } from "../../livePreview/eventManager
 import { PublicLogger } from "../../logger/logger";
 import { IInitData } from "../../types/types";
 import ContentstackLivePreview from "../contentstack-live-preview-HOC";
+import * as inIframeModule from "../../common/inIframe";
 import { vi } from "vitest";
 
 Object.defineProperty(globalThis, "crypto", {
@@ -544,6 +545,64 @@ describe("Live Preview HOC unsubscribeOnEntryChange", () => {
                 "No subscriber found with the given callback."
             );
         });
+    });
+});
+
+describe("setPageContext", () => {
+    const context = { entryUid: "entry-123", contentTypeUid: "blog_post" };
+
+    afterEach(() => {
+        vi.restoreAllMocks();
+    });
+
+    test("should store the page context on Config", () => {
+        vi.spyOn(inIframeModule, "inIframe").mockReturnValue(false);
+
+        ContentstackLivePreview.setPageContext(context);
+
+        expect(Config.get().pageContext).toEqual(context);
+    });
+
+    test("should send PAGE_CONTEXT post message when inside an iframe", () => {
+        vi.spyOn(inIframeModule, "inIframe").mockReturnValue(true);
+        const sendSpy = vi
+            .spyOn(visualBuilderPostMessage as any, "send")
+            .mockResolvedValue(undefined);
+
+        ContentstackLivePreview.setPageContext(context);
+
+        expect(sendSpy).toHaveBeenCalledWith(
+            VisualBuilderPostMessageEvents.PAGE_CONTEXT,
+            context
+        );
+    });
+
+    test("should not send PAGE_CONTEXT post message when not inside an iframe", () => {
+        vi.spyOn(inIframeModule, "inIframe").mockReturnValue(false);
+        const sendSpy = vi
+            .spyOn(visualBuilderPostMessage as any, "send")
+            .mockResolvedValue(undefined);
+
+        ContentstackLivePreview.setPageContext(context);
+
+        expect(sendSpy).not.toHaveBeenCalled();
+    });
+
+    test("should log an error when the post message send fails", async () => {
+        vi.spyOn(inIframeModule, "inIframe").mockReturnValue(true);
+        const error = new Error("postMessage failed");
+        vi.spyOn(visualBuilderPostMessage as any, "send").mockRejectedValue(
+            error
+        );
+        const errorSpy = vi.spyOn(PublicLogger, "error");
+
+        ContentstackLivePreview.setPageContext(context);
+        await sleep(0);
+
+        expect(errorSpy).toHaveBeenCalledWith(
+            "Failed to send page context to Visual Builder.",
+            error
+        );
     });
 });
 

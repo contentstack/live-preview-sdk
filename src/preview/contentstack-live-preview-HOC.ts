@@ -274,10 +274,20 @@ class ContentstackLivePreview {
         // entry context in CSR apps. Send it now so VB can update its current entry.
         // Only send when inside an iframe — skip when the site opens in a plain browser tab.
         if (inIframe()) {
-            visualBuilderPostMessage?.send<IPageContextPostMessageEvent>(
-                VisualBuilderPostMessageEvents.PAGE_CONTEXT,
-                { entryUid: context.entryUid, contentTypeUid: context.contentTypeUid }
-            );
+            visualBuilderPostMessage
+                ?.send<IPageContextPostMessageEvent>(
+                    VisualBuilderPostMessageEvents.PAGE_CONTEXT,
+                    {
+                        entryUid: context.entryUid,
+                        contentTypeUid: context.contentTypeUid,
+                    }
+                )
+                .catch((error) => {
+                    PublicLogger.error(
+                        "Failed to send page context to Visual Builder.",
+                        error
+                    );
+                });
         }
     }
 
