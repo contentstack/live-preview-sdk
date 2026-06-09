@@ -118,5 +118,6 @@ export function getDefaultConfig(): IConfig {
             payload: [],
         },
         enableLivePreviewOutsideIframe: undefined,
+        pageContext: null,
     };
 }
