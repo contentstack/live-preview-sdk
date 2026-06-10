@@ -1,5 +1,6 @@
 import Config from "../../configManager/configManager";
 import { extractDetailsFromCslp, isValidCslp } from "../../cslp";
+import { resolvePageContext } from "./resolvePageContext";
 
 /**
  * Returns the redirection URL for the Visual builder.
@@ -34,6 +35,15 @@ export default function getVisualBuilderRedirectionUrl(): URL {
 
     if (localeToUse) {
         searchParams.set("locale", localeToUse);
+    }
+
+    const { entryUid, contentTypeUid } = resolvePageContext();
+
+    if (entryUid) {
+        searchParams.set("entry_uid", entryUid);
+    }
+    if (contentTypeUid) {
+        searchParams.set("content_type_uid", contentTypeUid);
     }
 
     const completeURL = new URL(

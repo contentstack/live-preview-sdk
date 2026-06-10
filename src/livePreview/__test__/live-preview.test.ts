@@ -10,6 +10,7 @@ import Config from "../../configManager/configManager";
 import { PublicLogger } from "../../logger/logger";
 import { ILivePreviewWindowType } from "../../types/types";
 import { addLivePreviewQueryTags } from '../../utils/addLivePreviewQueryTags';
+import * as utils from "../../utils";
 import livePreviewPostMessage from "../eventManager/livePreviewEventManager";
 import { LIVE_PREVIEW_POST_MESSAGE_EVENTS } from "../eventManager/livePreviewEventManager.constant";
 import {
@@ -17,7 +18,10 @@ import {
     OnChangeLivePreviewPostMessageEventData,
 } from "../eventManager/types/livePreviewPostMessageEvent.type";
 import LivePreview from "../live-preview";
+import * as postMessageHooks from "../eventManager/postMessageEvent.hooks";
+import { LivePreviewEditButton } from "../editButton/editButton";
 import { mockLivePreviewInitEventListener } from "./mock";
+
 
 vi.mock("../../utils/addLivePreviewQueryTags", () => ({
     addLivePreviewQueryTags: vi.fn(),
@@ -541,5 +545,226 @@ describe("testing window event listeners", () => {
             fireEvent.click(targetElement);
         });
         expect(addLivePreviewQueryTags).toBeCalled();
+    });
+});
+
+describe("enable=false early return", () => {
+    beforeEach(() => {
+        Config.reset();
+        livePreviewPostMessage?.destroy({ soft: true });
+        livePreviewPostMessage?.on(
+            LIVE_PREVIEW_POST_MESSAGE_EVENTS.INIT,
+            mockLivePreviewInitEventListener
+        );
+    });
+
+    afterEach(() => {
+        document.getElementsByTagName("html")[0].innerHTML = "";
+        vi.restoreAllMocks();
+    });
+
+    afterAll(() => {
+        Config.reset();
+        livePreviewPostMessage?.destroy({ soft: true });
+    });
+
+    test("should not call sendInitializeLivePreviewPostMessageEvent when enable is false", () => {
+        const sendInitSpy = vi.spyOn(
+            postMessageHooks,
+            "sendInitializeLivePreviewPostMessageEvent"
+        );
+        Config.replace({ enable: false, cleanCslpOnProduction: false });
+
+        new LivePreview();
+
+        expect(sendInitSpy).not.toHaveBeenCalled();
+    });
+
+    test("should call sendInitializeLivePreviewPostMessageEvent when enable is true", () => {
+        const sendInitSpy = vi.spyOn(
+            postMessageHooks,
+            "sendInitializeLivePreviewPostMessageEvent"
+        );
+        Config.replace({ enable: true });
+
+        new LivePreview();
+
+        expect(sendInitSpy).toHaveBeenCalled();
+    });
+
+    test("should not create LivePreviewEditButton when enable is false", () => {
+        Config.replace({
+            enable: false,
+            editButton: { enable: true },
+        });
+
+        new LivePreview();
+
+        expect(document.getElementById("cslp-tooltip")).toBeNull();
+    });
+
+    test("should not create LivePreviewEditButton when enable is false even if mode is builder", () => {
+        Config.replace({
+            enable: false,
+            mode: "builder",
+            stackDetails: { environment: "preview", apiKey: "test-key" },
+        });
+
+        new LivePreview();
+
+        expect(document.getElementById("cslp-tooltip")).toBeNull();
+    });
+});
+
+describe("LivePreview edit button condition", () => {
+    beforeEach(() => {
+        Config.reset();
+        LivePreviewEditButton.livePreviewEditButton = undefined as any;
+        livePreviewPostMessage?.destroy({ soft: true });
+        livePreviewPostMessage?.on(
+            LIVE_PREVIEW_POST_MESSAGE_EVENTS.INIT,
+            mockLivePreviewInitEventListener
+        );
+        vi.spyOn(utils, "isOpeningInTimeline").mockReturnValue(false);
+    });
+
+    afterEach(() => {
+        document.getElementsByTagName("html")[0].innerHTML = "";
+        vi.restoreAllMocks();
+    });
+
+    afterAll(() => {
+        Config.reset();
+        livePreviewPostMessage?.destroy({ soft: true });
+    });
+
+    test("should not create LivePreviewEditButton when editButton.enable is false and mode is preview", () => {
+        Config.replace({
+            enable: true,
+            editButton: { enable: false },
+            mode: "preview",
+        });
+
+        new LivePreview();
+
+        expect(LivePreviewEditButton.livePreviewEditButton).toBeUndefined();
+    });
+
+    test("should instantiate LivePreviewEditButton when mode is builder even if editButton.enable is false", () => {
+        LivePreviewEditButton.livePreviewEditButton = undefined as any;
+        Config.replace({
+            enable: true,
+            editButton: { enable: false },
+            mode: "builder",
+            stackDetails: { environment: "preview", apiKey: "test-key" },
+        });
+
+        new LivePreview();
+
+        expect(LivePreviewEditButton.livePreviewEditButton).toBeDefined();
+    });
+
+    test("should not create LivePreviewEditButton when isOpeningInTimeline returns true", () => {
+        vi.spyOn(utils, "isOpeningInTimeline").mockReturnValue(true);
+        Config.replace({
+            enable: true,
+            editButton: { enable: true },
+        });
+
+        new LivePreview();
+
+        expect(document.getElementById("cslp-tooltip")).toBeNull();
+    });
+});
+
+describe("multiple LivePreview inits", () => {
+    beforeEach(() => {
+        Config.reset();
+        livePreviewPostMessage?.destroy({ soft: true });
+        livePreviewPostMessage?.on(
+            LIVE_PREVIEW_POST_MESSAGE_EVENTS.INIT,
+            mockLivePreviewInitEventListener
+        );
+    });
+
+    afterEach(() => {
+        document.getElementsByTagName("html")[0].innerHTML = "";
+        vi.restoreAllMocks();
+    });
+
+    afterAll(() => {
+        Config.reset();
+        livePreviewPostMessage?.destroy({ soft: true });
+    });
+
+    test("should not throw when constructed multiple times", () => {
+        Config.replace({ enable: true });
+
+        expect(() => {
+            new LivePreview();
+            new LivePreview();
+        }).not.toThrow();
+    });
+
+    test("should have at most one edit button in the DOM after multiple inits", () => {
+        vi.spyOn(utils, "isOpeningInTimeline").mockReturnValue(false);
+        Config.replace({
+            enable: true,
+            editButton: { enable: true },
+        });
+
+        new LivePreview();
+        new LivePreview();
+
+        const buttons = document.querySelectorAll("#cslp-tooltip");
+        expect(buttons.length).toBe(1);
+    });
+});
+
+describe("LivePreview init with partial stackDetails", () => {
+    beforeEach(() => {
+        Config.reset();
+        livePreviewPostMessage?.destroy({ soft: true });
+        livePreviewPostMessage?.on(
+            LIVE_PREVIEW_POST_MESSAGE_EVENTS.INIT,
+            mockLivePreviewInitEventListener
+        );
+    });
+
+    afterEach(() => {
+        document.getElementsByTagName("html")[0].innerHTML = "";
+        vi.restoreAllMocks();
+    });
+
+    afterAll(() => {
+        Config.reset();
+        livePreviewPostMessage?.destroy({ soft: true });
+    });
+
+    test("should not throw when constructed with partial stackDetails", () => {
+        Config.replace({
+            enable: true,
+            stackDetails: {
+                apiKey: "partial-key",
+            } as any,
+        });
+
+        expect(() => new LivePreview()).not.toThrow();
+    });
+
+    test("should preserve provided stackDetails fields and retain defaults for omitted ones", () => {
+        Config.replace({
+            enable: true,
+            stackDetails: {
+                apiKey: "my-api-key",
+            } as any,
+        });
+
+        new LivePreview();
+
+        const { stackDetails } = Config.get();
+        expect(stackDetails.apiKey).toBe("my-api-key");
+        expect(stackDetails.locale).toBe("en-us");
+        expect(stackDetails.masterLocale).toBe("en-us");
     });
 });
