@@ -18,6 +18,7 @@ The init data has following structure
         -   [`stackSdk`](#stacksdk)
     -   [`onLiveEdit(callback: () => void)`](#onliveeditcallback---void)
     -   [`onEntryChange(callback: () => void)`](#onentrychangecallback---void)
+    -   [`setPageContext(context)`](#setpagecontextcontext)
     -   [hash](#hash)
     -   [setConfigFromParams(config: ConstructorParameters\[0\])](#setconfigfromparamsconfig-constructorparameters0)
     -   [`getGatsbyDataFormat(sdkQuery: IStackSdk, prefix: string)`](#getgatsbydataformatsdkquery-istacksdk-prefix-string)
@@ -322,6 +323,62 @@ const Footer = () => {
 ```js
 onEntryChange(fetchData, { skipInitialRender: true });
 ```
+
+## `setPageContext(context)`
+
+```ts
+setPageContext(context: { entryUid: string; contentTypeUid: string }): void
+```
+
+The `setPageContext()` method tells the Visual Builder which entry the current page is rendering. The Visual Builder uses this context so that the **"Start Editing"** button (and the `init` handshake) target the correct entry, even when a page is served from a custom URL that the SDK cannot map to an entry on its own.
+
+This context is used in two places: on the initial `init` handshake, so the Visual Builder can confirm whether the entry it has open matches the page rendered in the iframe; and on the "Start Editing" button click, so it can navigate to the correct entry in the Visual Editor. Because `init()` runs before your async data fetch resolves, the handshake may carry no entry context on its own — calling `setPageContext()` once your entry is available sends the context to the Visual Builder so it can update its current entry.
+
+Place the call alongside your existing `addEditableTags` call — both reference the same `entry` object, so there is no extra lookup.
+
+| parameter             | type     | description                                       |
+| --------------------- | -------- | ------------------------------------------------- |
+| `context.entryUid`    | string   | UID of the entry the current page is rendering.   |
+| `context.contentTypeUid` | string | UID of that entry's content type.               |
+
+**For example:**
+
+```js
+import ContentstackLivePreview from "@contentstack/live-preview-utils";
+import Utils from "@contentstack/utils";
+
+// In your page component (e.g. inside useEffect, once the entry is fetched)
+Utils.addEditableTags(entry, "blog_post", true, "en-us");
+ContentstackLivePreview.setPageContext({
+    entryUid: entry.uid,
+    contentTypeUid: "blog_post",
+});
+```
+
+> **Note:** When the page is loaded inside the Visual Builder/Live Preview iframe, the context is also sent to Contentstack via a post message. Outside an iframe, the context is only stored locally and used when generating the "Start Editing" redirection URL.
+
+### Alternative ways to supply page context
+
+If you cannot call `setPageContext()` directly (for example, when no JavaScript hook is available for injecting runtime values), the SDK resolves the page context from the following sources, in order of precedence:
+
+1. The value set via `ContentstackLivePreview.setPageContext()`.
+2. A `window.__CS_PAGE_CONTEXT__` global:
+
+    ```ts
+    window.__CS_PAGE_CONTEXT__ = {
+        entryUid: "entry-123",
+        contentTypeUid: "blog_post",
+    };
+    ```
+
+3. `<meta>` tags in the page `<head>`:
+
+    ```html
+    <meta name="contentstack:entry-uid" content="entry-123" />
+    <meta name="contentstack:content-type-uid" content="blog_post" />
+    ```
+
+    Meta tags are a useful fallback for frameworks that render `<meta>` natively (for example, Next.js App Router `metadata`/`generateMetadata()` or Nuxt `useHead()`) and for sites with a strict Content Security Policy (`no unsafe-inline`) that blocks inline `<script>` tags but allows meta tags.
 
 ## hash
 
