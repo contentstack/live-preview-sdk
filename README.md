@@ -83,6 +83,7 @@ Full tables and examples: **[docs/live-preview-configs.md](docs/live-preview-con
 
 - [`onLiveEdit`](docs/live-preview-configs.md#onliveeditcallback---void): Trigger actions on live edits
 - [`onEntryChange`](docs/live-preview-configs.md#onentrychangecallback---void): Listen for entry updates
+- [`setPageContext`](docs/live-preview-configs.md#setpagecontextcontext): Tell Visual Builder which entry the current page renders so “Start Editing” targets the right entry (needed for custom-URL pages)
 - [`hash`](docs/live-preview-configs.md#hash): Access preview state identifier
 - [`config`](docs/live-preview-configs.md#config): Includes runtime context (for example Live Preview / Timeline preview, Visual Editor, or independent)
 
