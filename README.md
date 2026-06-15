@@ -29,11 +29,11 @@ npm install @contentstack/live-preview-utils
 
 ### Load from a CDN (advanced)
 
-Pin the version to match your app (update `4.4.3` when you upgrade):
+Pin the version to match your app (update `4.4.4` when you upgrade):
 
 ```html
 <script type="module" crossorigin="anonymous">
-  import ContentstackLivePreview from "https://esm.sh/@contentstack/live-preview-utils@4.4.3";
+  import ContentstackLivePreview from "https://esm.sh/@contentstack/live-preview-utils@4.4.4";
 
   ContentstackLivePreview.init({
     stackDetails: {
@@ -84,6 +84,7 @@ Full tables and examples: **[docs/live-preview-configs.md](docs/live-preview-con
 - [`onLiveEdit`](docs/live-preview-configs.md#onliveeditcallback---void): Trigger actions on live edits
 - [`onEntryChange`](docs/live-preview-configs.md#onentrychangecallback---void): Listen for entry updates
 - [`hash`](docs/live-preview-configs.md#hash): Access preview state identifier
+- [`setPageContext`](docs/live-preview-configs.md#setpagecontextcontext): Tell Visual Builder which entry the current page renders so “Start Editing” targets the right entry (needed for custom-URL pages)
 - [`config`](docs/live-preview-configs.md#config): Includes runtime context (for example Live Preview / Timeline preview, Visual Editor, or independent)
 
 The [configs table of contents](docs/live-preview-configs.md#contentstack-live-preview-utils-sdk-configs) also lists `setConfigFromParams` and `getGatsbyDataFormat` for deeper workflows.

@@ -65,6 +65,11 @@ export enum ILivePreviewWindowType {
     INDEPENDENT = "independent",
 }
 
+export declare interface IPageContext {
+    entryUid: string;
+    contentTypeUid: string;
+}
+
 export declare interface IConfig {
     ssr: boolean;
     enable: boolean;
@@ -89,6 +94,7 @@ export declare interface IConfig {
     };
     collab: ICollabConfig["collab"];
     enableLivePreviewOutsideIframe: boolean | undefined;
+    pageContext: IPageContext | null;
 }
 
 

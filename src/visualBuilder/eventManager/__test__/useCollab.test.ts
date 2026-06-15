@@ -410,3 +410,51 @@ describe("cleanup", () => {
         });
     });
 });
+
+// Integration tests using real Config to document the intentional read-only isolation design.
+// Share recipients receive COLLAB_ENABLE with fromShare:true, which sets pauseFeedback and
+// isFeedbackMode but intentionally does NOT set collab.enable. As a result, share recipients
+// never enter the collab block in mouseClick.ts (guarded by `collab.enable === true`) and
+// bypass the full collab flow by design.
+describe("read-only isolation — fromShare integration", () => {
+    let realConfig: { get: () => any; set: (key: string, value: any) => void; reset: () => void };
+    let collabEnableHandler: (data: any) => void;
+    let collabDisableHandler: (data: any) => void;
+
+    beforeEach(async () => {
+        vi.clearAllMocks();
+        const realConfigModule = await vi.importActual<{ default: typeof realConfig }>(
+            "../../../configManager/configManager"
+        );
+        realConfig = realConfigModule.default;
+        realConfig.reset();
+        vi.mocked(Config.set).mockImplementation((key, value) => realConfig.set(key, value));
+        vi.mocked(Config.get).mockImplementation(() => realConfig.get());
+        useCollab();
+        collabEnableHandler = getHandler(0);
+        collabDisableHandler = getHandler(2);
+    });
+
+    afterEach(() => {
+        realConfig.reset();
+        vi.mocked(Config.get).mockReset();
+        vi.mocked(Config.set).mockReset();
+    });
+
+    it("should set pauseFeedback but not enable after COLLAB_ENABLE with fromShare:true", () => {
+        collabEnableHandler({
+            data: { collab: { fromShare: true, pauseFeedback: true, isFeedbackMode: true } },
+        });
+
+        expect(realConfig.get().collab.pauseFeedback).toBe(true);
+        expect(realConfig.get().collab.enable).not.toBe(true);
+    });
+
+    it("should set collab.pauseFeedback when COLLAB_DISABLE fires with fromShare:true", () => {
+        collabDisableHandler({
+            data: { collab: { fromShare: true, pauseFeedback: true } },
+        });
+
+        expect(realConfig.get().collab.pauseFeedback).toBe(true);
+    });
+});

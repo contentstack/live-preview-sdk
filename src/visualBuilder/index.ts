@@ -15,6 +15,7 @@ import { generateStartEditingButton } from "./generators/generateStartEditingBut
 
 import { addFocusOverlay } from "./generators/generateOverlay";
 import { getEntryIdentifiersInCurrentPage } from "./utils/getEntryIdentifiersInCurrentPage";
+import { resolvePageContext } from "./utils/resolvePageContext";
 import visualBuilderPostMessage from "./utils/visualBuilderPostMessage";
 import { VisualBuilderPostMessageEvents } from "./utils/types/postMessage.types";
 
@@ -308,11 +309,16 @@ export class VisualBuilder {
             return;
         }
 
+        const { entryUid, contentTypeUid } = resolvePageContext();
+        const initPayload: any = {
+            isSSR: config.ssr,
+            href: window.location.href,
+            entry_uid: entryUid,
+            content_type_uid: contentTypeUid,
+        };
+
         visualBuilderPostMessage
-            ?.send<IVisualBuilderInitEvent>("init", {
-                isSSR: config.ssr,
-                href: window.location.href,
-            })
+            ?.send<IVisualBuilderInitEvent>("init", initPayload)
             .then((data) => {
                 const {
                     windowType = ILivePreviewWindowType.BUILDER,
