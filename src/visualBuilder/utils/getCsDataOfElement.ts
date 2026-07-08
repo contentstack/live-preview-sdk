@@ -33,14 +33,12 @@ export function getCsDataOfElement(
     // elementsFromPoint fallback exists to pierce the website's own empty
     // overlapping elements, not the SDK's chrome: piercing the toolbar made
     // the edit (pencil) button double as a click on the field it covered.
-    const isVisualBuilderUi = targetElement.closest(
-        ".visual-builder__container"
-    );
-
+    // The closest() check runs last so hover events only pay for it when
+    // the fallback is enabled and no field matched.
     if (
         !editableElement &&
-        !isVisualBuilderUi &&
-        Config.get().overlayPropagation.enable
+        Config.get().overlayPropagation.enable &&
+        !targetElement.closest(".visual-builder__container")
     ) {
         const stack = document.elementsFromPoint(
             event.clientX,
