@@ -196,6 +196,38 @@ describe("getCsDataOfElement", () => {
             });
         });
 
+        test("does not pierce the visual builder's own UI (e.g. the field toolbar) even when fallback is enabled", () => {
+            Config.set("overlayPropagation", { enable: true });
+
+            // clicks on the SDK's own toolbar land on elements inside the
+            // visual builder container and must never resolve to the canvas
+            // field underneath
+            const vbContainer = document.createElement("div");
+            vbContainer.classList.add("visual-builder__container");
+            const toolbarButton = document.createElement("button");
+            vbContainer.appendChild(toolbarButton);
+            document.body.appendChild(vbContainer);
+
+            const toolbarClick = new MouseEvent("click", {
+                bubbles: true,
+                cancelable: true,
+                clientX: 100,
+                clientY: 100,
+            });
+            Object.defineProperty(toolbarClick, "target", {
+                value: toolbarButton,
+                writable: false,
+            });
+            (
+                document.elementsFromPoint as ReturnType<typeof vi.fn>
+            ).mockReturnValue([toolbarButton, vbContainer, cslpEl]);
+
+            const result = getCsDataOfElement(toolbarClick);
+
+            expect(result).toBeUndefined();
+            expect(document.elementsFromPoint).not.toHaveBeenCalled();
+        });
+
         test("returns undefined when fallback is enabled but no element under the cursor has data-cslp", () => {
             Config.set("overlayPropagation", { enable: true });
             const otherBlocker = document.createElement("div");
