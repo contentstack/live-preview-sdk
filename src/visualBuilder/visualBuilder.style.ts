@@ -699,6 +699,13 @@ export function visualBuilderStyles() {
         `,
         "visual-builder__default-cursor--disabled": css`
             cursor: none;
+            /* links/buttons carry their own cursor:pointer — suppress it too
+               while the custom cursor is active. Scoped to this body class so
+               it auto-reverts when the class is removed */
+            & a,
+            & button {
+                cursor: none !important;
+            }
         `,
         "visual-builder__draft-field": css`
             outline: 2px dashed #eb5646;
@@ -818,9 +825,6 @@ export function visualBuilderStyles() {
                 margin-top: 4px;
                 margin-bottom: 4px;
             }
-        `,
-        "visual-builder__no-cursor-style": css`
-            cursor: none !important;
         `,
         "visual-builder__field-toolbar-container": css`
             display: flex;
