@@ -319,6 +319,7 @@ describe("handleBuilderInteraction — alt+click on anchor", () => {
             "noopener,noreferrer"
         );
         expect(window.location.href).toBe("");
+        openSpy.mockRestore();
     });
 
     it("resolves the anchor ancestor when the click lands on nested formatted text inside the link", async () => {
@@ -338,5 +339,33 @@ describe("handleBuilderInteraction — alt+click on anchor", () => {
 
         expect(preventDefaultSpy).toHaveBeenCalled();
         expect(window.location.href).toBe("https://example.com/bold-link");
+    });
+
+    it("blocks unsafe url schemes like javascript: on alt+click", async () => {
+        document.body.innerHTML = "";
+        const anchor = document.createElement("a");
+        anchor.href = "javascript:alert(1)";
+        document.body.appendChild(anchor);
+
+        const params = makeParams(anchor);
+        Object.defineProperty(params.event, "altKey", { value: true });
+
+        await handleBuilderInteraction(params);
+
+        expect(window.location.href).toBe("");
+    });
+
+    it("allows relative hrefs (resolve to the page's own http/https scheme)", async () => {
+        document.body.innerHTML = "";
+        const anchor = document.createElement("a");
+        anchor.href = "/other-entry";
+        document.body.appendChild(anchor);
+
+        const params = makeParams(anchor);
+        Object.defineProperty(params.event, "altKey", { value: true });
+
+        await handleBuilderInteraction(params);
+
+        expect(window.location.href).toBe(anchor.href);
     });
 });

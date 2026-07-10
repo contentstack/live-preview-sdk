@@ -36,6 +36,8 @@ import { fetchEntryPermissionsAndStageDetails } from "../utils/fetchEntryPermiss
 import { isCustomFieldMultipleInstance } from "../utils/isCustomFieldMultipleInstance";
 import { getParentCslp, getWholeFieldElement } from "../utils/getWholeFieldElement";
 
+const SAFE_URL_SCHEMES = new Set(["http:", "https:", "mailto:", "tel:"]);
+
 export type HandleBuilderInteractionParams = Omit<
     EventListenerHandlerParams,
     "eventDetails" | "customCursor"
@@ -121,10 +123,10 @@ export async function handleBuilderInteraction(
     // click (browsers alt-click anchors as a download, not a navigation)
     if (params.event.altKey) {
         if (anchorElement) {
-            const { href, target } = anchorElement;
+            const { href, target, protocol } = anchorElement;
             params.event.preventDefault();
             params.event.stopPropagation();
-            if (href) {
+            if (href && SAFE_URL_SCHEMES.has(protocol)) {
                 if (target === "_blank") {
                     window.open(href, "_blank", "noopener,noreferrer");
                 } else {
