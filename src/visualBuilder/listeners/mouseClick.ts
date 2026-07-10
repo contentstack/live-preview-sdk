@@ -84,7 +84,9 @@ export async function handleBuilderInteraction(
     params: HandleBuilderInteractionParams
 ): Promise<void> {
     const eventTarget = params.event.target as HTMLElement | null;
-    const isAnchorElement = eventTarget instanceof HTMLAnchorElement;
+    // resolve nearest anchor ancestor, not just an exact tag match
+    const anchorElement = eventTarget?.closest("a") ?? null;
+    const isAnchorElement = anchorElement !== null;
     const elementHasCslp =
         eventTarget &&
         (eventTarget.hasAttribute("data-cslp") ||
@@ -115,10 +117,20 @@ export async function handleBuilderInteraction(
         return;
     }
 
+    // Alt+click on a link: navigate explicitly, don't rely on the native
+    // click (browsers alt-click anchors as a download, not a navigation)
     if (params.event.altKey) {
-        if (isAnchorElement) {
+        if (anchorElement) {
+            const { href, target } = anchorElement;
             params.event.preventDefault();
             params.event.stopPropagation();
+            if (href) {
+                if (target === "_blank") {
+                    window.open(href, "_blank", "noopener,noreferrer");
+                } else {
+                    window.location.href = href;
+                }
+            }
         }
         return;
     }

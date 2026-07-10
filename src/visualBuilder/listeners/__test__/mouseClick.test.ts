@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import handleBuilderInteraction from "../mouseClick";
 import { VisualBuilder } from "../../index";
 import { FieldSchemaMap } from "../../utils/fieldSchemaMap";
@@ -248,5 +248,95 @@ describe("handleBuilderInteraction — pauseFeedback guard", () => {
         await handleBuilderInteraction(makeParams(editableElement));
 
         expect(generateThread).toHaveBeenCalled();
+    });
+});
+
+describe("handleBuilderInteraction — alt+click on anchor", () => {
+    const originalLocation = window.location;
+
+    beforeEach(() => {
+        Object.defineProperty(window, "location", {
+            value: { href: "" },
+            writable: true,
+        });
+    });
+
+    afterEach(() => {
+        Object.defineProperty(window, "location", {
+            value: originalLocation,
+            writable: true,
+        });
+    });
+
+    it("prevents default/propagation and drives navigation itself instead of relying on the native click", async () => {
+        document.body.innerHTML = "";
+        const anchor = document.createElement("a");
+        anchor.href = "https://example.com/blog#anchor";
+        document.body.appendChild(anchor);
+
+        const params = makeParams(anchor);
+        Object.defineProperty(params.event, "altKey", { value: true });
+        const preventDefaultSpy = vi.spyOn(params.event, "preventDefault");
+        const stopPropagationSpy = vi.spyOn(params.event, "stopPropagation");
+
+        await handleBuilderInteraction(params);
+
+        expect(preventDefaultSpy).toHaveBeenCalled();
+        expect(stopPropagationSpy).toHaveBeenCalled();
+        expect(window.location.href).toBe("https://example.com/blog#anchor");
+        expect(getCsDataOfElement).not.toHaveBeenCalled();
+    });
+
+    it("does nothing on alt+click when the target isn't an anchor", async () => {
+        const editableElement = makeEditableElement();
+        const params = makeParams(editableElement);
+        Object.defineProperty(params.event, "altKey", { value: true });
+        const preventDefaultSpy = vi.spyOn(params.event, "preventDefault");
+
+        await handleBuilderInteraction(params);
+
+        expect(preventDefaultSpy).not.toHaveBeenCalled();
+        expect(window.location.href).toBe("");
+        expect(getCsDataOfElement).not.toHaveBeenCalled();
+    });
+
+    it("opens target=_blank links (RTE 'open in new tab') in a new tab instead of hijacking the iframe", async () => {
+        document.body.innerHTML = "";
+        const anchor = document.createElement("a");
+        anchor.href = "https://example.com/other-entry";
+        anchor.target = "_blank";
+        document.body.appendChild(anchor);
+
+        const openSpy = vi.spyOn(window, "open").mockImplementation(() => null);
+        const params = makeParams(anchor);
+        Object.defineProperty(params.event, "altKey", { value: true });
+
+        await handleBuilderInteraction(params);
+
+        expect(openSpy).toHaveBeenCalledWith(
+            "https://example.com/other-entry",
+            "_blank",
+            "noopener,noreferrer"
+        );
+        expect(window.location.href).toBe("");
+    });
+
+    it("resolves the anchor ancestor when the click lands on nested formatted text inside the link", async () => {
+        document.body.innerHTML = "";
+        const anchor = document.createElement("a");
+        anchor.href = "https://example.com/bold-link";
+        const bold = document.createElement("strong");
+        bold.textContent = "click me";
+        anchor.appendChild(bold);
+        document.body.appendChild(anchor);
+
+        const params = makeParams(bold);
+        Object.defineProperty(params.event, "altKey", { value: true });
+        const preventDefaultSpy = vi.spyOn(params.event, "preventDefault");
+
+        await handleBuilderInteraction(params);
+
+        expect(preventDefaultSpy).toHaveBeenCalled();
+        expect(window.location.href).toBe("https://example.com/bold-link");
     });
 });
