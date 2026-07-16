@@ -92,8 +92,7 @@ export function enableInlineEditing({
     }
 
     actualEditableField.setAttribute("contenteditable", "true");
-    // Let the caret follow the text's own direction so RTL content (e.g.
-    // Arabic, Hebrew) reads naturally instead of keeping an LTR caret.
+    // caret follows the text direction (fixes LTR caret on RTL content)
     actualEditableField.setAttribute("dir", "auto");
     actualEditableField.addEventListener("input", handleFieldInput);
     actualEditableField.addEventListener("keydown", handleFieldKeyDown);

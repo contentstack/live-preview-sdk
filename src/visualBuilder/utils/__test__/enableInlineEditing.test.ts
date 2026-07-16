@@ -142,6 +142,24 @@ describe("enableInlineEditing", () => {
         expect(editableElement.getAttribute("dir")).toBe("auto");
     });
 
+    it("should set dir=auto on the pseudo element when one is created", () => {
+        // Content differs from expected, so a pseudo editable element is used.
+        enableInlineEditing({
+            expectedFieldData: "Different content",
+            editableElement,
+            fieldType: FieldDataType.SINGLELINE,
+            elements: {
+                visualBuilderContainer,
+                resizeObserver,
+                lastEditedField: null,
+            },
+        });
+
+        const pseudoElement =
+            generatePseudoEditableElement.mock.results[0].value;
+        expect(pseudoElement.getAttribute("dir")).toBe("auto");
+    });
+
     it("should handle multiline fields correctly", () => {
         enableInlineEditing({
             expectedFieldData: "Test content",
