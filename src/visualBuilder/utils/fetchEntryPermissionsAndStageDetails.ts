@@ -1,6 +1,7 @@
 import { getEntryPermissionsCached } from "./getEntryPermissionsCached";
 import { getResolvedVariantPermissions } from "./getResolvedVariantPermissions";
 import { getWorkflowStageDetails } from "./getWorkflowStageDetails";
+import { requestEntryLockInfoOnce } from "./fieldLockIndicator";
 
 export async function fetchEntryPermissionsAndStageDetails({
     entryUid,
@@ -15,6 +16,16 @@ export async function fetchEntryPermissionsAndStageDetails({
     fieldPathWithIndex: string;
     variantUid?: string | undefined;
 }) {
+    // Fire-and-forget: pull this entry's lock snapshot once and paint indicators.
+    // De-duped per entry (the parent pushes deltas afterwards), so hovering does
+    // not spam requests, and it must not block the permission/stage fetch below.
+    void requestEntryLockInfoOnce({
+        entryUid,
+        contentTypeUid,
+        locale,
+        ...(variantUid ? { variantUid } : {}),
+    });
+
     const entryAclPromise = getEntryPermissionsCached({
         entryUid,
         contentTypeUid,

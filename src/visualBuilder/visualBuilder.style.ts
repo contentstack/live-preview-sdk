@@ -710,6 +710,27 @@ export function visualBuilderStyles() {
         "visual-builder__draft-field": css`
             outline: 2px dashed #eb5646;
         `,
+        "visual-builder__lock-avatar": css`
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: 600;
+            line-height: 1;
+            color: #ffffff;
+            background: #6c5ce7;
+            box-shadow: 0 0 0 2px #ffffff;
+            pointer-events: none;
+            transition: var(--outline-transition);
+            z-index: 2147483647 !important;
+        `,
+        "visual-builder__lock-avatar--hidden": css`
+            display: none;
+        `,
         "visual-builder__variant-field": css``,
         "visual-builder__variant-field-outline": css`
             outline: 2px solid #bd59fa;

@@ -20,6 +20,12 @@ import { CslpData } from "../../cslp/types/cslp.types";
 import { fetchEntryPermissionsAndStageDetails } from "../utils/fetchEntryPermissionsAndStageDetails";
 import { isCustomFieldMultipleInstance } from "../utils/isCustomFieldMultipleInstance";
 import { getParentCslp, getWholeFieldElement } from "../utils/getWholeFieldElement";
+import { getPeerLockForField } from "../utils/fieldLockIndicator";
+import { subscribeEntryFieldLockInfo } from "../utils/fieldLockStore";
+import {
+    showLockAvatar,
+    hideLockAvatar,
+} from "../generators/generateLockAvatar";
 
 const config = Config.get();
 export interface HandleMouseHoverParams
@@ -84,7 +90,22 @@ async function addOutline(params?: AddOutlineParams): Promise<void> {
     } = params;
     if (!editableElement) return;
     const isVariant = !!fieldMetadata.variant;
-    addHoverOutline(editableElement as HTMLElement, fieldDisabled, isVariant);
+    // Peer-lock is a hover-only affordance: if this field is locked by another
+    // user, show the disabled hover state + the author avatar (top-left, outside
+    // the border). Read the mirror synchronously for an instant paint on cached
+    // entries; it is re-read after the async fetch below in case the snapshot
+    // only just arrived for a first-time-hovered entry.
+    let peerLock = getPeerLockForField(fieldMetadata);
+    if (peerLock) {
+        showLockAvatar(editableElement, peerLock);
+    } else {
+        hideLockAvatar();
+    }
+    addHoverOutline(
+        editableElement as HTMLElement,
+        fieldDisabled || Boolean(peerLock),
+        isVariant
+    );
     const fieldSchema = await FieldSchemaMap.getFieldSchema(
         content_type_uid,
         fieldPath
@@ -105,12 +126,55 @@ async function addOutline(params?: AddOutlineParams): Promise<void> {
         entryAcl,
         entryWorkflowStageDetails
     );
-    addHoverOutline(editableElement, fieldDisabled || isDisabled, isVariant);
+    peerLock = getPeerLockForField(fieldMetadata);
+    if (peerLock) {
+        showLockAvatar(editableElement, peerLock);
+    } else {
+        hideLockAvatar();
+    }
+    addHoverOutline(
+        editableElement,
+        fieldDisabled || isDisabled || Boolean(peerLock),
+        isVariant
+    );
 }
 
 const debouncedAddOutline = debounce(addOutline, 50, { trailing: true });
 export const cancelPendingAddOutline = () => debouncedAddOutline.cancel();
-const showOutline = (params?: AddOutlineParams): Promise<void> | undefined => debouncedAddOutline(params);
+// Remember the last painted hover so a lock change can repaint the same element
+// (see the subscription below) without waiting for the next mouse move.
+let lastAddOutlineParams: AddOutlineParams | undefined;
+const showOutline = (params?: AddOutlineParams): Promise<void> | undefined => {
+    if (params) {
+        lastAddOutlineParams = params;
+    }
+    return debouncedAddOutline(params);
+};
+
+// Repaint the hover affordance when the lock mirror changes, so a lock acquired
+// or released while the pointer sits on a field updates immediately. Guarded to
+// the element still under the pointer with a visible outline, so a stale paint
+// never resurrects a hidden outline.
+subscribeEntryFieldLockInfo(() => {
+    const params = lastAddOutlineParams;
+    if (!params) return;
+    if (
+        VisualBuilder.VisualBuilderGlobalState.value.previousHoveredTargetDOM !==
+        params.editableElement
+    ) {
+        return;
+    }
+    const outline = document.querySelector(".visual-builder__hover-outline");
+    if (
+        !outline ||
+        outline.classList.contains(
+            visualBuilderStyles()["visual-builder__hover-outline--hidden"]
+        )
+    ) {
+        return;
+    }
+    void addOutline(params);
+});
 
 function hideDefaultCursor(): void {
     if (
@@ -151,6 +215,7 @@ export function hideHoverOutline(
     hoverOutline.classList.add(
         visualBuilderStyles()["visual-builder__hover-outline--hidden"]
     );
+    hideLockAvatar();
 }
 
 export function hideCustomCursor(customCursor: HTMLDivElement | null): void {
@@ -246,6 +311,9 @@ const throttledMouseHover = throttle(async (params: HandleMouseHoverParams) => {
         }
         if (!config?.collab.enable) {
             resetCustomCursor(params.customCursor);
+            // Empty space: drop any peer-lock avatar left over from a prior
+            // field hover so it does not ghost over the blank canvas.
+            hideLockAvatar();
         }
         removeAddInstanceButtons({
             eventTarget: params.event.target,
@@ -418,10 +486,12 @@ async function generateCursor({
         entryWorkflowStageDetails
     );
     const fieldType = getFieldType(fieldSchema);
+    // A peer-locked field reads as disabled on hover (same grey outline), so gray
+    // the cursor info too for a consistent disabled affordance.
     generateCustomCursor({
         fieldType,
         customCursor,
-        fieldDisabled,
+        fieldDisabled: fieldDisabled || Boolean(getPeerLockForField(fieldMetadata)),
     });
 }
 

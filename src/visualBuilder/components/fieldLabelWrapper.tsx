@@ -1,5 +1,5 @@
 import classNames from "classnames";
-import React, { useEffect, useRef, useState } from "preact/compat";
+import React, { useCallback, useEffect, useRef, useState } from "preact/compat";
 import { extractDetailsFromCslp, isValidCslp } from "../../cslp";
 import { CslpData } from "../../cslp/types/cslp.types";
 import { VisualBuilderCslpEventDetails } from "../types/visualBuilder.types";
@@ -20,6 +20,8 @@ import { fetchEntryPermissionsAndStageDetails } from "../utils/fetchEntryPermiss
 import { VariantIndicator } from "./VariantIndicator";
 import { handleRevalidateFieldData } from "../eventManager/useRevalidateFieldDataPostMessageEvent";
 import { RESULT_TYPES } from "../utils/constants";
+import { getPeerLockForField, lockAvatarInfo } from "../utils/fieldLockIndicator";
+import { subscribeEntryFieldLockInfo } from "../utils/fieldLockStore";
 
 interface ReferenceParentMap {
     [entryUid: string]: {
@@ -211,6 +213,73 @@ function FieldLabelWrapperComponent(
     const [error, setError] = useState(false);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
+    // Base (non-lock) label state captured by the data fetch below. The peer
+    // lock is layered on top separately so the affordance re-renders when the
+    // lock mirror changes, without re-running the (network) fetch.
+    const labelBaseRef = useRef<{
+        text: string;
+        contentTypeName: string;
+        fieldDisabled: boolean;
+        reason: string;
+        workflowRequestUi?: "request" | "pending";
+        handleLinkVariant: () => void;
+        handleRequestEditAccess: () => void | Promise<void>;
+        hasParentPaths: boolean;
+        isReference: boolean;
+        referenceFieldName: string;
+        parentContentTypeName: string;
+        isVariant: boolean;
+        prefixIcon: any;
+    } | null>(null);
+
+    const applyLockAffordance = useCallback(() => {
+        const base = labelBaseRef.current;
+        if (!base) return;
+        const peerLock = getPeerLockForField(props.fieldMetadata);
+        const effectiveDisabled = base.fieldDisabled || Boolean(peerLock);
+        const effectiveReason =
+            !base.fieldDisabled && peerLock
+                ? `This field is locked by ${
+                      lockAvatarInfo(peerLock).name || "another user"
+                  }`
+                : base.reason;
+        const usePlainDataTooltip =
+            effectiveReason &&
+            !effectiveReason.includes(DisableReason.CanLinkVariant) &&
+            base.workflowRequestUi == null;
+        setCurrentField({
+            text: base.text,
+            contentTypeName: base.contentTypeName,
+            icon: effectiveDisabled ? (
+                <FieldLabelDisabledIcon
+                    reason={effectiveReason}
+                    {...(base.workflowRequestUi != null
+                        ? { workflowRequestUi: base.workflowRequestUi }
+                        : {})}
+                    usePlainDataTooltip={Boolean(usePlainDataTooltip)}
+                    onLinkVariant={base.handleLinkVariant}
+                    onRequestEditAccess={base.handleRequestEditAccess}
+                />
+            ) : base.hasParentPaths ? (
+                <CaretIcon />
+            ) : (
+                <></>
+            ),
+            isReference: base.isReference,
+            prefixIcon: base.prefixIcon,
+            disabled: effectiveDisabled,
+            referenceFieldName: base.referenceFieldName,
+            parentContentTypeName: base.parentContentTypeName,
+            isVariant: base.isVariant,
+        });
+    }, [props.fieldMetadata]);
+
+    // Re-layer the lock affordance whenever the SDK lock mirror changes.
+    useEffect(
+        () => subscribeEntryFieldLockInfo(applyLockAffordance),
+        [applyLockAffordance]
+    );
+
     function calculateTopOffset(index: number) {
         const height = -30; // from bottom
         const offset = (index + 1) * height;
@@ -351,36 +420,26 @@ function FieldLabelWrapperComponent(
             const hasParentPaths = !!props?.parentPaths?.length;
             const isVariant = props.fieldMetadata.variant ? true : false;
 
-            const usePlainDataTooltip =
-                reason &&
-                !reason.includes(DisableReason.CanLinkVariant) &&
-                workflowRequestUi == null;
-
-            setCurrentField({
+            // A peer-held lock reads as disabled in the field label too (reusing
+            // the disabled info-icon + tooltip). Capture the base (non-lock)
+            // state and layer the lock on via applyLockAffordance, so a lock
+            // acquire/release re-renders the label without re-fetching.
+            labelBaseRef.current = {
                 text: currentFieldDisplayName,
                 contentTypeName: contentTypeName ?? "",
-                icon: fieldDisabled ? (
-                    <FieldLabelDisabledIcon
-                        reason={reason}
-                        {...(workflowRequestUi != null
-                            ? { workflowRequestUi }
-                            : {})}
-                        usePlainDataTooltip={Boolean(usePlainDataTooltip)}
-                        onLinkVariant={handleLinkVariant}
-                        onRequestEditAccess={handleRequestEditAccess}
-                    />
-                ) : hasParentPaths ? (
-                    <CaretIcon />
-                ) : (
-                    <></>
-                ),
+                fieldDisabled,
+                reason,
+                ...(workflowRequestUi != null ? { workflowRequestUi } : {}),
+                handleLinkVariant,
+                handleRequestEditAccess,
+                hasParentPaths,
                 isReference,
-                prefixIcon: getFieldIcon(fieldSchema),
-                disabled: fieldDisabled,
                 referenceFieldName,
                 parentContentTypeName,
-                isVariant: isVariant,
-            });
+                isVariant,
+                prefixIcon: getFieldIcon(fieldSchema),
+            };
+            applyLockAffordance();
 
             if (displayNames) {
                 setDisplayNames(displayNames);

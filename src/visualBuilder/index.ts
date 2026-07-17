@@ -25,6 +25,7 @@ import { h } from "preact";
 import { extractDetailsFromCslp, isValidCslp } from "../cslp";
 import initUI from "./components";
 import { useDraftFieldsPostMessageEvent } from "./eventManager/useDraftFieldsPostMessageEvent";
+import { useEntryLockInfoUpdateEvent } from "./eventManager/useEntryLockInfoUpdateEvent";
 import { useHideFocusOverlayPostMessageEvent } from "./eventManager/useHideFocusOverlayPostMessageEvent";
 import { useScrollToField } from "./eventManager/useScrollToField";
 import { debounceAddVariantFieldClass, getHighlightVariantFieldsStatus, setHighlightVariantFields, useVariantFieldsPostMessageEvent } from "./eventManager/useVariantsPostMessageEvent";
@@ -414,6 +415,7 @@ export class VisualBuilder {
                     useOnEntryUpdatePostMessageEvent();
                     useRecalculateVariantDataCSLPValues();
                     useDraftFieldsPostMessageEvent();
+                    useEntryLockInfoUpdateEvent();
                     useVariantFieldsPostMessageEvent({ isSSR: config.ssr ?? false });
                 }
             })
