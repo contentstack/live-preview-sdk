@@ -110,6 +110,8 @@ describe("StartEditingButtonComponent", () => {
     test("should update href with current URL when mouse enters button", async () => {
         Object.defineProperty(window, "location", {
             value: new URL("http://localhost:3000"),
+            configurable: true,
+            writable: true,
         });
 
         const { getByTestId } = await asyncRender(
@@ -120,6 +122,7 @@ describe("StartEditingButtonComponent", () => {
 
         Object.defineProperty(window, "location", {
             value: new URL("http://localhost:3000/about"),
+            configurable: true,
             writable: true,
         });
 
@@ -135,6 +138,8 @@ describe("StartEditingButtonComponent", () => {
     test("should update href with current URL when button is focused", async () => {
         Object.defineProperty(window, "location", {
             value: new URL("http://localhost:3000"),
+            configurable: true,
+            writable: true,
         });
 
         const { getByTestId } = await asyncRender(
@@ -145,10 +150,11 @@ describe("StartEditingButtonComponent", () => {
 
         Object.defineProperty(window, "location", {
             value: new URL("http://localhost:3000/contact"),
+            configurable: true,
             writable: true,
         });
 
-        fireEvent.focus(button);
+        button.focus();
 
         const updatedHref = button.getAttribute("href");
         expect(updatedHref).not.toBe(initialHref);

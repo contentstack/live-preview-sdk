@@ -28,7 +28,18 @@ export function getCsDataOfElement(
     let editableElement: Element | null =
         targetElement.closest("[data-cslp]");
 
-    if (!editableElement && Config.get().overlayPropagation.enable) {
+    // Clicks on the visual builder's own UI (field toolbar, overlays, add
+    // buttons) must never resolve to the canvas field underneath them. The
+    // elementsFromPoint fallback exists to pierce the website's own empty
+    // overlapping elements, not the SDK's chrome: piercing the toolbar made
+    // the edit (pencil) button double as a click on the field it covered.
+    // The closest() check runs last so hover events only pay for it when
+    // the fallback is enabled and no field matched.
+    if (
+        !editableElement &&
+        Config.get().overlayPropagation.enable &&
+        !targetElement.closest(".visual-builder__container")
+    ) {
         const stack = document.elementsFromPoint(
             event.clientX,
             event.clientY
