@@ -189,15 +189,17 @@ export function sendFieldEvent(options: ISendFieldEventParams): void {
             fieldMetadata.fieldPath
         )
             .then((fieldSchema) => {
-                if (
-                    fieldSchema &&
-                    eventType === VisualBuilderPostMessageEvents.UPDATE_FIELD
-                ) {
+                if (fieldSchema) {
                     const fieldType = getFieldType(fieldSchema);
                     if (fieldType && fieldType === FieldDataType.MULTILINE) {
                         data = getMultilinePlaintext(actualEditedElement);
-                        (actualEditedElement as HTMLElement).innerText =
-                            data as string;
+                        if (
+                            eventType ===
+                            VisualBuilderPostMessageEvents.UPDATE_FIELD
+                        ) {
+                            (actualEditedElement as HTMLElement).innerText =
+                                data as string;
+                        }
                     }
                 }
             })
