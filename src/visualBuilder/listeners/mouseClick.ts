@@ -182,6 +182,16 @@ export async function handleBuilderInteraction(
 
     const eventDetails = getCsDataOfElement(params.event);
 
+    // A field locked by another user is not editable — block entering edit mode
+    // (the hover state already shows it disabled with the author avatar). This
+    // gate runs before the post message so a click on a peer-locked field is a
+    // true no-op: posting MOUSE_CLICK with its fieldMetadata makes the host read
+    // it as a fresh selection and cancel the current user's own pending lock
+    // release.
+    if (eventDetails && getPeerLockForField(eventDetails.fieldMetadata)) {
+        return;
+    }
+
     // Send mouse click post message. A click inside the active inline editor (the
     // pseudo-editable overlay) resolves to no data-cslp — the overlay lives in the
     // SDK container, not the content DOM — but it is NOT a deselect: the user is
@@ -201,12 +211,6 @@ export async function handleBuilderInteraction(
     }
 
     const { editableElement, fieldMetadata } = eventDetails;
-
-    // A field locked by another user is not editable — block entering edit mode
-    // (the hover state already shows it disabled with the author avatar).
-    if (getPeerLockForField(fieldMetadata)) {
-        return;
-    }
 
     // Redirect click on multiple custom field instance to its whole-field parent (cached schema only)
     const { content_type_uid, fieldPath } = fieldMetadata;

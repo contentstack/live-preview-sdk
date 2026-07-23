@@ -31,7 +31,7 @@ export function showLockAvatar(
     );
     // Centre the badge on the field's top-left corner so it sits outside the border.
     avatar.style.top = `${rect.top + window.scrollY - AVATAR_SIZE / 2}px`;
-    avatar.style.left = `${rect.left - AVATAR_SIZE / 2}px`;
+    avatar.style.left = `${rect.left + window.scrollX - AVATAR_SIZE / 2}px`;
     avatar.classList.remove(
         visualBuilderStyles()["visual-builder__lock-avatar--hidden"]
     );
