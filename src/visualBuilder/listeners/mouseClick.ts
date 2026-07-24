@@ -8,6 +8,7 @@ import {
     getDOMEditStack,
 } from "../utils/getCsDataOfElement";
 import { isValidCslp } from "../../cslp";
+import { extractDetailsFromCslp } from "../../cslp/cslpdata";
 
 import { appendFocusedToolbar } from "../generators/generateToolbar";
 
@@ -20,6 +21,7 @@ import { VisualBuilderPostMessageEvents } from "../utils/types/postMessage.types
 import { VisualBuilder } from "..";
 import { FieldSchemaMap } from "../utils/fieldSchemaMap";
 import { isFieldDisabled } from "../utils/isFieldDisabled";
+import { getPeerLockForField } from "../utils/fieldLockIndicator";
 import EventListenerHandlerParams from "./types";
 import { toggleHighlightedCommentIconDisplay } from "../generators/generateHighlightedComment";
 import { VB_EmptyBlockParentClass } from "../..";
@@ -180,8 +182,25 @@ export async function handleBuilderInteraction(
 
     const eventDetails = getCsDataOfElement(params.event);
 
-    // Send mouse click post message
-    sendMouseClickPostMessage(eventDetails);
+    // A field locked by another user is not editable — block entering edit mode
+    // (the hover state already shows it disabled with the author avatar). This
+    // gate runs before the post message so a click on a peer-locked field is a
+    // true no-op: posting MOUSE_CLICK with its fieldMetadata makes the host read
+    // it as a fresh selection and cancel the current user's own pending lock
+    // release.
+    if (eventDetails && getPeerLockForField(eventDetails.fieldMetadata)) {
+        return;
+    }
+
+    // Send mouse click post message. A click inside the active inline editor (the
+    // pseudo-editable overlay) resolves to no data-cslp — the overlay lives in the
+    // SDK container, not the content DOM — but it is NOT a deselect: the user is
+    // just repositioning the cursor within the focused field. Carry the focused
+    // field's metadata so the host keeps the field lock instead of reading an
+    // empty-space click as a deselect and releasing it.
+    sendMouseClickPostMessage(
+        eventDetails ?? getInlineEditFieldDetails(eventTarget)
+    );
 
     if (
         !eventDetails ||
@@ -277,6 +296,45 @@ function sendMouseClickPostMessage(eventDetails: any) {
         .catch((err) => {
             console.warn("Error while sending post message", err);
         });
+}
+
+/** SDK-owned chrome for the focused field (its toolbar + action buttons like
+ * Replace / Edit / move / revert). These live in the SDK container, not the
+ * content DOM, so they carry no data-cslp — but clicking them acts ON the focused
+ * field, so it must not be read as a deselect. */
+const FOCUSED_FIELD_CHROME_SELECTOR =
+    ".visual-builder__pseudo-editable-element," +
+    ".visual-builder__focused-toolbar," +
+    ".visual-builder__field-toolbar-container";
+
+/**
+ * When a no-cslp click is still an interaction with the currently focused field —
+ * inside its inline-edit overlay, inside the field element itself (cursor
+ * reposition / text selection), or on its SDK toolbar chrome (Replace, Edit,
+ * move, revert, field-path dropdown) — resolve the focused field's cslp so
+ * MOUSE_CLICK still carries fieldMetadata and the host keeps the lock. Returns
+ * undefined for any other empty click (a genuine deselect).
+ */
+function getInlineEditFieldDetails(
+    eventTarget: HTMLElement | null
+): { cslpData: string; fieldMetadata: CslpData } | undefined {
+    const focusedElement =
+        VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM;
+    if (!focusedElement) {
+        return undefined;
+    }
+    const insideFieldChrome = !!eventTarget?.closest?.(
+        FOCUSED_FIELD_CHROME_SELECTOR
+    );
+    const insideFocusedField = !!eventTarget && focusedElement.contains(eventTarget);
+    if (!insideFieldChrome && !insideFocusedField) {
+        return undefined;
+    }
+    const cslpData = focusedElement.getAttribute?.("data-cslp") ?? null;
+    if (!isValidCslp(cslpData)) {
+        return undefined;
+    }
+    return { cslpData, fieldMetadata: extractDetailsFromCslp(cslpData) };
 }
 function cleanResidualsIfNeeded(
     params: HandleBuilderInteractionParams,

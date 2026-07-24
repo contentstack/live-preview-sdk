@@ -13,8 +13,22 @@ vi.mock("../../utils/getCsDataOfElement", () => ({
     getDOMEditStack: vi.fn().mockReturnValue([]),
 }));
 
+const { mockIsValidCslp } = vi.hoisted(() => ({
+    mockIsValidCslp: vi.fn().mockReturnValue(false),
+}));
+
 vi.mock("../../cslp", () => ({
-    isValidCslp: vi.fn().mockReturnValue(false),
+    isValidCslp: mockIsValidCslp,
+}));
+
+const { mockExtractDetailsFromCslp } = vi.hoisted(() => ({
+    mockExtractDetailsFromCslp: vi
+        .fn()
+        .mockReturnValue({ entry_uid: "entry1", fieldPathWithIndex: "field.0" }),
+}));
+
+vi.mock("../../cslp/cslpdata", () => ({
+    extractDetailsFromCslp: mockExtractDetailsFromCslp,
 }));
 
 vi.mock("../../generators/generateToolbar", () => ({
@@ -27,8 +41,12 @@ vi.mock("../../generators/generateOverlay", () => ({
     hideOverlay: vi.fn(),
 }));
 
+const { mockPostMessageSend } = vi.hoisted(() => ({
+    mockPostMessageSend: vi.fn().mockResolvedValue(undefined),
+}));
+
 vi.mock("../../utils/visualBuilderPostMessage", () => ({
-    default: { send: vi.fn().mockResolvedValue(undefined) },
+    default: { send: mockPostMessageSend },
 }));
 
 vi.mock("../../utils/types/postMessage.types", () => ({
@@ -367,5 +385,94 @@ describe("handleBuilderInteraction — alt+click on anchor", () => {
         await handleBuilderInteraction(params);
 
         expect(window.location.href).toBe(anchor.href);
+    });
+});
+
+describe("handleBuilderInteraction — inline editor click keeps the field lock", () => {
+    let focusedField: HTMLElement;
+
+    beforeEach(() => {
+        vi.clearAllMocks();
+        document.body.innerHTML = "";
+        hoistedConfigMocks.configGet.mockReturnValue({
+            collab: { enable: false, isFeedbackMode: false, pauseFeedback: false },
+        });
+        focusedField = document.createElement("div");
+        focusedField.setAttribute("data-cslp", "ct.entry1.en-us.field.0");
+        document.body.appendChild(focusedField);
+        VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
+            focusedField;
+        VisualBuilder.VisualBuilderGlobalState.value.isFocussed = true;
+        // getCsDataOfElement finds nothing (pseudo-editable and empty space both
+        // resolve to no data-cslp)
+        vi.mocked(getCsDataOfElement).mockReturnValue(undefined as any);
+        mockIsValidCslp.mockReturnValue(true);
+    });
+
+    it("carries the focused field's metadata on MOUSE_CLICK when the click is inside the pseudo-editable overlay", async () => {
+        const pseudo = document.createElement("div");
+        pseudo.className = "visual-builder__pseudo-editable-element";
+        document.body.appendChild(pseudo);
+
+        await handleBuilderInteraction(makeParams(pseudo));
+
+        expect(mockPostMessageSend).toHaveBeenCalledWith(
+            "MOUSE_CLICK",
+            expect.objectContaining({
+                cslpData: "ct.entry1.en-us.field.0",
+                fieldMetadata: expect.anything(),
+            }),
+        );
+    });
+
+    it("carries the focused field's metadata when the click is inside the focused field itself (in-place editor reposition)", async () => {
+        // A no-cslp click on a child of the focused field (e.g. repositioning the
+        // cursor inside an RTE / in-place editor) is not a deselect.
+        const innerNode = document.createElement("span");
+        focusedField.appendChild(innerNode);
+
+        await handleBuilderInteraction(makeParams(innerNode));
+
+        expect(mockPostMessageSend).toHaveBeenCalledWith(
+            "MOUSE_CLICK",
+            expect.objectContaining({
+                cslpData: "ct.entry1.en-us.field.0",
+                fieldMetadata: expect.anything(),
+            }),
+        );
+    });
+
+    it("carries the focused field's metadata when clicking the field toolbar chrome (e.g. Replace)", async () => {
+        // The file/asset Replace button lives in the SDK field toolbar, not the
+        // content DOM, so it has no data-cslp — but clicking it acts on the focused
+        // field and must not release the lock.
+        const toolbar = document.createElement("div");
+        toolbar.className = "visual-builder__field-toolbar-container";
+        const replaceBtn = document.createElement("button");
+        replaceBtn.setAttribute("data-testid", "visual-builder-replace-file");
+        toolbar.appendChild(replaceBtn);
+        document.body.appendChild(toolbar);
+
+        await handleBuilderInteraction(makeParams(replaceBtn));
+
+        expect(mockPostMessageSend).toHaveBeenCalledWith(
+            "MOUSE_CLICK",
+            expect.objectContaining({
+                cslpData: "ct.entry1.en-us.field.0",
+                fieldMetadata: expect.anything(),
+            }),
+        );
+    });
+
+    it("sends no fieldMetadata on a genuine empty-space click (a real deselect)", async () => {
+        const emptyTarget = document.createElement("div");
+        document.body.appendChild(emptyTarget);
+
+        await handleBuilderInteraction(makeParams(emptyTarget));
+
+        expect(mockPostMessageSend).toHaveBeenCalledWith("MOUSE_CLICK", {
+            cslpData: undefined,
+            fieldMetadata: undefined,
+        });
     });
 });

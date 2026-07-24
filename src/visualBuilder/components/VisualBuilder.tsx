@@ -108,6 +108,14 @@ function VisualBuilderComponent(props: VisualBuilderProps): JSX.Element | null {
             ></div>
             <div
                 className={classNames(
+                    "visual-builder__lock-avatar visual-builder__lock-avatar--hidden",
+                    visualBuilderStyles()["visual-builder__lock-avatar"],
+                    visualBuilderStyles()["visual-builder__lock-avatar--hidden"]
+                )}
+                data-testid="visual-builder__lock-avatar"
+            ></div>
+            <div
+                className={classNames(
                     "visual-builder__focused-toolbar",
                     visualBuilderStyles()["visual-builder__focused-toolbar"]
                 )}

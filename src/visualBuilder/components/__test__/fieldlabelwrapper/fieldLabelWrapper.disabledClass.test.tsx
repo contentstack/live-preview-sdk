@@ -15,6 +15,10 @@ import {
     mockFieldMetadata,
     mockEntryPermissionsResponse,
 } from "./fieldLabelWrapper.mocks";
+import {
+    setEntryFieldLockInfo,
+    clearAllEntryFieldLockInfo,
+} from "../../../utils/fieldLockStore";
 
 // Local cache for this test file (can't use imported cache in vi.mock due to hoisting)
 const testFieldSchemaCache: Record<string, Record<string, any>> = {};
@@ -207,6 +211,7 @@ describe("FieldLabelWrapperComponent - Disabled Class", () => {
     beforeEach(() => {
         // Reset all mocks to their default state before each test
         vi.clearAllMocks();
+        clearAllEntryFieldLockInfo();
 
         // Reset isFieldDisabled to default
         (isFieldDisabled as any).mockReturnValue({
@@ -279,6 +284,7 @@ describe("FieldLabelWrapperComponent - Disabled Class", () => {
     afterEach(() => {
         // Clean up field schema cache after each test
         FieldSchemaMap.clear();
+        clearAllEntryFieldLockInfo();
         // Clean up DOM after each test to prevent state pollution
         document.body.innerHTML = "";
     });
@@ -319,6 +325,54 @@ describe("FieldLabelWrapperComponent - Disabled Class", () => {
         });
 
         // Use findByTestId which is optimized for async queries
+        const fieldLabel = (await findByTestId(
+            container as HTMLElement,
+            "visual-builder__focused-toolbar__field-label-wrapper",
+            {},
+            { timeout: 1000 }
+        )) as HTMLElement;
+        expect(fieldLabel).toHaveClass(
+            "visual-builder__focused-toolbar--field-disabled"
+        );
+    });
+
+    test("renders the disabled (locked) class when the field is peer-locked, even without a permission disable", async () => {
+        // isFieldDisabled stays false (no permission/workflow disable); the peer
+        // lock alone must drive the same disabled label affordance.
+        (isFieldDisabled as any).mockReturnValue({
+            isDisabled: false,
+            reason: "",
+        });
+        setEntryFieldLockInfo(
+            {
+                entryUid: mockFieldMetadata.entry_uid,
+                locale: mockFieldMetadata.locale,
+            },
+            {
+                [mockFieldMetadata.fieldPath]: {
+                    user: { uid: "u1", name: "Ada Lovelace" },
+                    ttl: "2030-01-01",
+                    isLocked: true,
+                    isOwn: false,
+                },
+            }
+        );
+
+        const { container } = render(
+            <FieldLabelWrapperComponent
+                fieldMetadata={mockFieldMetadata}
+                eventDetails={mockEventDetails}
+                parentPaths={[]}
+                getParentEditableElement={mockGetParentEditable}
+            />
+        );
+
+        await act(async () => {
+            await new Promise<void>((resolve) =>
+                queueMicrotask(() => resolve())
+            );
+        });
+
         const fieldLabel = (await findByTestId(
             container as HTMLElement,
             "visual-builder__focused-toolbar__field-label-wrapper",

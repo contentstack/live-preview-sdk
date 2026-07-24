@@ -3,6 +3,10 @@ import handleMouseHover from "../mouseHover";
 import { VisualBuilder } from "../../index";
 import * as fetchEntryPermissionsModule from "../../utils/fetchEntryPermissionsAndStageDetails";
 import { FieldSchemaMap } from "../../utils/fieldSchemaMap";
+import {
+    setEntryFieldLockInfo,
+    clearAllEntryFieldLockInfo,
+} from "../../utils/fieldLockStore";
 
 vi.mock("lodash-es", async () => ({
     ...(await import("lodash-es")),
@@ -141,6 +145,7 @@ describe("mouseHover — custom field multiple instance suppression", () => {
         VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM = null;
         VisualBuilder.VisualBuilderGlobalState.value.isFocussed = false;
         vi.mocked(FieldSchemaMap.hasFieldSchema).mockReturnValue(true);
+        clearAllEntryFieldLockInfo();
     });
 
     it("dispatches mousemove on whole-field element for custom field multiple instance", async () => {
@@ -182,6 +187,30 @@ describe("mouseHover — custom field multiple instance suppression", () => {
         await handleMouseHover(makeParams(editableElement, customCursor));
 
         expect(addHoverOutline).toHaveBeenCalled();
+    });
+
+    it("grays the hover cursor for a peer-locked field (same disabled affordance as a disabled field)", async () => {
+        setEntryFieldLockInfo(
+            { entryUid: "entry1", locale: "en-us" },
+            {
+                title: {
+                    user: { uid: "u1", name: "Ada", initials: "AD" },
+                    ttl: "2030-01-01",
+                    isLocked: true,
+                    isOwn: false,
+                },
+            },
+        );
+        vi.mocked(isCustomFieldMultipleInstance).mockReturnValue(false);
+        mockedGetCsDataOfElement.mockReturnValue(
+            makeEventDetails(editableElement) as any,
+        );
+
+        await handleMouseHover(makeParams(editableElement, customCursor));
+
+        expect(vi.mocked(generateCustomCursor)).toHaveBeenCalledWith(
+            expect.objectContaining({ fieldDisabled: true }),
+        );
     });
 
     it("does not suppress when schema is not yet cached (hasFieldSchema returns false)", async () => {
