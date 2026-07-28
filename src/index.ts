@@ -5,7 +5,6 @@ import LightLivePreviewHoC from "./light-sdk";
 
 export type IStackSdk = ExternalStackSdkType;
 
-
 const ContentstackLivePreview =
     typeof process !== "undefined" &&
     (process?.env?.PURGE_PREVIEW_SDK === "true" ||
@@ -14,4 +13,7 @@ const ContentstackLivePreview =
         : ContentstackLivePreviewHOC;
 
 export const VB_EmptyBlockParentClass = "visual-builder__empty-block-parent";
+
+export { isVisualEditorEditing } from "./visualBuilder/utils/editingState";
+
 export default ContentstackLivePreview;
