@@ -48,7 +48,7 @@ export function visualBuilderStyles() {
                 position: fixed;
                 top: 0;
                 left: 0;
-                z-index: 2147483647 !important;
+                z-index: 2147482000 !important;
 
                 color: #fff;
 
@@ -160,7 +160,7 @@ export function visualBuilderStyles() {
             color: #6c5ce7;
             overflow: hidden;
 
-            z-index: 2147483646 !important;
+            z-index: 2147481999 !important;
 
             display: grid;
             grid-template-columns: min-content 0fr;
@@ -300,10 +300,10 @@ export function visualBuilderStyles() {
             border-style: solid;
             align-content: center;
             text-align: center;
-            border-color: #BD59FA;
+            border-color: #bd59fa;
 
             svg {
-                color: #BD59FA;
+                color: #bd59fa;
             }
         `,
         "visual-builder__focused-toolbar": css`
@@ -378,7 +378,7 @@ export function visualBuilderStyles() {
             line-height: 100%;
             padding: 8px 16px;
             text-align: center;
-            z-index: 2147483647 !important;
+            z-index: 2147482000 !important;
             transition:
                 color 0.15s ease-in-out,
                 background-color 0.15s ease-in-out,
@@ -475,7 +475,7 @@ export function visualBuilderStyles() {
             border-radius: 2px;
             height: 100%;
             padding: 4px !important;
-            z-index: 2147483647 !important;
+            z-index: 2147482000 !important;
 
             &:has(.visual-builder__button) {
                 padding: 2px;
@@ -513,7 +513,7 @@ export function visualBuilderStyles() {
         `,
         "visual-builder__focused-toolbar__multiple-field-toolbar": css`
             height: 40px;
-            z-index: 2147483647 !important;
+            z-index: 2147482000 !important;
 
             svg {
                 height: 100%;
@@ -532,7 +532,7 @@ export function visualBuilderStyles() {
         `,
         "visual-builder__focused-toolbar--variant": css`
             .visual-builder__focused-toolbar__field-label-wrapper__current-field {
-                background: #BD59FA;
+                background: #bd59fa;
             }
         `,
         "visual-builder__cursor-disabled": css`
@@ -554,7 +554,7 @@ export function visualBuilderStyles() {
             &:hover:before,
             &:hover:after {
                 display: block;
-                z-index: 2147483647 !important;
+                z-index: 2147482000 !important;
             }
 
             &:after {
@@ -683,7 +683,7 @@ export function visualBuilderStyles() {
             position: absolute;
             outline: 2px dashed #6c5ce7;
             transition: var(--outline-transition);
-            z-index: 2147483646 !important;
+            z-index: 2147481999 !important;
         `,
         "visual-builder__hover-outline--hidden": css`
             visibility: hidden;
@@ -695,7 +695,7 @@ export function visualBuilderStyles() {
             outline: 2px dashed #909090;
         `,
         "visual-builder__hover-outline--variant": css`
-            outline: 2px dashed #BD59FA;
+            outline: 2px dashed #bd59fa;
         `,
         "visual-builder__default-cursor--disabled": css`
             cursor: none;
@@ -785,7 +785,7 @@ export function visualBuilderStyles() {
         "variant-field-revert-component": css`
             position: relative;
             display: inline-block;
-            z-index: 2147483647 !important;
+            z-index: 2147482000 !important;
         `,
         "variant-field-revert-component__dropdown-content": css`
             position: absolute;
@@ -797,7 +797,7 @@ export function visualBuilderStyles() {
                 0 4px 15px 0 rgba(108, 92, 231, 0.2),
                 0 3px 14px 3px rgba(0, 0, 0, 0.12),
                 0 8px 10px 1px rgba(0, 0, 0, 0.14);
-            z-index: 2147483647 !important;
+            z-index: 2147482000 !important;
             margin-top: 4px;
             padding: 4px 0px;
             border-radius: 2px;
@@ -813,7 +813,7 @@ export function visualBuilderStyles() {
             line-height: 2rem;
             display: flex;
             align-items: center;
-            z-index: 2147483647 !important;
+            z-index: 2147482000 !important;
             cursor: pointer;
             &:hover {
                 background-color: #f1f1f1;
@@ -829,7 +829,7 @@ export function visualBuilderStyles() {
         "visual-builder__field-toolbar-container": css`
             display: flex;
             flex-direction: column-reverse;
-            z-index: 2147483647 !important;
+            z-index: 2147482000 !important;
             position: relative;
         `,
         "visual-builder__custom-field-instance-message": css`

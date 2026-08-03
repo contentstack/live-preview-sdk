@@ -17,6 +17,11 @@ import { PublicLogger } from "../logger/logger";
 import { handleWebCompare } from "../timeline/compare/compare";
 import type { IExportedConfig, IInitData } from "../types/types";
 import { VisualBuilder } from "../visualBuilder";
+import {
+    isPanelOpen,
+    isPanelRequested,
+    restorePanel,
+} from "../visualBuilder/panel/builderPanel";
 import visualBuilderPostMessage from "../visualBuilder/utils/visualBuilderPostMessage";
 import {
     IPageContextPostMessageEvent,
@@ -83,15 +88,15 @@ class ContentstackLivePreview {
         const config = Config.get();
         const clonedConfig = cloneDeep(config);
         const configToShare = pick(clonedConfig, [
-            'ssr',
-            'enable',
-            'cleanCslpOnProduction',
-            'stackDetails',
-            'clientUrlParams',
-            'windowType',
-            'hash',
-            'editButton',
-            'mode',
+            "ssr",
+            "enable",
+            "cleanCslpOnProduction",
+            "stackDetails",
+            "clientUrlParams",
+            "windowType",
+            "hash",
+            "editButton",
+            "mode",
         ]);
         return configToShare;
     }
@@ -100,7 +105,17 @@ class ContentstackLivePreview {
         return !isEmpty(ContentstackLivePreview.previewConstructors);
     }
 
-    private static initializePreview() {
+    private static async initializePreview() {
+        // Bring the panel back first when a previous page load had it docked.
+        // VisualBuilder sends its init handshake from the constructor, so the
+        // channels have to already point at the panel by the time we get there.
+        if (
+            isPanelRequested() &&
+            Config.get().editInVisualBuilderButton.openInPanel
+        ) {
+            await restorePanel();
+        }
+
         ContentstackLivePreview.previewConstructors = {
             livePreview: new LivePreview(),
             visualBuilder: new VisualBuilder(),
@@ -268,12 +283,16 @@ class ContentstackLivePreview {
      * ContentstackLivePreview.setPageContext({ entryUid: entry.uid, contentTypeUid: "blog_post" });
      * ```
      */
-    static setPageContext(context: { entryUid: string; contentTypeUid: string }): void {
+    static setPageContext(context: {
+        entryUid: string;
+        contentTypeUid: string;
+    }): void {
         Config.set("pageContext", context);
         // init() fires before async data fetching, so the INIT post-message has no
         // entry context in CSR apps. Send it now so VB can update its current entry.
-        // Only send when inside an iframe — skip when the site opens in a plain browser tab.
-        if (inIframe()) {
+        // Only send when a builder is actually listening: inside an iframe, or
+        // top-level with the panel docked. Skip for a plain browser tab.
+        if (inIframe() || isPanelOpen()) {
             visualBuilderPostMessage
                 ?.send<IPageContextPostMessageEvent>(
                     VisualBuilderPostMessageEvents.PAGE_CONTEXT,

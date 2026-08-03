@@ -105,7 +105,7 @@ export function collabStyles() {
         `,
         "collab-tooltip": css`
             position: fixed;
-            z-index: 2147483647 !important;
+            z-index: 2147482000 !important;
             padding: 8px 12px;
             font-size: 14px;
             color: #f7f9fc;

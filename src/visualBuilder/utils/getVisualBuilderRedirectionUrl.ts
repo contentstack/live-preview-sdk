@@ -3,13 +3,14 @@ import { extractDetailsFromCslp, isValidCslp } from "../../cslp";
 import { resolvePageContext } from "./resolvePageContext";
 
 /**
- * Returns the redirection URL for the Visual builder.
- * @returns {URL} The redirection URL.
+ * Builds the params that tell Visual Builder which page it is editing.
+ *
+ * Shared by the redirect flow and the docked panel flow: both need the same
+ * context, they just differ in where they send it.
  */
-export default function getVisualBuilderRedirectionUrl(): URL {
-    const { stackDetails, clientUrlParams } = Config.get();
-    const { branch, apiKey, environment, locale } = stackDetails;
-    const { url: appUrl } = clientUrlParams;
+export function buildVisualBuilderSearchParams(): URLSearchParams {
+    const { stackDetails } = Config.get();
+    const { branch, environment, locale } = stackDetails;
 
     const searchParams = new URLSearchParams();
     if (branch) {
@@ -39,15 +40,36 @@ export default function getVisualBuilderRedirectionUrl(): URL {
 
     const { entryUid, contentTypeUid } = resolvePageContext();
 
-    if (entryUid) {
-        searchParams.set("entry_uid", entryUid);
+    // Fall back to whatever the page URL already carries. resolvePageContext reads
+    // the rendered page, which on a reload has not fetched its entry yet — so
+    // without this the docked panel can come up with no entry context at all, and
+    // the builder then has nothing to open.
+    const pageParams = new URLSearchParams(window.location.search);
+    const resolvedEntryUid = entryUid || pageParams.get("entry_uid");
+    const resolvedContentTypeUid =
+        contentTypeUid || pageParams.get("content_type_uid");
+
+    if (resolvedEntryUid) {
+        searchParams.set("entry_uid", resolvedEntryUid);
     }
-    if (contentTypeUid) {
-        searchParams.set("content_type_uid", contentTypeUid);
+    if (resolvedContentTypeUid) {
+        searchParams.set("content_type_uid", resolvedContentTypeUid);
     }
 
+    return searchParams;
+}
+
+/**
+ * Returns the redirection URL for the Visual builder.
+ * @returns {URL} The redirection URL.
+ */
+export default function getVisualBuilderRedirectionUrl(): URL {
+    const { stackDetails, clientUrlParams } = Config.get();
+    const { apiKey } = stackDetails;
+    const { url: appUrl } = clientUrlParams;
+
     const completeURL = new URL(
-        `/#!/stack/${apiKey}/visual-editor?${searchParams.toString()}`,
+        `/#!/stack/${apiKey}/visual-editor?${buildVisualBuilderSearchParams().toString()}`,
         appUrl
     );
     return completeURL;
