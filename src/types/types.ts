@@ -97,14 +97,29 @@ export declare interface IConfig {
     pageContext: IPageContext | null;
 }
 
-
 export declare interface IConfigEditInVisualBuilderButton {
     enable: boolean;
-    position?:
-        | "top-left"
-        | "top-right"
-        | "bottom-left"
-        | "bottom-right"
+    position?: "top-left" | "top-right" | "bottom-left" | "bottom-right";
+    /**
+     * Dock the builder into this page instead of navigating to the Contentstack
+     * app. The site stays the top-level document, so it keeps its own session
+     * and never has to allow itself to be framed.
+     */
+    openInPanel?: boolean;
+    /**
+     * Origin serving the builder panel. Falls back to `clientUrlParams`.
+     *
+     * Should be an origin that holds no Contentstack session, since the panel is
+     * a third-party frame in the customer's page and is meant to be
+     * credential-free.
+     */
+    panelUrl?: string;
+    /**
+     * Origin of the window that performs API calls for the panel. Must be the
+     * Contentstack app origin — it is the only one with the user's session.
+     * Falls back to `clientUrlParams`.
+     */
+    brokerUrl?: string;
 }
 
 export declare interface IConfigOverlayPropagation {
@@ -119,7 +134,6 @@ export declare interface IConfigOverlayPropagation {
      */
     enable: boolean;
 }
-
 
 export declare interface IConfigEditButton {
     enable: boolean;

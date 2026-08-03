@@ -108,7 +108,7 @@ export const handleInitData = (initData: Partial<IInitData>): void => {
             config.editButton.includeByQueryParameter ??
             true,
     });
-    
+
     Config.set("editInVisualBuilderButton", {
         enable:
             initData.editInVisualBuilderButton?.enable ??
@@ -119,7 +119,17 @@ export const handleInitData = (initData: Partial<IInitData>): void => {
             stackSdk.live_preview?.position ??
             config.editInVisualBuilderButton.position ??
             "bottom-right",
-    })
+        openInPanel:
+            initData.editInVisualBuilderButton?.openInPanel ??
+            config.editInVisualBuilderButton.openInPanel ??
+            false,
+        panelUrl:
+            initData.editInVisualBuilderButton?.panelUrl ??
+            config.editInVisualBuilderButton.panelUrl,
+        brokerUrl:
+            initData.editInVisualBuilderButton?.brokerUrl ??
+            config.editInVisualBuilderButton.brokerUrl,
+    });
 
     Config.set("overlayPropagation", {
         enable:

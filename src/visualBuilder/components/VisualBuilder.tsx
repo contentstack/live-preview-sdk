@@ -5,7 +5,8 @@ import {
     VisualBuilderGlobalStyles,
 } from "../visualBuilder.style";
 import React from "preact/compat";
-import { isOpenInBuilder , isOpenInPreviewShare} from "../../utils";
+import { isOpenInBuilder, isOpenInPreviewShare } from "../../utils";
+import { isPanelOpen } from "../panel/panelElement";
 
 interface VisualBuilderProps {
     visualBuilderContainer: HTMLDivElement | null;
@@ -13,7 +14,10 @@ interface VisualBuilderProps {
 }
 
 function VisualBuilderComponent(props: VisualBuilderProps): JSX.Element | null {
-    const isInBuilder = isOpenInBuilder();
+    // isOpenInBuilder covers the canvas-in-an-iframe arrangement, where Visual
+    // Builder puts `builder=true` on the URL it loads. isPanelOpen covers the
+    // reverse: this page is top-level and the builder is docked into it.
+    const isInBuilder = isOpenInBuilder() || isPanelOpen();
     const isInPreviewShare = isOpenInPreviewShare();
 
     if (!isInBuilder && !isInPreviewShare) {

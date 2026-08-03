@@ -5,37 +5,64 @@ import { visualBuilderStyles } from "../visualBuilder.style";
 import React from "preact/compat";
 import Config from "../../configManager/configManager";
 import { IConfigEditInVisualBuilderButton } from "../../types/types";
+import { openBuilderPanel } from "../panel/builderPanel";
 
-
-type Position = NonNullable<IConfigEditInVisualBuilderButton['position']>;
+type Position = NonNullable<IConfigEditInVisualBuilderButton["position"]>;
 
 const positionStyles: Record<Position, string> = {
-    "bottom-right": visualBuilderStyles()['visual-builder__start-editing-btn__bottom-right'],
-    "bottom-left": visualBuilderStyles()['visual-builder__start-editing-btn__bottom-left'],
-    "top-left": visualBuilderStyles()['visual-builder__start-editing-btn__top-left'],
-    "top-right": visualBuilderStyles()['visual-builder__start-editing-btn__top-right'],
-}
+    "bottom-right":
+        visualBuilderStyles()[
+            "visual-builder__start-editing-btn__bottom-right"
+        ],
+    "bottom-left":
+        visualBuilderStyles()["visual-builder__start-editing-btn__bottom-left"],
+    "top-left":
+        visualBuilderStyles()["visual-builder__start-editing-btn__top-left"],
+    "top-right":
+        visualBuilderStyles()["visual-builder__start-editing-btn__top-right"],
+};
 
 export function getEditButtonPosition(position: any): Position {
-    const validPositions: Position[] = ['bottom-left', 'bottom-right', 'top-left', 'top-right']
-    if(validPositions.includes(position)){
-        return position
+    const validPositions: Position[] = [
+        "bottom-left",
+        "bottom-right",
+        "top-left",
+        "top-right",
+    ];
+    if (validPositions.includes(position)) {
+        return position;
     } else {
-        return "bottom-right"
+        return "bottom-right";
     }
 }
 
 function StartEditingButtonComponent(): JSX.Element | null {
-    const config = Config.get()
+    const config = Config.get();
     const enable = config.editInVisualBuilderButton.enable;
-    const position = config.editInVisualBuilderButton.position || "bottom-right";
-    
-    function updateTargetUrl(e: any){
+    const position =
+        config.editInVisualBuilderButton.position || "bottom-right";
+    const openInPanel = config.editInVisualBuilderButton.openInPanel;
+
+    function updateTargetUrl(e: any) {
         const targetElement = e.target as HTMLAnchorElement;
         targetElement.setAttribute(
             "href",
             getVisualBuilderRedirectionUrl().toString()
         );
+    }
+
+    function handleClick(e: any) {
+        if (!openInPanel) {
+            updateTargetUrl(e);
+            return;
+        }
+        // Dock the builder into this page rather than navigating to the app, so
+        // the site stays top-level and keeps its own session. The href is left
+        // intact as a fallback for opening in a new tab.
+        e.preventDefault();
+        // Not awaited on purpose: openBuilderPanel opens the broker window in its
+        // first synchronous step, and awaiting here would not change that.
+        void openBuilderPanel();
     }
 
     return enable ? (
@@ -49,7 +76,7 @@ function StartEditingButtonComponent(): JSX.Element | null {
             data-testid="vcms-start-editing-btn"
             onMouseEnter={(e) => updateTargetUrl(e)}
             onFocus={(e) => updateTargetUrl(e)}
-            onClick={(e) => updateTargetUrl(e)}
+            onClick={(e) => handleClick(e)}
         >
             <EditIcon />
             <span>Start Editing</span>

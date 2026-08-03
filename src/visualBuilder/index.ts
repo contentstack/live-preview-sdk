@@ -12,6 +12,8 @@ import {
     IVisualBuilderInitEvent,
 } from "../types/types";
 import { generateStartEditingButton } from "./generators/generateStartEditingButton";
+import { BUILDER_PANEL_OPENED_EVENT } from "./panel/builderPanel";
+import { isPanelOpen } from "./panel/panelElement";
 
 import { addFocusOverlay } from "./generators/generateOverlay";
 import { getEntryIdentifiersInCurrentPage } from "./utils/getEntryIdentifiersInCurrentPage";
@@ -25,7 +27,12 @@ import initUI from "./components";
 import { useDraftFieldsPostMessageEvent } from "./eventManager/useDraftFieldsPostMessageEvent";
 import { useHideFocusOverlayPostMessageEvent } from "./eventManager/useHideFocusOverlayPostMessageEvent";
 import { useScrollToField } from "./eventManager/useScrollToField";
-import { debounceAddVariantFieldClass, getHighlightVariantFieldsStatus, setHighlightVariantFields, useVariantFieldsPostMessageEvent } from "./eventManager/useVariantsPostMessageEvent";
+import {
+    debounceAddVariantFieldClass,
+    getHighlightVariantFieldsStatus,
+    setHighlightVariantFields,
+    useVariantFieldsPostMessageEvent,
+} from "./eventManager/useVariantsPostMessageEvent";
 import {
     generateEmptyBlocks,
     removeEmptyBlocks,
@@ -241,8 +248,14 @@ export class VisualBuilder {
                         previousEmptyBlockParents: emptyBlockParents,
                     };
                 }
-                if (VisualBuilder.VisualBuilderGlobalState.value.variant && VisualBuilder.VisualBuilderGlobalState.value.highlightVariantFields) {
-                    debounceAddVariantFieldClass(VisualBuilder.VisualBuilderGlobalState.value.variant);
+                if (
+                    VisualBuilder.VisualBuilderGlobalState.value.variant &&
+                    VisualBuilder.VisualBuilderGlobalState.value
+                        .highlightVariantFields
+                ) {
+                    debounceAddVariantFieldClass(
+                        VisualBuilder.VisualBuilderGlobalState.value.variant
+                    );
                 }
             },
             100,
@@ -283,6 +296,27 @@ export class VisualBuilder {
         // triggering a redraw of the visual builder
         window.addEventListener("resize", this.resizeEventHandler);
         window.addEventListener("scroll", this.scrollEventHandler);
+
+        // The docked panel appears after a click, long after this runs, so the
+        // first handshake finds no builder. Run it again once the panel is up
+        // rather than making the user reload to get the ordering right.
+        window.addEventListener(BUILDER_PANEL_OPENED_EVENT, () => {
+            this.startEditing();
+        });
+
+        this.startEditing();
+    }
+
+    /**
+     * Asks whoever is listening whether a builder is there, and wires up editing
+     * if one answers.
+     *
+     * Safe to call more than once: a failed handshake leaves nothing behind, and
+     * `isEditingWired` stops a second success from double-registering listeners.
+     */
+    private isEditingWired = false;
+
+    startEditing = (): void => {
         initUI({
             resizeObserver: this.resizeObserver,
         });
@@ -315,6 +349,9 @@ export class VisualBuilder {
         visualBuilderPostMessage
             ?.send<IVisualBuilderInitEvent>("init", initPayload)
             .then((data) => {
+                if (this.isEditingWired) return;
+                this.isEditingWired = true;
+
                 const {
                     windowType = ILivePreviewWindowType.BUILDER,
                     stackDetails,
@@ -372,7 +409,9 @@ export class VisualBuilder {
                     });
 
                     getHighlightVariantFieldsStatus().then((result) => {
-                        setHighlightVariantFields(result.highlightVariantFields);
+                        setHighlightVariantFields(
+                            result.highlightVariantFields
+                        );
                     });
                     visualBuilderPostMessage?.on(
                         VisualBuilderPostMessageEvents.GET_ALL_ENTRIES_IN_CURRENT_PAGE,
@@ -391,13 +430,10 @@ export class VisualBuilder {
                                 document.body.style.overflow = "hidden";
                             } else {
                                 document.body.style.overflow = "auto";
-
                             }
                         }
                     );
 
-
-                    
                     useHideFocusOverlayPostMessageEvent({
                         overlayWrapper: this.overlayWrapper,
                         visualBuilderContainer: this.visualBuilderContainer,
@@ -409,15 +445,19 @@ export class VisualBuilder {
                     useOnEntryUpdatePostMessageEvent();
                     useRecalculateVariantDataCSLPValues();
                     useDraftFieldsPostMessageEvent();
-                    useVariantFieldsPostMessageEvent({ isSSR: config.ssr ?? false });
+                    useVariantFieldsPostMessageEvent({
+                        isSSR: config.ssr ?? false,
+                    });
                 }
             })
             .catch(() => {
-                if (!inIframe()) {
+                // No builder listening. Offer to dock one, unless we are the
+                // canvas inside an iframe or a panel is already up.
+                if (!inIframe() && !isPanelOpen()) {
                     generateStartEditingButton();
                 }
             });
-    }
+    };
 
     // TODO: write test cases
     destroy = (): void => {

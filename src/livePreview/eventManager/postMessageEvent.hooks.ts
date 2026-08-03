@@ -3,6 +3,32 @@ import Config, { syncToStackSdk } from "../../configManager/configManager";
 import { PublicLogger } from "../../logger/logger";
 import { ILivePreviewWindowType } from "../../types/types";
 import { addParamsToUrl, isOpeningInTimeline } from "../../utils";
+import { isPanelOpen } from "../../visualBuilder/panel/panelElement";
+import { softReloadPage } from "../../visualBuilder/panel/softReload";
+
+/**
+ * Whether this document is the canvas *and* the top-level page — the live-preview
+ * popout, or a page with the builder docked into it. Either way nothing else can
+ * set our URL for us, so we keep the preview params on it ourselves.
+ */
+function isTopLevelCanvas(): boolean {
+    return isOpeningInNewTab() || isPanelOpen();
+}
+
+/**
+ * The tracker this document's markup was rendered against, captured at load.
+ *
+ * Deliberately captured here rather than read from the live URL: we rewrite the
+ * URL in place to keep the preview params current, so by the time an SSR reload
+ * decision is made the URL no longer says what the markup was built from.
+ * A soft reload refreshes the markup without producing a new document, so it
+ * updates this in place — otherwise every later ON_CHANGE would look like a
+ * reason to reload again.
+ */
+let documentRenderedHash =
+    typeof window !== "undefined"
+        ? new URLSearchParams(window.location.search).get("live_preview")
+        : null;
 import livePreviewPostMessage from "./livePreviewEventManager";
 import { LIVE_PREVIEW_POST_MESSAGE_EVENTS } from "./livePreviewEventManager.constant";
 import {
@@ -30,6 +56,14 @@ export function useHistoryPostMessageEvent(): void {
                     break;
                 }
                 case "reload": {
+                    // With the builder docked, a real reload would take the
+                    // panel down with the page; patch the fresh markup in
+                    // instead. Everywhere else the canvas is its own frame and
+                    // reloading it is cheap and exact.
+                    if (isPanelOpen()) {
+                        void softReloadPage();
+                        break;
+                    }
                     window.history.go();
                     break;
                 }
@@ -58,62 +92,127 @@ export function useOnEntryUpdatePostMessageEvent(): void {
                     syncToStackSdk({ hash: event.data.hash });
                 }
 
+                // The preview API rejects a live_preview hash that arrives
+                // without the entry it belongs to. When the canvas is an iframe,
+                // Visual Builder puts all three on the URL it loads and the SDK
+                // picks them up from there. A top-level canvas has no such URL,
+                // so take them from the payload instead — otherwise the first
+                // edit turns every content request into a 400 and the site falls
+                // through to its own not-found page.
+                const contentTypeUid = event.data.content_type_uid;
+                const entryUid = event.data.entry_uid;
+                if (contentTypeUid && entryUid) {
+                    Config.set("stackDetails.contentTypeUid", contentTypeUid);
+                    Config.set("stackDetails.entryUid", entryUid);
+                    syncToStackSdk({ contentTypeUid, entryUid });
+                }
+
                 // This section will run when there is a change in the entry and the website is CSR
                 if (!ssr && !event_type) {
                     onChange();
                 }
 
-                if (isOpeningInNewTab()) {
+                // A top-level canvas owns its own URL, so it has to carry the
+                // preview params itself. True of the live-preview popout and of a
+                // page with the builder docked into it — in both cases there is no
+                // parent frame whose src someone else can set.
+                if (isTopLevelCanvas()) {
                     if (!window) {
                         PublicLogger.error("window is not defined");
                         return;
-                    };
+                    }
 
-                    if (ssr && !event_type) {
-                        const url = new URL(window.location.href);
-                        let live_preview = url.searchParams.get("live_preview");
-                        let content_type_uid = url.searchParams.get("content_type_uid");
-                        let entry_uid = url.searchParams.get("entry_uid");
+                    // Kept on the URL for every render mode, not just SSR, so a
+                    // top-level canvas looks like the framed one: Visual Builder
+                    // always puts all three on a canvas iframe's src. It also means
+                    // a reload or a shared link comes back to the same preview.
+                    const url = new URL(window.location.href);
+                    const nextHash = event.data.hash;
+                    const nextContentTypeUid =
+                        event.data.content_type_uid ||
+                        stackDetails.contentTypeUid?.toString() ||
+                        "";
+                    const nextEntryUid =
+                        event.data.entry_uid ||
+                        stackDetails.entryUid?.toString() ||
+                        "";
 
-                        if (live_preview && content_type_uid && entry_uid) {
-                            // All required params are present, just reload
-                            window.location.reload();
-                        } else {
-                            live_preview = event.data.hash;
-                            content_type_uid = event.data.content_type_uid || stackDetails.contentTypeUid?.toString() || "";
-                            entry_uid = event.data.entry_uid || stackDetails.entryUid?.toString() || "";
-                            // Set missing params and redirect
-                            url.searchParams.set("live_preview", live_preview);
-                            if (content_type_uid) {
-                                url.searchParams.set(
-                                    "content_type_uid",
-                                    content_type_uid
-                                );
+                    if (nextHash)
+                        url.searchParams.set("live_preview", nextHash);
+                    if (nextContentTypeUid) {
+                        url.searchParams.set(
+                            "content_type_uid",
+                            nextContentTypeUid
+                        );
+                    }
+                    if (nextEntryUid) {
+                        url.searchParams.set("entry_uid", nextEntryUid);
+                    }
+
+                    // A URL change is a navigation, so it wins over any param sync.
+                    if (
+                        event_type ===
+                            OnChangeLivePreviewPostMessageEventTypes.URL_CHANGE &&
+                        event.data.url
+                    ) {
+                        // Only the path is trustworthy: the sender resolves URLs
+                        // against the host it was configured with, which for a
+                        // docked builder is not where this page lives. And the
+                        // preview params ride along — `url` already carries the
+                        // new tracker and entry — so the destination comes back
+                        // editing rather than as the plain site.
+                        const requested = new URL(
+                            event.data.url,
+                            window.location.href
+                        );
+                        const target = new URL(
+                            requested.pathname +
+                                requested.search +
+                                requested.hash,
+                            window.location.origin
+                        );
+                        url.searchParams.forEach((value, key) => {
+                            if (!target.searchParams.has(key)) {
+                                target.searchParams.set(key, value);
                             }
-                            if (entry_uid) {
-                                url.searchParams.set(
-                                    "entry_uid",
-                                    entry_uid
-                                );
-                            }
-                            window.location.href = url.toString();
+                        });
+                        window.location.href = target.toString();
+                        return;
+                    }
+
+                    // Server-rendered markup can only pick up new content by being
+                    // fetched again, and only when the tracker actually differs from
+                    // the one this document was rendered against. Comparing against
+                    // the hash captured at load — rather than the live URL, which we
+                    // have just rewritten — is what stops an endless
+                    // reload / remount / re-announce cycle.
+                    if (
+                        ssr &&
+                        !event_type &&
+                        nextHash &&
+                        nextHash !== documentRenderedHash
+                    ) {
+                        if (isPanelOpen()) {
+                            // Put the new params on the URL first — the soft
+                            // reload fetches window.location.href.
+                            window.history.replaceState({}, "", url.toString());
+                            documentRenderedHash = nextHash;
+                            void softReloadPage();
+                            return;
                         }
+                        window.location.href = url.toString();
+                        return;
                     }
 
-                    // This section will run when the hash changes and the website is SSR or CSR
-                    if (event_type === OnChangeLivePreviewPostMessageEventTypes.HASH_CHANGE) {
-                        const newUrl = new URL(window.location.href);
-                        newUrl.searchParams.set("live_preview", event.data.hash);
-                        window.history.pushState({}, "", newUrl.toString());
-                    }
-
-                    // This section will run when the URL of the page changes
-                    if (event_type === OnChangeLivePreviewPostMessageEventTypes.URL_CHANGE && event.data.url) {
-                        window.location.href = event.data.url;
+                    if (url.toString() !== window.location.href) {
+                        window.history.replaceState({}, "", url.toString());
                     }
                 }
             } catch (error) {
-                PublicLogger.error("Error handling live preview update:", error);
+                PublicLogger.error(
+                    "Error handling live preview update:",
+                    error
+                );
                 return;
             }
         }
@@ -136,7 +235,8 @@ export function sendInitializeLivePreviewPostMessageEvent(): void {
     };
 
     if (config.enableLivePreviewOutsideIframe !== undefined) {
-        initConfig.enableLivePreviewOutsideIframe = config.enableLivePreviewOutsideIframe;
+        initConfig.enableLivePreviewOutsideIframe =
+            config.enableLivePreviewOutsideIframe;
     }
 
     livePreviewPostMessage
@@ -153,12 +253,18 @@ export function sendInitializeLivePreviewPostMessageEvent(): void {
                 windowType = ILivePreviewWindowType.PREVIEW,
             } = data || {};
 
-            if(inVisualEditor()){
+            // The builder already answered its own init on the other channel.
+            // isPanelOpen() covers the docked-panel arrangement, where the page
+            // is top-level so inVisualEditor() cannot recognise it.
+            if (inVisualEditor() || isPanelOpen()) {
                 return;
             }
 
             // TODO: the upper condition will the handle the visual editor init double firing issue so later we can remove this once verified
-            if (Config?.get()?.windowType && Config.get().windowType === ILivePreviewWindowType.BUILDER) {
+            if (
+                Config?.get()?.windowType &&
+                Config.get().windowType === ILivePreviewWindowType.BUILDER
+            ) {
                 return;
             }
 
