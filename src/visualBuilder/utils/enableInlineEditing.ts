@@ -92,6 +92,8 @@ export function enableInlineEditing({
     }
 
     actualEditableField.setAttribute("contenteditable", "true");
+    // caret follows the text direction (fixes LTR caret on RTL content)
+    actualEditableField.setAttribute("dir", "auto");
     actualEditableField.addEventListener("input", handleFieldInput);
     actualEditableField.addEventListener("keydown", handleFieldKeyDown);
 

@@ -42,4 +42,14 @@ describe("getStyleOfAnElement", () => {
             width: "100px",
         });
     });
+
+    test("it should not copy direction/unicode-bidi so dir=auto can govern", () => {
+        const elem = document.createElement("div");
+        elem.style.direction = "rtl";
+        elem.style.unicodeBidi = "isolate";
+
+        const style = getStyleOfAnElement(elem);
+        expect(style).not.toHaveProperty("direction");
+        expect(style).not.toHaveProperty("unicode-bidi");
+    });
 });

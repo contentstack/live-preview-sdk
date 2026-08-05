@@ -19,9 +19,7 @@ import { resolvePageContext } from "./utils/resolvePageContext";
 import visualBuilderPostMessage from "./utils/visualBuilderPostMessage";
 import { VisualBuilderPostMessageEvents } from "./utils/types/postMessage.types";
 
-import { setup } from "goober";
 import { debounce, isEqual } from "lodash-es";
-import { h } from "preact";
 import { extractDetailsFromCslp, isValidCslp } from "../cslp";
 import initUI from "./components";
 import { useDraftFieldsPostMessageEvent } from "./eventManager/useDraftFieldsPostMessageEvent";
@@ -288,9 +286,6 @@ export class VisualBuilder {
         initUI({
             resizeObserver: this.resizeObserver,
         });
-
-        // Initializing goober for css-in-js
-        setup(h);
 
         this.visualBuilderContainer = document.querySelector(
             ".visual-builder__container"
