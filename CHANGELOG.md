@@ -1,23 +1,57 @@
 # Changelog
 
-## [v4.4.5](https://github.com/contentstack/live-preview-sdk/compare/v4.4.4...v4.4.5)
+## [v4.5.0](https://github.com/contentstack/live-preview-sdk/compare/v4.4.5...v4.5.0)
 
-> 13 July 2026
+> 5 August 2026
+
+### New Features
+
+- feat(VB-2055): add isVisualEditorEditing helper (Karan Bhavesh Gandhi - [#629](https://github.com/contentstack/live-preview-sdk/pull/629))
 
 ### Fixes
 
+- fix: isolate goober pragma from host app to prevent react-hot-toast crash (Hitesh Shetty - [#630](https://github.com/contentstack/live-preview-sdk/pull/630))
+- fix(VB-1797): match caret direction to text when inline editing (Karan Bhavesh Gandhi - [#620](https://github.com/contentstack/live-preview-sdk/pull/620))
+
+### General Changes
+
+- develop to stage 6 aug release (Karan Bhavesh Gandhi - [#631](https://github.com/contentstack/live-preview-sdk/pull/631))
+
+### Fixes
+
+- fix(VB-1797): keep dir=auto working on the pseudo editable element (Karan Gandhi - [a06ad34](https://github.com/contentstack/live-preview-sdk/commit/a06ad3403106cad06d899034f76d2d9a180b7460))
+
+### General Changes
+
+- sca-scan.yml (Aravind Kumar - [9852a61](https://github.com/contentstack/live-preview-sdk/commit/9852a61b443e8fd75cef3fedf95f1a72b648b874))
+- sca-scan.yml (Aravind Kumar - [bf89762](https://github.com/contentstack/live-preview-sdk/commit/bf89762514dd27ac41f331e6f02aa3b3d5067ea2))
+- sca-scan.yml (Aravind Kumar - [0285857](https://github.com/contentstack/live-preview-sdk/commit/0285857239cadd075d42d09b2975d4e2e8f88f55))
+
+## [v4.4.5](https://github.com/contentstack/live-preview-sdk/compare/v4.4.4...v4.4.5)
+
+> 21 July 2026
+
+### Fixes
+
+- fix(security): bump dompurify to patch XSS and prototype pollution issues (Hitesh Shetty - [#622](https://github.com/contentstack/live-preview-sdk/pull/622))
 - fix(VB-1820): navigate on alt+click of in-iframe links instead of swallowing the click (Shivam Mishra - [#618](https://github.com/contentstack/live-preview-sdk/pull/618))
 - fix(visual-builder): keep overlayPropagation from piercing the SDK's own toolbar (Hitesh Shetty - [#617](https://github.com/contentstack/live-preview-sdk/pull/617))
 - fix(VP-2254): keep cursor visible over RTE links in Visual Builder (Shivam Mishra - [#616](https://github.com/contentstack/live-preview-sdk/pull/616))
 
+### Chores And Housekeeping
+
+- chore: update CODEOWNERS to visual-preview-developers (Hitesh Shetty - [#623](https://github.com/contentstack/live-preview-sdk/pull/623))
+
 ### General Changes
 
+- Release v4.4.5 (Hitesh Shetty - [#624](https://github.com/contentstack/live-preview-sdk/pull/624))
 - release: promote develop_v4 to stage_v4 (Hitesh Shetty - [#619](https://github.com/contentstack/live-preview-sdk/pull/619))
 
 ### Fixes
 
 - fix(VP-2254): keep cursor visible over RTE links in Visual Builder and patch npm audit vulnerabilities (shivamfl - [5650527](https://github.com/contentstack/live-preview-sdk/commit/5650527aa43edd6c4b9fcd00a3ea76329934b62a))
 - fix(VB-1820): restrict alt+click navigation to safe url schemes, fix leaked test spy (shivamfl - [f856b0a](https://github.com/contentstack/live-preview-sdk/commit/f856b0a52c5e6d7ee42bee04fe61e5f22abe0058))
+- fix: update CDN version to 4.4.5 in README (hitesh-shetty-cstk - [9494423](https://github.com/contentstack/live-preview-sdk/commit/9494423085222a2c6b69346631912129819d84ec))
 
 ### Refactoring and Updates
 
