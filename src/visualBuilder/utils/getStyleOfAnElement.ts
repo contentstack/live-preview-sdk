@@ -30,6 +30,9 @@ export default function getStyleOfAnElement(element: HTMLElement): {
         "margin-bottom",
         "-webkit-user-modify",
         "cursor",
+        // let the pseudo element's dir="auto" decide direction, not inline copies
+        "direction",
+        "unicode-bidi",
     ];
 
     const styles: { [key: string]: string } = {};
