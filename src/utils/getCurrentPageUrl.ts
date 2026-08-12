@@ -1,18 +1,12 @@
 import { PublicLogger } from "../logger/logger";
+import { LIVE_PREVIEW_QUERY_PARAMS } from "./livePreviewQueryParams.constant";
 
 /**
- * Query parameters live preview adds to the page itself. They describe the
- * preview session, not the page, so they are dropped before the URL is handed
- * back to the CMS.
+ * The preview session parameters plus `cslp-buttons`, which the edit button reads
+ * off the page URL. All of them describe the preview, not the page, so they are
+ * dropped before the URL is handed back to the CMS.
  */
-const LIVE_PREVIEW_QUERY_PARAMS = [
-    "live_preview",
-    "content_type_uid",
-    "entry_uid",
-    "preview_timestamp",
-    "preview_variant",
-    "cslp-buttons",
-];
+const PARAMS_TO_DROP = [...LIVE_PREVIEW_QUERY_PARAMS, "cslp-buttons"];
 
 /**
  * The URL of the page the visitor is on, without live preview's own query
@@ -31,9 +25,7 @@ export function getCurrentPageUrl(): string {
         if (typeof window === "undefined" || !window.location?.href) return "";
 
         const url = new URL(window.location.href);
-        LIVE_PREVIEW_QUERY_PARAMS.forEach((param) =>
-            url.searchParams.delete(param)
-        );
+        PARAMS_TO_DROP.forEach((param) => url.searchParams.delete(param));
 
         return url.href;
     } catch (error) {

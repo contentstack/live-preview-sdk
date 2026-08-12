@@ -16,7 +16,7 @@ describe("getCurrentPageUrl", () => {
 
     it("should drop live preview's own query params", () => {
         setHref(
-            "https://example.com/page?live_preview=abc&content_type_uid=hero&entry_uid=blt1&preview_timestamp=123"
+            "https://example.com/page?live_preview=abc&content_type_uid=hero&entry_uid=blt1&preview_timestamp=123&cslp-buttons=true"
         );
 
         expect(getCurrentPageUrl()).toBe("https://example.com/page");
