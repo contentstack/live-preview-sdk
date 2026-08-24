@@ -98,7 +98,7 @@ describe("Live Preview HOC init", () => {
             mode: "builder",
             stackDetails: {
                 environment: "development",
-                apiKey: "livePreviewApiKey123",
+                apiKey: "YOUR_API_KEY",
             },
         });
 
@@ -171,13 +171,13 @@ describe("Live Preview HOC config", () => {
         const userConfig: Partial<IInitData> = {
             enable: true,
             stackDetails: {
-                apiKey: "livePreviewApiKey123",
+                apiKey: "YOUR_API_KEY",
             },
         };
 
         ContentstackLivePreview.init(userConfig);
 
-        expect(Config.get().stackDetails.apiKey).toBe("livePreviewApiKey123");
+        expect(Config.get().stackDetails.apiKey).toBe("YOUR_API_KEY");
     });
 
     test("should set the hash from the URL", async () => {
@@ -225,7 +225,7 @@ describe("Live Preview HOC config", () => {
         const userConfig: Partial<IInitData> = {
             enable: true,
             stackDetails: {
-                apiKey: "livePreviewApiKey123",
+                apiKey: "YOUR_API_KEY",
             },
         };
 
