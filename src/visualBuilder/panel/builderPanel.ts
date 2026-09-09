@@ -32,6 +32,13 @@ const PANEL_FRAME_NAME = "visual-builder-panel";
  */
 const DOCK_WIDTH = "472px";
 const READY_TIMEOUT_MS = 20000;
+/**
+ * How long a freshly opened relay gets to answer. It boots a complete Visual
+ * Builder now, so a cold start (module federation, auth, stores) runs well past
+ * the ceiling that suited the old proxy-only page. Polled throughout, so this is
+ * a backstop rather than a wait.
+ */
+const RELAY_BOOT_TIMEOUT_MS = 60000;
 
 /**
  * Marks a page load as "come up with the builder docked".
@@ -77,6 +84,7 @@ type PanelLayout =
     | "collapsed-status"
     | "expanded"
     | "expanded-status"
+    | "collapsed-overlay"
     | "overlay";
 
 /**
@@ -166,12 +174,63 @@ function getPanelUrl(): string {
     return url.toString();
 }
 
-function getBrokerUrl(): string {
+/**
+ * Where the session lives. Defaults to the Contentstack app origin, which is the
+ * only origin that holds it; the panel's own origin deliberately does not.
+ *
+ * The window we open and the origin we accept messages from both derive from
+ * this, because deriving them separately lets them drift: with brokerUrl pointing
+ * at a local builder and clientUrlParams.url at a hosted app, the relay opens on
+ * one origin while the handshake waits on the other, and nothing ever connects.
+ */
+function getBrokerBase(): string {
     const { editInVisualBuilderButton, clientUrlParams } = Config.get();
-    // Defaults to the Contentstack app origin, which is the only origin that
-    // holds the user's session. The panel's own origin deliberately does not.
-    const base = editInVisualBuilderButton.brokerUrl || clientUrlParams.url;
-    return new URL("/broker", base).toString();
+    return editInVisualBuilderButton.brokerUrl || clientUrlParams.url;
+}
+
+function getBrokerOrigin(): string {
+    return originOf(new URL("/", getBrokerBase()).toString());
+}
+
+/**
+ * The URL the relay window opens at: a complete Visual Builder on this stack,
+ * not a bare proxy page.
+ *
+ * Any Visual Builder tab already runs the broker service, so a real builder is
+ * relay-capable by construction, and it is the same place the Start Editing
+ * button sent people before the panel existed. The editor gets a window that
+ * makes sense on its own instead of one that only says "keep me open".
+ *
+ * The current tracker rides along deliberately. Visual Builder seeds its hash
+ * from `live_preview` when the URL carries one and mints a fresh token when it
+ * does not, so leaving it off would give the relay its own tracker and split the
+ * editor's drafts across two of them.
+ *
+ * It rides along twice, in the route params and in the real query string. VE
+ * reads the tracker from `location.search`, and a builder hosted in the app
+ * keeps its route past the `#`, where that reader never looks — so the fragment
+ * copy alone leaves a hosted relay minting its own tracker.
+ */
+function getRelayWindowUrl(): string {
+    const { stackDetails } = Config.get();
+    const params = buildVisualBuilderSearchParams();
+    const hash = new URLSearchParams(window.location.search).get(
+        "live_preview"
+    );
+    if (hash) {
+        params.set("live_preview", hash);
+    }
+    // `cs_relay` tells that window it exists to serve this panel: it skips its
+    // own canvas and says so, rather than loading the page a second time in a
+    // tab the user is meant to leave alone.
+    const search = new URLSearchParams({ cs_relay: "true" });
+    if (hash) search.set("live_preview", hash);
+    return new URL(
+        `/?${search.toString()}#!/stack/${
+            stackDetails.apiKey
+        }/visual-editor?${params.toString()}`,
+        getBrokerBase()
+    ).toString();
 }
 
 function getCustomCursor(): HTMLDivElement | null {
@@ -251,7 +310,7 @@ function openBrokerWindow(): Window | null {
     try {
         if (
             window.opener &&
-            originOf(document.referrer) === originOf(getBrokerUrl())
+            originOf(document.referrer) === getBrokerOrigin()
         ) {
             return window.opener;
         }
@@ -260,16 +319,23 @@ function openBrokerWindow(): Window | null {
     }
 
     // Named, so a reload of this page can find the same window again instead of
-    // stacking up popups.
-    const broker = window.open(
-        getBrokerUrl(),
-        BROKER_WINDOW_NAME,
-        "popup=yes,width=420,height=280"
-    );
+    // stacking up windows. No features string, so this is an ordinary tab: the
+    // relay is a full builder now and 420x280 would make it useless.
+    const broker = window.open(getRelayWindowUrl(), BROKER_WINDOW_NAME);
     if (!broker) {
         PublicLogger.error(
             "Visual Builder could not open its Contentstack window. Allow pop-ups for this site and start editing again."
         );
+        return broker;
+    }
+
+    // A new tab takes focus, and the editor asked to work on THIS page. Best
+    // effort only: returning focus to the opener is not guaranteed, and if it
+    // does not land the editor is simply in a usable builder tab.
+    try {
+        window.focus();
+    } catch (e) {
+        // Not worth failing the connection over.
     }
     return broker;
 }
@@ -317,6 +383,45 @@ function waitForSignal(
 
 const BROKER_POLL_INTERVAL_MS = 300;
 
+/** Marks the tracker we have already reloaded for, so this cannot loop. */
+const TRACKER_ADOPTED_KEY = "cs-builder-adopted-tracker";
+
+/**
+ * Puts this page on the builder tab's tracker.
+ *
+ * Drafts live in a tracker document keyed by the `live_preview` hash, and each
+ * Visual Builder mints its own when its URL does not carry one. So a panel
+ * docked against a builder tab that was opened on its own leaves two trackers
+ * open on one entry: the site renders one set of drafts, the builder tab's
+ * canvas renders the other, and an edit in either is invisible to the other.
+ * Not a sync bug — two different documents.
+ *
+ * The builder tab's tracker wins. It is the one that may already hold unsaved
+ * work, while a panel that is only now docking has none to lose. Costs one
+ * reload of this page, at the moment the panel appears.
+ */
+function adoptBrokerTracker(brokerHash?: string): void {
+    if (!brokerHash) return;
+    try {
+        const url = new URL(window.location.href);
+        if (url.searchParams.get("live_preview") === brokerHash) return;
+        // Reload once per broker tracker. If the reload somehow lands back
+        // here with the old hash, stop rather than reload forever.
+        if (window.sessionStorage.getItem(TRACKER_ADOPTED_KEY) === brokerHash) {
+            PublicLogger.warn(
+                "Visual Builder and this page are on different preview trackers; their drafts will not match."
+            );
+            return;
+        }
+        window.sessionStorage.setItem(TRACKER_ADOPTED_KEY, brokerHash);
+        url.searchParams.set("live_preview", brokerHash);
+        url.searchParams.set(PANEL_PARAM, "true");
+        window.location.replace(url.toString());
+    } catch (e) {
+        // A tracker we cannot adopt is not worth failing the dock over.
+    }
+}
+
 /**
  * Waits until the broker window answers.
  *
@@ -335,7 +440,7 @@ function waitForBroker(
     broker: Window,
     { timeoutMs = READY_TIMEOUT_MS, quiet = false } = {}
 ): Promise<boolean> {
-    const brokerOrigin = originOf(getBrokerUrl());
+    const brokerOrigin = getBrokerOrigin();
 
     return new Promise((resolve) => {
         const cleanup = () => {
@@ -349,6 +454,7 @@ function waitForBroker(
             if (event.data?.source !== BROKER_MESSAGE_SOURCE) return;
             if (event.data?.type !== "ready") return;
             cleanup();
+            adoptBrokerTracker(event.data?.hash);
             resolve(true);
         };
         window.addEventListener("message", onMessage);
@@ -390,9 +496,10 @@ async function connectPanelToBroker(
     panel: Window,
     broker: Window
 ): Promise<boolean> {
-    if (!(await waitForBroker(broker))) return false;
+    if (!(await waitForBroker(broker, { timeoutMs: RELAY_BOOT_TIMEOUT_MS })))
+        return false;
 
-    const brokerOrigin = originOf(getBrokerUrl());
+    const brokerOrigin = getBrokerOrigin();
     const panelOrigin = originOf(getPanelUrl());
 
     const channel = new MessageChannel();
@@ -437,12 +544,16 @@ export function setPanelLayout(layout: PanelLayout): void {
     const container = getPanelElement();
     if (!container) return;
 
-    if (layout === "overlay") {
+    if (layout === "overlay" || layout === "collapsed-overlay") {
         container.style.width = "100%";
         container.style.height = "100vh";
         container.style.background = "transparent";
         container.style.boxShadow = "none";
-        setSeamVisible(container, true);
+        // No seam with the dock shut: it marks the edge of a form column that
+        // is not on screen, and the panel is only this wide to hold a modal.
+        // With the dock open it stays, and a modal over it reads correctly —
+        // the frame sits above it, so the modal dims and covers it like the page.
+        setSeamVisible(container, layout === "overlay");
         // The page keeps whatever inset it had, so dismissing the modal does not
         // reflow the whole site.
         return;
@@ -556,6 +667,13 @@ export async function mountPanel(): Promise<Window | null> {
         height: "100%",
         border: "0",
         display: "block",
+        // Above the seam below, which is its sibling. Without a stacking order
+        // of its own a static iframe loses to any positioned sibling, and the
+        // seam drew ON TOP of the frame — a hairline down the middle of every
+        // modal that spans the dock's edge. Under the frame it behaves like the
+        // rest of the page: the modal's overlay dims it, the modal covers it.
+        position: "relative",
+        zIndex: "1",
     } as Partial<CSSStyleDeclaration>);
 
     // Starts hidden to match the collapsed frame the container is created at.

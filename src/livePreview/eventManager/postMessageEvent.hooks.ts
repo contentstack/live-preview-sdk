@@ -4,7 +4,6 @@ import { PublicLogger } from "../../logger/logger";
 import { ILivePreviewWindowType } from "../../types/types";
 import { addParamsToUrl, isOpeningInTimeline } from "../../utils";
 import { isPanelOpen } from "../../visualBuilder/panel/panelElement";
-import { softReloadPage } from "../../visualBuilder/panel/softReload";
 
 /**
  * Whether this document is the canvas *and* the top-level page — the live-preview
@@ -25,7 +24,7 @@ function isTopLevelCanvas(): boolean {
  * updates this in place — otherwise every later ON_CHANGE would look like a
  * reason to reload again.
  */
-let documentRenderedHash =
+const documentRenderedHash =
     typeof window !== "undefined"
         ? new URLSearchParams(window.location.search).get("live_preview")
         : null;
@@ -42,6 +41,31 @@ import {
  * Registers a post message event listener for history-related events.
  * The listener handles events for forward, backward, and reload actions on the browser history.
  */
+/**
+ * Whether the page may navigate itself to pick up new content.
+ *
+ * A server-rendered canvas can only show an edit by being fetched again, so the
+ * builder reloads it. While developing that is disruptive: the reload fires on
+ * every blur after an edit, and with the builder docked into this page it takes
+ * the panel down and back up each time. `cs_manual_reload=true` on the URL turns
+ * the automatic reloads off and leaves the browser's own reload button as the
+ * way to refresh, which is what a developer wants while poking at the panel.
+ *
+ * Deliberately a URL param rather than a build flag: it has to be switchable on
+ * a running site, it survives the reloads it governs, and it needs no rebuild.
+ */
+function autoReloadDisabled(): boolean {
+    try {
+        return (
+            new URLSearchParams(window.location.search).get(
+                "cs_manual_reload"
+            ) === "true"
+        );
+    } catch (e) {
+        return false;
+    }
+}
+
 export function useHistoryPostMessageEvent(): void {
     livePreviewPostMessage?.on<HistoryLivePreviewPostMessageEventData>(
         LIVE_PREVIEW_POST_MESSAGE_EVENTS.HISTORY,
@@ -56,12 +80,10 @@ export function useHistoryPostMessageEvent(): void {
                     break;
                 }
                 case "reload": {
-                    // With the builder docked, a real reload would take the
-                    // panel down with the page; patch the fresh markup in
-                    // instead. Everywhere else the canvas is its own frame and
-                    // reloading it is cheap and exact.
-                    if (isPanelOpen()) {
-                        void softReloadPage();
+                    if (autoReloadDisabled()) {
+                        PublicLogger.debug(
+                            "[Visual Builder] reload suppressed by cs_manual_reload; use the browser reload to refresh."
+                        );
                         break;
                     }
                     window.history.go();
@@ -192,12 +214,17 @@ export function useOnEntryUpdatePostMessageEvent(): void {
                         nextHash &&
                         nextHash !== documentRenderedHash
                     ) {
-                        if (isPanelOpen()) {
-                            // Put the new params on the URL first — the soft
-                            // reload fetches window.location.href.
-                            window.history.replaceState({}, "", url.toString());
-                            documentRenderedHash = nextHash;
-                            void softReloadPage();
+                        if (autoReloadDisabled()) {
+                            // Keep the params on the URL so a manual reload
+                            // still lands on the right entry and tracker.
+                            window.history.replaceState(
+                                {},
+                                "",
+                                url.toString()
+                            );
+                            PublicLogger.debug(
+                                "[Visual Builder] reload suppressed by cs_manual_reload; use the browser reload to refresh."
+                            );
                             return;
                         }
                         window.location.href = url.toString();

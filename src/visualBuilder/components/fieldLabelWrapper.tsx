@@ -8,7 +8,10 @@ import { DisableReason, isFieldDisabled } from "../utils/isFieldDisabled";
 import visualBuilderPostMessage from "../utils/visualBuilderPostMessage";
 import { CaretIcon, CaretRightIcon, InfoIcon } from "./icons";
 import { LoadingIcon } from "./icons/loading";
-import { FieldTypeIconsMap, getFieldIcon } from "../generators/generateCustomCursor";
+import {
+    FieldTypeIconsMap,
+    getFieldIcon,
+} from "../generators/generateCustomCursor";
 import { uniqBy } from "lodash-es";
 import { visualBuilderStyles } from "../visualBuilder.style";
 import { CslpError } from "./CslpError";
@@ -26,7 +29,7 @@ interface ReferenceParentMap {
         contentTypeUid: string;
         contentTypeTitle: string;
         referenceFieldName: string;
-    }[]
+    }[];
 }
 
 async function getFieldDisplayNames(fieldMetadata: CslpData[]) {
@@ -44,18 +47,41 @@ async function getContentTypeName(contentTypeUid: string) {
             content_type_uid: contentTypeUid,
         });
         return result?.contentTypeName;
-    } catch(e) {
-        console.warn("[getFieldLabelWrapper] Error getting content type name", e);
+    } catch (e) {
+        console.warn(
+            "[getFieldLabelWrapper] Error getting content type name",
+            e
+        );
         return "";
     }
 }
 
-async function getReferenceParentMap() {
+/**
+ * The parents of this field's entry.
+ *
+ * Names the entry rather than asking for the whole page: the builder resolved
+ * every entry on the page otherwise, which is one API call each (measured: 30
+ * calls for a nav with ~24 links) while the label reads a single row. The
+ * builder falls back to the full map if these are absent, so an older builder
+ * still answers.
+ */
+async function getReferenceParentMap(fieldMetadata: CslpData) {
     try {
-        const result = await visualBuilderPostMessage?.send<ReferenceParentMap>(VisualBuilderPostMessageEvents.REFERENCE_MAP, {}) ?? {};
+        const result =
+            (await visualBuilderPostMessage?.send<ReferenceParentMap>(
+                VisualBuilderPostMessageEvents.REFERENCE_MAP,
+                {
+                    entryUid: fieldMetadata.entry_uid,
+                    contentTypeUid: fieldMetadata.content_type_uid,
+                    locale: fieldMetadata.locale,
+                }
+            )) ?? {};
         return result;
-    } catch(e) {
-        console.warn("[getFieldLabelWrapper] Error getting reference parent map", e);
+    } catch (e) {
+        console.warn(
+            "[getFieldLabelWrapper] Error getting reference parent map",
+            e
+        );
         return {};
     }
 }
@@ -120,9 +146,7 @@ function FieldLabelDisabledIcon(
         visualBuilderStyles()["visual-builder__custom-tooltip"],
         showTooltipBelow &&
             visualBuilderStyles()["visual-builder__custom-tooltip--below"],
-        visualBuilderStyles()[
-            "visual-builder__custom-tooltip--workflow-access"
-        ]
+        visualBuilderStyles()["visual-builder__custom-tooltip--workflow-access"]
     );
 
     return (
@@ -231,40 +255,26 @@ function FieldLabelWrapperComponent(
                 ],
                 "cslpValue"
             );
-            const [displayNames, fieldSchema, contentTypeName, referenceParentMap] = await Promise.all([
-                getFieldDisplayNames(allPaths),
-                FieldSchemaMap.getFieldSchema(
-                    props.fieldMetadata.content_type_uid,
-                    props.fieldMetadata.fieldPath
-                ),
-                getContentTypeName(
-                    props.fieldMetadata.content_type_uid
-                ),
-                getReferenceParentMap()
-            ]);
-            const entryUid = props.fieldMetadata.entry_uid;
+            // The reference map is deliberately NOT awaited here. It is a tooltip
+            // decoration, but resolving it costs two sequential round trips (an
+            // entry's parents, then each parent's content type) and awaiting it
+            // held `dataLoading` true for seconds. That does not just delay a
+            // label: inline editing needs the resolved field type, so a slow
+            // reference map left the canvas unusable with no clone and focus
+            // still on BODY. It now fills in behind the label instead.
+            const [displayNames, fieldSchema, contentTypeName] =
+                await Promise.all([
+                    getFieldDisplayNames(allPaths),
+                    FieldSchemaMap.getFieldSchema(
+                        props.fieldMetadata.content_type_uid,
+                        props.fieldMetadata.fieldPath
+                    ),
+                    getContentTypeName(props.fieldMetadata.content_type_uid),
+                ]);
 
-            const referenceData = referenceParentMap[entryUid];
-            const isReference = !!referenceData;
-
-            let referenceFieldName = referenceData ? referenceData[0].referenceFieldName : "";
-            let parentContentTypeName = referenceData ? referenceData[0].contentTypeTitle : "";
-
-            if(isReference) {
-                const domAncestor = eventDetails.editableElement.closest(`[data-cslp]:not([data-cslp^="${props.fieldMetadata.content_type_uid}"])`);
-                if(domAncestor) {
-                    const domAncestorCslp = domAncestor.getAttribute("data-cslp");
-                    if (isValidCslp(domAncestorCslp)) {
-                        const domAncestorDetails = extractDetailsFromCslp(domAncestorCslp);
-                        const domAncestorContentTypeUid = domAncestorDetails.content_type_uid;
-                        const domAncestorContentParent = referenceData?.find(data => data.contentTypeUid === domAncestorContentTypeUid);
-                        if(domAncestorContentParent) {
-                            referenceFieldName = domAncestorContentParent.referenceFieldName;
-                            parentContentTypeName = domAncestorContentParent.contentTypeTitle;
-                        }
-                    }
-                }
-            }
+            const isReference = false;
+            const referenceFieldName = "";
+            const parentContentTypeName = "";
 
             if (hasPostMessageError(displayNames) || !fieldSchema) {
                 setDataLoading(false);
@@ -273,14 +283,17 @@ function FieldLabelWrapperComponent(
                 return;
             }
 
-            const { acl: entryAcl, workflowStage: entryWorkflowStageDetails, resolvedVariantPermissions } =
-                await fetchEntryPermissionsAndStageDetails({
-                    entryUid: props.fieldMetadata.entry_uid,
-                    contentTypeUid: props.fieldMetadata.content_type_uid,
-                    locale: props.fieldMetadata.locale,
-                    variantUid: props.fieldMetadata.variant,
-                    fieldPathWithIndex: props.fieldMetadata.fieldPathWithIndex,
-                });
+            const {
+                acl: entryAcl,
+                workflowStage: entryWorkflowStageDetails,
+                resolvedVariantPermissions,
+            } = await fetchEntryPermissionsAndStageDetails({
+                entryUid: props.fieldMetadata.entry_uid,
+                contentTypeUid: props.fieldMetadata.content_type_uid,
+                locale: props.fieldMetadata.locale,
+                variantUid: props.fieldMetadata.variant,
+                fieldPathWithIndex: props.fieldMetadata.fieldPathWithIndex,
+            });
             const {
                 isDisabled: fieldDisabled,
                 reason,
@@ -290,7 +303,7 @@ function FieldLabelWrapperComponent(
                 eventDetails,
                 resolvedVariantPermissions,
                 entryAcl,
-                entryWorkflowStageDetails,
+                entryWorkflowStageDetails
             );
             const handleRequestEditAccess = async () => {
                 try {
@@ -316,7 +329,9 @@ function FieldLabelWrapperComponent(
                 try {
                     if (fieldSchema.field_metadata?.canLinkVariant) {
                         const result = await visualBuilderPostMessage?.send<{
-                            type: typeof RESULT_TYPES.SUCCESS | typeof RESULT_TYPES.ERROR;
+                            type:
+                                | typeof RESULT_TYPES.SUCCESS
+                                | typeof RESULT_TYPES.ERROR;
                             message: string;
                         }>(
                             VisualBuilderPostMessageEvents.OPEN_LINK_VARIANT_MODAL,
@@ -337,10 +352,7 @@ function FieldLabelWrapperComponent(
                         }
                     }
                 } catch (error) {
-                    console.error(
-                        "Error in link variant modal flow:",
-                        error
-                    );
+                    console.error("Error in link variant modal flow:", error);
                 }
             };
 
@@ -382,6 +394,57 @@ function FieldLabelWrapperComponent(
                 isVariant: isVariant,
             });
 
+            // Now that the label is up, resolve the reference decoration and
+            // patch it in. Failures stay silent: the label is already correct
+            // without it, and the tooltip is the only thing that goes missing.
+            void getReferenceParentMap(props.fieldMetadata)
+                .then((referenceParentMap) => {
+                    const referenceData =
+                        referenceParentMap[props.fieldMetadata.entry_uid];
+                    // `[]` means resolved-with-no-parents and is truthy here.
+                    if (!referenceData?.length) return;
+
+                    let nextReferenceFieldName =
+                        referenceData[0].referenceFieldName;
+                    let nextParentContentTypeName =
+                        referenceData[0].contentTypeTitle;
+
+                    // Prefer the parent this element actually sits inside, when
+                    // the DOM disagrees with "first parent".
+                    const domAncestor = eventDetails.editableElement.closest(
+                        `[data-cslp]:not([data-cslp^="${props.fieldMetadata.content_type_uid}"])`
+                    );
+                    const domAncestorCslp =
+                        domAncestor?.getAttribute("data-cslp");
+                    if (isValidCslp(domAncestorCslp)) {
+                        const domAncestorContentTypeUid =
+                            extractDetailsFromCslp(
+                                domAncestorCslp
+                            ).content_type_uid;
+                        const domAncestorContentParent = referenceData.find(
+                            (data) =>
+                                data.contentTypeUid ===
+                                domAncestorContentTypeUid
+                        );
+                        if (domAncestorContentParent) {
+                            nextReferenceFieldName =
+                                domAncestorContentParent.referenceFieldName;
+                            nextParentContentTypeName =
+                                domAncestorContentParent.contentTypeTitle;
+                        }
+                    }
+
+                    setCurrentField((previous) => ({
+                        ...previous,
+                        isReference: true,
+                        referenceFieldName: nextReferenceFieldName,
+                        parentContentTypeName: nextParentContentTypeName,
+                    }));
+                })
+                .catch(() => {
+                    // Already logged by getReferenceParentMap.
+                });
+
             if (displayNames) {
                 setDisplayNames(displayNames);
             }
@@ -390,11 +453,18 @@ function FieldLabelWrapperComponent(
             }
         };
 
-        try {
-            fetchData();
-        } catch(e) {
-            console.warn("[getFieldLabelWrapper] Error fetching field label data", e);
-        }
+        // `fetchData` is async, so a plain try/catch around the call caught
+        // nothing: a rejected send left `dataLoading` true forever, which is a
+        // permanent spinner AND an uneditable field, because inline editing
+        // needs the field type this resolves. Settle on the promise instead.
+        fetchData().catch((e) => {
+            console.warn(
+                "[getFieldLabelWrapper] Error fetching field label data",
+                e
+            );
+            setDataLoading(false);
+            setError(true);
+        });
     }, [props]);
 
     const onParentPathClick = (cslp: string) => {
@@ -425,7 +495,13 @@ function FieldLabelWrapperComponent(
             )}
         >
             {currentField.isVariant ? <VariantIndicator /> : null}
-            <ToolbarTooltip data={{contentTypeName: currentField.parentContentTypeName, referenceFieldName: currentField.referenceFieldName}} disabled={!currentField.isReference || isDropdownOpen}>
+            <ToolbarTooltip
+                data={{
+                    contentTypeName: currentField.parentContentTypeName,
+                    referenceFieldName: currentField.referenceFieldName,
+                }}
+                disabled={!currentField.isReference || isDropdownOpen}
+            >
                 <div
                     className={classNames(
                         "visual-builder__focused-toolbar__field-label-wrapper",
@@ -443,8 +519,9 @@ function FieldLabelWrapperComponent(
                         },
                         {
                             "field-label-dropdown-open": isDropdownOpen,
-                            [visualBuilderStyles()["field-label-dropdown-open"]]:
-                                isDropdownOpen,
+                            [visualBuilderStyles()[
+                                "field-label-dropdown-open"
+                            ]]: isDropdownOpen,
                         },
                         {
                             "visual-builder__focused-toolbar--variant":
@@ -470,7 +547,9 @@ function FieldLabelWrapperComponent(
                             visualBuilderStyles()[
                                 "visual-builder__button--primary"
                             ],
-                            visualBuilderStyles()["visual-builder__button-loader"],
+                            visualBuilderStyles()[
+                                "visual-builder__button-loader"
+                            ],
                             error &&
                                 visualBuilderStyles()[
                                     "visual-builder__button-error"
@@ -478,12 +557,13 @@ function FieldLabelWrapperComponent(
                         )}
                         disabled={dataLoading}
                     >
-                        {
-                            currentField.isReference && !dataLoading && !error ? 
+                        {currentField.isReference && !dataLoading && !error ? (
                             <div
                                 className={classNames(
                                     "visual-builder__reference-icon-container",
-                                visualBuilderStyles()["visual-builder__reference-icon-container"]
+                                    visualBuilderStyles()[
+                                        "visual-builder__reference-icon-container"
+                                    ]
                                 )}
                             >
                                 <div
@@ -499,10 +579,11 @@ function FieldLabelWrapperComponent(
                                     data-testid="visual-builder__field-icon-caret"
                                 />
                                 <CaretRightIcon />
-                            </div> : null
-                        }
-                        {
-                            currentField.contentTypeName && !dataLoading && !error ?
+                            </div>
+                        ) : null}
+                        {currentField.contentTypeName &&
+                        !dataLoading &&
+                        !error ? (
                             <>
                                 <ContentTypeIcon />
                                 <div
@@ -516,8 +597,8 @@ function FieldLabelWrapperComponent(
                                 >
                                     {currentField.contentTypeName + " : "}
                                 </div>
-                            </> : null
-                        }
+                            </>
+                        ) : null}
                         {currentField.prefixIcon ? (
                             <div
                                 className={classNames(
