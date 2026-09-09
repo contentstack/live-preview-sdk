@@ -7,6 +7,8 @@ import { ISchemaFieldMap } from "../utils/types/index.types";
 import { VisualBuilderPostMessageEvents } from "../utils/types/postMessage.types";
 import React from "preact/compat";
 import { startCase, toLower } from "lodash-es";
+import { getDOMEditStack } from "../utils/getCsDataOfElement";
+import { getPeerLockForField } from "../utils/fieldLockIndicator";
 
 interface EmptyBlockProps {
     details: {
@@ -20,14 +22,33 @@ export function EmptyBlock(props: EmptyBlockProps): JSX.Element {
 
     const blockParentName = details.fieldSchema.display_name;
 
-    async function sendAddInstanceEvent() {
-        await visualBuilderPostMessage?.send(
-            VisualBuilderPostMessageEvents.ADD_INSTANCE,
-            {
-                fieldMetadata: details.fieldMetadata,
-                index: 0,
-            }
-        );
+    async function sendAddInstanceEvent(event: MouseEvent) {
+        // A peer holds this field: adding would edit through their lock, the same
+        // no-op a click on a peer-locked field gets in the click listener.
+        if (getPeerLockForField(details.fieldMetadata)) return;
+
+        // The empty-state add never selects the field, so nothing else claims the
+        // lock. Fire and forget: the parent does not await the claim either.
+        const DOMEditStack = getDOMEditStack(event.currentTarget as Element);
+        // An empty stack reads as a deselect on the parent and would RELEASE the lock.
+        if (DOMEditStack.length) {
+            visualBuilderPostMessage?.send(
+                VisualBuilderPostMessageEvents.FOCUS_FIELD,
+                { DOMEditStack }
+            );
+        }
+
+        try {
+            await visualBuilderPostMessage?.send(
+                VisualBuilderPostMessageEvents.ADD_INSTANCE,
+                {
+                    fieldMetadata: details.fieldMetadata,
+                    index: 0,
+                }
+            );
+        } catch (error) {
+            console.error("Visual Builder: Failed to add instance", error);
+        }
         observeParentAndFocusNewInstance({
             parentCslp: details.fieldMetadata.cslpValue,
             index: 0,
@@ -67,7 +88,9 @@ export function EmptyBlock(props: EmptyBlockProps): JSX.Element {
                         "visual-builder__empty-block-add-button"
                     ]
                 )}
-                onClick={() => sendAddInstanceEvent()}
+                onClick={(e) =>
+                    sendAddInstanceEvent(e as unknown as MouseEvent)
+                }
                 type="button"
                 data-testid="visual-builder__empty-block-add-button"
             >
