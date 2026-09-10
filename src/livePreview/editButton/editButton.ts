@@ -12,6 +12,7 @@ import {
 import livePreviewPostMessage from "../eventManager/livePreviewEventManager";
 import { EDIT_BUTTON_TOOLTIP_ID } from "./editButton.constant";
 import { isOpeningInTimeline } from "../../utils";
+import { getCurrentPageUrl } from "../../utils/getCurrentPageUrl";
 
 function calculateEditButtonPosition(
     currentHoveredElement: HTMLElement,
@@ -555,6 +556,15 @@ export class LivePreviewEditButton {
         url.searchParams.append("preview-field", preview_field);
         url.searchParams.append("preview-locale", locale ?? "en-us");
         url.searchParams.append("preview-environment", environment);
+
+        // The page the editor was on. A referenced entry can be rendered on more
+        // than one page, and a nested one has no page among its direct
+        // references at all, so the CMS cannot work this out from the entry
+        // alone — without it the preview falls back to the base URL.
+        const pageUrl = getCurrentPageUrl();
+        if (pageUrl) {
+            url.searchParams.append("preview-url", pageUrl);
+        }
 
         return `${url.origin}/${url.hash}${url.search}`;
     }
