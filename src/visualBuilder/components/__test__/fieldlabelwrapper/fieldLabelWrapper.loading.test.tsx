@@ -343,4 +343,42 @@ describe("FieldLabelWrapperComponent - Loading State", () => {
             { timeout: 1000, interval: 10 } // Reduced timeout - mocks resolve immediately
         );
     });
+
+    // A rejected send used to leave dataLoading true forever, because the
+    // try/catch sat around the async call rather than on its promise. That is
+    // a permanent spinner AND an uneditable field, since inline editing needs
+    // the field type this resolves.
+    test("stops loading and shows the error state when a send rejects", async () => {
+        vi.mocked(visualBuilderPostMessage!.send).mockImplementation(
+            (eventName: string) => {
+                if (
+                    eventName ===
+                    VisualBuilderPostMessageEvents.GET_FIELD_DISPLAY_NAMES
+                ) {
+                    return Promise.reject(new Error("no listener"));
+                }
+                return Promise.resolve({});
+            }
+        );
+
+        const { container } = render(
+            <FieldLabelWrapperComponent
+                fieldMetadata={mockFieldMetadata}
+                eventDetails={mockEventDetails}
+                parentPaths={[]}
+                getParentEditableElement={mockGetParentEditable}
+            />
+        );
+
+        await waitFor(
+            () => {
+                expect(container.textContent).toContain("Error");
+            },
+            { timeout: 1000, interval: 10 }
+        );
+
+        expect(
+            container.querySelector("button[disabled]")
+        ).not.toBeInTheDocument();
+    });
 });
