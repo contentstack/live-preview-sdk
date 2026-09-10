@@ -1,8 +1,35 @@
 # Changelog
 
+## [v4.5.1](https://github.com/contentstack/live-preview-sdk/compare/v4.5.0...v4.5.1)
+
+> 10 September 2026
+
+### Fixes
+
+- fix(security): bump dompurify to patch XSS vulnerability (Hitesh Shetty - [#638](https://github.com/contentstack/live-preview-sdk/pull/638))
+- fix(edit-button): send the page the editor was on to the CMS (Kirtesh Suthar - [#635](https://github.com/contentstack/live-preview-sdk/pull/635))
+
+### Chores And Housekeeping
+
+- chore: sync develop_v4 with stage_v4 (Kirtesh Suthar - [#645](https://github.com/contentstack/live-preview-sdk/pull/645))
+- chore(tests): standardize api key placeholder values in specs (Hitesh Shetty - [#639](https://github.com/contentstack/live-preview-sdk/pull/639))
+
+### General Changes
+
+- Develop v4 (Kirtesh Suthar - [#640](https://github.com/contentstack/live-preview-sdk/pull/640))
+
+### Chores And Housekeeping
+
+- chore: merge stage_v4 into develop_v4 (Kirtesh Suthar - [e1dee0f](https://github.com/contentstack/live-preview-sdk/commit/e1dee0f33c15fbbeb9d7842ad70aba7610801524))
+- chore(deps): apply npm audit fix (hitesh-shetty-cstk - [ec144b9](https://github.com/contentstack/live-preview-sdk/commit/ec144b934935185f40efccfdcd09d4ac153222c8))
+
+### Refactoring and Updates
+
+- refactor(utils): one list for live preview's own query params (Kirtesh Suthar - [c179114](https://github.com/contentstack/live-preview-sdk/commit/c1791141dd7f22430f4f96d8070f4354dc9b641e))
+
 ## [v4.5.0](https://github.com/contentstack/live-preview-sdk/compare/v4.4.5...v4.5.0)
 
-> 5 August 2026
+> 11 August 2026
 
 ### New Features
 
@@ -15,11 +42,16 @@
 
 ### General Changes
 
+- Release v4.5.0 (Karan Bhavesh Gandhi - [#632](https://github.com/contentstack/live-preview-sdk/pull/632))
 - develop to stage 6 aug release (Karan Bhavesh Gandhi - [#631](https://github.com/contentstack/live-preview-sdk/pull/631))
 
 ### Fixes
 
 - fix(VB-1797): keep dir=auto working on the pseudo editable element (Karan Gandhi - [a06ad34](https://github.com/contentstack/live-preview-sdk/commit/a06ad3403106cad06d899034f76d2d9a180b7460))
+
+### Documentation Changes
+
+- docs: bump README CDN URL to 4.5.0 (Karan Gandhi - [76f5ca7](https://github.com/contentstack/live-preview-sdk/commit/76f5ca73387965c74b54bf032ea45a8d2ca1bf82))
 
 ### General Changes
 
