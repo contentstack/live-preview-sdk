@@ -9,6 +9,7 @@ import React from "preact/compat";
 import { startCase, toLower } from "lodash-es";
 import { getDOMEditStack } from "../utils/getCsDataOfElement";
 import { getPeerLockForField } from "../utils/fieldLockIndicator";
+import { DATA_CSLP_ATTR_SELECTOR } from "../utils/constants";
 
 interface EmptyBlockProps {
     details: {
@@ -22,14 +23,23 @@ export function EmptyBlock(props: EmptyBlockProps): JSX.Element {
 
     const blockParentName = details.fieldSchema.display_name;
 
-    async function sendAddInstanceEvent(event: MouseEvent) {
+    async function sendAddInstanceEvent(
+        event: JSX.TargetedMouseEvent<HTMLButtonElement>
+    ) {
         // A peer holds this field: adding would edit through their lock, the same
         // no-op a click on a peer-locked field gets in the click listener.
         if (getPeerLockForField(details.fieldMetadata)) return;
 
+        // Resolve the field by its cslp, not the button's DOM position: a portal
+        // render would yield an empty stack and silently skip the lock claim.
+        const fieldElement =
+            document.querySelector(
+                `[${DATA_CSLP_ATTR_SELECTOR}="${details.fieldMetadata.cslpValue}"]`
+            ) ?? event.currentTarget;
+
         // The empty-state add never selects the field, so nothing else claims the
         // lock. Fire and forget: the parent does not await the claim either.
-        const DOMEditStack = getDOMEditStack(event.currentTarget as Element);
+        const DOMEditStack = getDOMEditStack(fieldElement);
         // An empty stack reads as a deselect on the parent and would RELEASE the lock.
         if (DOMEditStack.length) {
             visualBuilderPostMessage?.send(
@@ -48,7 +58,9 @@ export function EmptyBlock(props: EmptyBlockProps): JSX.Element {
             );
         } catch (error) {
             console.error("Visual Builder: Failed to add instance", error);
+            return;
         }
+
         observeParentAndFocusNewInstance({
             parentCslp: details.fieldMetadata.cslpValue,
             index: 0,
@@ -88,9 +100,7 @@ export function EmptyBlock(props: EmptyBlockProps): JSX.Element {
                         "visual-builder__empty-block-add-button"
                     ]
                 )}
-                onClick={(e) =>
-                    sendAddInstanceEvent(e as unknown as MouseEvent)
-                }
+                onClick={sendAddInstanceEvent}
                 type="button"
                 data-testid="visual-builder__empty-block-add-button"
             >

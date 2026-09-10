@@ -23,22 +23,26 @@ vi.mock("../../utils/fieldLockIndicator", () => ({
     getPeerLockForField: vi.fn(() => null),
 }));
 
-const flushMicrotasks = async () => {
-    for (let i = 0; i < 10; i += 1) await Promise.resolve();
-};
-
 describe("EmptyBlock", () => {
     const mockDetails = {
         fieldMetadata: {
-            cslpValue: "parent.cslp.value",
+            cslpValue: "ct.entry.en-us.blocks_field",
         } as CslpData,
         fieldSchema: {
             display_name: "Test Block",
         } as ISchemaFieldMap,
     };
 
-    afterEach(() => {
+    let host: HTMLElement | null = null;
+
+    beforeEach(() => {
         vi.clearAllMocks();
+    });
+
+    afterEach(() => {
+        // RTL only removes containers it created, so this one would outlive the test
+        host?.remove();
+        host = null;
     });
 
     test("should render correctly", () => {
@@ -82,19 +86,19 @@ describe("EmptyBlock", () => {
     });
 
     test("claims the field lock before adding, so a peer sees it", async () => {
-        const host = document.createElement("div");
-        host.setAttribute("data-cslp", "ct.entry.en-us.blocks_field");
+        host = document.createElement("div");
+        host.setAttribute("data-cslp", mockDetails.fieldMetadata.cslpValue);
         document.body.appendChild(host);
 
         const { getByTestId } = render(<EmptyBlock details={mockDetails} />, {
-            container: host,
+            container: host as HTMLElement,
         });
         fireEvent.click(getByTestId("visual-builder__empty-block-add-button"));
 
         await waitFor(() => {
             expect((visualBuilderPostMessage as any).send).toHaveBeenCalledWith(
                 VisualBuilderPostMessageEvents.FOCUS_FIELD,
-                { DOMEditStack: getDOMEditStack(host) }
+                { DOMEditStack: getDOMEditStack(host as HTMLElement) }
             );
         });
 
@@ -132,8 +136,8 @@ describe("EmptyBlock", () => {
 
         const { getByTestId } = render(<EmptyBlock details={mockDetails} />);
         fireEvent.click(getByTestId("visual-builder__empty-block-add-button"));
-        await flushMicrotasks();
 
+        await waitFor(() => expect(getPeerLockForField).toHaveBeenCalled());
         expect((visualBuilderPostMessage as any).send).not.toHaveBeenCalled();
         expect(observeParentAndFocusNewInstance).not.toHaveBeenCalled();
     });
