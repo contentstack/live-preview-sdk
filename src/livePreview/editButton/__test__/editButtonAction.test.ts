@@ -201,7 +201,7 @@ describe("cslp tooltip", () => {
         singularEditButton?.click();
 
         const expectedRedirectUrl =
-            "https://app.contentstack.com/#!/stack/sample-api-key/content-type/content-type-1/en-us/entry/entry-uid-1/edit?branch=main&preview-field=field-title&preview-locale=en-us&preview-environment=sample-environment";
+            "https://app.contentstack.com/#!/stack/sample-api-key/content-type/content-type-1/en-us/entry/entry-uid-1/edit?branch=main&preview-field=field-title&preview-locale=en-us&preview-environment=sample-environment&preview-url=http%3A%2F%2Flocalhost%3A3000%2F";
 
         expect(window.open).toHaveBeenCalledWith(expectedRedirectUrl, "_blank");
 
@@ -241,7 +241,7 @@ describe("cslp tooltip", () => {
         singularEditButton?.click();
 
         const expectedRedirectUrl =
-            "https://app.contentstack.com/#!/stack/sample-api-key/content-type/content-type-1/en-us/entry/entry-uid-1/edit?branch=dev&preview-field=field-title&preview-locale=en-us&preview-environment=sample-environment";
+            "https://app.contentstack.com/#!/stack/sample-api-key/content-type/content-type-1/en-us/entry/entry-uid-1/edit?branch=dev&preview-field=field-title&preview-locale=en-us&preview-environment=sample-environment&preview-url=http%3A%2F%2Flocalhost%3A3000%2F";
 
         expect(window.open).toHaveBeenCalledWith(expectedRedirectUrl, "_blank");
 
@@ -283,7 +283,7 @@ describe("cslp tooltip", () => {
         singularEditButton?.click();
 
         const expectedRedirectUrl =
-            "https://app.contentstack.com/#!/stack/sample-api-key/content-type/content-type-1/en-us/entry/entry-uid-1/variant/variant-uid-1/edit?branch=dev&preview-field=field-title&preview-locale=en-us&preview-environment=sample-environment";
+            "https://app.contentstack.com/#!/stack/sample-api-key/content-type/content-type-1/en-us/entry/entry-uid-1/variant/variant-uid-1/edit?branch=dev&preview-field=field-title&preview-locale=en-us&preview-environment=sample-environment&preview-url=http%3A%2F%2Flocalhost%3A3000%2F";
 
         expect(window.open).toHaveBeenCalledWith(expectedRedirectUrl, "_blank");
 
