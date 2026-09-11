@@ -36,6 +36,7 @@ export enum VisualBuilderPostMessageEvents {
 
     // FROM visual builder
     GET_ALL_ENTRIES_IN_CURRENT_PAGE = "get-entries-in-current-page",
+    ENTRIES_IN_PAGE_CHANGED = "entries-in-page-changed",
     HIDE_FOCUS_OVERLAY = "hide-focus-overlay",
     SHOW_DRAFT_FIELDS = "show-draft-fields",
     REMOVE_DRAFT_FIELDS = "remove-draft-fields",

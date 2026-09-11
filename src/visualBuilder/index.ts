@@ -14,7 +14,10 @@ import {
 import { generateStartEditingButton } from "./generators/generateStartEditingButton";
 
 import { addFocusOverlay } from "./generators/generateOverlay";
-import { getEntryIdentifiersInCurrentPage } from "./utils/getEntryIdentifiersInCurrentPage";
+import {
+    getEntryIdentifiersInCurrentPage,
+    getEntryIdentifiersSignature,
+} from "./utils/getEntryIdentifiersInCurrentPage";
 import { resolvePageContext } from "./utils/resolvePageContext";
 import visualBuilderPostMessage from "./utils/visualBuilderPostMessage";
 import { VisualBuilderPostMessageEvents } from "./utils/types/postMessage.types";
@@ -206,6 +209,20 @@ export class VisualBuilder {
         });
     });
 
+    private lastEntriesSignature = "";
+
+    /** Tell the editor which entries are on the page, only when the set changed. */
+    private notifyEntriesInPageIfChanged = (): void => {
+        const { entriesInCurrentPage } = getEntryIdentifiersInCurrentPage();
+        const signature = getEntryIdentifiersSignature(entriesInCurrentPage);
+        if (signature === this.lastEntriesSignature) return;
+        this.lastEntriesSignature = signature;
+        visualBuilderPostMessage?.send(
+            VisualBuilderPostMessageEvents.ENTRIES_IN_PAGE_CHANGED,
+            { entriesInCurrentPage }
+        );
+    };
+
     private mutationObserver = new MutationObserver(
         debounce(
             async () => {
@@ -215,6 +232,7 @@ export class VisualBuilder {
                     this.visualBuilderContainer,
                     this.resizeObserver
                 );
+                this.notifyEntriesInPageIfChanged();
 
                 const emptyBlockParents = Array.from(
                     document.querySelectorAll(`.${VB_EmptyBlockParentClass}`)
@@ -378,6 +396,7 @@ export class VisualBuilder {
                         VisualBuilderPostMessageEvents.GET_ALL_ENTRIES_IN_CURRENT_PAGE,
                         getEntryIdentifiersInCurrentPage
                     );
+                    this.notifyEntriesInPageIfChanged();
                     visualBuilderPostMessage?.send(
                         VisualBuilderPostMessageEvents.SEND_VARIANT_AND_LOCALE
                     );

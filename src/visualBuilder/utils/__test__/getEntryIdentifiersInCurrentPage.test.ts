@@ -1,5 +1,8 @@
 import { JSDOM } from "jsdom";
-import { getEntryIdentifiersInCurrentPage } from "../getEntryIdentifiersInCurrentPage";
+import {
+    getEntryIdentifiersInCurrentPage,
+    getEntryIdentifiersSignature,
+} from "../getEntryIdentifiersInCurrentPage";
 
 const dom = new JSDOM(`
 <div>
@@ -23,8 +26,8 @@ const domWithNoCslp = new JSDOM(`
 `);
 
 describe("getEntryIdentifiersInCurrentPage", () => {
-    test('should return an empty array if no elements with data-cslp attribute are found', () => {
-        document.body.innerHTML = '';
+    test("should return an empty array if no elements with data-cslp attribute are found", () => {
+        document.body.innerHTML = "";
         const result = getEntryIdentifiersInCurrentPage();
         expect(result.entriesInCurrentPage).toEqual([]);
     });
@@ -58,6 +61,38 @@ describe("getEntryIdentifiersInCurrentPage", () => {
         `;
         const { entriesInCurrentPage } = getEntryIdentifiersInCurrentPage();
         expect(entriesInCurrentPage.length).toBe(1);
-        expect(entriesInCurrentPage[0].entryUid).toBe('bltf5bb5f8fb088a332');
+        expect(entriesInCurrentPage[0].entryUid).toBe("bltf5bb5f8fb088a332");
+    });
+});
+
+describe("getEntryIdentifiersInCurrentPage locale handling", () => {
+    test("should keep the same entry in two locales as two results", () => {
+        document.body.innerHTML = `
+            <h1 data-cslp="page.blt1.en-us.title">EN</h1>
+            <h1 data-cslp="page.blt1.fr-fr.title">FR</h1>
+        `;
+        const { entriesInCurrentPage } = getEntryIdentifiersInCurrentPage();
+        expect(entriesInCurrentPage).toEqual([
+            { entryUid: "blt1", contentTypeUid: "page", locale: "en-us" },
+            { entryUid: "blt1", contentTypeUid: "page", locale: "fr-fr" },
+        ]);
+    });
+});
+
+describe("getEntryIdentifiersSignature", () => {
+    test("should be order independent and change with the set", () => {
+        const a = { entryUid: "blt1", contentTypeUid: "page", locale: "en-us" };
+        const b = {
+            entryUid: "blt2",
+            contentTypeUid: "header",
+            locale: "en-us",
+        };
+        expect(getEntryIdentifiersSignature([a, b])).toBe(
+            getEntryIdentifiersSignature([b, a])
+        );
+        expect(getEntryIdentifiersSignature([a])).not.toBe(
+            getEntryIdentifiersSignature([a, b])
+        );
+        expect(getEntryIdentifiersSignature([])).toBe("");
     });
 });
