@@ -6,6 +6,8 @@ import { observeParentAndFocusNewInstance } from "../../utils/multipleElementAdd
 import { CslpData } from "../../../cslp/types/cslp.types";
 import { ISchemaFieldMap } from "../../utils/types/index.types";
 import { VisualBuilderPostMessageEvents } from "../../utils/types/postMessage.types";
+import { getDOMEditStack } from "../../utils/getCsDataOfElement";
+import { getPeerLockForField } from "../../utils/fieldLockIndicator";
 
 vi.mock("../../utils/visualBuilderPostMessage", () => ({
     default: {
@@ -17,18 +19,30 @@ vi.mock("../../utils/multipleElementAddButton", () => ({
     observeParentAndFocusNewInstance: vi.fn(),
 }));
 
+vi.mock("../../utils/fieldLockIndicator", () => ({
+    getPeerLockForField: vi.fn(() => null),
+}));
+
 describe("EmptyBlock", () => {
     const mockDetails = {
         fieldMetadata: {
-            cslpValue: "parent.cslp.value",
+            cslpValue: "ct.entry.en-us.blocks_field",
         } as CslpData,
         fieldSchema: {
             display_name: "Test Block",
         } as ISchemaFieldMap,
     };
 
-    afterEach(() => {
+    let host: HTMLElement | null = null;
+
+    beforeEach(() => {
         vi.clearAllMocks();
+    });
+
+    afterEach(() => {
+        // RTL only removes containers it created, so this one would outlive the test
+        host?.remove();
+        host = null;
     });
 
     test("should render correctly", () => {
@@ -69,5 +83,62 @@ describe("EmptyBlock", () => {
             parentCslp: mockDetails.fieldMetadata.cslpValue,
             index: 0,
         });
+    });
+
+    test("claims the field lock before adding, so a peer sees it", async () => {
+        host = document.createElement("div");
+        host.setAttribute("data-cslp", mockDetails.fieldMetadata.cslpValue);
+        document.body.appendChild(host);
+
+        const { getByTestId } = render(<EmptyBlock details={mockDetails} />, {
+            container: host as HTMLElement,
+        });
+        fireEvent.click(getByTestId("visual-builder__empty-block-add-button"));
+
+        await waitFor(() => {
+            expect((visualBuilderPostMessage as any).send).toHaveBeenCalledWith(
+                VisualBuilderPostMessageEvents.FOCUS_FIELD,
+                { DOMEditStack: getDOMEditStack(host as HTMLElement) }
+            );
+        });
+
+        // the lock must be claimed first, or the parent applies the add with no lock
+        const events = (visualBuilderPostMessage as any).send.mock.calls.map(
+            (call: unknown[]) => call[0]
+        );
+        expect(events).toEqual([
+            VisualBuilderPostMessageEvents.FOCUS_FIELD,
+            VisualBuilderPostMessageEvents.ADD_INSTANCE,
+        ]);
+    });
+
+    test("does not send an empty edit stack, which the parent reads as a deselect", async () => {
+        // no ancestor carries data-cslp, so the stack comes back empty
+        const { getByTestId } = render(<EmptyBlock details={mockDetails} />);
+        fireEvent.click(getByTestId("visual-builder__empty-block-add-button"));
+
+        await waitFor(() => {
+            expect((visualBuilderPostMessage as any).send).toHaveBeenCalledWith(
+                VisualBuilderPostMessageEvents.ADD_INSTANCE,
+                { fieldMetadata: mockDetails.fieldMetadata, index: 0 }
+            );
+        });
+        expect((visualBuilderPostMessage as any).send).not.toHaveBeenCalledWith(
+            VisualBuilderPostMessageEvents.FOCUS_FIELD,
+            expect.anything()
+        );
+    });
+
+    test("adds nothing when a peer holds the field", async () => {
+        (getPeerLockForField as any).mockReturnValueOnce({
+            user: { uid: "peer" },
+        });
+
+        const { getByTestId } = render(<EmptyBlock details={mockDetails} />);
+        fireEvent.click(getByTestId("visual-builder__empty-block-add-button"));
+
+        await waitFor(() => expect(getPeerLockForField).toHaveBeenCalled());
+        expect((visualBuilderPostMessage as any).send).not.toHaveBeenCalled();
+        expect(observeParentAndFocusNewInstance).not.toHaveBeenCalled();
     });
 });
