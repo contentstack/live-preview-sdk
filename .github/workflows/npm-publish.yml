@@ -44,4 +44,5 @@ jobs:
       - name: Update npm
         run: npm install -g npm@latest
       - name: Release
-        run: npm publish --provenance --access public
+        # Without --tag alpha npm moves the latest tag to the prerelease
+        run: npm publish --tag alpha --provenance --access public

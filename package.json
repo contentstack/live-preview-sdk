@@ -31,6 +31,7 @@
         "test:coverage": "vitest --coverage",
         "dev": "NODE_OPTIONS='--max-old-space-size=16384' tsup --watch --config tsup.config.dev.js",
         "prepare": "husky",
+        "prepack": "npm run build",
         "lint": "eslint src",
         "lint:fix": "eslint --fix",
         "prettier": "prettier src --check",
