@@ -1,8 +1,25 @@
 # Changelog
 
+## [v4.5.2](https://github.com/contentstack/live-preview-sdk/compare/v4.5.1...v4.5.2)
+
+> 16 September 2026
+
+### Fixes
+
+- fix(release): restore build before publish and the alpha dist-tag (Kirtesh Suthar - [#650](https://github.com/contentstack/live-preview-sdk/pull/650))
+
+### Fixes
+
+- fix(release): publish prereleases under the alpha dist-tag (Kirtesh Suthar - [86f5187](https://github.com/contentstack/live-preview-sdk/commit/86f5187abd0a861bdd8a328f9cab04df926f5c0c))
+- fix(release): build on prepack so dist ships in the published package (Kirtesh Suthar - [76e6a9d](https://github.com/contentstack/live-preview-sdk/commit/76e6a9dc6748f15d459320ced52da95e403bb9bf))
+
+### Chores And Housekeeping
+
+- chore(ci): pin vitest-coverage-report-action to a commit sha (Kirtesh Suthar - [fd8e6af](https://github.com/contentstack/live-preview-sdk/commit/fd8e6af5a8b4b5c8cdd512955180b943616c0c26))
+
 ## [v4.5.1](https://github.com/contentstack/live-preview-sdk/compare/v4.5.0...v4.5.1)
 
-> 10 September 2026
+> 15 September 2026
 
 ### Fixes
 
@@ -11,21 +28,35 @@
 
 ### Chores And Housekeeping
 
+- chore(release): v4.5.1 (Kirtesh Suthar - [#646](https://github.com/contentstack/live-preview-sdk/pull/646))
 - chore: sync develop_v4 with stage_v4 (Kirtesh Suthar - [#645](https://github.com/contentstack/live-preview-sdk/pull/645))
 - chore(tests): standardize api key placeholder values in specs (Hitesh Shetty - [#639](https://github.com/contentstack/live-preview-sdk/pull/639))
 
 ### General Changes
 
+- release: v4.5.1 (Kirtesh Suthar - [#647](https://github.com/contentstack/live-preview-sdk/pull/647))
 - Develop v4 (Kirtesh Suthar - [#640](https://github.com/contentstack/live-preview-sdk/pull/640))
+
+### Fixes
+
+- fix: update CDN version to 4.5.1 in README (Kirtesh Suthar - [e93cc36](https://github.com/contentstack/live-preview-sdk/commit/e93cc36a182d084fed01b3ee5b3262a51fb159fd))
 
 ### Chores And Housekeeping
 
+- chore: merge main into stage_v4 release branch (Kirtesh Suthar - [3d2e823](https://github.com/contentstack/live-preview-sdk/commit/3d2e8231f7e6cf21a8648d6435499f3773367510))
 - chore: merge stage_v4 into develop_v4 (Kirtesh Suthar - [e1dee0f](https://github.com/contentstack/live-preview-sdk/commit/e1dee0f33c15fbbeb9d7842ad70aba7610801524))
 - chore(deps): apply npm audit fix (hitesh-shetty-cstk - [ec144b9](https://github.com/contentstack/live-preview-sdk/commit/ec144b934935185f40efccfdcd09d4ac153222c8))
 
 ### Refactoring and Updates
 
 - refactor(utils): one list for live preview's own query params (Kirtesh Suthar - [c179114](https://github.com/contentstack/live-preview-sdk/commit/c1791141dd7f22430f4f96d8070f4354dc9b641e))
+
+### General Changes
+
+- Update npm-publish.yml (Aravind Kumar - [60ce24f](https://github.com/contentstack/live-preview-sdk/commit/60ce24f4c53467294a9b52307337d670a404eec9))
+- Delete .github/workflows/npm-alpha-publish.yml (Aravind Kumar - [71a26ad](https://github.com/contentstack/live-preview-sdk/commit/71a26ad7dc3a9534c2513858a0fa574fd8940be4))
+- Update npm-publish.yml (Aravind Kumar - [89811da](https://github.com/contentstack/live-preview-sdk/commit/89811da4bf36528c30d2efc14c5d01594234a501))
+- Updated codeowners (Aravind Kumar - [4183387](https://github.com/contentstack/live-preview-sdk/commit/41833878124126b1cf74d92d8501f1d1eda1c06f))
 
 ## [v4.5.0](https://github.com/contentstack/live-preview-sdk/compare/v4.4.5...v4.5.0)
 
