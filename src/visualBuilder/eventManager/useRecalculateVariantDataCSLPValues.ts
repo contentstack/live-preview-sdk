@@ -14,9 +14,12 @@ const VARIANT_UPDATE_DELAY_MS: Readonly<number> = 8000;
 // Coalesce a burst of data-cslp mutations into a single request to the
 // visual editor.
 const requestDiscussionHighlights = debounce(() => {
-    visualBuilderPostMessage?.send(
-        VisualBuilderPostMessageEvents.REQUEST_DISCUSSION_HIGHLIGHTS
-    );
+    // Receiver is optional: the visual builder only listens while the
+    // Discussions panel is open, so a missing listener is expected and its
+    // rejection must not surface as an unhandled one.
+    visualBuilderPostMessage
+        ?.send(VisualBuilderPostMessageEvents.REQUEST_DISCUSSION_HIGHLIGHTS)
+        .catch(() => {});
 }, 200);
 
 type OnAudienceModeVariantPatchUpdate = {

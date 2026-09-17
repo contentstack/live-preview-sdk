@@ -167,17 +167,19 @@ export function useVariantFieldsPostMessageEvent({ isSSR }: { isSSR: boolean }):
                 if (selectedVariant) {
                     addVariantFieldClass(selectedVariant);
                 }
-                // SSR DOM is final; observer never fires, request directly.
-                visualBuilderPostMessage?.send(
-                    VisualBuilderPostMessageEvents.REQUEST_DISCUSSION_HIGHLIGHTS
-                );
             } else {
-                // CSR: observer in updateVariantClasses requests on settle.
+                // CSR: observer in updateVariantClasses also requests on settle.
                 updateVariantClasses();
-                visualBuilderPostMessage?.send(
-                    VisualBuilderPostMessageEvents.REQUEST_DISCUSSION_HIGHLIGHTS
-                );
             }
+            // Sent in both modes: SSR has no observer to fire it later. The
+            // receiver is optional — VB listens only while the Discussions
+            // panel is open — so the rejection must be handled here or it
+            // surfaces as an unhandled one.
+            visualBuilderPostMessage
+                ?.send(
+                    VisualBuilderPostMessageEvents.REQUEST_DISCUSSION_HIGHLIGHTS
+                )
+                .catch(() => {});
         }
     );
     visualBuilderPostMessage?.on(

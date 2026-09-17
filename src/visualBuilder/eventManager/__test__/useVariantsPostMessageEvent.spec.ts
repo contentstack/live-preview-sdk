@@ -48,7 +48,9 @@ vi.mock("../../../visualBuilder/utils/visualBuilderPostMessage", () => {
     return {
         default: {
             on: vi.fn(),
-            send: vi.fn(),
+            // send always returns a promise; tests that assert on rejection
+            // handling need the mock to match that contract.
+            send: vi.fn().mockResolvedValue(undefined),
         },
     };
 });
@@ -727,5 +729,39 @@ describe("useVariantFieldsPostMessageEvent SSR handling", () => {
             VisualBuilderPostMessageEvents.REQUEST_DISCUSSION_HIGHLIGHTS
         );
         expect(updateVariantClasses).toHaveBeenCalled();
+    });
+
+    // The visual builder registers this listener only while the
+    // Discussions panel is open, so the send rejects on most page loads. Left
+    // unhandled it reaches Next.js's unhandledrejection hook and renders a
+    // "[object Object]" runtime error overlay in dev.
+    it("attaches a rejection handler to the send", async () => {
+        useVariantFieldsPostMessageEvent({ isSSR: true });
+        const call = mockVisualBuilderPostMessage.on.mock.calls.find(
+            (call: any[]) =>
+                call[0] === VisualBuilderPostMessageEvents.GET_VARIANT_ID
+        );
+        const handler = call ? call[1] : null;
+
+        const rejection = Promise.reject({
+            code: "NO_REQUEST_LISTENER_FOUND",
+            message:
+                'No request listener found for event "request-discussion-highlights"',
+        });
+        const catchSpy = vi.spyOn(rejection, "catch");
+        (mockVisualBuilderPostMessage.send as any).mockReturnValue(rejection);
+
+        try {
+            handler!({ data: { variant: "variant-123" } });
+            expect(catchSpy).toHaveBeenCalled();
+            await expect(rejection).rejects.toMatchObject({
+                code: "NO_REQUEST_LISTENER_FOUND",
+            });
+        } finally {
+            catchSpy.mockRestore();
+            (mockVisualBuilderPostMessage.send as any).mockResolvedValue(
+                undefined
+            );
+        }
     });
 });
