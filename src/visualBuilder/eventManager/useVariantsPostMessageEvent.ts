@@ -1,6 +1,7 @@
 import { VisualBuilder } from "..";
 import { visualBuilderStyles } from "../visualBuilder.style";
 import visualBuilderPostMessage from "../utils/visualBuilderPostMessage";
+import { ignoreMissingListener } from "../utils/postMessageErrors";
 import { VisualBuilderPostMessageEvents } from "../utils/types/postMessage.types";
 import { FieldSchemaMap } from "../utils/fieldSchemaMap";
 import { updateVariantClasses } from "./useRecalculateVariantDataCSLPValues";
@@ -172,14 +173,17 @@ export function useVariantFieldsPostMessageEvent({ isSSR }: { isSSR: boolean }):
                 updateVariantClasses();
             }
             // Sent in both modes: SSR has no observer to fire it later. The
-            // receiver is optional — VB listens only while the Discussions
-            // panel is open — so the rejection must be handled here or it
-            // surfaces as an unhandled one.
+            // visual builder listens only while the Discussions panel is open,
+            // so an absent receiver is expected here rather than a failure.
             visualBuilderPostMessage
                 ?.send(
                     VisualBuilderPostMessageEvents.REQUEST_DISCUSSION_HIGHLIGHTS
                 )
-                .catch(() => {});
+                .catch(
+                    ignoreMissingListener(
+                        VisualBuilderPostMessageEvents.REQUEST_DISCUSSION_HIGHLIGHTS
+                    )
+                );
         }
     );
     visualBuilderPostMessage?.on(
