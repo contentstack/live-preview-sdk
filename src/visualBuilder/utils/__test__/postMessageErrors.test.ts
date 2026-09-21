@@ -39,6 +39,9 @@ describe("ignoreMissingListener", () => {
 
         expect(warn).toHaveBeenCalledOnce();
         expect(warn.mock.calls[0][0]).toContain(EVENT);
+        // The rejection itself is the reason this branch exists; without this
+        // the warn call could drop it and every assertion here would hold.
+        expect(warn.mock.calls[0][1]).toBe(error);
     });
 
     it("warns on a coded rejection that is not the missing listener", () => {

@@ -624,6 +624,7 @@ describe("useVariantFieldsPostMessageEvent SSR handling", () => {
 
     afterEach(() => {
         document.querySelectorAll = originalQuerySelectorAll;
+        vi.restoreAllMocks();
     });
 
     it("should call addVariantFieldClass directly when isSSR is true and variant is provided", () => {
@@ -791,11 +792,16 @@ describe("useVariantFieldsPostMessageEvent SSR handling", () => {
         (mockVisualBuilderPostMessage.send as any).mockReturnValue(rejection);
 
         handler!({ data: { variant: "variant-123" } });
-        await expect(rejection).rejects.toBeTruthy();
+        await expect(rejection).rejects.toBe(
+            "contentstack-adv-post-message: The ACK was not received"
+        );
 
         expect(warn).toHaveBeenCalledOnce();
         expect(warn.mock.calls[0][0]).toContain(
             VisualBuilderPostMessageEvents.REQUEST_DISCUSSION_HIGHLIGHTS
+        );
+        expect(warn.mock.calls[0][1]).toBe(
+            "contentstack-adv-post-message: The ACK was not received"
         );
     });
 });

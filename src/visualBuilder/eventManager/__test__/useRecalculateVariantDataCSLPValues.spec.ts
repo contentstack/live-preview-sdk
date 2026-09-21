@@ -29,7 +29,10 @@ const send = (visualBuilderPostMessage as any).send;
 // vitest.setup.ts swaps MutationObserver for a stub that drops the callback, so
 // the real observer never fires here. Capture the callback and drive it instead.
 let observerCallbacks: MutationCallback[] = [];
-const realMutationObserver = global.MutationObserver;
+// Captured in beforeEach, not at module scope: vitest.setup.ts installs its
+// stub in beforeAll, so a module-level read would grab jsdom's native one and
+// afterEach would restore the wrong implementation.
+let installedMutationObserver: typeof MutationObserver;
 
 class CapturingMutationObserver {
     observe = vi.fn();
@@ -50,6 +53,7 @@ describe("requestDiscussionHighlights via the CSLP mutation observer", () => {
     beforeEach(() => {
         vi.clearAllMocks();
         observerCallbacks = [];
+        installedMutationObserver = global.MutationObserver;
         global.MutationObserver =
             CapturingMutationObserver as unknown as typeof MutationObserver;
         send.mockResolvedValue(undefined);
@@ -58,7 +62,7 @@ describe("requestDiscussionHighlights via the CSLP mutation observer", () => {
     });
 
     afterEach(() => {
-        global.MutationObserver = realMutationObserver;
+        global.MutationObserver = installedMutationObserver;
         document.body.innerHTML = "";
         vi.restoreAllMocks();
     });
@@ -110,11 +114,16 @@ describe("requestDiscussionHighlights via the CSLP mutation observer", () => {
         send.mockReturnValue(rejection);
 
         fireMutation();
-        await expect(rejection).rejects.toBeTruthy();
+        await expect(rejection).rejects.toBe(
+            "contentstack-adv-post-message: The ACK was not received"
+        );
 
         expect(warn).toHaveBeenCalledOnce();
         expect(warn.mock.calls[0][0]).toContain(
             VisualBuilderPostMessageEvents.REQUEST_DISCUSSION_HIGHLIGHTS
+        );
+        expect(warn.mock.calls[0][1]).toBe(
+            "contentstack-adv-post-message: The ACK was not received"
         );
     });
 });
