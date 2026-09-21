@@ -213,13 +213,15 @@ export class VisualBuilder {
 
     /** Tell the editor which entries are on the page, only when the set changed. */
     private notifyEntriesInPageIfChanged = (): void => {
-        const { entriesInCurrentPage } = getEntryIdentifiersInCurrentPage();
-        const signature = getEntryIdentifiersSignature(entriesInCurrentPage);
+        const entries = getEntryIdentifiersInCurrentPage();
+        const signature = getEntryIdentifiersSignature(
+            entries.entriesInCurrentPage
+        );
         if (signature === this.lastEntriesSignature) return;
         this.lastEntriesSignature = signature;
         visualBuilderPostMessage?.send(
             VisualBuilderPostMessageEvents.ENTRIES_IN_CURRENT_PAGE_CHANGED,
-            { entriesInCurrentPage }
+            entries
         );
     };
 

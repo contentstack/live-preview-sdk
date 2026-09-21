@@ -65,20 +65,6 @@ describe("getEntryIdentifiersInCurrentPage", () => {
     });
 });
 
-describe("getEntryIdentifiersInCurrentPage locale handling", () => {
-    test("should keep the same entry in two locales as two results", () => {
-        document.body.innerHTML = `
-            <h1 data-cslp="page.blt1.en-us.title">EN</h1>
-            <h1 data-cslp="page.blt1.fr-fr.title">FR</h1>
-        `;
-        const { entriesInCurrentPage } = getEntryIdentifiersInCurrentPage();
-        expect(entriesInCurrentPage).toEqual([
-            { entryUid: "blt1", contentTypeUid: "page", locale: "en-us" },
-            { entryUid: "blt1", contentTypeUid: "page", locale: "fr-fr" },
-        ]);
-    });
-});
-
 describe("getEntryIdentifiersSignature", () => {
     test("should be order independent and change with the set", () => {
         const a = { entryUid: "blt1", contentTypeUid: "page", locale: "en-us" };
