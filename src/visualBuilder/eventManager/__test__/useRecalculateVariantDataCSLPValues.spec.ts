@@ -22,6 +22,7 @@ import { updateVariantClasses } from "../useRecalculateVariantDataCSLPValues";
 import { VisualBuilderPostMessageEvents } from "../../utils/types/postMessage.types";
 import visualBuilderPostMessage from "../../../visualBuilder/utils/visualBuilderPostMessage";
 import * as cslpdata from "../../../cslp/cslpdata";
+import { PublicLogger } from "../../../logger/logger";
 
 const send = (visualBuilderPostMessage as any).send;
 
@@ -85,13 +86,35 @@ describe("requestDiscussionHighlights via the CSLP mutation observer", () => {
             message: 'No request listener found for event "x"',
         });
         const catchSpy = vi.spyOn(rejection, "catch");
+        const warn = vi.spyOn(PublicLogger, "warn").mockImplementation(() => {});
         send.mockReturnValue(rejection);
 
         fireMutation();
-
-        expect(catchSpy).toHaveBeenCalled();
         await expect(rejection).rejects.toMatchObject({
             code: "NO_REQUEST_LISTENER_FOUND",
         });
+
+        expect(catchSpy).toHaveBeenCalled();
+        expect(warn).not.toHaveBeenCalled();
+    });
+
+    // postMessageErrors is not mocked here, so the real helper runs. This is
+    // the case that ties the call site to it: a bare `.catch(() => {})` would
+    // pass every assertion above but fail this one.
+    it("warns through the helper when the send fails for another reason", async () => {
+        // The shape the library's no-ack timeout rejects with: no code.
+        const rejection = Promise.reject(
+            "contentstack-adv-post-message: The ACK was not received"
+        );
+        const warn = vi.spyOn(PublicLogger, "warn").mockImplementation(() => {});
+        send.mockReturnValue(rejection);
+
+        fireMutation();
+        await expect(rejection).rejects.toBeTruthy();
+
+        expect(warn).toHaveBeenCalledOnce();
+        expect(warn.mock.calls[0][0]).toContain(
+            VisualBuilderPostMessageEvents.REQUEST_DISCUSSION_HIGHLIGHTS
+        );
     });
 });

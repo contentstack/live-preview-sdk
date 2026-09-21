@@ -39,6 +39,7 @@ import visualBuilderPostMessage from "../../../visualBuilder/utils/visualBuilder
 import { EventManager } from "@contentstack/advanced-post-message";
 import { updateVariantClasses } from "../../../visualBuilder/eventManager/useRecalculateVariantDataCSLPValues";
 import * as cslpdata from "../../../cslp/cslpdata";
+import { PublicLogger } from "../../../logger/logger";
 
 const mockVisualBuilderPostMessage =
     visualBuilderPostMessage as MockedObject<EventManager>;
@@ -759,13 +760,42 @@ describe("useVariantFieldsPostMessageEvent SSR handling", () => {
         // fix removed, so it proves nothing. Rewriting this to catch a
         // try/catch refactor means fixing that detection first.
         const catchSpy = vi.spyOn(rejection, "catch");
+        const warn = vi.spyOn(PublicLogger, "warn").mockImplementation(() => {});
         (mockVisualBuilderPostMessage.send as any).mockReturnValue(rejection);
 
         handler!({ data: { variant: "variant-123" } });
-
-        expect(catchSpy).toHaveBeenCalled();
         await expect(rejection).rejects.toMatchObject({
             code: "NO_REQUEST_LISTENER_FOUND",
         });
+
+        expect(catchSpy).toHaveBeenCalled();
+        expect(warn).not.toHaveBeenCalled();
+    });
+
+    // postMessageErrors is not mocked here, so the real helper runs. This is
+    // the case that ties the call site to it: a bare `.catch(() => {})` would
+    // pass every assertion above but fail this one.
+    it("warns through the helper when the send fails for another reason", async () => {
+        useVariantFieldsPostMessageEvent({ isSSR: true });
+        const call = mockVisualBuilderPostMessage.on.mock.calls.find(
+            (call: any[]) =>
+                call[0] === VisualBuilderPostMessageEvents.GET_VARIANT_ID
+        );
+        const handler = call ? call[1] : null;
+
+        // The shape the library's no-ack timeout rejects with: no code.
+        const rejection = Promise.reject(
+            "contentstack-adv-post-message: The ACK was not received"
+        );
+        const warn = vi.spyOn(PublicLogger, "warn").mockImplementation(() => {});
+        (mockVisualBuilderPostMessage.send as any).mockReturnValue(rejection);
+
+        handler!({ data: { variant: "variant-123" } });
+        await expect(rejection).rejects.toBeTruthy();
+
+        expect(warn).toHaveBeenCalledOnce();
+        expect(warn.mock.calls[0][0]).toContain(
+            VisualBuilderPostMessageEvents.REQUEST_DISCUSSION_HIGHLIGHTS
+        );
     });
 });

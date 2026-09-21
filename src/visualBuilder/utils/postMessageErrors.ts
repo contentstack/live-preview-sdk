@@ -1,5 +1,5 @@
 import { PublicLogger } from "../../logger/logger";
-import { VisualBuilderPostMessageEvents } from "./types/postMessage.types";
+import type { VisualBuilderPostMessageEvents } from "./types/postMessage.types";
 
 // adv-post-message does not export ERROR_CODES from its entry point, so the
 // wire value is matched directly.
