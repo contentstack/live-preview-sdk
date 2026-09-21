@@ -218,7 +218,7 @@ export class VisualBuilder {
         if (signature === this.lastEntriesSignature) return;
         this.lastEntriesSignature = signature;
         visualBuilderPostMessage?.send(
-            VisualBuilderPostMessageEvents.ENTRIES_IN_PAGE_CHANGED,
+            VisualBuilderPostMessageEvents.ENTRIES_IN_CURRENT_PAGE_CHANGED,
             { entriesInCurrentPage }
         );
     };
