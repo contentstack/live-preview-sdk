@@ -155,7 +155,8 @@ describe("useVariantFieldsPostMessageEvent", () => {
 
         // Reset mocks
         vi.clearAllMocks();
-        
+        (mockVisualBuilderPostMessage.send as any).mockResolvedValue(undefined);
+
         // Mock isValidCslp to return true for test data (after clearAllMocks)
         vi.spyOn(cslpdata, "isValidCslp").mockReturnValue(true);
     });
@@ -615,6 +616,9 @@ describe("useVariantFieldsPostMessageEvent SSR handling", () => {
     beforeEach(() => {
         document.querySelectorAll = mockQuerySelectorAll;
         vi.clearAllMocks();
+        // Restate the contract rather than inherit it: send always returns a
+        // promise, and a test below swaps in a rejecting one.
+        (mockVisualBuilderPostMessage.send as any).mockResolvedValue(undefined);
     });
 
     afterEach(() => {
@@ -748,20 +752,20 @@ describe("useVariantFieldsPostMessageEvent SSR handling", () => {
             message:
                 'No request listener found for event "request-discussion-highlights"',
         });
+        // Deliberately coupled to the `.catch` shape. Asserting "no unhandled
+        // rejection escapes" would survive a refactor to try/catch, but neither
+        // a process `unhandledRejection` listener nor the jsdom window event
+        // fires reliably under vitest here: the same assertion passes with the
+        // fix removed, so it proves nothing. Rewriting this to catch a
+        // try/catch refactor means fixing that detection first.
         const catchSpy = vi.spyOn(rejection, "catch");
         (mockVisualBuilderPostMessage.send as any).mockReturnValue(rejection);
 
-        try {
-            handler!({ data: { variant: "variant-123" } });
-            expect(catchSpy).toHaveBeenCalled();
-            await expect(rejection).rejects.toMatchObject({
-                code: "NO_REQUEST_LISTENER_FOUND",
-            });
-        } finally {
-            catchSpy.mockRestore();
-            (mockVisualBuilderPostMessage.send as any).mockResolvedValue(
-                undefined
-            );
-        }
+        handler!({ data: { variant: "variant-123" } });
+
+        expect(catchSpy).toHaveBeenCalled();
+        await expect(rejection).rejects.toMatchObject({
+            code: "NO_REQUEST_LISTENER_FOUND",
+        });
     });
 });
