@@ -384,9 +384,13 @@ export class VisualBuilder {
                     useScrollToField();
                     useHighlightCommentIcon();
 
+                    // Frameworks reuse nodes and rewrite data-cslp in place (variant
+                    // switch, re-keyed lists), which childList alone never reports.
                     this.mutationObserver.observe(document.body, {
                         childList: true,
                         subtree: true,
+                        attributes: true,
+                        attributeFilter: ["data-cslp"],
                     });
 
                     getHighlightVariantFieldsStatus().then((result) => {
