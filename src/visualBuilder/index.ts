@@ -209,7 +209,8 @@ export class VisualBuilder {
         });
     });
 
-    private lastEntriesSignature = "";
+    // null, not "": an empty page has signature "" and must still send once.
+    private lastEntriesSignature: string | null = null;
 
     /** Tell the editor which entries are on the page, only when the set changed. */
     private notifyEntriesInPageIfChanged = (): void => {
