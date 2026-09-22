@@ -1,6 +1,7 @@
 import { VisualBuilder } from "..";
 import { visualBuilderStyles } from "../visualBuilder.style";
 import visualBuilderPostMessage from "../utils/visualBuilderPostMessage";
+import { ignoreMissingListener } from "../utils/postMessageErrors";
 import { VisualBuilderPostMessageEvents } from "../utils/types/postMessage.types";
 import { FieldSchemaMap } from "../utils/fieldSchemaMap";
 import { updateVariantClasses } from "./useRecalculateVariantDataCSLPValues";
@@ -167,17 +168,22 @@ export function useVariantFieldsPostMessageEvent({ isSSR }: { isSSR: boolean }):
                 if (selectedVariant) {
                     addVariantFieldClass(selectedVariant);
                 }
-                // SSR DOM is final; observer never fires, request directly.
-                visualBuilderPostMessage?.send(
-                    VisualBuilderPostMessageEvents.REQUEST_DISCUSSION_HIGHLIGHTS
-                );
             } else {
-                // CSR: observer in updateVariantClasses requests on settle.
+                // CSR: observer in updateVariantClasses also requests on settle.
                 updateVariantClasses();
-                visualBuilderPostMessage?.send(
-                    VisualBuilderPostMessageEvents.REQUEST_DISCUSSION_HIGHLIGHTS
-                );
             }
+            // Sent in both modes: SSR has no observer to fire it later. The
+            // visual builder listens only while the Discussions panel is open,
+            // so an absent receiver is expected here rather than a failure.
+            visualBuilderPostMessage
+                ?.send(
+                    VisualBuilderPostMessageEvents.REQUEST_DISCUSSION_HIGHLIGHTS
+                )
+                .catch(
+                    ignoreMissingListener(
+                        VisualBuilderPostMessageEvents.REQUEST_DISCUSSION_HIGHLIGHTS
+                    )
+                );
         }
     );
     visualBuilderPostMessage?.on(

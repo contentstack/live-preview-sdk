@@ -39,6 +39,7 @@ import visualBuilderPostMessage from "../../../visualBuilder/utils/visualBuilder
 import { EventManager } from "@contentstack/advanced-post-message";
 import { updateVariantClasses } from "../../../visualBuilder/eventManager/useRecalculateVariantDataCSLPValues";
 import * as cslpdata from "../../../cslp/cslpdata";
+import { PublicLogger } from "../../../logger/logger";
 
 const mockVisualBuilderPostMessage =
     visualBuilderPostMessage as MockedObject<EventManager>;
@@ -48,7 +49,9 @@ vi.mock("../../../visualBuilder/utils/visualBuilderPostMessage", () => {
     return {
         default: {
             on: vi.fn(),
-            send: vi.fn(),
+            // send always returns a promise; tests that assert on rejection
+            // handling need the mock to match that contract.
+            send: vi.fn().mockResolvedValue(undefined),
         },
     };
 });
@@ -153,7 +156,8 @@ describe("useVariantFieldsPostMessageEvent", () => {
 
         // Reset mocks
         vi.clearAllMocks();
-        
+        (mockVisualBuilderPostMessage.send as any).mockResolvedValue(undefined);
+
         // Mock isValidCslp to return true for test data (after clearAllMocks)
         vi.spyOn(cslpdata, "isValidCslp").mockReturnValue(true);
     });
@@ -613,10 +617,14 @@ describe("useVariantFieldsPostMessageEvent SSR handling", () => {
     beforeEach(() => {
         document.querySelectorAll = mockQuerySelectorAll;
         vi.clearAllMocks();
+        // Restate the contract rather than inherit it: send always returns a
+        // promise, and a test below swaps in a rejecting one.
+        (mockVisualBuilderPostMessage.send as any).mockResolvedValue(undefined);
     });
 
     afterEach(() => {
         document.querySelectorAll = originalQuerySelectorAll;
+        vi.restoreAllMocks();
     });
 
     it("should call addVariantFieldClass directly when isSSR is true and variant is provided", () => {
@@ -727,5 +735,73 @@ describe("useVariantFieldsPostMessageEvent SSR handling", () => {
             VisualBuilderPostMessageEvents.REQUEST_DISCUSSION_HIGHLIGHTS
         );
         expect(updateVariantClasses).toHaveBeenCalled();
+    });
+
+    // The visual builder registers this listener only while the
+    // Discussions panel is open, so the send rejects on most page loads. Left
+    // unhandled it reaches Next.js's unhandledrejection hook and renders a
+    // "[object Object]" runtime error overlay in dev.
+    it("attaches a rejection handler to the send", async () => {
+        useVariantFieldsPostMessageEvent({ isSSR: true });
+        const call = mockVisualBuilderPostMessage.on.mock.calls.find(
+            (call: any[]) =>
+                call[0] === VisualBuilderPostMessageEvents.GET_VARIANT_ID
+        );
+        const handler = call ? call[1] : null;
+
+        const rejection = Promise.reject({
+            code: "NO_REQUEST_LISTENER_FOUND",
+            message:
+                'No request listener found for event "request-discussion-highlights"',
+        });
+        // Deliberately coupled to the `.catch` shape. Asserting "no unhandled
+        // rejection escapes" would survive a refactor to try/catch, but neither
+        // a process `unhandledRejection` listener nor the jsdom window event
+        // fires reliably under vitest here: the same assertion passes with the
+        // fix removed, so it proves nothing. Rewriting this to catch a
+        // try/catch refactor means fixing that detection first.
+        const catchSpy = vi.spyOn(rejection, "catch");
+        const warn = vi.spyOn(PublicLogger, "warn").mockImplementation(() => {});
+        (mockVisualBuilderPostMessage.send as any).mockReturnValue(rejection);
+
+        handler!({ data: { variant: "variant-123" } });
+        await expect(rejection).rejects.toMatchObject({
+            code: "NO_REQUEST_LISTENER_FOUND",
+        });
+
+        expect(catchSpy).toHaveBeenCalled();
+        expect(warn).not.toHaveBeenCalled();
+    });
+
+    // postMessageErrors is not mocked here, so the real helper runs. This is
+    // the case that ties the call site to it: a bare `.catch(() => {})` would
+    // pass every assertion above but fail this one.
+    it("warns through the helper when the send fails for another reason", async () => {
+        useVariantFieldsPostMessageEvent({ isSSR: true });
+        const call = mockVisualBuilderPostMessage.on.mock.calls.find(
+            (call: any[]) =>
+                call[0] === VisualBuilderPostMessageEvents.GET_VARIANT_ID
+        );
+        const handler = call ? call[1] : null;
+
+        // The shape the library's no-ack timeout rejects with: no code.
+        const rejection = Promise.reject(
+            "contentstack-adv-post-message: The ACK was not received"
+        );
+        const warn = vi.spyOn(PublicLogger, "warn").mockImplementation(() => {});
+        (mockVisualBuilderPostMessage.send as any).mockReturnValue(rejection);
+
+        handler!({ data: { variant: "variant-123" } });
+        await expect(rejection).rejects.toBe(
+            "contentstack-adv-post-message: The ACK was not received"
+        );
+
+        expect(warn).toHaveBeenCalledOnce();
+        expect(warn.mock.calls[0][0]).toContain(
+            VisualBuilderPostMessageEvents.REQUEST_DISCUSSION_HIGHLIGHTS
+        );
+        expect(warn.mock.calls[0][1]).toBe(
+            "contentstack-adv-post-message: The ACK was not received"
+        );
     });
 });
