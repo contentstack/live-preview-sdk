@@ -14,7 +14,10 @@ import {
 import { generateStartEditingButton } from "./generators/generateStartEditingButton";
 
 import { addFocusOverlay } from "./generators/generateOverlay";
-import { getEntryIdentifiersInCurrentPage } from "./utils/getEntryIdentifiersInCurrentPage";
+import {
+    getEntryIdentifiersInCurrentPage,
+    getEntryIdentifiersSignature,
+} from "./utils/getEntryIdentifiersInCurrentPage";
 import { resolvePageContext } from "./utils/resolvePageContext";
 import visualBuilderPostMessage from "./utils/visualBuilderPostMessage";
 import { VisualBuilderPostMessageEvents } from "./utils/types/postMessage.types";
@@ -206,6 +209,23 @@ export class VisualBuilder {
         });
     });
 
+    // null, not "": an empty page has signature "" and must still send once.
+    private lastEntriesSignature: string | null = null;
+
+    /** Tell the editor which entries are on the page, only when the set changed. */
+    private notifyEntriesInPageIfChanged = (): void => {
+        const entries = getEntryIdentifiersInCurrentPage();
+        const signature = getEntryIdentifiersSignature(
+            entries.entriesInCurrentPage
+        );
+        if (signature === this.lastEntriesSignature) return;
+        this.lastEntriesSignature = signature;
+        visualBuilderPostMessage?.send(
+            VisualBuilderPostMessageEvents.ENTRIES_IN_CURRENT_PAGE_CHANGED,
+            entries
+        );
+    };
+
     private mutationObserver = new MutationObserver(
         debounce(
             async () => {
@@ -215,6 +235,7 @@ export class VisualBuilder {
                     this.visualBuilderContainer,
                     this.resizeObserver
                 );
+                this.notifyEntriesInPageIfChanged();
 
                 const emptyBlockParents = Array.from(
                     document.querySelectorAll(`.${VB_EmptyBlockParentClass}`)
@@ -366,9 +387,13 @@ export class VisualBuilder {
                     useScrollToField();
                     useHighlightCommentIcon();
 
+                    // Frameworks reuse nodes and rewrite data-cslp in place (variant
+                    // switch, re-keyed lists), which childList alone never reports.
                     this.mutationObserver.observe(document.body, {
                         childList: true,
                         subtree: true,
+                        attributes: true,
+                        attributeFilter: ["data-cslp"],
                     });
 
                     getHighlightVariantFieldsStatus().then((result) => {
@@ -378,6 +403,7 @@ export class VisualBuilder {
                         VisualBuilderPostMessageEvents.GET_ALL_ENTRIES_IN_CURRENT_PAGE,
                         getEntryIdentifiersInCurrentPage
                     );
+                    this.notifyEntriesInPageIfChanged();
                     visualBuilderPostMessage?.send(
                         VisualBuilderPostMessageEvents.SEND_VARIANT_AND_LOCALE
                     );

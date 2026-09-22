@@ -196,6 +196,17 @@ describe(
         x.destroy();
     });
 
+    test("should report an empty entry set once the builder is ready", async () => {
+        const x = new VisualBuilder();
+        await waitForBuilderSDKToBeInitialized(visualBuilderPostMessage);
+
+        expect(visualBuilderPostMessage.send).toHaveBeenCalledWith(
+            VisualBuilderPostMessageEvents.ENTRIES_IN_CURRENT_PAGE_CHANGED,
+            { entriesInCurrentPage: [] }
+        );
+        x.destroy();
+    });
+
     describe("VisualBuilder init — early return conditions", () => {
         afterEach(() => {
             Config.set("mode", 2);
