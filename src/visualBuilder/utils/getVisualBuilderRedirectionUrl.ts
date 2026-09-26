@@ -3,13 +3,12 @@ import { extractDetailsFromCslp, isValidCslp } from "../../cslp";
 import { resolvePageContext } from "./resolvePageContext";
 
 /**
- * Returns the redirection URL for the Visual builder.
- * @returns {URL} The redirection URL.
+ * The page's editing context as Visual Builder reads it from its URL: branch,
+ * environment, target URL, locale, entry and content type.
  */
-export default function getVisualBuilderRedirectionUrl(): URL {
-    const { stackDetails, clientUrlParams } = Config.get();
-    const { branch, apiKey, environment, locale } = stackDetails;
-    const { url: appUrl } = clientUrlParams;
+export function buildVisualBuilderSearchParams(): URLSearchParams {
+    const { stackDetails } = Config.get();
+    const { branch, environment, locale } = stackDetails;
 
     const searchParams = new URLSearchParams();
     if (branch) {
@@ -46,9 +45,17 @@ export default function getVisualBuilderRedirectionUrl(): URL {
         searchParams.set("content_type_uid", contentTypeUid);
     }
 
-    const completeURL = new URL(
-        `/#!/stack/${apiKey}/visual-editor?${searchParams.toString()}`,
-        appUrl
+    return searchParams;
+}
+
+/**
+ * Returns the redirection URL for the Visual builder.
+ * @returns {URL} The redirection URL.
+ */
+export default function getVisualBuilderRedirectionUrl(): URL {
+    const { stackDetails, clientUrlParams } = Config.get();
+    return new URL(
+        `/#!/stack/${stackDetails.apiKey}/visual-editor?${buildVisualBuilderSearchParams().toString()}`,
+        clientUrlParams.url
     );
-    return completeURL;
 }

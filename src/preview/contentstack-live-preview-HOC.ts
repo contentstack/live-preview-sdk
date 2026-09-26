@@ -1,6 +1,6 @@
 import { cloneDeep, isEmpty, pick } from "lodash-es";
 import { v4 as uuidv4 } from "uuid";
-import { inIframe } from "../common/inIframe";
+import { inIframe, isOpeningInNewTab } from "../common/inIframe";
 import { getUserInitData } from "../configManager/config.default";
 import Config, { updateConfigFromUrl } from "../configManager/configManager";
 import LivePreview from "../livePreview/live-preview";
@@ -16,7 +16,9 @@ import {
 import { PublicLogger } from "../logger/logger";
 import { handleWebCompare } from "../timeline/compare/compare";
 import type { IExportedConfig, IInitData } from "../types/types";
+import { ILivePreviewModeConfig } from "../types/types";
 import { VisualBuilder } from "../visualBuilder";
+import { dockFromOpener } from "../visualBuilder/panel/builderPanel";
 import visualBuilderPostMessage from "../visualBuilder/utils/visualBuilderPostMessage";
 import {
     IPageContextPostMessageEvent,
@@ -119,6 +121,15 @@ class ContentstackLivePreview {
 
         handlePageTraversal();
         handleWebCompare();
+
+        // Opened by Visual Builder: it may ask for the builder docked in this page.
+        if (
+            Config.get().mode >= ILivePreviewModeConfig.BUILDER &&
+            !inIframe() &&
+            isOpeningInNewTab()
+        ) {
+            void dockFromOpener();
+        }
 
         return Promise.resolve(ContentstackLivePreview.previewConstructors);
     }
