@@ -5,6 +5,7 @@ import { visualBuilderStyles } from "../visualBuilder.style";
 import React from "preact/compat";
 import Config from "../../configManager/configManager";
 import { IConfigEditInVisualBuilderButton } from "../../types/types";
+import { openRelayAndDock } from "../panel/builderPanel";
 
 
 type Position = NonNullable<IConfigEditInVisualBuilderButton['position']>;
@@ -49,7 +50,17 @@ function StartEditingButtonComponent(): JSX.Element | null {
             data-testid="vcms-start-editing-btn"
             onMouseEnter={(e) => updateTargetUrl(e)}
             onFocus={(e) => updateTargetUrl(e)}
-            onClick={(e) => updateTargetUrl(e)}
+            onClick={(e) => {
+                updateTargetUrl(e);
+                // A refused window falls through to the link, as before.
+                if (
+                    openRelayAndDock(
+                        getVisualBuilderRedirectionUrl().toString()
+                    )
+                ) {
+                    e.preventDefault();
+                }
+            }}
         >
             <EditIcon />
             <span>Start Editing</span>

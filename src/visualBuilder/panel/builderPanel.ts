@@ -20,6 +20,8 @@ export const PANEL_ID = "cs-builder-panel";
 const DOCK_WIDTH = "472px";
 const HELLO_INTERVAL_MS = 300;
 const RELAY_TIMEOUT_MS = 10000;
+/** A relay opened by Start Editing boots a whole Visual Editor first. */
+const RELAY_BOOT_TIMEOUT_MS = 60000;
 const PANEL_TIMEOUT_MS = 20000;
 
 function appOrigin(): string {
@@ -146,13 +148,43 @@ export function mountPanel(
 }
 
 /**
+ * The relay tab's name. Unique per stack and site, so two sites never share a
+ * relay, and stable, so this page finds its own again.
+ */
+export function relayWindowName(): string {
+    const { apiKey } = Config.get().stackDetails;
+    return `csBuilderRelay:${apiKey}:${window.location.origin}`;
+}
+
+async function dock(relay: Window, timeoutMs: number): Promise<Window | null> {
+    const panelUrl = await askRelay(relay, timeoutMs);
+    if (!panelUrl) return null;
+    return mountPanel(panelUrl, relay);
+}
+
+/**
  * Docks the panel when the Visual Builder tab that opened this page allows it.
  * Otherwise does nothing, so the page behaves exactly as it does today.
  */
 export async function dockFromOpener(): Promise<Window | null> {
     const relay = window.opener as Window | null;
     if (!relay || document.getElementById(PANEL_ID)) return null;
-    const panelUrl = await askRelay(relay);
-    if (!panelUrl) return null;
-    return mountPanel(panelUrl, relay);
+    return dock(relay, RELAY_TIMEOUT_MS);
+}
+
+/**
+ * Start Editing: opens Visual Editor at `href` in the relay tab, and docks the
+ * panel here if that stack allows it. For any other stack the new tab is just
+ * Visual Editor. Must run inside the click, which is what lets the window open.
+ *
+ * Returns false when the browser refused the window, so the caller can fall
+ * back to navigating this tab.
+ */
+export function openRelayAndDock(href: string): boolean {
+    const relay = window.open(href, relayWindowName());
+    if (!relay) return false;
+    if (!document.getElementById(PANEL_ID)) {
+        void dock(relay, RELAY_BOOT_TIMEOUT_MS);
+    }
+    return true;
 }
