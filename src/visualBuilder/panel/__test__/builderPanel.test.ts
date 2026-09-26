@@ -1,6 +1,12 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import Config from "../../../configManager/configManager";
-import { askRelay, mountPanel, PANEL_ID } from "../builderPanel";
+import {
+    askRelay,
+    mountPanel,
+    openRelayAndDock,
+    PANEL_ID,
+    relayWindowName,
+} from "../builderPanel";
 
 vi.mock("../../../configManager/configManager");
 
@@ -122,6 +128,35 @@ describe("builderPanel", () => {
             expect(await mounted).toBeNull();
             expect(relay.postMessage).not.toHaveBeenCalled();
             expect(document.getElementById(PANEL_ID)).toBeNull();
+        });
+    });
+
+    describe("openRelayAndDock", () => {
+        afterEach(() => vi.restoreAllMocks());
+
+        it("opens Visual Editor in a relay tab named for this stack and site", () => {
+            const relay = fakeRelay();
+            const open = vi.spyOn(window, "open").mockReturnValue(relay);
+            expect(openRelayAndDock(`${APP}/#!/stack/blt1/visual-editor`)).toBe(
+                true
+            );
+            expect(open).toHaveBeenCalledWith(
+                `${APP}/#!/stack/blt1/visual-editor`,
+                `csBuilderRelay:blt1:${window.location.origin}`
+            );
+            expect(relayWindowName()).toBe(
+                `csBuilderRelay:blt1:${window.location.origin}`
+            );
+            // It asks the new tab whether to dock.
+            expect(relay.postMessage).toHaveBeenCalledWith(
+                { source: "cs-builder-panel", type: "hello" },
+                APP
+            );
+        });
+
+        it("reports a refused window so the caller can fall back", () => {
+            vi.spyOn(window, "open").mockReturnValue(null);
+            expect(openRelayAndDock(APP)).toBe(false);
         });
     });
 });
