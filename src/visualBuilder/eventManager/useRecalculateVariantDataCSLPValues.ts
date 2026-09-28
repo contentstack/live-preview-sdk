@@ -6,6 +6,7 @@ import { visualBuilderStyles } from "../visualBuilder.style";
 import { isValidCslp } from "../../cslp/cslpdata";
 import { setHighlightVariantFields } from "./useVariantsPostMessageEvent";
 import visualBuilderPostMessage from "../utils/visualBuilderPostMessage";
+import { ignoreMissingListener } from "../utils/postMessageErrors";
 import { VisualBuilderPostMessageEvents } from "../utils/types/postMessage.types";
 import { debounce } from "lodash-es";
 
@@ -14,9 +15,15 @@ const VARIANT_UPDATE_DELAY_MS: Readonly<number> = 8000;
 // Coalesce a burst of data-cslp mutations into a single request to the
 // visual editor.
 const requestDiscussionHighlights = debounce(() => {
-    visualBuilderPostMessage?.send(
-        VisualBuilderPostMessageEvents.REQUEST_DISCUSSION_HIGHLIGHTS
-    );
+    // The visual builder listens only while the Discussions panel is open, so
+    // an absent receiver is expected here rather than a failure.
+    visualBuilderPostMessage
+        ?.send(VisualBuilderPostMessageEvents.REQUEST_DISCUSSION_HIGHLIGHTS)
+        .catch(
+            ignoreMissingListener(
+                VisualBuilderPostMessageEvents.REQUEST_DISCUSSION_HIGHLIGHTS
+            )
+        );
 }, 200);
 
 type OnAudienceModeVariantPatchUpdate = {
