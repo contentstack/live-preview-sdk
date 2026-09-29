@@ -1,12 +1,16 @@
 # Changelog
 
-## [v4.5.2](https://github.com/contentstack/live-preview-sdk/compare/v4.5.2...v4.5.2)
+## [v4.5.3](https://github.com/contentstack/live-preview-sdk/compare/v4.5.2...v4.5.3)
 
-> 28 September 2026
+> 29 September 2026
 
 ### Fixes
 
 - fix(visual-builder): handle rejection when discussion highlights has no listener (Kirtesh Suthar - [#652](https://github.com/contentstack/live-preview-sdk/pull/652))
+
+### General Changes
+
+- Updated codeowners (Karan Bhavesh Gandhi - [#657](https://github.com/contentstack/live-preview-sdk/pull/657))
 
 ### Fixes
 
