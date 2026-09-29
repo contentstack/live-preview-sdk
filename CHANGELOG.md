@@ -1,5 +1,30 @@
 # Changelog
 
+## [v4.5.3](https://github.com/contentstack/live-preview-sdk/compare/v4.5.2...v4.5.3)
+
+> 29 September 2026
+
+### Fixes
+
+- fix(visual-builder): handle rejection when discussion highlights has no listener (Kirtesh Suthar - [#652](https://github.com/contentstack/live-preview-sdk/pull/652))
+
+### General Changes
+
+- Updated codeowners (Karan Bhavesh Gandhi - [#657](https://github.com/contentstack/live-preview-sdk/pull/657))
+
+### Fixes
+
+- fix(visual-builder): correct the documented rejection contract and cover the observer send (Kirtesh Suthar - [b78d266](https://github.com/contentstack/live-preview-sdk/commit/b78d2662f563f2261b02eea9a6b7088fc2485ee5))
+
+### Refactoring and Updates
+
+- refactor(visual-builder): warn on real send failures, stay silent on a missing listener (Kirtesh Suthar - [19f80f9](https://github.com/contentstack/live-preview-sdk/commit/19f80f9a69bd53ded3bf579d96ec6e36ad162904))
+
+### Changes to Test Assests
+
+- test(visual-builder): bind both send sites to the discriminating handler (Kirtesh Suthar - [dc4d8bf](https://github.com/contentstack/live-preview-sdk/commit/dc4d8bf3f2c102ca30479773435d95584a881e56))
+- test(visual-builder): pin the rejection value in the warning, and tidy spy lifecycles (Kirtesh Suthar - [de91b09](https://github.com/contentstack/live-preview-sdk/commit/de91b09de7d3f8d47252f9aa5fcfe1c6ada7b278))
+
 ## [v4.5.2](https://github.com/contentstack/live-preview-sdk/compare/v4.5.1...v4.5.2)
 
 > 16 September 2026
@@ -8,8 +33,13 @@
 
 - fix(release): restore build before publish and the alpha dist-tag (Kirtesh Suthar - [#650](https://github.com/contentstack/live-preview-sdk/pull/650))
 
+### General Changes
+
+- release: v4.5.2 (Kirtesh Suthar - [#651](https://github.com/contentstack/live-preview-sdk/pull/651))
+
 ### Fixes
 
+- fix: update CDN version to 4.5.2 in README (Kirtesh Suthar - [514013d](https://github.com/contentstack/live-preview-sdk/commit/514013d8cf6cb2e6c65c0da11be39df1476a7444))
 - fix(release): publish prereleases under the alpha dist-tag (Kirtesh Suthar - [86f5187](https://github.com/contentstack/live-preview-sdk/commit/86f5187abd0a861bdd8a328f9cab04df926f5c0c))
 - fix(release): build on prepack so dist ships in the published package (Kirtesh Suthar - [76e6a9d](https://github.com/contentstack/live-preview-sdk/commit/76e6a9dc6748f15d459320ced52da95e403bb9bf))
 
@@ -302,9 +332,17 @@
 - Merge origin/stage_v4 into stage_v4 — resolve version conflicts (4.3.0 → 4.4.0) (hitesh-shetty-cstk - [be798e3](https://github.com/contentstack/live-preview-sdk/commit/be798e30c2c82f57488407477482cd3e5273751f))
 - Merge pull request #565 from contentstack/develop_v4 (Karan Bhavesh Gandhi - [c8fc00d](https://github.com/contentstack/live-preview-sdk/commit/c8fc00ddf53681e2bd5c08ad6d61799b236728ca))
 
-## [v4.4.0](https://github.com/contentstack/live-preview-sdk/compare/v4.3.0...v4.4.0)
+## [v4.4.0](https://github.com/contentstack/live-preview-sdk/compare/v4.3.1...v4.4.0)
 
 > 6 April 2026
+
+### General Changes
+
+- Merge pull request #578 from contentstack/stage_v4 (Karan Bhavesh Gandhi - [7dbe992](https://github.com/contentstack/live-preview-sdk/commit/7dbe99233ad3920834147de9f67d63c8bd2895fc))
+
+## [v4.3.1](https://github.com/contentstack/live-preview-sdk/compare/v4.3.0...v4.3.1)
+
+> 2 April 2026
 
 ### New Features
 
@@ -349,7 +387,6 @@
 
 ### General Changes
 
-- Merge pull request #578 from contentstack/stage_v4 (Karan Bhavesh Gandhi - [7dbe992](https://github.com/contentstack/live-preview-sdk/commit/7dbe99233ad3920834147de9f67d63c8bd2895fc))
 - Merge pull request #576 from contentstack/develop_v4 (Karan Bhavesh Gandhi - [2501855](https://github.com/contentstack/live-preview-sdk/commit/25018553092688922b523e70ac60a6a0363cec15))
 - Merge pull request #577 from contentstack/VP-1133/purge-flag-4 (Karan Bhavesh Gandhi - [a621121](https://github.com/contentstack/live-preview-sdk/commit/a621121d15a2b518d75e39dbba996ba585439003))
 
