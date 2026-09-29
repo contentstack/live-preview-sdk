@@ -1,5 +1,30 @@
 # Changelog
 
+## [v4.5.3](https://github.com/contentstack/live-preview-sdk/compare/v4.5.2...v4.5.3)
+
+> 29 September 2026
+
+### Fixes
+
+- fix(visual-builder): handle rejection when discussion highlights has no listener (Kirtesh Suthar - [#652](https://github.com/contentstack/live-preview-sdk/pull/652))
+
+### General Changes
+
+- Updated codeowners (Karan Bhavesh Gandhi - [#657](https://github.com/contentstack/live-preview-sdk/pull/657))
+
+### Fixes
+
+- fix(visual-builder): correct the documented rejection contract and cover the observer send (Kirtesh Suthar - [b78d266](https://github.com/contentstack/live-preview-sdk/commit/b78d2662f563f2261b02eea9a6b7088fc2485ee5))
+
+### Refactoring and Updates
+
+- refactor(visual-builder): warn on real send failures, stay silent on a missing listener (Kirtesh Suthar - [19f80f9](https://github.com/contentstack/live-preview-sdk/commit/19f80f9a69bd53ded3bf579d96ec6e36ad162904))
+
+### Changes to Test Assests
+
+- test(visual-builder): bind both send sites to the discriminating handler (Kirtesh Suthar - [dc4d8bf](https://github.com/contentstack/live-preview-sdk/commit/dc4d8bf3f2c102ca30479773435d95584a881e56))
+- test(visual-builder): pin the rejection value in the warning, and tidy spy lifecycles (Kirtesh Suthar - [de91b09](https://github.com/contentstack/live-preview-sdk/commit/de91b09de7d3f8d47252f9aa5fcfe1c6ada7b278))
+
 ## [v4.5.2](https://github.com/contentstack/live-preview-sdk/compare/v4.5.1...v4.5.2)
 
 > 16 September 2026
@@ -267,7 +292,7 @@
 - Fix 20 april snyk fixes 2 develop v4 sync (Aditya Pachauri - [#585](https://github.com/contentstack/live-preview-sdk/pull/585))
 - Vp 1721 fix known issues (Kirtesh Suthar - [#581](https://github.com/contentstack/live-preview-sdk/pull/581))
 - Vp 444 stag sync 2 (Aditya Pachauri - [#562](https://github.com/contentstack/live-preview-sdk/pull/562))
-- Optimize Development Build Performance (Hitesh Shetty - [#548](https://github.com/contentstack/live-preview-sdk/pull/548))
+-  Optimize Development Build Performance (Hitesh Shetty - [#548](https://github.com/contentstack/live-preview-sdk/pull/548))
 - Add support for Variant highlights (Hitesh Shetty - [#533](https://github.com/contentstack/live-preview-sdk/pull/533))
 
 ### New Features
@@ -589,7 +614,7 @@
 ### General Changes
 
 - 2nd Oct Release (Mridul Sharma - [#512](https://github.com/contentstack/live-preview-sdk/pull/512))
-- 2nd October release (Mridul Sharma - [#511](https://github.com/contentstack/live-preview-sdk/pull/511))
+- 2nd October release  (Mridul Sharma - [#511](https://github.com/contentstack/live-preview-sdk/pull/511))
 - 1st oct 2025 to develop v4 (Aditya Pachauri - [#510](https://github.com/contentstack/live-preview-sdk/pull/510))
 - [Feat/VB-442] Indicator for variant fields (Ayush Dubey - [#508](https://github.com/contentstack/live-preview-sdk/pull/508))
 
@@ -630,7 +655,7 @@
 - 18th sept 2025 release (Kirtesh Suthar - [#505](https://github.com/contentstack/live-preview-sdk/pull/505))
 - Live preview new tab ssr issue (Mridul Sharma - [#502](https://github.com/contentstack/live-preview-sdk/pull/502))
 - VB-248 fixed the cursor moving to the start with a explicitly adding pseudo element on second time a field is visited (Sahil Chalke - [#497](https://github.com/contentstack/live-preview-sdk/pull/497))
-- VE-6918 : warning message improved (Aditya Pachauri - [#475](https://github.com/contentstack/live-preview-sdk/pull/475))
+- VE-6918 : warning message improved  (Aditya Pachauri - [#475](https://github.com/contentstack/live-preview-sdk/pull/475))
 - HoverToolbar: Requested Changes (Ayush Dubey - [#464](https://github.com/contentstack/live-preview-sdk/pull/464))
 - Ve 5474 field modifier support for canvas in visual builder (Sahil Chalke - [#460](https://github.com/contentstack/live-preview-sdk/pull/460))
 - [Feature] HoverToolbar (Ayush Dubey - [#455](https://github.com/contentstack/live-preview-sdk/pull/455))
@@ -717,13 +742,13 @@
 
 ### New Features
 
-- feat(VB-132 | VE-7062): disable editing when workflow stage rules restrict the same (Faraaz Biyabani - [#494](https://github.com/contentstack/live-preview-sdk/pull/494))
+- feat(VB-132 | VE-7062): disable editing when workflow stage rules restrict the same  (Faraaz Biyabani - [#494](https://github.com/contentstack/live-preview-sdk/pull/494))
 - feat: live preview: added outside iframe code (Mridul Sharma - [#477](https://github.com/contentstack/live-preview-sdk/pull/477))
 - feat: live preview: added outside iframe code (Mridul Sharma - [#468](https://github.com/contentstack/live-preview-sdk/pull/468))
 
 ### General Changes
 
-- 21st august 2025 release (Sahil Chalke - [#495](https://github.com/contentstack/live-preview-sdk/pull/495))
+- 21st august 2025 release  (Sahil Chalke - [#495](https://github.com/contentstack/live-preview-sdk/pull/495))
 - Live preview outside iframe (Mridul Sharma - [#492](https://github.com/contentstack/live-preview-sdk/pull/492))
 
 ### New Features
@@ -772,7 +797,7 @@
 
 ### General Changes
 
-- VE-6918 (Faraaz Biyabani - [#487](https://github.com/contentstack/live-preview-sdk/pull/487))
+- VE-6918  (Faraaz Biyabani - [#487](https://github.com/contentstack/live-preview-sdk/pull/487))
 - Hover Toolbar Click-ability Missed Commit (Faraaz Biyabani - [#482](https://github.com/contentstack/live-preview-sdk/pull/482))
 - Ve 5474 clean (Faraaz Biyabani - [#481](https://github.com/contentstack/live-preview-sdk/pull/481))
 
@@ -1098,7 +1123,7 @@
 
 ### Fixes
 
-- fix(VE-5643): Replace button is visible for parent wrapper for Multiple file field (Hitesh Shetty - [#410](https://github.com/contentstack/live-preview-sdk/pull/410))
+- fix(VE-5643): Replace button is visible for parent wrapper for Multiple file field  (Hitesh Shetty - [#410](https://github.com/contentstack/live-preview-sdk/pull/410))
 - fix: enhance loading state for form field focus (Hitesh Shetty - [#409](https://github.com/contentstack/live-preview-sdk/pull/409))
 - fix(VE-5555): add instance button loading state (Faraaz Biyabani - [#406](https://github.com/contentstack/live-preview-sdk/pull/406))
 - fix: call onChangeCallback when live_preview parameter is present in URL (Faraaz Biyabani - [#363](https://github.com/contentstack/live-preview-sdk/pull/363))
@@ -1146,7 +1171,7 @@
 
 - feat: v3.1.2 (Faraaz Biyabani - [#381](https://github.com/contentstack/live-preview-sdk/pull/381))
 - feat: improve edit button rendering (Faraaz Biyabani - [#371](https://github.com/contentstack/live-preview-sdk/pull/371))
-- feat(VE-5170): add plus button configuration (Sairaj - [#349](https://github.com/contentstack/live-preview-sdk/pull/349))
+- feat(VE-5170): add plus button configuration  (Sairaj - [#349](https://github.com/contentstack/live-preview-sdk/pull/349))
 - feat: allow click on elements with studio-ui attribute (Faraaz Biyabani - [#355](https://github.com/contentstack/live-preview-sdk/pull/355))
 - feat(VE-4043): add start editing button configuration for builder mode (Sairaj - [#346](https://github.com/contentstack/live-preview-sdk/pull/346))
 
@@ -1256,7 +1281,7 @@
 ### Fixes
 
 - fix(VE-4805): back button appears in quickform on clicking canvas (srinad007 - [#320](https://github.com/contentstack/live-preview-sdk/pull/320))
-- fix: issue with variant revert dropdown in canvas (srinad007 - [#317](https://github.com/contentstack/live-preview-sdk/pull/317))
+- fix: issue with variant revert dropdown in canvas  (srinad007 - [#317](https://github.com/contentstack/live-preview-sdk/pull/317))
 
 ### Chores And Housekeeping
 
@@ -1305,7 +1330,7 @@
 - fix: clean up event listeners in FieldToolbar and update query selector (Hitesh Shetty - [#311](https://github.com/contentstack/live-preview-sdk/pull/311))
 - fix(VE-4530): exclude properties doesn't check for frame status on `outsideLivePreviewPortal` (Hitesh Shetty - [#310](https://github.com/contentstack/live-preview-sdk/pull/310))
 - fix: add video tag in the void elements list (Kirtesh Suthar - [#307](https://github.com/contentstack/live-preview-sdk/pull/307))
-- fix: error when selecting a non text HTML element with the cslp of a text field (Faraaz Biyabani - [#299](https://github.com/contentstack/live-preview-sdk/pull/299))
+- fix: error when selecting a non text HTML element with the cslp of a text field  (Faraaz Biyabani - [#299](https://github.com/contentstack/live-preview-sdk/pull/299))
 
 ### General Changes
 
@@ -1351,7 +1376,7 @@
 
 ### Fixes
 
-- fix: psuedo editable re-positioning logic (Faraaz Biyabani - [#294](https://github.com/contentstack/live-preview-sdk/pull/294))
+- fix: psuedo editable re-positioning logic  (Faraaz Biyabani - [#294](https://github.com/contentstack/live-preview-sdk/pull/294))
 
 ### General Changes
 
@@ -1380,12 +1405,12 @@
 
 - feat: hide edit tags when website is in timeline preview (Kirtesh Suthar - [#285](https://github.com/contentstack/live-preview-sdk/pull/285))
 - feat: add support to live sync form on inline editing (Hitesh Shetty - [#279](https://github.com/contentstack/live-preview-sdk/pull/279))
-- feat: created seperate class for permenant tooltip (Venkatesh B - [#263](https://github.com/contentstack/live-preview-sdk/pull/263))
+- feat:  created seperate class for permenant tooltip (Venkatesh B - [#263](https://github.com/contentstack/live-preview-sdk/pull/263))
 - feat: UI Text and Error message changes (Venkatesh B - [#262](https://github.com/contentstack/live-preview-sdk/pull/262))
 - feat: include href in init call (Hitesh Shetty - [#255](https://github.com/contentstack/live-preview-sdk/pull/255))
 - feat: discussionId to discussion payload changes(Imapct of resolve API) (Venkatesh B - [#248](https://github.com/contentstack/live-preview-sdk/pull/248))
 - feat: add mouse click event handling and post message support (Hitesh Shetty - [#253](https://github.com/contentstack/live-preview-sdk/pull/253))
-- feat: Handle Comment modal should open on click event in highlighed … (Hitesh Shetty - [#242](https://github.com/contentstack/live-preview-sdk/pull/242))
+- feat: Handle Comment modal should open on click event in  highlighed … (Hitesh Shetty - [#242](https://github.com/contentstack/live-preview-sdk/pull/242))
 - feat: update comment highlighting to append icons within visual build… (Hitesh Shetty - [#232](https://github.com/contentstack/live-preview-sdk/pull/232))
 - feat: add support for base field editing (Hitesh Shetty - [#231](https://github.com/contentstack/live-preview-sdk/pull/231))
 - feat: Highlight active discussion (Venkatesh B - [#230](https://github.com/contentstack/live-preview-sdk/pull/230))
@@ -1400,7 +1425,7 @@
 - feat: disabled state for hover outline and field focus outline (Faraaz Biyabani - [#158](https://github.com/contentstack/live-preview-sdk/pull/158))
 - feat: toolbar edit icons for modal editable fields (Faraaz Biyabani - [#156](https://github.com/contentstack/live-preview-sdk/pull/156))
 - feat: field edit modal for JSON RTE and link fields (Faraaz Biyabani - [#150](https://github.com/contentstack/live-preview-sdk/pull/150))
-- feat: hide/show custom cursor on canvas mouseleave/mouseenter (Hitesh Shetty - [#146](https://github.com/contentstack/live-preview-sdk/pull/146))
+- feat: hide/show custom cursor on canvas mouseleave/mouseenter  (Hitesh Shetty - [#146](https://github.com/contentstack/live-preview-sdk/pull/146))
 - feat: Refactor getLiveEditorRedirectionUrl to use URLSearchParams (Hitesh Shetty - [#144](https://github.com/contentstack/live-preview-sdk/pull/144))
 - feat: handling date fields (Faraaz Biyabani - [#140](https://github.com/contentstack/live-preview-sdk/pull/140))
 - feat: handling number fields (Faraaz Biyabani - [#139](https://github.com/contentstack/live-preview-sdk/pull/139))
@@ -1438,7 +1463,7 @@
 - fix: adding curser pointer to the component (Venkatesh B - [#245](https://github.com/contentstack/live-preview-sdk/pull/245))
 - fix: handle cursor collapse on empty element (Faraaz Biyabani - [#241](https://github.com/contentstack/live-preview-sdk/pull/241))
 - fix: bug fixing on taxanomy and link field multiple (Venkatesh B - [#223](https://github.com/contentstack/live-preview-sdk/pull/223))
-- fix:hide comment icon when not needed (Hitesh Shetty - [#222](https://github.com/contentstack/live-preview-sdk/pull/222))
+- fix:hide comment  icon when not needed (Hitesh Shetty - [#222](https://github.com/contentstack/live-preview-sdk/pull/222))
 - fix: hide contenteditable outline (Faraaz Biyabani - [#220](https://github.com/contentstack/live-preview-sdk/pull/220))
 - fix: visual builder icon class name changes (Venkatesh B - [#215](https://github.com/contentstack/live-preview-sdk/pull/215))
 - fix: incorrect focus on blocks field instead of new block (Hitesh Shetty - [#197](https://github.com/contentstack/live-preview-sdk/pull/197))
@@ -1496,7 +1521,7 @@
 - implement highlight variant fields in audience when checked (srinad007 - [#257](https://github.com/contentstack/live-preview-sdk/pull/257))
 - Ve 3355 iframe variant revert (Hitesh Shetty - [#252](https://github.com/contentstack/live-preview-sdk/pull/252))
 - Exported VB_EmptyBlockParentClass (Ayush Dubey - [#251](https://github.com/contentstack/live-preview-sdk/pull/251))
-- Typescript Delivery SDK support (Ayush Dubey - [#244](https://github.com/contentstack/live-preview-sdk/pull/244))
+-  Typescript Delivery SDK support (Ayush Dubey - [#244](https://github.com/contentstack/live-preview-sdk/pull/244))
 - Custom mouse pointer z-index fix (Ayush Dubey - [#239](https://github.com/contentstack/live-preview-sdk/pull/239))
 - Ve 3038 add support to highlight comments in canvas on discussion tab open (Venkatesh B - [#237](https://github.com/contentstack/live-preview-sdk/pull/237))
 - multiple toolbar fix (Ayush Dubey - [#236](https://github.com/contentstack/live-preview-sdk/pull/236))
@@ -1507,7 +1532,7 @@
 - Ve 72 render comment icon in the focus editing view (Venkatesh B - [#214](https://github.com/contentstack/live-preview-sdk/pull/214))
 - Ve 2866 (srinad007 - [#208](https://github.com/contentstack/live-preview-sdk/pull/208))
 - VE-2647-merge-v2-v3 (Deepak Kharah - [#207](https://github.com/contentstack/live-preview-sdk/pull/207))
-- Multiline Field Support (Ayush Dubey - [#204](https://github.com/contentstack/live-preview-sdk/pull/204))
+-  Multiline Field Support (Ayush Dubey - [#204](https://github.com/contentstack/live-preview-sdk/pull/204))
 - Taxonomy Icon on custom cursor (Ayush Dubey - [#203](https://github.com/contentstack/live-preview-sdk/pull/203))
 - Multiple Reference Instances' toolbar buttons (Ayush Dubey - [#202](https://github.com/contentstack/live-preview-sdk/pull/202))
 - Canvas URL field editing and mouse event blocking (Ayush Dubey - [#199](https://github.com/contentstack/live-preview-sdk/pull/199))
@@ -1515,7 +1540,7 @@
 - VE-2354 Fix: Overflow & Cutoff on Right Edge (Amey Shrivastava - [#192](https://github.com/contentstack/live-preview-sdk/pull/192))
 - Consistent Toolbar Position (Amey Shrivastava - [#189](https://github.com/contentstack/live-preview-sdk/pull/189))
 - MouseHover fix (Ayush Dubey - [#188](https://github.com/contentstack/live-preview-sdk/pull/188))
-- Fix: Hover on editable element (Ayush Dubey - [#187](https://github.com/contentstack/live-preview-sdk/pull/187))
+-  Fix: Hover on editable element (Ayush Dubey - [#187](https://github.com/contentstack/live-preview-sdk/pull/187))
 - Adjust toolbar position to prevent overlap when space is limited (Amey Shrivastava - [#185](https://github.com/contentstack/live-preview-sdk/pull/185))
 - highlight draft fields (srinad007 - [#183](https://github.com/contentstack/live-preview-sdk/pull/183))
 - VE-2376 Handle changes in element positions due to sidebar toggling or window resizing (Amey Shrivastava - [#182](https://github.com/contentstack/live-preview-sdk/pull/182))
@@ -1538,7 +1563,7 @@
 - Fix for website shaking due to overlay (Ayush Dubey - [#125](https://github.com/contentstack/live-preview-sdk/pull/125))
 - Plus button to only appear on mouse click (Ayush Dubey - [#124](https://github.com/contentstack/live-preview-sdk/pull/124))
 - Added outline to hovered elements (Ayush Dubey - [#123](https://github.com/contentstack/live-preview-sdk/pull/123))
-- Introduced `EmptyBlocks` for handling empty block entries (Ayush Dubey - [#122](https://github.com/contentstack/live-preview-sdk/pull/122))
+-  Introduced `EmptyBlocks` for handling empty block entries  (Ayush Dubey - [#122](https://github.com/contentstack/live-preview-sdk/pull/122))
 - Introduced Instance's `fieldPathWithIndex` in post-message payloads (Ayush Dubey - [#119](https://github.com/contentstack/live-preview-sdk/pull/119))
 - EB-1566: Few fields like links groups etc are not highlighted properly (Vishvam S - [#118](https://github.com/contentstack/live-preview-sdk/pull/118))
 - EB-1565: Sidebar sometimes load and sometimes doesn't (Vishvam S - [#117](https://github.com/contentstack/live-preview-sdk/pull/117))
@@ -1560,7 +1585,7 @@
 - feat: increase z-index for Field Label dropdown items (hiteshshetty-dev - [b5a95d3](https://github.com/contentstack/live-preview-sdk/commit/b5a95d3033ea5dc1894e51fc6d765d3cdc7d789d))
 - feat: code cleaning (Venkat - [a018d0f](https://github.com/contentstack/live-preview-sdk/commit/a018d0f4c79c52ac84dba09844bc9412c14bfd59))
 - feat: render commment icon and integrate with visual-builder modal (Venkat - [a3b2262](https://github.com/contentstack/live-preview-sdk/commit/a3b2262ffe4675faaa01da7d4ae34bada3084524))
-- feat: Handle Comment modal should open on click event in highlighed icon (Venkat - [959e6b7](https://github.com/contentstack/live-preview-sdk/commit/959e6b7ff322b3e28639bdcc787d68e870423acd))
+- feat: Handle Comment modal should open on click event in  highlighed icon (Venkat - [959e6b7](https://github.com/contentstack/live-preview-sdk/commit/959e6b7ff322b3e28639bdcc787d68e870423acd))
 - feat: update comment icon for Highlight (hiteshshetty-dev - [246853d](https://github.com/contentstack/live-preview-sdk/commit/246853d04fc9f68cf40e5464b373d32bc647b106))
 - feat: fix psuedo editable element positioning (hiteshshetty-dev - [06449bd](https://github.com/contentstack/live-preview-sdk/commit/06449bdc2cafed991585eb7c9da470cf82262369))
 - feat: handle scroll to field (Venkat - [763ae74](https://github.com/contentstack/live-preview-sdk/commit/763ae747bc2b7b2a493e1757bb5ea679691657a2))
@@ -1627,7 +1652,7 @@
 - fix: updated test snapshots in liveEditor (Vishvam10 - [2038712](https://github.com/contentstack/live-preview-sdk/commit/20387127a85f497c1aa73970e47d3fea551f48c7))
 - fix: multiple add instance buttons not shown while hovering (Vishvam10 - [e58df20](https://github.com/contentstack/live-preview-sdk/commit/e58df20b784c85d569f0da520b803bf38a320edb))
 - fix: incorrect focus on blocks field instead of newly added block (Faraaz Biyabani - [9b7c776](https://github.com/contentstack/live-preview-sdk/commit/9b7c776bfad219c04ef76b65ca287178e25e890e))
-- fix: single line line break and unnecessary psuedo editable due to nbsp (Faraaz Biyabani - [63d2f6a](https://github.com/contentstack/live-preview-sdk/commit/63d2f6a0f9a44d95ff1a1e7c417d1a4ee30fd410))
+- fix: single line line break and unnecessary  psuedo editable due to nbsp (Faraaz Biyabani - [63d2f6a](https://github.com/contentstack/live-preview-sdk/commit/63d2f6a0f9a44d95ff1a1e7c417d1a4ee30fd410))
 - fix: moved global state into VIsualEditor class and updated params.ts to types.ts (Vishvam10 - [e211d2d](https://github.com/contentstack/live-preview-sdk/commit/e211d2dcd0e7ce23e680dccc0505ea2fccf52e44))
 - fix: resolve overlay issue occurring upon clicking the visual editor wrapper element (Vishvam10 - [64d7f3d](https://github.com/contentstack/live-preview-sdk/commit/64d7f3d86ac38b963d8202805adc9490407a6028))
 - fix: eslint errors, add return types and updated interfaces to types (Vishvam10 - [59a3ca0](https://github.com/contentstack/live-preview-sdk/commit/59a3ca0a1cfc070a65ba448337029d853bc2be54))
