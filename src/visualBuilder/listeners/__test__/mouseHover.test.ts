@@ -286,3 +286,73 @@ describe("mouseHover — generateCursor same-element guard", () => {
         expect(delta).toBe(2);
     });
 });
+
+describe("mouseHover — lock change while hovering", () => {
+    let editableElement: HTMLElement;
+    let customCursor: HTMLDivElement;
+
+    const peerLockOnTitle = {
+        title: {
+            user: { uid: "u1", name: "Ada", initials: "AD" },
+            ttl: "2030-01-01",
+            isLocked: true,
+            isOwn: false,
+        },
+    };
+
+    beforeEach(() => {
+        vi.clearAllMocks();
+        document.body.innerHTML = "";
+        editableElement = makeElement();
+        customCursor = document.createElement("div");
+        const hoverOutline = document.createElement("div");
+        hoverOutline.className = "visual-builder__hover-outline";
+        document.body.appendChild(hoverOutline);
+        VisualBuilder.VisualBuilderGlobalState.value.previousHoveredTargetDOM = null;
+        VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM = null;
+        VisualBuilder.VisualBuilderGlobalState.value.isFocussed = false;
+        vi.mocked(FieldSchemaMap.hasFieldSchema).mockReturnValue(true);
+        vi.mocked(isCustomFieldMultipleInstance).mockReturnValue(false);
+        mockedGetCsDataOfElement.mockReturnValue(
+            makeEventDetails(editableElement) as any,
+        );
+        // Keep this after the previousHoveredTargetDOM reset: clearing notifies the
+        // lock subscription, and the reset makes it return before it repaints.
+        clearAllEntryFieldLockInfo();
+    });
+
+    it("un-grays the cursor when the peer releases the lock", async () => {
+        setEntryFieldLockInfo({ entryUid: "entry1", locale: "en-us" }, peerLockOnTitle);
+        await handleMouseHover(makeParams(editableElement, customCursor));
+        await vi.waitFor(() =>
+            expect(vi.mocked(generateCustomCursor)).toHaveBeenLastCalledWith(
+                expect.objectContaining({ fieldDisabled: true }),
+            ),
+        );
+
+        setEntryFieldLockInfo({ entryUid: "entry1", locale: "en-us" }, {});
+
+        await vi.waitFor(() =>
+            expect(vi.mocked(generateCustomCursor)).toHaveBeenLastCalledWith(
+                expect.objectContaining({ fieldDisabled: false }),
+            ),
+        );
+    });
+
+    it("grays the cursor when a peer takes the lock", async () => {
+        await handleMouseHover(makeParams(editableElement, customCursor));
+        await vi.waitFor(() =>
+            expect(vi.mocked(generateCustomCursor)).toHaveBeenLastCalledWith(
+                expect.objectContaining({ fieldDisabled: false }),
+            ),
+        );
+
+        setEntryFieldLockInfo({ entryUid: "entry1", locale: "en-us" }, peerLockOnTitle);
+
+        await vi.waitFor(() =>
+            expect(vi.mocked(generateCustomCursor)).toHaveBeenLastCalledWith(
+                expect.objectContaining({ fieldDisabled: true }),
+            ),
+        );
+    });
+});

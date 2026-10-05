@@ -144,6 +144,7 @@ export const cancelPendingAddOutline = () => debouncedAddOutline.cancel();
 // Remember the last painted hover so a lock change can repaint the same element
 // (see the subscription below) without waiting for the next mouse move.
 let lastAddOutlineParams: AddOutlineParams | undefined;
+let lastCustomCursor: HTMLDivElement | null = null;
 const showOutline = (params?: AddOutlineParams): Promise<void> | undefined => {
     if (params) {
         lastAddOutlineParams = params;
@@ -174,6 +175,16 @@ subscribeEntryFieldLockInfo(() => {
         return;
     }
     void addOutline(params);
+    // The cursor is generated only on entering a new element, so repaint it too
+    // or it keeps the old disabled/enabled look. Collab mode owns its own cursor.
+    if (!config?.collab.enable) {
+        void generateCursor({
+            eventDetails: params.eventDetails,
+            customCursor: lastCustomCursor,
+        }).catch((error) => {
+            console.debug("[Visual Builder] cursor repaint failed", error);
+        });
+    }
 });
 
 function hideDefaultCursor(): void {
@@ -371,6 +382,7 @@ const throttledMouseHover = throttle(async (params: HandleMouseHoverParams) => {
     }
 
     if (params.customCursor) {
+        lastCustomCursor = params.customCursor;
         if (config?.collab.enable && config?.collab.isFeedbackMode) {
             collabCustomCursor(params.customCursor);
             handleCursorPosition(params.event, params.customCursor);

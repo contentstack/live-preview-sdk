@@ -71,4 +71,23 @@ describe("generateCustomCursor", () => {
         expect(cursorContainer.getAttribute("data-icon")).toBe("singleline");
         expect(cursorContainer.innerHTML).toBe("old icon");
     });
+
+    test("should repaint when only the disabled state changes", () => {
+        generateCustomCursor({
+            fieldType: FieldDataType.SINGLELINE,
+            customCursor: cursorContainer,
+            fieldDisabled: true,
+        });
+        expect(cursorContainer.innerHTML).toContain(
+            "visual-builder__cursor-disabled"
+        );
+        generateCustomCursor({
+            fieldType: FieldDataType.SINGLELINE,
+            customCursor: cursorContainer,
+            fieldDisabled: false,
+        });
+        expect(cursorContainer.innerHTML).not.toContain(
+            "visual-builder__cursor-disabled"
+        );
+    });
 });

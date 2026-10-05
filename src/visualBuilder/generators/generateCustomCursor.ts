@@ -50,7 +50,9 @@ export function generateCustomCursor({
     const icon = fieldType ? FieldTypeIconsMap[fieldType] : "";
 
     const prevDataIcon = customCursor.getAttribute("data-icon");
-    if (prevDataIcon === fieldType) {
+    // A peer lock can change on the same field, so the disabled state is part of the cache key.
+    const prevDisabled = customCursor.getAttribute("data-disabled") === "true";
+    if (prevDataIcon === fieldType && prevDisabled === fieldDisabled) {
         return;
     }
     customCursor.innerHTML = `<div class="${classNames(
@@ -68,6 +70,7 @@ export function generateCustomCursor({
         visualBuilderStyles()["visual-builder__cursor-icon"]
     )}">${icon}</div>`;
     customCursor.setAttribute("data-icon", fieldType);
+    customCursor.setAttribute("data-disabled", String(fieldDisabled));
 }
 export function getFieldIcon(fieldSchema: ISchemaFieldMap) {
     const fieldType = getFieldType(fieldSchema);
