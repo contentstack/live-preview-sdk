@@ -181,6 +181,8 @@ subscribeEntryFieldLockInfo(() => {
         void generateCursor({
             eventDetails: params.eventDetails,
             customCursor: lastCustomCursor,
+        }).catch((error) => {
+            console.debug("[Visual Builder] cursor repaint failed", error);
         });
     }
 });

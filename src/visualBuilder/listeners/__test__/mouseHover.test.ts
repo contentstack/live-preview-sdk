@@ -316,6 +316,8 @@ describe("mouseHover — lock change while hovering", () => {
         mockedGetCsDataOfElement.mockReturnValue(
             makeEventDetails(editableElement) as any,
         );
+        // Keep this after the previousHoveredTargetDOM reset: clearing notifies the
+        // lock subscription, and the reset makes it return before it repaints.
         clearAllEntryFieldLockInfo();
     });
 
