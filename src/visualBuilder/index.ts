@@ -20,6 +20,7 @@ import {
 } from "./utils/getEntryIdentifiersInCurrentPage";
 import { resolvePageContext } from "./utils/resolvePageContext";
 import visualBuilderPostMessage from "./utils/visualBuilderPostMessage";
+import { ignoreMissingListener } from "./utils/postMessageErrors";
 import { VisualBuilderPostMessageEvents } from "./utils/types/postMessage.types";
 
 import { debounce, isEqual } from "lodash-es";
@@ -220,56 +221,65 @@ export class VisualBuilder {
         );
         if (signature === this.lastEntriesSignature) return;
         this.lastEntriesSignature = signature;
-        visualBuilderPostMessage?.send(
-            VisualBuilderPostMessageEvents.ENTRIES_IN_CURRENT_PAGE_CHANGED,
-            entries
-        );
+        visualBuilderPostMessage
+            ?.send(
+                VisualBuilderPostMessageEvents.ENTRIES_IN_CURRENT_PAGE_CHANGED,
+                entries
+            )
+            .catch((error: unknown) => {
+                // Let the next observer pass resend a set the editor never got.
+                if (this.lastEntriesSignature === signature) {
+                    this.lastEntriesSignature = null;
+                }
+                ignoreMissingListener(
+                    VisualBuilderPostMessageEvents.ENTRIES_IN_CURRENT_PAGE_CHANGED
+                )(error);
+            });
     };
 
-    private mutationObserver = new MutationObserver(
-        debounce(
-            async () => {
-                updateFocussedStateOnMutation(
-                    this.overlayWrapper,
-                    this.focusedToolbar,
-                    this.visualBuilderContainer,
-                    this.resizeObserver
+    private onBodyMutation = debounce(
+        async () => {
+            updateFocussedStateOnMutation(
+                this.overlayWrapper,
+                this.focusedToolbar,
+                this.visualBuilderContainer,
+                this.resizeObserver
+            );
+            this.notifyEntriesInPageIfChanged();
+
+            const emptyBlockParents = Array.from(
+                document.querySelectorAll(`.${VB_EmptyBlockParentClass}`)
+            );
+
+            const previousEmptyBlockParents = VisualBuilder
+                .VisualBuilderGlobalState.value
+                .previousEmptyBlockParents as Element[];
+
+            if (!isEqual(emptyBlockParents, previousEmptyBlockParents)) {
+                const noMoreEmptyBlockParent = previousEmptyBlockParents.filter(
+                    (x) => !emptyBlockParents.includes(x)
                 );
-                this.notifyEntriesInPageIfChanged();
-
-                const emptyBlockParents = Array.from(
-                    document.querySelectorAll(`.${VB_EmptyBlockParentClass}`)
+                const newEmptyBlockParent = emptyBlockParents.filter(
+                    (x) => !previousEmptyBlockParents.includes(x)
                 );
 
-                const previousEmptyBlockParents = VisualBuilder
-                    .VisualBuilderGlobalState.value
-                    .previousEmptyBlockParents as Element[];
+                removeEmptyBlocks(noMoreEmptyBlockParent);
+                await generateEmptyBlocks(newEmptyBlockParent);
 
-                if (!isEqual(emptyBlockParents, previousEmptyBlockParents)) {
-                    const noMoreEmptyBlockParent =
-                        previousEmptyBlockParents.filter(
-                            (x) => !emptyBlockParents.includes(x)
-                        );
-                    const newEmptyBlockParent = emptyBlockParents.filter(
-                        (x) => !previousEmptyBlockParents.includes(x)
-                    );
-
-                    removeEmptyBlocks(noMoreEmptyBlockParent);
-                    await generateEmptyBlocks(newEmptyBlockParent);
-
-                    VisualBuilder.VisualBuilderGlobalState.value = {
-                        ...VisualBuilder.VisualBuilderGlobalState.value,
-                        previousEmptyBlockParents: emptyBlockParents,
-                    };
-                }
-                if (VisualBuilder.VisualBuilderGlobalState.value.variant && VisualBuilder.VisualBuilderGlobalState.value.highlightVariantFields) {
-                    debounceAddVariantFieldClass(VisualBuilder.VisualBuilderGlobalState.value.variant);
-                }
-            },
-            100,
-            { trailing: true }
-        )
+                VisualBuilder.VisualBuilderGlobalState.value = {
+                    ...VisualBuilder.VisualBuilderGlobalState.value,
+                    previousEmptyBlockParents: emptyBlockParents,
+                };
+            }
+            if (VisualBuilder.VisualBuilderGlobalState.value.variant && VisualBuilder.VisualBuilderGlobalState.value.highlightVariantFields) {
+                debounceAddVariantFieldClass(VisualBuilder.VisualBuilderGlobalState.value.variant);
+            }
+        },
+        100,
+        { trailing: true }
     );
+
+    private mutationObserver = new MutationObserver(this.onBodyMutation);
 
     private threadMutationObserver = new MutationObserver(
         debounce(() => {
@@ -466,6 +476,8 @@ export class VisualBuilder {
         // Disconnect observers
         this.resizeObserver.disconnect();
         this.mutationObserver.disconnect();
+        // disconnect() leaves a pending debounced pass that would still post to the editor.
+        this.onBodyMutation.cancel();
         this.threadMutationObserver.disconnect();
 
         // Clear global state
