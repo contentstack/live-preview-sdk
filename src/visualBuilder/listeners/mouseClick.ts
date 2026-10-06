@@ -21,7 +21,10 @@ import { VisualBuilderPostMessageEvents } from "../utils/types/postMessage.types
 import { VisualBuilder } from "..";
 import { FieldSchemaMap } from "../utils/fieldSchemaMap";
 import { isFieldDisabled } from "../utils/isFieldDisabled";
-import { isFieldBlockedByAutoDraft } from "../utils/fieldLockIndicator";
+import {
+    getEntryEditRestrictionForField,
+    getPeerLockForField,
+} from "../utils/fieldLockIndicator";
 import EventListenerHandlerParams from "./types";
 import { toggleHighlightedCommentIconDisplay } from "../generators/generateHighlightedComment";
 import { VB_EmptyBlockParentClass } from "../..";
@@ -182,13 +185,14 @@ export async function handleBuilderInteraction(
 
     const eventDetails = getCsDataOfElement(params.event);
 
-    // A field locked by another user, or on an entry the parent has restricted (e.g. an older
-    // version is open), is not editable — block entering edit mode. This
+    // A field locked by another user is not editable — block entering edit mode
+    // (the hover state already shows it disabled with the author avatar). This
     // gate runs before the post message so a click on a peer-locked field is a
     // true no-op: posting MOUSE_CLICK with its fieldMetadata makes the host read
     // it as a fresh selection and cancel the current user's own pending lock
-    // release.
-    if (eventDetails && isFieldBlockedByAutoDraft(eventDetails.fieldMetadata)) {
+    // release. An entry-wide restriction does not stop here: the click still opens
+    // the form (the way back to the latest version), and the field shows disabled.
+    if (eventDetails && getPeerLockForField(eventDetails.fieldMetadata)) {
         return;
     }
 
@@ -438,7 +442,7 @@ async function handleFieldSchemaAndIndividualFields(
             entryAcl,
             entryWorkflowStageDetails
         );
-        if (isDisabled) {
+        if (isDisabled || getEntryEditRestrictionForField(fieldMetadata)) {
             addOverlay({
                 overlayWrapper: params.overlayWrapper,
                 resizeObserver: params.resizeObserver,

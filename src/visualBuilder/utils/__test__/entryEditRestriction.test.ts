@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach, vi, MockedObject } from "vitest";
 import { EventManager } from "@contentstack/advanced-post-message";
 import {
+    ENTRY_RESTRICTION_MESSAGES,
     getEntryEditRestrictionForField,
     isFieldBlockedByAutoDraft,
 } from "../fieldLockIndicator";
@@ -14,7 +15,6 @@ import {
 import { getEntryLockInfo } from "../getEntryLockInfo";
 import { useEntryEditRestrictionUpdateEvent } from "../../eventManager/useEntryEditRestrictionUpdateEvent";
 import { VisualBuilderPostMessageEvents } from "../types/postMessage.types";
-import { DisableReason } from "../isFieldDisabled";
 import visualBuilderPostMessage from "../visualBuilderPostMessage";
 
 vi.mock("../visualBuilderPostMessage", () => ({
@@ -44,18 +44,18 @@ describe("getEntryEditRestrictionForField", () => {
     it("returns the older-version message for a restricted entry", () => {
         setEntryEditRestriction(scope, "olderVersion");
         expect(getEntryEditRestrictionForField(meta())).toBe(
-            DisableReason.OlderEntryVersion
+            ENTRY_RESTRICTION_MESSAGES.olderVersion
         );
     });
 
     it("returns a distinct message per restriction", () => {
         setEntryEditRestriction(scope, "unlocalized");
         expect(getEntryEditRestrictionForField(meta())).toBe(
-            DisableReason.UnlocalizedEntry
+            ENTRY_RESTRICTION_MESSAGES.unlocalized
         );
         setEntryEditRestriction(scope, "unsavedVariant");
         expect(getEntryEditRestrictionForField(meta())).toBe(
-            DisableReason.UnsavedVariant
+            ENTRY_RESTRICTION_MESSAGES.unsavedVariant
         );
     });
 
@@ -68,7 +68,7 @@ describe("getEntryEditRestrictionForField", () => {
     it("applies a base-entry restriction to that entry's variant fields", () => {
         setEntryEditRestriction(scope, "olderVersion");
         expect(getEntryEditRestrictionForField(meta({ variant: "v1" }))).toBe(
-            DisableReason.OlderEntryVersion
+            ENTRY_RESTRICTION_MESSAGES.olderVersion
         );
     });
 
@@ -123,6 +123,23 @@ describe("restriction updates", () => {
         handler({ data: { ...scope, restriction: null } });
         expect(getEntryEditRestriction(scope)).toBeNull();
     });
+
+    it("ignores a restriction value it does not know", () => {
+        useEntryEditRestrictionUpdateEvent();
+        const handler = mockPostMessage.on.mock.calls[0][1] as any;
+        handler({ data: { ...scope, restriction: "<img onerror=1>" } });
+        expect(getEntryEditRestriction(scope)).toBeNull();
+    });
+
+    it("does not notify listeners when the value is unchanged", () => {
+        setEntryEditRestriction(scope, "olderVersion");
+        const listener = vi.fn();
+        const unsubscribe = subscribeEntryFieldLockInfo(listener);
+        setEntryEditRestriction(scope, "olderVersion");
+        setEntryEditRestriction({ ...scope, entryUid: "other" }, null);
+        unsubscribe();
+        expect(listener).not.toHaveBeenCalled();
+    });
 });
 
 describe("snapshot seeding", () => {
@@ -162,5 +179,30 @@ describe("snapshot seeding", () => {
         await pending;
 
         expect(getEntryEditRestriction(scope)).toBeNull();
+    });
+
+    it("clears this entry's scopes that the snapshot no longer lists, and only this entry's", async () => {
+        setEntryEditRestriction(scope, "olderVersion");
+        setEntryEditRestriction({ ...scope, entryUid: "entry2" }, "olderVersion");
+        mockPostMessage.send.mockResolvedValueOnce({
+            fieldLockInfo: {},
+            editRestrictions: {},
+        });
+
+        await getEntryLockInfo(request);
+
+        expect(getEntryEditRestriction(scope)).toBeNull();
+        expect(
+            getEntryEditRestriction({ ...scope, entryUid: "entry2" })
+        ).toBe("olderVersion");
+    });
+
+    it("leaves restrictions alone when an older parent sends no editRestrictions", async () => {
+        setEntryEditRestriction(scope, "olderVersion");
+        mockPostMessage.send.mockResolvedValueOnce({ fieldLockInfo: {} });
+
+        await getEntryLockInfo(request);
+
+        expect(getEntryEditRestriction(scope)).toBe("olderVersion");
     });
 });

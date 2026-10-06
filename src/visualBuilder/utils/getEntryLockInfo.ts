@@ -1,7 +1,6 @@
 import { VisualBuilderPostMessageEvents } from "./types/postMessage.types";
 import visualBuilderPostMessage from "./visualBuilderPostMessage";
 import {
-    EntryEditRestriction,
     EntryFieldLockInfo,
     EntryLockScope,
     getEntryEditRestrictionWriteSeq,
@@ -29,7 +28,7 @@ export async function getEntryLockInfo(
     try {
         const response = await visualBuilderPostMessage?.send<{
             fieldLockInfo?: EntryFieldLockInfo;
-            editRestrictions?: Record<string, EntryEditRestriction>;
+            editRestrictions?: Record<string, unknown>;
             error?: boolean;
         }>(VisualBuilderPostMessageEvents.GET_ENTRY_LOCK_INFO, { ...scope });
 
@@ -41,10 +40,14 @@ export async function getEntryLockInfo(
         }
 
         const fieldLockInfo = response.fieldLockInfo;
-        seedEntryEditRestrictions(
-            response.editRestrictions ?? {},
-            restrictionSeqBeforeRequest
-        );
+        // An older parent omits the field; it cannot have restrictions, so skip the seed.
+        if (response.editRestrictions) {
+            seedEntryEditRestrictions(
+                scope.entryUid,
+                response.editRestrictions,
+                restrictionSeqBeforeRequest
+            );
+        }
         // Only seed the mirror if no delta updated this scope during the
         // round-trip; a delta that arrived meanwhile is fresher than this
         // snapshot, so keep it.

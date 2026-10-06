@@ -1,8 +1,8 @@
 import visualBuilderPostMessage from "../utils/visualBuilderPostMessage";
 import { VisualBuilderPostMessageEvents } from "../utils/types/postMessage.types";
 import {
-    EntryEditRestriction,
     setEntryEditRestriction,
+    toEntryEditRestriction,
 } from "../utils/fieldLockStore";
 
 interface EntryEditRestrictionUpdateEvent {
@@ -10,7 +10,7 @@ interface EntryEditRestrictionUpdateEvent {
         entryUid: string;
         locale: string;
         variantUid?: string;
-        restriction: EntryEditRestriction | null;
+        restriction: unknown;
     };
 }
 
@@ -24,8 +24,8 @@ export function useEntryEditRestrictionUpdateEvent(): void {
         (event: EntryEditRestrictionUpdateEvent) => {
             const { entryUid, locale, variantUid, restriction } = event.data;
             setEntryEditRestriction(
-                { entryUid, locale, ...(variantUid ? { variantUid } : {}) },
-                restriction ?? null
+                { entryUid, locale, variantUid },
+                toEntryEditRestriction(restriction)
             );
         }
     );

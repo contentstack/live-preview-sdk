@@ -3,7 +3,6 @@ import {
     getEntryFieldLockInfo,
 } from "./fieldLockStore";
 import { getEntryLockInfo } from "./getEntryLockInfo";
-import { DisableReason } from "./isFieldDisabled";
 import type {
     EntryEditRestriction,
     EntryFieldLock,
@@ -64,13 +63,14 @@ export function getPeerLockForField(
     return null;
 }
 
-// Read at call time: isFieldDisabled imports the VisualBuilder module, which loads this one.
-const restrictionMessage = (restriction: EntryEditRestriction): string =>
-    ({
-        olderVersion: DisableReason.OlderEntryVersion,
-        unlocalized: DisableReason.UnlocalizedEntry,
-        unsavedVariant: DisableReason.UnsavedVariant,
-    })[restriction];
+export const ENTRY_RESTRICTION_MESSAGES: Record<EntryEditRestriction, string> = {
+    olderVersion:
+        "You're viewing an older version of this entry. Switch to the latest version to edit.",
+    unlocalized:
+        "This entry isn't localized in this language yet. Save it from the form to localize it, then edit here.",
+    unsavedVariant:
+        "This variant hasn't been saved yet. Save it from the form to edit this field here.",
+};
 
 /**
  * The message for an entry-wide edit restriction on this field's entry, or null. A variant
@@ -90,7 +90,7 @@ export function getEntryEditRestrictionForField(
                   variantUid: fieldMetadata.variant,
               })
             : null) ?? getEntryEditRestriction(scope);
-    return restriction ? restrictionMessage(restriction) : null;
+    return restriction ? ENTRY_RESTRICTION_MESSAGES[restriction] : null;
 }
 
 /** True when auto-draft blocks editing this field: a peer lock or an entry restriction. */

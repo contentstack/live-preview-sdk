@@ -21,7 +21,6 @@ import { fetchEntryPermissionsAndStageDetails } from "../utils/fetchEntryPermiss
 import { isCustomFieldMultipleInstance } from "../utils/isCustomFieldMultipleInstance";
 import { getParentCslp, getWholeFieldElement } from "../utils/getWholeFieldElement";
 import {
-    getEntryEditRestrictionForField,
     getPeerLockForField,
     isFieldBlockedByAutoDraft,
 } from "../utils/fieldLockIndicator";
@@ -107,9 +106,7 @@ async function addOutline(params?: AddOutlineParams): Promise<void> {
     }
     addHoverOutline(
         editableElement as HTMLElement,
-        fieldDisabled ||
-            Boolean(peerLock) ||
-            Boolean(getEntryEditRestrictionForField(fieldMetadata)),
+        fieldDisabled || isFieldBlockedByAutoDraft(fieldMetadata),
         isVariant
     );
     const fieldSchema = await FieldSchemaMap.getFieldSchema(
@@ -140,10 +137,7 @@ async function addOutline(params?: AddOutlineParams): Promise<void> {
     }
     addHoverOutline(
         editableElement,
-        fieldDisabled ||
-            isDisabled ||
-            Boolean(peerLock) ||
-            Boolean(getEntryEditRestrictionForField(fieldMetadata)),
+        fieldDisabled || isDisabled || isFieldBlockedByAutoDraft(fieldMetadata),
         isVariant
     );
 }
