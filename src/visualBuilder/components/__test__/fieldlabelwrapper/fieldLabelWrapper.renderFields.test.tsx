@@ -328,4 +328,31 @@ describe("FieldLabelWrapperComponent - Render Fields", () => {
             { timeout: 1000, interval: 10 }
         );
     });
+
+    // Without an entry the builder resolves every entry on the page, one API
+    // call each, to fill in a tooltip that reads one row.
+    test("names the entry it needs when asking for the reference map", async () => {
+        await act(async () => {
+            render(
+                <FieldLabelWrapperComponent
+                    fieldMetadata={mockFieldMetadata}
+                    eventDetails={mockEventDetails}
+                    parentPaths={[]}
+                    getParentEditableElement={mockGetParentEditable}
+                />
+            );
+            await new Promise<void>((resolve) =>
+                queueMicrotask(() => resolve())
+            );
+        });
+
+        expect(visualBuilderPostMessage!.send).toHaveBeenCalledWith(
+            VisualBuilderPostMessageEvents.REFERENCE_MAP,
+            {
+                entryUid: mockFieldMetadata.entry_uid,
+                contentTypeUid: mockFieldMetadata.content_type_uid,
+                locale: mockFieldMetadata.locale,
+            }
+        );
+    });
 });
