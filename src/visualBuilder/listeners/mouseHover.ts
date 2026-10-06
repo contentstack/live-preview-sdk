@@ -20,7 +20,11 @@ import { CslpData } from "../../cslp/types/cslp.types";
 import { fetchEntryPermissionsAndStageDetails } from "../utils/fetchEntryPermissionsAndStageDetails";
 import { isCustomFieldMultipleInstance } from "../utils/isCustomFieldMultipleInstance";
 import { getParentCslp, getWholeFieldElement } from "../utils/getWholeFieldElement";
-import { getPeerLockForField } from "../utils/fieldLockIndicator";
+import {
+    getEntryEditRestrictionForField,
+    getPeerLockForField,
+    isFieldBlockedByAutoDraft,
+} from "../utils/fieldLockIndicator";
 import { subscribeEntryFieldLockInfo } from "../utils/fieldLockStore";
 import {
     showLockAvatar,
@@ -103,7 +107,9 @@ async function addOutline(params?: AddOutlineParams): Promise<void> {
     }
     addHoverOutline(
         editableElement as HTMLElement,
-        fieldDisabled || Boolean(peerLock),
+        fieldDisabled ||
+            Boolean(peerLock) ||
+            Boolean(getEntryEditRestrictionForField(fieldMetadata)),
         isVariant
     );
     const fieldSchema = await FieldSchemaMap.getFieldSchema(
@@ -134,7 +140,10 @@ async function addOutline(params?: AddOutlineParams): Promise<void> {
     }
     addHoverOutline(
         editableElement,
-        fieldDisabled || isDisabled || Boolean(peerLock),
+        fieldDisabled ||
+            isDisabled ||
+            Boolean(peerLock) ||
+            Boolean(getEntryEditRestrictionForField(fieldMetadata)),
         isVariant
     );
 }
@@ -503,7 +512,7 @@ async function generateCursor({
     generateCustomCursor({
         fieldType,
         customCursor,
-        fieldDisabled: fieldDisabled || Boolean(getPeerLockForField(fieldMetadata)),
+        fieldDisabled: fieldDisabled || isFieldBlockedByAutoDraft(fieldMetadata),
     });
 }
 

@@ -20,7 +20,11 @@ import { fetchEntryPermissionsAndStageDetails } from "../utils/fetchEntryPermiss
 import { VariantIndicator } from "./VariantIndicator";
 import { handleRevalidateFieldData } from "../eventManager/useRevalidateFieldDataPostMessageEvent";
 import { RESULT_TYPES } from "../utils/constants";
-import { getPeerLockForField, lockAvatarInfo } from "../utils/fieldLockIndicator";
+import {
+    getEntryEditRestrictionForField,
+    getPeerLockForField,
+    lockAvatarInfo,
+} from "../utils/fieldLockIndicator";
 import { subscribeEntryFieldLockInfo } from "../utils/fieldLockStore";
 
 interface ReferenceParentMap {
@@ -236,13 +240,20 @@ function FieldLabelWrapperComponent(
         const base = labelBaseRef.current;
         if (!base) return;
         const peerLock = getPeerLockForField(props.fieldMetadata);
-        const effectiveDisabled = base.fieldDisabled || Boolean(peerLock);
-        const effectiveReason =
-            !base.fieldDisabled && peerLock
-                ? `This field is locked by ${
-                      lockAvatarInfo(peerLock).name || "another user"
-                  }`
-                : base.reason;
+        const restrictionReason = getEntryEditRestrictionForField(
+            props.fieldMetadata
+        );
+        const effectiveDisabled =
+            base.fieldDisabled || Boolean(restrictionReason) || Boolean(peerLock);
+        // Permission and workflow reasons win, then the entry restriction, then a peer lock.
+        let effectiveReason = base.reason;
+        if (!base.fieldDisabled && restrictionReason) {
+            effectiveReason = restrictionReason;
+        } else if (!base.fieldDisabled && peerLock) {
+            effectiveReason = `This field is locked by ${
+                lockAvatarInfo(peerLock).name || "another user"
+            }`;
+        }
         const usePlainDataTooltip =
             effectiveReason &&
             !effectiveReason.includes(DisableReason.CanLinkVariant) &&

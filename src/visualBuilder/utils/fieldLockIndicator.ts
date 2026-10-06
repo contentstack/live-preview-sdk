@@ -1,6 +1,14 @@
-import { getEntryFieldLockInfo } from "./fieldLockStore";
+import {
+    getEntryEditRestriction,
+    getEntryFieldLockInfo,
+} from "./fieldLockStore";
 import { getEntryLockInfo } from "./getEntryLockInfo";
-import type { EntryFieldLock, EntryLockScope } from "./fieldLockStore";
+import { DisableReason } from "./isFieldDisabled";
+import type {
+    EntryEditRestriction,
+    EntryFieldLock,
+    EntryLockScope,
+} from "./fieldLockStore";
 import type { CslpData } from "../../cslp/types/cslp.types";
 
 type FieldMetadataForLock = Pick<
@@ -54,6 +62,45 @@ export function getPeerLockForField(
         }
     }
     return null;
+}
+
+// Read at call time: isFieldDisabled imports the VisualBuilder module, which loads this one.
+const restrictionMessage = (restriction: EntryEditRestriction): string =>
+    ({
+        olderVersion: DisableReason.OlderEntryVersion,
+        unlocalized: DisableReason.UnlocalizedEntry,
+        unsavedVariant: DisableReason.UnsavedVariant,
+    })[restriction];
+
+/**
+ * The message for an entry-wide edit restriction on this field's entry, or null. A variant
+ * field also inherits a restriction recorded on its base entry.
+ */
+export function getEntryEditRestrictionForField(
+    fieldMetadata: FieldMetadataForLock
+): string | null {
+    const scope = {
+        entryUid: fieldMetadata.entry_uid,
+        locale: fieldMetadata.locale,
+    };
+    const restriction =
+        (fieldMetadata.variant
+            ? getEntryEditRestriction({
+                  ...scope,
+                  variantUid: fieldMetadata.variant,
+              })
+            : null) ?? getEntryEditRestriction(scope);
+    return restriction ? restrictionMessage(restriction) : null;
+}
+
+/** True when auto-draft blocks editing this field: a peer lock or an entry restriction. */
+export function isFieldBlockedByAutoDraft(
+    fieldMetadata: FieldMetadataForLock
+): boolean {
+    return (
+        Boolean(getEntryEditRestrictionForField(fieldMetadata)) ||
+        Boolean(getPeerLockForField(fieldMetadata))
+    );
 }
 
 /** Avatar display (initials + colour + full name) for a lock's holder. */

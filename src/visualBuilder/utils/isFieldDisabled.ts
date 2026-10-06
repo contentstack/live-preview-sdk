@@ -20,6 +20,12 @@ export const DisableReason = {
     DisabledVariant:
         "This field is not editable as it doesn't match the selected variant",
     UnlocalizedVariant: "This field is not editable as it is not localized",
+    OlderEntryVersion:
+        "You're viewing an older version of this entry. Switch to the latest version to edit.",
+    UnlocalizedEntry:
+        "This entry isn't localized in this language yet. Save it from the form to localize it, then edit here.",
+    UnsavedVariant:
+        "This variant hasn't been saved yet. Save it from the form to edit this field here.",
     None: "",
     EntryUpdateRestricted: "You do not have permission to edit this entry",
     WorkflowStagePermission: ({ stageName }: { stageName: string }) =>

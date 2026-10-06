@@ -27,6 +27,12 @@ export interface EntryFieldLock {
 
 export type EntryFieldLockInfo = Record<string, EntryFieldLock>;
 
+/** Why the parent has turned editing off for a whole entry scope. */
+export type EntryEditRestriction =
+    | "olderVersion"
+    | "unlocalized"
+    | "unsavedVariant";
+
 /** The parts that identify a lock scope: entry + locale + variant. */
 export interface EntryLockScopeParts {
     entryUid: string;
@@ -40,6 +46,9 @@ export interface EntryLockScope extends EntryLockScopeParts {
 }
 
 const store = new Map<string, EntryFieldLockInfo>();
+const restrictions = new Map<string, EntryEditRestriction>();
+// Write sequence per restricted scope, so a late snapshot does not undo a newer update.
+const restrictionWrites = new Map<string, number>();
 // Per-scope monotonic write counter, so a late snapshot can detect that a newer
 // delta already updated the scope and skip its stale overwrite.
 const scopeVersions = new Map<string, number>();
@@ -101,5 +110,52 @@ export function getEntryFieldLockInfo(
 export function clearAllEntryFieldLockInfo(): void {
     store.clear();
     scopeVersions.clear();
+    restrictions.clear();
+    restrictionWrites.clear();
     notifyLockListeners();
+}
+
+/** Current write sequence; pass it to `seedEntryEditRestrictions` after a round trip. */
+export function getEntryEditRestrictionWriteSeq(): number {
+    return writeSeq;
+}
+
+export function setEntryEditRestriction(
+    scope: EntryLockScopeParts,
+    restriction: EntryEditRestriction | null
+): void {
+    const key = entryLockScopeKey(scope);
+    if (restriction) {
+        restrictions.set(key, restriction);
+    } else {
+        restrictions.delete(key);
+    }
+    restrictionWrites.set(key, ++writeSeq);
+    notifyLockListeners();
+}
+
+/**
+ * Seeds restrictions from a snapshot keyed `uid:locale[:variant]` (the parent's entry key),
+ * skipping any scope updated after `seqBeforeRequest`.
+ */
+export function seedEntryEditRestrictions(
+    snapshot: Record<string, EntryEditRestriction>,
+    seqBeforeRequest: number
+): void {
+    let changed = false;
+    for (const [parentKey, restriction] of Object.entries(snapshot)) {
+        const [entryUid, locale, variantUid] = parentKey.split(":");
+        const key = entryLockScopeKey({ entryUid, locale, variantUid });
+        if ((restrictionWrites.get(key) ?? 0) > seqBeforeRequest) continue;
+        restrictions.set(key, restriction);
+        restrictionWrites.set(key, ++writeSeq);
+        changed = true;
+    }
+    if (changed) notifyLockListeners();
+}
+
+export function getEntryEditRestriction(
+    scope: EntryLockScopeParts
+): EntryEditRestriction | null {
+    return restrictions.get(entryLockScopeKey(scope)) ?? null;
 }

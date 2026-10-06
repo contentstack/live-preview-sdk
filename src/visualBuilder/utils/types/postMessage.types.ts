@@ -63,6 +63,7 @@ export enum VisualBuilderPostMessageEvents {
     PAGE_CONTEXT = "page-context",
     REQUEST_DISCUSSION_HIGHLIGHTS = "request-discussion-highlights",
     ENTRY_LOCK_INFO_UPDATE = "entry-lock-info-update",
+    ENTRY_EDIT_RESTRICTION_UPDATE = "entry-edit-restriction-update",
 }
 
 export interface IPageContextPostMessageEvent {
