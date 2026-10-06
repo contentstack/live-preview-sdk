@@ -16,6 +16,7 @@ import { FieldSchemaMap } from "./fieldSchemaMap";
 import getChildrenDirection from "./getChildrenDirection";
 import { getPsuedoEditableElementStyles } from "./getPsuedoEditableStylesElement";
 import { isFieldDisabled } from "./isFieldDisabled";
+import { getEntryEditRestrictionForField } from "./fieldLockIndicator";
 import { fetchEntryPermissionsAndStageDetails } from "./fetchEntryPermissionsAndStageDetails";
 
 interface ToolbarPositionParams {
@@ -157,13 +158,14 @@ export async function updateFocussedState({
             variantUid: fieldMetadata.variant,
             fieldPathWithIndex: fieldMetadata.fieldPathWithIndex,
         });
-    const { isDisabled } = isFieldDisabled(
-        fieldSchema,
-        { editableElement, fieldMetadata },
-        resolvedVariantPermissions,
-        entryAcl,
-        entryWorkflowStageDetails
-    );
+    const isDisabled =
+        isFieldDisabled(
+            fieldSchema,
+            { editableElement, fieldMetadata },
+            resolvedVariantPermissions,
+            entryAcl,
+            entryWorkflowStageDetails
+        ).isDisabled || Boolean(getEntryEditRestrictionForField(fieldMetadata));
     addFocusOverlay(previousSelectedEditableDOM, overlayWrapper, isDisabled);
 
     // update psuedo editable element if present

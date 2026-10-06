@@ -27,6 +27,7 @@ import initUI from "./components";
 import { useDraftFieldsPostMessageEvent } from "./eventManager/useDraftFieldsPostMessageEvent";
 import { useEntryLockInfoUpdateEvent } from "./eventManager/useEntryLockInfoUpdateEvent";
 import { useEntryEditRestrictionUpdateEvent } from "./eventManager/useEntryEditRestrictionUpdateEvent";
+import { getEntryEditRestrictionForField } from "./utils/fieldLockIndicator";
 import { useHideFocusOverlayPostMessageEvent } from "./eventManager/useHideFocusOverlayPostMessageEvent";
 import { useScrollToField } from "./eventManager/useScrollToField";
 import { debounceAddVariantFieldClass, getHighlightVariantFieldsStatus, setHighlightVariantFields, useVariantFieldsPostMessageEvent } from "./eventManager/useVariantsPostMessageEvent";
@@ -196,10 +197,12 @@ export class VisualBuilder {
             if (!fieldSchema) {
                 return;
             }
-            const { isDisabled } = isFieldDisabled(fieldSchema, {
-                editableElement,
-                fieldMetadata,
-            });
+            const isDisabled =
+                isFieldDisabled(fieldSchema, {
+                    editableElement,
+                    fieldMetadata,
+                }).isDisabled ||
+                Boolean(getEntryEditRestrictionForField(fieldMetadata));
             if (isDisabled) {
                 addFocusOverlay(
                     editableElement,

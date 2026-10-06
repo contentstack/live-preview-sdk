@@ -43,6 +43,8 @@ import { EntryPermissions } from "../utils/getEntryPermissions";
 import { FieldLocationAppList } from "./FieldLocationAppList";
 import { FieldLocationIcon } from "./FieldLocationIcon";
 import { WorkflowStageDetails } from "../utils/getWorkflowStageDetails";
+import { getEntryEditRestrictionForField } from "../utils/fieldLockIndicator";
+import { subscribeEntryFieldLockInfo } from "../utils/fieldLockStore";
 import { ResolvedVariantPermissions } from "../utils/getResolvedVariantPermissions";
 import { isCustomFieldMultipleInstance as checkIsCustomFieldMultipleInstance } from "../utils/isCustomFieldMultipleInstance";
 
@@ -153,7 +155,17 @@ function FieldToolbarComponent(
     let isWholeMultipleField = false;
     const APP_LIST_MIN_WIDTH = 230;
 
-    let disableFieldActions = false;
+    const [restrictionReason, setRestrictionReason] = useState(() =>
+        getEntryEditRestrictionForField(fieldMetadata)
+    );
+    useEffect(() => {
+        const update = () =>
+            setRestrictionReason(getEntryEditRestrictionForField(fieldMetadata));
+        update();
+        return subscribeEntryFieldLockInfo(update);
+    }, [fieldMetadata]);
+
+    let disableFieldActions = Boolean(restrictionReason);
     let isCustomFieldMultipleInstance = false;
     let isCustomFieldWholeMultiple = false;
     if (fieldSchema) {
@@ -167,7 +179,7 @@ function FieldToolbarComponent(
             entryPermissions,
             entryWorkflowStageDetails,
         );
-        disableFieldActions = isDisabled;
+        disableFieldActions = isDisabled || Boolean(restrictionReason);
 
         fieldType = getFieldType(fieldSchema);
 
