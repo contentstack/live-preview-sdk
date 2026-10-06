@@ -126,6 +126,13 @@ export function lockAvatarInfo(lock: EntryFieldLock): {
 
 /** Entries whose snapshot has already been requested this session. */
 const requestedScopes = new Set<string>();
+/** Snapshot requests still in flight, so a caller can wait for the first one. */
+const inFlightRequests = new Map<string, Promise<void>>();
+
+const requestKey = (scope: Omit<EntryLockScope, "contentTypeUid">): string =>
+    `${scope.entryUid}.${scope.locale}${
+        scope.variantUid ? `.${scope.variantUid}` : ""
+    }`;
 
 /**
  * Requests an entry's lock snapshot at most once (the parent pushes deltas after,
@@ -137,16 +144,41 @@ const requestedScopes = new Set<string>();
 export async function requestEntryLockInfoOnce(
     scope: EntryLockScope
 ): Promise<void> {
-    const key = `${scope.entryUid}.${scope.locale}${
-        scope.variantUid ? `.${scope.variantUid}` : ""
-    }`;
+    const key = requestKey(scope);
     if (requestedScopes.has(key)) {
         return;
     }
     requestedScopes.add(key);
 
-    const result = await getEntryLockInfo(scope);
-    if (result === null) {
-        requestedScopes.delete(key);
+    const request = getEntryLockInfo(scope).then((result) => {
+        if (result === null) {
+            requestedScopes.delete(key);
+        }
+    });
+    inFlightRequests.set(key, request);
+    try {
+        await request;
+    } finally {
+        inFlightRequests.delete(key);
     }
+}
+
+/**
+ * Waits (bounded) for this scope's first snapshot if it is still in flight. Inline editing calls
+ * this so a fresh canvas does not open a field for editing before an entry restriction arrives.
+ */
+export async function waitForEntryLockInfo(
+    scope: Omit<EntryLockScope, "contentTypeUid">,
+    timeoutMs = 1500
+): Promise<void> {
+    const request = inFlightRequests.get(requestKey(scope));
+    if (!request) return;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    await Promise.race([
+        request,
+        new Promise<void>((resolve) => {
+            timer = setTimeout(resolve, timeoutMs);
+        }),
+    ]);
+    clearTimeout(timer);
 }

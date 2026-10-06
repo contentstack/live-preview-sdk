@@ -4,6 +4,8 @@ import {
     ENTRY_RESTRICTION_MESSAGES,
     getEntryEditRestrictionForField,
     isFieldBlockedByAutoDraft,
+    requestEntryLockInfoOnce,
+    waitForEntryLockInfo,
 } from "../fieldLockIndicator";
 import {
     clearAllEntryFieldLockInfo,
@@ -204,5 +206,39 @@ describe("snapshot seeding", () => {
         await getEntryLockInfo(request);
 
         expect(getEntryEditRestriction(scope)).toBe("olderVersion");
+    });
+
+    it("lets inline editing wait for a first snapshot still in flight", async () => {
+        let resolve!: (value: unknown) => void;
+        mockPostMessage.send.mockReturnValueOnce(
+            new Promise((r) => {
+                resolve = r;
+            }) as never
+        );
+        const wideScope = { ...request, entryUid: "entry-wait" };
+        void requestEntryLockInfoOnce(wideScope);
+
+        let done = false;
+        const waiting = waitForEntryLockInfo(wideScope, 5000).then(() => {
+            done = true;
+        });
+        await new Promise((r) => setTimeout(r, 0));
+        expect(done).toBe(false);
+
+        resolve({
+            fieldLockInfo: {},
+            editRestrictions: { "entry-wait:en-us": "olderVersion" },
+        });
+        await waiting;
+
+        expect(
+            getEntryEditRestriction({ entryUid: "entry-wait", locale: "en-us" })
+        ).toBe("olderVersion");
+    });
+
+    it("does not wait when nothing is in flight", async () => {
+        await expect(
+            waitForEntryLockInfo({ entryUid: "idle", locale: "en-us" }, 5000)
+        ).resolves.toBeUndefined();
     });
 });

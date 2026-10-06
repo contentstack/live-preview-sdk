@@ -6,7 +6,10 @@ import { getFieldData } from "./getFieldData";
 import { getFieldType } from "./getFieldType";
 import { handleFieldInput, handleFieldKeyDown } from "./handleFieldMouseDown";
 import { isFieldDisabled } from "./isFieldDisabled";
-import { getEntryEditRestrictionForField } from "./fieldLockIndicator";
+import {
+    getEntryEditRestrictionForField,
+    waitForEntryLockInfo,
+} from "./fieldLockIndicator";
 import {
     handleAddButtonsForMultiple,
     removeAddInstanceButtons,
@@ -58,6 +61,11 @@ export async function handleIndividualFields(
             variantUid: variant,
             fieldPathWithIndex,
         });
+    await waitForEntryLockInfo({
+        entryUid: entry_uid,
+        locale,
+        ...(variant ? { variantUid: variant } : {}),
+    });
     const disabled =
         isFieldDisabled(
             fieldSchema,
