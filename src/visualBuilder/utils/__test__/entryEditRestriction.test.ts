@@ -55,6 +55,10 @@ describe("getEntryEditRestrictionForField", () => {
         expect(getEntryEditRestrictionForField(meta())).toBe(
             ENTRY_RESTRICTION_MESSAGES.unlocalized
         );
+        setEntryEditRestriction(scope, "entryLocked");
+        expect(getEntryEditRestrictionForField(meta())).toBe(
+            ENTRY_RESTRICTION_MESSAGES.entryLocked
+        );
         setEntryEditRestriction(scope, "unsavedVariant");
         expect(getEntryEditRestrictionForField(meta())).toBe(
             ENTRY_RESTRICTION_MESSAGES.unsavedVariant
