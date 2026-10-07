@@ -27,6 +27,10 @@ import React from "preact/compat";
 import visualBuilderPostMessage from "../../utils/visualBuilderPostMessage";
 import { FieldLocationIcon } from "../FieldLocationIcon";
 import { VisualBuilderPostMessageEvents } from "../../utils/types/postMessage.types";
+import {
+    clearAllEntryFieldLockInfo,
+    setEntryEditRestriction,
+} from "../../utils/fieldLockStore";
 
 vi.mock("../../utils/instanceHandlers", () => ({
     handleMoveInstance: vi.fn(),
@@ -628,6 +632,54 @@ describe("FieldToolbarComponent", () => {
             if (replaceButton) {
                 expect(replaceButton).toBeDisabled();
             }
+        });
+
+        describe("on an entry the parent has restricted", () => {
+            const scope = { entryUid: "e1", locale: "en-us" };
+            const renderToolbar = async () => {
+                const { container } = render(
+                    <FieldToolbarComponent
+                        eventDetails={{
+                            ...mockEventDetails,
+                            fieldMetadata: {
+                                ...mockMultipleFieldMetadata,
+                                entry_uid: "e1",
+                                locale: "en-us",
+                            },
+                        }}
+                        hideOverlay={vi.fn()}
+                    />
+                );
+                await findByTestId(
+                    container as HTMLElement,
+                    "visual-builder__focused-toolbar__multiple-field-toolbar",
+                    {},
+                    { timeout: 1000 }
+                );
+                return () =>
+                    container.querySelector(
+                        '[data-testid="visual-builder__focused-toolbar__multiple-field-toolbar__delete-button"]'
+                    );
+            };
+
+            afterEach(() => clearAllEntryFieldLockInfo());
+
+            test("disables the field actions", async () => {
+                setEntryEditRestriction(scope, "olderVersion");
+
+                const deleteButton = await renderToolbar();
+
+                await waitFor(() => expect(deleteButton()).toBeDisabled());
+            });
+
+            test("disables the field actions when the restriction arrives after the toolbar opened", async () => {
+                const deleteButton = await renderToolbar();
+                await waitFor(() => expect(deleteButton()).not.toBeDisabled());
+
+                act(() => setEntryEditRestriction(scope, "olderVersion"));
+
+                await waitFor(() => expect(deleteButton()).toBeDisabled());
+            });
         });
     });
 });

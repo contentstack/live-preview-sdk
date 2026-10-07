@@ -18,6 +18,10 @@ import { VisualBuilder } from "../..";
 import { act } from "@testing-library/preact";
 import { VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY } from "../constants";
 import { FieldDataType } from "../types/index.types";
+import {
+    clearAllEntryFieldLockInfo,
+    setEntryEditRestriction,
+} from "../fieldLockStore";
 
 vi.mock("../fieldSchemaMap");
 vi.mock("../getFieldData");
@@ -185,6 +189,50 @@ describe("handleIndividualFields", () => {
         expect(
             eventDetails.editableElement.getAttribute("contenteditable")
         ).toBe("true");
+    });
+});
+
+describe("handleIndividualFields on a restricted entry", () => {
+    it("does not make the field editable while its entry is restricted", async () => {
+        clearAllEntryFieldLockInfo();
+        setEntryEditRestriction(
+            { entryUid: "entryUid", locale: "en-us" },
+            "olderVersion"
+        );
+        const editableElement = document.createElement("div");
+        editableElement.textContent = "value";
+        (FieldSchemaMap.getFieldSchema as Mock).mockResolvedValue({
+            data_type: FieldDataType.SINGLELINE,
+            multiple: false,
+        });
+        (getFieldData as Mock).mockResolvedValue("value");
+        (getFieldType as Mock).mockReturnValue(FieldDataType.SINGLELINE);
+        (isFieldDisabled as Mock).mockReturnValue({ isDisabled: false });
+
+        await act(async () => {
+            await handleIndividualFields(
+                {
+                    // @ts-expect-error mocking only required properties
+                    fieldMetadata: {
+                        content_type_uid: "contentTypeUid",
+                        entry_uid: "entryUid",
+                        locale: "en-us",
+                        fieldPath: "fieldPath",
+                        fieldPathWithIndex: "fieldPathWithIndex",
+                        instance: { fieldPathWithIndex: "fieldPathWithIndex.0" },
+                    },
+                    editableElement,
+                },
+                {
+                    visualBuilderContainer: document.createElement("div"),
+                    resizeObserver: new ResizeObserver(() => {}),
+                    lastEditedField: null,
+                }
+            );
+        });
+        clearAllEntryFieldLockInfo();
+
+        expect(editableElement.getAttribute("contenteditable")).not.toBe("true");
     });
 });
 

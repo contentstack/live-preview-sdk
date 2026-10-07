@@ -13,6 +13,10 @@ import { act } from "@testing-library/preact";
 import { singleLineFieldSchema } from "../../../__test__/data/fields";
 import { fetchEntryPermissionsAndStageDetails } from "../fetchEntryPermissionsAndStageDetails";
 import { isFieldDisabled } from "../isFieldDisabled";
+import {
+    clearAllEntryFieldLockInfo,
+    setEntryEditRestriction,
+} from "../fieldLockStore";
 import { getEntryPermissionsCached } from "../getEntryPermissionsCached";
 
 vi.mock("../../generators/generateOverlay", () => ({
@@ -393,5 +397,36 @@ describe("updateFocussedStateOnMutation", () => {
         expect(focusOutlineMock.style.left).toBe("10px");
         expect(focusOutlineMock.style.width).toBe("100px");
         expect(focusOutlineMock.style.height).toBe("100px");
+    });
+
+    it("redraws the focus overlay as disabled while the entry is restricted", async () => {
+        setEntryEditRestriction(
+            { entryUid: "entry_uid", locale: "locale" },
+            "olderVersion"
+        );
+        const editableElementMock = document.createElement("div");
+        editableElementMock.setAttribute(
+            "data-cslp",
+            "content_type_uid.entry_uid.locale.field_path"
+        );
+
+        await act(async () => {
+            await updateFocussedState({
+                editableElement: editableElementMock,
+                visualBuilderContainer: document.createElement("div"),
+                overlayWrapper: document.createElement("div"),
+                focusedToolbar: document.createElement("div"),
+                resizeObserver: {
+                    disconnect: vi.fn(),
+                } as unknown as ResizeObserver,
+            });
+        });
+        clearAllEntryFieldLockInfo();
+
+        expect(addFocusOverlay).toHaveBeenCalledWith(
+            expect.any(HTMLElement),
+            expect.any(HTMLElement),
+            true
+        );
     });
 });

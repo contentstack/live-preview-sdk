@@ -17,6 +17,7 @@ import {
 } from "./fieldLabelWrapper.mocks";
 import {
     setEntryFieldLockInfo,
+    setEntryEditRestriction,
     clearAllEntryFieldLockInfo,
 } from "../../../utils/fieldLockStore";
 
@@ -382,5 +383,84 @@ describe("FieldLabelWrapperComponent - Disabled Class", () => {
         expect(fieldLabel).toHaveClass(
             "visual-builder__focused-toolbar--field-disabled"
         );
+    });
+
+    const OLDER_VERSION_MESSAGE =
+        "You're viewing an older version of this entry. Switch to the latest version to edit.";
+
+    const renderLabel = async () => {
+        const { container } = render(
+            <FieldLabelWrapperComponent
+                fieldMetadata={mockFieldMetadata}
+                eventDetails={mockEventDetails}
+                parentPaths={[]}
+                getParentEditableElement={mockGetParentEditable}
+            />
+        );
+        await act(async () => {
+            await new Promise<void>((resolve) =>
+                queueMicrotask(() => resolve())
+            );
+        });
+        return (await findByTestId(
+            container as HTMLElement,
+            "visual-builder__focused-toolbar__field-label-wrapper",
+            {},
+            { timeout: 1000 }
+        )) as HTMLElement;
+    };
+
+    test("shows a restricted entry as disabled with the restriction's message", async () => {
+        (isFieldDisabled as any).mockReturnValue({
+            isDisabled: false,
+            reason: "",
+        });
+        setEntryEditRestriction(
+            {
+                entryUid: mockFieldMetadata.entry_uid,
+                locale: mockFieldMetadata.locale,
+            },
+            "olderVersion"
+        );
+
+        const fieldLabel = await renderLabel();
+
+        expect(fieldLabel).toHaveClass(
+            "visual-builder__focused-toolbar--field-disabled"
+        );
+        expect(
+            fieldLabel.querySelector(
+                `[data-tooltip="${OLDER_VERSION_MESSAGE}"]`
+            )
+        ).not.toBeNull();
+    });
+
+    test("prefers the entry restriction's message over a peer lock", async () => {
+        (isFieldDisabled as any).mockReturnValue({
+            isDisabled: false,
+            reason: "",
+        });
+        const scope = {
+            entryUid: mockFieldMetadata.entry_uid,
+            locale: mockFieldMetadata.locale,
+        };
+        setEntryFieldLockInfo(scope, {
+            [mockFieldMetadata.fieldPath]: {
+                user: { uid: "u1", name: "Ada Lovelace" },
+                ttl: "2030-01-01",
+                isLocked: true,
+                isOwn: false,
+            },
+        });
+        setEntryEditRestriction(scope, "olderVersion");
+
+        const fieldLabel = await renderLabel();
+
+        expect(
+            fieldLabel.querySelector(
+                `[data-tooltip="${OLDER_VERSION_MESSAGE}"]`
+            )
+        ).not.toBeNull();
+        expect(fieldLabel.textContent).not.toContain("Ada Lovelace");
     });
 });

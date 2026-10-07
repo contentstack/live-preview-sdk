@@ -3,7 +3,9 @@ import visualBuilderPostMessage from "./visualBuilderPostMessage";
 import {
     EntryFieldLockInfo,
     EntryLockScope,
+    getEntryEditRestrictionWriteSeq,
     getEntryFieldLockVersion,
+    seedEntryEditRestrictions,
     setEntryFieldLockInfo,
 } from "./fieldLockStore";
 
@@ -22,9 +24,11 @@ export async function getEntryLockInfo(
     // delta (ENTRY_LOCK_INFO_UPDATE) landed while we waited and avoid clobbering
     // it with this now-stale snapshot.
     const versionBeforeRequest = getEntryFieldLockVersion(scope);
+    const restrictionSeqBeforeRequest = getEntryEditRestrictionWriteSeq();
     try {
         const response = await visualBuilderPostMessage?.send<{
             fieldLockInfo?: EntryFieldLockInfo;
+            editRestrictions?: Record<string, unknown>;
             error?: boolean;
         }>(VisualBuilderPostMessageEvents.GET_ENTRY_LOCK_INFO, { ...scope });
 
@@ -36,6 +40,14 @@ export async function getEntryLockInfo(
         }
 
         const fieldLockInfo = response.fieldLockInfo;
+        // An older parent omits the field; it cannot have restrictions, so skip the seed.
+        if (response.editRestrictions) {
+            seedEntryEditRestrictions(
+                scope.entryUid,
+                response.editRestrictions,
+                restrictionSeqBeforeRequest
+            );
+        }
         // Only seed the mirror if no delta updated this scope during the
         // round-trip; a delta that arrived meanwhile is fresher than this
         // snapshot, so keep it.

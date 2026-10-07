@@ -7,7 +7,7 @@ import { CslpData } from "../../../cslp/types/cslp.types";
 import { ISchemaFieldMap } from "../../utils/types/index.types";
 import { VisualBuilderPostMessageEvents } from "../../utils/types/postMessage.types";
 import { getDOMEditStack } from "../../utils/getCsDataOfElement";
-import { getPeerLockForField } from "../../utils/fieldLockIndicator";
+import { isFieldBlockedByAutoDraft } from "../../utils/fieldLockIndicator";
 
 vi.mock("../../utils/visualBuilderPostMessage", () => ({
     default: {
@@ -20,7 +20,7 @@ vi.mock("../../utils/multipleElementAddButton", () => ({
 }));
 
 vi.mock("../../utils/fieldLockIndicator", () => ({
-    getPeerLockForField: vi.fn(() => null),
+    isFieldBlockedByAutoDraft: vi.fn(() => false),
 }));
 
 describe("EmptyBlock", () => {
@@ -129,15 +129,13 @@ describe("EmptyBlock", () => {
         );
     });
 
-    test("adds nothing when a peer holds the field", async () => {
-        (getPeerLockForField as any).mockReturnValueOnce({
-            user: { uid: "peer" },
-        });
+    test("adds nothing when a peer holds the field or the entry is restricted", async () => {
+        (isFieldBlockedByAutoDraft as any).mockReturnValueOnce(true);
 
         const { getByTestId } = render(<EmptyBlock details={mockDetails} />);
         fireEvent.click(getByTestId("visual-builder__empty-block-add-button"));
 
-        await waitFor(() => expect(getPeerLockForField).toHaveBeenCalled());
+        await waitFor(() => expect(isFieldBlockedByAutoDraft).toHaveBeenCalled());
         expect((visualBuilderPostMessage as any).send).not.toHaveBeenCalled();
         expect(observeParentAndFocusNewInstance).not.toHaveBeenCalled();
     });

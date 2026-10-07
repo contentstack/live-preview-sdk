@@ -7,6 +7,10 @@ import { getFieldType } from "./getFieldType";
 import { handleFieldInput, handleFieldKeyDown } from "./handleFieldMouseDown";
 import { isFieldDisabled } from "./isFieldDisabled";
 import {
+    getEntryEditRestrictionForField,
+    waitForEntryLockInfo,
+} from "./fieldLockIndicator";
+import {
     handleAddButtonsForMultiple,
     removeAddInstanceButtons,
 } from "./multipleElementAddButton";
@@ -57,13 +61,19 @@ export async function handleIndividualFields(
             variantUid: variant,
             fieldPathWithIndex,
         });
-    const { isDisabled: disabled } = isFieldDisabled(
-        fieldSchema,
-        eventDetails,
-        resolvedVariantPermissions,
-        entryAcl,
-        entryWorkflowStageDetails
-    );
+    await waitForEntryLockInfo({
+        entryUid: entry_uid,
+        locale,
+        ...(variant ? { variantUid: variant } : {}),
+    });
+    const disabled =
+        isFieldDisabled(
+            fieldSchema,
+            eventDetails,
+            resolvedVariantPermissions,
+            entryAcl,
+            entryWorkflowStageDetails
+        ).isDisabled || Boolean(getEntryEditRestrictionForField(fieldMetadata));
 
     editableElement.setAttribute(
         VISUAL_BUILDER_FIELD_TYPE_ATTRIBUTE_KEY,

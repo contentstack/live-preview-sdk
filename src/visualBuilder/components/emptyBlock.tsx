@@ -8,7 +8,7 @@ import { VisualBuilderPostMessageEvents } from "../utils/types/postMessage.types
 import React from "preact/compat";
 import { startCase, toLower } from "lodash-es";
 import { getDOMEditStack } from "../utils/getCsDataOfElement";
-import { getPeerLockForField } from "../utils/fieldLockIndicator";
+import { isFieldBlockedByAutoDraft } from "../utils/fieldLockIndicator";
 import { DATA_CSLP_ATTR_SELECTOR } from "../utils/constants";
 
 interface EmptyBlockProps {
@@ -26,9 +26,9 @@ export function EmptyBlock(props: EmptyBlockProps): JSX.Element {
     async function sendAddInstanceEvent(
         event: JSX.TargetedMouseEvent<HTMLButtonElement>
     ) {
-        // A peer holds this field: adding would edit through their lock, the same
-        // no-op a click on a peer-locked field gets in the click listener.
-        if (getPeerLockForField(details.fieldMetadata)) return;
+        // A peer holds this field or its entry is restricted: the same no-op a click on a
+        // blocked field gets in the click listener.
+        if (isFieldBlockedByAutoDraft(details.fieldMetadata)) return;
 
         // Resolve the field by its cslp, not the button's DOM position: a portal
         // render would yield an empty stack and silently skip the lock claim.

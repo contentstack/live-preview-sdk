@@ -1,6 +1,13 @@
-import { getEntryFieldLockInfo } from "./fieldLockStore";
+import {
+    getEntryEditRestriction,
+    getEntryFieldLockInfo,
+} from "./fieldLockStore";
 import { getEntryLockInfo } from "./getEntryLockInfo";
-import type { EntryFieldLock, EntryLockScope } from "./fieldLockStore";
+import type {
+    EntryEditRestriction,
+    EntryFieldLock,
+    EntryLockScope,
+} from "./fieldLockStore";
 import type { CslpData } from "../../cslp/types/cslp.types";
 
 type FieldMetadataForLock = Pick<
@@ -56,6 +63,46 @@ export function getPeerLockForField(
     return null;
 }
 
+export const ENTRY_RESTRICTION_MESSAGES: Record<EntryEditRestriction, string> = {
+    olderVersion:
+        "You're viewing an older version of this entry. Switch to the latest version to edit.",
+    unlocalized:
+        "This entry isn't localized in this language yet. Save it from the form to localize it, then edit here.",
+    unsavedVariant:
+        "This variant hasn't been saved yet. Save it from the form to edit this field here.",
+};
+
+/**
+ * The message for an entry-wide edit restriction on this field's entry, or null. A variant
+ * field also inherits a restriction recorded on its base entry.
+ */
+export function getEntryEditRestrictionForField(
+    fieldMetadata: FieldMetadataForLock
+): string | null {
+    const scope = {
+        entryUid: fieldMetadata.entry_uid,
+        locale: fieldMetadata.locale,
+    };
+    const restriction =
+        (fieldMetadata.variant
+            ? getEntryEditRestriction({
+                  ...scope,
+                  variantUid: fieldMetadata.variant,
+              })
+            : null) ?? getEntryEditRestriction(scope);
+    return restriction ? ENTRY_RESTRICTION_MESSAGES[restriction] : null;
+}
+
+/** True when auto-draft blocks editing this field: a peer lock or an entry restriction. */
+export function isFieldBlockedByAutoDraft(
+    fieldMetadata: FieldMetadataForLock
+): boolean {
+    return (
+        Boolean(getEntryEditRestrictionForField(fieldMetadata)) ||
+        Boolean(getPeerLockForField(fieldMetadata))
+    );
+}
+
 /** Avatar display (initials + colour + full name) for a lock's holder. */
 export function lockAvatarInfo(lock: EntryFieldLock): {
     initials: string;
@@ -79,6 +126,13 @@ export function lockAvatarInfo(lock: EntryFieldLock): {
 
 /** Entries whose snapshot has already been requested this session. */
 const requestedScopes = new Set<string>();
+/** Snapshot requests still in flight, so a caller can wait for the first one. */
+const inFlightRequests = new Map<string, Promise<void>>();
+
+const requestKey = (scope: Omit<EntryLockScope, "contentTypeUid">): string =>
+    `${scope.entryUid}.${scope.locale}${
+        scope.variantUid ? `.${scope.variantUid}` : ""
+    }`;
 
 /**
  * Requests an entry's lock snapshot at most once (the parent pushes deltas after,
@@ -90,16 +144,41 @@ const requestedScopes = new Set<string>();
 export async function requestEntryLockInfoOnce(
     scope: EntryLockScope
 ): Promise<void> {
-    const key = `${scope.entryUid}.${scope.locale}${
-        scope.variantUid ? `.${scope.variantUid}` : ""
-    }`;
+    const key = requestKey(scope);
     if (requestedScopes.has(key)) {
         return;
     }
     requestedScopes.add(key);
 
-    const result = await getEntryLockInfo(scope);
-    if (result === null) {
-        requestedScopes.delete(key);
+    const request = getEntryLockInfo(scope).then((result) => {
+        if (result === null) {
+            requestedScopes.delete(key);
+        }
+    });
+    inFlightRequests.set(key, request);
+    try {
+        await request;
+    } finally {
+        inFlightRequests.delete(key);
     }
+}
+
+/**
+ * Waits (bounded) for this scope's first snapshot if it is still in flight. Inline editing calls
+ * this so a fresh canvas does not open a field for editing before an entry restriction arrives.
+ */
+export async function waitForEntryLockInfo(
+    scope: Omit<EntryLockScope, "contentTypeUid">,
+    timeoutMs = 1500
+): Promise<void> {
+    const request = inFlightRequests.get(requestKey(scope));
+    if (!request) return;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    await Promise.race([
+        request,
+        new Promise<void>((resolve) => {
+            timer = setTimeout(resolve, timeoutMs);
+        }),
+    ]);
+    clearTimeout(timer);
 }
