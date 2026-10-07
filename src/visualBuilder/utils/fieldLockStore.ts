@@ -27,12 +27,18 @@ export interface EntryFieldLock {
 
 export type EntryFieldLockInfo = Record<string, EntryFieldLock>;
 
+/** Every reason the parent can turn editing off for a whole entry scope. */
+export const ENTRY_EDIT_RESTRICTIONS = [
+    "olderVersion",
+    "entryLocked",
+    "contentTypeUpdated",
+    "contentTypeDeleted",
+    "unlocalized",
+    "unsavedVariant",
+] as const;
+
 /** Why the parent has turned editing off for a whole entry scope. */
-export type EntryEditRestriction =
-    | "olderVersion"
-    | "entryLocked"
-    | "unlocalized"
-    | "unsavedVariant";
+export type EntryEditRestriction = (typeof ENTRY_EDIT_RESTRICTIONS)[number];
 
 /** The parts that identify a lock scope: entry + locale + variant. */
 export interface EntryLockScopeParts {
@@ -121,12 +127,7 @@ export function getEntryEditRestrictionWriteSeq(): number {
     return writeSeq;
 }
 
-const RESTRICTIONS: ReadonlySet<string> = new Set([
-    "olderVersion",
-    "entryLocked",
-    "unlocalized",
-    "unsavedVariant",
-]);
+const RESTRICTIONS: ReadonlySet<string> = new Set(ENTRY_EDIT_RESTRICTIONS);
 
 /** Narrows a value from the parent; anything unknown is treated as "no restriction". */
 export function toEntryEditRestriction(

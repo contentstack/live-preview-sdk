@@ -68,6 +68,10 @@ export const ENTRY_RESTRICTION_MESSAGES: Record<EntryEditRestriction, string> = 
         "You're viewing an older version of this entry. Switch to the latest version to edit.",
     entryLocked:
         "This entry was updated by someone else. Reload the entry to keep editing.",
+    contentTypeUpdated:
+        "This entry's content type was changed. Reload the entry to keep editing.",
+    contentTypeDeleted:
+        "This entry's content type was deleted. It can no longer be edited here.",
     unlocalized:
         "This entry isn't localized in this language yet. Save it from the form to localize it, then edit here.",
     unsavedVariant:
