@@ -30,6 +30,7 @@ export type EntryFieldLockInfo = Record<string, EntryFieldLock>;
 /** Why the parent has turned editing off for a whole entry scope. */
 export type EntryEditRestriction =
     | "olderVersion"
+    | "entryLocked"
     | "unlocalized"
     | "unsavedVariant";
 
@@ -122,6 +123,7 @@ export function getEntryEditRestrictionWriteSeq(): number {
 
 const RESTRICTIONS: ReadonlySet<string> = new Set([
     "olderVersion",
+    "entryLocked",
     "unlocalized",
     "unsavedVariant",
 ]);

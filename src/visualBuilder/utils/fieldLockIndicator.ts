@@ -66,6 +66,8 @@ export function getPeerLockForField(
 export const ENTRY_RESTRICTION_MESSAGES: Record<EntryEditRestriction, string> = {
     olderVersion:
         "You're viewing an older version of this entry. Switch to the latest version to edit.",
+    entryLocked:
+        "This entry was updated by someone else. Reload the entry to keep editing.",
     unlocalized:
         "This entry isn't localized in this language yet. Save it from the form to localize it, then edit here.",
     unsavedVariant:
