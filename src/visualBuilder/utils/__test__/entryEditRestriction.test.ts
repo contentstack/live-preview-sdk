@@ -59,6 +59,14 @@ describe("getEntryEditRestrictionForField", () => {
         expect(getEntryEditRestrictionForField(meta())).toBe(
             ENTRY_RESTRICTION_MESSAGES.entryLocked
         );
+        setEntryEditRestriction(scope, "contentTypeUpdated");
+        expect(getEntryEditRestrictionForField(meta())).toBe(
+            ENTRY_RESTRICTION_MESSAGES.contentTypeUpdated
+        );
+        setEntryEditRestriction(scope, "contentTypeDeleted");
+        expect(getEntryEditRestrictionForField(meta())).toBe(
+            ENTRY_RESTRICTION_MESSAGES.contentTypeDeleted
+        );
         setEntryEditRestriction(scope, "unsavedVariant");
         expect(getEntryEditRestrictionForField(meta())).toBe(
             ENTRY_RESTRICTION_MESSAGES.unsavedVariant
@@ -128,6 +136,16 @@ describe("restriction updates", () => {
         expect(getEntryEditRestriction(scope)).toBe("olderVersion");
         handler({ data: { ...scope, restriction: null } });
         expect(getEntryEditRestriction(scope)).toBeNull();
+    });
+
+    it("accepts content type changes from the parent", () => {
+        useEntryEditRestrictionUpdateEvent();
+        const handler = mockPostMessage.on.mock.calls[0][1] as any;
+
+        handler({ data: { ...scope, restriction: "contentTypeDeleted" } });
+        expect(getEntryEditRestriction(scope)).toBe("contentTypeDeleted");
+        handler({ data: { ...scope, restriction: "contentTypeUpdated" } });
+        expect(getEntryEditRestriction(scope)).toBe("contentTypeUpdated");
     });
 
     it("ignores a restriction value it does not know", () => {
@@ -244,5 +262,43 @@ describe("snapshot seeding", () => {
         await expect(
             waitForEntryLockInfo({ entryUid: "idle", locale: "en-us" }, 5000)
         ).resolves.toBeUndefined();
+    });
+});
+
+describe("content type restrictions from the editor", () => {
+    it.each([
+        "olderVersion",
+        "entryLocked",
+        "contentTypeUpdated",
+        "contentTypeDeleted",
+        "unlocalized",
+        "unsavedVariant",
+    ] as const)("accepts %s and has a field message for it", (restriction) => {
+        useEntryEditRestrictionUpdateEvent();
+        const handler = mockPostMessage.on.mock.calls[0][1] as any;
+
+        handler({ data: { ...scope, restriction } });
+
+        expect(getEntryEditRestriction(scope)).toBe(restriction);
+        expect(getEntryEditRestrictionForField(meta())).toBe(
+            ENTRY_RESTRICTION_MESSAGES[restriction]
+        );
+        expect(ENTRY_RESTRICTION_MESSAGES[restriction]).toEqual(
+            expect.any(String)
+        );
+    });
+
+    it("seeds a content type reason from the lock snapshot and shows it on variant fields", async () => {
+        mockPostMessage.send.mockResolvedValueOnce({
+            fieldLockInfo: {},
+            editRestrictions: { "entry1:en-us": "contentTypeDeleted" },
+        });
+
+        await getEntryLockInfo({ ...scope, contentTypeUid: "shoe" });
+
+        expect(getEntryEditRestrictionForField(meta({ variant: "v1" }))).toBe(
+            ENTRY_RESTRICTION_MESSAGES.contentTypeDeleted
+        );
+        expect(isFieldBlockedByAutoDraft(meta({ variant: "v1" }))).toBe(true);
     });
 });

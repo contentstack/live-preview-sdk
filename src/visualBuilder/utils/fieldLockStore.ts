@@ -31,6 +31,8 @@ export type EntryFieldLockInfo = Record<string, EntryFieldLock>;
 export type EntryEditRestriction =
     | "olderVersion"
     | "entryLocked"
+    | "contentTypeUpdated"
+    | "contentTypeDeleted"
     | "unlocalized"
     | "unsavedVariant";
 
@@ -124,6 +126,8 @@ export function getEntryEditRestrictionWriteSeq(): number {
 const RESTRICTIONS: ReadonlySet<string> = new Set([
     "olderVersion",
     "entryLocked",
+    "contentTypeUpdated",
+    "contentTypeDeleted",
     "unlocalized",
     "unsavedVariant",
 ]);
