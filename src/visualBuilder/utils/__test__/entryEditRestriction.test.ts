@@ -8,6 +8,7 @@ import {
     waitForEntryLockInfo,
 } from "../fieldLockIndicator";
 import {
+    ENTRY_EDIT_RESTRICTIONS,
     clearAllEntryFieldLockInfo,
     getEntryEditRestriction,
     setEntryEditRestriction,
@@ -58,14 +59,6 @@ describe("getEntryEditRestrictionForField", () => {
         setEntryEditRestriction(scope, "entryLocked");
         expect(getEntryEditRestrictionForField(meta())).toBe(
             ENTRY_RESTRICTION_MESSAGES.entryLocked
-        );
-        setEntryEditRestriction(scope, "contentTypeUpdated");
-        expect(getEntryEditRestrictionForField(meta())).toBe(
-            ENTRY_RESTRICTION_MESSAGES.contentTypeUpdated
-        );
-        setEntryEditRestriction(scope, "contentTypeDeleted");
-        expect(getEntryEditRestrictionForField(meta())).toBe(
-            ENTRY_RESTRICTION_MESSAGES.contentTypeDeleted
         );
         setEntryEditRestriction(scope, "unsavedVariant");
         expect(getEntryEditRestrictionForField(meta())).toBe(
@@ -266,27 +259,23 @@ describe("snapshot seeding", () => {
 });
 
 describe("content type restrictions from the editor", () => {
-    it.each([
-        "olderVersion",
-        "entryLocked",
-        "contentTypeUpdated",
-        "contentTypeDeleted",
-        "unlocalized",
-        "unsavedVariant",
-    ] as const)("accepts %s and has a field message for it", (restriction) => {
-        useEntryEditRestrictionUpdateEvent();
-        const handler = mockPostMessage.on.mock.calls[0][1] as any;
+    it.each(ENTRY_EDIT_RESTRICTIONS)(
+        "accepts %s and has a field message for it",
+        (restriction) => {
+            useEntryEditRestrictionUpdateEvent();
+            const handler = mockPostMessage.on.mock.calls[0][1] as any;
 
-        handler({ data: { ...scope, restriction } });
+            handler({ data: { ...scope, restriction } });
 
-        expect(getEntryEditRestriction(scope)).toBe(restriction);
-        expect(getEntryEditRestrictionForField(meta())).toBe(
-            ENTRY_RESTRICTION_MESSAGES[restriction]
-        );
-        expect(ENTRY_RESTRICTION_MESSAGES[restriction]).toEqual(
-            expect.any(String)
-        );
-    });
+            expect(getEntryEditRestriction(scope)).toBe(restriction);
+            expect(getEntryEditRestrictionForField(meta())).toBe(
+                ENTRY_RESTRICTION_MESSAGES[restriction]
+            );
+            expect(ENTRY_RESTRICTION_MESSAGES[restriction]).toEqual(
+                expect.any(String)
+            );
+        }
+    );
 
     it("seeds a content type reason from the lock snapshot and shows it on variant fields", async () => {
         mockPostMessage.send.mockResolvedValueOnce({
