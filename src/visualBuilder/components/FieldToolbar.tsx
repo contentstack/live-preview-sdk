@@ -47,6 +47,10 @@ import { getEntryEditRestrictionForField } from "../utils/fieldLockIndicator";
 import { subscribeEntryFieldLockInfo } from "../utils/fieldLockStore";
 import { ResolvedVariantPermissions } from "../utils/getResolvedVariantPermissions";
 import { isCustomFieldMultipleInstance as checkIsCustomFieldMultipleInstance } from "../utils/isCustomFieldMultipleInstance";
+import {
+    isFieldLockRefused,
+    isFieldStillSelected,
+} from "../utils/fieldLockRefused";
 
 export type FieldDetails = Pick<
     VisualBuilderCslpEventDetails,
@@ -64,17 +68,50 @@ interface MultipleFieldToolbarProps {
     resolvedVariantPermissions?: ResolvedVariantPermissions | undefined;
 }
 
-function handleReplaceAsset(fieldMetadata: CslpData) {
-    // TODO avoid sending whole fieldMetadata
-    visualBuilderPostMessage?.send(
-        VisualBuilderPostMessageEvents.OPEN_ASSET_MODAL,
-        {
-            fieldMetadata,
+/**
+ * Sends a replace request and deselects the field if the parent refuses it for
+ * a collaborator's lock, so the toolbar does not linger on a field we cannot
+ * edit.
+ */
+async function sendReplaceRequest(
+    fieldMetadata: CslpData,
+    request: Promise<unknown> | undefined,
+    hideOverlay: () => void
+): Promise<void> {
+    try {
+        const response = await request;
+        if (
+            isFieldLockRefused(response) &&
+            isFieldStillSelected(fieldMetadata.cslpValue)
+        ) {
+            hideOverlay();
         }
+    } catch (error) {
+        console.error(
+            "Visual Builder: Failed to open the replace modal",
+            error
+        );
+    }
+}
+
+function handleReplaceAsset(fieldMetadata: CslpData, hideOverlay: () => void) {
+    // TODO avoid sending whole fieldMetadata
+    return sendReplaceRequest(
+        fieldMetadata,
+        visualBuilderPostMessage?.send(
+            VisualBuilderPostMessageEvents.OPEN_ASSET_MODAL,
+            {
+                fieldMetadata,
+            }
+        ),
+        hideOverlay
     );
 }
 
-function handleReplaceReference(fieldMetadata: CslpData) {
+function handleReplaceReference(
+    fieldMetadata: CslpData,
+    hideOverlay: () => void
+) {
     const isMultipleInstance =
         fieldMetadata.multipleFieldMetadata.index > -1 &&
         fieldMetadata.fieldPathWithIndex ===
@@ -83,16 +120,22 @@ function handleReplaceReference(fieldMetadata: CslpData) {
         ? fieldMetadata.instance.fieldPathWithIndex
         : fieldMetadata.fieldPathWithIndex;
 
-    visualBuilderPostMessage?.send(
-        VisualBuilderPostMessageEvents.OPEN_REFERENCE_MODAL,
-        {
-            entry_uid: fieldMetadata.entry_uid,
-            content_type_uid: fieldMetadata.content_type_uid,
-            locale: fieldMetadata.locale,
-            fieldPath: fieldMetadata.fieldPath,
-            fieldPathWithIndex: fieldMetadata.fieldPathWithIndex,
-            entryPath,
-        }
+    return sendReplaceRequest(
+        fieldMetadata,
+        visualBuilderPostMessage?.send(
+            VisualBuilderPostMessageEvents.OPEN_REFERENCE_MODAL,
+            {
+                entry_uid: fieldMetadata.entry_uid,
+                content_type_uid: fieldMetadata.content_type_uid,
+                locale: fieldMetadata.locale,
+                // The parent derives the field lock path from the variant entry.
+                variant: fieldMetadata.variant,
+                fieldPath: fieldMetadata.fieldPath,
+                fieldPathWithIndex: fieldMetadata.fieldPathWithIndex,
+                entryPath,
+            }
+        ),
+        hideOverlay
     );
 }
 
@@ -298,10 +341,13 @@ function FieldToolbarComponent(
                 e.stopPropagation();
                 e.preventDefault();
                 if (fieldType === FieldDataType.REFERENCE) {
-                    handleReplaceReference(fieldMetadata);
+                    void handleReplaceReference(
+                        fieldMetadata,
+                        props.hideOverlay
+                    );
                     return;
                 } else if (fieldType === FieldDataType.FILE) {
-                    handleReplaceAsset(fieldMetadata);
+                    void handleReplaceAsset(fieldMetadata, props.hideOverlay);
                     return;
                 }
             }}

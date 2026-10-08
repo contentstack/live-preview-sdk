@@ -114,4 +114,34 @@ describe("AddInstanceButtonComponent", () => {
         });
         expect(onClickCallback).toHaveBeenCalled();
     });
+    test("calls onFieldLockRefused instead of onClick when the lock is refused", async () => {
+        visualBuilderPostMessage!.send.mockResolvedValueOnce({
+            fieldLockRefused: true,
+        });
+        const onClickCallback = vi.fn();
+        const onFieldLockRefused = vi.fn();
+        await act(() => {
+            render(
+                <AddInstanceButtonComponent
+                    value={[]}
+                    fieldSchema={singleLineFieldSchema}
+                    // @ts-expect-error mocking fieldMetadata
+                    fieldMetadata={{}}
+                    index={0}
+                    onClick={onClickCallback}
+                    onFieldLockRefused={onFieldLockRefused}
+                    label="Add instance"
+                    // @ts-expect-error mocking signal
+                    loading={{ value: false }}
+                />
+            );
+        });
+        await act(() => {
+            fireEvent.click(
+                getByTestId(document.body, "visual-builder-add-instance-button")
+            );
+        });
+        expect(onFieldLockRefused).toHaveBeenCalled();
+        expect(onClickCallback).not.toHaveBeenCalled();
+    });
 });

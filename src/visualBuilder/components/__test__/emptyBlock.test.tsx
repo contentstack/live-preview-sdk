@@ -85,6 +85,25 @@ describe("EmptyBlock", () => {
         });
     });
 
+    test("does not wait for a new instance when the lock is refused", async () => {
+        (visualBuilderPostMessage as any).send.mockResolvedValue({
+            fieldLockRefused: true,
+        });
+        const { getByTestId } = render(<EmptyBlock details={mockDetails} />);
+
+        fireEvent.click(getByTestId("visual-builder__empty-block-add-button"));
+
+        await waitFor(() => {
+            expect((visualBuilderPostMessage as any).send).toHaveBeenCalledWith(
+                VisualBuilderPostMessageEvents.ADD_INSTANCE,
+                expect.anything()
+            );
+        });
+        await Promise.resolve();
+        expect(observeParentAndFocusNewInstance).not.toHaveBeenCalled();
+        (visualBuilderPostMessage as any).send.mockReset();
+    });
+
     test("claims the field lock before adding, so a peer sees it", async () => {
         host = document.createElement("div");
         host.setAttribute("data-cslp", mockDetails.fieldMetadata.cslpValue);

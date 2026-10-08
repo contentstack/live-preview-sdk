@@ -18,6 +18,7 @@ export function generateAddInstanceButton({
     index,
     loading,
     onClick,
+    onFieldLockRefused,
     label,
 }: {
     fieldSchema: ISchemaFieldMap | undefined;
@@ -26,6 +27,7 @@ export function generateAddInstanceButton({
     index: number;
     loading: Signal<boolean>;
     onClick: (event: MouseEvent) => void;
+    onFieldLockRefused?: () => void;
     label?: string | undefined;
 }): HTMLButtonElement {
     const wrapper = document.createDocumentFragment();
@@ -37,6 +39,7 @@ export function generateAddInstanceButton({
             value={value}
             label={label}
             onClick={onClick}
+            onFieldLockRefused={onFieldLockRefused}
             fieldSchema={fieldSchema}
             fieldMetadata={fieldMetadata}
         />,

@@ -14,6 +14,7 @@ import visualBuilderPostMessage from "../visualBuilderPostMessage";
 import { VisualBuilderPostMessageEvents } from "../types/postMessage.types";
 import { singleLineFieldSchema } from "../../../__test__/data/fields";
 import { signal } from "@preact/signals";
+import { VisualBuilder } from "../..";
 
 Object.defineProperty(globalThis, "crypto", {
     value: {
@@ -478,6 +479,63 @@ describe("handleAddButtonsForMultiple", () => {
         afterEach(() => {
             document.getElementsByTagName("body")[0].innerHTML = "";
             vi.clearAllMocks();
+        });
+
+        describe("when the field lock is refused", () => {
+            const clickAddRefused = async () => {
+                vi.mocked(visualBuilderPostMessage!.send).mockResolvedValueOnce(
+                    { fieldLockRefused: true }
+                );
+                handleAddButtonsForMultiple(
+                    eventDetails,
+                    {
+                        editableElement: firstChild,
+                        visualBuilderContainer: visualBuilderContainer,
+                        resizeObserver: mockResizeObserver,
+                    },
+                    {
+                        fieldSchema: singleLineFieldSchema,
+                        expectedFieldData: [],
+                        disabled: false,
+                        label: undefined,
+                    }
+                );
+                (
+                    visualBuilderContainer.querySelector(
+                        `[data-testid="visual-builder-add-instance-button"]`
+                    ) as HTMLButtonElement
+                ).click();
+                await sleep(0);
+            };
+
+            afterEach(() => {
+                VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
+                    null;
+            });
+
+            test("deselects the field it was added from", async () => {
+                VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
+                    firstChild;
+
+                await clickAddRefused();
+
+                expect(
+                    VisualBuilder.VisualBuilderGlobalState.value
+                        .previousSelectedEditableDOM
+                ).toBeNull();
+            });
+
+            test("leaves a field selected since then alone", async () => {
+                VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
+                    secondChild;
+
+                await clickAddRefused();
+
+                expect(
+                    VisualBuilder.VisualBuilderGlobalState.value
+                        .previousSelectedEditableDOM
+                ).toBe(secondChild);
+            });
         });
 
         test("should send an add instance message to the parent", async () => {

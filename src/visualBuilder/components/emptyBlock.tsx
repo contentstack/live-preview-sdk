@@ -10,6 +10,7 @@ import { startCase, toLower } from "lodash-es";
 import { getDOMEditStack } from "../utils/getCsDataOfElement";
 import { isFieldBlockedByAutoDraft } from "../utils/fieldLockIndicator";
 import { DATA_CSLP_ATTR_SELECTOR } from "../utils/constants";
+import { isFieldLockRefused } from "../utils/fieldLockRefused";
 
 interface EmptyBlockProps {
     details: {
@@ -49,13 +50,15 @@ export function EmptyBlock(props: EmptyBlockProps): JSX.Element {
         }
 
         try {
-            await visualBuilderPostMessage?.send(
+            const response = await visualBuilderPostMessage?.send(
                 VisualBuilderPostMessageEvents.ADD_INSTANCE,
                 {
                     fieldMetadata: details.fieldMetadata,
                     index: 0,
                 }
             );
+            // A collaborator holds the field: no instance is coming to focus.
+            if (isFieldLockRefused(response)) return;
         } catch (error) {
             console.error("Visual Builder: Failed to add instance", error);
             return;
