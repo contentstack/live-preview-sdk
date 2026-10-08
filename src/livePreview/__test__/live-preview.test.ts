@@ -607,7 +607,7 @@ describe("enable=false early return", () => {
         Config.replace({
             enable: false,
             mode: "builder",
-            stackDetails: { environment: "preview", apiKey: "test-key" },
+            stackDetails: { environment: "preview", apiKey: "YOUR_API_KEY" },
         });
 
         new LivePreview();
@@ -656,7 +656,7 @@ describe("LivePreview edit button condition", () => {
             enable: true,
             editButton: { enable: false },
             mode: "builder",
-            stackDetails: { environment: "preview", apiKey: "test-key" },
+            stackDetails: { environment: "preview", apiKey: "YOUR_API_KEY" },
         });
 
         new LivePreview();
@@ -745,7 +745,7 @@ describe("LivePreview init with partial stackDetails", () => {
         Config.replace({
             enable: true,
             stackDetails: {
-                apiKey: "partial-key",
+                apiKey: "YOUR_API_KEY",
             } as any,
         });
 

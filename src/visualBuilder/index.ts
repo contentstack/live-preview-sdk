@@ -14,14 +14,16 @@ import {
 import { generateStartEditingButton } from "./generators/generateStartEditingButton";
 
 import { addFocusOverlay } from "./generators/generateOverlay";
-import { getEntryIdentifiersInCurrentPage } from "./utils/getEntryIdentifiersInCurrentPage";
+import {
+    getEntryIdentifiersInCurrentPage,
+    getEntryIdentifiersSignature,
+} from "./utils/getEntryIdentifiersInCurrentPage";
 import { resolvePageContext } from "./utils/resolvePageContext";
 import visualBuilderPostMessage from "./utils/visualBuilderPostMessage";
+import { ignoreMissingListener } from "./utils/postMessageErrors";
 import { VisualBuilderPostMessageEvents } from "./utils/types/postMessage.types";
 
-import { setup } from "goober";
 import { debounce, isEqual } from "lodash-es";
-import { h } from "preact";
 import { extractDetailsFromCslp, isValidCslp } from "../cslp";
 import initUI from "./components";
 import { useDraftFieldsPostMessageEvent } from "./eventManager/useDraftFieldsPostMessageEvent";
@@ -213,49 +215,76 @@ export class VisualBuilder {
         });
     });
 
-    private mutationObserver = new MutationObserver(
-        debounce(
-            async () => {
-                updateFocussedStateOnMutation(
-                    this.overlayWrapper,
-                    this.focusedToolbar,
-                    this.visualBuilderContainer,
-                    this.resizeObserver
+    // null, not "": an empty page has signature "" and must still send once.
+    private lastEntriesSignature: string | null = null;
+
+    /** Tell the editor which entries are on the page, only when the set changed. */
+    private notifyEntriesInPageIfChanged = (): void => {
+        const entries = getEntryIdentifiersInCurrentPage();
+        const signature = getEntryIdentifiersSignature(
+            entries.entriesInCurrentPage
+        );
+        if (signature === this.lastEntriesSignature) return;
+        this.lastEntriesSignature = signature;
+        visualBuilderPostMessage
+            ?.send(
+                VisualBuilderPostMessageEvents.ENTRIES_IN_CURRENT_PAGE_CHANGED,
+                entries
+            )
+            .catch((error: unknown) => {
+                // Let the next observer pass resend a set the editor never got.
+                if (this.lastEntriesSignature === signature) {
+                    this.lastEntriesSignature = null;
+                }
+                ignoreMissingListener(
+                    VisualBuilderPostMessageEvents.ENTRIES_IN_CURRENT_PAGE_CHANGED
+                )(error);
+            });
+    };
+
+    private onBodyMutation = debounce(
+        async () => {
+            updateFocussedStateOnMutation(
+                this.overlayWrapper,
+                this.focusedToolbar,
+                this.visualBuilderContainer,
+                this.resizeObserver
+            );
+            this.notifyEntriesInPageIfChanged();
+
+            const emptyBlockParents = Array.from(
+                document.querySelectorAll(`.${VB_EmptyBlockParentClass}`)
+            );
+
+            const previousEmptyBlockParents = VisualBuilder
+                .VisualBuilderGlobalState.value
+                .previousEmptyBlockParents as Element[];
+
+            if (!isEqual(emptyBlockParents, previousEmptyBlockParents)) {
+                const noMoreEmptyBlockParent = previousEmptyBlockParents.filter(
+                    (x) => !emptyBlockParents.includes(x)
+                );
+                const newEmptyBlockParent = emptyBlockParents.filter(
+                    (x) => !previousEmptyBlockParents.includes(x)
                 );
 
-                const emptyBlockParents = Array.from(
-                    document.querySelectorAll(`.${VB_EmptyBlockParentClass}`)
-                );
+                removeEmptyBlocks(noMoreEmptyBlockParent);
+                await generateEmptyBlocks(newEmptyBlockParent);
 
-                const previousEmptyBlockParents = VisualBuilder
-                    .VisualBuilderGlobalState.value
-                    .previousEmptyBlockParents as Element[];
-
-                if (!isEqual(emptyBlockParents, previousEmptyBlockParents)) {
-                    const noMoreEmptyBlockParent =
-                        previousEmptyBlockParents.filter(
-                            (x) => !emptyBlockParents.includes(x)
-                        );
-                    const newEmptyBlockParent = emptyBlockParents.filter(
-                        (x) => !previousEmptyBlockParents.includes(x)
-                    );
-
-                    removeEmptyBlocks(noMoreEmptyBlockParent);
-                    await generateEmptyBlocks(newEmptyBlockParent);
-
-                    VisualBuilder.VisualBuilderGlobalState.value = {
-                        ...VisualBuilder.VisualBuilderGlobalState.value,
-                        previousEmptyBlockParents: emptyBlockParents,
-                    };
-                }
-                if (VisualBuilder.VisualBuilderGlobalState.value.variant && VisualBuilder.VisualBuilderGlobalState.value.highlightVariantFields) {
-                    debounceAddVariantFieldClass(VisualBuilder.VisualBuilderGlobalState.value.variant);
-                }
-            },
-            100,
-            { trailing: true }
-        )
+                VisualBuilder.VisualBuilderGlobalState.value = {
+                    ...VisualBuilder.VisualBuilderGlobalState.value,
+                    previousEmptyBlockParents: emptyBlockParents,
+                };
+            }
+            if (VisualBuilder.VisualBuilderGlobalState.value.variant && VisualBuilder.VisualBuilderGlobalState.value.highlightVariantFields) {
+                debounceAddVariantFieldClass(VisualBuilder.VisualBuilderGlobalState.value.variant);
+            }
+        },
+        100,
+        { trailing: true }
     );
+
+    private mutationObserver = new MutationObserver(this.onBodyMutation);
 
     private threadMutationObserver = new MutationObserver(
         debounce(() => {
@@ -293,9 +322,6 @@ export class VisualBuilder {
         initUI({
             resizeObserver: this.resizeObserver,
         });
-
-        // Initializing goober for css-in-js
-        setup(h);
 
         this.visualBuilderContainer = document.querySelector(
             ".visual-builder__container"
@@ -376,9 +402,13 @@ export class VisualBuilder {
                     useScrollToField();
                     useHighlightCommentIcon();
 
+                    // Frameworks reuse nodes and rewrite data-cslp in place (variant
+                    // switch, re-keyed lists), which childList alone never reports.
                     this.mutationObserver.observe(document.body, {
                         childList: true,
                         subtree: true,
+                        attributes: true,
+                        attributeFilter: ["data-cslp"],
                     });
 
                     getHighlightVariantFieldsStatus().then((result) => {
@@ -388,6 +418,7 @@ export class VisualBuilder {
                         VisualBuilderPostMessageEvents.GET_ALL_ENTRIES_IN_CURRENT_PAGE,
                         getEntryIdentifiersInCurrentPage
                     );
+                    this.notifyEntriesInPageIfChanged();
                     visualBuilderPostMessage?.send(
                         VisualBuilderPostMessageEvents.SEND_VARIANT_AND_LOCALE
                     );
@@ -452,6 +483,8 @@ export class VisualBuilder {
         // Disconnect observers
         this.resizeObserver.disconnect();
         this.mutationObserver.disconnect();
+        // disconnect() leaves a pending debounced pass that would still post to the editor.
+        this.onBodyMutation.cancel();
         this.threadMutationObserver.disconnect();
 
         // Clear global state

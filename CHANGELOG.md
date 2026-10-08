@@ -1,23 +1,150 @@
 # Changelog
 
-## [v4.4.5](https://github.com/contentstack/live-preview-sdk/compare/v4.4.4...v4.4.5)
+## [v4.5.3](https://github.com/contentstack/live-preview-sdk/compare/v4.5.2...v4.5.3)
 
-> 13 July 2026
+> 29 September 2026
 
 ### Fixes
 
+- fix(visual-builder): handle rejection when discussion highlights has no listener (Kirtesh Suthar - [#652](https://github.com/contentstack/live-preview-sdk/pull/652))
+
+### General Changes
+
+- Updated codeowners (Karan Bhavesh Gandhi - [#657](https://github.com/contentstack/live-preview-sdk/pull/657))
+
+### Fixes
+
+- fix(visual-builder): correct the documented rejection contract and cover the observer send (Kirtesh Suthar - [b78d266](https://github.com/contentstack/live-preview-sdk/commit/b78d2662f563f2261b02eea9a6b7088fc2485ee5))
+
+### Refactoring and Updates
+
+- refactor(visual-builder): warn on real send failures, stay silent on a missing listener (Kirtesh Suthar - [19f80f9](https://github.com/contentstack/live-preview-sdk/commit/19f80f9a69bd53ded3bf579d96ec6e36ad162904))
+
+### Changes to Test Assests
+
+- test(visual-builder): bind both send sites to the discriminating handler (Kirtesh Suthar - [dc4d8bf](https://github.com/contentstack/live-preview-sdk/commit/dc4d8bf3f2c102ca30479773435d95584a881e56))
+- test(visual-builder): pin the rejection value in the warning, and tidy spy lifecycles (Kirtesh Suthar - [de91b09](https://github.com/contentstack/live-preview-sdk/commit/de91b09de7d3f8d47252f9aa5fcfe1c6ada7b278))
+
+## [v4.5.2](https://github.com/contentstack/live-preview-sdk/compare/v4.5.1...v4.5.2)
+
+> 16 September 2026
+
+### Fixes
+
+- fix(release): restore build before publish and the alpha dist-tag (Kirtesh Suthar - [#650](https://github.com/contentstack/live-preview-sdk/pull/650))
+
+### General Changes
+
+- release: v4.5.2 (Kirtesh Suthar - [#651](https://github.com/contentstack/live-preview-sdk/pull/651))
+
+### Fixes
+
+- fix: update CDN version to 4.5.2 in README (Kirtesh Suthar - [514013d](https://github.com/contentstack/live-preview-sdk/commit/514013d8cf6cb2e6c65c0da11be39df1476a7444))
+- fix(release): publish prereleases under the alpha dist-tag (Kirtesh Suthar - [86f5187](https://github.com/contentstack/live-preview-sdk/commit/86f5187abd0a861bdd8a328f9cab04df926f5c0c))
+- fix(release): build on prepack so dist ships in the published package (Kirtesh Suthar - [76e6a9d](https://github.com/contentstack/live-preview-sdk/commit/76e6a9dc6748f15d459320ced52da95e403bb9bf))
+
+### Chores And Housekeeping
+
+- chore(ci): pin vitest-coverage-report-action to a commit sha (Kirtesh Suthar - [fd8e6af](https://github.com/contentstack/live-preview-sdk/commit/fd8e6af5a8b4b5c8cdd512955180b943616c0c26))
+
+## [v4.5.1](https://github.com/contentstack/live-preview-sdk/compare/v4.5.0...v4.5.1)
+
+> 15 September 2026
+
+### Fixes
+
+- fix(security): bump dompurify to patch XSS vulnerability (Hitesh Shetty - [#638](https://github.com/contentstack/live-preview-sdk/pull/638))
+- fix(edit-button): send the page the editor was on to the CMS (Kirtesh Suthar - [#635](https://github.com/contentstack/live-preview-sdk/pull/635))
+
+### Chores And Housekeeping
+
+- chore(release): v4.5.1 (Kirtesh Suthar - [#646](https://github.com/contentstack/live-preview-sdk/pull/646))
+- chore: sync develop_v4 with stage_v4 (Kirtesh Suthar - [#645](https://github.com/contentstack/live-preview-sdk/pull/645))
+- chore(tests): standardize api key placeholder values in specs (Hitesh Shetty - [#639](https://github.com/contentstack/live-preview-sdk/pull/639))
+
+### General Changes
+
+- release: v4.5.1 (Kirtesh Suthar - [#647](https://github.com/contentstack/live-preview-sdk/pull/647))
+- Develop v4 (Kirtesh Suthar - [#640](https://github.com/contentstack/live-preview-sdk/pull/640))
+
+### Fixes
+
+- fix: update CDN version to 4.5.1 in README (Kirtesh Suthar - [e93cc36](https://github.com/contentstack/live-preview-sdk/commit/e93cc36a182d084fed01b3ee5b3262a51fb159fd))
+
+### Chores And Housekeeping
+
+- chore: merge main into stage_v4 release branch (Kirtesh Suthar - [3d2e823](https://github.com/contentstack/live-preview-sdk/commit/3d2e8231f7e6cf21a8648d6435499f3773367510))
+- chore: merge stage_v4 into develop_v4 (Kirtesh Suthar - [e1dee0f](https://github.com/contentstack/live-preview-sdk/commit/e1dee0f33c15fbbeb9d7842ad70aba7610801524))
+- chore(deps): apply npm audit fix (hitesh-shetty-cstk - [ec144b9](https://github.com/contentstack/live-preview-sdk/commit/ec144b934935185f40efccfdcd09d4ac153222c8))
+
+### Refactoring and Updates
+
+- refactor(utils): one list for live preview's own query params (Kirtesh Suthar - [c179114](https://github.com/contentstack/live-preview-sdk/commit/c1791141dd7f22430f4f96d8070f4354dc9b641e))
+
+### General Changes
+
+- Update npm-publish.yml (Aravind Kumar - [60ce24f](https://github.com/contentstack/live-preview-sdk/commit/60ce24f4c53467294a9b52307337d670a404eec9))
+- Delete .github/workflows/npm-alpha-publish.yml (Aravind Kumar - [71a26ad](https://github.com/contentstack/live-preview-sdk/commit/71a26ad7dc3a9534c2513858a0fa574fd8940be4))
+- Update npm-publish.yml (Aravind Kumar - [89811da](https://github.com/contentstack/live-preview-sdk/commit/89811da4bf36528c30d2efc14c5d01594234a501))
+- Updated codeowners (Aravind Kumar - [4183387](https://github.com/contentstack/live-preview-sdk/commit/41833878124126b1cf74d92d8501f1d1eda1c06f))
+
+## [v4.5.0](https://github.com/contentstack/live-preview-sdk/compare/v4.4.5...v4.5.0)
+
+> 11 August 2026
+
+### New Features
+
+- feat(VB-2055): add isVisualEditorEditing helper (Karan Bhavesh Gandhi - [#629](https://github.com/contentstack/live-preview-sdk/pull/629))
+
+### Fixes
+
+- fix: isolate goober pragma from host app to prevent react-hot-toast crash (Hitesh Shetty - [#630](https://github.com/contentstack/live-preview-sdk/pull/630))
+- fix(VB-1797): match caret direction to text when inline editing (Karan Bhavesh Gandhi - [#620](https://github.com/contentstack/live-preview-sdk/pull/620))
+
+### General Changes
+
+- Release v4.5.0 (Karan Bhavesh Gandhi - [#632](https://github.com/contentstack/live-preview-sdk/pull/632))
+- develop to stage 6 aug release (Karan Bhavesh Gandhi - [#631](https://github.com/contentstack/live-preview-sdk/pull/631))
+
+### Fixes
+
+- fix(VB-1797): keep dir=auto working on the pseudo editable element (Karan Gandhi - [a06ad34](https://github.com/contentstack/live-preview-sdk/commit/a06ad3403106cad06d899034f76d2d9a180b7460))
+
+### Documentation Changes
+
+- docs: bump README CDN URL to 4.5.0 (Karan Gandhi - [76f5ca7](https://github.com/contentstack/live-preview-sdk/commit/76f5ca73387965c74b54bf032ea45a8d2ca1bf82))
+
+### General Changes
+
+- sca-scan.yml (Aravind Kumar - [9852a61](https://github.com/contentstack/live-preview-sdk/commit/9852a61b443e8fd75cef3fedf95f1a72b648b874))
+- sca-scan.yml (Aravind Kumar - [bf89762](https://github.com/contentstack/live-preview-sdk/commit/bf89762514dd27ac41f331e6f02aa3b3d5067ea2))
+- sca-scan.yml (Aravind Kumar - [0285857](https://github.com/contentstack/live-preview-sdk/commit/0285857239cadd075d42d09b2975d4e2e8f88f55))
+
+## [v4.4.5](https://github.com/contentstack/live-preview-sdk/compare/v4.4.4...v4.4.5)
+
+> 21 July 2026
+
+### Fixes
+
+- fix(security): bump dompurify to patch XSS and prototype pollution issues (Hitesh Shetty - [#622](https://github.com/contentstack/live-preview-sdk/pull/622))
 - fix(VB-1820): navigate on alt+click of in-iframe links instead of swallowing the click (Shivam Mishra - [#618](https://github.com/contentstack/live-preview-sdk/pull/618))
 - fix(visual-builder): keep overlayPropagation from piercing the SDK's own toolbar (Hitesh Shetty - [#617](https://github.com/contentstack/live-preview-sdk/pull/617))
 - fix(VP-2254): keep cursor visible over RTE links in Visual Builder (Shivam Mishra - [#616](https://github.com/contentstack/live-preview-sdk/pull/616))
 
+### Chores And Housekeeping
+
+- chore: update CODEOWNERS to visual-preview-developers (Hitesh Shetty - [#623](https://github.com/contentstack/live-preview-sdk/pull/623))
+
 ### General Changes
 
+- Release v4.4.5 (Hitesh Shetty - [#624](https://github.com/contentstack/live-preview-sdk/pull/624))
 - release: promote develop_v4 to stage_v4 (Hitesh Shetty - [#619](https://github.com/contentstack/live-preview-sdk/pull/619))
 
 ### Fixes
 
 - fix(VP-2254): keep cursor visible over RTE links in Visual Builder and patch npm audit vulnerabilities (shivamfl - [5650527](https://github.com/contentstack/live-preview-sdk/commit/5650527aa43edd6c4b9fcd00a3ea76329934b62a))
 - fix(VB-1820): restrict alt+click navigation to safe url schemes, fix leaked test spy (shivamfl - [f856b0a](https://github.com/contentstack/live-preview-sdk/commit/f856b0a52c5e6d7ee42bee04fe61e5f22abe0058))
+- fix: update CDN version to 4.4.5 in README (hitesh-shetty-cstk - [9494423](https://github.com/contentstack/live-preview-sdk/commit/9494423085222a2c6b69346631912129819d84ec))
 
 ### Refactoring and Updates
 
@@ -205,9 +332,17 @@
 - Merge origin/stage_v4 into stage_v4 — resolve version conflicts (4.3.0 → 4.4.0) (hitesh-shetty-cstk - [be798e3](https://github.com/contentstack/live-preview-sdk/commit/be798e30c2c82f57488407477482cd3e5273751f))
 - Merge pull request #565 from contentstack/develop_v4 (Karan Bhavesh Gandhi - [c8fc00d](https://github.com/contentstack/live-preview-sdk/commit/c8fc00ddf53681e2bd5c08ad6d61799b236728ca))
 
-## [v4.4.0](https://github.com/contentstack/live-preview-sdk/compare/v4.3.0...v4.4.0)
+## [v4.4.0](https://github.com/contentstack/live-preview-sdk/compare/v4.3.1...v4.4.0)
 
 > 6 April 2026
+
+### General Changes
+
+- Merge pull request #578 from contentstack/stage_v4 (Karan Bhavesh Gandhi - [7dbe992](https://github.com/contentstack/live-preview-sdk/commit/7dbe99233ad3920834147de9f67d63c8bd2895fc))
+
+## [v4.3.1](https://github.com/contentstack/live-preview-sdk/compare/v4.3.0...v4.3.1)
+
+> 2 April 2026
 
 ### New Features
 
@@ -252,7 +387,6 @@
 
 ### General Changes
 
-- Merge pull request #578 from contentstack/stage_v4 (Karan Bhavesh Gandhi - [7dbe992](https://github.com/contentstack/live-preview-sdk/commit/7dbe99233ad3920834147de9f67d63c8bd2895fc))
 - Merge pull request #576 from contentstack/develop_v4 (Karan Bhavesh Gandhi - [2501855](https://github.com/contentstack/live-preview-sdk/commit/25018553092688922b523e70ac60a6a0363cec15))
 - Merge pull request #577 from contentstack/VP-1133/purge-flag-4 (Karan Bhavesh Gandhi - [a621121](https://github.com/contentstack/live-preview-sdk/commit/a621121d15a2b518d75e39dbba996ba585439003))
 

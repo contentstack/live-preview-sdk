@@ -53,7 +53,7 @@ describe("handleInitData()", () => {
         const initData: Partial<IInitData> = {
             enable: true,
             stackDetails: {
-                apiKey: "bltanything",
+                apiKey: "YOUR_API_KEY",
                 environment: "",
             },
         };
@@ -64,7 +64,7 @@ describe("handleInitData()", () => {
             enable: true,
             cleanCslpOnProduction: true,
             stackDetails: {
-                apiKey: "bltanything",
+                apiKey: "YOUR_API_KEY",
                 environment: "",
                 contentTypeUid: "",
                 entryUid: "",
@@ -90,7 +90,7 @@ describe("handleInitData()", () => {
         const initData: Partial<IInitData> = {
             enable: true,
             stackDetails: {
-                apiKey: "bltanything",
+                apiKey: "YOUR_API_KEY",
                 environment: "",
             },
         };
@@ -103,7 +103,7 @@ describe("handleInitData()", () => {
         const initData: Partial<IInitData> = {
             enable: true,
             stackDetails: {
-                apiKey: "bltanything",
+                apiKey: "YOUR_API_KEY",
                 environment: "",
             },
             stackSdk: {
@@ -111,7 +111,7 @@ describe("handleInitData()", () => {
                     enable: true,
                 },
                 headers: {
-                    api_key: "bltanything",
+                    api_key: "YOUR_API_KEY",
                 },
                 environment: "",
                 cachePolicy: 1,
@@ -138,7 +138,7 @@ describe("handleInitData()", () => {
                 mode: "builder",
                 stackDetails: {
                     environment: "main",
-                    apiKey: "bltanything",
+                    apiKey: "YOUR_API_KEY",
                 },
             };
 
@@ -176,23 +176,23 @@ describe("handleInitData()", () => {
             const initData: Partial<IInitData> = {
                 enable: true,
                 stackDetails: {
-                    apiKey: "bltuserapikey",
+                    apiKey: "YOUR_API_KEY",
                 },
             };
 
             handleInitData(initData);
-            expect(config.stackDetails.apiKey).toBe("bltuserapikey");
+            expect(config.stackDetails.apiKey).toBe("YOUR_API_KEY");
 
             initData.stackSdk = {
                 live_preview: {},
                 headers: {
-                    api_key: "bltheaderapikey",
+                    api_key: "YOUR_HEADER_API_KEY",
                 },
                 environment: "dev",
             };
 
             handleInitData(initData);
-            expect(config.stackDetails.apiKey).toBe("bltuserapikey");
+            expect(config.stackDetails.apiKey).toBe("YOUR_API_KEY");
         });
 
         test("should reset api key if it is not passed", () => {
@@ -270,7 +270,7 @@ describe("handleInitData()", () => {
             const initData: Partial<IInitData> = {
                 enable: true,
                 stackDetails: {
-                    apiKey: "bltapikey",
+                    apiKey: "YOUR_API_KEY",
                 },
                 mode: "builder",
             };
@@ -294,7 +294,7 @@ describe("handleInitData()", () => {
             initData.stackSdk = {
                 live_preview: {},
                 headers: {
-                    api_key: "bltapikey",
+                    api_key: "YOUR_API_KEY",
                     branch: "sdkbranch",
                 },
                 environment: "dev",
@@ -311,7 +311,7 @@ describe("handleInitData()", () => {
                 stackSdk: {
                     live_preview: {},
                     headers: {
-                        api_key: "sdkbranch",
+                        api_key: "YOUR_API_KEY",
                         branch: "sdkbranch",
                     },
                     environment: "dev",

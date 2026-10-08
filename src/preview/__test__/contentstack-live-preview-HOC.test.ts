@@ -98,7 +98,7 @@ describe("Live Preview HOC init", () => {
             mode: "builder",
             stackDetails: {
                 environment: "development",
-                apiKey: "livePreviewApiKey123",
+                apiKey: "YOUR_API_KEY",
             },
         });
 
@@ -107,7 +107,8 @@ describe("Live Preview HOC init", () => {
         expect(visualBuilderPostMessageSpy).toHaveBeenCalledWith('init', { isSSR: true, href: 'http://localhost:3000/' });
         expect(visualBuilderPostMessageSpy).toHaveBeenCalledWith('send-variant-and-locale');
         expect(visualBuilderPostMessageSpy).toHaveBeenCalledWith('get-highlight-variant-fields-status');
-        expect(visualBuilderPostMessageSpy).toHaveBeenCalledTimes(3);
+        expect(visualBuilderPostMessageSpy).toHaveBeenCalledWith('entries-in-current-page-changed', { entriesInCurrentPage: [] });
+        expect(visualBuilderPostMessageSpy).toHaveBeenCalledTimes(4);
     });
 
     test("should return the existing live preview instance if it is already initialized", async () => {
@@ -171,13 +172,13 @@ describe("Live Preview HOC config", () => {
         const userConfig: Partial<IInitData> = {
             enable: true,
             stackDetails: {
-                apiKey: "livePreviewApiKey123",
+                apiKey: "YOUR_API_KEY",
             },
         };
 
         ContentstackLivePreview.init(userConfig);
 
-        expect(Config.get().stackDetails.apiKey).toBe("livePreviewApiKey123");
+        expect(Config.get().stackDetails.apiKey).toBe("YOUR_API_KEY");
     });
 
     test("should set the hash from the URL", async () => {
@@ -225,7 +226,7 @@ describe("Live Preview HOC config", () => {
         const userConfig: Partial<IInitData> = {
             enable: true,
             stackDetails: {
-                apiKey: "livePreviewApiKey123",
+                apiKey: "YOUR_API_KEY",
             },
         };
 
