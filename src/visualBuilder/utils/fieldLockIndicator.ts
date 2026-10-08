@@ -72,6 +72,8 @@ export const ENTRY_RESTRICTION_MESSAGES: Record<EntryEditRestriction, string> = 
         "This entry's content type was changed. Reload the entry to keep editing.",
     contentTypeDeleted:
         "This entry's content type was deleted. It can no longer be edited here.",
+    autoDraftDisabled:
+        "Auto-draft is disabled for this stack.",
     unlocalized:
         "This entry isn't localized in this language yet. Save it from the form to localize it, then edit here.",
     unsavedVariant:

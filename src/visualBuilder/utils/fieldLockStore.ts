@@ -33,6 +33,7 @@ export const ENTRY_EDIT_RESTRICTIONS = [
     "entryLocked",
     "contentTypeUpdated",
     "contentTypeDeleted",
+    "autoDraftDisabled",
     "unlocalized",
     "unsavedVariant",
 ] as const;
