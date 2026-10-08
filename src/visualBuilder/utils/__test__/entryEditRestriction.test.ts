@@ -290,4 +290,16 @@ describe("content type restrictions from the editor", () => {
         );
         expect(isFieldBlockedByAutoDraft(meta({ variant: "v1" }))).toBe(true);
     });
+
+    it("disables the field and says auto-draft is off for the stack", () => {
+        useEntryEditRestrictionUpdateEvent();
+        const handler = mockPostMessage.on.mock.calls[0][1] as any;
+
+        handler({ data: { ...scope, restriction: "autoDraftDisabled" } });
+
+        expect(getEntryEditRestrictionForField(meta())).toBe(
+            "Auto-draft is disabled for this stack."
+        );
+        expect(isFieldBlockedByAutoDraft(meta())).toBe(true);
+    });
 });
