@@ -40,6 +40,8 @@ describe("EmptyBlock", () => {
     });
 
     afterEach(() => {
+        // A test's resolved value would otherwise answer `send` in the next one.
+        (visualBuilderPostMessage as any).send.mockReset();
         // RTL only removes containers it created, so this one would outlive the test
         host?.remove();
         host = null;
@@ -83,6 +85,24 @@ describe("EmptyBlock", () => {
             parentCslp: mockDetails.fieldMetadata.cslpValue,
             index: 0,
         });
+    });
+
+    test("does not wait for a new instance when the lock is refused", async () => {
+        (visualBuilderPostMessage as any).send.mockResolvedValue({
+            fieldLockRefused: true,
+        });
+        const { getByTestId } = render(<EmptyBlock details={mockDetails} />);
+
+        fireEvent.click(getByTestId("visual-builder__empty-block-add-button"));
+
+        await waitFor(() => {
+            expect((visualBuilderPostMessage as any).send).toHaveBeenCalledWith(
+                VisualBuilderPostMessageEvents.ADD_INSTANCE,
+                expect.anything()
+            );
+        });
+        await Promise.resolve();
+        expect(observeParentAndFocusNewInstance).not.toHaveBeenCalled();
     });
 
     test("claims the field lock before adding, so a peer sees it", async () => {

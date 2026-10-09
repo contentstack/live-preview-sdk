@@ -5,6 +5,7 @@ import {
 } from "../generators/generateAddInstanceButtons";
 import getChildrenDirection from "./getChildrenDirection";
 import { hideOverlay } from "../generators/generateOverlay";
+import { isFieldStillSelected } from "./fieldLockRefused";
 import { hideHoverOutline } from "../listeners/mouseHover";
 import { ISchemaFieldMap } from "./types/index.types";
 import { signal } from "@preact/signals";
@@ -105,6 +106,14 @@ export function handleAddButtonsForMultiple(
         });
     };
 
+    // No instance is coming, so only deselect, and only if the user has not
+    // moved to another field while the lock was requested.
+    const onFieldLockRefused = () => {
+        if (isFieldStillSelected(eventDetails.fieldMetadata.cslpValue)) {
+            hideOverlayAndHoverOutline();
+        }
+    };
+
     // this is a shared loading state between the
     // next and previous button for the duration
     // between the add-instance post message being
@@ -117,6 +126,7 @@ export function handleAddButtonsForMultiple(
         fieldMetadata: eventDetails.fieldMetadata,
         index: prevIndex,
         onClick: onMessageSent.bind(null, prevIndex),
+        onFieldLockRefused,
         loading,
         label,
     });
@@ -127,6 +137,7 @@ export function handleAddButtonsForMultiple(
         fieldMetadata: eventDetails.fieldMetadata,
         index: nextIndex,
         onClick: onMessageSent.bind(null, nextIndex),
+        onFieldLockRefused,
         loading,
         label,
     });

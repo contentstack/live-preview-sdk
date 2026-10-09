@@ -7,10 +7,13 @@ import { CslpData } from "../../cslp/types/cslp.types";
 import visualBuilderPostMessage from "../utils/visualBuilderPostMessage";
 import { VisualBuilderPostMessageEvents } from "../utils/types/postMessage.types";
 import { Signal } from "@preact/signals";
+import { isFieldLockRefused } from "../utils/fieldLockRefused";
 
 interface AddInstanceButtonProps {
     value: any;
     onClick: (event: MouseEvent) => void;
+    /** Called instead of `onClick` when a collaborator holds the field lock. */
+    onFieldLockRefused: () => void;
     label?: string | undefined;
     fieldSchema: ISchemaFieldMap | undefined;
     fieldMetadata: CslpData;
@@ -28,8 +31,9 @@ function AddInstanceButtonComponent(
 
     const onClick = async (event: MouseEvent) => {
         loading.value = true;
+        let response: unknown;
         try {
-            await visualBuilderPostMessage?.send(
+            response = await visualBuilderPostMessage?.send(
                 VisualBuilderPostMessageEvents.ADD_INSTANCE,
                 {
                     fieldMetadata,
@@ -40,6 +44,10 @@ function AddInstanceButtonComponent(
             console.error("Visual Builder: Failed to add instance", error);
         }
         loading.value = false;
+        if (isFieldLockRefused(response)) {
+            props.onFieldLockRefused();
+            return;
+        }
         props.onClick(event);
     };
 

@@ -31,6 +31,7 @@ import {
     clearAllEntryFieldLockInfo,
     setEntryEditRestriction,
 } from "../../utils/fieldLockStore";
+import { VisualBuilder } from "../..";
 
 vi.mock("../../utils/instanceHandlers", () => ({
     handleMoveInstance: vi.fn(),
@@ -483,6 +484,150 @@ describe("FieldToolbarComponent", () => {
         });
     });
 
+    describe("replace refused by a collaborator's field lock", () => {
+        const referenceFieldSchema = {
+            uid: "refs",
+            data_type: "reference",
+            display_name: "Refs",
+            reference_to: ["page"],
+            field_metadata: { ref_multiple: true },
+            multiple: true,
+        } as unknown as ISchemaFieldMap;
+        const cases = [
+            {
+                name: "file",
+                schema: mockMultipleFileFieldSchema,
+                event: VisualBuilderPostMessageEvents.OPEN_ASSET_MODAL,
+            },
+            {
+                name: "reference",
+                schema: referenceFieldSchema,
+                event: VisualBuilderPostMessageEvents.OPEN_REFERENCE_MODAL,
+            },
+        ];
+        const instanceMetadata: CslpData = {
+            ...mockMultipleFieldMetadata,
+            cslpValue: "page.entry.en-us.refs.0",
+            fieldPathWithIndex: "refs",
+            instance: { fieldPathWithIndex: "refs.0" },
+        };
+
+        const selectElementWithCslp = (cslp: string) => {
+            const element = document.createElement("div");
+            element.setAttribute("data-cslp", cslp);
+            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
+                element;
+        };
+
+        const clickReplace = async (
+            name: string,
+            schema: ISchemaFieldMap,
+            response: unknown,
+            fieldMetadata: CslpData = instanceMetadata
+        ) => {
+            vi.mocked(FieldSchemaMap.getFieldSchema).mockImplementation(() =>
+                Promise.resolve(schema)
+            );
+            vi.mocked(visualBuilderPostMessage!.send).mockImplementation(
+                (eventName: string) =>
+                    Promise.resolve(
+                        eventName ===
+                            VisualBuilderPostMessageEvents.OPEN_ASSET_MODAL ||
+                            eventName ===
+                                VisualBuilderPostMessageEvents.OPEN_REFERENCE_MODAL
+                            ? response
+                            : {}
+                    ) as any
+            );
+            const hideOverlay = vi.fn();
+            const { container } = render(
+                <FieldToolbarComponent
+                    eventDetails={{
+                        ...mockEventDetails,
+                        fieldMetadata,
+                    }}
+                    hideOverlay={hideOverlay}
+                />
+            );
+            const replaceButton = await findByTestId(
+                container,
+                `visual-builder-replace-${name}`
+            );
+            await act(async () => {
+                fireEvent.click(replaceButton);
+            });
+            return hideOverlay;
+        };
+
+        afterEach(() => {
+            VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
+                null;
+            // clearAllMocks keeps implementations; put back the factory's `send`.
+            vi.mocked(visualBuilderPostMessage!.send).mockReset();
+        });
+
+        test.each(cases)(
+            "deselects the $name field when the lock is refused",
+            async ({ name, schema, event }) => {
+                selectElementWithCslp(instanceMetadata.cslpValue);
+
+                const hideOverlay = await clickReplace(name, schema, {
+                    fieldLockRefused: true,
+                });
+
+                expect(visualBuilderPostMessage!.send).toHaveBeenCalledWith(
+                    event,
+                    expect.anything()
+                );
+                await waitFor(() => expect(hideOverlay).toHaveBeenCalled());
+            }
+        );
+
+        test.each(cases)(
+            "leaves a newer selection alone when the $name lock is refused",
+            async ({ name, schema }) => {
+                selectElementWithCslp("page.entry.en-us.title");
+
+                const hideOverlay = await clickReplace(name, schema, {
+                    fieldLockRefused: true,
+                });
+
+                await act(async () => {
+                    await new Promise((resolve) => setTimeout(resolve, 0));
+                });
+                expect(hideOverlay).not.toHaveBeenCalled();
+            }
+        );
+
+        test.each(cases)(
+            "keeps the $name field selected when the modal opens",
+            async ({ name, schema }) => {
+                selectElementWithCslp(instanceMetadata.cslpValue);
+
+                const hideOverlay = await clickReplace(name, schema, undefined);
+
+                await act(async () => {
+                    await new Promise((resolve) => setTimeout(resolve, 0));
+                });
+                expect(hideOverlay).not.toHaveBeenCalled();
+            }
+        );
+
+        test("sends the variant with the reference replace request", async () => {
+            selectElementWithCslp(instanceMetadata.cslpValue);
+
+            await clickReplace("reference", referenceFieldSchema, undefined, {
+                ...instanceMetadata,
+                variant: "variant_1",
+            });
+
+            expect(visualBuilderPostMessage!.send).toHaveBeenCalledWith(
+                VisualBuilderPostMessageEvents.OPEN_REFERENCE_MODAL,
+                expect.objectContaining({ variant: "variant_1" })
+            );
+        });
+    });
+
     describe("'Replace button' visibility for multiple file fields", () => {
         beforeEach(() => {
             // Override the mock for this describe block - resolve immediately
@@ -492,7 +637,7 @@ describe("FieldToolbarComponent", () => {
         });
 
         afterEach(() => {
-            // Restore will happen in outer afterEach via clearAllMocks
+            // Nothing to restore: the outer beforeEach resets getFieldSchema per test.
         });
 
         test("'replace button' is hidden for parent wrapper of multiple file field", async () => {
