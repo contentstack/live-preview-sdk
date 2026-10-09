@@ -27,7 +27,7 @@ export function generateAddInstanceButton({
     index: number;
     loading: Signal<boolean>;
     onClick: (event: MouseEvent) => void;
-    onFieldLockRefused?: () => void;
+    onFieldLockRefused: () => void;
     label?: string | undefined;
 }): HTMLButtonElement {
     const wrapper = document.createDocumentFragment();

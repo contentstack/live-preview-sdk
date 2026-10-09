@@ -38,6 +38,7 @@ describe("AddInstanceButtonComponent", () => {
                     fieldMetadata={{}}
                     index={0}
                     onClick={onClickCallback}
+                    onFieldLockRefused={vi.fn()}
                     label="Add instance"
                     // @ts-expect-error mocking signal
                     loading={{ value: false }}
@@ -66,6 +67,7 @@ describe("AddInstanceButtonComponent", () => {
                     fieldMetadata={{}}
                     index={0}
                     onClick={onClickCallback}
+                    onFieldLockRefused={vi.fn()}
                     label="Add instance"
                     // @ts-expect-error mocking signal
                     loading={{ value: false }}
@@ -99,6 +101,7 @@ describe("AddInstanceButtonComponent", () => {
                     fieldMetadata={{}}
                     index={0}
                     onClick={onClickCallback}
+                    onFieldLockRefused={vi.fn()}
                     label="Add instance"
                     // @ts-expect-error mocking signal
                     loading={{ value: false }}

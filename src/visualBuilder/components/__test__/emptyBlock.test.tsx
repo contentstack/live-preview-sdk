@@ -40,6 +40,8 @@ describe("EmptyBlock", () => {
     });
 
     afterEach(() => {
+        // A test's resolved value would otherwise answer `send` in the next one.
+        (visualBuilderPostMessage as any).send.mockReset();
         // RTL only removes containers it created, so this one would outlive the test
         host?.remove();
         host = null;
@@ -101,7 +103,6 @@ describe("EmptyBlock", () => {
         });
         await Promise.resolve();
         expect(observeParentAndFocusNewInstance).not.toHaveBeenCalled();
-        (visualBuilderPostMessage as any).send.mockReset();
     });
 
     test("claims the field lock before adding, so a peer sees it", async () => {

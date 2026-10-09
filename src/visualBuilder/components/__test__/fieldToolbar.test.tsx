@@ -522,7 +522,8 @@ describe("FieldToolbarComponent", () => {
         const clickReplace = async (
             name: string,
             schema: ISchemaFieldMap,
-            response: unknown
+            response: unknown,
+            fieldMetadata: CslpData = instanceMetadata
         ) => {
             vi.mocked(FieldSchemaMap.getFieldSchema).mockImplementation(() =>
                 Promise.resolve(schema)
@@ -543,7 +544,7 @@ describe("FieldToolbarComponent", () => {
                 <FieldToolbarComponent
                     eventDetails={{
                         ...mockEventDetails,
-                        fieldMetadata: instanceMetadata,
+                        fieldMetadata,
                     }}
                     hideOverlay={hideOverlay}
                 />
@@ -561,6 +562,8 @@ describe("FieldToolbarComponent", () => {
         afterEach(() => {
             VisualBuilder.VisualBuilderGlobalState.value.previousSelectedEditableDOM =
                 null;
+            // clearAllMocks keeps implementations; put back the factory's `send`.
+            vi.mocked(visualBuilderPostMessage!.send).mockReset();
         });
 
         test.each(cases)(
@@ -612,15 +615,16 @@ describe("FieldToolbarComponent", () => {
 
         test("sends the variant with the reference replace request", async () => {
             selectElementWithCslp(instanceMetadata.cslpValue);
-            instanceMetadata.variant = "variant_1";
 
-            await clickReplace("reference", referenceFieldSchema, undefined);
+            await clickReplace("reference", referenceFieldSchema, undefined, {
+                ...instanceMetadata,
+                variant: "variant_1",
+            });
 
             expect(visualBuilderPostMessage!.send).toHaveBeenCalledWith(
                 VisualBuilderPostMessageEvents.OPEN_REFERENCE_MODAL,
                 expect.objectContaining({ variant: "variant_1" })
             );
-            instanceMetadata.variant = undefined;
         });
     });
 
@@ -633,7 +637,7 @@ describe("FieldToolbarComponent", () => {
         });
 
         afterEach(() => {
-            // Restore will happen in outer afterEach via clearAllMocks
+            // Nothing to restore: the outer beforeEach resets getFieldSchema per test.
         });
 
         test("'replace button' is hidden for parent wrapper of multiple file field", async () => {

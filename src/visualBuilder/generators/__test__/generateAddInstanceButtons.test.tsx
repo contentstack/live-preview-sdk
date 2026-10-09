@@ -32,6 +32,7 @@ describe("generateAddInstanceButton", () => {
             // @ts-expect-error mock field metadata
             fieldMetadata: { hello: "world" },
             onClick: vi.fn(),
+            onFieldLockRefused: vi.fn(),
             // @ts-expect-error mocking preact signal
             loading: { value: false },
             index: 0,

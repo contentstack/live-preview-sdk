@@ -57,7 +57,9 @@ export function EmptyBlock(props: EmptyBlockProps): JSX.Element {
                     index: 0,
                 }
             );
-            // A collaborator holds the field: no instance is coming to focus.
+            // A collaborator holds the field: no instance is coming to focus. Nothing
+            // to release either: the refusal is the answer to the FOCUS_FIELD claim
+            // above, so the parent already holds nothing for this field.
             if (isFieldLockRefused(response)) return;
         } catch (error) {
             console.error("Visual Builder: Failed to add instance", error);

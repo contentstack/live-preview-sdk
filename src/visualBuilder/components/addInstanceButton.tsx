@@ -13,7 +13,7 @@ interface AddInstanceButtonProps {
     value: any;
     onClick: (event: MouseEvent) => void;
     /** Called instead of `onClick` when a collaborator holds the field lock. */
-    onFieldLockRefused?: () => void;
+    onFieldLockRefused: () => void;
     label?: string | undefined;
     fieldSchema: ISchemaFieldMap | undefined;
     fieldMetadata: CslpData;
@@ -45,7 +45,7 @@ function AddInstanceButtonComponent(
         }
         loading.value = false;
         if (isFieldLockRefused(response)) {
-            props.onFieldLockRefused?.();
+            props.onFieldLockRefused();
             return;
         }
         props.onClick(event);

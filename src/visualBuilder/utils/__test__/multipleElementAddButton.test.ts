@@ -643,6 +643,7 @@ describe("removeAddInstanceButtons", () => {
             fieldMetadata: { hello: "world" },
             value: "",
             onClick: vi.fn(),
+            onFieldLockRefused: vi.fn(),
             loading: signal(false),
         });
         nextButton = generateAddInstanceButton({
@@ -651,6 +652,7 @@ describe("removeAddInstanceButtons", () => {
             // @ts-expect-error mock field metadata
             fieldMetadata: { hello: "world" },
             onClick: vi.fn(),
+            onFieldLockRefused: vi.fn(),
             loading: signal(false),
         });
         overlayWrapper = document.createElement("div");
@@ -749,6 +751,7 @@ describe("removeAddInstanceButtons", () => {
                 // @ts-expect-error mock field metadata
                 fieldMetadata: { hello: "world" },
                 onClick: vi.fn(),
+                onFieldLockRefused: vi.fn(),
                 loading: signal(false),
             });
             visualBuilderContainer.appendChild(button);
@@ -785,6 +788,7 @@ describe("removeAddInstanceButtons", () => {
                 // @ts-expect-error mock field metadata
                 fieldMetadata: { hello: "world" },
                 onClick: vi.fn(),
+                onFieldLockRefused: vi.fn(),
                 loading: signal(false),
             });
             visualBuilderContainer.appendChild(button);
