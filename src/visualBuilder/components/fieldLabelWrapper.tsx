@@ -50,9 +50,21 @@ async function getContentTypeName(contentTypeUid: string) {
     }
 }
 
-async function getReferenceParentMap() {
+/**
+ * The parents of this field's entry.
+ *
+ * Names the entry rather than asking for the whole page: the builder resolved
+ * every entry on the page otherwise, one API call each (measured at 30 calls
+ * for a nav with roughly 24 links), while the label reads a single row. An
+ * older builder ignores the payload and still answers with the full map.
+ */
+async function getReferenceParentMap(fieldMetadata: CslpData) {
     try {
-        const result = await visualBuilderPostMessage?.send<ReferenceParentMap>(VisualBuilderPostMessageEvents.REFERENCE_MAP, {}) ?? {};
+        const result = await visualBuilderPostMessage?.send<ReferenceParentMap>(VisualBuilderPostMessageEvents.REFERENCE_MAP, {
+            entryUid: fieldMetadata.entry_uid,
+            contentTypeUid: fieldMetadata.content_type_uid,
+            locale: fieldMetadata.locale,
+        }) ?? {};
         return result;
     } catch(e) {
         console.warn("[getFieldLabelWrapper] Error getting reference parent map", e);
@@ -240,7 +252,7 @@ function FieldLabelWrapperComponent(
                 getContentTypeName(
                     props.fieldMetadata.content_type_uid
                 ),
-                getReferenceParentMap()
+                getReferenceParentMap(props.fieldMetadata)
             ]);
             const entryUid = props.fieldMetadata.entry_uid;
 
