@@ -390,11 +390,19 @@ function FieldLabelWrapperComponent(
             }
         };
 
-        try {
-            fetchData();
-        } catch(e) {
-            console.warn("[getFieldLabelWrapper] Error fetching field label data", e);
-        }
+        // Settle on the promise, not around the call. `fetchData` is async, so
+        // this try/catch never caught anything: a rejected send left
+        // `dataLoading` true forever, which is not just a stuck spinner but an
+        // uneditable field, because inline editing needs the field type this
+        // resolves. Fail the same way an unusable response already does.
+        fetchData().catch((e) => {
+            console.warn(
+                "[getFieldLabelWrapper] Error fetching field label data",
+                e
+            );
+            setDataLoading(false);
+            setError(true);
+        });
     }, [props]);
 
     const onParentPathClick = (cslp: string) => {
