@@ -263,7 +263,23 @@ function FieldToolbarComponent(
                 // propagation to be stopped, should ideally only attach onClick to fieldpath dropdown
                 e.preventDefault();
                 e.stopPropagation();
-                handleEdit(fieldMetadata);
+                // Multiple Select is edited as one value; a value click must not bind to its index
+                handleEdit(
+                    isMultipleSelect
+                        ? {
+                              ...fieldMetadata,
+                              instance: {
+                                  ...fieldMetadata.instance,
+                                  fieldPathWithIndex:
+                                      fieldMetadata.fieldPathWithIndex,
+                              },
+                              multipleFieldMetadata: {
+                                  ...fieldMetadata.multipleFieldMetadata,
+                                  index: -1,
+                              },
+                          }
+                        : fieldMetadata
+                );
             }}
             disabled={disableFieldActions}
         >

@@ -726,6 +726,43 @@ describe("FieldToolbarComponent", () => {
             }
         });
 
+        test("multiple select value click sends whole-field metadata on edit", async () => {
+            const valueMetadata: CslpData = {
+                ...singleMetadata,
+                multipleFieldMetadata: {
+                    index: 1,
+                    parentDetails: {
+                        parentPath: "badges",
+                        parentCslpValue: "entry.ct.en-us",
+                    },
+                },
+                instance: { fieldPathWithIndex: "badges.1" },
+            };
+            const { container } = await renderSelect(
+                selectSchema(true),
+                valueMetadata
+            );
+
+            fireEvent.click(
+                await findByTestId(container, EDIT_ID, {}, { timeout: 1000 })
+            );
+
+            expect(visualBuilderPostMessage?.send).toHaveBeenCalledWith(
+                VisualBuilderPostMessageEvents.OPEN_FIELD_EDIT_MODAL,
+                {
+                    fieldMetadata: {
+                        ...valueMetadata,
+                        instance: { fieldPathWithIndex: "badges" },
+                        multipleFieldMetadata: {
+                            ...valueMetadata.multipleFieldMetadata,
+                            index: -1,
+                        },
+                    },
+                }
+            );
+            expect(valueMetadata.instance.fieldPathWithIndex).toBe("badges.1");
+        });
+
         test("multiple select whole-field click shows edit without move or delete", async () => {
             const { container } = await renderSelect(selectSchema(true), {
                 ...singleMetadata,
