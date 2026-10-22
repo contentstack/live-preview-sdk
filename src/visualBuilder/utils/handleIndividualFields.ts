@@ -12,7 +12,7 @@ import {
 } from "./multipleElementAddButton";
 import { isFieldMultiple } from "./isFieldMultiple";
 import { handleInlineEditableField } from "./handleInlineEditableField";
-import { VisualBuilderEditContext } from "./types/index.types";
+import { FieldDataType, VisualBuilderEditContext } from "./types/index.types";
 import { isCustomFieldMultipleInstance } from "./isCustomFieldMultipleInstance";
 import { pasteAsPlainText } from "./pasteAsPlainText";
 import { removeFieldToolbar } from "../generators/generateToolbar";
@@ -70,7 +70,8 @@ export async function handleIndividualFields(
         fieldType
     );
 
-    if (isFieldMultiple(fieldSchema)) {
+    // A canvas add button patches an { $fieldValue } item into the Select's plain array
+    if (isFieldMultiple(fieldSchema) && fieldType !== FieldDataType.SELECT) {
         if (!isCustomFieldMultipleInstance(fieldSchema, fieldMetadata) && lastEditedField !== editableElement) {
             const addButtonLabel =
                 fieldSchema.data_type === "blocks"
