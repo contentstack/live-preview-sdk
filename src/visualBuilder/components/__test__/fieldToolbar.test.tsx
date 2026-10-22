@@ -630,4 +630,133 @@ describe("FieldToolbarComponent", () => {
             }
         });
     });
+
+    describe("Select field toolbar", () => {
+        const selectSchema = (multiple: boolean) =>
+            ({
+                data_type: "text",
+                display_name: "Badges",
+                uid: "badges",
+                display_type: "dropdown",
+                enum: {
+                    advanced: false,
+                    choices: [{ value: "a" }, { value: "b" }],
+                },
+                multiple,
+                mandatory: false,
+                non_localizable: false,
+                unique: false,
+                field_metadata: { description: "", default_value: "" },
+            }) as unknown as ISchemaFieldMap;
+
+        const EDIT_ID =
+            "visual-builder__focused-toolbar__multiple-field-toolbar__edit-button";
+        const PREFIX = "visual-builder__focused-toolbar__multiple-field-toolbar";
+
+        const singleMetadata: CslpData = {
+            ...mockMultipleFieldMetadata,
+            fieldPath: "badges",
+            fieldPathWithIndex: "badges",
+            multipleFieldMetadata: { index: -1, parentDetails: null },
+            instance: { fieldPathWithIndex: "badges" },
+        };
+
+        const renderSelect = async (
+            schema: ISchemaFieldMap,
+            fieldMetadata: CslpData
+        ) => {
+            vi.mocked(FieldSchemaMap.getFieldSchema).mockImplementation(() =>
+                Promise.resolve(schema)
+            );
+            const utils = render(
+                <FieldToolbarComponent
+                    eventDetails={{ ...mockEventDetails, fieldMetadata }}
+                    hideOverlay={vi.fn()}
+                />
+            );
+            await act(async () => {
+                await new Promise((r) => setTimeout(r, 0));
+            });
+            return utils;
+        };
+
+        test("single select shows edit button that opens the edit modal", async () => {
+            const { container } = await renderSelect(
+                selectSchema(false),
+                singleMetadata
+            );
+
+            const editButton = await findByTestId(
+                container,
+                EDIT_ID,
+                {},
+                { timeout: 1000 }
+            );
+            fireEvent.click(editButton);
+
+            expect(visualBuilderPostMessage?.send).toHaveBeenCalledWith(
+                VisualBuilderPostMessageEvents.OPEN_FIELD_EDIT_MODAL,
+                { fieldMetadata: singleMetadata }
+            );
+        });
+
+        test("multiple select value click shows edit without move or delete", async () => {
+            const { container } = await renderSelect(selectSchema(true), {
+                ...singleMetadata,
+                fieldPathWithIndex: "badges",
+                multipleFieldMetadata: {
+                    index: 1,
+                    parentDetails: {
+                        parentPath: "badges",
+                        parentCslpValue: "entry.ct.en-us",
+                    },
+                },
+                instance: { fieldPathWithIndex: "badges.1" },
+            });
+
+            expect(
+                await findByTestId(container, EDIT_ID, {}, { timeout: 1000 })
+            ).toBeInTheDocument();
+            for (const id of ["move-left", "move-right", "delete"]) {
+                expect(
+                    container.querySelector(
+                        `[data-testid="${PREFIX}__${id}-button"]`
+                    )
+                ).not.toBeInTheDocument();
+            }
+        });
+
+        test("multiple select whole-field click shows edit without move or delete", async () => {
+            const { container } = await renderSelect(selectSchema(true), {
+                ...singleMetadata,
+                instance: { fieldPathWithIndex: "badges" },
+            });
+
+            expect(
+                await findByTestId(container, EDIT_ID, {}, { timeout: 1000 })
+            ).toBeInTheDocument();
+            for (const id of ["move-left", "move-right", "delete"]) {
+                expect(
+                    container.querySelector(
+                        `[data-testid="${PREFIX}__${id}-button"]`
+                    )
+                ).not.toBeInTheDocument();
+            }
+        });
+
+        test("edit button is disabled when the select field is disabled", async () => {
+            vi.mocked(isFieldDisabled).mockReturnValue({
+                isDisabled: true,
+                reason: "",
+            } as ReturnType<typeof isFieldDisabled>);
+            const { container } = await renderSelect(
+                selectSchema(false),
+                singleMetadata
+            );
+
+            expect(
+                await findByTestId(container, EDIT_ID, {}, { timeout: 1000 })
+            ).toBeDisabled();
+        });
+    });
 });
