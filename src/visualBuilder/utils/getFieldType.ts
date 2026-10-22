@@ -36,11 +36,17 @@ export function getFieldType(fieldSchema: ISchemaFieldMap): FieldDataType {
         case "blocks": {
             return "modular_block";
         }
+        case "number": {
+            // Number dropdowns are Selects and edit through the modal, not inline
+            if (fieldSchema.enum) {
+                return FieldDataType.SELECT;
+            }
+            return FieldDataType.NUMBER;
+        }
         case "link":
         case "isodate":
         case "boolean":
         case "block":
-        case "number":
         case "reference":
         case "group":
         case "experience_container":
