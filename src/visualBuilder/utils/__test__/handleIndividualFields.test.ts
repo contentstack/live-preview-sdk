@@ -176,6 +176,23 @@ describe("handleIndividualFields", () => {
         expect(handleAddButtonsForMultiple).not.toHaveBeenCalled();
     });
 
+    it("still adds instance buttons for a multiple Taxonomy field", async () => {
+        const fieldSchema = {
+            data_type: "taxonomy",
+            multiple: true,
+            taxonomies: [{ taxonomy_uid: "colors" }],
+        };
+
+        (FieldSchemaMap.getFieldSchema as Mock).mockResolvedValue(fieldSchema);
+        (getFieldData as Mock).mockResolvedValue([{ term_uid: "red" }]);
+        (getFieldType as Mock).mockReturnValue(FieldDataType.TAXONOMY);
+        (isFieldDisabled as Mock).mockReturnValue({ isDisabled: false });
+
+        await handleIndividualFields(eventDetails, elements);
+
+        expect(handleAddButtonsForMultiple).toHaveBeenCalled();
+    });
+
     it("still adds instance buttons for a multiple single-line text", async () => {
         const fieldSchema = {
             data_type: "text",

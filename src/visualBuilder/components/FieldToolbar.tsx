@@ -151,7 +151,7 @@ function FieldToolbarComponent(
     let Icon = null;
     let fieldType = null;
     let isWholeMultipleField = false;
-    let isMultipleSelect = false;
+    let isEditedAsOneValue = false;
     const APP_LIST_MIN_WIDTH = 230;
 
     let disableFieldActions = false;
@@ -196,10 +196,12 @@ function FieldToolbarComponent(
         isCustomFieldWholeMultiple =
             fieldType === FieldDataType.CUSTOM_FIELD && isMultiple && isWholeMultipleField;
 
-        // A multiple Select edits as one field, so a value click gets the whole-field toolbar.
-        isMultipleSelect = fieldType === FieldDataType.SELECT && isMultiple;
+        // A multiple Select or Taxonomy edits as one value, so a value click gets the whole-field toolbar.
+        isEditedAsOneValue =
+            (fieldType === FieldDataType.SELECT && isMultiple) ||
+            fieldType === FieldDataType.TAXONOMY;
 
-        if (isCustomFieldWholeMultiple || isMultipleSelect) {
+        if (isCustomFieldWholeMultiple || isEditedAsOneValue) {
             isModalEditable = true;
         } else {
             isModalEditable = ALLOWED_MODAL_EDITABLE_FIELD.includes(fieldType) && !isWholeMultipleField;
@@ -263,9 +265,9 @@ function FieldToolbarComponent(
                 // propagation to be stopped, should ideally only attach onClick to fieldpath dropdown
                 e.preventDefault();
                 e.stopPropagation();
-                // Multiple Select is edited as one value; a value click must not bind to its index
+                // Multiple Select and Taxonomy are edited as one value; a value click must not bind to its index
                 handleEdit(
-                    isMultipleSelect
+                    isEditedAsOneValue
                         ? {
                               ...fieldMetadata,
                               instance: {
@@ -514,7 +516,7 @@ function FieldToolbarComponent(
                                 disabled={disableFieldActions}
                             />
                         ) : null}
-                        {isMultiple && !isWholeMultipleField && !isMultipleSelect ? (
+                        {isMultiple && !isWholeMultipleField && !isEditedAsOneValue ? (
                             <>
                                 <button
                                     data-testid="visual-builder__focused-toolbar__multiple-field-toolbar__move-left-button"

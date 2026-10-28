@@ -849,5 +849,95 @@ describe("FieldToolbarComponent", () => {
                 )
             ).toBeInTheDocument();
         });
+
+        const TAX_EDIT_ID =
+            "visual-builder__focused-toolbar__multiple-field-toolbar__edit-button";
+        const TAX_PREFIX =
+            "visual-builder__focused-toolbar__multiple-field-toolbar";
+
+        const renderTaxonomy = async (fieldMetadata: CslpData) => {
+            vi.mocked(FieldSchemaMap.getFieldSchema).mockImplementation(() =>
+                Promise.resolve(taxonomySchema)
+            );
+            const view = render(
+                <FieldToolbarComponent
+                    eventDetails={{ ...mockEventDetails, fieldMetadata }}
+                    hideOverlay={vi.fn()}
+                />
+            );
+            await act(async () => {
+                await new Promise((r) => setTimeout(r, 0));
+            });
+            return view;
+        };
+
+        const expectNoMoveOrDelete = (container: HTMLElement) => {
+            for (const id of ["move-left", "move-right", "delete"]) {
+                expect(
+                    container.querySelector(
+                        `[data-testid="${TAX_PREFIX}__${id}-button"]`
+                    )
+                ).not.toBeInTheDocument();
+            }
+        };
+
+        test("term click shows edit without move or delete", async () => {
+            const { container } = await renderTaxonomy(termMetadata);
+
+            expect(
+                await findByTestId(container, TAX_EDIT_ID, {}, { timeout: 1000 })
+            ).toBeInTheDocument();
+            expectNoMoveOrDelete(container);
+        });
+
+        test("whole-list click shows edit without move or delete", async () => {
+            const { container } = await renderTaxonomy({
+                ...termMetadata,
+                multipleFieldMetadata: { index: -1, parentDetails: null },
+                instance: { fieldPathWithIndex: "taxonomies" },
+            });
+
+            expect(
+                await findByTestId(container, TAX_EDIT_ID, {}, { timeout: 1000 })
+            ).toBeInTheDocument();
+            expectNoMoveOrDelete(container);
+        });
+
+        test("term click sends whole-field metadata on edit", async () => {
+            const { container } = await renderTaxonomy(termMetadata);
+
+            fireEvent.click(
+                await findByTestId(container, TAX_EDIT_ID, {}, { timeout: 1000 })
+            );
+
+            expect(visualBuilderPostMessage?.send).toHaveBeenCalledWith(
+                VisualBuilderPostMessageEvents.OPEN_FIELD_EDIT_MODAL,
+                {
+                    fieldMetadata: {
+                        ...termMetadata,
+                        instance: { fieldPathWithIndex: "taxonomies" },
+                        multipleFieldMetadata: {
+                            ...termMetadata.multipleFieldMetadata,
+                            index: -1,
+                        },
+                    },
+                }
+            );
+            expect(termMetadata.instance.fieldPathWithIndex).toBe(
+                "taxonomies.1"
+            );
+        });
+
+        test("edit button is disabled when the taxonomy field is disabled", async () => {
+            vi.mocked(isFieldDisabled).mockReturnValue({
+                isDisabled: true,
+                reason: "",
+            } as ReturnType<typeof isFieldDisabled>);
+            const { container } = await renderTaxonomy(termMetadata);
+
+            expect(
+                await findByTestId(container, TAX_EDIT_ID, {}, { timeout: 1000 })
+            ).toBeDisabled();
+        });
     });
 });
