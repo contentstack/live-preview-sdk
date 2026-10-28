@@ -796,4 +796,58 @@ describe("FieldToolbarComponent", () => {
             ).toBeDisabled();
         });
     });
+
+    describe("Taxonomy field toolbar", () => {
+        const taxonomySchema = {
+            data_type: "taxonomy",
+            display_name: "Taxonomies",
+            uid: "taxonomies",
+            multiple: true,
+            mandatory: false,
+            non_localizable: false,
+            unique: false,
+            taxonomies: [{ taxonomy_uid: "colors", non_localizable: false }],
+        } as unknown as ISchemaFieldMap;
+
+        const termMetadata: CslpData = {
+            ...mockMultipleFieldMetadata,
+            fieldPath: "taxonomies",
+            fieldPathWithIndex: "taxonomies",
+            multipleFieldMetadata: {
+                index: 1,
+                parentDetails: {
+                    parentPath: "taxonomies",
+                    parentCslpValue: "entry.ct.en-us",
+                },
+            },
+            instance: { fieldPathWithIndex: "taxonomies.1" },
+        };
+
+        test("renders the Edit button for a Taxonomy field", async () => {
+            vi.mocked(FieldSchemaMap.getFieldSchema).mockImplementation(() =>
+                Promise.resolve(taxonomySchema)
+            );
+            const { container } = render(
+                <FieldToolbarComponent
+                    eventDetails={{
+                        ...mockEventDetails,
+                        fieldMetadata: termMetadata,
+                    }}
+                    hideOverlay={vi.fn()}
+                />
+            );
+            await act(async () => {
+                await new Promise((r) => setTimeout(r, 0));
+            });
+
+            expect(
+                await findByTestId(
+                    container,
+                    "visual-builder__focused-toolbar__multiple-field-toolbar__edit-button",
+                    {},
+                    { timeout: 1000 }
+                )
+            ).toBeInTheDocument();
+        });
+    });
 });

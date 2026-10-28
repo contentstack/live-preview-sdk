@@ -46,6 +46,7 @@ export const ALLOWED_MODAL_EDITABLE_FIELD: FieldDataType[] = [
     FieldDataType.ISODATE,
     FieldDataType.URL,
     FieldDataType.SELECT,
+    FieldDataType.TAXONOMY,
 ];
 
 export const ALLOWED_REPLACE_FIELDS: FieldDataType[] = [
