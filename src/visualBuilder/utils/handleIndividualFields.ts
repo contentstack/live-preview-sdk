@@ -70,7 +70,8 @@ export async function handleIndividualFields(
         fieldType
     );
 
-    // A canvas add button patches an { $fieldValue } item into the Select's plain array
+    // Select skips add buttons: they would patch a { $fieldValue } item into its plain array.
+    // Taxonomy keeps them: the editor opens its term picker on add-instance.
     if (isFieldMultiple(fieldSchema) && fieldType !== FieldDataType.SELECT) {
         if (!isCustomFieldMultipleInstance(fieldSchema, fieldMetadata) && lastEditedField !== editableElement) {
             const addButtonLabel =

@@ -11,4 +11,5 @@ export const fieldIcons: Partial<Record<FieldDataType, React.FC>> = {
     isodate: EditIcon,
     url: EditIcon,
     select: EditIcon,
+    taxonomy: EditIcon,
 };
