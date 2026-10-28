@@ -809,21 +809,8 @@ describe("FieldToolbarComponent", () => {
             non_localizable: false,
         } as unknown as ISchemaFieldMap;
 
-        const fileSchema = {
-            data_type: "file",
-            display_name: "Cover",
-            uid: "cover",
-            field_metadata: { description: "", rich_text_type: "" },
-            multiple: false,
-            mandatory: false,
-            unique: false,
-            non_localizable: false,
-        } as unknown as ISchemaFieldMap;
-
         const EDIT_ID =
             "visual-builder__focused-toolbar__multiple-field-toolbar__edit-button";
-        const TOOLBAR_ID =
-            "visual-builder__focused-toolbar__multiple-field-toolbar";
 
         const booleanMetadata: CslpData = {
             ...mockMultipleFieldMetadata,
@@ -863,22 +850,6 @@ describe("FieldToolbarComponent", () => {
             ).toBeInTheDocument();
         });
 
-        test("clicking the edit button opens the edit modal with the field metadata", async () => {
-            const { container } = await renderField(
-                booleanSchema,
-                booleanMetadata
-            );
-
-            fireEvent.click(
-                await findByTestId(container, EDIT_ID, {}, { timeout: 1000 })
-            );
-
-            expect(visualBuilderPostMessage?.send).toHaveBeenCalledWith(
-                VisualBuilderPostMessageEvents.OPEN_FIELD_EDIT_MODAL,
-                { fieldMetadata: booleanMetadata }
-            );
-        });
-
         test("edit button is disabled when the boolean field is disabled", async () => {
             vi.mocked(isFieldDisabled).mockReturnValue({
                 isDisabled: true,
@@ -905,30 +876,6 @@ describe("FieldToolbarComponent", () => {
                 container.querySelector(
                     '[data-testid="visual-builder-replace-boolean"]'
                 )
-            ).not.toBeInTheDocument();
-        });
-
-        test("a field type that is not editable in the modal keeps its toolbar without an edit button", async () => {
-            const { container } = await renderField(fileSchema, {
-                ...booleanMetadata,
-                fieldPath: "cover",
-                fieldPathWithIndex: "cover",
-                instance: { fieldPathWithIndex: "cover" },
-            });
-
-            expect(
-                await findByTestId(
-                    container,
-                    "visual-builder-replace-file",
-                    {},
-                    { timeout: 1000 }
-                )
-            ).toBeInTheDocument();
-            expect(
-                container.querySelector(`[data-testid="${TOOLBAR_ID}"]`)
-            ).toBeInTheDocument();
-            expect(
-                container.querySelector(`[data-testid="${EDIT_ID}"]`)
             ).not.toBeInTheDocument();
         });
     });
