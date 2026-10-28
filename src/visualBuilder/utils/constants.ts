@@ -48,6 +48,7 @@ export const ALLOWED_MODAL_EDITABLE_FIELD: FieldDataType[] = [
     FieldDataType.SELECT,
     FieldDataType.TAXONOMY,
     FieldDataType.TAGS,
+    FieldDataType.BOOLEAN,
 ];
 
 export const ALLOWED_REPLACE_FIELDS: FieldDataType[] = [

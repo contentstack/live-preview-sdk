@@ -797,6 +797,142 @@ describe("FieldToolbarComponent", () => {
         });
     });
 
+    describe("Boolean field toolbar", () => {
+        const booleanSchema = {
+            data_type: "boolean",
+            display_name: "Featured",
+            uid: "featured",
+            field_metadata: { description: "", default_value: false },
+            multiple: false,
+            mandatory: false,
+            unique: false,
+            non_localizable: false,
+        } as unknown as ISchemaFieldMap;
+
+        const fileSchema = {
+            data_type: "file",
+            display_name: "Cover",
+            uid: "cover",
+            field_metadata: { description: "", rich_text_type: "" },
+            multiple: false,
+            mandatory: false,
+            unique: false,
+            non_localizable: false,
+        } as unknown as ISchemaFieldMap;
+
+        const EDIT_ID =
+            "visual-builder__focused-toolbar__multiple-field-toolbar__edit-button";
+        const TOOLBAR_ID =
+            "visual-builder__focused-toolbar__multiple-field-toolbar";
+
+        const booleanMetadata: CslpData = {
+            ...mockMultipleFieldMetadata,
+            fieldPath: "featured",
+            fieldPathWithIndex: "featured",
+            multipleFieldMetadata: { index: -1, parentDetails: null },
+            instance: { fieldPathWithIndex: "featured" },
+        };
+
+        const renderField = async (
+            schema: ISchemaFieldMap,
+            fieldMetadata: CslpData
+        ) => {
+            vi.mocked(FieldSchemaMap.getFieldSchema).mockImplementation(() =>
+                Promise.resolve(schema)
+            );
+            const utils = render(
+                <FieldToolbarComponent
+                    eventDetails={{ ...mockEventDetails, fieldMetadata }}
+                    hideOverlay={vi.fn()}
+                />
+            );
+            await act(async () => {
+                await new Promise((r) => setTimeout(r, 0));
+            });
+            return utils;
+        };
+
+        test("boolean field shows the edit button", async () => {
+            const { container } = await renderField(
+                booleanSchema,
+                booleanMetadata
+            );
+
+            expect(
+                await findByTestId(container, EDIT_ID, {}, { timeout: 1000 })
+            ).toBeInTheDocument();
+        });
+
+        test("clicking the edit button opens the edit modal with the field metadata", async () => {
+            const { container } = await renderField(
+                booleanSchema,
+                booleanMetadata
+            );
+
+            fireEvent.click(
+                await findByTestId(container, EDIT_ID, {}, { timeout: 1000 })
+            );
+
+            expect(visualBuilderPostMessage?.send).toHaveBeenCalledWith(
+                VisualBuilderPostMessageEvents.OPEN_FIELD_EDIT_MODAL,
+                { fieldMetadata: booleanMetadata }
+            );
+        });
+
+        test("edit button is disabled when the boolean field is disabled", async () => {
+            vi.mocked(isFieldDisabled).mockReturnValue({
+                isDisabled: true,
+                reason: "",
+            } as ReturnType<typeof isFieldDisabled>);
+            const { container } = await renderField(
+                booleanSchema,
+                booleanMetadata
+            );
+
+            expect(
+                await findByTestId(container, EDIT_ID, {}, { timeout: 1000 })
+            ).toBeDisabled();
+        });
+
+        test("boolean field has no replace button", async () => {
+            const { container } = await renderField(
+                booleanSchema,
+                booleanMetadata
+            );
+
+            await findByTestId(container, EDIT_ID, {}, { timeout: 1000 });
+            expect(
+                container.querySelector(
+                    '[data-testid="visual-builder-replace-boolean"]'
+                )
+            ).not.toBeInTheDocument();
+        });
+
+        test("a field type that is not editable in the modal keeps its toolbar without an edit button", async () => {
+            const { container } = await renderField(fileSchema, {
+                ...booleanMetadata,
+                fieldPath: "cover",
+                fieldPathWithIndex: "cover",
+                instance: { fieldPathWithIndex: "cover" },
+            });
+
+            expect(
+                await findByTestId(
+                    container,
+                    "visual-builder-replace-file",
+                    {},
+                    { timeout: 1000 }
+                )
+            ).toBeInTheDocument();
+            expect(
+                container.querySelector(`[data-testid="${TOOLBAR_ID}"]`)
+            ).toBeInTheDocument();
+            expect(
+                container.querySelector(`[data-testid="${EDIT_ID}"]`)
+            ).not.toBeInTheDocument();
+        });
+    });
+
     describe("Taxonomy field toolbar", () => {
         const taxonomySchema = {
             data_type: "taxonomy",
