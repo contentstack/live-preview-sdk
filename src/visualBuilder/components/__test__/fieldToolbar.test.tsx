@@ -823,33 +823,6 @@ describe("FieldToolbarComponent", () => {
             instance: { fieldPathWithIndex: "taxonomies.1" },
         };
 
-        test("renders the Edit button for a Taxonomy field", async () => {
-            vi.mocked(FieldSchemaMap.getFieldSchema).mockImplementation(() =>
-                Promise.resolve(taxonomySchema)
-            );
-            const { container } = render(
-                <FieldToolbarComponent
-                    eventDetails={{
-                        ...mockEventDetails,
-                        fieldMetadata: termMetadata,
-                    }}
-                    hideOverlay={vi.fn()}
-                />
-            );
-            await act(async () => {
-                await new Promise((r) => setTimeout(r, 0));
-            });
-
-            expect(
-                await findByTestId(
-                    container,
-                    "visual-builder__focused-toolbar__multiple-field-toolbar__edit-button",
-                    {},
-                    { timeout: 1000 }
-                )
-            ).toBeInTheDocument();
-        });
-
         const TAX_EDIT_ID =
             "visual-builder__focused-toolbar__multiple-field-toolbar__edit-button";
         const TAX_PREFIX =
@@ -888,6 +861,49 @@ describe("FieldToolbarComponent", () => {
                 await findByTestId(container, TAX_EDIT_ID, {}, { timeout: 1000 })
             ).toBeInTheDocument();
             expectNoMoveOrDelete(container);
+        });
+
+        test("term click inside a modular block keeps the parent index on edit", async () => {
+            const blockTermMetadata: CslpData = {
+                ...termMetadata,
+                fieldPath: "blocks.section.taxonomies",
+                fieldPathWithIndex: "blocks.0.section.taxonomies",
+                multipleFieldMetadata: {
+                    index: 2,
+                    parentDetails: {
+                        parentPath: "blocks.0.section.taxonomies",
+                        parentCslpValue: "entry.ct.en-us",
+                    },
+                },
+                instance: {
+                    fieldPathWithIndex: "blocks.0.section.taxonomies.2",
+                },
+            };
+            const { container } = await renderTaxonomy(blockTermMetadata);
+
+            fireEvent.click(
+                await findByTestId(container, TAX_EDIT_ID, {}, { timeout: 1000 })
+            );
+
+            expect(visualBuilderPostMessage?.send).toHaveBeenCalledWith(
+                VisualBuilderPostMessageEvents.OPEN_FIELD_EDIT_MODAL,
+                {
+                    fieldMetadata: {
+                        ...blockTermMetadata,
+                        instance: {
+                            fieldPathWithIndex: "blocks.0.section.taxonomies",
+                        },
+                        multipleFieldMetadata: {
+                            ...blockTermMetadata.multipleFieldMetadata,
+                            index: -1,
+                        },
+                    },
+                }
+            );
+            expect(blockTermMetadata.instance.fieldPathWithIndex).toBe(
+                "blocks.0.section.taxonomies.2"
+            );
+            expect(blockTermMetadata.multipleFieldMetadata.index).toBe(2);
         });
 
         test("whole-list click shows edit without move or delete", async () => {

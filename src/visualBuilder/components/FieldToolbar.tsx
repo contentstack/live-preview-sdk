@@ -199,6 +199,7 @@ function FieldToolbarComponent(
 
         // A multiple Select or Taxonomy edits as one value, so a value click gets the whole-field toolbar.
         isMultipleSelect = fieldType === FieldDataType.SELECT && isMultiple;
+        // Taxonomy is always multiple, so unlike Select no isMultiple check is needed.
         isTaxonomyField = fieldType === FieldDataType.TAXONOMY;
 
         if (isCustomFieldWholeMultiple || isMultipleSelect || isTaxonomyField) {
