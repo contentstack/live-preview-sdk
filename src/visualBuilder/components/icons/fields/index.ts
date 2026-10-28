@@ -12,4 +12,5 @@ export const fieldIcons: Partial<Record<FieldDataType, React.FC>> = {
     url: EditIcon,
     select: EditIcon,
     taxonomy: EditIcon,
+    tags: EditIcon,
 };

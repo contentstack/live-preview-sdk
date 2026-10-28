@@ -436,6 +436,16 @@ describe("getFieldType", () => {
         expect(getFieldType(data)).toBe(FieldDataType.URL);
     });
 
+    test("should return tags if data_type is tags", () => {
+        const data = {
+            data_type: "tags",
+            uid: "tags",
+            display_name: "Tags",
+        } as unknown as ISchemaFieldMap;
+
+        expect(getFieldType(data)).toBe(FieldDataType.TAGS);
+    });
+
     test("should return empty string if it is not any of the above", () => {
         const data = {} as unknown as ISchemaFieldMap;
 
