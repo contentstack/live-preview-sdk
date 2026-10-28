@@ -151,7 +151,8 @@ function FieldToolbarComponent(
     let Icon = null;
     let fieldType = null;
     let isWholeMultipleField = false;
-    let isEditedAsOneValue = false;
+    let isMultipleSelect = false;
+    let isTaxonomyField = false;
     const APP_LIST_MIN_WIDTH = 230;
 
     let disableFieldActions = false;
@@ -197,11 +198,10 @@ function FieldToolbarComponent(
             fieldType === FieldDataType.CUSTOM_FIELD && isMultiple && isWholeMultipleField;
 
         // A multiple Select or Taxonomy edits as one value, so a value click gets the whole-field toolbar.
-        isEditedAsOneValue =
-            (fieldType === FieldDataType.SELECT && isMultiple) ||
-            fieldType === FieldDataType.TAXONOMY;
+        isMultipleSelect = fieldType === FieldDataType.SELECT && isMultiple;
+        isTaxonomyField = fieldType === FieldDataType.TAXONOMY;
 
-        if (isCustomFieldWholeMultiple || isEditedAsOneValue) {
+        if (isCustomFieldWholeMultiple || isMultipleSelect || isTaxonomyField) {
             isModalEditable = true;
         } else {
             isModalEditable = ALLOWED_MODAL_EDITABLE_FIELD.includes(fieldType) && !isWholeMultipleField;
@@ -267,7 +267,7 @@ function FieldToolbarComponent(
                 e.stopPropagation();
                 // Multiple Select and Taxonomy are edited as one value; a value click must not bind to its index
                 handleEdit(
-                    isEditedAsOneValue
+                    isMultipleSelect || isTaxonomyField
                         ? {
                               ...fieldMetadata,
                               instance: {
@@ -516,7 +516,7 @@ function FieldToolbarComponent(
                                 disabled={disableFieldActions}
                             />
                         ) : null}
-                        {isMultiple && !isWholeMultipleField && !isEditedAsOneValue ? (
+                        {isMultiple && !isWholeMultipleField && !isMultipleSelect && !isTaxonomyField ? (
                             <>
                                 <button
                                     data-testid="visual-builder__focused-toolbar__multiple-field-toolbar__move-left-button"
