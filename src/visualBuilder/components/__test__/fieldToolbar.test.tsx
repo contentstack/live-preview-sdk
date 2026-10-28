@@ -797,6 +797,89 @@ describe("FieldToolbarComponent", () => {
         });
     });
 
+    describe("Boolean field toolbar", () => {
+        const booleanSchema = {
+            data_type: "boolean",
+            display_name: "Featured",
+            uid: "featured",
+            field_metadata: { description: "", default_value: false },
+            multiple: false,
+            mandatory: false,
+            unique: false,
+            non_localizable: false,
+        } as unknown as ISchemaFieldMap;
+
+        const EDIT_ID =
+            "visual-builder__focused-toolbar__multiple-field-toolbar__edit-button";
+
+        const booleanMetadata: CslpData = {
+            ...mockMultipleFieldMetadata,
+            fieldPath: "featured",
+            fieldPathWithIndex: "featured",
+            multipleFieldMetadata: { index: -1, parentDetails: null },
+            instance: { fieldPathWithIndex: "featured" },
+        };
+
+        const renderField = async (
+            schema: ISchemaFieldMap,
+            fieldMetadata: CslpData
+        ) => {
+            vi.mocked(FieldSchemaMap.getFieldSchema).mockImplementation(() =>
+                Promise.resolve(schema)
+            );
+            const utils = render(
+                <FieldToolbarComponent
+                    eventDetails={{ ...mockEventDetails, fieldMetadata }}
+                    hideOverlay={vi.fn()}
+                />
+            );
+            await act(async () => {
+                await new Promise((r) => setTimeout(r, 0));
+            });
+            return utils;
+        };
+
+        test("boolean field shows the edit button", async () => {
+            const { container } = await renderField(
+                booleanSchema,
+                booleanMetadata
+            );
+
+            expect(
+                await findByTestId(container, EDIT_ID, {}, { timeout: 1000 })
+            ).toBeInTheDocument();
+        });
+
+        test("edit button is disabled when the boolean field is disabled", async () => {
+            vi.mocked(isFieldDisabled).mockReturnValue({
+                isDisabled: true,
+                reason: "",
+            } as ReturnType<typeof isFieldDisabled>);
+            const { container } = await renderField(
+                booleanSchema,
+                booleanMetadata
+            );
+
+            expect(
+                await findByTestId(container, EDIT_ID, {}, { timeout: 1000 })
+            ).toBeDisabled();
+        });
+
+        test("boolean field has no replace button", async () => {
+            const { container } = await renderField(
+                booleanSchema,
+                booleanMetadata
+            );
+
+            await findByTestId(container, EDIT_ID, {}, { timeout: 1000 });
+            expect(
+                container.querySelector(
+                    '[data-testid="visual-builder-replace-boolean"]'
+                )
+            ).not.toBeInTheDocument();
+        });
+    });
+
     describe("Taxonomy field toolbar", () => {
         const taxonomySchema = {
             data_type: "taxonomy",
