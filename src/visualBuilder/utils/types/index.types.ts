@@ -55,6 +55,7 @@ export enum FieldDataType {
     FILE = "file",
     GLOBAL_FIELD = "global_field",
     TAXONOMY = "taxonomy",
+    TAGS = "tags",
 }
 
 export interface VisualBuilderEditContext {

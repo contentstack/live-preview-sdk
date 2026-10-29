@@ -111,6 +111,52 @@ describe("getFieldType", () => {
         expect(getFieldType(data)).toBe("select");
     });
 
+    test("returns select for a number-typed dropdown", () => {
+        const data = {
+            data_type: "number",
+            display_type: "dropdown",
+            enum: {
+                advanced: false,
+                choices: [{ value: 1 }, { value: 2 }],
+            },
+            field_metadata: {
+                description: "",
+                default_value: "",
+            },
+            uid: "",
+            display_name: "",
+            mandatory: false,
+            multiple: false,
+            non_localizable: false,
+            unique: false,
+        } as unknown as ISchemaFieldMap;
+
+        expect(getFieldType(data)).toBe(FieldDataType.SELECT);
+    });
+
+    test("returns select for a text dropdown", () => {
+        const data = {
+            data_type: "text",
+            display_type: "dropdown",
+            enum: {
+                advanced: false,
+                choices: [{ value: "a" }, { value: "b" }],
+            },
+            field_metadata: {
+                description: "",
+                default_value: "",
+            },
+            uid: "",
+            display_name: "",
+            mandatory: false,
+            multiple: false,
+            non_localizable: false,
+            unique: false,
+        } as unknown as ISchemaFieldMap;
+
+        expect(getFieldType(data)).toBe(FieldDataType.SELECT);
+    });
+
     test("should return singleline if it is singleline", () => {
         const data: ISingleLineTextBoxContentTypeSchema = {
             data_type: "text",
@@ -388,6 +434,16 @@ describe("getFieldType", () => {
         };
 
         expect(getFieldType(data)).toBe(FieldDataType.URL);
+    });
+
+    test("should return tags if data_type is tags", () => {
+        const data = {
+            data_type: "tags",
+            uid: "tags",
+            display_name: "Tags",
+        } as unknown as ISchemaFieldMap;
+
+        expect(getFieldType(data)).toBe(FieldDataType.TAGS);
     });
 
     test("should return empty string if it is not any of the above", () => {
