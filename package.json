@@ -24,7 +24,8 @@
     ],
     "sideEffects": false,
     "scripts": {
-        "build": "NODE_OPTIONS='--max-old-space-size=16384' tsup",
+            "postpack": "ggshield secret scan archive ./*.tgz",
+    "build": "NODE_OPTIONS='--max-old-space-size=16384' tsup",
         "test": "vitest --run",
         "test:watch": "vitest",
         "test:once": "vitest run",
