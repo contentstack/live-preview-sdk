@@ -12,6 +12,8 @@ import {
     IVisualBuilderInitEvent,
 } from "../types/types";
 import { generateStartEditingButton } from "./generators/generateStartEditingButton";
+import { askRelay } from "./panel/relayHello";
+import { dockPanel } from "./panel/dock";
 
 import { addFocusOverlay } from "./generators/generateOverlay";
 import { getEntryIdentifiersInCurrentPage } from "./utils/getEntryIdentifiersInCurrentPage";
@@ -412,10 +414,12 @@ export class VisualBuilder {
                     useVariantFieldsPostMessageEvent({ isSSR: config.ssr ?? false });
                 }
             })
-            .catch(() => {
-                if (!inIframe()) {
-                    generateStartEditingButton();
-                }
+            .catch(async () => {
+                if (inIframe()) return;
+                // Opened from a Visual Editor tab with Open in New Tab on: dock instead of Start Editing.
+                const panelUrl = await askRelay();
+                if (panelUrl) dockPanel(panelUrl);
+                else generateStartEditingButton();
             });
     }
 
