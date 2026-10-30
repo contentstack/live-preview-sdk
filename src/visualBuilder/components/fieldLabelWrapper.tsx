@@ -50,9 +50,15 @@ async function getContentTypeName(contentTypeUid: string) {
     }
 }
 
-async function getReferenceParentMap() {
+// Naming the hovered entry lets the editor answer without building the whole
+// map, e.g. at once for the page entry. Older editors ignore the payload.
+async function getReferenceParentMap(fieldMetadata: CslpData) {
     try {
-        const result = await visualBuilderPostMessage?.send<ReferenceParentMap>(VisualBuilderPostMessageEvents.REFERENCE_MAP, {}) ?? {};
+        const result = await visualBuilderPostMessage?.send<ReferenceParentMap>(VisualBuilderPostMessageEvents.REFERENCE_MAP, {
+            entry_uid: fieldMetadata.entry_uid,
+            content_type_uid: fieldMetadata.content_type_uid,
+            locale: fieldMetadata.locale,
+        }) ?? {};
         return result;
     } catch(e) {
         console.warn("[getFieldLabelWrapper] Error getting reference parent map", e);
@@ -240,7 +246,7 @@ function FieldLabelWrapperComponent(
                 getContentTypeName(
                     props.fieldMetadata.content_type_uid
                 ),
-                getReferenceParentMap()
+                getReferenceParentMap(props.fieldMetadata)
             ]);
             const entryUid = props.fieldMetadata.entry_uid;
 
