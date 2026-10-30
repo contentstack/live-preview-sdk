@@ -1,4 +1,5 @@
-const PANEL_WIDTH = "400px";
+// Visual Editor's DEFAULT_SIDEBAR_WIDTH (72px tab rail + 400px form), so the panel matches the framed editor.
+const PANEL_WIDTH = "472px";
 
 /** Docks the Visual Editor panel on the right and pushes the page aside so nothing is covered. */
 export function dockPanel(panelUrl: string): HTMLIFrameElement {

@@ -22,6 +22,13 @@ describe("dockPanel", () => {
         expect(panel.style.right).toBe("0px");
     });
 
+    test("is as wide as the side form in Visual Editor's framed editor", () => {
+        dockPanel(PANEL_URL);
+
+        // Visual Editor's DEFAULT_SIDEBAR_WIDTH: a 72px tab rail and 400px of form.
+        expect(panels()[0].style.width).toBe("472px");
+    });
+
     test("pushes the page aside by the panel's width instead of covering it", () => {
         dockPanel(PANEL_URL);
 
