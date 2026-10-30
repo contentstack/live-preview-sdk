@@ -3,6 +3,7 @@ import { waitFor } from "@testing-library/preact";
 import { VisualBuilder } from "../index";
 import Config from "../../configManager/configManager";
 import { askRelay } from "../panel/relayHello";
+import { connectPanel } from "../panel/connect";
 
 // Outside an iframe nothing answers init: the path that shows Start Editing today.
 vi.mock("../utils/visualBuilderPostMessage", () => ({
@@ -15,6 +16,7 @@ vi.mock("../utils/visualBuilderPostMessage", () => ({
     },
 }));
 vi.mock("../panel/relayHello", () => ({ askRelay: vi.fn() }));
+vi.mock("../panel/connect", () => ({ connectPanel: vi.fn() }));
 
 Object.defineProperty(globalThis, "crypto", {
     value: {
@@ -53,5 +55,23 @@ describe("Open in New Tab on the site", () => {
             expect(panel()?.getAttribute("src")).toBe(PANEL_URL)
         );
         expect(startEditing()).toBeNull();
+    });
+
+    test("starts connecting the panel it docked", async () => {
+        vi.mocked(askRelay).mockResolvedValue(PANEL_URL);
+
+        new VisualBuilder();
+
+        await waitFor(() => expect(connectPanel).toHaveBeenCalledWith(panel()));
+    });
+
+    test("connects nothing when it shows Start Editing", async () => {
+        vi.mocked(askRelay).mockResolvedValue(null);
+        vi.mocked(connectPanel).mockClear();
+
+        new VisualBuilder();
+
+        await waitFor(() => expect(startEditing()).toBeTruthy());
+        expect(connectPanel).not.toHaveBeenCalled();
     });
 });

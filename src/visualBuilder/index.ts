@@ -14,6 +14,7 @@ import {
 import { generateStartEditingButton } from "./generators/generateStartEditingButton";
 import { askRelay } from "./panel/relayHello";
 import { dockPanel } from "./panel/dock";
+import { connectPanel } from "./panel/connect";
 
 import { addFocusOverlay } from "./generators/generateOverlay";
 import { getEntryIdentifiersInCurrentPage } from "./utils/getEntryIdentifiersInCurrentPage";
@@ -418,7 +419,7 @@ export class VisualBuilder {
                 if (inIframe()) return;
                 // Opened from a Visual Editor tab with Open in New Tab on: dock instead of Start Editing.
                 const panelUrl = await askRelay();
-                if (panelUrl) dockPanel(panelUrl);
+                if (panelUrl) connectPanel(dockPanel(panelUrl));
                 else generateStartEditingButton();
             });
     }

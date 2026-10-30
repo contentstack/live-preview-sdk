@@ -1,8 +1,11 @@
 const PANEL_WIDTH = "400px";
 
 /** Docks the Visual Editor panel on the right and pushes the page aside so nothing is covered. */
-export function dockPanel(panelUrl: string): void {
-    if (document.querySelector("iframe.visual-builder__panel")) return;
+export function dockPanel(panelUrl: string): HTMLIFrameElement {
+    const docked = document.querySelector<HTMLIFrameElement>(
+        "iframe.visual-builder__panel"
+    );
+    if (docked) return docked;
 
     const panel = document.createElement("iframe");
     panel.className = "visual-builder__panel";
@@ -20,4 +23,5 @@ export function dockPanel(panelUrl: string): void {
     });
     document.body.appendChild(panel);
     document.documentElement.style.marginRight = PANEL_WIDTH;
+    return panel;
 }
