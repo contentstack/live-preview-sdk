@@ -1,4 +1,5 @@
 import { dockPanel } from "../dock";
+import { dockStyles } from "../dock.style";
 
 const PANEL_URL = "https://visual-builder.contentstack.com/panel/index.html";
 const panels = () =>
@@ -18,8 +19,15 @@ describe("dockPanel", () => {
         const [panel] = panels();
         expect(panel.src).toBe(PANEL_URL);
         expect(panel.title).toBeTruthy();
-        expect(panel.style.position).toBe("fixed");
-        expect(panel.style.right).toBe("0px");
+        expect(
+            panel.classList.contains(dockStyles()["visual-builder__panel"])
+        ).toBe(true);
+        const rules = [...document.querySelectorAll("style#_goober")]
+            .map((style) => style.textContent)
+            .join("")
+            .replace(/\s/g, "");
+        expect(rules).toContain("position:fixed");
+        expect(rules).toContain("right:0");
     });
 
     test("is as wide as the side form in Visual Editor's framed editor", () => {
