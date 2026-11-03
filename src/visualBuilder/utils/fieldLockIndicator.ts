@@ -13,11 +13,43 @@ import type { CslpData } from "../../cslp/types/cslp.types";
 type FieldMetadataForLock = Pick<
     CslpData,
     "entry_uid" | "locale" | "variant" | "fieldPath" | "fieldPathWithIndex"
->;
+> &
+    Partial<Pick<CslpData, "instance">>;
 
 /** A lock counts as a peer lock when it is locked and not the current user's. */
 function asPeerLock(lock: EntryFieldLock | undefined): EntryFieldLock | null {
     return lock?.isLocked && lock.isOwn !== true ? lock : null;
+}
+
+type FieldMetadataForContainerLock = Pick<
+    CslpData,
+    "entry_uid" | "locale" | "variant" | "fieldPathWithIndex"
+>;
+
+function getScopeLocks(fieldMetadata: FieldMetadataForContainerLock) {
+    return getEntryFieldLockInfo({
+        entryUid: fieldMetadata.entry_uid,
+        locale: fieldMetadata.locale,
+        ...(fieldMetadata.variant ? { variantUid: fieldMetadata.variant } : {}),
+    });
+}
+
+/** First peer lock on `path`, inside it, or on a container above it. */
+function findPeerLockAround(
+    scopeLocks: Record<string, EntryFieldLock>,
+    path: string
+): EntryFieldLock | null {
+    for (const lockedPath of Object.keys(scopeLocks)) {
+        if (
+            lockedPath === path ||
+            path.startsWith(lockedPath + ".") ||
+            lockedPath.startsWith(path + ".")
+        ) {
+            const peer = asPeerLock(scopeLocks[lockedPath]);
+            if (peer) return peer;
+        }
+    }
+    return null;
 }
 
 /**
@@ -29,38 +61,43 @@ function asPeerLock(lock: EntryFieldLock | undefined): EntryFieldLock | null {
  *
  * Container fields propagate the lock, mirroring the entry editor's
  * useContainerFieldLock: a peer lock on an ancestor disables its descendants
- * (parent locked => child locked) and a peer lock on a descendant disables the
- * ancestor's structural actions (child locked => container locked). Mirror keys
- * are cslp index-form, so the ancestor/descendant scan compares against
- * fieldPathWithIndex.
+ * and a peer lock on a descendant disables the ancestor. Mirror keys are cslp
+ * index-form. An instance element (`buckets.1`) is matched on its own path, so
+ * a peer inside a sibling instance leaves it free; structural actions use
+ * `getPeerLockForContainer` instead.
  */
 export function getPeerLockForField(
     fieldMetadata: FieldMetadataForLock
 ): EntryFieldLock | null {
-    const scopeLocks = getEntryFieldLockInfo({
-        entryUid: fieldMetadata.entry_uid,
-        locale: fieldMetadata.locale,
-        ...(fieldMetadata.variant ? { variantUid: fieldMetadata.variant } : {}),
-    });
-
-    const exact = asPeerLock(
-        scopeLocks[fieldMetadata.fieldPathWithIndex] ??
-            scopeLocks[fieldMetadata.fieldPath]
-    );
+    const scopeLocks = getScopeLocks(fieldMetadata);
+    const exact = asPeerLock(scopeLocks[fieldMetadata.fieldPath]);
     if (exact) return exact;
 
-    const target = fieldMetadata.fieldPathWithIndex || fieldMetadata.fieldPath;
-    if (!target) return null;
-    for (const lockedPath of Object.keys(scopeLocks)) {
-        if (
-            target.startsWith(lockedPath + ".") ||
-            lockedPath.startsWith(target + ".")
-        ) {
-            const peer = asPeerLock(scopeLocks[lockedPath]);
-            if (peer) return peer;
-        }
-    }
-    return null;
+    const target =
+        fieldMetadata.instance?.fieldPathWithIndex ||
+        fieldMetadata.fieldPathWithIndex ||
+        fieldMetadata.fieldPath;
+    return target ? findPeerLockAround(scopeLocks, target) : null;
+}
+
+/**
+ * The peer lock that blocks add / move / delete on this field's multiple
+ * container: one on the container, inside any of its instances, or above it.
+ * Same rule the parent enforces before it applies the change.
+ */
+export function getPeerLockForContainer(
+    fieldMetadata: FieldMetadataForContainerLock
+): EntryFieldLock | null {
+    if (!fieldMetadata.fieldPathWithIndex) return null;
+    return findPeerLockAround(
+        getScopeLocks(fieldMetadata),
+        fieldMetadata.fieldPathWithIndex
+    );
+}
+
+/** Tooltip / label text for a field a collaborator holds. */
+export function peerLockMessage(lock: EntryFieldLock): string {
+    return `This field is locked by ${lockAvatarInfo(lock).name || "another user"}`;
 }
 
 export const ENTRY_RESTRICTION_MESSAGES: Record<EntryEditRestriction, string> = {

@@ -1,4 +1,4 @@
-import React from "preact/compat";
+import React, { useEffect, useState } from "preact/compat";
 import classNames from "classnames";
 import { visualBuilderStyles } from "../visualBuilder.style";
 import { PlusIcon } from "./icons";
@@ -8,6 +8,11 @@ import visualBuilderPostMessage from "../utils/visualBuilderPostMessage";
 import { VisualBuilderPostMessageEvents } from "../utils/types/postMessage.types";
 import { Signal } from "@preact/signals";
 import { isFieldLockRefused } from "../utils/fieldLockRefused";
+import {
+    getPeerLockForContainer,
+    peerLockMessage,
+} from "../utils/fieldLockIndicator";
+import { subscribeEntryFieldLockInfo } from "../utils/fieldLockStore";
 
 interface AddInstanceButtonProps {
     value: any;
@@ -28,6 +33,15 @@ function AddInstanceButtonComponent(
     const fieldMetadata = props.fieldMetadata;
     const index = props.index;
     const loading = props.loading;
+    const [containerPeerLock, setContainerPeerLock] = useState(() =>
+        getPeerLockForContainer(fieldMetadata)
+    );
+    useEffect(() => {
+        const update = () =>
+            setContainerPeerLock(getPeerLockForContainer(fieldMetadata));
+        update();
+        return subscribeEntryFieldLockInfo(update);
+    }, [fieldMetadata]);
 
     const onClick = async (event: MouseEvent) => {
         loading.value = true;
@@ -71,12 +85,17 @@ function AddInstanceButtonComponent(
     const isMaxInstances = maxInstances
         ? props.value.length >= maxInstances
         : false;
-    const disabled = loading.value || isMaxInstances;
+    const disabled =
+        loading.value || isMaxInstances || Boolean(containerPeerLock);
 
     return (
         <button
             className={buttonClassName}
-            data-tooltip={"Add section"}
+            data-tooltip={
+                containerPeerLock
+                    ? peerLockMessage(containerPeerLock)
+                    : "Add section"
+            }
             data-testid="visual-builder-add-instance-button"
             disabled={disabled}
             title={

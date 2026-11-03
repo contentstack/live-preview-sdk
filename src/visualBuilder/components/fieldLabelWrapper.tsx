@@ -23,7 +23,7 @@ import { RESULT_TYPES } from "../utils/constants";
 import {
     getEntryEditRestrictionForField,
     getPeerLockForField,
-    lockAvatarInfo,
+    peerLockMessage,
 } from "../utils/fieldLockIndicator";
 import { subscribeEntryFieldLockInfo } from "../utils/fieldLockStore";
 
@@ -250,9 +250,7 @@ function FieldLabelWrapperComponent(
         if (!base.fieldDisabled && restrictionReason) {
             effectiveReason = restrictionReason;
         } else if (!base.fieldDisabled && peerLock) {
-            effectiveReason = `This field is locked by ${
-                lockAvatarInfo(peerLock).name || "another user"
-            }`;
+            effectiveReason = peerLockMessage(peerLock);
         }
         const usePlainDataTooltip =
             effectiveReason &&

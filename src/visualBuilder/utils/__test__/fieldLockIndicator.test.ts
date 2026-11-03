@@ -1,5 +1,10 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
-import { getPeerLockForField, lockAvatarInfo } from "../fieldLockIndicator";
+import {
+    getPeerLockForContainer,
+    getPeerLockForField,
+    lockAvatarInfo,
+    peerLockMessage,
+} from "../fieldLockIndicator";
 import {
     setEntryFieldLockInfo,
     clearAllEntryFieldLockInfo,
@@ -118,6 +123,62 @@ describe("getPeerLockForField", () => {
                 }) as never
             )
         ).toBeNull();
+    });
+});
+
+describe("instance elements", () => {
+    // An instance element's cslp ends in its index: fieldPathWithIndex is the container.
+    const instance = (index: number) =>
+        meta({
+            fieldPath: "section.buckets",
+            fieldPathWithIndex: "section.0.buckets",
+            instance: { fieldPathWithIndex: `section.0.buckets.${index}` },
+        }) as never;
+
+    it("leaves an instance free when a peer is inside a sibling instance", () => {
+        setEntryFieldLockInfo(scope, { "section.0.buckets.1.title": peer() });
+        expect(getPeerLockForField(instance(0))).toBeNull();
+        expect(getPeerLockForField(instance(1))?.user.uid).toBe("u1");
+    });
+
+    it("does not match instance 1 against a lock on instance 10", () => {
+        setEntryFieldLockInfo(scope, { "section.0.buckets.10": peer() });
+        expect(getPeerLockForField(instance(1))).toBeNull();
+    });
+
+    it("locks every instance when the container itself is locked", () => {
+        setEntryFieldLockInfo(scope, { "section.0.buckets": peer() });
+        expect(getPeerLockForField(instance(0))).not.toBeNull();
+    });
+
+    it("blocks structural actions for a peer anywhere in the container", () => {
+        setEntryFieldLockInfo(scope, { "section.0.buckets.1.title": peer() });
+        expect(getPeerLockForContainer(instance(0))?.user.uid).toBe("u1");
+    });
+
+    it("blocks structural actions for a peer lock above the container", () => {
+        setEntryFieldLockInfo(scope, { "section.0": peer() });
+        expect(getPeerLockForContainer(instance(0))).not.toBeNull();
+    });
+
+    it("ignores own locks and other containers for structural actions", () => {
+        setEntryFieldLockInfo(scope, {
+            "section.0.buckets.1": peer({ isOwn: true }),
+            "section.0.buckets_two.0": peer(),
+            "section.1.buckets.0": peer(),
+        });
+        expect(getPeerLockForContainer(instance(0))).toBeNull();
+    });
+});
+
+describe("peerLockMessage", () => {
+    it("names the holder, or another user", () => {
+        expect(peerLockMessage(peer() as never)).toBe(
+            "This field is locked by Ada Lovelace"
+        );
+        expect(peerLockMessage(peer({ user: { uid: "u1" } }) as never)).toBe(
+            "This field is locked by another user"
+        );
     });
 });
 
