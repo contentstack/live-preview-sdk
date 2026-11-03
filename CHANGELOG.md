@@ -14,6 +14,7 @@
 
 ### Fixes
 
+- fix(visual-builder): name the hovered entry in the reference map request (Kirtesh Suthar - [#672](https://github.com/contentstack/live-preview-sdk/pull/672))
 - fix(security): bump dompurify to patch DOM XSS advisory (Hitesh Shetty - [#660](https://github.com/contentstack/live-preview-sdk/pull/660))
 
 ### New Features
