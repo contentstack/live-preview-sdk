@@ -51,4 +51,79 @@ describe("dockPanel", () => {
 
         expect(panels()).toHaveLength(1);
     });
+
+    describe("the page's builder treats the dock as off the page", () => {
+        const handle = () =>
+            document.querySelector(".visual-builder__panel-resize-handle")!;
+        const pageEvents = () => {
+            const seen: string[] = [];
+            const root = document.documentElement;
+            const log = (e: Event) => e.target === root && seen.push(e.type);
+            root.addEventListener("mouseleave", log);
+            root.addEventListener("mouseenter", log);
+            return seen;
+        };
+        const moveOver = (target: Element) =>
+            target.dispatchEvent(
+                new MouseEvent("mousemove", { bubbles: true })
+            );
+        /** The page gets no events over the panel's frame, so the panel reports it. */
+        const panelSays = (source: Window | null = panels()[0].contentWindow) =>
+            window.dispatchEvent(
+                new MessageEvent("message", {
+                    data: {
+                        source: "cs-builder-panel",
+                        type: "pointer-over-panel",
+                    },
+                    source,
+                })
+            );
+
+        test("hides the page's cursor and outlines when the panel says the pointer is over it", () => {
+            dockPanel(PANEL_URL);
+            const seen = pageEvents();
+
+            panelSays();
+
+            expect(seen).toEqual(["mouseleave"]);
+        });
+
+        test("ignores that from any window but the panel", () => {
+            dockPanel(PANEL_URL);
+            const seen = pageEvents();
+
+            panelSays(window);
+
+            expect(seen).toEqual([]);
+        });
+
+        test("hides them from the resize handle on, which reaches over the page's edge", () => {
+            dockPanel(PANEL_URL);
+            const seen = pageEvents();
+
+            moveOver(handle());
+
+            expect(seen).toEqual(["mouseleave"]);
+        });
+
+        test("brings them back on the next move over the page", () => {
+            dockPanel(PANEL_URL);
+            const seen = pageEvents();
+            panelSays();
+
+            moveOver(document.body);
+
+            expect(seen).toEqual(["mouseleave", "mouseenter"]);
+        });
+
+        test("leaves moves within the page alone", () => {
+            dockPanel(PANEL_URL);
+            const seen = pageEvents();
+
+            moveOver(document.body);
+            moveOver(document.body);
+
+            expect(seen).toEqual([]);
+        });
+    });
 });

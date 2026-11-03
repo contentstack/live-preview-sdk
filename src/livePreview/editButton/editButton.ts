@@ -243,14 +243,11 @@ export function shouldRenderEditButton(): boolean {
         )
     ) {
         return false;
-    } else if (iFrameCheck) {
-        // case if inside visual builder
-        if (config.windowType === "builder") {
-            return false;
-        }
+    }
 
-        // case if independent site
-        return true;
+    // case if inside visual builder: framed, or docked beside this top-level page
+    if (config.windowType === "builder") {
+        return false;
     }
 
     // Priority list => 1. cslpEditButton query value 2.  Inside live preview  3. renderCslpButtonByDefault value selected by user

@@ -352,6 +352,15 @@ describe("shouldRenderEditButton", () => {
         vitest.spyOn(inIframe, "inIframe").mockReturnValue(true);
         expect(shouldRenderEditButton()).toBe(false);
     });
+
+    test("should return false on a top-level page whose docked Visual Editor panel runs the builder", () => {
+        vitest.spyOn(Config, "get").mockReturnValue({
+            editButton: { enable: true },
+            windowType: "builder",
+        });
+        vitest.spyOn(inIframe, "inIframe").mockReturnValue(false);
+        expect(shouldRenderEditButton()).toBe(false);
+    });
 });
 
 describe("isPointerWithinEditButtonSafeZone", () => {

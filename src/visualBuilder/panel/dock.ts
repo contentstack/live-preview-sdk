@@ -45,6 +45,29 @@ export function dockPanel(panelUrl: string): HTMLIFrameElement {
     handle.appendChild(element("div", "visual-builder__panel-resize-grip"));
     document.body.append(panel, handle);
 
+    // The builder hides its cursor and outlines when the pointer leaves the page, and the dock is not the page.
+    // Over the panel's cross-origin frame the page gets no events at all, so the panel reports it.
+    let offPage = false;
+    const setOffPage = (next: boolean) => {
+        if (offPage === next || !panel.isConnected) return;
+        offPage = next;
+        document.documentElement.dispatchEvent(
+            new MouseEvent(next ? "mouseleave" : "mouseenter")
+        );
+    };
+    document.addEventListener("mousemove", ({ target }) =>
+        setOffPage(handle.contains(target as Node))
+    );
+    window.addEventListener("message", ({ data, source }: MessageEvent) => {
+        if (
+            source === panel.contentWindow &&
+            data?.source === "cs-builder-panel" &&
+            data.type === "pointer-over-panel"
+        ) {
+            setOffPage(true);
+        }
+    });
+
     let width = 0;
     const resizeTo = (next: number) => {
         width = clamp(next);

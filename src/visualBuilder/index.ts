@@ -15,6 +15,7 @@ import { generateStartEditingButton } from "./generators/generateStartEditingBut
 import { askRelay } from "./panel/relayHello";
 import { dockPanel } from "./panel/dock";
 import { connectPanel } from "./panel/connect";
+import { introducePageToPanel } from "./panel/canvas";
 
 import { addFocusOverlay } from "./generators/generateOverlay";
 import { getEntryIdentifiersInCurrentPage } from "./utils/getEntryIdentifiersInCurrentPage";
@@ -307,17 +308,25 @@ export class VisualBuilder {
             return;
         }
 
-        const { entryUid, contentTypeUid } = resolvePageContext();
-        const initPayload: any = {
-            isSSR: config.ssr,
-            href: window.location.href,
-            entry_uid: entryUid,
-            content_type_uid: contentTypeUid,
+        const channel = visualBuilderPostMessage;
+        if (!channel) return;
+        const sendInit = () => {
+            const { entryUid, contentTypeUid } = resolvePageContext();
+            const initPayload: any = {
+                isSSR: config.ssr,
+                href: window.location.href,
+                entry_uid: entryUid,
+                content_type_uid: contentTypeUid,
+            };
+            return channel.send<IVisualBuilderInitEvent>("init", initPayload);
         };
 
-        visualBuilderPostMessage
-            ?.send<IVisualBuilderInitEvent>("init", initPayload)
-            .then((data) => {
+        // Sets up the builder on this page once; a reloaded docked panel only needs init again.
+        let builderSetUp = false;
+        const startBuilder = () =>
+            sendInit().then((data) => {
+                if (builderSetUp) return;
+                builderSetUp = true;
                 const {
                     windowType = ILivePreviewWindowType.BUILDER,
                     stackDetails,
@@ -414,14 +423,20 @@ export class VisualBuilder {
                     useDraftFieldsPostMessageEvent();
                     useVariantFieldsPostMessageEvent({ isSSR: config.ssr ?? false });
                 }
-            })
-            .catch(async () => {
-                if (inIframe()) return;
-                // Opened from a Visual Editor tab with Open in New Tab on: dock instead of Start Editing.
-                const panelUrl = await askRelay();
-                if (panelUrl) connectPanel(dockPanel(panelUrl));
-                else generateStartEditingButton();
             });
+
+        startBuilder().catch(async () => {
+            if (inIframe()) return;
+            // Opened from a Visual Editor tab with Open in New Tab on: dock instead of Start Editing.
+            const panelUrl = await askRelay();
+            if (!panelUrl) {
+                generateStartEditingButton();
+                return;
+            }
+            const panel = dockPanel(panelUrl);
+            introducePageToPanel(panel, startBuilder);
+            connectPanel(panel);
+        });
     }
 
     // TODO: write test cases
