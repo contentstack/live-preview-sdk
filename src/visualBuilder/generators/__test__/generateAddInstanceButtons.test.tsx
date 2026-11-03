@@ -1,8 +1,9 @@
-import React from "preact/compat";
+import React, { useEffect } from "preact/compat";
 import { singleLineFieldSchema } from "../../../__test__/data/fields";
 import {
     getAddInstanceButtons,
     generateAddInstanceButton,
+    removeAddInstanceButton,
 } from "../generateAddInstanceButtons";
 import AddInstanceButtonComponentActual from "../../components/addInstanceButton";
 
@@ -39,6 +40,36 @@ describe("generateAddInstanceButton", () => {
             label: "Add Instance",
         });
         expect(button).toBeInstanceOf(HTMLButtonElement);
+    });
+
+    test("removeAddInstanceButton unmounts the component so its effects clean up", async () => {
+        const mounted = vi.fn();
+        const cleanup = vi.fn();
+        AddInstanceButtonComponent.mockImplementationOnce(() => {
+            useEffect(() => {
+                mounted();
+                return cleanup;
+            }, []);
+            return <button>Add</button>;
+        });
+        const button = generateAddInstanceButton({
+            fieldSchema: singleLineFieldSchema,
+            value: "",
+            // @ts-expect-error mock field metadata
+            fieldMetadata: { hello: "world" },
+            onClick: vi.fn(),
+            onFieldLockRefused: vi.fn(),
+            // @ts-expect-error mocking preact signal
+            loading: { value: false },
+            index: 0,
+        });
+        document.body.appendChild(button);
+        await vi.waitFor(() => expect(mounted).toHaveBeenCalled());
+
+        removeAddInstanceButton(button);
+
+        expect(cleanup).toHaveBeenCalledTimes(1);
+        expect(button.isConnected).toBe(false);
     });
 
     test("should call the AddInstanceButtonComponent with the correct props", () => {

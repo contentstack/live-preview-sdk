@@ -47,7 +47,20 @@ export function generateAddInstanceButton({
     );
 
     const button = wrapper.children[0] as HTMLButtonElement;
+    renderRoots.set(button, wrapper);
     return button;
+}
+
+// The button's preact root, so removing the button can unmount it and run its
+// effect cleanups (the lock-info subscription).
+const renderRoots = new WeakMap<HTMLButtonElement, DocumentFragment>();
+
+/** Removes a button made by generateAddInstanceButton and unmounts its component. */
+export function removeAddInstanceButton(button: HTMLButtonElement): void {
+    const root = renderRoots.get(button);
+    renderRoots.delete(button);
+    if (root) render(null, root);
+    button.remove();
 }
 
 /**
