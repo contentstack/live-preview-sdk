@@ -151,6 +151,9 @@ function FieldToolbarComponent(
     let Icon = null;
     let fieldType = null;
     let isWholeMultipleField = false;
+    let isMultipleSelect = false;
+    let isTaxonomyField = false;
+    let isTagsField = false;
     const APP_LIST_MIN_WIDTH = 230;
 
     let disableFieldActions = false;
@@ -195,7 +198,14 @@ function FieldToolbarComponent(
         isCustomFieldWholeMultiple =
             fieldType === FieldDataType.CUSTOM_FIELD && isMultiple && isWholeMultipleField;
 
-        if (isCustomFieldWholeMultiple) {
+        // A multiple Select or Taxonomy edits as one value, so a value click gets the whole-field toolbar.
+        isMultipleSelect = fieldType === FieldDataType.SELECT && isMultiple;
+        // Taxonomy is always multiple, so unlike Select no isMultiple check is needed.
+        isTaxonomyField = fieldType === FieldDataType.TAXONOMY;
+        // Entry tags are a synthetic `multiple: false` field edited as one list, so key off the type.
+        isTagsField = fieldType === FieldDataType.TAGS;
+
+        if (isCustomFieldWholeMultiple || isMultipleSelect || isTaxonomyField || isTagsField) {
             isModalEditable = true;
         } else {
             isModalEditable = ALLOWED_MODAL_EDITABLE_FIELD.includes(fieldType) && !isWholeMultipleField;
@@ -259,7 +269,23 @@ function FieldToolbarComponent(
                 // propagation to be stopped, should ideally only attach onClick to fieldpath dropdown
                 e.preventDefault();
                 e.stopPropagation();
-                handleEdit(fieldMetadata);
+                // Multiple Select, Taxonomy and Tags are edited as one value; a value click must not bind to its index
+                handleEdit(
+                    isMultipleSelect || isTaxonomyField || isTagsField
+                        ? {
+                              ...fieldMetadata,
+                              instance: {
+                                  ...fieldMetadata.instance,
+                                  fieldPathWithIndex:
+                                      fieldMetadata.fieldPathWithIndex,
+                              },
+                              multipleFieldMetadata: {
+                                  ...fieldMetadata.multipleFieldMetadata,
+                                  index: -1,
+                              },
+                          }
+                        : fieldMetadata
+                );
             }}
             disabled={disableFieldActions}
         >
@@ -494,7 +520,7 @@ function FieldToolbarComponent(
                                 disabled={disableFieldActions}
                             />
                         ) : null}
-                        {isMultiple && !isWholeMultipleField ? (
+                        {isMultiple && !isWholeMultipleField && !isMultipleSelect && !isTaxonomyField ? (
                             <>
                                 <button
                                     data-testid="visual-builder__focused-toolbar__multiple-field-toolbar__move-left-button"

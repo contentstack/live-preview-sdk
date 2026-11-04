@@ -630,4 +630,413 @@ describe("FieldToolbarComponent", () => {
             }
         });
     });
+
+    describe("Select field toolbar", () => {
+        const selectSchema = (multiple: boolean) =>
+            ({
+                data_type: "text",
+                display_name: "Badges",
+                uid: "badges",
+                display_type: "dropdown",
+                enum: {
+                    advanced: false,
+                    choices: [{ value: "a" }, { value: "b" }],
+                },
+                multiple,
+                mandatory: false,
+                non_localizable: false,
+                unique: false,
+                field_metadata: { description: "", default_value: "" },
+            }) as unknown as ISchemaFieldMap;
+
+        const EDIT_ID =
+            "visual-builder__focused-toolbar__multiple-field-toolbar__edit-button";
+        const PREFIX = "visual-builder__focused-toolbar__multiple-field-toolbar";
+
+        const singleMetadata: CslpData = {
+            ...mockMultipleFieldMetadata,
+            fieldPath: "badges",
+            fieldPathWithIndex: "badges",
+            multipleFieldMetadata: { index: -1, parentDetails: null },
+            instance: { fieldPathWithIndex: "badges" },
+        };
+
+        const renderSelect = async (
+            schema: ISchemaFieldMap,
+            fieldMetadata: CslpData
+        ) => {
+            vi.mocked(FieldSchemaMap.getFieldSchema).mockImplementation(() =>
+                Promise.resolve(schema)
+            );
+            const utils = render(
+                <FieldToolbarComponent
+                    eventDetails={{ ...mockEventDetails, fieldMetadata }}
+                    hideOverlay={vi.fn()}
+                />
+            );
+            await act(async () => {
+                await new Promise((r) => setTimeout(r, 0));
+            });
+            return utils;
+        };
+
+        test("single select shows edit button that opens the edit modal", async () => {
+            const { container } = await renderSelect(
+                selectSchema(false),
+                singleMetadata
+            );
+
+            const editButton = await findByTestId(
+                container,
+                EDIT_ID,
+                {},
+                { timeout: 1000 }
+            );
+            fireEvent.click(editButton);
+
+            expect(visualBuilderPostMessage?.send).toHaveBeenCalledWith(
+                VisualBuilderPostMessageEvents.OPEN_FIELD_EDIT_MODAL,
+                { fieldMetadata: singleMetadata }
+            );
+        });
+
+        test("multiple select value click shows edit without move or delete", async () => {
+            const { container } = await renderSelect(selectSchema(true), {
+                ...singleMetadata,
+                fieldPathWithIndex: "badges",
+                multipleFieldMetadata: {
+                    index: 1,
+                    parentDetails: {
+                        parentPath: "badges",
+                        parentCslpValue: "entry.ct.en-us",
+                    },
+                },
+                instance: { fieldPathWithIndex: "badges.1" },
+            });
+
+            expect(
+                await findByTestId(container, EDIT_ID, {}, { timeout: 1000 })
+            ).toBeInTheDocument();
+            for (const id of ["move-left", "move-right", "delete"]) {
+                expect(
+                    container.querySelector(
+                        `[data-testid="${PREFIX}__${id}-button"]`
+                    )
+                ).not.toBeInTheDocument();
+            }
+        });
+
+        test("multiple select value click sends whole-field metadata on edit", async () => {
+            const valueMetadata: CslpData = {
+                ...singleMetadata,
+                multipleFieldMetadata: {
+                    index: 1,
+                    parentDetails: {
+                        parentPath: "badges",
+                        parentCslpValue: "entry.ct.en-us",
+                    },
+                },
+                instance: { fieldPathWithIndex: "badges.1" },
+            };
+            const { container } = await renderSelect(
+                selectSchema(true),
+                valueMetadata
+            );
+
+            fireEvent.click(
+                await findByTestId(container, EDIT_ID, {}, { timeout: 1000 })
+            );
+
+            expect(visualBuilderPostMessage?.send).toHaveBeenCalledWith(
+                VisualBuilderPostMessageEvents.OPEN_FIELD_EDIT_MODAL,
+                {
+                    fieldMetadata: {
+                        ...valueMetadata,
+                        instance: { fieldPathWithIndex: "badges" },
+                        multipleFieldMetadata: {
+                            ...valueMetadata.multipleFieldMetadata,
+                            index: -1,
+                        },
+                    },
+                }
+            );
+            expect(valueMetadata.instance.fieldPathWithIndex).toBe("badges.1");
+        });
+
+        test("multiple select whole-field click shows edit without move or delete", async () => {
+            const { container } = await renderSelect(selectSchema(true), {
+                ...singleMetadata,
+                instance: { fieldPathWithIndex: "badges" },
+            });
+
+            expect(
+                await findByTestId(container, EDIT_ID, {}, { timeout: 1000 })
+            ).toBeInTheDocument();
+            for (const id of ["move-left", "move-right", "delete"]) {
+                expect(
+                    container.querySelector(
+                        `[data-testid="${PREFIX}__${id}-button"]`
+                    )
+                ).not.toBeInTheDocument();
+            }
+        });
+
+        test("edit button is disabled when the select field is disabled", async () => {
+            vi.mocked(isFieldDisabled).mockReturnValue({
+                isDisabled: true,
+                reason: "",
+            } as ReturnType<typeof isFieldDisabled>);
+            const { container } = await renderSelect(
+                selectSchema(false),
+                singleMetadata
+            );
+
+            expect(
+                await findByTestId(container, EDIT_ID, {}, { timeout: 1000 })
+            ).toBeDisabled();
+        });
+    });
+
+    describe("Boolean field toolbar", () => {
+        const booleanSchema = {
+            data_type: "boolean",
+            display_name: "Featured",
+            uid: "featured",
+            field_metadata: { description: "", default_value: false },
+            multiple: false,
+            mandatory: false,
+            unique: false,
+            non_localizable: false,
+        } as unknown as ISchemaFieldMap;
+
+        const EDIT_ID =
+            "visual-builder__focused-toolbar__multiple-field-toolbar__edit-button";
+
+        const booleanMetadata: CslpData = {
+            ...mockMultipleFieldMetadata,
+            fieldPath: "featured",
+            fieldPathWithIndex: "featured",
+            multipleFieldMetadata: { index: -1, parentDetails: null },
+            instance: { fieldPathWithIndex: "featured" },
+        };
+
+        const renderField = async (
+            schema: ISchemaFieldMap,
+            fieldMetadata: CslpData
+        ) => {
+            vi.mocked(FieldSchemaMap.getFieldSchema).mockImplementation(() =>
+                Promise.resolve(schema)
+            );
+            const utils = render(
+                <FieldToolbarComponent
+                    eventDetails={{ ...mockEventDetails, fieldMetadata }}
+                    hideOverlay={vi.fn()}
+                />
+            );
+            await act(async () => {
+                await new Promise((r) => setTimeout(r, 0));
+            });
+            return utils;
+        };
+
+        test("boolean field shows the edit button", async () => {
+            const { container } = await renderField(
+                booleanSchema,
+                booleanMetadata
+            );
+
+            expect(
+                await findByTestId(container, EDIT_ID, {}, { timeout: 1000 })
+            ).toBeInTheDocument();
+        });
+
+        test("edit button is disabled when the boolean field is disabled", async () => {
+            vi.mocked(isFieldDisabled).mockReturnValue({
+                isDisabled: true,
+                reason: "",
+            } as ReturnType<typeof isFieldDisabled>);
+            const { container } = await renderField(
+                booleanSchema,
+                booleanMetadata
+            );
+
+            expect(
+                await findByTestId(container, EDIT_ID, {}, { timeout: 1000 })
+            ).toBeDisabled();
+        });
+
+        test("boolean field has no replace button", async () => {
+            const { container } = await renderField(
+                booleanSchema,
+                booleanMetadata
+            );
+
+            await findByTestId(container, EDIT_ID, {}, { timeout: 1000 });
+            expect(
+                container.querySelector(
+                    '[data-testid="visual-builder-replace-boolean"]'
+                )
+            ).not.toBeInTheDocument();
+        });
+    });
+
+    describe("Taxonomy field toolbar", () => {
+        const taxonomySchema = {
+            data_type: "taxonomy",
+            display_name: "Taxonomies",
+            uid: "taxonomies",
+            multiple: true,
+            mandatory: false,
+            non_localizable: false,
+            unique: false,
+            taxonomies: [{ taxonomy_uid: "colors", non_localizable: false }],
+        } as unknown as ISchemaFieldMap;
+
+        const termMetadata: CslpData = {
+            ...mockMultipleFieldMetadata,
+            fieldPath: "taxonomies",
+            fieldPathWithIndex: "taxonomies",
+            multipleFieldMetadata: {
+                index: 1,
+                parentDetails: {
+                    parentPath: "taxonomies",
+                    parentCslpValue: "entry.ct.en-us",
+                },
+            },
+            instance: { fieldPathWithIndex: "taxonomies.1" },
+        };
+
+        const TAX_EDIT_ID =
+            "visual-builder__focused-toolbar__multiple-field-toolbar__edit-button";
+        const TAX_PREFIX =
+            "visual-builder__focused-toolbar__multiple-field-toolbar";
+
+        const renderTaxonomy = async (fieldMetadata: CslpData) => {
+            vi.mocked(FieldSchemaMap.getFieldSchema).mockImplementation(() =>
+                Promise.resolve(taxonomySchema)
+            );
+            const view = render(
+                <FieldToolbarComponent
+                    eventDetails={{ ...mockEventDetails, fieldMetadata }}
+                    hideOverlay={vi.fn()}
+                />
+            );
+            await act(async () => {
+                await new Promise((r) => setTimeout(r, 0));
+            });
+            return view;
+        };
+
+        const expectNoMoveOrDelete = (container: HTMLElement) => {
+            for (const id of ["move-left", "move-right", "delete"]) {
+                expect(
+                    container.querySelector(
+                        `[data-testid="${TAX_PREFIX}__${id}-button"]`
+                    )
+                ).not.toBeInTheDocument();
+            }
+        };
+
+        test("term click shows edit without move or delete", async () => {
+            const { container } = await renderTaxonomy(termMetadata);
+
+            expect(
+                await findByTestId(container, TAX_EDIT_ID, {}, { timeout: 1000 })
+            ).toBeInTheDocument();
+            expectNoMoveOrDelete(container);
+        });
+
+        test("term click inside a modular block keeps the parent index on edit", async () => {
+            const blockTermMetadata: CslpData = {
+                ...termMetadata,
+                fieldPath: "blocks.section.taxonomies",
+                fieldPathWithIndex: "blocks.0.section.taxonomies",
+                multipleFieldMetadata: {
+                    index: 2,
+                    parentDetails: {
+                        parentPath: "blocks.0.section.taxonomies",
+                        parentCslpValue: "entry.ct.en-us",
+                    },
+                },
+                instance: {
+                    fieldPathWithIndex: "blocks.0.section.taxonomies.2",
+                },
+            };
+            const { container } = await renderTaxonomy(blockTermMetadata);
+
+            fireEvent.click(
+                await findByTestId(container, TAX_EDIT_ID, {}, { timeout: 1000 })
+            );
+
+            expect(visualBuilderPostMessage?.send).toHaveBeenCalledWith(
+                VisualBuilderPostMessageEvents.OPEN_FIELD_EDIT_MODAL,
+                {
+                    fieldMetadata: {
+                        ...blockTermMetadata,
+                        instance: {
+                            fieldPathWithIndex: "blocks.0.section.taxonomies",
+                        },
+                        multipleFieldMetadata: {
+                            ...blockTermMetadata.multipleFieldMetadata,
+                            index: -1,
+                        },
+                    },
+                }
+            );
+            expect(blockTermMetadata.instance.fieldPathWithIndex).toBe(
+                "blocks.0.section.taxonomies.2"
+            );
+            expect(blockTermMetadata.multipleFieldMetadata.index).toBe(2);
+        });
+
+        test("whole-list click shows edit without move or delete", async () => {
+            const { container } = await renderTaxonomy({
+                ...termMetadata,
+                multipleFieldMetadata: { index: -1, parentDetails: null },
+                instance: { fieldPathWithIndex: "taxonomies" },
+            });
+
+            expect(
+                await findByTestId(container, TAX_EDIT_ID, {}, { timeout: 1000 })
+            ).toBeInTheDocument();
+            expectNoMoveOrDelete(container);
+        });
+
+        test("term click sends whole-field metadata on edit", async () => {
+            const { container } = await renderTaxonomy(termMetadata);
+
+            fireEvent.click(
+                await findByTestId(container, TAX_EDIT_ID, {}, { timeout: 1000 })
+            );
+
+            expect(visualBuilderPostMessage?.send).toHaveBeenCalledWith(
+                VisualBuilderPostMessageEvents.OPEN_FIELD_EDIT_MODAL,
+                {
+                    fieldMetadata: {
+                        ...termMetadata,
+                        instance: { fieldPathWithIndex: "taxonomies" },
+                        multipleFieldMetadata: {
+                            ...termMetadata.multipleFieldMetadata,
+                            index: -1,
+                        },
+                    },
+                }
+            );
+            expect(termMetadata.instance.fieldPathWithIndex).toBe(
+                "taxonomies.1"
+            );
+        });
+
+        test("edit button is disabled when the taxonomy field is disabled", async () => {
+            vi.mocked(isFieldDisabled).mockReturnValue({
+                isDisabled: true,
+                reason: "",
+            } as ReturnType<typeof isFieldDisabled>);
+            const { container } = await renderTaxonomy(termMetadata);
+
+            expect(
+                await findByTestId(container, TAX_EDIT_ID, {}, { timeout: 1000 })
+            ).toBeDisabled();
+        });
+    });
 });
