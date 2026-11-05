@@ -139,9 +139,32 @@ describe('getVisualBuilderRedirectionUrl', () => {
             expect(compositionUidOf(getVisualBuilderRedirectionUrl())).toBe('landing');
         });
 
-        it('takes the template only from where the entry came from, so an entry the site set is never paired with a template another script announced', () => {
+        it('keeps the template another source announces for the same entry, so a site calling setPageContext without one still skips the template picker', () => {
+            Config.get.mockReturnValue(config({ entryUid: 'entry-1', contentTypeUid: 'blogs' }));
+            window.__CS_PAGE_CONTEXT__ = { entryUid: 'entry-1', contentTypeUid: 'blogs', compositionUid: 'promo' };
+
+            expect(compositionUidOf(getVisualBuilderRedirectionUrl())).toBe('promo');
+        });
+
+        it('never sends a template announced for a different entry, so the entry the site set is not paired with another page\'s template', () => {
             Config.get.mockReturnValue(config({ entryUid: 'entry-site', contentTypeUid: 'landing_page' }));
             window.__CS_PAGE_CONTEXT__ = { entryUid: 'entry-1', contentTypeUid: 'blogs', compositionUid: 'promo' };
+
+            expect(compositionUidOf(getVisualBuilderRedirectionUrl())).toBeNull();
+        });
+
+        it('sends no template when no source names an entry, so a template is never sent without the entry it belongs to', () => {
+            Config.get.mockReturnValue(config());
+            document.head.innerHTML = '<meta name="contentstack:composition-uid" content="promo">';
+
+            expect(compositionUidOf(getVisualBuilderRedirectionUrl())).toBeNull();
+        });
+
+        it('sends no template when the entry meta tag is empty, so the link never carries a template without an entry_uid', () => {
+            Config.get.mockReturnValue(config());
+            document.head.innerHTML =
+                '<meta name="contentstack:entry-uid" content="">' +
+                '<meta name="contentstack:composition-uid" content="promo">';
 
             expect(compositionUidOf(getVisualBuilderRedirectionUrl())).toBeNull();
         });

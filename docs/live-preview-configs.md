@@ -340,7 +340,7 @@ Place the call alongside your existing `addEditableTags` call — both reference
 | --------------------- | -------- | ------------------------------------------------- |
 | `context.entryUid`    | string   | UID of the entry the current page is rendering.   |
 | `context.contentTypeUid` | string | UID of that entry's content type.               |
-| `context.compositionUid` | string (optional) | The `composable_uid` of the Studio template that renders the page. When several Studio templates claim the content type, "Start Editing" opens this one instead of asking the author which to open. |
+| `context.compositionUid` | string (optional) | The `composable_uid` of the Studio template that renders the page. When several Studio templates claim the content type, "Start Editing" opens this one instead of asking the author which to open. It is used only when it names the same entry as the winning `entryUid` (see the order of precedence below), and it reaches the Visual Editor only through the "Start Editing" link, not the `init` handshake or the page-context post message. |
 
 **For example:**
 
@@ -356,7 +356,7 @@ ContentstackLivePreview.setPageContext({
 });
 ```
 
-> **Note:** When the page is loaded inside the Visual Builder/Live Preview iframe, the context is also sent to Contentstack via a post message. Outside an iframe, the context is only stored locally and used when generating the "Start Editing" redirection URL.
+> **Note:** When the page is loaded inside the Visual Builder/Live Preview iframe, the entry and content type are also sent to Contentstack via a post message. Outside an iframe, the context is only stored locally and used when generating the "Start Editing" redirection URL.
 
 ### Alternative ways to supply page context
 

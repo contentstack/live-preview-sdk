@@ -1,7 +1,11 @@
 import Config from "../../configManager/configManager";
 import type { IPageContext } from "../../types/types";
 
-type PageContextSource = Partial<IPageContext> | null | undefined;
+/** A source may lack any field; an absent meta tag reads as `undefined`. */
+type PageContextFields = {
+    [Field in keyof IPageContext]?: IPageContext[Field] | undefined;
+};
+type PageContextSource = PageContextFields | null | undefined;
 
 const PAGE_CONTEXT_META_NAMES: Record<keyof IPageContext, string> = {
     entryUid: "contentstack:entry-uid",
@@ -21,7 +25,7 @@ function readMetaTag(name: string): string | undefined {
 // - Next.js App Router's metadata/generateMetadata() and Nuxt's useHead() produce
 //   <meta> tags natively — there is no built-in hook for injecting window globals.
 // - Strict CSP policies (no unsafe-inline) block inline <script> tags, but never meta tags.
-function pageContextFromMetaTags(): Partial<IPageContext> {
+function pageContextFromMetaTags(): PageContextFields {
     return {
         entryUid: readMetaTag(PAGE_CONTEXT_META_NAMES.entryUid),
         contentTypeUid: readMetaTag(PAGE_CONTEXT_META_NAMES.contentTypeUid),
@@ -41,16 +45,22 @@ export function resolvePageContext(): {
         pageContextFromMetaTags(),
     ];
     const firstOf = (field: keyof IPageContext) =>
-        sources.find((source) => source?.[field] != null)?.[field] ??
-        undefined;
+        sources.find((source) => source?.[field] != null)?.[field] ?? undefined;
+
+    const entryUid = firstOf("entryUid");
+    // Only from a source naming the same entry: the site may set the entry
+    // while the Studio SDK announces its template, but a template for some
+    // other entry, or for no entry, must never be sent.
+    const templateSource = entryUid
+        ? sources.find(
+              (source) =>
+                  source?.entryUid === entryUid && source.compositionUid != null
+          )
+        : undefined;
 
     return {
-        entryUid: firstOf("entryUid"),
+        entryUid,
         contentTypeUid: firstOf("contentTypeUid"),
-        // Only from the source that named the entry: a template announced by
-        // one script must not be paired with an entry the site set elsewhere.
-        compositionUid:
-            sources.find((source) => source?.entryUid != null)
-                ?.compositionUid ?? undefined,
+        compositionUid: templateSource?.compositionUid ?? undefined,
     };
 }
