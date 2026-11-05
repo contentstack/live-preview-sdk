@@ -54,13 +54,14 @@ export function resolvePageContext(): {
     const templateSource = entryUid
         ? sources.find(
               (source) =>
-                  source?.entryUid === entryUid && source.compositionUid != null
+                  source?.entryUid === entryUid &&
+                  Boolean(source.compositionUid)
           )
         : undefined;
 
     return {
         entryUid,
         contentTypeUid: firstOf("contentTypeUid"),
-        compositionUid: templateSource?.compositionUid ?? undefined,
+        compositionUid: templateSource?.compositionUid,
     };
 }

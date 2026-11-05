@@ -578,6 +578,26 @@ describe("setPageContext", () => {
         );
     });
 
+    test("sends only the entry and content type in PAGE_CONTEXT, so the Studio template reaches the editor only through the Start Editing link", () => {
+        vi.spyOn(inIframeModule, "inIframe").mockReturnValue(true);
+        const sendSpy = vi
+            .spyOn(visualBuilderPostMessage as any, "send")
+            .mockResolvedValue(undefined);
+
+        ContentstackLivePreview.setPageContext({
+            ...context,
+            compositionUid: "promo",
+        });
+
+        expect(sendSpy).toHaveBeenCalledWith(
+            VisualBuilderPostMessageEvents.PAGE_CONTEXT,
+            {
+                entryUid: context.entryUid,
+                contentTypeUid: context.contentTypeUid,
+            }
+        );
+    });
+
     test("should not send PAGE_CONTEXT post message when not inside an iframe", () => {
         vi.spyOn(inIframeModule, "inIframe").mockReturnValue(false);
         const sendSpy = vi

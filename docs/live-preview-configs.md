@@ -369,6 +369,8 @@ If you cannot call `setPageContext()` directly (for example, when no JavaScript 
     window.__CS_PAGE_CONTEXT__ = {
         entryUid: "entry-123",
         contentTypeUid: "blog_post",
+        // Optional: the Studio template that renders the page.
+        compositionUid: "blog_redesign",
     };
     ```
 

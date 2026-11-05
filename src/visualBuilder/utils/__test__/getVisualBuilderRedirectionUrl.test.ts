@@ -160,6 +160,13 @@ describe('getVisualBuilderRedirectionUrl', () => {
             expect(compositionUidOf(getVisualBuilderRedirectionUrl())).toBeNull();
         });
 
+        it('skips an empty template from a higher source, so a site passing compositionUid: "" does not hide the template the Studio SDK announces', () => {
+            Config.get.mockReturnValue(config({ entryUid: 'entry-1', contentTypeUid: 'blogs', compositionUid: '' }));
+            window.__CS_PAGE_CONTEXT__ = { entryUid: 'entry-1', contentTypeUid: 'blogs', compositionUid: 'promo' };
+
+            expect(compositionUidOf(getVisualBuilderRedirectionUrl())).toBe('promo');
+        });
+
         it('sends no template when the entry meta tag is empty, so the link never carries a template without an entry_uid', () => {
             Config.get.mockReturnValue(config());
             document.head.innerHTML =
