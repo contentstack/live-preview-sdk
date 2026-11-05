@@ -108,4 +108,58 @@ describe('getVisualBuilderRedirectionUrl', () => {
         // Should not call extractDetailsFromCslp for invalid cslp
         expect(extractDetailsFromCslp).not.toHaveBeenCalled();
     });
+
+    describe('naming the Studio template the page renders', () => {
+        const config = (pageContext: unknown = null) => ({
+            stackDetails: { branch: 'main', apiKey: '12345', environment: 'production', locale: 'en-US' },
+            clientUrlParams: { url: 'https://app.example.com' },
+            pageContext,
+        });
+        const compositionUidOf = (url: URL) =>
+            new URLSearchParams(url.hash.split('?')[1]).get('composition_uid');
+
+        afterEach(() => {
+            delete window.__CS_PAGE_CONTEXT__;
+            document.head.innerHTML = '';
+        });
+
+        it('sends the template the page announced, so the Visual Editor opens it without asking which one', () => {
+            Config.get.mockReturnValue(config());
+            window.__CS_PAGE_CONTEXT__ = { entryUid: 'entry-1', contentTypeUid: 'blogs', compositionUid: 'promo' };
+
+            expect(compositionUidOf(getVisualBuilderRedirectionUrl())).toBe('promo');
+        });
+
+        it('sends the template passed to setPageContext ahead of the page global, the same order as the entry', () => {
+            Config.get.mockReturnValue(
+                config({ entryUid: 'entry-1', contentTypeUid: 'blogs', compositionUid: 'landing' }),
+            );
+            window.__CS_PAGE_CONTEXT__ = { entryUid: 'entry-1', contentTypeUid: 'blogs', compositionUid: 'promo' };
+
+            expect(compositionUidOf(getVisualBuilderRedirectionUrl())).toBe('landing');
+        });
+
+        it('takes the template only from where the entry came from, so an entry the site set is never paired with a template another script announced', () => {
+            Config.get.mockReturnValue(config({ entryUid: 'entry-site', contentTypeUid: 'landing_page' }));
+            window.__CS_PAGE_CONTEXT__ = { entryUid: 'entry-1', contentTypeUid: 'blogs', compositionUid: 'promo' };
+
+            expect(compositionUidOf(getVisualBuilderRedirectionUrl())).toBeNull();
+        });
+
+        it('reads the template from a meta tag too, for sites whose framework writes meta tags but no globals', () => {
+            Config.get.mockReturnValue(config());
+            document.head.innerHTML =
+                '<meta name="contentstack:entry-uid" content="entry-1">' +
+                '<meta name="contentstack:composition-uid" content="promo">';
+
+            expect(compositionUidOf(getVisualBuilderRedirectionUrl())).toBe('promo');
+        });
+
+        it('sends no template when the page names none, so the Visual Editor decides as before', () => {
+            Config.get.mockReturnValue(config());
+            window.__CS_PAGE_CONTEXT__ = { entryUid: 'entry-1', contentTypeUid: 'blogs' };
+
+            expect(compositionUidOf(getVisualBuilderRedirectionUrl())).toBeNull();
+        });
+    });
 });

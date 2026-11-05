@@ -3,6 +3,12 @@ import { extractDetailsFromCslp, isValidCslp } from "../../cslp";
 import { resolvePageContext } from "./resolvePageContext";
 
 /**
+ * Names the Studio template the page renders, so the Visual Editor opens that
+ * one when several claim the entry. The same parameter Studio sends.
+ */
+const COMPOSITION_UID_PARAM = "composition_uid";
+
+/**
  * Returns the redirection URL for the Visual builder.
  * @returns {URL} The redirection URL.
  */
@@ -37,13 +43,16 @@ export default function getVisualBuilderRedirectionUrl(): URL {
         searchParams.set("locale", localeToUse);
     }
 
-    const { entryUid, contentTypeUid } = resolvePageContext();
+    const { entryUid, contentTypeUid, compositionUid } = resolvePageContext();
 
     if (entryUid) {
         searchParams.set("entry_uid", entryUid);
     }
     if (contentTypeUid) {
         searchParams.set("content_type_uid", contentTypeUid);
+    }
+    if (compositionUid) {
+        searchParams.set(COMPOSITION_UID_PARAM, compositionUid);
     }
 
     const completeURL = new URL(
