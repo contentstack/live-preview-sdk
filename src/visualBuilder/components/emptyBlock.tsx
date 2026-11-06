@@ -24,9 +24,11 @@ export function EmptyBlock(props: EmptyBlockProps): JSX.Element {
 
     const blockParentName = details.fieldSchema.display_name;
 
-    async function sendAddInstanceEvent(
-        event: JSX.TargetedMouseEvent<HTMLButtonElement>
-    ) {
+    async function sendAddInstanceEvent({
+        currentTarget,
+    }: {
+        currentTarget: HTMLButtonElement;
+    }) {
         // A peer holds this field or its entry is restricted: the same no-op a click on a
         // blocked field gets in the click listener.
         if (isFieldBlockedByAutoDraft(details.fieldMetadata)) return;
@@ -36,7 +38,7 @@ export function EmptyBlock(props: EmptyBlockProps): JSX.Element {
         const fieldElement =
             document.querySelector(
                 `[${DATA_CSLP_ATTR_SELECTOR}="${details.fieldMetadata.cslpValue}"]`
-            ) ?? event.currentTarget;
+            ) ?? currentTarget;
 
         // The empty-state add never selects the field, so nothing else claims the
         // lock. Fire and forget: the parent does not await the claim either.
