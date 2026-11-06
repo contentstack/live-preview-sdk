@@ -33,6 +33,10 @@ export function dockStyles() {
                 opacity: 1;
             }
         `,
+        // A <button>, unlike Start Editing's link, so it needs the pointer set.
+        "visual-builder__panel-toggle": css`
+            cursor: pointer;
+        `,
         // The framed editor's side form resize bar: a full-height 2px line in venus lavender-purple P-500.
         "visual-builder__panel-resize-grip": css`
             position: absolute;

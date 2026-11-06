@@ -25,6 +25,13 @@ export function getEditButtonPosition(position: any): Position {
     }
 }
 
+/** The class that puts a button where the site placed Start Editing. */
+export function startEditingPositionClass(): string {
+    return positionStyles[
+        getEditButtonPosition(Config.get().editInVisualBuilderButton.position)
+    ];
+}
+
 function StartEditingButtonComponent(): JSX.Element | null {
     const config = Config.get()
     const enable = config.editInVisualBuilderButton.enable;

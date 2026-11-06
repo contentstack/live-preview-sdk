@@ -14,6 +14,20 @@ const handle = () =>
 const grip = () =>
     handle().querySelector<HTMLElement>(".visual-builder__panel-resize-grip")!;
 const pageMargin = () => document.documentElement.style.marginRight;
+/** Docks the panel with its side form open: only an open dock has a width to drag. */
+const dock = () => {
+    dockPanel(PANEL_URL);
+    window.dispatchEvent(
+        new MessageEvent("message", {
+            data: {
+                source: "cs-builder-panel",
+                type: "form-visibility",
+                open: true,
+            },
+            source: panel().contentWindow,
+        })
+    );
+};
 // Straddles the panel's left edge: half over the page, half over the panel's border.
 const handleRightFor = (panelWidth: number) => `${panelWidth - 4}px`;
 
@@ -63,7 +77,7 @@ describe("resizing the docked panel", () => {
     });
 
     test("puts a keyboard-reachable resize handle on the panel's left edge", () => {
-        dockPanel(PANEL_URL);
+        dock();
 
         expect(handle()).toBeTruthy();
         expect(handle().getAttribute("role")).toBe("separator");
@@ -73,7 +87,7 @@ describe("resizing the docked panel", () => {
     });
 
     test("is an invisible strip straddling the panel's left edge, with the resize cursor", () => {
-        dockPanel(PANEL_URL);
+        dock();
 
         expect(hasClass(handle(), "visual-builder__panel-resize-handle")).toBe(
             true
@@ -92,7 +106,7 @@ describe("resizing the docked panel", () => {
     });
 
     test("draws the framed editor's resize line: full height, 2px, brand purple, on the panel's edge", () => {
-        dockPanel(PANEL_URL);
+        dock();
 
         expect(hasClass(grip(), "visual-builder__panel-resize-grip")).toBe(
             true
@@ -108,7 +122,7 @@ describe("resizing the docked panel", () => {
     });
 
     test("shows the line while the edge is hovered or dragged", () => {
-        dockPanel(PANEL_URL);
+        dock();
 
         const rules = rulesOf("visual-builder__panel-resize-handle");
         expect(rules).toContain(":hover.visual-builder__panel-resize-grip");
@@ -119,7 +133,7 @@ describe("resizing the docked panel", () => {
     });
 
     test("keeps the line and the resize cursor for the whole drag, even off the strip", () => {
-        dockPanel(PANEL_URL);
+        dock();
         pointer("pointerdown", handle(), 900);
 
         expect(handle().classList.contains(DRAGGING)).toBe(true);
@@ -134,7 +148,7 @@ describe("resizing the docked panel", () => {
     });
 
     test("has no width transition, so the edge stays under the pointer", () => {
-        dockPanel(PANEL_URL);
+        dock();
 
         expect(hasClass(panel(), "visual-builder__panel")).toBe(true);
         expect(rulesOf("visual-builder__panel")).toContain("transition:none");
@@ -142,7 +156,7 @@ describe("resizing the docked panel", () => {
     });
 
     test("dragging left widens the panel and pushes the page aside by the same width", () => {
-        dockPanel(PANEL_URL);
+        dock();
 
         drag(-100);
 
@@ -152,7 +166,7 @@ describe("resizing the docked panel", () => {
     });
 
     test("dragging right narrows it, but never below the framed editor's side form width", () => {
-        dockPanel(PANEL_URL);
+        dock();
         drag(-100);
 
         drag(300);
@@ -162,7 +176,7 @@ describe("resizing the docked panel", () => {
     });
 
     test("never takes more than 60% of the window, so the page stays usable", () => {
-        dockPanel(PANEL_URL);
+        dock();
 
         drag(-2000);
 
@@ -170,7 +184,7 @@ describe("resizing the docked panel", () => {
     });
 
     test("applies a burst of moves once per animation frame, so dragging stays smooth", () => {
-        dockPanel(PANEL_URL);
+        dock();
         pointer("pointerdown", handle(), 900);
 
         pointer("pointermove", window, 880);
@@ -183,7 +197,7 @@ describe("resizing the docked panel", () => {
     });
 
     test("lets the pointer cross over the panel mid-drag, and gives it back afterwards", () => {
-        dockPanel(PANEL_URL);
+        dock();
 
         pointer("pointerdown", handle(), 900);
         // A cross-origin iframe would otherwise swallow the moves once the pointer is over it.
@@ -194,7 +208,7 @@ describe("resizing the docked panel", () => {
     });
 
     test("stops following the pointer once released", () => {
-        dockPanel(PANEL_URL);
+        dock();
         drag(-100);
 
         pointer("pointermove", window, 500);
@@ -204,7 +218,7 @@ describe("resizing the docked panel", () => {
     });
 
     test("arrow keys on the handle resize it in steps, within the same limits", () => {
-        dockPanel(PANEL_URL);
+        dock();
 
         handle().dispatchEvent(
             new KeyboardEvent("keydown", { key: "ArrowLeft", bubbles: true })
@@ -221,12 +235,34 @@ describe("resizing the docked panel", () => {
     });
 
     test("keeps the chosen width when the page reloads", () => {
-        dockPanel(PANEL_URL);
+        dock();
         drag(-100);
         expect(localStorage.getItem(WIDTH_KEY)).toBe("572");
 
         document.body.innerHTML = "";
-        dockPanel(PANEL_URL);
+        dock();
+
+        expect(panel().style.width).toBe("572px");
+        expect(pageMargin()).toBe("572px");
+    });
+
+    test("reopens at the chosen width after the form closes", () => {
+        dock();
+        drag(-100);
+        const formShows = (open: boolean) =>
+            window.dispatchEvent(
+                new MessageEvent("message", {
+                    data: {
+                        source: "cs-builder-panel",
+                        type: "form-visibility",
+                        open,
+                    },
+                    source: panel().contentWindow,
+                })
+            );
+
+        formShows(false);
+        formShows(true);
 
         expect(panel().style.width).toBe("572px");
         expect(pageMargin()).toBe("572px");
@@ -235,13 +271,13 @@ describe("resizing the docked panel", () => {
     test("ignores a remembered width outside the limits", () => {
         localStorage.setItem(WIDTH_KEY, "5000");
 
-        dockPanel(PANEL_URL);
+        dock();
 
         expect(panel().style.width).toBe("864px");
     });
 
     test("shrinks back within the limit when the window gets narrower", () => {
-        dockPanel(PANEL_URL);
+        dock();
         drag(-2000);
 
         window.innerWidth = 1000;
@@ -252,7 +288,7 @@ describe("resizing the docked panel", () => {
     });
 
     test("never lets the panel and the page overlap, however it is resized", () => {
-        dockPanel(PANEL_URL);
+        dock();
         const steps: Array<() => void> = [
             () => drag(-150),
             () => drag(90),
@@ -282,8 +318,8 @@ describe("resizing the docked panel", () => {
     });
 
     test("adds one handle however many times the panel is docked", () => {
-        dockPanel(PANEL_URL);
-        dockPanel(PANEL_URL);
+        dock();
+        dock();
 
         expect(
             document.querySelectorAll(".visual-builder__panel-resize-handle")
