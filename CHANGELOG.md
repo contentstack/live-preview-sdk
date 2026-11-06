@@ -1,5 +1,38 @@
 # Changelog
 
+## [v4.6.0](https://github.com/contentstack/live-preview-sdk/compare/v4.5.3...v4.6.0)
+
+> 29 October 2026
+
+### New Features
+
+- feat(field-toolbar): show the Edit button for Boolean fields (Faraaz Biyabani - [#671](https://github.com/contentstack/live-preview-sdk/pull/671))
+- feat(visual-builder): edit entry tags from the canvas toolbar (sairaj-cs - [#670](https://github.com/contentstack/live-preview-sdk/pull/670))
+- feat(field-toolbar): show the Edit button for Taxonomy fields on the canvas toolbar (Sahil Chalke - [#669](https://github.com/contentstack/live-preview-sdk/pull/669))
+- feat(visual-builder): edit Select fields from the canvas toolbar (Hitesh Shetty - [#668](https://github.com/contentstack/live-preview-sdk/pull/668))
+- feat(visual-builder): notify the editor when the entries on the page change (sairaj-cs - [#662](https://github.com/contentstack/live-preview-sdk/pull/662))
+
+### Fixes
+
+- fix(security): bump dompurify to patch DOM XSS advisory (Hitesh Shetty - [#660](https://github.com/contentstack/live-preview-sdk/pull/660))
+
+### New Features
+
+- feat(field-toolbar): give Taxonomy fields the whole-field toolbar (Claude - [a84b2c2](https://github.com/contentstack/live-preview-sdk/commit/a84b2c21de75564e182cb521fd37853786dc3226))
+- feat(field-toolbar): show the Edit button for Taxonomy fields (Claude - [e5175f4](https://github.com/contentstack/live-preview-sdk/commit/e5175f488bf8ba6d7932483d3b85b8d0dacc2161))
+
+### Fixes
+
+- fix(field-toolbar): explain Taxonomy add buttons and tidy Taxonomy toolbar tests (Claude - [2d2036c](https://github.com/contentstack/live-preview-sdk/commit/2d2036c05ec48b10cb853a1e1aee09e1a536b079))
+
+### Refactoring and Updates
+
+- refactor(field-toolbar): split isEditedAsOneValue into isMultipleSelect and isTaxonomyField (SahilCs15 - [9b34a1d](https://github.com/contentstack/live-preview-sdk/commit/9b34a1d09119d56347a220fc08d4e5277d3c870f))
+
+### Changes to Test Assests
+
+- test(field-toolbar): drop Boolean tests that other toolbar tests already cover (Claude - [88b0ee2](https://github.com/contentstack/live-preview-sdk/commit/88b0ee256c36b4d75d162238d228eb7f3586680d))
+
 ## [v4.5.3](https://github.com/contentstack/live-preview-sdk/compare/v4.5.2...v4.5.3)
 
 > 29 September 2026
@@ -10,11 +43,15 @@
 
 ### General Changes
 
+- release: v4.5.3 (Karan Bhavesh Gandhi - [#659](https://github.com/contentstack/live-preview-sdk/pull/659))
+- release: v4.5.3 (Develop v4 -&gt; stage v4) (Karan Bhavesh Gandhi - [#653](https://github.com/contentstack/live-preview-sdk/pull/653))
+- release: v4.5.3 (sync main into develop_v4) (Karan Bhavesh Gandhi - [#658](https://github.com/contentstack/live-preview-sdk/pull/658))
 - Updated codeowners (Karan Bhavesh Gandhi - [#657](https://github.com/contentstack/live-preview-sdk/pull/657))
 
 ### Fixes
 
 - fix(visual-builder): correct the documented rejection contract and cover the observer send (Kirtesh Suthar - [b78d266](https://github.com/contentstack/live-preview-sdk/commit/b78d2662f563f2261b02eea9a6b7088fc2485ee5))
+- fix: update CDN version to 4.5.3 in README (Karan Gandhi - [697a526](https://github.com/contentstack/live-preview-sdk/commit/697a526f9826171599a09cd8d5281997cc247891))
 
 ### Refactoring and Updates
 
@@ -47,9 +84,15 @@
 
 - chore(ci): pin vitest-coverage-report-action to a commit sha (Kirtesh Suthar - [fd8e6af](https://github.com/contentstack/live-preview-sdk/commit/fd8e6af5a8b4b5c8cdd512955180b943616c0c26))
 
+### General Changes
+
+- Update npm-publish.yml (Aravind Kumar - [60ce24f](https://github.com/contentstack/live-preview-sdk/commit/60ce24f4c53467294a9b52307337d670a404eec9))
+- Delete .github/workflows/npm-alpha-publish.yml (Aravind Kumar - [71a26ad](https://github.com/contentstack/live-preview-sdk/commit/71a26ad7dc3a9534c2513858a0fa574fd8940be4))
+- Update npm-publish.yml (Aravind Kumar - [89811da](https://github.com/contentstack/live-preview-sdk/commit/89811da4bf36528c30d2efc14c5d01594234a501))
+
 ## [v4.5.1](https://github.com/contentstack/live-preview-sdk/compare/v4.5.0...v4.5.1)
 
-> 15 September 2026
+> 11 September 2026
 
 ### Fixes
 
@@ -83,9 +126,6 @@
 
 ### General Changes
 
-- Update npm-publish.yml (Aravind Kumar - [60ce24f](https://github.com/contentstack/live-preview-sdk/commit/60ce24f4c53467294a9b52307337d670a404eec9))
-- Delete .github/workflows/npm-alpha-publish.yml (Aravind Kumar - [71a26ad](https://github.com/contentstack/live-preview-sdk/commit/71a26ad7dc3a9534c2513858a0fa574fd8940be4))
-- Update npm-publish.yml (Aravind Kumar - [89811da](https://github.com/contentstack/live-preview-sdk/commit/89811da4bf36528c30d2efc14c5d01594234a501))
 - Updated codeowners (Aravind Kumar - [4183387](https://github.com/contentstack/live-preview-sdk/commit/41833878124126b1cf74d92d8501f1d1eda1c06f))
 
 ## [v4.5.0](https://github.com/contentstack/live-preview-sdk/compare/v4.4.5...v4.5.0)
@@ -332,17 +372,9 @@
 - Merge origin/stage_v4 into stage_v4 — resolve version conflicts (4.3.0 → 4.4.0) (hitesh-shetty-cstk - [be798e3](https://github.com/contentstack/live-preview-sdk/commit/be798e30c2c82f57488407477482cd3e5273751f))
 - Merge pull request #565 from contentstack/develop_v4 (Karan Bhavesh Gandhi - [c8fc00d](https://github.com/contentstack/live-preview-sdk/commit/c8fc00ddf53681e2bd5c08ad6d61799b236728ca))
 
-## [v4.4.0](https://github.com/contentstack/live-preview-sdk/compare/v4.3.1...v4.4.0)
+## [v4.4.0](https://github.com/contentstack/live-preview-sdk/compare/v4.3.0...v4.4.0)
 
 > 6 April 2026
-
-### General Changes
-
-- Merge pull request #578 from contentstack/stage_v4 (Karan Bhavesh Gandhi - [7dbe992](https://github.com/contentstack/live-preview-sdk/commit/7dbe99233ad3920834147de9f67d63c8bd2895fc))
-
-## [v4.3.1](https://github.com/contentstack/live-preview-sdk/compare/v4.3.0...v4.3.1)
-
-> 2 April 2026
 
 ### New Features
 
@@ -387,6 +419,7 @@
 
 ### General Changes
 
+- Merge pull request #578 from contentstack/stage_v4 (Karan Bhavesh Gandhi - [7dbe992](https://github.com/contentstack/live-preview-sdk/commit/7dbe99233ad3920834147de9f67d63c8bd2895fc))
 - Merge pull request #576 from contentstack/develop_v4 (Karan Bhavesh Gandhi - [2501855](https://github.com/contentstack/live-preview-sdk/commit/25018553092688922b523e70ac60a6a0363cec15))
 - Merge pull request #577 from contentstack/VP-1133/purge-flag-4 (Karan Bhavesh Gandhi - [a621121](https://github.com/contentstack/live-preview-sdk/commit/a621121d15a2b518d75e39dbba996ba585439003))
 
