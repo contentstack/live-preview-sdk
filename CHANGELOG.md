@@ -1,5 +1,13 @@
 # Changelog
 
+## [v4.6.1](https://github.com/contentstack/live-preview-sdk/compare/v4.6.0...v4.6.1)
+
+> 6 November 2026
+
+### Fixes
+
+- fix(security): bump dompurify to patch multiple XSS advisories (Claude - [bde4d0e](https://github.com/contentstack/live-preview-sdk/commit/bde4d0e0646fba2fec53e09dc97246bca7cac90d))
+
 ## [v4.6.0](https://github.com/contentstack/live-preview-sdk/compare/v4.5.3...v4.6.0)
 
 > 29 October 2026
