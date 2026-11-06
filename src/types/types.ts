@@ -68,6 +68,12 @@ export enum ILivePreviewWindowType {
 export declare interface IPageContext {
     entryUid: string;
     contentTypeUid: string;
+    /**
+     * The `composable_uid` of the Studio template that renders this page.
+     * Optional: when several templates claim the entry's content type, it
+     * tells the Visual Editor which one to open instead of asking.
+     */
+    compositionUid?: string;
 }
 
 export declare interface IConfig {

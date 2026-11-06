@@ -327,7 +327,7 @@ onEntryChange(fetchData, { skipInitialRender: true });
 ## `setPageContext(context)`
 
 ```ts
-setPageContext(context: { entryUid: string; contentTypeUid: string }): void
+setPageContext(context: { entryUid: string; contentTypeUid: string; compositionUid?: string }): void
 ```
 
 The `setPageContext()` method tells the Visual Builder which entry the current page is rendering. The Visual Builder uses this context so that the **"Start Editing"** button (and the `init` handshake) target the correct entry, even when a page is served from a custom URL that the SDK cannot map to an entry on its own.
@@ -340,6 +340,7 @@ Place the call alongside your existing `addEditableTags` call — both reference
 | --------------------- | -------- | ------------------------------------------------- |
 | `context.entryUid`    | string   | UID of the entry the current page is rendering.   |
 | `context.contentTypeUid` | string | UID of that entry's content type.               |
+| `context.compositionUid` | string (optional) | The `composable_uid` of the Studio template that renders the page. When several Studio templates claim the content type, "Start Editing" opens this one instead of asking the author which to open. It is used only when it names the same entry as the winning `entryUid` (see the order of precedence below), and it reaches the Visual Editor only through the "Start Editing" link, not the `init` handshake or the page-context post message. |
 
 **For example:**
 
@@ -355,7 +356,7 @@ ContentstackLivePreview.setPageContext({
 });
 ```
 
-> **Note:** When the page is loaded inside the Visual Builder/Live Preview iframe, the context is also sent to Contentstack via a post message. Outside an iframe, the context is only stored locally and used when generating the "Start Editing" redirection URL.
+> **Note:** When the page is loaded inside the Visual Builder/Live Preview iframe, the entry and content type are also sent to Contentstack via a post message. Outside an iframe, the context is only stored locally and used when generating the "Start Editing" redirection URL.
 
 ### Alternative ways to supply page context
 
@@ -368,6 +369,8 @@ If you cannot call `setPageContext()` directly (for example, when no JavaScript 
     window.__CS_PAGE_CONTEXT__ = {
         entryUid: "entry-123",
         contentTypeUid: "blog_post",
+        // Optional: the Studio template that renders the page.
+        compositionUid: "blog_redesign",
     };
     ```
 
@@ -376,6 +379,8 @@ If you cannot call `setPageContext()` directly (for example, when no JavaScript 
     ```html
     <meta name="contentstack:entry-uid" content="entry-123" />
     <meta name="contentstack:content-type-uid" content="blog_post" />
+    <!-- Optional: the Studio template that renders the page -->
+    <meta name="contentstack:composition-uid" content="blog_template" />
     ```
 
     Meta tags are a useful fallback for frameworks that render `<meta>` natively (for example, Next.js App Router `metadata`/`generateMetadata()` or Nuxt `useHead()`) and for sites with a strict Content Security Policy (`no unsafe-inline`) that blocks inline `<script>` tags but allows meta tags.

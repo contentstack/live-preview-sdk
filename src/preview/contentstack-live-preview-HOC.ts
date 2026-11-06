@@ -15,7 +15,7 @@ import {
 } from "../livePreview/types/onEntryChangeCallback.type";
 import { PublicLogger } from "../logger/logger";
 import { handleWebCompare } from "../timeline/compare/compare";
-import type { IExportedConfig, IInitData } from "../types/types";
+import type { IExportedConfig, IInitData, IPageContext } from "../types/types";
 import { VisualBuilder } from "../visualBuilder";
 import visualBuilderPostMessage from "../visualBuilder/utils/visualBuilderPostMessage";
 import {
@@ -267,8 +267,12 @@ class ContentstackLivePreview {
      * Utils.addEditableTags(entry, "blog_post", true, "en-us");
      * ContentstackLivePreview.setPageContext({ entryUid: entry.uid, contentTypeUid: "blog_post" });
      * ```
+     *
+     * A page rendered by a Studio template can also pass `compositionUid`, the
+     * template's `composable_uid`, so "Start Editing" opens that template when
+     * several claim the content type.
      */
-    static setPageContext(context: { entryUid: string; contentTypeUid: string }): void {
+    static setPageContext(context: IPageContext): void {
         Config.set("pageContext", context);
         // init() fires before async data fetching, so the INIT post-message has no
         // entry context in CSR apps. Send it now so VB can update its current entry.

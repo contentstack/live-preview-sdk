@@ -37,13 +37,16 @@ export default function getVisualBuilderRedirectionUrl(): URL {
         searchParams.set("locale", localeToUse);
     }
 
-    const { entryUid, contentTypeUid } = resolvePageContext();
+    const { entryUid, contentTypeUid, compositionUid } = resolvePageContext();
 
     if (entryUid) {
         searchParams.set("entry_uid", entryUid);
     }
     if (contentTypeUid) {
         searchParams.set("content_type_uid", contentTypeUid);
+    }
+    if (compositionUid) {
+        searchParams.set("composition_uid", compositionUid);
     }
 
     const completeURL = new URL(
