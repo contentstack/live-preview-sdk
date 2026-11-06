@@ -141,6 +141,14 @@ describe("instance elements", () => {
         expect(getPeerLockForField(instance(1))?.user.uid).toBe("u1");
     });
 
+    it("names the instance's own holder before a peer inside it", () => {
+        setEntryFieldLockInfo(scope, {
+            "section.0.buckets.1.title": peer({ user: { uid: "u2" } }),
+            "section.0.buckets.1": peer(),
+        });
+        expect(getPeerLockForField(instance(1))?.user.uid).toBe("u1");
+    });
+
     it("does not match instance 1 against a lock on instance 10", () => {
         setEntryFieldLockInfo(scope, { "section.0.buckets.10": peer() });
         expect(getPeerLockForField(instance(1))).toBeNull();

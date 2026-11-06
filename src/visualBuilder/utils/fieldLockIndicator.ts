@@ -69,15 +69,17 @@ function findPeerLockAround(
 export function getPeerLockForField(
     fieldMetadata: FieldMetadataForLock
 ): EntryFieldLock | null {
-    const scopeLocks = getScopeLocks(fieldMetadata);
-    const exact = asPeerLock(scopeLocks[fieldMetadata.fieldPath]);
-    if (exact) return exact;
-
     const target =
         fieldMetadata.instance?.fieldPathWithIndex ||
         fieldMetadata.fieldPathWithIndex ||
         fieldMetadata.fieldPath;
-    return target ? findPeerLockAround(scopeLocks, target) : null;
+    if (!target) return null;
+
+    // Own path first so its holder wins over a peer in a nested or parent field.
+    const scopeLocks = getScopeLocks(fieldMetadata);
+    return (
+        asPeerLock(scopeLocks[target]) ?? findPeerLockAround(scopeLocks, target)
+    );
 }
 
 /**
