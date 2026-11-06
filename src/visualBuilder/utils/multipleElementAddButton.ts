@@ -2,6 +2,7 @@ import { VisualBuilderCslpEventDetails } from "../types/visualBuilder.types";
 import {
     generateAddInstanceButton,
     getAddInstanceButtons,
+    removeAddInstanceButton,
 } from "../generators/generateAddInstanceButtons";
 import getChildrenDirection from "./getChildrenDirection";
 import { hideOverlay } from "../generators/generateOverlay";
@@ -196,7 +197,7 @@ export function removeAddInstanceButtons(
             true
         );
 
-        addInstanceButtons?.forEach((button) => button.remove());
+        addInstanceButtons?.forEach(removeAddInstanceButton);
     }
 
     const addInstanceButtons = getAddInstanceButtons(visualBuilderContainer);
@@ -219,8 +220,8 @@ export function removeAddInstanceButtons(
         return;
     }
 
-    nextButton.remove();
-    previousButton.remove();
+    removeAddInstanceButton(nextButton);
+    removeAddInstanceButton(previousButton);
 }
 
 /**

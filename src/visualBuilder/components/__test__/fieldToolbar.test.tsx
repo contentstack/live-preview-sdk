@@ -30,6 +30,7 @@ import { VisualBuilderPostMessageEvents } from "../../utils/types/postMessage.ty
 import {
     clearAllEntryFieldLockInfo,
     setEntryEditRestriction,
+    setEntryFieldLockInfo,
 } from "../../utils/fieldLockStore";
 import { VisualBuilder } from "../..";
 
@@ -815,6 +816,61 @@ describe("FieldToolbarComponent", () => {
                 const deleteButton = await renderToolbar();
 
                 await waitFor(() => expect(deleteButton()).toBeDisabled());
+            });
+
+            describe("a collaborator inside the container", () => {
+                const lockIn = (path: string) =>
+                    setEntryFieldLockInfo(scope, {
+                        [path]: {
+                            user: { uid: "u2", name: "Watcher" },
+                            ttl: "2030-01-01",
+                            isLocked: true,
+                            isOwn: false,
+                        },
+                    });
+                const button = (container: Element, name: string) =>
+                    container.querySelector(
+                        `[data-testid="visual-builder__focused-toolbar__multiple-field-toolbar__${name}-button"]`
+                    );
+
+                test("greys move and delete with the holder in the tooltip", async () => {
+                    lockIn("group.link.1");
+                    const deleteButton = await renderToolbar();
+
+                    await waitFor(() => expect(deleteButton()).toBeDisabled());
+                    expect(deleteButton()).toHaveAttribute(
+                        "data-tooltip",
+                        "This field is locked by Watcher"
+                    );
+                    const toolbar = deleteButton()!.parentElement!;
+                    expect(button(toolbar, "move-left")).toBeDisabled();
+                    expect(button(toolbar, "move-right")).toBeDisabled();
+                });
+
+                test("re-enables them when the lock is released", async () => {
+                    lockIn("group.link.1");
+                    const deleteButton = await renderToolbar();
+                    await waitFor(() => expect(deleteButton()).toBeDisabled());
+
+                    act(() => setEntryFieldLockInfo(scope, {}));
+
+                    await waitFor(() =>
+                        expect(deleteButton()).not.toBeDisabled()
+                    );
+                    expect(deleteButton()).toHaveAttribute(
+                        "data-tooltip",
+                        "Delete"
+                    );
+                });
+
+                test("ignores a lock in another field", async () => {
+                    lockIn("group.title");
+                    const deleteButton = await renderToolbar();
+
+                    await waitFor(() =>
+                        expect(deleteButton()).not.toBeDisabled()
+                    );
+                });
             });
 
             test("disables the field actions when the restriction arrives after the toolbar opened", async () => {

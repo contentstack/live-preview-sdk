@@ -43,7 +43,11 @@ import { EntryPermissions } from "../utils/getEntryPermissions";
 import { FieldLocationAppList } from "./FieldLocationAppList";
 import { FieldLocationIcon } from "./FieldLocationIcon";
 import { WorkflowStageDetails } from "../utils/getWorkflowStageDetails";
-import { getEntryEditRestrictionForField } from "../utils/fieldLockIndicator";
+import {
+    getEntryEditRestrictionForField,
+    getPeerLockForContainer,
+    peerLockMessage,
+} from "../utils/fieldLockIndicator";
 import { subscribeEntryFieldLockInfo } from "../utils/fieldLockStore";
 import { ResolvedVariantPermissions } from "../utils/getResolvedVariantPermissions";
 import { isCustomFieldMultipleInstance as checkIsCustomFieldMultipleInstance } from "../utils/isCustomFieldMultipleInstance";
@@ -201,12 +205,21 @@ function FieldToolbarComponent(
     const [restrictionReason, setRestrictionReason] = useState(() =>
         getEntryEditRestrictionForField(fieldMetadata)
     );
+    const [containerPeerLock, setContainerPeerLock] = useState(() =>
+        getPeerLockForContainer(fieldMetadata)
+    );
     useEffect(() => {
-        const update = () =>
+        const update = () => {
             setRestrictionReason(getEntryEditRestrictionForField(fieldMetadata));
+            setContainerPeerLock(getPeerLockForContainer(fieldMetadata));
+        };
         update();
         return subscribeEntryFieldLockInfo(update);
     }, [fieldMetadata]);
+    // Add / move / delete change the whole container, so a collaborator anywhere in it blocks them.
+    const containerLockReason = containerPeerLock
+        ? peerLockMessage(containerPeerLock)
+        : null;
 
     let disableFieldActions = Boolean(restrictionReason);
     let isCustomFieldMultipleInstance = false;
@@ -560,9 +573,10 @@ function FieldToolbarComponent(
                                         multipleFieldToolbarButtonClasses
                                     }
                                     data-tooltip={
-                                        direction === "vertical"
+                                        containerLockReason ??
+                                        (direction === "vertical"
                                             ? "Move up"
-                                            : "Move left"
+                                            : "Move left")
                                     }
                                     onClick={(e) => {
                                         e.preventDefault();
@@ -573,7 +587,9 @@ function FieldToolbarComponent(
                                         );
                                     }}
                                     disabled={
-                                        disableFieldActions || disableMoveLeft
+                                        disableFieldActions ||
+                                        Boolean(containerLockReason) ||
+                                        disableMoveLeft
                                     }
                                 >
                                     <MoveLeftIcon
@@ -586,6 +602,7 @@ function FieldToolbarComponent(
                                         })}
                                         disabled={
                                             disableFieldActions ||
+                                            Boolean(containerLockReason) ||
                                             disableMoveLeft
                                         }
                                     />
@@ -597,9 +614,10 @@ function FieldToolbarComponent(
                                         multipleFieldToolbarButtonClasses
                                     }
                                     data-tooltip={
-                                        direction === "vertical"
+                                        containerLockReason ??
+                                        (direction === "vertical"
                                             ? "Move down"
-                                            : "Move right"
+                                            : "Move right")
                                     }
                                     onClick={(e) => {
                                         e.preventDefault();
@@ -610,7 +628,9 @@ function FieldToolbarComponent(
                                         );
                                     }}
                                     disabled={
-                                        disableFieldActions || disableMoveRight
+                                        disableFieldActions ||
+                                        Boolean(containerLockReason) ||
+                                        disableMoveRight
                                     }
                                 >
                                     <MoveRightIcon
@@ -623,6 +643,7 @@ function FieldToolbarComponent(
                                         })}
                                         disabled={
                                             disableFieldActions ||
+                                            Boolean(containerLockReason) ||
                                             disableMoveRight
                                         }
                                     />
@@ -637,13 +658,18 @@ function FieldToolbarComponent(
                                     className={
                                         multipleFieldToolbarButtonClasses
                                     }
-                                    data-tooltip={"Delete"}
+                                    data-tooltip={
+                                        containerLockReason ?? "Delete"
+                                    }
                                     onClick={(e) => {
                                         e.preventDefault();
                                         e.stopPropagation();
                                         handleDeleteInstance(fieldMetadata);
                                     }}
-                                    disabled={disableFieldActions}
+                                    disabled={
+                                        disableFieldActions ||
+                                        Boolean(containerLockReason)
+                                    }
                                 >
                                     <DeleteIcon />
                                 </button>
