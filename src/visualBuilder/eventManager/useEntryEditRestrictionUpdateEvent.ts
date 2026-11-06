@@ -24,7 +24,7 @@ export function useEntryEditRestrictionUpdateEvent(): void {
         (event: EntryEditRestrictionUpdateEvent) => {
             const { entryUid, locale, variantUid, restriction } = event.data;
             setEntryEditRestriction(
-                { entryUid, locale, variantUid },
+                { entryUid, locale, ...(variantUid ? { variantUid } : {}) },
                 toEntryEditRestriction(restriction)
             );
         }
