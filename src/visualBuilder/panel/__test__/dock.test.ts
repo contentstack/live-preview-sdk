@@ -1,4 +1,4 @@
-import { dockPanel } from "../dock";
+import { dockPanel, markEditorReload } from "../dock";
 import { dockStyles } from "../dock.style";
 import Config from "../../../configManager/configManager";
 import { visualBuilderStyles } from "../../visualBuilder.style";
@@ -189,6 +189,207 @@ describe("dockPanel", () => {
             modalShows(true, window);
 
             expect(panels()[0].style.width).toBe("472px");
+        });
+    });
+
+    // An SSR site reloads the whole page on every edit; the form should not close each time.
+    describe("across a reload the editor itself causes", () => {
+        afterEach(() => sessionStorage.clear());
+        const leave = () => window.dispatchEvent(new Event("pagehide"));
+
+        test("comes back open, page still pushed aside, and asks the panel to reopen its form", () => {
+            dockPanel(PANEL_URL);
+            formShows(true);
+            markEditorReload();
+            leave();
+            document.body.innerHTML = "";
+
+            dockPanel(PANEL_URL);
+            expect(panels()[0].style.width).toBe("472px");
+            expect(document.documentElement.style.marginRight).toBe("472px");
+            const post = vi
+                .spyOn(panels()[0].contentWindow!, "postMessage")
+                .mockImplementation(() => {});
+            // The reloaded panel boots closed, as on any reload.
+            formShows(false);
+
+            expect(post).toHaveBeenCalledWith(
+                { source: "cs-builder-host", type: "open-form" },
+                "https://visual-builder.contentstack.com"
+            );
+            expect(panels()[0].style.width).toBe("472px");
+        });
+
+        test("stays collapsed when the form was closed before it", () => {
+            dockPanel(PANEL_URL);
+            formShows(false);
+            markEditorReload();
+            leave();
+            document.body.innerHTML = "";
+
+            dockPanel(PANEL_URL);
+
+            expect(panels()[0].style.width).toBe("0px");
+        });
+
+        test("a reload by the user still comes back collapsed", () => {
+            dockPanel(PANEL_URL);
+            formShows(true);
+            leave();
+            document.body.innerHTML = "";
+
+            dockPanel(PANEL_URL);
+
+            expect(panels()[0].style.width).toBe("0px");
+        });
+    });
+
+    // While the panel says an SSR edit is on its way, the page is stale: wait, do not edit it.
+    describe("busy while the panel is updating the page", () => {
+        const BUSY = "visual-builder__page--busy";
+        const panelSaysBusy = (
+            busy: boolean,
+            source: Window | null = panels()[0].contentWindow
+        ) =>
+            window.dispatchEvent(
+                new MessageEvent("message", {
+                    data: {
+                        source: "cs-builder-panel",
+                        type: "canvas-busy",
+                        busy,
+                    },
+                    source,
+                })
+            );
+        const isBusy = () => document.documentElement.classList.contains(BUSY);
+        const pageEvents = () => {
+            const seen: string[] = [];
+            const root = document.documentElement;
+            const log = (e: Event) => e.target === root && seen.push(e.type);
+            root.addEventListener("mouseleave", log);
+            root.addEventListener("mouseenter", log);
+            return seen;
+        };
+        afterEach(() => {
+            document.documentElement.classList.remove(BUSY);
+            sessionStorage.clear();
+        });
+
+        test("shows the waiting cursor over the page", () => {
+            dockPanel(PANEL_URL);
+
+            panelSaysBusy(true);
+
+            expect(isBusy()).toBe(true);
+            const rules = [...document.querySelectorAll("style#_goober")]
+                .map((style) => style.textContent)
+                .join("")
+                .replace(/\s/g, "");
+            expect(rules).toContain("cursor:progress!important");
+        });
+
+        test("hides the builder's edit cursor and outlines, and keeps them hidden over the page", () => {
+            dockPanel(PANEL_URL);
+            const seen = pageEvents();
+            // The builder shows its edit cursor from window moves over a field, registered after the dock.
+            const builderMove = vi.fn();
+            window.addEventListener("mousemove", builderMove);
+
+            panelSaysBusy(true);
+            document.body.dispatchEvent(
+                new MouseEvent("mousemove", { bubbles: true })
+            );
+
+            expect(seen).toEqual(["mouseleave"]);
+            expect(builderMove).not.toHaveBeenCalled();
+
+            panelSaysBusy(false);
+            document.body.dispatchEvent(
+                new MouseEvent("mousemove", { bubbles: true })
+            );
+            expect(builderMove).toHaveBeenCalledTimes(1);
+            window.removeEventListener("mousemove", builderMove);
+        });
+
+        test("lets nothing on the page be clicked into edit, then gives it back", () => {
+            dockPanel(PANEL_URL);
+            // The builder listens for clicks on the window, after the dock.
+            const builderClick = vi.fn();
+            window.addEventListener("click", builderClick, { capture: true });
+
+            panelSaysBusy(true);
+            document.body.click();
+            expect(builderClick).not.toHaveBeenCalled();
+
+            panelSaysBusy(false);
+            document.body.click();
+            expect(builderClick).toHaveBeenCalledTimes(1);
+            expect(isBusy()).toBe(false);
+            window.removeEventListener("click", builderClick, {
+                capture: true,
+            });
+        });
+
+        // The old page stays up until the server has rendered the new one, which can outlast the panel's grace.
+        test("stays waiting from the editor's reload until the page goes, whatever the panel says after", () => {
+            dockPanel(PANEL_URL);
+            panelSaysBusy(true);
+
+            markEditorReload();
+            window.dispatchEvent(new Event("beforeunload"));
+            panelSaysBusy(false);
+
+            expect(isBusy()).toBe(true);
+        });
+
+        test("waits from the editor's reload even when nothing said busy before it", () => {
+            dockPanel(PANEL_URL);
+
+            markEditorReload();
+            window.dispatchEvent(new Event("beforeunload"));
+
+            expect(isBusy()).toBe(true);
+        });
+
+        test("does not wait when the user reloads the page", () => {
+            dockPanel(PANEL_URL);
+
+            window.dispatchEvent(new Event("beforeunload"));
+
+            expect(isBusy()).toBe(false);
+        });
+
+        test("starts busy after a reload the editor caused, until the panel says the page is ready", () => {
+            dockPanel(PANEL_URL);
+            formShows(true);
+            markEditorReload();
+            window.dispatchEvent(new Event("pagehide"));
+            document.body.innerHTML = "";
+
+            dockPanel(PANEL_URL);
+            expect(isBusy()).toBe(true);
+
+            panelSaysBusy(false);
+            expect(isBusy()).toBe(false);
+        });
+
+        test("a reload by the user is not busy", () => {
+            dockPanel(PANEL_URL);
+            formShows(true);
+            window.dispatchEvent(new Event("pagehide"));
+            document.body.innerHTML = "";
+
+            dockPanel(PANEL_URL);
+
+            expect(isBusy()).toBe(false);
+        });
+
+        test("ignores that from any window but the panel", () => {
+            dockPanel(PANEL_URL);
+
+            panelSaysBusy(true, window);
+
+            expect(isBusy()).toBe(false);
         });
     });
 

@@ -3,6 +3,7 @@ import Config, { syncToStackSdk } from "../../configManager/configManager";
 import { PublicLogger } from "../../logger/logger";
 import { ILivePreviewWindowType } from "../../types/types";
 import { addParamsToUrl, isOpeningInTimeline } from "../../utils";
+import { markEditorReload } from "../../visualBuilder/panel/editorReload";
 import livePreviewPostMessage from "./livePreviewEventManager";
 import { LIVE_PREVIEW_POST_MESSAGE_EVENTS } from "./livePreviewEventManager.constant";
 import {
@@ -30,6 +31,7 @@ export function useHistoryPostMessageEvent(): void {
                     break;
                 }
                 case "reload": {
+                    markEditorReload();
                     window.history.go();
                     break;
                 }
@@ -70,6 +72,7 @@ export function useOnEntryUpdatePostMessageEvent(): void {
                     };
 
                     if (ssr && !event_type) {
+                        markEditorReload();
                         const url = new URL(window.location.href);
                         let live_preview = url.searchParams.get("live_preview");
                         let content_type_uid = url.searchParams.get("content_type_uid");
@@ -109,6 +112,7 @@ export function useOnEntryUpdatePostMessageEvent(): void {
 
                     // This section will run when the URL of the page changes
                     if (event_type === OnChangeLivePreviewPostMessageEventTypes.URL_CHANGE && event.data.url) {
+                        markEditorReload();
                         window.location.href = event.data.url;
                     }
                 }

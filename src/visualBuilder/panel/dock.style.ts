@@ -33,6 +33,13 @@ export function dockStyles() {
                 opacity: 1;
             }
         `,
+        // On the page's root while the panel updates it: the waiting cursor everywhere, over the builder's own.
+        "visual-builder__page--busy": css`
+            &,
+            & * {
+                cursor: progress !important;
+            }
+        `,
         // A <button>, unlike Start Editing's link, so it needs the pointer set.
         "visual-builder__panel-toggle": css`
             cursor: pointer;
