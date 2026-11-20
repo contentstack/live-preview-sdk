@@ -1,3 +1,4 @@
+import type { MockInstance } from "vitest";
 import { dockPanel, markEditorReload } from "../dock";
 import { dockStyles } from "../dock.style";
 import Config from "../../../configManager/configManager";
@@ -73,6 +74,76 @@ describe("dockPanel", () => {
         dockPanel(PANEL_URL);
 
         expect(panels()).toHaveLength(1);
+    });
+
+    // The CMS's own modals open in the Visual Editor tab (the site's opener); only this page may bring it forward.
+    describe("bringing the Visual Editor tab forward", () => {
+        const TAB = "cs-vb-relay-00000000-0000-4000-8000-000000000000";
+        let open: MockInstance<typeof window.open>;
+        const fromPanel = (
+            tabName: unknown,
+            source: Window | null = panels()[0].contentWindow
+        ) =>
+            window.dispatchEvent(
+                new MessageEvent("message", {
+                    data: {
+                        source: "cs-builder-panel",
+                        type: "show-editor-tab",
+                        tabName,
+                    },
+                    source,
+                })
+            );
+        const setOpener = (opener: unknown) =>
+            Object.defineProperty(window, "opener", {
+                value: opener,
+                configurable: true,
+            });
+
+        beforeEach(() => {
+            open = vi.spyOn(window, "open").mockReturnValue(null);
+            setOpener({ closed: false });
+            dockPanel(PANEL_URL);
+        });
+
+        afterEach(() => {
+            open.mockRestore();
+            setOpener(null);
+        });
+
+        test("brings it forward by its name, without loading anything in it", () => {
+            fromPanel(TAB);
+
+            expect(open).toHaveBeenCalledWith("", TAB);
+        });
+
+        test.each([
+            ["a name it did not give", "_blank"],
+            ["a name with anything after it", `${TAB}/x`],
+            ["no name", undefined],
+        ])("ignores %s", (_, name) => {
+            fromPanel(name);
+
+            expect(open).not.toHaveBeenCalled();
+        });
+
+        // A missing tab would be opened as a new blank one instead.
+        test.each([
+            ["closed", { closed: true }],
+            ["gone", null],
+        ])("does nothing once the Visual Editor tab is %s", (_, opener) => {
+            setOpener(opener);
+
+            fromPanel(TAB);
+
+            expect(open).not.toHaveBeenCalled();
+        });
+
+        test("ignores the request from any window but the panel", () => {
+            fromPanel(TAB, window);
+
+            expect(open).not.toHaveBeenCalled();
+        });
     });
 
     describe("collapsed until the side form opens", () => {

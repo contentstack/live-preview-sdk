@@ -24,6 +24,26 @@ const WIDTH_KEY = "cs-builder-panel-width";
 const DRAGGING = "visual-builder__panel-resize-handle--dragging";
 const BUSY = "visual-builder__page--busy";
 
+// The name the Visual Editor tab gives itself for this (see relayModals.ts in Visual Editor).
+const EDITOR_TAB_NAME = /^cs-vb-relay-[\w-]{1,64}$/;
+
+/**
+ * Brings the Visual Editor tab that opened this site to the front, where the CMS's own modals open. Only this
+ * page may: the panel's frame cannot reach a tab by name. By name, which loads nothing in a tab that has it.
+ */
+const showEditorTab = (tabName: unknown) => {
+    const editor = window.opener as Window | null;
+    // With that tab gone, the same call would open a new blank one instead.
+    if (
+        typeof tabName !== "string" ||
+        !EDITOR_TAB_NAME.test(tabName) ||
+        !editor ||
+        editor.closed
+    )
+        return;
+    window.open("", tabName);
+};
+
 const clamp = (width: number) =>
     Math.min(
         Math.max(MIN_WIDTH, Math.floor(window.innerWidth * MAX_SHARE)),
@@ -177,6 +197,7 @@ export function dockPanel(panelUrl: string): HTMLIFrameElement {
         }
         if (data.type === "modal-visibility") modal = Boolean(data.open);
         if (data.type === "canvas-busy") setBusy(Boolean(data.busy));
+        if (data.type === "show-editor-tab") showEditorTab(data.tabName);
         layout();
     });
 
