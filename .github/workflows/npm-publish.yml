@@ -20,10 +20,14 @@ jobs:
           registry-url: https://registry.npmjs.org/
           cache: 'npm'
       - run: npm ci
+      - name: Install ggshield
+        run: pipx install ggshield
       - name: Update npm
         run: npm install -g npm@latest
       - name: Release
         run: npm publish --provenance --access public
+        env:
+          GITGUARDIAN_API_KEY: ${{ secrets.GITGUARDIAN_API_KEY }}
   publish-alpha:
     runs-on: ubuntu-latest
     if: ${{ endsWith(github.event.release.name, '-alpha')  }}
@@ -41,8 +45,12 @@ jobs:
           registry-url: https://registry.npmjs.org/
           cache: 'npm'
       - run: npm ci
+      - name: Install ggshield
+        run: pipx install ggshield
       - name: Update npm
         run: npm install -g npm@latest
       - name: Release
         # Without --tag alpha npm moves the latest tag to the prerelease
         run: npm publish --tag alpha --provenance --access public
+        env:
+          GITGUARDIAN_API_KEY: ${{ secrets.GITGUARDIAN_API_KEY }}
