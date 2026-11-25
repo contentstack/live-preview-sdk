@@ -1,4 +1,15 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
+# >>> GitGuardian secret scan >>>
+# Warns instead of failing when ggshield is missing: outside contributors cannot use our workspace.
+if [ -z "${CI:-}" ]; then
+  if command -v ggshield >/dev/null 2>&1; then
+    ggshield secret scan pre-push "$@" || exit 1
+  else
+    echo "Warning: ggshield is not installed, so this push was not scanned for secrets. See \"Secret scanning\" in README.md." >&2
+  fi
+fi
+# <<< GitGuardian secret scan <<<
+
 npm test

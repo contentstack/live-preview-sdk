@@ -95,6 +95,10 @@ Set `PURGE_PREVIEW_SDK` or `REACT_APP_PURGE_PREVIEW_SDK` to `"true"` during buil
 
 **Note:** This reduces bundle size by replacing the SDK with a lightweight stub in production.
 
+## Secret scanning
+
+The husky `pre-commit` and `pre-push` hooks scan your changes for secrets with [ggshield](https://docs.gitguardian.com/ggshield-docs/getting-started) when it is installed. Without ggshield, the hooks print a warning and continue. To turn the scan on, install ggshield and run `ggshield auth login`.
+
 ## Resources
 
 - **Source:** [github.com/contentstack/live-preview-sdk](https://github.com/contentstack/live-preview-sdk)
