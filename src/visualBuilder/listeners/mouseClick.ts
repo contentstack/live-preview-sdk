@@ -15,6 +15,7 @@ import { appendFocusedToolbar } from "../generators/generateToolbar";
 import { addFocusOverlay, hideOverlay } from "../generators/generateOverlay";
 
 import visualBuilderPostMessage from "../utils/visualBuilderPostMessage";
+import { sendMouseClickPostMessage } from "../utils/sendMouseClickPostMessage";
 
 import { VisualBuilderPostMessageEvents } from "../utils/types/postMessage.types";
 
@@ -289,17 +290,6 @@ export async function handleBuilderInteraction(
 
     // Observe changes to the editable element
     observeEditableElementChanges(params, editableElement);
-}
-
-function sendMouseClickPostMessage(eventDetails: any) {
-    visualBuilderPostMessage
-        ?.send(VisualBuilderPostMessageEvents.MOUSE_CLICK, {
-            cslpData: eventDetails?.cslpData,
-            fieldMetadata: eventDetails?.fieldMetadata,
-        })
-        .catch((err) => {
-            console.warn("Error while sending post message", err);
-        });
 }
 
 /** SDK-owned chrome for the focused field (its toolbar + action buttons like
