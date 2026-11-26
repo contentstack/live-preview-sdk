@@ -361,6 +361,8 @@ export const useCommentTextArea = (
                     }
                     break;
                 case "Escape":
+                    // Closing a visible list must not also deselect the canvas field.
+                    if (filteredUsers.length > 0) e.stopPropagation();
                     setShowSuggestions(false);
                     inputRef.current?.focus();
                     break;
